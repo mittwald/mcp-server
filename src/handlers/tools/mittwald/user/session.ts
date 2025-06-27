@@ -114,15 +114,17 @@ export async function handleRefreshSessions(): Promise<CallToolResult> {
     // Note: The API only supports refreshing individual sessions
     // Get current session first
     const tokenInfo = await client.typedApi.user.checkToken({});
-    const sessionId = tokenInfo.data?.sessionId;
+    const sessionId = tokenInfo.data?.id;
     
     if (!sessionId) {
       throw new Error("Could not retrieve current session ID");
     }
     
-    const response = await client.typedApi.user.refreshSession({ sessionId });
+    const response = await client.typedApi.user.refreshSession({ 
+      data: { refreshToken: sessionId }
+    });
 
-    if (response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatResponse({
         refreshed: true,
         message: "All sessions have been refreshed with extended expiration times"
@@ -146,7 +148,7 @@ export async function handleTerminateSession(args: { tokenId: string }): Promise
       tokenId: args.tokenId
     });
 
-    if (response.status === 204 || response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatResponse({
         terminated: true,
         tokenId: args.tokenId
@@ -173,7 +175,7 @@ export async function handleTerminateAllSessions(args: { includeCurrentSession?:
       throw new Error("Failed to retrieve sessions");
     }
 
-    const sessions = sessionsResponse.data as Session[];
+    const sessions = sessionsResponse.data as unknown as Session[];
     let terminatedCount = 0;
     const errors: any[] = [];
 
