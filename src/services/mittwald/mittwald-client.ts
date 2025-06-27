@@ -35,6 +35,25 @@ export class MittwaldClient {
     return this.client;
   }
 
+  // Direct namespace access for all SDK APIs
+  public get app() { return this.client.app; }
+  public get article() { return this.client.article; }
+  public get backup() { return this.client.backup; }
+  public get container() { return this.client.container; }
+  public get contract() { return this.client.contract; }
+  public get conversation() { return this.client.conversation; }
+  public get cronjob() { return this.client.cronjob; }
+  public get customer() { return this.client.customer; }
+  public get database() { return this.client.database; }
+  public get domain() { return this.client.domain; }
+  public get file() { return this.client.file; }
+  public get mail() { return this.client.mail; }
+  public get marketplace() { return this.client.marketplace; }
+  public get notification() { return this.client.notification; }
+  public get project() { return this.client.project; }
+  public get sshsftpUser() { return this.client.sshsftpUser; }
+  public get user() { return this.client.user; }
+
   /**
    * Test the API connection by fetching the user's email
    * @returns true if connection is successful, false otherwise
