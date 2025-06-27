@@ -19,7 +19,7 @@ export async function handleProjectGetStorageStatistics(args: { projectId: strin
       projectId: args.projectId 
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get storage statistics: ${response.status} ${response.statusText}`);
     }
 
@@ -60,7 +60,7 @@ export async function handleProjectUpdateStorageThreshold(args: {
       },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to update storage threshold: ${response.status} ${response.statusText}`);
     }
 

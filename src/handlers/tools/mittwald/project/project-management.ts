@@ -30,7 +30,7 @@ export async function handleProjectList(args: ListProjectsParams) {
 
     const response = await client.api.project.listProjects(queryParams);
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list projects: ${response.status} ${response.statusText}`);
     }
 
@@ -64,7 +64,7 @@ export async function handleProjectGet(args: { projectId: string }) {
       projectId: args.projectId 
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get project: ${response.status} ${response.statusText}`);
     }
 
@@ -97,7 +97,7 @@ export async function handleProjectDelete(args: { projectId: string }) {
       projectId: args.projectId 
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to delete project: ${response.status} ${response.statusText}`);
     }
 
@@ -132,7 +132,7 @@ export async function handleProjectUpdateDescription(args: { projectId: string; 
       data: { description: args.description },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to update project description: ${response.status} ${response.statusText}`);
     }
 
@@ -172,7 +172,7 @@ export async function handleProjectUploadAvatar(args: { projectId: string; fileC
       },
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to upload project avatar: ${response.status} ${response.statusText}`);
     }
 
@@ -207,7 +207,7 @@ export async function handleProjectDeleteAvatar(args: { projectId: string }) {
       projectId: args.projectId 
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to delete project avatar: ${response.status} ${response.statusText}`);
     }
 
@@ -262,7 +262,7 @@ export async function handleServerListProjects(args: { serverId: string; limit?:
       ...queryParams,
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list server projects: ${response.status} ${response.statusText}`);
     }
 

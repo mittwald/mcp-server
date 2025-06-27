@@ -27,7 +27,7 @@ export const handleCustomerListInvites = async (args: ListCustomerInvitesArgs): 
       }
     });
 
-    if (response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: `Successfully retrieved ${response.data.length} invitations`,
         result: {
@@ -65,7 +65,7 @@ export const handleCustomerCreateInvite = async (args: CreateCustomerInviteArgs)
       }
     });
 
-    if (response.status === 201) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: "Successfully created customer invitation",
         result: {
@@ -101,7 +101,7 @@ export const handleCustomerAcceptInvite = async (args: AcceptCustomerInviteArgs)
       }
     });
 
-    if (response.status === 204) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: "Successfully accepted customer invitation",
         result: {

@@ -27,7 +27,7 @@ export async function handleProjectInviteListAll(args: { limit?: number; skip?: 
 
     const response = await client.api.project.listProjectInvites(queryParams);
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list project invitations: ${response.status} ${response.statusText}`);
     }
 
@@ -67,7 +67,7 @@ export async function handleProjectInviteList(args: { projectId: string; limit?:
       ...queryParams,
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list project invitations: ${response.status} ${response.statusText}`);
     }
 
@@ -125,7 +125,7 @@ export async function handleProjectInviteCreate(args: {
       data: inviteData,
     });
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to create project invitation: ${response.status} ${response.statusText}`);
     }
 
@@ -161,7 +161,7 @@ export async function handleProjectInviteGet(args: { inviteId: string }) {
       projectInviteId: args.inviteId 
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get invitation: ${response.status} ${response.statusText}`);
     }
 
@@ -194,7 +194,7 @@ export async function handleProjectInviteDelete(args: { inviteId: string }) {
       projectInviteId: args.inviteId 
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to delete invitation: ${response.status} ${response.statusText}`);
     }
 
@@ -228,7 +228,7 @@ export async function handleProjectInviteAccept(args: { inviteId: string }) {
       projectInviteId: args.inviteId 
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to accept invitation: ${response.status} ${response.statusText}`);
     }
 
@@ -262,7 +262,7 @@ export async function handleProjectInviteDecline(args: { inviteId: string }) {
       projectInviteId: args.inviteId 
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to decline invitation: ${response.status} ${response.statusText}`);
     }
 
@@ -296,7 +296,7 @@ export async function handleProjectInviteResend(args: { inviteId: string }) {
       projectInviteId: args.inviteId 
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to resend invitation: ${response.status} ${response.statusText}`);
     }
 
@@ -330,7 +330,7 @@ export async function handleProjectTokenInviteGet(args: { token: string }) {
       headers: { token: args.token },
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get token invitation: ${response.status} ${response.statusText}`);
     }
 

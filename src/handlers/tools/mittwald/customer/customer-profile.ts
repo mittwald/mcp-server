@@ -25,7 +25,7 @@ export const handleCustomerListMemberships = async (args: ListCustomerMembership
       }
     });
 
-    if (response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: `Successfully retrieved ${response.data.length} memberships`,
         result: {

@@ -28,7 +28,7 @@ export async function handleProjectMembershipListAll(args: { userId?: string; li
 
     const response = await client.api.project.listProjectMemberships(queryParams);
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list project memberships: ${response.status} ${response.statusText}`);
     }
 
@@ -68,7 +68,7 @@ export async function handleProjectMembershipList(args: { projectId: string; lim
       ...queryParams,
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list project memberships: ${response.status} ${response.statusText}`);
     }
 
@@ -103,7 +103,7 @@ export async function handleProjectMembershipGetSelf(args: { projectId: string }
       projectId: args.projectId 
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get own membership: ${response.status} ${response.statusText}`);
     }
 
@@ -137,7 +137,7 @@ export async function handleProjectMembershipGet(args: { membershipId: string })
       projectMembershipId: args.membershipId 
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get membership: ${response.status} ${response.statusText}`);
     }
 
@@ -175,7 +175,7 @@ export async function handleProjectMembershipUpdate(args: { membershipId: string
       data: updateData,
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to update membership: ${response.status} ${response.statusText}`);
     }
 
@@ -209,7 +209,7 @@ export async function handleProjectMembershipRemove(args: { membershipId: string
       projectMembershipId: args.membershipId 
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to remove membership: ${response.status} ${response.statusText}`);
     }
 

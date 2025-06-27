@@ -29,7 +29,7 @@ export const handleCustomerList = async (args: ListCustomersArgs): Promise<CallT
       }
     });
 
-    if (response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: `Successfully retrieved ${response.data.length} customers`,
         result: {
@@ -62,7 +62,7 @@ export const handleCustomerGet = async (args: GetCustomerArgs): Promise<CallTool
       customerId: args.customerId
     });
 
-    if (response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: "Successfully retrieved customer details",
         result: {
@@ -97,7 +97,7 @@ export const handleCustomerCreate = async (args: CreateCustomerArgs): Promise<Ca
       }
     });
 
-    if (response.status === 201) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: "Successfully created customer",
         result: {
@@ -136,7 +136,7 @@ export const handleCustomerUpdate = async (args: UpdateCustomerArgs): Promise<Ca
       }
     });
 
-    if (response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: "Successfully updated customer",
         result: {
@@ -169,7 +169,7 @@ export const handleCustomerDelete = async (args: DeleteCustomerArgs): Promise<Ca
       customerId: args.customerId
     });
 
-    if (response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: "Successfully deleted customer",
         result: {
@@ -202,7 +202,7 @@ export const handleCustomerIsLegallyCompetent = async (args: IsCustomerLegallyCo
       customerId: args.customerId
     });
 
-    if (response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: "Successfully checked customer legal competence",
         result: {
