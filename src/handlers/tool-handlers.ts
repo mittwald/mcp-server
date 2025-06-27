@@ -226,6 +226,9 @@ import {
   handleMittwaldMarketplaceDryRunWebhook,
 } from './tools/mittwald/marketplace/index.js';
 
+// Import Mittwald Customer handlers
+import * as CustomerHandlers from './tools/mittwald/customer/index.js';
+
 /**
  * Zod schemas for tool validation
  */
