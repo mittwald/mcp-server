@@ -47,14 +47,14 @@ export const handleMittwaldExtensionList: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { limit = 50, offset = 0 } = args;
 
-    const response = await client.api.marketplace.listExtensions({
+    const response = await client.marketplace.extensionListExtensions({
       queryParameters: {
         limit,
         skip: offset
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to list extensions: ${response.status}`
@@ -94,7 +94,7 @@ export const handleMittwaldExtensionGet: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { extensionId } = args;
 
-    const response = await client.api.marketplace.getExtension({
+    const response = await client.marketplace.extensionGetExtension({
       extensionId
     });
 
@@ -105,7 +105,7 @@ export const handleMittwaldExtensionGet: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to get extension: ${response.status}`
@@ -144,7 +144,7 @@ export const handleMittwaldExtensionCreate: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, name, shortDescription } = args;
 
-    const response = await client.api.marketplace.createExtension({
+    const response = await client.marketplace.extensionRegisterExtension({
       contributorId,
       data: {
         name,
@@ -159,7 +159,7 @@ export const handleMittwaldExtensionCreate: ToolHandler<{
       );
     }
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to create extension: ${response.status}`
@@ -197,7 +197,7 @@ export const handleMittwaldExtensionUpdate: ToolHandler<UpdateExtensionRequest &
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId, ...updateData } = args;
 
-    const response = await client.api.marketplace.updateExtension({
+    const response = await client.marketplace.extensionPatchExtension({
       contributorId,
       extensionId,
       data: updateData
@@ -217,7 +217,7 @@ export const handleMittwaldExtensionUpdate: ToolHandler<UpdateExtensionRequest &
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to update extension: ${response.status}`
@@ -254,7 +254,7 @@ export const handleMittwaldExtensionDelete: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId } = args;
 
-    const response = await client.api.marketplace.deleteExtension({
+    const response = await client.marketplace.extensionDeleteExtension({
       contributorId,
       extensionId
     });
@@ -280,7 +280,7 @@ export const handleMittwaldExtensionDelete: ToolHandler<{
       );
     }
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to delete extension: ${response.status}`
@@ -318,7 +318,7 @@ export const handleMittwaldExtensionPublish: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId, published } = args;
 
-    const response = await client.api.marketplace.updateExtensionPublished({
+    const response = await client.marketplace.extensionSetExtensionPublishedState({
       contributorId,
       extensionId,
       data: { published }
@@ -338,7 +338,7 @@ export const handleMittwaldExtensionPublish: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to update publication status: ${response.status}`
@@ -376,7 +376,7 @@ export const handleMittwaldExtensionUpdateContext: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId, context: extensionContext } = args;
 
-    const response = await client.api.marketplace.updateExtensionContext({
+    const response = await client.marketplace.extensionChangeContext({
       contributorId,
       extensionId,
       data: { context: extensionContext }
@@ -396,7 +396,7 @@ export const handleMittwaldExtensionUpdateContext: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to update context: ${response.status}`
@@ -438,7 +438,7 @@ export const handleMittwaldExtensionUploadLogo: ToolHandler<{
     // Convert base64 to Buffer
     const logoBuffer = Buffer.from(logoBase64, 'base64');
 
-    const response = await client.api.marketplace.uploadExtensionLogo({
+    const response = await client.marketplace.extensionRequestLogoUpload({
       contributorId,
       extensionId,
       data: logoBuffer,
@@ -461,7 +461,7 @@ export const handleMittwaldExtensionUploadLogo: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to upload logo: ${response.status}`
@@ -498,7 +498,7 @@ export const handleMittwaldExtensionDeleteLogo: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId } = args;
 
-    const response = await client.api.marketplace.deleteExtensionLogo({
+    const response = await client.marketplace.extensionRemoveLogo({
       contributorId,
       extensionId
     });
@@ -517,7 +517,7 @@ export const handleMittwaldExtensionDeleteLogo: ToolHandler<{
       );
     }
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to delete logo: ${response.status}`
@@ -560,7 +560,7 @@ export const handleMittwaldExtensionUploadAsset: ToolHandler<{
     // Convert base64 to Buffer
     const contentBuffer = Buffer.from(contentBase64, 'base64');
 
-    const response = await client.api.marketplace.uploadExtensionAsset({
+    const response = await client.marketplace.extensionRequestAssetUpload({
       contributorId,
       extensionId,
       data: {
@@ -584,7 +584,7 @@ export const handleMittwaldExtensionUploadAsset: ToolHandler<{
       );
     }
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to upload asset: ${response.status}`
@@ -623,7 +623,7 @@ export const handleMittwaldExtensionDeleteAsset: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId, assetRefId } = args;
 
-    const response = await client.api.marketplace.deleteExtensionAsset({
+    const response = await client.marketplace.extensionRemoveAsset({
       contributorId,
       extensionId,
       assetRefId
@@ -643,7 +643,7 @@ export const handleMittwaldExtensionDeleteAsset: ToolHandler<{
       );
     }
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to delete asset: ${response.status}`
@@ -682,7 +682,7 @@ export const handleMittwaldExtensionCreateSecret: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId, name, value } = args;
 
-    const response = await client.api.marketplace.createExtensionSecret({
+    const response = await client.marketplace.extensionGenerateExtensionSecret({
       contributorId,
       extensionId,
       data: { name, value }
@@ -702,7 +702,7 @@ export const handleMittwaldExtensionCreateSecret: ToolHandler<{
       );
     }
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to create secret: ${response.status}`
@@ -741,7 +741,7 @@ export const handleMittwaldExtensionDeleteSecret: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId, extensionSecretId } = args;
 
-    const response = await client.api.marketplace.deleteExtensionSecret({
+    const response = await client.marketplace.extensionInvalidateExtensionSecret({
       contributorId,
       extensionId,
       extensionSecretId
@@ -761,7 +761,7 @@ export const handleMittwaldExtensionDeleteSecret: ToolHandler<{
       );
     }
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to delete secret: ${response.status}`
@@ -798,7 +798,7 @@ export const handleMittwaldExtensionRequestVerification: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId } = args;
 
-    const response = await client.api.marketplace.requestExtensionVerification({
+    const response = await client.marketplace.extensionRequestExtensionVerification({
       contributorId,
       extensionId
     });
@@ -817,7 +817,7 @@ export const handleMittwaldExtensionRequestVerification: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to request verification: ${response.status}`

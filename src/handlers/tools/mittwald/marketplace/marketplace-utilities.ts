@@ -32,9 +32,9 @@ export const handleMittwaldMarketplaceListScopes: ToolHandler<{}> = async (args,
 
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
 
-    const response = await client.api.marketplace.listScopes({});
+    const response = await client.marketplace.extensionListScopes({});
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to list scopes: ${response.status}`
@@ -73,7 +73,7 @@ export const handleMittwaldMarketplaceGetPublicKey: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { serial } = args;
 
-    const response = await client.api.marketplace.getPublicKey({
+    const response = await client.marketplace.extensionGetPublicKey({
       serial
     });
 
@@ -84,7 +84,7 @@ export const handleMittwaldMarketplaceGetPublicKey: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to get public key: ${response.status}`
@@ -121,7 +121,7 @@ export const handleMittwaldMarketplaceGetWebhookPublicKey: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { serial } = args;
 
-    const response = await client.api.marketplace.getWebhookPublicKey({
+    const response = await client.marketplace.extensionGetPublicKey({
       serial
     });
 
@@ -132,7 +132,7 @@ export const handleMittwaldMarketplaceGetWebhookPublicKey: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to get webhook public key: ${response.status}`
@@ -170,7 +170,7 @@ export const handleMittwaldMarketplaceGetCustomerExtension: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { customerId, extensionId } = args;
 
-    const response = await client.api.marketplace.getCustomerExtension({
+    const response = await client.marketplace.extensionGetExtensionInstanceForCustomer({
       customerId,
       extensionId
     });
@@ -182,7 +182,7 @@ export const handleMittwaldMarketplaceGetCustomerExtension: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to get customer extension: ${response.status}`
@@ -220,7 +220,7 @@ export const handleMittwaldMarketplaceGetProjectExtension: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { projectId, extensionId } = args;
 
-    const response = await client.api.marketplace.getProjectExtension({
+    const response = await client.marketplace.extensionGetExtensionInstanceForProject({
       projectId,
       extensionId
     });
@@ -232,7 +232,7 @@ export const handleMittwaldMarketplaceGetProjectExtension: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to get project extension: ${response.status}`
@@ -272,7 +272,7 @@ export const handleMittwaldMarketplaceDryRunWebhook: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { contributorId, extensionId, extensionInstanceId, webhookKind } = args;
 
-    const response = await client.api.marketplace.dryRunExtensionWebhook({
+    const response = await client.marketplace.extensionDryRunWebhook({
       contributorId,
       extensionId,
       extensionInstanceId,
@@ -293,7 +293,7 @@ export const handleMittwaldMarketplaceDryRunWebhook: ToolHandler<{
       );
     }
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to run webhook test: ${response.status}`
