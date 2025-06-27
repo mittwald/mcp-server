@@ -259,6 +259,31 @@ import {
   handleAppDatabaseSetUsers
 } from './tools/mittwald/database/index.js';
 
+// Mittwald tool handlers
+import * as ConversationHandlers from './tools/mittwald/conversation/index.js';
+import * as NotificationHandlers from './tools/mittwald/notification/index.js';
+
+// Mittwald tool argument types
+import type {
+  ConversationListArgs,
+  ConversationCreateArgs,
+  ConversationGetArgs,
+  ConversationUpdateArgs,
+  ConversationMessageListArgs,
+  ConversationMessageCreateArgs,
+  ConversationMessageUpdateArgs,
+  ConversationMembersGetArgs,
+  ConversationStatusSetArgs,
+  ConversationFileUploadRequestArgs,
+  ConversationFileAccessTokenArgs,
+} from '../types/mittwald/conversation.js';
+import type {
+  NotificationListArgs,
+  NotificationUnreadCountsArgs,
+  NotificationMarkAllReadArgs,
+  NotificationMarkReadArgs,
+} from '../types/mittwald/notification.js';
+
 /**
  * Zod schemas for tool validation
  */
@@ -749,6 +774,15 @@ export async function handleToolCall(
 
     // Create Mittwald service for Mittwald tools
     const mittwaldClient = getMittwaldClient();
+    const mittwaldHandlerContext: MittwaldToolHandlerContext = {
+      mittwaldClient,
+      userId: credentials.userId,
+      sessionId: context.sessionId,
+      progressToken: request.params._meta?.progressToken,
+    };
+
+    // Create Mittwald client context for Mittwald tools
+    const mittwaldClient = getMittwaldClient(CONFIG.MITTWALD_API_TOKEN);
     const mittwaldHandlerContext: MittwaldToolHandlerContext = {
       mittwaldClient,
       userId: credentials.userId,
