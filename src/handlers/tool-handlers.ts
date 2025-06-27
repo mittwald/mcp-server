@@ -229,6 +229,36 @@ import {
 // Import Mittwald Customer handlers
 import * as CustomerHandlers from './tools/mittwald/customer/index.js';
 
+import {
+  handleMySQLDatabaseList,
+  handleMySQLDatabaseCreate,
+  handleMySQLDatabaseGet,
+  handleMySQLDatabaseDelete,
+  handleMySQLDatabaseUpdateDescription,
+  handleMySQLDatabaseUpdateCharset,
+  handleMySQLUserList,
+  handleMySQLUserCreate,
+  handleMySQLUserGet,
+  handleMySQLUserUpdate,
+  handleMySQLUserDelete,
+  handleMySQLUserUpdatePassword,
+  handleMySQLUserEnable,
+  handleMySQLUserDisable,
+  handleMySQLUserGetPhpMyAdminUrl,
+  handleRedisDatabaseList,
+  handleRedisDatabaseCreate,
+  handleRedisDatabaseGet,
+  handleRedisDatabaseDelete,
+  handleRedisDatabaseUpdateDescription,
+  handleRedisDatabaseUpdateConfiguration,
+  handleRedisGetVersions,
+  handleAppDatabaseUpdate,
+  handleAppDatabaseReplace,
+  handleAppDatabaseLink,
+  handleAppDatabaseUnlink,
+  handleAppDatabaseSetUsers
+} from './tools/mittwald/database/index.js';
+
 /**
  * Zod schemas for tool validation
  */
@@ -684,22 +714,38 @@ export async function handleToolCall(
   
   try {
     logger.info(`🔧 handleToolCall called for tool: ${request.params.name}`);
-    // Extract and validate Reddit credentials from AuthInfo
-    const credentials = extractAndValidateCredentials(context.authInfo);
+    
+    // Check if this is a Mittwald tool (skip Reddit auth)
+    const isMittwaldTool = request.params.name.startsWith('mittwald_');
+    
+    let handlerContext: ToolHandlerContext;
+    
+    if (isMittwaldTool) {
+      // For Mittwald tools, create a minimal context without Reddit service
+      handlerContext = {
+        redditService: null as any, // Not used for Mittwald tools
+        userId: 'mittwald-user',
+        sessionId: context.sessionId,
+        progressToken: request.params._meta?.progressToken,
+      };
+    } else {
+      // Extract and validate Reddit credentials from AuthInfo for Reddit tools
+      const credentials = extractAndValidateCredentials(context.authInfo);
 
-    // Create Reddit service with validated tokens
-    const redditService = new RedditService({
-      accessToken: credentials.accessToken,
-      refreshToken: credentials.refreshToken,
-      username: credentials.userId, // Pass the Reddit username from OAuth
-    });
+      // Create Reddit service with validated tokens
+      const redditService = new RedditService({
+        accessToken: credentials.accessToken,
+        refreshToken: credentials.refreshToken,
+        username: credentials.userId, // Pass the Reddit username from OAuth
+      });
 
-    const handlerContext: ToolHandlerContext = {
-      redditService,
-      userId: credentials.userId,
-      sessionId: context.sessionId,
-      progressToken: request.params._meta?.progressToken,
-    };
+      handlerContext = {
+        redditService,
+        userId: credentials.userId,
+        sessionId: context.sessionId,
+        progressToken: request.params._meta?.progressToken,
+      };
+    }
 
     // Create Mittwald service for Mittwald tools
     const mittwaldClient = getMittwaldClient();
