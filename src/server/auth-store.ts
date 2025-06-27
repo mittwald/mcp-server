@@ -7,23 +7,23 @@
  * by handlers that need authentication context.
  */
 
-import type { RedditAuthInfo } from '../types/request-context.js';
+import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
 // import { logger } from '../utils/logger.js';
 
 // Simple in-memory store for auth info
-const authMap = new Map<string, RedditAuthInfo>();
+const authMap = new Map<string, AuthInfo>();
 
 /**
  * Store auth info for a session
  */
-export function setAuth(sessionId: string, authInfo: RedditAuthInfo): void {
+export function setAuth(sessionId: string, authInfo: AuthInfo): void {
   authMap.set(sessionId, authInfo);
 }
 
 /**
  * Get auth info for a session
  */
-export function getAuth(sessionId: string): RedditAuthInfo | undefined {
+export function getAuth(sessionId: string): AuthInfo | undefined {
   return authMap.get(sessionId);
 }
 
