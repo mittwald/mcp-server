@@ -32,7 +32,7 @@ export const handleMittwaldContributorList: ToolHandler<{
     const { limit = 50, offset = 0 } = args;
 
     // Call the API using the client
-    const response = await client.typedApi.marketplace.extensionListContributors({
+    const response = await client.marketplace.extensionListContributors({
       queryParameters: {
         limit,
         skip: offset
@@ -80,7 +80,7 @@ export const handleMittwaldContributorGet: ToolHandler<{
     const { contributorId } = args;
 
     // Call the API using the client
-    const response = await client.typedApi.marketplace.extensionGetContributor({
+    const response = await client.marketplace.extensionGetContributor({
       contributorId
     } as any);
 
@@ -124,7 +124,7 @@ export const handleMittwaldContributorGetExtensions: ToolHandler<{
     const { contributorId, limit = 50, offset = 0 } = args;
 
     // Call the API using the client
-    const response = await client.typedApi.marketplace.extensionListExtensions({
+    const response = await client.marketplace.extensionListExtensions({
       queryParameters: {
         contributorId,
         limit,
