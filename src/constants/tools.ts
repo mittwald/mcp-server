@@ -21,6 +21,7 @@ import { SAMPLING_EXAMPLE_TOOL } from './tool/sampling-example.js';
 import { STRUCTURED_DATA_EXAMPLE_TOOL } from './tool/structured-data-example.js';
 import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
+import { MITTWALD_DOMAIN_TOOLS } from './tool/mittwald/domain/index.js';
 import type { RedditConfigData } from '../types/config.js';
 
 /**
@@ -85,6 +86,7 @@ export const TOOLS: Tool[] = [
   STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
+  ...MITTWALD_DOMAIN_TOOLS,
 ];
 
 /**
