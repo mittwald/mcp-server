@@ -23,17 +23,15 @@ export const handleListVolumes: ToolHandler<ListVolumesRequest> = async (args) =
     if (args.skip) queryParams.skip = args.skip;
     if (args.page) queryParams.page = args.page;
     
-    const response = await client.api.container.listVolumes({
-      pathParameters: {
-        projectId: args.projectId,
-      },
+    const response = await client.typedApi.container.listVolumes({
+      projectId: args.projectId,
       queryParameters: queryParams,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.listVolumes,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -54,17 +52,15 @@ export const handleGetVolume: ToolHandler<GetVolumeRequest> = async (args) => {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.getVolume({
-      pathParameters: {
-        stackId: args.stackId,
-        volumeId: args.volumeId,
-      },
+    const response = await client.typedApi.container.getVolume({
+      stackId: args.stackId,
+      volumeId: args.volumeId,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.getVolume,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -85,11 +81,9 @@ export const handleDeleteVolume: ToolHandler<DeleteVolumeRequest> = async (args)
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.deleteVolume({
-      pathParameters: {
-        stackId: args.stackId,
-        volumeId: args.volumeId,
-      },
+    const response = await client.typedApi.container.deleteVolume({
+      stackId: args.stackId,
+      volumeId: args.volumeId,
     });
     
     if (response.status === 204) {
@@ -112,16 +106,20 @@ export const handleDeleteVolume: ToolHandler<DeleteVolumeRequest> = async (args)
   }
 };
 
-export const handleGetContainerImageConfig: ToolHandler<{}> = async () => {
+export const handleGetContainerImageConfig: ToolHandler<{imageReference: string}> = async (args) => {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.getContainerImageConfig({});
+    const response = await client.typedApi.container.getContainerImageConfig({
+      queryParameters: {
+        imageReference: args.imageReference,
+      },
+    });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.getContainerImageConfig,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     

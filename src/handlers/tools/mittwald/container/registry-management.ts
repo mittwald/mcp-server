@@ -199,9 +199,9 @@ export const handleValidateRegistryUri: ToolHandler<ValidateRegistryUriRequest> 
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.validateContainerRegistryUri({
+    const response = await client.typedApi.container.validateContainerRegistryUri({
       data: {
-        uri: args.uri,
+        registryUri: args.uri,
       },
     });
     
@@ -229,10 +229,8 @@ export const handleValidateRegistryCredentials: ToolHandler<ValidateRegistryCred
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.validateRegistryCredentials({
-      pathParameters: {
-        registryId: args.registryId,
-      },
+    const response = await client.typedApi.container.validateRegistryCredentials({
+      registryId: args.registryId,
     });
     
     if (response.status === 200 && response.data) {

@@ -32,14 +32,14 @@ export const handleMittwaldContributorList: ToolHandler<{
     const { limit = 50, offset = 0 } = args;
 
     // Call the API using the client
-    const response = await client.api.marketplace.listContributors({
+    const response = await client.typedApi.marketplace.extensionListContributors({
       queryParameters: {
         limit,
         skip: offset
-      }
-    });
+      } as any
+    } as any);
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to list contributors: ${response.status}`
@@ -50,8 +50,8 @@ export const handleMittwaldContributorList: ToolHandler<{
       "success",
       MITTWALD_CONTRIBUTOR_LIST_SUCCESS,
       {
-        contributors: response.data,
-        totalCount: response.data.length
+        contributors: (response as any).data,
+        totalCount: (response as any).data.length
       }
     );
   } catch (error) {
@@ -80,18 +80,11 @@ export const handleMittwaldContributorGet: ToolHandler<{
     const { contributorId } = args;
 
     // Call the API using the client
-    const response = await client.api.marketplace.getContributor({
+    const response = await client.typedApi.marketplace.extensionGetContributor({
       contributorId
-    });
+    } as any);
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Contributor with ID ${contributorId} not found`
-      );
-    }
-
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to get contributor: ${response.status}`
@@ -101,7 +94,7 @@ export const handleMittwaldContributorGet: ToolHandler<{
     return formatToolResponse<Contributor>(
       "success",
       MITTWALD_CONTRIBUTOR_GET_SUCCESS,
-      response.data
+      (response as any).data
     );
   } catch (error) {
     return formatToolResponse(
@@ -131,22 +124,15 @@ export const handleMittwaldContributorGetExtensions: ToolHandler<{
     const { contributorId, limit = 50, offset = 0 } = args;
 
     // Call the API using the client
-    const response = await client.api.marketplace.listExtensionsFromContributor({
-      contributorId,
+    const response = await client.typedApi.marketplace.extensionListExtensions({
       queryParameters: {
+        contributorId,
         limit,
         skip: offset
-      }
-    });
+      } as any
+    } as any);
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Contributor with ID ${contributorId} not found`
-      );
-    }
-
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
         `Failed to get contributor extensions: ${response.status}`
@@ -157,8 +143,8 @@ export const handleMittwaldContributorGetExtensions: ToolHandler<{
       "success",
       MITTWALD_CONTRIBUTOR_GET_EXTENSIONS_SUCCESS,
       {
-        extensions: response.data,
-        totalCount: response.data.length
+        extensions: (response as any).data,
+        totalCount: (response as any).data.length
       }
     );
   } catch (error) {

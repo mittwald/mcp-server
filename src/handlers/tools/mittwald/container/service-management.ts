@@ -24,17 +24,15 @@ export const handleListServices: ToolHandler<ListServicesRequest> = async (args)
     if (args.skip) queryParams.skip = args.skip;
     if (args.page) queryParams.page = args.page;
     
-    const response = await client.api.container.listServices({
-      pathParameters: {
-        projectId: args.projectId,
-      },
+    const response = await client.typedApi.container.listServices({
+      projectId: args.projectId,
       queryParameters: queryParams,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.listServices,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -55,17 +53,15 @@ export const handleGetService: ToolHandler<GetServiceRequest> = async (args) => 
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.getService({
-      pathParameters: {
-        stackId: args.stackId,
-        serviceId: args.serviceId,
-      },
+    const response = await client.typedApi.container.getService({
+      stackId: args.stackId,
+      serviceId: args.serviceId,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.getService,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -91,18 +87,16 @@ export const handleGetServiceLogs: ToolHandler<GetServiceLogsRequest> = async (a
     if (args.until) queryParams.until = args.until;
     if (args.limit) queryParams.limit = args.limit;
     
-    const response = await client.api.container.getServiceLogs({
-      pathParameters: {
-        stackId: args.stackId,
-        serviceId: args.serviceId,
-      },
-      queryParameters: queryParams,
+    const response = await client.typedApi.container.getServiceLogs({
+      stackId: args.stackId,
+      serviceId: args.serviceId,
+      ...queryParams
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.getServiceLogs,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -123,17 +117,15 @@ export const handleStartService: ToolHandler<ServiceActionRequest> = async (args
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.startService({
-      pathParameters: {
-        stackId: args.stackId,
-        serviceId: args.serviceId,
-      },
+    const response = await client.typedApi.container.startService({
+      stackId: args.stackId,
+      serviceId: args.serviceId,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.startService,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -154,17 +146,15 @@ export const handleStopService: ToolHandler<ServiceActionRequest> = async (args)
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.stopService({
-      pathParameters: {
-        stackId: args.stackId,
-        serviceId: args.serviceId,
-      },
+    const response = await client.typedApi.container.stopService({
+      stackId: args.stackId,
+      serviceId: args.serviceId,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.stopService,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -185,17 +175,15 @@ export const handleRestartService: ToolHandler<ServiceActionRequest> = async (ar
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.restartService({
-      pathParameters: {
-        stackId: args.stackId,
-        serviceId: args.serviceId,
-      },
+    const response = await client.typedApi.container.restartService({
+      stackId: args.stackId,
+      serviceId: args.serviceId,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: containerToolSuccessMessages.restartService,
-        result: response.data,
+        result: (response as any).data ?? {},
       });
     }
     
@@ -216,17 +204,15 @@ export const handleRecreateService: ToolHandler<ServiceActionRequest> = async (a
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.recreateService({
-      pathParameters: {
-        stackId: args.stackId,
-        serviceId: args.serviceId,
-      },
+    const response = await client.typedApi.container.recreateService({
+      stackId: args.stackId,
+      serviceId: args.serviceId,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: containerToolSuccessMessages.recreateService,
-        result: response.data,
+        result: (response as any).data ?? {},
       });
     }
     
@@ -247,17 +233,15 @@ export const handlePullImageForService: ToolHandler<ServiceActionRequest> = asyn
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.pullImageForService({
-      pathParameters: {
-        stackId: args.stackId,
-        serviceId: args.serviceId,
-      },
+    const response = await client.typedApi.container.pullImageForService({
+      stackId: args.stackId,
+      serviceId: args.serviceId,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2')) {
       return formatToolResponse({
         message: containerToolSuccessMessages.pullImageForService,
-        result: response.data,
+        result: (response as any).data ?? {},
       });
     }
     

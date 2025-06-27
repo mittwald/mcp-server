@@ -22,16 +22,14 @@ export class MittwaldClient {
   }
 
   /**
-   * Temporary compatibility getter that exposes the raw client as `any` so
-   * legacy handlers compiled against an older SDK continue to work. Use
-   * `typedApi` for new code.
+   * Strongly-typed SDK surface.
    */
-  public get api(): any {
-    return this.client as any;
+  public get api(): MittwaldAPIV2Client {
+    return this.client;
   }
 
   /**
-   * Strongly-typed SDK surface for newly migrated handlers.
+   * Alias for `api` to ease incremental migrations.
    */
   public get typedApi(): MittwaldAPIV2Client {
     return this.client;

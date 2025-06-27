@@ -55,9 +55,9 @@ export const handleMittwaldExtensionInstanceList: ToolHandler<{
     if (projectId) queryParams.projectId = projectId;
     if (customerId) queryParams.customerId = customerId;
 
-    const response = await client.api.marketplace.listExtensionInstances({
+    const response = await client.typedApi.marketplace.listExtensionInstances({
       queryParameters: queryParams
-    });
+    } as any);
 
     if (response.status !== 200) {
       return formatToolResponse(
@@ -99,9 +99,9 @@ export const handleMittwaldExtensionInstanceGet: ToolHandler<{
     const client = getMittwaldClient(context.authInfo.mittwald.apiToken);
     const { extensionInstanceId } = args;
 
-    const response = await client.api.marketplace.getExtensionInstance({
-      extensionInstanceId
-    });
+    const response = await client.typedApi.marketplace.getExtensionInstance({
+      extensionInstanceId: extensionInstanceId
+    } as any);
 
     if (response.status === 404) {
       return formatToolResponse(
