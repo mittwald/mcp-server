@@ -47,7 +47,7 @@ export const handleMittwaldAppInstallationAction: ToolHandler<MittwaldAppInstall
       action: args.action
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to execute action: ${response.status}`);
     }
 
@@ -92,7 +92,7 @@ export const handleMittwaldAppInstallationCopy: ToolHandler<MittwaldAppInstallat
       data: requestBody
     });
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to copy app installation: ${response.status}`);
     }
 
@@ -132,11 +132,11 @@ export const handleMittwaldAppInstallationGetStatus: ToolHandler<MittwaldAppInst
       appInstallationId: args.appInstallationId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get app installation status: ${response.status}`);
     }
 
-    const installation: AppInstallation = response.data;
+    const installation: AppInstallation = response.data as AppInstallation;
     // Extract status information from the installation data
     const status = {
       state: installation.disabled ? 'stopped' : 'running',
@@ -181,11 +181,11 @@ export const handleMittwaldAppInstallationGetMissingDependencies: ToolHandler<Mi
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get missing dependencies: ${response.status}`);
     }
 
-    const missingDependencies = response.data || {};
+    const missingDependencies = response.data as any || {};
     const systemSoftwareDeps = missingDependencies.missingSystemSoftwareDependencies || [];
     const userInputs = missingDependencies.missingUserInputs || [];
     const totalCount = systemSoftwareDeps.length + userInputs.length;

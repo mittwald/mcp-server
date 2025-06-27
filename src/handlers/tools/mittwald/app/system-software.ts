@@ -61,11 +61,11 @@ export const handleMittwaldSystemSoftwareList: ToolHandler<MittwaldSystemSoftwar
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list system software: ${response.status}`);
     }
 
-    const systemSoftware: SystemSoftware[] = response.data || [];
+    const systemSoftware: SystemSoftware[] = Array.isArray(response.data) ? response.data : [];
 
     return formatToolResponse({
       message: mittwald_system_software_listSuccessMessage,
@@ -105,11 +105,11 @@ export const handleMittwaldSystemSoftwareGet: ToolHandler<MittwaldSystemSoftware
       systemSoftwareId: args.systemSoftwareId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get system software details: ${response.status}`);
     }
 
-    const systemSoftware: SystemSoftware = response.data;
+    const systemSoftware: SystemSoftware = response.data as SystemSoftware;
 
     return formatToolResponse({
       message: mittwald_system_software_getSuccessMessage,
@@ -144,11 +144,11 @@ export const handleMittwaldSystemSoftwareListVersions: ToolHandler<MittwaldSyste
       systemSoftwareId: args.systemSoftwareId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list system software versions: ${response.status}`);
     }
 
-    let versions: SystemSoftwareVersion[] = response.data || [];
+    let versions: SystemSoftwareVersion[] = Array.isArray(response.data) ? response.data : [];
 
     // Filter by recommended if requested
     if (args.recommended) {
@@ -191,11 +191,11 @@ export const handleMittwaldSystemSoftwareGetVersion: ToolHandler<MittwaldSystemS
       systemSoftwareVersionId: args.systemSoftwareVersionId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get system software version details: ${response.status}`);
     }
 
-    const version: SystemSoftwareVersion = response.data;
+    const version: SystemSoftwareVersion = response.data as SystemSoftwareVersion;
 
     return formatToolResponse({
       message: mittwald_system_software_get_versionSuccessMessage,
@@ -230,11 +230,11 @@ export const handleMittwaldAppInstallationGetSystemSoftware: ToolHandler<Mittwal
       appInstallationId: args.appInstallationId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get app installation system software: ${response.status}`);
     }
 
-    const systemSoftware: any[] = response.data || [];  // API returns different type than expected
+    const systemSoftware: any[] = Array.isArray(response.data) ? response.data : [];  // API returns different type than expected
 
     return formatToolResponse({
       message: mittwald_app_installation_get_system_softwareSuccessMessage,

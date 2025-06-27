@@ -31,11 +31,11 @@ export const handleMittwaldAppList: ToolHandler<MittwaldAppListArgs> = async (ar
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list apps: ${response.status}`);
     }
 
-    const apps: App[] = response.data || [];
+    const apps: App[] = Array.isArray(response.data) ? response.data : [];
 
     return formatToolResponse({
       message: mittwald_app_listSuccessMessage,
@@ -75,11 +75,11 @@ export const handleMittwaldAppGet: ToolHandler<MittwaldAppGetArgs> = async (args
       appId: args.appId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get app details: ${response.status}`);
     }
 
-    const app: App = response.data;
+    const app: App = response.data as App;
 
     return formatToolResponse({
       message: mittwald_app_getSuccessMessage,

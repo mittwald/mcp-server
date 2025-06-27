@@ -37,11 +37,11 @@ export const handleMittwaldAppListVersions: ToolHandler<MittwaldAppListVersionsA
       appId: args.appId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list app versions: ${response.status}`);
     }
 
-    let versions: AppVersion[] = response.data || [];
+    let versions: AppVersion[] = Array.isArray(response.data) ? response.data : [];
 
     // Filter by recommended if requested
     if (args.recommended) {
@@ -84,11 +84,11 @@ export const handleMittwaldAppGetVersion: ToolHandler<MittwaldAppGetVersionArgs>
       appVersionId: args.appVersionId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get app version details: ${response.status}`);
     }
 
-    const version: AppVersion = response.data;
+    const version: AppVersion = response.data as AppVersion;
 
     return formatToolResponse({
       message: mittwald_app_get_versionSuccessMessage,
@@ -124,11 +124,11 @@ export const handleMittwaldAppGetVersionUpdateCandidates: ToolHandler<MittwaldAp
       baseAppVersionId: args.baseAppVersionId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get update candidates: ${response.status}`);
     }
 
-    const candidates: AppVersion[] = response.data || [];
+    const candidates: AppVersion[] = Array.isArray(response.data) ? response.data : [];
 
     return formatToolResponse({
       message: mittwald_app_get_version_update_candidatesSuccessMessage,

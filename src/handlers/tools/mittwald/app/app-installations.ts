@@ -66,11 +66,11 @@ export const handleMittwaldAppInstallationList: ToolHandler<MittwaldAppInstallat
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list app installations: ${response.status}`);
     }
 
-    const installations: AppInstallation[] = response.data || [];
+    const installations: AppInstallation[] = Array.isArray(response.data) ? response.data : [];
 
     return formatToolResponse({
       message: mittwald_app_installation_listSuccessMessage,
@@ -111,11 +111,11 @@ export const handleMittwaldAppInstallationGet: ToolHandler<MittwaldAppInstallati
       appInstallationId: args.appInstallationId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get app installation details: ${response.status}`);
     }
 
-    const installation: AppInstallation = response.data;
+    const installation: AppInstallation = response.data as AppInstallation;
 
     return formatToolResponse({
       message: mittwald_app_installation_getSuccessMessage,
@@ -159,7 +159,7 @@ export const handleMittwaldAppInstallationCreate: ToolHandler<MittwaldAppInstall
       data: requestBody
     });
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to create app installation: ${response.status}`);
     }
 
@@ -206,7 +206,7 @@ export const handleMittwaldAppInstallationUpdate: ToolHandler<MittwaldAppInstall
       data: requestBody
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to update app installation: ${response.status}`);
     }
 
@@ -244,7 +244,7 @@ export const handleMittwaldAppInstallationDelete: ToolHandler<MittwaldAppInstall
       appInstallationId: args.appInstallationId
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to delete app installation: ${response.status}`);
     }
 
