@@ -23,6 +23,9 @@ import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import type { RedditConfigData } from '../types/config.js';
 
+// Import all Mittwald User API tools
+import * as MittwaldUserTools from './tool/mittwald/user/index.js';
+
 /**
  * Standard error messages for tool operations.
  * 
@@ -85,6 +88,13 @@ export const TOOLS: Tool[] = [
   STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
+  // Mittwald User API tools
+  ...Object.values(MittwaldUserTools).filter(tool => 
+    typeof tool === 'object' && 
+    tool !== null && 
+    'name' in tool && 
+    'inputSchema' in tool
+  ) as Tool[],
 ];
 
 /**
