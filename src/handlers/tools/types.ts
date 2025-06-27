@@ -298,3 +298,34 @@ export interface CreateRedditMessageArgs {
   /** The content of the message */
   content: string;
 }
+
+// Re-export Mittwald types
+export type {
+  ListSshKeysArgs,
+  CreateSshKeyArgs,
+  GetSshKeyArgs,
+  UpdateSshKeyArgs,
+  DeleteSshKeyArgs,
+  ListSshUsersArgs,
+  CreateSshUserArgs,
+  GetSshUserArgs,
+  UpdateSshUserArgs,
+  DeleteSshUserArgs,
+  ListSftpUsersArgs,
+  CreateSftpUserArgs,
+  GetSftpUserArgs,
+  UpdateSftpUserArgs,
+  DeleteSftpUserArgs,
+  ListBackupsArgs,
+  CreateBackupArgs,
+  GetBackupArgs,
+  DeleteBackupArgs,
+  UpdateBackupDescriptionArgs,
+  CreateBackupExportArgs,
+  DeleteBackupExportArgs,
+  ListBackupSchedulesArgs,
+  CreateBackupScheduleArgs,
+  GetBackupScheduleArgs,
+  UpdateBackupScheduleArgs,
+  DeleteBackupScheduleArgs,
+} from '../../types/mittwald/ssh-backup.js';
