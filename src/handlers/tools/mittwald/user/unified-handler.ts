@@ -69,7 +69,7 @@ export async function handleMittwaldUserTool(toolName: string, args: any): Promi
         return formatResponse({ mfaStatus: mfaResponse.data });
         
       case "mittwald_user_init_mfa":
-        const initMfaResponse = await client.typedApi.user.initMfa({ data: args });
+        const initMfaResponse = await client.typedApi.user.initMfa(args);
         return formatResponse({ mfaInit: initMfaResponse.data });
         
       // Support
@@ -77,15 +77,12 @@ export async function handleMittwaldUserTool(toolName: string, args: any): Promi
         const feedbackResponse = await client.typedApi.user.createFeedback({ data: args });
         return formatResponse({ feedback: feedbackResponse.data });
         
-      case "mittwald_user_get_support_code":
-        const supportCodeResponse = await client.typedApi.user.getSupportCode({});
-        return formatResponse({ supportCode: supportCodeResponse.data });
         
       // Phone
       case "mittwald_user_add_phone":
         const addPhoneResponse = await client.typedApi.user.addPhoneNumber({ 
           userId: args.userId, 
-          data: { phoneNumber: args.phoneNumber, primary: args.primary } 
+          data: { phoneNumber: args.phoneNumber } 
         });
         return formatResponse({ phone: addPhoneResponse.data });
         
@@ -93,7 +90,7 @@ export async function handleMittwaldUserTool(toolName: string, args: any): Promi
         const verifyPhoneResponse = await client.typedApi.user.verifyPhoneNumber({ 
           userId: args.userId, 
           phoneNumber: args.phoneNumber,
-          data: { verificationCode: args.verificationCode } 
+          data: { code: args.verificationCode } 
         });
         return formatResponse({ verified: true });
         
