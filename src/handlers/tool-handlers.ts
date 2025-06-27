@@ -188,6 +188,44 @@ import {
   type DomainGetContractArgs
 } from './tools/mittwald/domain/index.js';
 
+// Mittwald marketplace handlers
+import {
+  handleMittwaldContributorList,
+  handleMittwaldContributorGet,
+  handleMittwaldContributorGetExtensions,
+  handleMittwaldExtensionList,
+  handleMittwaldExtensionGet,
+  handleMittwaldExtensionCreate,
+  handleMittwaldExtensionUpdate,
+  handleMittwaldExtensionDelete,
+  handleMittwaldExtensionPublish,
+  handleMittwaldExtensionUpdateContext,
+  handleMittwaldExtensionUploadLogo,
+  handleMittwaldExtensionDeleteLogo,
+  handleMittwaldExtensionUploadAsset,
+  handleMittwaldExtensionDeleteAsset,
+  handleMittwaldExtensionCreateSecret,
+  handleMittwaldExtensionDeleteSecret,
+  handleMittwaldExtensionRequestVerification,
+  handleMittwaldExtensionInstanceList,
+  handleMittwaldExtensionInstanceGet,
+  handleMittwaldExtensionInstanceCreate,
+  handleMittwaldExtensionInstanceDelete,
+  handleMittwaldExtensionInstanceEnable,
+  handleMittwaldExtensionInstanceDisable,
+  handleMittwaldExtensionInstanceUpdateScopes,
+  handleMittwaldExtensionInstanceCreateRetrievalKey,
+  handleMittwaldExtensionInstanceCreateToken,
+  handleMittwaldExtensionInstanceUpdateSecret,
+  handleMittwaldExtensionInstanceAuthenticateSession,
+  handleMittwaldMarketplaceListScopes,
+  handleMittwaldMarketplaceGetPublicKey,
+  handleMittwaldMarketplaceGetWebhookPublicKey,
+  handleMittwaldMarketplaceGetCustomerExtension,
+  handleMittwaldMarketplaceGetProjectExtension,
+  handleMittwaldMarketplaceDryRunWebhook,
+} from './tools/mittwald/marketplace/index.js';
+
 /**
  * Zod schemas for tool validation
  */

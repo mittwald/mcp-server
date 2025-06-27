@@ -80,11 +80,14 @@ export const TOOL_RESPONSE_MESSAGES = {
  * @see {@link https://modelcontextprotocol.io/specification/2025-06-18/client/sampling | MCP Sampling}
  */
 export const TOOLS: Tool[] = [
+  // Reddit tools
   getChannel,
   getPost,
   getNotifications,
   searchReddit,
   getComment,
+  
+  // Example tools
   ELICITATION_EXAMPLE_TOOL,
   SAMPLING_EXAMPLE_TOOL,
   STRUCTURED_DATA_EXAMPLE_TOOL,
