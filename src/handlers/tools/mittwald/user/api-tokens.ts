@@ -4,7 +4,7 @@
  */
 
 import { getMittwaldClient } from '../../../../services/mittwald/index.js';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { ApiToken, CreateApiTokenRequest } from '../../../../types/mittwald/user.js';
 import { apiTokenMessages } from '../../../../constants/tool/mittwald/user/api-tokens.js';
 
@@ -58,10 +58,10 @@ export async function handleListApiTokens(): Promise<CallToolResult> {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.listApiTokens({});
+    const response = await client.typedApi.user.listApiTokens({});
 
     if (response.status === 200 && response.data) {
-      const tokens = response.data as ApiToken[];
+      const tokens = response.data as any[];
       
       return formatResponse({
         tokens: tokens.map(token => ({
@@ -86,7 +86,7 @@ export async function handleGetApiToken(args: { apiTokenId: string }): Promise<C
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.getApiToken({
+    const response = await client.typedApi.user.getApiToken({
       apiTokenId: args.apiTokenId
     });
 
@@ -121,7 +121,7 @@ export async function handleCreateApiToken(args: CreateApiTokenRequest): Promise
     if (args.expiresAt) requestData.expiresAt = args.expiresAt;
     if (args.scopes) requestData.scopes = args.scopes;
     
-    const response = await client.api.user.createApiToken({
+    const response = await client.typedApi.user.createApiToken({
       data: requestData
     });
 
@@ -153,14 +153,14 @@ export async function handleUpdateApiToken(args: {
     if (args.name !== undefined) updateData.name = args.name;
     if (args.description !== undefined) updateData.description = args.description;
     
-    const response = await client.api.user.updateApiToken({
+    const response = await client.typedApi.user.editApiToken({
       apiTokenId: args.apiTokenId,
       data: updateData
     });
 
-    if (response.status === 200 || response.status === 204) {
+    if (String(response.status).startsWith('2')) {
       // Get updated token data
-      const tokenResponse = await client.api.user.getApiToken({
+      const tokenResponse = await client.typedApi.user.getApiToken({
         apiTokenId: args.apiTokenId
       });
       
@@ -186,11 +186,11 @@ export async function handleDeleteApiToken(args: { apiTokenId: string }): Promis
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.deleteApiToken({
+    const response = await client.typedApi.user.deleteApiToken({
       apiTokenId: args.apiTokenId
     });
 
-    if (response.status === 204 || response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatResponse({
         deleted: true,
         apiTokenId: args.apiTokenId,

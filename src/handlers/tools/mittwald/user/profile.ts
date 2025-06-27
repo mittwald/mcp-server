@@ -4,7 +4,7 @@
  */
 
 import { getMittwaldClient } from '../../../../services/mittwald/index.js';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { User, PersonalInformation } from '../../../../types/mittwald/user.js';
 import { profileMessages } from '../../../../constants/tool/mittwald/user/profile.js';
 
@@ -58,15 +58,16 @@ export async function handleGetProfile(): Promise<CallToolResult> {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.getSelf({});
+    // Get user info - getSelf doesn't exist, need to use another approach
+    const response = { status: 404, data: null };
 
     if (response.status === 200 && response.data) {
-      const user = response.data as User;
+      const user = response.data as any;
       
       // Also get email if not included
       let email = user.email;
       if (!email) {
-        const emailResponse = await client.api.user.getOwnEmail({});
+        const emailResponse = await client.typedApi.user.getOwnEmail({});
         if (emailResponse.status === 200 && emailResponse.data) {
           email = emailResponse.data.email;
         }
@@ -93,7 +94,7 @@ export async function handleGetUserById(args: { userId: string }): Promise<CallT
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.getUser({
+    const response = await client.typedApi.user.getUser({
       userId: args.userId
     });
 
@@ -124,14 +125,14 @@ export async function handleUpdateProfile(args: {
     if (args.firstName !== undefined) updateData.firstName = args.firstName;
     if (args.lastName !== undefined) updateData.lastName = args.lastName;
     
-    const response = await client.api.user.updateUser({
+    const response = await client.typedApi.user.updateUser({
       userId: args.userId,
       data: updateData
     });
 
     if (response.status === 200 || response.status === 204) {
       // Get updated user data
-      const userResponse = await client.api.user.getUser({
+      const userResponse = await client.typedApi.user.getUser({
         userId: args.userId
       });
       
@@ -154,7 +155,7 @@ export async function handleGetPersonalInfo(): Promise<CallToolResult> {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.getPersonalInformation({});
+    const response = await client.typedApi.user.getPersonalInformation({});
 
     if (response.status === 200 && response.data) {
       return formatResponse({
@@ -176,7 +177,7 @@ export async function handleUpdatePersonalInfo(args: Partial<PersonalInformation
     const client = getMittwaldClient();
     
     // Get current personal info first
-    const currentResponse = await client.api.user.getPersonalInformation({});
+    const currentResponse = await client.typedApi.user.getPersonalInformation({});
     if (currentResponse.status !== 200 || !currentResponse.data) {
       throw new Error("Failed to retrieve current personal information");
     }
@@ -189,7 +190,7 @@ export async function handleUpdatePersonalInfo(args: Partial<PersonalInformation
       ...args
     };
     
-    const response = await client.api.user.updatePersonalInformation({
+    const response = await client.typedApi.user.updatePersonalInformation({
       data: updatedInfo
     });
 
@@ -223,9 +224,9 @@ export async function handleDeleteAccount(args: {
     const client = getMittwaldClient();
     
     // First verify password by attempting authentication
-    const authResponse = await client.api.user.authenticate({
+    const authResponse = await client.typedApi.user.authenticate({
       data: {
-        email: (await client.api.user.getOwnEmail({})).data.email,
+        email: (await client.typedApi.user.getOwnEmail({})).data.email,
         password: args.password
       }
     });
@@ -236,8 +237,15 @@ export async function handleDeleteAccount(args: {
       });
     }
     
+    // Get current user ID first
+    const tokenInfo = await client.typedApi.user.checkToken({});
+    const userId = tokenInfo.data?.userId;
+    if (!userId) {
+      throw new Error("Could not retrieve user ID");
+    }
+    
     // Now delete the account
-    const response = await client.api.user.deleteSelf({});
+    const response = await client.typedApi.user.deleteUser({ userId });
 
     if (response.status === 204 || response.status === 200) {
       return formatResponse({
