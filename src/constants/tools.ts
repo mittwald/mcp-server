@@ -23,6 +23,9 @@ import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import type { RedditConfigData } from '../types/config.js';
 
+// Import all Mittwald Customer tools
+import * as CustomerTools from './tool/mittwald/customer/index.js';
+
 /**
  * Standard error messages for tool operations.
  * 
@@ -85,6 +88,8 @@ export const TOOLS: Tool[] = [
   STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
+  // Mittwald Customer API tools
+  ...Object.values(CustomerTools),
 ];
 
 /**

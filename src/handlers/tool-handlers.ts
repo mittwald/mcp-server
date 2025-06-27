@@ -42,6 +42,9 @@ import {
   handleValidationExample,
 } from './tools/index.js';
 
+// Import Mittwald Customer handlers
+import * as CustomerHandlers from './tools/mittwald/customer/index.js';
+
 /**
  * Zod schemas for tool validation
  */
@@ -115,6 +118,151 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+  
+  // Mittwald Customer Management Tools
+  mittwald_customer_list: z.object({
+    limit: z.number().int().min(1).max(1000).optional().describe("Maximum number of customers to return"),
+    skip: z.number().int().min(0).optional().describe("Number of customers to skip for pagination"),
+    page: z.number().int().min(1).optional().describe("Page number for pagination")
+  }),
+  
+  mittwald_customer_get: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  mittwald_customer_create: z.object({
+    email: z.string().email().describe("Email address for the customer account"),
+    company: z.string().optional().describe("Company name"),
+    firstName: z.string().optional().describe("Customer's first name"),
+    lastName: z.string().optional().describe("Customer's last name"),
+    phoneNumber: z.string().optional().describe("Customer's phone number"),
+    title: z.string().optional().describe("Professional title"),
+    salutation: z.string().optional().describe("Salutation"),
+    country: z.string().optional().describe("Country code (ISO 3166-1 alpha-2)")
+  }),
+  
+  mittwald_customer_update: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer to update"),
+    company: z.string().optional().describe("Company name"),
+    firstName: z.string().optional().describe("Customer's first name"),
+    lastName: z.string().optional().describe("Customer's last name"),
+    phoneNumber: z.string().optional().describe("Customer's phone number"),
+    title: z.string().optional().describe("Professional title"),
+    salutation: z.string().optional().describe("Salutation"),
+    website: z.string().optional().describe("Customer's website URL")
+  }),
+  
+  mittwald_customer_delete: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer to delete")
+  }),
+  
+  mittwald_customer_is_legally_competent: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  // Mittwald Customer Profile Tools
+  mittwald_customer_upload_avatar: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  mittwald_customer_delete_avatar: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  mittwald_customer_list_memberships: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    limit: z.number().int().min(1).optional().describe("Maximum number of memberships to return"),
+    skip: z.number().int().min(0).optional().describe("Number of memberships to skip for pagination")
+  }),
+  
+  mittwald_customer_leave: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer organization to leave")
+  }),
+  
+  mittwald_customer_get_wallet: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  mittwald_customer_create_wallet: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  mittwald_customer_create_recommendation_suggestion: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  // Mittwald Customer Invitation Tools
+  mittwald_customer_list_invites: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    limit: z.number().int().min(1).optional().describe("Maximum number of invitations to return"),
+    skip: z.number().int().min(0).optional().describe("Number of invitations to skip for pagination")
+  }),
+  
+  mittwald_customer_create_invite: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    addressId: z.string().min(1).describe("The address ID for the invitation"),
+    mailAddress: z.string().email().describe("Email address of the person to invite"),
+    message: z.string().optional().describe("Optional personal message to include in the invitation email"),
+    membershipRoles: z.array(z.string()).optional().describe("Roles to assign to the invited member")
+  }),
+  
+  mittwald_customer_accept_invite: z.object({
+    customerInviteId: z.string().min(1).describe("The unique identifier of the invitation"),
+    invitationToken: z.string().optional().describe("Optional invitation token from the invitation email")
+  }),
+  
+  // Mittwald Customer Contract Tools
+  mittwald_customer_list_contracts: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    limit: z.number().int().min(1).optional().describe("Maximum number of contracts to return"),
+    skip: z.number().int().min(0).optional().describe("Number of contracts to skip for pagination")
+  }),
+  
+  mittwald_customer_get_lead_fyndr_contract: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  // Mittwald Customer Miscellaneous Tools
+  mittwald_customer_get_conversation_preferences: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  mittwald_customer_get_extension_instance: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    extensionId: z.string().min(1).describe("The unique identifier of the extension")
+  }),
+  
+  mittwald_customer_get_invoice_settings: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer")
+  }),
+  
+  mittwald_customer_update_invoice_settings: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    billingAddress: z.object({}).optional().describe("Updated billing address information"),
+    paymentMethod: z.string().optional().describe("Preferred payment method")
+  }),
+  
+  mittwald_customer_list_invoices: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    limit: z.number().int().min(1).optional().describe("Maximum number of invoices to return"),
+    skip: z.number().int().min(0).optional().describe("Number of invoices to skip for pagination")
+  }),
+  
+  mittwald_customer_get_invoice: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    invoiceId: z.string().min(1).describe("The unique identifier of the invoice")
+  }),
+  
+  mittwald_customer_get_invoice_file_access_token: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    invoiceId: z.string().min(1).describe("The unique identifier of the invoice")
+  }),
+  
+  mittwald_customer_list_orders: z.object({
+    customerId: z.string().min(1).describe("The unique identifier of the customer"),
+    limit: z.number().int().min(1).optional().describe("Maximum number of orders to return"),
+    skip: z.number().int().min(0).optional().describe("Number of orders to skip for pagination")
   })
 };
 
@@ -136,6 +284,33 @@ type ToolArgs = {
   structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
   validation_example: any;
+  // Mittwald Customer tools - these will be validated by Zod schemas
+  mittwald_customer_list: any;
+  mittwald_customer_get: any;
+  mittwald_customer_create: any;
+  mittwald_customer_update: any;
+  mittwald_customer_delete: any;
+  mittwald_customer_is_legally_competent: any;
+  mittwald_customer_upload_avatar: any;
+  mittwald_customer_delete_avatar: any;
+  mittwald_customer_list_memberships: any;
+  mittwald_customer_leave: any;
+  mittwald_customer_get_wallet: any;
+  mittwald_customer_create_wallet: any;
+  mittwald_customer_create_recommendation_suggestion: any;
+  mittwald_customer_list_invites: any;
+  mittwald_customer_create_invite: any;
+  mittwald_customer_accept_invite: any;
+  mittwald_customer_list_contracts: any;
+  mittwald_customer_get_lead_fyndr_contract: any;
+  mittwald_customer_get_conversation_preferences: any;
+  mittwald_customer_get_extension_instance: any;
+  mittwald_customer_get_invoice_settings: any;
+  mittwald_customer_update_invoice_settings: any;
+  mittwald_customer_list_invoices: any;
+  mittwald_customer_get_invoice: any;
+  mittwald_customer_get_invoice_file_access_token: any;
+  mittwald_customer_list_orders: any;
 };
 
 /**
@@ -342,6 +517,89 @@ export async function handleToolCall(
         break;
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
+        break;
+      // Mittwald Customer Management Tools
+      case "mittwald_customer_list":
+        result = await CustomerHandlers.handleCustomerList(args);
+        break;
+      case "mittwald_customer_get":
+        result = await CustomerHandlers.handleCustomerGet(args);
+        break;
+      case "mittwald_customer_create":
+        result = await CustomerHandlers.handleCustomerCreate(args);
+        break;
+      case "mittwald_customer_update":
+        result = await CustomerHandlers.handleCustomerUpdate(args);
+        break;
+      case "mittwald_customer_delete":
+        result = await CustomerHandlers.handleCustomerDelete(args);
+        break;
+      case "mittwald_customer_is_legally_competent":
+        result = await CustomerHandlers.handleCustomerIsLegallyCompetent(args);
+        break;
+      // Mittwald Customer Profile Tools
+      case "mittwald_customer_upload_avatar":
+        result = await CustomerHandlers.handleCustomerUploadAvatar(args);
+        break;
+      case "mittwald_customer_delete_avatar":
+        result = await CustomerHandlers.handleCustomerDeleteAvatar(args);
+        break;
+      case "mittwald_customer_list_memberships":
+        result = await CustomerHandlers.handleCustomerListMemberships(args);
+        break;
+      case "mittwald_customer_leave":
+        result = await CustomerHandlers.handleCustomerLeave(args);
+        break;
+      case "mittwald_customer_get_wallet":
+        result = await CustomerHandlers.handleCustomerGetWallet(args);
+        break;
+      case "mittwald_customer_create_wallet":
+        result = await CustomerHandlers.handleCustomerCreateWallet(args);
+        break;
+      case "mittwald_customer_create_recommendation_suggestion":
+        result = await CustomerHandlers.handleCustomerCreateRecommendationSuggestion(args);
+        break;
+      // Mittwald Customer Invitation Tools
+      case "mittwald_customer_list_invites":
+        result = await CustomerHandlers.handleCustomerListInvites(args);
+        break;
+      case "mittwald_customer_create_invite":
+        result = await CustomerHandlers.handleCustomerCreateInvite(args);
+        break;
+      case "mittwald_customer_accept_invite":
+        result = await CustomerHandlers.handleCustomerAcceptInvite(args);
+        break;
+      // Mittwald Customer Contract Tools
+      case "mittwald_customer_list_contracts":
+        result = await CustomerHandlers.handleCustomerListContracts(args);
+        break;
+      case "mittwald_customer_get_lead_fyndr_contract":
+        result = await CustomerHandlers.handleCustomerGetLeadFyndrContract(args);
+        break;
+      // Mittwald Customer Miscellaneous Tools
+      case "mittwald_customer_get_conversation_preferences":
+        result = await CustomerHandlers.handleCustomerGetConversationPreferences(args);
+        break;
+      case "mittwald_customer_get_extension_instance":
+        result = await CustomerHandlers.handleCustomerGetExtensionInstance(args);
+        break;
+      case "mittwald_customer_get_invoice_settings":
+        result = await CustomerHandlers.handleCustomerGetInvoiceSettings(args);
+        break;
+      case "mittwald_customer_update_invoice_settings":
+        result = await CustomerHandlers.handleCustomerUpdateInvoiceSettings(args);
+        break;
+      case "mittwald_customer_list_invoices":
+        result = await CustomerHandlers.handleCustomerListInvoices(args);
+        break;
+      case "mittwald_customer_get_invoice":
+        result = await CustomerHandlers.handleCustomerGetInvoice(args);
+        break;
+      case "mittwald_customer_get_invoice_file_access_token":
+        result = await CustomerHandlers.handleCustomerGetInvoiceFileAccessToken(args);
+        break;
+      case "mittwald_customer_list_orders":
+        result = await CustomerHandlers.handleCustomerListOrders(args);
         break;
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
