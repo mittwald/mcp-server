@@ -42,6 +42,36 @@ import {
   handleValidationExample,
 } from './tools/index.js';
 
+import {
+  handleMySQLDatabaseList,
+  handleMySQLDatabaseCreate,
+  handleMySQLDatabaseGet,
+  handleMySQLDatabaseDelete,
+  handleMySQLDatabaseUpdateDescription,
+  handleMySQLDatabaseUpdateCharset,
+  handleMySQLUserList,
+  handleMySQLUserCreate,
+  handleMySQLUserGet,
+  handleMySQLUserUpdate,
+  handleMySQLUserDelete,
+  handleMySQLUserUpdatePassword,
+  handleMySQLUserEnable,
+  handleMySQLUserDisable,
+  handleMySQLUserGetPhpMyAdminUrl,
+  handleRedisDatabaseList,
+  handleRedisDatabaseCreate,
+  handleRedisDatabaseGet,
+  handleRedisDatabaseDelete,
+  handleRedisDatabaseUpdateDescription,
+  handleRedisDatabaseUpdateConfiguration,
+  handleRedisGetVersions,
+  handleAppDatabaseUpdate,
+  handleAppDatabaseReplace,
+  handleAppDatabaseLink,
+  handleAppDatabaseUnlink,
+  handleAppDatabaseSetUsers
+} from './tools/mittwald/database/index.js';
+
 /**
  * Zod schemas for tool validation
  */
@@ -115,6 +145,164 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+
+  // Mittwald MySQL Database Tools
+  mittwald_mysql_database_list: z.object({
+    projectId: z.string().describe("The project ID to list databases for"),
+    limit: z.number().optional().describe("Maximum number of results"),
+    skip: z.number().optional().describe("Number of results to skip")
+  }),
+
+  mittwald_mysql_database_create: z.object({
+    projectId: z.string().describe("The project ID to create the database in"),
+    description: z.string().describe("Description for the database"),
+    characterSettings: z.object({
+      collation: z.string().optional().describe("Database collation"),
+      characterSet: z.string().optional().describe("Database character set")
+    }).optional(),
+    version: z.string().optional().describe("MySQL version to use")
+  }),
+
+  mittwald_mysql_database_get: z.object({
+    mysqlDatabaseId: z.string().describe("The MySQL database ID")
+  }),
+
+  mittwald_mysql_database_delete: z.object({
+    mysqlDatabaseId: z.string().describe("The MySQL database ID to delete")
+  }),
+
+  mittwald_mysql_database_update_description: z.object({
+    mysqlDatabaseId: z.string().describe("The MySQL database ID"),
+    description: z.string().describe("New description for the database")
+  }),
+
+  mittwald_mysql_database_update_charset: z.object({
+    mysqlDatabaseId: z.string().describe("The MySQL database ID"),
+    defaultCharacterSet: z.string().describe("New default character set"),
+    defaultCollation: z.string().describe("New default collation")
+  }),
+
+  // Mittwald MySQL User Tools
+  mittwald_mysql_user_list: z.object({
+    mysqlDatabaseId: z.string().describe("The MySQL database ID to list users for"),
+    limit: z.number().optional().describe("Maximum number of results"),
+    skip: z.number().optional().describe("Number of results to skip")
+  }),
+
+  mittwald_mysql_user_create: z.object({
+    mysqlDatabaseId: z.string().describe("The MySQL database ID to create the user for"),
+    description: z.string().describe("Description for the user"),
+    password: z.string().describe("Password for the new user"),
+    accessLevel: z.enum(["full", "readonly"]).optional().describe("Access level for the user"),
+    accessIpMask: z.string().optional().describe("IP mask for access restriction"),
+    externalAccess: z.boolean().optional().describe("Whether to allow external access")
+  }),
+
+  mittwald_mysql_user_get: z.object({
+    mysqlUserId: z.string().describe("The MySQL user ID")
+  }),
+
+  mittwald_mysql_user_update: z.object({
+    mysqlUserId: z.string().describe("The MySQL user ID"),
+    description: z.string().optional().describe("New description for the user"),
+    accessLevel: z.enum(["full", "readonly"]).optional().describe("New access level"),
+    accessIpMask: z.string().optional().describe("New IP mask for access restriction")
+  }),
+
+  mittwald_mysql_user_delete: z.object({
+    mysqlUserId: z.string().describe("The MySQL user ID to delete")
+  }),
+
+  mittwald_mysql_user_update_password: z.object({
+    mysqlUserId: z.string().describe("The MySQL user ID"),
+    password: z.string().describe("New password for the user")
+  }),
+
+  mittwald_mysql_user_enable: z.object({
+    mysqlUserId: z.string().describe("The MySQL user ID to enable")
+  }),
+
+  mittwald_mysql_user_disable: z.object({
+    mysqlUserId: z.string().describe("The MySQL user ID to disable")
+  }),
+
+  mittwald_mysql_user_get_phpmyadmin_url: z.object({
+    mysqlUserId: z.string().describe("The MySQL user ID")
+  }),
+
+  // Mittwald Redis Database Tools
+  mittwald_redis_database_list: z.object({
+    projectId: z.string().describe("The project ID to list databases for"),
+    limit: z.number().optional().describe("Maximum number of results"),
+    skip: z.number().optional().describe("Number of results to skip")
+  }),
+
+  mittwald_redis_database_create: z.object({
+    projectId: z.string().describe("The project ID to create the database in"),
+    description: z.string().describe("Description for the database"),
+    version: z.string().optional().describe("Redis version to use"),
+    configuration: z.object({
+      maxmemoryPolicy: z.enum(["noeviction", "allkeys-lru", "volatile-lru", "allkeys-random", "volatile-random", "volatile-ttl"]).optional(),
+      maxMemory: z.string().optional().describe("Maximum memory limit")
+    }).optional()
+  }),
+
+  mittwald_redis_database_get: z.object({
+    redisDatabaseId: z.string().describe("The Redis database ID")
+  }),
+
+  mittwald_redis_database_delete: z.object({
+    redisDatabaseId: z.string().describe("The Redis database ID to delete")
+  }),
+
+  mittwald_redis_database_update_description: z.object({
+    redisDatabaseId: z.string().describe("The Redis database ID"),
+    description: z.string().describe("New description for the database")
+  }),
+
+  mittwald_redis_database_update_configuration: z.object({
+    redisDatabaseId: z.string().describe("The Redis database ID"),
+    configuration: z.object({
+      maxmemoryPolicy: z.enum(["noeviction", "allkeys-lru", "volatile-lru", "allkeys-random", "volatile-random", "volatile-ttl"]).optional(),
+      maxMemory: z.string().optional().describe("Maximum memory limit"),
+      persistentStorage: z.boolean().optional().describe("Enable persistent storage")
+    }).describe("Redis configuration options to update")
+  }),
+
+  mittwald_redis_get_versions: z.object({}),
+
+  // Mittwald App Database Tools
+  mittwald_app_database_update: z.object({
+    appInstallationId: z.string().describe("The app installation ID"),
+    updateKind: z.enum(["update", "replace", "unlink", "link"]).describe("The kind of update operation"),
+    mysqlDatabaseId: z.string().optional().describe("The MySQL database ID to link"),
+    mysqlUserId: z.string().optional().describe("The MySQL user ID to use"),
+    purpose: z.string().optional().describe("The purpose of the database connection")
+  }),
+
+  mittwald_app_database_replace: z.object({
+    appInstallationId: z.string().describe("The app installation ID"),
+    mysqlDatabaseId: z.string().describe("The new MySQL database ID"),
+    mysqlUserId: z.string().describe("The MySQL user ID to use")
+  }),
+
+  mittwald_app_database_link: z.object({
+    appInstallationId: z.string().describe("The app installation ID"),
+    databaseId: z.string().describe("The database ID to link"),
+    databaseKind: z.enum(["mysql", "redis"]).describe("The kind of database")
+  }),
+
+  mittwald_app_database_unlink: z.object({
+    appInstallationId: z.string().describe("The app installation ID"),
+    databaseId: z.string().describe("The database ID to unlink"),
+    databaseKind: z.enum(["mysql", "redis"]).describe("The kind of database")
+  }),
+
+  mittwald_app_database_set_users: z.object({
+    appInstallationId: z.string().describe("The app installation ID"),
+    databaseId: z.string().describe("The database ID"),
+    userIds: z.array(z.string()).describe("Array of database user IDs to set")
   })
 };
 
@@ -255,22 +443,38 @@ export async function handleToolCall(
   
   try {
     logger.info(`🔧 handleToolCall called for tool: ${request.params.name}`);
-    // Extract and validate Reddit credentials from AuthInfo
-    const credentials = extractAndValidateCredentials(context.authInfo);
+    
+    // Check if this is a Mittwald tool (skip Reddit auth)
+    const isMittwaldTool = request.params.name.startsWith('mittwald_');
+    
+    let handlerContext: ToolHandlerContext;
+    
+    if (isMittwaldTool) {
+      // For Mittwald tools, create a minimal context without Reddit service
+      handlerContext = {
+        redditService: null as any, // Not used for Mittwald tools
+        userId: 'mittwald-user',
+        sessionId: context.sessionId,
+        progressToken: request.params._meta?.progressToken,
+      };
+    } else {
+      // Extract and validate Reddit credentials from AuthInfo for Reddit tools
+      const credentials = extractAndValidateCredentials(context.authInfo);
 
-    // Create Reddit service with validated tokens
-    const redditService = new RedditService({
-      accessToken: credentials.accessToken,
-      refreshToken: credentials.refreshToken,
-      username: credentials.userId, // Pass the Reddit username from OAuth
-    });
+      // Create Reddit service with validated tokens
+      const redditService = new RedditService({
+        accessToken: credentials.accessToken,
+        refreshToken: credentials.refreshToken,
+        username: credentials.userId, // Pass the Reddit username from OAuth
+      });
 
-    const handlerContext: ToolHandlerContext = {
-      redditService,
-      userId: credentials.userId,
-      sessionId: context.sessionId,
-      progressToken: request.params._meta?.progressToken,
-    };
+      handlerContext = {
+        redditService,
+        userId: credentials.userId,
+        sessionId: context.sessionId,
+        progressToken: request.params._meta?.progressToken,
+      };
+    }
 
     if (!request.params.arguments) {
       logger.error("Tool call missing required arguments", { toolName: request.params?.name });
@@ -343,6 +547,96 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
+      
+      // Mittwald MySQL Database Tools
+      case "mittwald_mysql_database_list":
+        result = await handleMySQLDatabaseList(args);
+        break;
+      case "mittwald_mysql_database_create":
+        result = await handleMySQLDatabaseCreate(args);
+        break;
+      case "mittwald_mysql_database_get":
+        result = await handleMySQLDatabaseGet(args);
+        break;
+      case "mittwald_mysql_database_delete":
+        result = await handleMySQLDatabaseDelete(args);
+        break;
+      case "mittwald_mysql_database_update_description":
+        result = await handleMySQLDatabaseUpdateDescription(args);
+        break;
+      case "mittwald_mysql_database_update_charset":
+        result = await handleMySQLDatabaseUpdateCharset(args);
+        break;
+      
+      // Mittwald MySQL User Tools
+      case "mittwald_mysql_user_list":
+        result = await handleMySQLUserList(args);
+        break;
+      case "mittwald_mysql_user_create":
+        result = await handleMySQLUserCreate(args);
+        break;
+      case "mittwald_mysql_user_get":
+        result = await handleMySQLUserGet(args);
+        break;
+      case "mittwald_mysql_user_update":
+        result = await handleMySQLUserUpdate(args);
+        break;
+      case "mittwald_mysql_user_delete":
+        result = await handleMySQLUserDelete(args);
+        break;
+      case "mittwald_mysql_user_update_password":
+        result = await handleMySQLUserUpdatePassword(args);
+        break;
+      case "mittwald_mysql_user_enable":
+        result = await handleMySQLUserEnable(args);
+        break;
+      case "mittwald_mysql_user_disable":
+        result = await handleMySQLUserDisable(args);
+        break;
+      case "mittwald_mysql_user_get_phpmyadmin_url":
+        result = await handleMySQLUserGetPhpMyAdminUrl(args);
+        break;
+      
+      // Mittwald Redis Database Tools
+      case "mittwald_redis_database_list":
+        result = await handleRedisDatabaseList(args);
+        break;
+      case "mittwald_redis_database_create":
+        result = await handleRedisDatabaseCreate(args);
+        break;
+      case "mittwald_redis_database_get":
+        result = await handleRedisDatabaseGet(args);
+        break;
+      case "mittwald_redis_database_delete":
+        result = await handleRedisDatabaseDelete(args);
+        break;
+      case "mittwald_redis_database_update_description":
+        result = await handleRedisDatabaseUpdateDescription(args);
+        break;
+      case "mittwald_redis_database_update_configuration":
+        result = await handleRedisDatabaseUpdateConfiguration(args);
+        break;
+      case "mittwald_redis_get_versions":
+        result = await handleRedisGetVersions();
+        break;
+      
+      // Mittwald App Database Tools
+      case "mittwald_app_database_update":
+        result = await handleAppDatabaseUpdate(args);
+        break;
+      case "mittwald_app_database_replace":
+        result = await handleAppDatabaseReplace(args);
+        break;
+      case "mittwald_app_database_link":
+        result = await handleAppDatabaseLink(args);
+        break;
+      case "mittwald_app_database_unlink":
+        result = await handleAppDatabaseUnlink(args);
+        break;
+      case "mittwald_app_database_set_users":
+        result = await handleAppDatabaseSetUsers(args);
+        break;
+      
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);

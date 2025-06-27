@@ -23,6 +23,36 @@ import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import type { RedditConfigData } from '../types/config.js';
 
+import {
+  mittwald_mysql_database_list,
+  mittwald_mysql_database_create,
+  mittwald_mysql_database_get,
+  mittwald_mysql_database_delete,
+  mittwald_mysql_database_update_description,
+  mittwald_mysql_database_update_charset,
+  mittwald_mysql_user_list,
+  mittwald_mysql_user_create,
+  mittwald_mysql_user_get,
+  mittwald_mysql_user_update,
+  mittwald_mysql_user_delete,
+  mittwald_mysql_user_update_password,
+  mittwald_mysql_user_enable,
+  mittwald_mysql_user_disable,
+  mittwald_mysql_user_get_phpmyadmin_url,
+  mittwald_redis_database_list,
+  mittwald_redis_database_create,
+  mittwald_redis_database_get,
+  mittwald_redis_database_delete,
+  mittwald_redis_database_update_description,
+  mittwald_redis_database_update_configuration,
+  mittwald_redis_get_versions,
+  mittwald_app_database_update,
+  mittwald_app_database_replace,
+  mittwald_app_database_link,
+  mittwald_app_database_unlink,
+  mittwald_app_database_set_users
+} from './tool/mittwald/database/index.js';
+
 /**
  * Standard error messages for tool operations.
  * 
@@ -85,6 +115,33 @@ export const TOOLS: Tool[] = [
   STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
+  mittwald_mysql_database_list,
+  mittwald_mysql_database_create,
+  mittwald_mysql_database_get,
+  mittwald_mysql_database_delete,
+  mittwald_mysql_database_update_description,
+  mittwald_mysql_database_update_charset,
+  mittwald_mysql_user_list,
+  mittwald_mysql_user_create,
+  mittwald_mysql_user_get,
+  mittwald_mysql_user_update,
+  mittwald_mysql_user_delete,
+  mittwald_mysql_user_update_password,
+  mittwald_mysql_user_enable,
+  mittwald_mysql_user_disable,
+  mittwald_mysql_user_get_phpmyadmin_url,
+  mittwald_redis_database_list,
+  mittwald_redis_database_create,
+  mittwald_redis_database_get,
+  mittwald_redis_database_delete,
+  mittwald_redis_database_update_description,
+  mittwald_redis_database_update_configuration,
+  mittwald_redis_get_versions,
+  mittwald_app_database_update,
+  mittwald_app_database_replace,
+  mittwald_app_database_link,
+  mittwald_app_database_unlink,
+  mittwald_app_database_set_users,
 ];
 
 /**
