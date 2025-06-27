@@ -79,3 +79,25 @@
 ## Remaining Issues
 
 Several methods that existed in the untyped API don't have direct equivalents in the typed API, requiring either workarounds or feature removal.
+
+## Important Note for Coordinator
+
+**While I fixed all compilation errors in the User & Auth modules, there are architectural decisions needed:**
+
+1. **Missing Methods**: Several methods don't exist in the typed API:
+   - `authenticateWithSessionToken` - currently using `refreshSession` as workaround
+   - `getSelf` - requires userId from checkToken first
+   - `resendEmailVerification` - no equivalent, currently throws error
+   - `updateUser` - may need to use `updateAccount` instead
+   - `getPersonalInformation` - no direct equivalent
+   - `getSupportCode` - doesn't exist
+
+2. **Type Mismatches**: Some responses had to be cast to `any` due to type incompatibilities between expected and actual response structures.
+
+3. **Parameter Changes**: Several methods now require additional parameters (e.g., userId, email) that weren't needed before.
+
+**These issues may require team discussion on whether to:**
+- Remove features that aren't supported
+- Find alternative implementations
+- Request updates to the SDK
+- Create compatibility wrappers
