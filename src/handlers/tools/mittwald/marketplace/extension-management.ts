@@ -65,8 +65,8 @@ export const handleMittwaldExtensionList: ToolHandler<{
       "success",
       MITTWALD_EXTENSION_LIST_SUCCESS,
       {
-        extensions: response.data,
-        totalCount: response.data.length
+        extensions: response.data as any, // SDK returns MarketplaceExtension[]
+        totalCount: response.data?.length || 0
       }
     );
   } catch (error) {
@@ -115,7 +115,7 @@ export const handleMittwaldExtensionGet: ToolHandler<{
     return formatToolResponse<Extension>(
       "success",
       MITTWALD_EXTENSION_GET_SUCCESS,
-      response.data
+      response.data as any // SDK returns MarketplaceExtension
     );
   } catch (error) {
     return formatToolResponse(
@@ -148,7 +148,7 @@ export const handleMittwaldExtensionCreate: ToolHandler<{
       contributorId,
       data: {
         name,
-        shortDescription
+        description: shortDescription
       }
     });
 

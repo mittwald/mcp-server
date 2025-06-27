@@ -70,8 +70,8 @@ export const handleMittwaldExtensionInstanceList: ToolHandler<{
       "success",
       MITTWALD_EXTENSION_INSTANCE_LIST_SUCCESS,
       {
-        extensionInstances: response.data,
-        totalCount: response.data.length
+        extensionInstances: response.data as any, // SDK returns MarketplaceExtensionInstance[]
+        totalCount: response.data?.length || 0
       }
     );
   } catch (error) {
@@ -120,7 +120,7 @@ export const handleMittwaldExtensionInstanceGet: ToolHandler<{
     return formatToolResponse<ExtensionInstance>(
       "success",
       MITTWALD_EXTENSION_INSTANCE_GET_SUCCESS,
-      response.data
+      response.data as any // SDK returns MarketplaceExtensionInstance
     );
   } catch (error) {
     return formatToolResponse(
@@ -193,7 +193,7 @@ export const handleMittwaldExtensionInstanceCreate: ToolHandler<{
     return formatToolResponse<{ extensionInstanceId: string }>(
       "success",
       MITTWALD_EXTENSION_INSTANCE_CREATE_SUCCESS,
-      { extensionInstanceId: response.data.id }
+      { extensionInstanceId: (response.data as any).id }
     );
   } catch (error) {
     return formatToolResponse(
@@ -223,20 +223,6 @@ export const handleMittwaldExtensionInstanceDelete: ToolHandler<{
     const response = await client.marketplace.extensionDeleteExtensionInstance({
       extensionInstanceId
     });
-
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to delete this extension instance"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance with ID ${extensionInstanceId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -278,20 +264,6 @@ export const handleMittwaldExtensionInstanceEnable: ToolHandler<{
       extensionInstanceId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to enable this extension instance"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance with ID ${extensionInstanceId} not found`
-      );
-    }
-
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
@@ -332,20 +304,6 @@ export const handleMittwaldExtensionInstanceDisable: ToolHandler<{
       extensionInstanceId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to disable this extension instance"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance with ID ${extensionInstanceId} not found`
-      );
-    }
-
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
@@ -385,22 +343,8 @@ export const handleMittwaldExtensionInstanceUpdateScopes: ToolHandler<{
 
     const response = await client.marketplace.extensionConsentToExtensionScopes({
       extensionInstanceId,
-      data: { scopes }
+      data: { consentedScopes: scopes }
     });
-
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to update scopes for this extension instance"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance with ID ${extensionInstanceId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -442,20 +386,6 @@ export const handleMittwaldExtensionInstanceCreateRetrievalKey: ToolHandler<{
       extensionInstanceId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to create retrieval keys for this extension instance"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance with ID ${extensionInstanceId} not found`
-      );
-    }
-
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
@@ -466,7 +396,7 @@ export const handleMittwaldExtensionInstanceCreateRetrievalKey: ToolHandler<{
     return formatToolResponse<CreateAccessTokenRetrievalKeyResponse>(
       "success",
       MITTWALD_EXTENSION_INSTANCE_CREATE_RETRIEVAL_KEY_SUCCESS,
-      response.data
+      response.data as any
     );
   } catch (error) {
     return formatToolResponse(
