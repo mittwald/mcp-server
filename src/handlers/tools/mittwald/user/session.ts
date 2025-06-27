@@ -61,7 +61,7 @@ export async function handleListSessions(): Promise<CallToolResult> {
     const response = await client.typedApi.user.listSessions({});
 
     if (response.status === 200 && response.data) {
-      const sessions = response.data as Session[];
+      const sessions = response.data as any as Session[];
       
       // Mark the current session if we can detect it
       const enrichedSessions = sessions.map(session => ({
@@ -121,7 +121,7 @@ export async function handleRefreshSessions(): Promise<CallToolResult> {
     }
     
     const response = await client.typedApi.user.refreshSession({ 
-      data: { refreshToken: sessionId }
+      data: { refreshToken: sessionId as string }
     });
 
     if (String(response.status).startsWith('2')) {

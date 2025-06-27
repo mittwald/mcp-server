@@ -88,9 +88,11 @@ export async function handleMittwaldUserTool(toolName: string, args: any): Promi
         
       case "mittwald_user_verify_phone":
         const verifyPhoneResponse = await client.typedApi.user.verifyPhoneNumber({ 
-          userId: args.userId, 
-          phoneNumber: args.phoneNumber,
-          data: { code: args.verificationCode } 
+          userId: args.userId,
+          data: { 
+            code: args.verificationCode,
+            phoneNumber: args.phoneNumber
+          } 
         });
         return formatResponse({ verified: true });
         

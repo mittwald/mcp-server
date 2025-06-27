@@ -125,12 +125,18 @@ export async function handleUpdateProfile(args: {
     if (args.firstName !== undefined) updateData.firstName = args.firstName;
     if (args.lastName !== undefined) updateData.lastName = args.lastName;
     
-    const response = await client.typedApi.user.updateUser({
-      userId: args.userId,
-      data: updateData
+    // updateUser doesn't exist in SDK v4.169.0
+    // Using updateAccount instead
+    const response = await client.typedApi.user.updateAccount({
+      data: {
+        person: {
+          firstName: updateData.firstName || '',
+          lastName: updateData.lastName || ''
+        }
+      }
     });
 
-    if (response.status === 200 || response.status === 204) {
+    if (String(response.status).startsWith('2')) {
       // Get updated user data
       const userResponse = await client.typedApi.user.getUser({
         userId: args.userId
@@ -155,15 +161,14 @@ export async function handleGetPersonalInfo(): Promise<CallToolResult> {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.typedApi.user.getPersonalInformation({});
-
-    if (response.status === 200 && response.data) {
-      return formatResponse({
-        personalInfo: response.data
-      }, profileMessages.personalInfoSuccess);
-    }
-
-    throw new Error("Failed to retrieve personal information");
+    // getPersonalInformation doesn't exist, need to use getUser
+    const userResponse = await client.typedApi.user.getUser({
+      userId: 'self'
+    });
+    
+    return formatResponse({
+      personalInfo: userResponse.data
+    }, profileMessages.personalInfoSuccess);
   } catch (error) {
     return formatErrorResponse(error);
   }
@@ -177,7 +182,9 @@ export async function handleUpdatePersonalInfo(args: Partial<PersonalInformation
     const client = getMittwaldClient();
     
     // Get current personal info first
-    const currentResponse = await client.typedApi.user.getPersonalInformation({});
+    const currentResponse = await client.typedApi.user.getUser({
+      userId: 'self'
+    });
     if (currentResponse.status !== 200 || !currentResponse.data) {
       throw new Error("Failed to retrieve current personal information");
     }
@@ -191,10 +198,17 @@ export async function handleUpdatePersonalInfo(args: Partial<PersonalInformation
     };
     
     const response = await client.typedApi.user.updatePersonalInformation({
-      data: updatedInfo
+      userId: 'self',
+      data: {
+        person: {
+          firstName: updatedInfo.firstName || '',
+          lastName: updatedInfo.lastName || '',
+          title: (updatedInfo as any).salutation
+        }
+      }
     });
 
-    if (response.status === 200 || response.status === 204) {
+    if (String(response.status).startsWith('2')) {
       return formatResponse({
         personalInfo: updatedInfo,
         updated: true
@@ -224,9 +238,11 @@ export async function handleDeleteAccount(args: {
     const client = getMittwaldClient();
     
     // First verify password by attempting authentication
+    const emailResponse = await client.typedApi.user.getOwnEmail({});
+    const email = (emailResponse.data as any)?.email || '';
     const authResponse = await client.typedApi.user.authenticate({
       data: {
-        email: (await client.typedApi.user.getOwnEmail({})).data.email,
+        email: email,
         password: args.password
       }
     });
@@ -239,15 +255,19 @@ export async function handleDeleteAccount(args: {
     
     // Get current user ID first
     const tokenInfo = await client.typedApi.user.checkToken({});
-    const userId = tokenInfo.data?.userId;
+    const userId = (tokenInfo.data as any)?.userId || tokenInfo.data?.id;
     if (!userId) {
       throw new Error("Could not retrieve user ID");
     }
     
     // Now delete the account
-    const response = await client.typedApi.user.deleteUser({ userId });
+    const response = await client.typedApi.user.deleteUser({ 
+      data: {
+        password: args.password
+      }
+    });
 
-    if (response.status === 204 || response.status === 200) {
+    if (String(response.status).startsWith('2')) {
       return formatResponse({
         deleted: true,
         message: "Account deletion has been initiated. You will receive a confirmation email with further instructions."
