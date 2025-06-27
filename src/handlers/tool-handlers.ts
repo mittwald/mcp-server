@@ -19,9 +19,12 @@ import type {
 import { z } from 'zod';
 import { TOOLS, TOOL_ERROR_MESSAGES } from '../constants/tools.js';
 import { RedditService } from '../services/reddit/reddit-service.js';
+import { getMittwaldClient } from '../services/mittwald/index.js';
+import { CONFIG } from '../server/config.js';
 import { logger } from '../utils/logger.js';
 import type { RedditAuthInfo, MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
+import type { MittwaldToolHandlerContext } from '../types/mittwald/conversation.js';
 import type {
   GetChannelArgs,
   GetPostArgs,
@@ -41,6 +44,31 @@ import {
   handleLogging,
   handleValidationExample,
 } from './tools/index.js';
+
+// Mittwald tool handlers
+import * as ConversationHandlers from './tools/mittwald/conversation/index.js';
+import * as NotificationHandlers from './tools/mittwald/notification/index.js';
+
+// Mittwald tool argument types
+import type {
+  ConversationListArgs,
+  ConversationCreateArgs,
+  ConversationGetArgs,
+  ConversationUpdateArgs,
+  ConversationMessageListArgs,
+  ConversationMessageCreateArgs,
+  ConversationMessageUpdateArgs,
+  ConversationMembersGetArgs,
+  ConversationStatusSetArgs,
+  ConversationFileUploadRequestArgs,
+  ConversationFileAccessTokenArgs,
+} from '../types/mittwald/conversation.js';
+import type {
+  NotificationListArgs,
+  NotificationUnreadCountsArgs,
+  NotificationMarkAllReadArgs,
+  NotificationMarkReadArgs,
+} from '../types/mittwald/notification.js';
 
 /**
  * Zod schemas for tool validation
@@ -115,6 +143,87 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+
+  // Mittwald Conversation API schemas
+  mittwald_conversation_list: z.object({
+    sort: z.array(z.enum(["createdAt", "lastMessage.createdAt", "title", "priority", "shortId", "conversationId"])).optional(),
+    order: z.array(z.enum(["asc", "desc"])).optional()
+  }),
+
+  mittwald_conversation_create: z.object({
+    categoryId: z.string().describe("The category ID for the conversation"),
+    mainUserId: z.string().uuid().describe("UUID of the main user for the conversation"),
+    notificationRoles: z.array(z.object({})).describe("Array of notification roles"),
+    relatedTo: z.object({}).describe("Reference to related aggregate"),
+    sharedWith: z.object({}).describe("Shareable aggregate reference"),
+    title: z.string().describe("Title of the conversation")
+  }),
+
+  mittwald_conversation_get: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation to retrieve")
+  }),
+
+  mittwald_conversation_update: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation to update"),
+    categoryId: z.string().uuid().optional().describe("New category ID"),
+    relatedTo: z.object({}).optional().describe("New related aggregate reference"),
+    title: z.string().optional().describe("New title")
+  }),
+
+  mittwald_conversation_message_list: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation")
+  }),
+
+  mittwald_conversation_message_create: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation"),
+    messageContent: z.string().max(8000).describe("Message content (max 8000 chars)"),
+    fileIds: z.array(z.string().uuid()).optional().describe("Optional file IDs to attach")
+  }),
+
+  mittwald_conversation_message_update: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation"),
+    messageId: z.string().uuid().describe("UUID of the message to update"),
+    messageContent: z.string().describe("New message content")
+  }),
+
+  mittwald_conversation_members_get: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation")
+  }),
+
+  mittwald_conversation_status_set: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation"),
+    status: z.enum(["open", "answered", "closed"]).describe("New conversation status")
+  }),
+
+  mittwald_conversation_file_upload_request: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation")
+  }),
+
+  mittwald_conversation_file_access_token: z.object({
+    conversationId: z.string().uuid().describe("UUID of the conversation"),
+    fileId: z.string().uuid().describe("UUID of the file")
+  }),
+
+  // Mittwald Notification API schemas
+  mittwald_notification_list: z.object({
+    status: z.string().optional().describe("Filter by notification status"),
+    limit: z.number().int().positive().optional().describe("Maximum number of notifications"),
+    skip: z.number().int().min(0).optional().describe("Number to skip for pagination"),
+    page: z.number().int().positive().optional().describe("Page number")
+  }),
+
+  mittwald_notification_unread_counts: z.object({}),
+
+  mittwald_notification_mark_all_read: z.object({
+    severities: z.array(z.enum(["success", "info", "warning", "error"])).optional().describe("Filter by severities"),
+    referenceId: z.string().optional().describe("Filter by reference ID"),
+    referenceAggregate: z.string().optional().describe("Filter by reference aggregate"),
+    referenceDomain: z.string().optional().describe("Filter by reference domain")
+  }),
+
+  mittwald_notification_mark_read: z.object({
+    notificationId: z.string().describe("ID of notification to mark as read")
   })
 };
 
@@ -136,6 +245,23 @@ type ToolArgs = {
   structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
   validation_example: any;
+  // Mittwald Conversation API tools
+  mittwald_conversation_list: ConversationListArgs;
+  mittwald_conversation_create: ConversationCreateArgs;
+  mittwald_conversation_get: ConversationGetArgs;
+  mittwald_conversation_update: ConversationUpdateArgs;
+  mittwald_conversation_message_list: ConversationMessageListArgs;
+  mittwald_conversation_message_create: ConversationMessageCreateArgs;
+  mittwald_conversation_message_update: ConversationMessageUpdateArgs;
+  mittwald_conversation_members_get: ConversationMembersGetArgs;
+  mittwald_conversation_status_set: ConversationStatusSetArgs;
+  mittwald_conversation_file_upload_request: ConversationFileUploadRequestArgs;
+  mittwald_conversation_file_access_token: ConversationFileAccessTokenArgs;
+  // Mittwald Notification API tools
+  mittwald_notification_list: NotificationListArgs;
+  mittwald_notification_unread_counts: NotificationUnreadCountsArgs;
+  mittwald_notification_mark_all_read: NotificationMarkAllReadArgs;
+  mittwald_notification_mark_read: NotificationMarkReadArgs;
 };
 
 /**
@@ -272,6 +398,15 @@ export async function handleToolCall(
       progressToken: request.params._meta?.progressToken,
     };
 
+    // Create Mittwald client context for Mittwald tools
+    const mittwaldClient = getMittwaldClient(CONFIG.MITTWALD_API_TOKEN);
+    const mittwaldHandlerContext: MittwaldToolHandlerContext = {
+      mittwaldClient,
+      userId: credentials.userId,
+      sessionId: context.sessionId,
+      progressToken: request.params._meta?.progressToken,
+    };
+
     if (!request.params.arguments) {
       logger.error("Tool call missing required arguments", { toolName: request.params?.name });
       throw new Error("Arguments are required");
@@ -343,6 +478,56 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
+      
+      // Mittwald Conversation API cases
+      case "mittwald_conversation_list":
+        result = await ConversationHandlers.handleMittwaldConversationList(args as ConversationListArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_create":
+        result = await ConversationHandlers.handleMittwaldConversationCreate(args as ConversationCreateArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_get":
+        result = await ConversationHandlers.handleMittwaldConversationGet(args as ConversationGetArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_update":
+        result = await ConversationHandlers.handleMittwaldConversationUpdate(args as ConversationUpdateArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_message_list":
+        result = await ConversationHandlers.handleMittwaldConversationMessageList(args as ConversationMessageListArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_message_create":
+        result = await ConversationHandlers.handleMittwaldConversationMessageCreate(args as ConversationMessageCreateArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_message_update":
+        result = await ConversationHandlers.handleMittwaldConversationMessageUpdate(args as ConversationMessageUpdateArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_members_get":
+        result = await ConversationHandlers.handleMittwaldConversationMembersGet(args as ConversationMembersGetArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_status_set":
+        result = await ConversationHandlers.handleMittwaldConversationStatusSet(args as ConversationStatusSetArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_file_upload_request":
+        result = await ConversationHandlers.handleMittwaldConversationFileUploadRequest(args as ConversationFileUploadRequestArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_conversation_file_access_token":
+        result = await ConversationHandlers.handleMittwaldConversationFileAccessToken(args as ConversationFileAccessTokenArgs, mittwaldHandlerContext);
+        break;
+      
+      // Mittwald Notification API cases
+      case "mittwald_notification_list":
+        result = await NotificationHandlers.handleMittwaldNotificationList(args as NotificationListArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_notification_unread_counts":
+        result = await NotificationHandlers.handleMittwaldNotificationUnreadCounts(args as NotificationUnreadCountsArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_notification_mark_all_read":
+        result = await NotificationHandlers.handleMittwaldNotificationMarkAllRead(args as NotificationMarkAllReadArgs, mittwaldHandlerContext);
+        break;
+      case "mittwald_notification_mark_read":
+        result = await NotificationHandlers.handleMittwaldNotificationMarkRead(args as NotificationMarkReadArgs, mittwaldHandlerContext);
+        break;
+      
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);

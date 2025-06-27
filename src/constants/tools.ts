@@ -23,6 +23,10 @@ import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import type { RedditConfigData } from '../types/config.js';
 
+// Mittwald API tools imports
+import * as ConversationTools from './tool/mittwald/conversation/index.js';
+import * as NotificationTools from './tool/mittwald/notification/index.js';
+
 /**
  * Standard error messages for tool operations.
  * 
@@ -85,6 +89,23 @@ export const TOOLS: Tool[] = [
   STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
+  // Mittwald Conversation API tools
+  ConversationTools.mittwaldConversationList,
+  ConversationTools.mittwaldConversationCreate,
+  ConversationTools.mittwaldConversationGet,
+  ConversationTools.mittwaldConversationUpdate,
+  ConversationTools.mittwaldConversationMessageList,
+  ConversationTools.mittwaldConversationMessageCreate,
+  ConversationTools.mittwaldConversationMessageUpdate,
+  ConversationTools.mittwaldConversationMembersGet,
+  ConversationTools.mittwaldConversationStatusSet,
+  ConversationTools.mittwaldConversationFileUploadRequest,
+  ConversationTools.mittwaldConversationFileAccessToken,
+  // Mittwald Notification API tools
+  NotificationTools.mittwaldNotificationList,
+  NotificationTools.mittwaldNotificationUnreadCounts,
+  NotificationTools.mittwaldNotificationMarkAllRead,
+  NotificationTools.mittwaldNotificationMarkRead,
 ];
 
 /**
