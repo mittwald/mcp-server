@@ -42,6 +42,19 @@ import {
   handleValidationExample,
 } from './tools/index.js';
 
+// Import Mittwald User API handlers
+import {
+  handleAuthenticate,
+  handleGetProfile,
+  handleGetEmail,
+  handleChangeEmail,
+  handleChangePassword,
+  handleListSessions,
+  handleListApiTokens,
+  handleCreateApiToken,
+  handleMittwaldUserTool,
+} from './tools/mittwald/user/index.js';
+
 /**
  * Zod schemas for tool validation
  */
@@ -115,6 +128,46 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+
+  // Mittwald User API Schemas
+  mittwald_user_authenticate: z.object({
+    email: z.string().email().describe("User's email address"),
+    password: z.string().describe("User's password")
+  }),
+  
+  mittwald_user_get_profile: z.object({}),
+  mittwald_user_get_email: z.object({}),
+  mittwald_user_list_sessions: z.object({}),
+  mittwald_user_list_api_tokens: z.object({}),
+  mittwald_user_list_ssh_keys: z.object({}),
+  mittwald_user_get_mfa_status: z.object({}),
+  
+  mittwald_user_change_email: z.object({
+    email: z.string().email().describe("New email address"),
+    password: z.string().describe("Current password for verification")
+  }),
+  
+  mittwald_user_change_password: z.object({
+    oldPassword: z.string().describe("Current password"),
+    newPassword: z.string().describe("New password")
+  }),
+  
+  mittwald_user_create_api_token: z.object({
+    name: z.string().describe("API token name"),
+    description: z.string().optional().describe("Optional description"),
+    expiresAt: z.string().optional().describe("Optional expiration date")
+  }),
+  
+  mittwald_user_create_ssh_key: z.object({
+    publicKey: z.string().describe("SSH public key"),
+    comment: z.string().optional().describe("Optional comment")
+  }),
+  
+  mittwald_user_create_feedback: z.object({
+    subject: z.string().describe("Feedback subject"),
+    message: z.string().describe("Feedback message"),
+    type: z.enum(["bug", "feature", "improvement", "other"]).optional()
   })
 };
 
@@ -343,6 +396,41 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
+        
+      // Mittwald User API tools
+      case "mittwald_user_authenticate":
+        result = await handleAuthenticate(args);
+        break;
+      case "mittwald_user_get_profile":
+        result = await handleGetProfile();
+        break;
+      case "mittwald_user_get_email":
+        result = await handleGetEmail();
+        break;
+      case "mittwald_user_change_email":
+        result = await handleChangeEmail(args);
+        break;
+      case "mittwald_user_change_password":
+        result = await handleChangePassword(args);
+        break;
+      case "mittwald_user_list_sessions":
+        result = await handleListSessions();
+        break;
+      case "mittwald_user_list_api_tokens":
+        result = await handleListApiTokens();
+        break;
+      case "mittwald_user_create_api_token":
+        result = await handleCreateApiToken(args);
+        break;
+        
+      // Handle other Mittwald tools with unified handler
+      case "mittwald_user_list_ssh_keys":
+      case "mittwald_user_create_ssh_key":
+      case "mittwald_user_get_mfa_status":
+      case "mittwald_user_create_feedback":
+        result = await handleMittwaldUserTool(request.params.name, args);
+        break;
+        
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);

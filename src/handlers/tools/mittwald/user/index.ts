@@ -20,3 +20,6 @@ export * from './password.js';
 
 // Export API token management handlers
 export * from './api-tokens.js';
+
+// Export unified handlers for remaining tools
+export * from './unified-handler.js';

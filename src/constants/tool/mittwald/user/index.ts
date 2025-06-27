@@ -20,3 +20,15 @@ export * from './password.js';
 
 // Export API token management tools
 export * from './api-tokens.js';
+
+// Export SSH key management tools
+export * from './ssh-keys.js';
+
+// Export MFA management tools
+export * from './mfa.js';
+
+// Export support and feedback tools
+export * from './support.js';
+
+// Export phone management tools
+export * from './phone.js';

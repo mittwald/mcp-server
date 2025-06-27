@@ -89,7 +89,12 @@ export const TOOLS: Tool[] = [
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
   // Mittwald User API tools
-  ...Object.values(MittwaldUserTools).filter(tool => typeof tool === 'object' && tool.name),
+  ...Object.values(MittwaldUserTools).filter(tool => 
+    typeof tool === 'object' && 
+    tool !== null && 
+    'name' in tool && 
+    'inputSchema' in tool
+  ) as Tool[],
 ];
 
 /**
