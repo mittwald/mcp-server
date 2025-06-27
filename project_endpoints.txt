@@ -1,0 +1,44 @@
+Core Project Management:
+1. GET /v2/projects - List projects
+2. GET /v2/projects/{projectId} - Get project details
+3. DELETE /v2/projects/{projectId} - Delete project
+4. PATCH /v2/projects/{projectId}/description - Update project description
+5. POST /v2/projects/{projectId}/avatar - Upload project avatar
+6. DELETE /v2/projects/{projectId}/avatar - Delete project avatar
+7. GET /v2/projects/{projectId}/jwt - Get project JWT
+
+Project Memberships:
+8. GET /v2/project-memberships - List all project memberships
+9. GET /v2/projects/{projectId}/memberships - List project memberships
+10. GET /v2/projects/{projectId}/memberships/self - Get own membership
+11. GET /v2/project-memberships/{projectMembershipId} - Get membership details
+12. PATCH /v2/project-memberships/{projectMembershipId} - Update membership
+13. DELETE /v2/project-memberships/{projectMembershipId} - Remove membership
+14. POST /v2/projects/{projectId}/leave - Leave project
+
+Project Invitations:
+15. GET /v2/project-invites - List all project invitations
+16. GET /v2/projects/{projectId}/invites - List project invitations
+17. POST /v2/projects/{projectId}/invites - Create project invitation
+18. GET /v2/project-invites/{projectInviteId} - Get invitation details
+19. DELETE /v2/project-invites/{projectInviteId} - Delete invitation
+20. POST /v2/project-invites/{projectInviteId}/actions/accept - Accept invitation
+21. POST /v2/project-invites/{projectInviteId}/actions/decline - Decline invitation
+22. POST /v2/project-invites/{projectInviteId}/actions/resend - Resend invitation
+23. GET /v2/project-token-invite - Get project token invite
+
+Storage Management:
+24. GET /v2/projects/{projectId}/storage-space-statistics - Get storage statistics
+25. PUT /v2/projects/{projectId}/storage-space-notification-threshold - Set storage threshold
+
+Project Resources:
+26. GET /v2/projects/{projectId}/contract - Get project contract
+27. GET /v2/projects/{projectId}/orders - List project orders
+
+Server Projects:
+28. GET /v2/servers/{serverId}/projects - List server projects
+
+Legacy/Duplicate endpoints (included for completeness):
+29. POST /v2/project/{projectId}/invites - Create invitation (legacy)
+
+Total: 29 core Project API endpoints (excluding endpoints for other domains like backups, apps, mail, etc.)

@@ -148,6 +148,146 @@ export interface EditContentArgs {
   content: string;
 }
 
+// Mittwald Project API types
+export interface MittwaldProjectListArgs {
+  customerId?: string;
+  serverId?: string;
+  limit?: number;
+  skip?: number;
+}
+
+export interface MittwaldProjectGetArgs {
+  projectId: string;
+}
+
+export interface MittwaldProjectDeleteArgs {
+  projectId: string;
+}
+
+export interface MittwaldProjectUpdateDescriptionArgs {
+  projectId: string;
+  description: string;
+}
+
+export interface MittwaldProjectUploadAvatarArgs {
+  projectId: string;
+  fileContent: string;
+  filename: string;
+  contentType?: string;
+}
+
+export interface MittwaldProjectDeleteAvatarArgs {
+  projectId: string;
+}
+
+export interface MittwaldProjectGetJwtArgs {
+  projectId: string;
+}
+
+export interface MittwaldServerListProjectsArgs {
+  serverId: string;
+  limit?: number;
+  skip?: number;
+}
+
+export interface MittwaldProjectMembershipListAllArgs {
+  userId?: string;
+  limit?: number;
+  skip?: number;
+}
+
+export interface MittwaldProjectMembershipListArgs {
+  projectId: string;
+  limit?: number;
+  skip?: number;
+}
+
+export interface MittwaldProjectMembershipGetSelfArgs {
+  projectId: string;
+}
+
+export interface MittwaldProjectMembershipGetArgs {
+  membershipId: string;
+}
+
+export interface MittwaldProjectMembershipUpdateArgs {
+  membershipId: string;
+  role?: string;
+  expiresAt?: string;
+}
+
+export interface MittwaldProjectMembershipRemoveArgs {
+  membershipId: string;
+}
+
+export interface MittwaldProjectLeaveArgs {
+  projectId: string;
+}
+
+export interface MittwaldProjectInviteListAllArgs {
+  limit?: number;
+  skip?: number;
+}
+
+export interface MittwaldProjectInviteListArgs {
+  projectId: string;
+  limit?: number;
+  skip?: number;
+}
+
+export interface MittwaldProjectInviteCreateArgs {
+  projectId: string;
+  mailAddress: string;
+  role: string;
+  membershipExpiresAt?: string;
+  message?: string;
+  language?: string;
+}
+
+export interface MittwaldProjectInviteGetArgs {
+  inviteId: string;
+}
+
+export interface MittwaldProjectInviteDeleteArgs {
+  inviteId: string;
+}
+
+export interface MittwaldProjectInviteAcceptArgs {
+  inviteId: string;
+}
+
+export interface MittwaldProjectInviteDeclineArgs {
+  inviteId: string;
+}
+
+export interface MittwaldProjectInviteResendArgs {
+  inviteId: string;
+}
+
+export interface MittwaldProjectTokenInviteGetArgs {
+  token: string;
+}
+
+export interface MittwaldProjectGetStorageStatisticsArgs {
+  projectId: string;
+}
+
+export interface MittwaldProjectUpdateStorageThresholdArgs {
+  projectId: string;
+  enabled: boolean;
+  thresholdPercentage: number;
+}
+
+export interface MittwaldProjectGetContractArgs {
+  projectId: string;
+}
+
+export interface MittwaldProjectListOrdersArgs {
+  projectId: string;
+  limit?: number;
+  skip?: number;
+}
+
 export interface CreateRedditMessageArgs {
   /** The username of the recipient */
   recipient: string;
