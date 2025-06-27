@@ -13,7 +13,8 @@ export const handleMittwaldNotificationMarkRead: MittwaldToolHandler<Notificatio
     }
 
     const response = await mittwaldClient.api.notification.sreadNotification({
-      notificationId
+      notificationId,
+      data: { status: 'read' }
     });
 
     if (response.status !== 200) {
