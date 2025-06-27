@@ -66,7 +66,7 @@ export const handleMittwaldExtensionList: ToolHandler<{
       MITTWALD_EXTENSION_LIST_SUCCESS,
       {
         extensions: response.data as any, // SDK returns MarketplaceExtension[]
-        totalCount: response.data?.length || 0
+        totalCount: (response.data as any)?.length || 0
       }
     );
   } catch (error) {
@@ -98,12 +98,6 @@ export const handleMittwaldExtensionGet: ToolHandler<{
       extensionId
     });
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -148,16 +142,10 @@ export const handleMittwaldExtensionCreate: ToolHandler<{
       contributorId,
       data: {
         name,
-        description: shortDescription
+        description: shortDescription as any
       }
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to create extensions for this contributor"
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -169,7 +157,7 @@ export const handleMittwaldExtensionCreate: ToolHandler<{
     return formatToolResponse<{ extensionId: string }>(
       "success",
       MITTWALD_EXTENSION_CREATE_SUCCESS,
-      { extensionId: response.data.id }
+      { extensionId: (response.data as any).id }
     );
   } catch (error) {
     return formatToolResponse(
@@ -200,22 +188,9 @@ export const handleMittwaldExtensionUpdate: ToolHandler<UpdateExtensionRequest &
     const response = await client.marketplace.extensionPatchExtension({
       contributorId,
       extensionId,
-      data: updateData
+      data: updateData as any
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to update this extension"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -259,26 +234,8 @@ export const handleMittwaldExtensionDelete: ToolHandler<{
       extensionId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to delete this extension"
-      );
-    }
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
-    if (response.status === 409) {
-      return formatToolResponse(
-        "error",
-        "Cannot delete extension with active installations"
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -324,19 +281,7 @@ export const handleMittwaldExtensionPublish: ToolHandler<{
       data: { published }
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to update this extension's publication status"
-      );
-    }
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -379,22 +324,10 @@ export const handleMittwaldExtensionUpdateContext: ToolHandler<{
     const response = await client.marketplace.extensionChangeContext({
       contributorId,
       extensionId,
-      data: { context: extensionContext }
+      data: { context: extensionContext as any }
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to update this extension's context"
-      );
-    }
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -440,26 +373,10 @@ export const handleMittwaldExtensionUploadLogo: ToolHandler<{
 
     const response = await client.marketplace.extensionRequestLogoUpload({
       contributorId,
-      extensionId,
-      data: logoBuffer,
-      headers: {
-        'Content-Type': contentType
-      }
+      extensionId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to upload logo for this extension"
-      );
-    }
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -503,19 +420,7 @@ export const handleMittwaldExtensionDeleteLogo: ToolHandler<{
       extensionId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to delete logo for this extension"
-      );
-    }
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -564,25 +469,11 @@ export const handleMittwaldExtensionUploadAsset: ToolHandler<{
       contributorId,
       extensionId,
       data: {
-        filename,
-        content: contentBuffer,
-        contentType
+        assetType: contentType.startsWith('video/') ? 'video' : 'image' as const
       }
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to upload assets for this extension"
-      );
-    }
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -594,7 +485,7 @@ export const handleMittwaldExtensionUploadAsset: ToolHandler<{
     return formatToolResponse<{ assetId: string }>(
       "success",
       MITTWALD_EXTENSION_UPLOAD_ASSET_SUCCESS,
-      { assetId: response.data.id }
+      { assetId: (response.data as any)?.id || (response.data as any)?.assetRefId }
     );
   } catch (error) {
     return formatToolResponse(
@@ -629,12 +520,6 @@ export const handleMittwaldExtensionDeleteAsset: ToolHandler<{
       assetRefId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to delete assets for this extension"
-      );
-    }
 
     if (response.status === 404) {
       return formatToolResponse(
@@ -684,23 +569,10 @@ export const handleMittwaldExtensionCreateSecret: ToolHandler<{
 
     const response = await client.marketplace.extensionGenerateExtensionSecret({
       contributorId,
-      extensionId,
-      data: { name, value }
+      extensionId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to create secrets for this extension"
-      );
-    }
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -712,7 +584,7 @@ export const handleMittwaldExtensionCreateSecret: ToolHandler<{
     return formatToolResponse<{ secretId: string }>(
       "success",
       MITTWALD_EXTENSION_CREATE_SECRET_SUCCESS,
-      { secretId: response.data.id }
+      { secretId: (response.data as any)?.id || (response.data as any)?.secretId }
     );
   } catch (error) {
     return formatToolResponse(
@@ -747,12 +619,6 @@ export const handleMittwaldExtensionDeleteSecret: ToolHandler<{
       extensionSecretId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to delete secrets for this extension"
-      );
-    }
 
     if (response.status === 404) {
       return formatToolResponse(
@@ -803,19 +669,7 @@ export const handleMittwaldExtensionRequestVerification: ToolHandler<{
       extensionId
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to request verification for this extension"
-      );
-    }
 
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension with ID ${extensionId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
