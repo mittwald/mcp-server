@@ -1,9 +1,9 @@
 import type { 
   MittwaldToolHandler, 
-  ConversationMembersGetArgs,
-  formatMittwaldToolResponse 
+  ConversationMembersGetArgs
 } from '../../../../types/mittwald/conversation.js';
-import { formatMittwaldToolResponse } from "../../../../types/mittwald/conversation.js";
+import { formatMittwaldToolResponse } from '../../../../types/mittwald/conversation.js';
+
 export const handleMittwaldConversationMembersGet: MittwaldToolHandler<ConversationMembersGetArgs> = async (args, { mittwaldClient }) => {
   try {
     const { conversationId } = args;
@@ -13,7 +13,7 @@ export const handleMittwaldConversationMembersGet: MittwaldToolHandler<Conversat
     }
 
     const response = await mittwaldClient.api.conversation.getConversationMembers({
-      pathParameters: { conversationId }
+      conversationId
     });
 
     if (response.status !== 200) {

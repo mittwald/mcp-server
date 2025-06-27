@@ -183,7 +183,7 @@ export async function handleTerminateAllSessions(args: { includeCurrentSession?:
       } catch (error) {
         errors.push({
           tokenId: session.tokenId,
-          error: error?.message || "Unknown error"
+          error: (error as any)?.message || "Unknown error"
         });
       }
     }

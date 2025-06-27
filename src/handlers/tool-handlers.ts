@@ -19,11 +19,9 @@ import type {
 import { z } from 'zod';
 import { TOOLS, TOOL_ERROR_MESSAGES } from '../constants/tools.js';
 import { RedditService } from '../services/reddit/reddit-service.js';
-import { getMittwaldClient } from '../services/mittwald/index.js';
 import { logger } from '../utils/logger.js';
 import type { RedditAuthInfo, MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
-import type { MittwaldToolHandlerContext } from './tools/mittwald/types.js';
 import type {
   GetChannelArgs,
   GetPostArgs,

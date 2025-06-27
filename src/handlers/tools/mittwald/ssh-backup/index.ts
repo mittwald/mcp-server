@@ -49,3 +49,6 @@ export {
   handleUpdateBackupSchedule,
   handleDeleteBackupSchedule,
 } from './backup-schedules.js';
+
+// Re-export types for external usage
+export type * from '../../../../types/mittwald/ssh-backup.js';

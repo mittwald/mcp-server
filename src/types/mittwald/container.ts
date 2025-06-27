@@ -15,14 +15,8 @@ export type VolumeResponse = MittwaldAPIV2.Components.Schemas.ContainerVolumeRes
 // Request/Response types for registries
 export interface CreateRegistryRequest {
   projectId: string;
-  registry: {
-    imageRegistryType: 'docker' | 'github' | 'gitlab' | string;
-    uri: string;
-    credentials?: {
-      username?: string;
-      password?: string;
-    };
-  };
+  imageRegistryType: 'docker' | 'github' | 'gitlab' | string;
+  uri: string;
 }
 
 export interface ListRegistriesRequest {
@@ -34,14 +28,8 @@ export interface ListRegistriesRequest {
 
 export interface UpdateRegistryRequest {
   registryId: string;
-  registry: {
-    imageRegistryType?: 'docker' | 'github' | 'gitlab' | string;
-    uri?: string;
-    credentials?: {
-      username?: string;
-      password?: string;
-    };
-  };
+  imageRegistryType?: 'docker' | 'github' | 'gitlab' | string;
+  uri?: string;
 }
 
 // Request/Response types for stacks
@@ -58,50 +46,46 @@ export interface ListStacksRequest {
 
 export interface UpdateStackRequest {
   stackId: string;
-  requestBody: {
-    services?: Array<{
-      name: string;
-      imageURI?: string;
-      environment?: Record<string, string>;
-      ports?: Array<{
-        containerPort: number;
-        protocol?: 'tcp' | 'udp';
-      }>;
-      volumes?: Array<{
-        name: string;
-        mountPath: string;
-        readOnly?: boolean;
-      }>;
+  services?: Array<{
+    name: string;
+    imageURI?: string;
+    environment?: Record<string, string>;
+    ports?: Array<{
+      containerPort: number;
+      protocol?: 'tcp' | 'udp';
     }>;
     volumes?: Array<{
       name: string;
-      size?: string;
+      mountPath: string;
+      readOnly?: boolean;
     }>;
-  };
+  }>;
+  volumes?: Array<{
+    name: string;
+    size?: string;
+  }>;
 }
 
 export interface DeclareStackRequest {
   stackId: string;
-  requestBody: {
-    desiredServices?: Array<{
-      name: string;
-      imageURI: string;
-      environment?: Record<string, string>;
-      ports?: Array<{
-        containerPort: number;
-        protocol?: 'tcp' | 'udp';
-      }>;
-      volumes?: Array<{
-        name: string;
-        mountPath: string;
-        readOnly?: boolean;
-      }>;
+  desiredServices?: Array<{
+    name: string;
+    imageURI: string;
+    environment?: Record<string, string>;
+    ports?: Array<{
+      containerPort: number;
+      protocol?: 'tcp' | 'udp';
     }>;
-    desiredVolumes?: Array<{
+    volumes?: Array<{
       name: string;
-      size?: string;
+      mountPath: string;
+      readOnly?: boolean;
     }>;
-  };
+  }>;
+  desiredVolumes?: Array<{
+    name: string;
+    size?: string;
+  }>;
 }
 
 // Request/Response types for services

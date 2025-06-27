@@ -2,8 +2,8 @@ import type {
   MittwaldToolHandler, 
   ConversationGetArgs
 } from '../../../../types/mittwald/conversation.js';
-import { formatMittwaldToolResponse } from "../../../../types/mittwald/conversation.js";import { formatMittwaldToolResponse } from '../../../../types/mittwald/conversation.js';
-import { formatMittwaldToolResponse } from "../../../../types/mittwald/conversation.js";
+import { formatMittwaldToolResponse } from '../../../../types/mittwald/conversation.js';
+
 export const handleMittwaldConversationGet: MittwaldToolHandler<ConversationGetArgs> = async (args, { mittwaldClient }) => {
   try {
     const { conversationId } = args;
@@ -13,7 +13,7 @@ export const handleMittwaldConversationGet: MittwaldToolHandler<ConversationGetA
     }
 
     const response = await mittwaldClient.api.conversation.getConversation({
-      pathParameters: { conversationId }
+      conversationId
     });
 
     if (response.status !== 200) {

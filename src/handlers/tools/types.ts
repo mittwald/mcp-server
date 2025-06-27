@@ -10,6 +10,14 @@ export interface ToolHandlerContext {
   userId: string;
   sessionId?: string;
   progressToken?: string | number;
+  /** Optional authentication details for various providers */
+  authInfo?: {
+    mittwald?: {
+      /** API token for Mittwald services */
+      apiToken?: string;
+    };
+    [provider: string]: any; // allow future auth providers
+  };
 }
 
 export type ToolHandler<T = any> = (

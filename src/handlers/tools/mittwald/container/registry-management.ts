@@ -32,14 +32,16 @@ export const handleCreateRegistry: ToolHandler<CreateRegistryRequest & { usernam
       };
     }
     
-    const response = await client.api.container.createRegistry({
-      data: requestBody,
-      pathParameters: {
-        projectId: args.projectId,
-      },
+    const response = await client.typedApi.container.createRegistry({
+      projectId: args.projectId,
+      data: {
+        imageRegistryType: requestBody.imageRegistryType,
+        registryUri: requestBody.uri,
+        ...(requestBody.credentials && { credentials: requestBody.credentials })
+      }
     });
     
-    if (response.status === 201 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.createRegistry,
         result: response.data,
@@ -68,14 +70,12 @@ export const handleListRegistries: ToolHandler<ListRegistriesRequest> = async (a
     if (args.skip) queryParams.skip = args.skip;
     if (args.page) queryParams.page = args.page;
     
-    const response = await client.api.container.listRegistries({
-      pathParameters: {
-        projectId: args.projectId,
-      },
-      queryParameters: queryParams,
+    const response = await client.typedApi.container.listRegistries({
+      projectId: args.projectId,
+      queryParameters: queryParams
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.listRegistries,
         result: response.data,
@@ -99,10 +99,8 @@ export const handleGetRegistry: ToolHandler<{ registryId: string }> = async (arg
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.getRegistry({
-      pathParameters: {
-        registryId: args.registryId,
-      },
+    const response = await client.typedApi.container.getRegistry({
+      registryId: args.registryId
     });
     
     if (response.status === 200 && response.data) {
@@ -140,14 +138,16 @@ export const handleUpdateRegistry: ToolHandler<UpdateRegistryRequest & { usernam
       };
     }
     
-    const response = await client.api.container.updateRegistry({
-      data: requestBody,
-      pathParameters: {
-        registryId: args.registryId,
-      },
+    const response = await client.typedApi.container.updateRegistry({
+      registryId: args.registryId,
+      data: {
+        ...(requestBody.imageRegistryType && { imageRegistryType: requestBody.imageRegistryType }),
+        ...(requestBody.uri && { registryUri: requestBody.uri }),
+        ...(requestBody.credentials && { credentials: requestBody.credentials })
+      }
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.updateRegistry,
         result: response.data,
@@ -171,10 +171,8 @@ export const handleDeleteRegistry: ToolHandler<{ registryId: string }> = async (
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.deleteRegistry({
-      pathParameters: {
-        registryId: args.registryId,
-      },
+    const response = await client.typedApi.container.deleteRegistry({
+      registryId: args.registryId
     });
     
     if (response.status === 204) {

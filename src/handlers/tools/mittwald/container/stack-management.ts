@@ -24,17 +24,15 @@ export const handleListStacks: ToolHandler<ListStacksRequest> = async (args) => 
     if (args.skip) queryParams.skip = args.skip;
     if (args.page) queryParams.page = args.page;
     
-    const response = await client.api.container.listStacks({
-      pathParameters: {
-        projectId: args.projectId,
-      },
+    const response = await client.typedApi.container.listStacks({
+      projectId: args.projectId,
       queryParameters: queryParams,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.listStacks,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -55,16 +53,14 @@ export const handleGetStack: ToolHandler<GetStackRequest> = async (args) => {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.container.getStack({
-      pathParameters: {
-        stackId: args.stackId,
-      },
+    const response = await client.typedApi.container.getStack({
+      stackId: args.stackId,
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.getStack,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -89,17 +85,15 @@ export const handleUpdateStack: ToolHandler<UpdateStackRequest> = async (args) =
     if (args.services) requestBody.services = args.services;
     if (args.volumes) requestBody.volumes = args.volumes;
     
-    const response = await client.api.container.updateStack({
+    const response = await client.typedApi.container.updateStack({
+      stackId: args.stackId,
       data: requestBody,
-      pathParameters: {
-        stackId: args.stackId,
-      },
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.updateStack,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     
@@ -124,17 +118,15 @@ export const handleDeclareStack: ToolHandler<DeclareStackRequest> = async (args)
     if (args.desiredServices) requestBody.desiredServices = args.desiredServices;
     if (args.desiredVolumes) requestBody.desiredVolumes = args.desiredVolumes;
     
-    const response = await client.api.container.declareStack({
+    const response = await client.typedApi.container.declareStack({
+      stackId: args.stackId,
       data: requestBody,
-      pathParameters: {
-        stackId: args.stackId,
-      },
     });
     
-    if (response.status === 200 && response.data) {
+    if (String(response.status).startsWith('2') && (response as any).data) {
       return formatToolResponse({
         message: containerToolSuccessMessages.declareStack,
-        result: response.data,
+        result: (response as any).data,
       });
     }
     

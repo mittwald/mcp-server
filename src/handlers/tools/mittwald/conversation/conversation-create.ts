@@ -2,8 +2,8 @@ import type {
   MittwaldToolHandler, 
   ConversationCreateArgs
 } from '../../../../types/mittwald/conversation.js';
-import { formatMittwaldToolResponse } from "../../../../types/mittwald/conversation.js";import { formatMittwaldToolResponse } from '../../../../types/mittwald/conversation.js';
-import { formatMittwaldToolResponse } from "../../../../types/mittwald/conversation.js";
+import { formatMittwaldToolResponse } from '../../../../types/mittwald/conversation.js';
+
 export const handleMittwaldConversationCreate: MittwaldToolHandler<ConversationCreateArgs> = async (args, { mittwaldClient }) => {
   try {
     const { categoryId, mainUserId, notificationRoles, relatedTo, sharedWith, title } = args;
@@ -12,9 +12,9 @@ export const handleMittwaldConversationCreate: MittwaldToolHandler<ConversationC
       data: {
         categoryId,
         mainUserId,
-        notificationRoles,
-        relatedTo,
-        sharedWith,
+        notificationRoles: notificationRoles as any,
+        relatedTo: relatedTo as any,
+        sharedWith: sharedWith as any,
         title
       }
     });

@@ -1,9 +1,9 @@
 import type { 
   MittwaldToolHandler, 
-  ConversationMessageCreateArgs,
-  formatMittwaldToolResponse 
+  ConversationMessageCreateArgs
 } from '../../../../types/mittwald/conversation.js';
-import { formatMittwaldToolResponse } from "../../../../types/mittwald/conversation.js";
+import { formatMittwaldToolResponse } from '../../../../types/mittwald/conversation.js';
+
 export const handleMittwaldConversationMessageCreate: MittwaldToolHandler<ConversationMessageCreateArgs> = async (args, { mittwaldClient }) => {
   try {
     const { conversationId, messageContent, fileIds } = args;
@@ -21,7 +21,7 @@ export const handleMittwaldConversationMessageCreate: MittwaldToolHandler<Conver
     }
 
     const response = await mittwaldClient.api.conversation.createMessage({
-      pathParameters: { conversationId },
+      conversationId,
       data: {
         messageContent,
         ...(fileIds && { fileIds })

@@ -1,9 +1,9 @@
 import type { 
   MittwaldToolHandler, 
-  ConversationFileUploadRequestArgs,
-  formatMittwaldToolResponse 
+  ConversationFileUploadRequestArgs
 } from '../../../../types/mittwald/conversation.js';
-import { formatMittwaldToolResponse } from "../../../../types/mittwald/conversation.js";
+import { formatMittwaldToolResponse } from '../../../../types/mittwald/conversation.js';
+
 export const handleMittwaldConversationFileUploadRequest: MittwaldToolHandler<ConversationFileUploadRequestArgs> = async (args, { mittwaldClient }) => {
   try {
     const { conversationId } = args;
@@ -13,8 +13,7 @@ export const handleMittwaldConversationFileUploadRequest: MittwaldToolHandler<Co
     }
 
     const response = await mittwaldClient.api.conversation.requestFileUpload({
-      pathParameters: { conversationId },
-      data: {}
+      conversationId
     });
 
     if (response.status !== 201) {

@@ -1,9 +1,9 @@
 import type { 
   MittwaldToolHandler, 
-  ConversationFileAccessTokenArgs,
-  formatMittwaldToolResponse 
+  ConversationFileAccessTokenArgs
 } from '../../../../types/mittwald/conversation.js';
-import { formatMittwaldToolResponse } from "../../../../types/mittwald/conversation.js";
+import { formatMittwaldToolResponse } from '../../../../types/mittwald/conversation.js';
+
 export const handleMittwaldConversationFileAccessToken: MittwaldToolHandler<ConversationFileAccessTokenArgs> = async (args, { mittwaldClient }) => {
   try {
     const { conversationId, fileId } = args;
@@ -17,7 +17,8 @@ export const handleMittwaldConversationFileAccessToken: MittwaldToolHandler<Conv
     }
 
     const response = await mittwaldClient.api.conversation.getFileAccessToken({
-      pathParameters: { conversationId, fileId }
+      conversationId,
+      fileId
     });
 
     if (response.status !== 200) {
