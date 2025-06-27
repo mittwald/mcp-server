@@ -185,7 +185,19 @@ Your worktree has already been created. Start by:
    mkdir -p src/types/mittwald
    ```
 
-3. Reference the Mittwald API client docs:
+5. **CRITICAL: Set up git remote and push regularly**:
+   ```bash
+   # Verify remote is set (should show origin pointing to main repo)
+   git remote -v
+   
+   # If remote is missing, add it:
+   git remote add origin /Users/robert/Code/Mittwald/mittwald-typescript-mcp-systempromptio
+   
+   # Push your branch to remote (do this every 10-15 commits!)
+   git push -u origin feat/api-{domain-lowercase}
+   ```
+
+6. Reference the Mittwald API client docs:
    - SDK: https://github.com/mittwald/api-client-js
    - Use the existing client: `import { getMittwaldClient } from '../../services/mittwald/index.js'`
 
@@ -229,10 +241,11 @@ Your worktree has already been created. Start by:
    - Test both success and error cases
    - Use mock data for unit tests
 
-6. **Commit Guidelines**:
+6. **Commit and Push Guidelines**:
    - Commit every 2-3 tools implemented
    - Message format: `feat({domain}): implement {operation} tool`
-   - Push every 10-15 commits
+   - **CRITICAL: Push every 10-15 commits**: `git push -u origin feat/api-{domain-lowercase}`
+   - **Your work is invisible until pushed to remote!**
 
 7. **Available Resources**:
    - OpenAPI spec: /Users/robert/Code/Mittwald/mittwald-typescript-mcp-systempromptio/openapi.json
@@ -461,12 +474,14 @@ End your work with a summary:
 
 ## Common Pitfalls to Avoid
 
-1. **Wrong Directory**: Use the correct structure - `src/constants/tool/mittwald/` and `src/handlers/tools/mittwald/`
-2. **Forgetting Prefix**: All Mittwald tools must start with `mittwald_` to avoid conflicts
-3. **Breaking Reddit Tools**: Test that Reddit tools still work after your changes
-4. **Missing Exports**: Remember to export from index files in both constants and handlers directories
-5. **Type Mismatches**: Ensure handler argument types match the tool's inputSchema
-6. **Auth Issues**: Use the existing Mittwald client from `services/mittwald/` - don't create new auth logic
+1. **🚨 MOST CRITICAL: Not pushing work** - Your commits are invisible until pushed with `git push -u origin feat/api-{domain}`
+2. **Wrong Directory**: Use the correct structure - `src/constants/tool/mittwald/` and `src/handlers/tools/mittwald/`
+3. **Forgetting Prefix**: All Mittwald tools must start with `mittwald_` to avoid conflicts
+4. **Breaking Reddit Tools**: Test that Reddit tools still work after your changes
+5. **Missing Exports**: Remember to export from index files in both constants and handlers directories
+6. **Type Mismatches**: Ensure handler argument types match the tool's inputSchema
+7. **Auth Issues**: Use the existing Mittwald client from `services/mittwald/` - don't create new auth logic
+8. **Missing Remote**: If `git remote -v` shows no origin, add it: `git remote add origin /Users/robert/Code/Mittwald/mittwald-typescript-mcp-systempromptio`
 
 Note: With worktrees, you CAN modify core files like `src/constants/tools.ts` and `src/handlers/tool-handlers.ts` - the coordinator will merge all changes during integration!
 

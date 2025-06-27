@@ -24,6 +24,29 @@ import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import { MITTWALD_PROJECT_TOOLS } from './tool/mittwald/project/index.js';
 import { MITTWALD_DOMAIN_TOOLS } from './tool/mittwald/domain/index.js';
 import type { RedditConfigData } from '../types/config.js';
+// Mittwald App API tools
+import {
+  mittwald_app_list,
+  mittwald_app_get,
+  mittwald_app_list_versions,
+  mittwald_app_get_version,
+  mittwald_app_get_version_update_candidates,
+  mittwald_app_installation_list,
+  mittwald_app_installation_get,
+  mittwald_app_installation_create,
+  mittwald_app_installation_update,
+  mittwald_app_installation_delete,
+  mittwald_app_installation_action,
+  mittwald_app_installation_copy,
+  mittwald_app_installation_get_status,
+  mittwald_app_installation_get_missing_dependencies,
+  mittwald_system_software_list,
+  mittwald_system_software_get,
+  mittwald_system_software_list_versions,
+  mittwald_system_software_get_version,
+  mittwald_app_installation_get_system_software,
+  mittwald_app_installation_update_system_software
+} from './tool/mittwald/app/index.js';
 
 // Import all Mittwald User API tools
 import * as MittwaldUserTools from './tool/mittwald/user/index.js';
@@ -93,6 +116,7 @@ export const TOOLS: Tool[] = [
   STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
+<<<<<<< HEAD
   // Mittwald User API tools
   ...Object.values(MittwaldUserTools).filter(tool => 
     typeof tool === 'object' && 
@@ -104,6 +128,29 @@ export const TOOLS: Tool[] = [
   ...MITTWALD_PROJECT_TOOLS,
   // Mittwald Domain API tools
   ...MITTWALD_DOMAIN_TOOLS,
+=======
+  // Mittwald App API tools
+  mittwald_app_list,
+  mittwald_app_get,
+  mittwald_app_list_versions,
+  mittwald_app_get_version,
+  mittwald_app_get_version_update_candidates,
+  mittwald_app_installation_list,
+  mittwald_app_installation_get,
+  mittwald_app_installation_create,
+  mittwald_app_installation_update,
+  mittwald_app_installation_delete,
+  mittwald_app_installation_action,
+  mittwald_app_installation_copy,
+  mittwald_app_installation_get_status,
+  mittwald_app_installation_get_missing_dependencies,
+  mittwald_system_software_list,
+  mittwald_system_software_get,
+  mittwald_system_software_list_versions,
+  mittwald_system_software_get_version,
+  mittwald_app_installation_get_system_software,
+  mittwald_app_installation_update_system_software,
+>>>>>>> origin/feat/api-app
 ];
 
 /**
