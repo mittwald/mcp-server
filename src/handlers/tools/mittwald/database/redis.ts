@@ -9,9 +9,9 @@ interface RedisDatabaseListArgs {
 
 export const handleRedisDatabaseList = async (args: RedisDatabaseListArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.listRedisDatabases({
+    const response = await client.api.database.listRedisDatabases({
       projectId: args.projectId
     });
 
@@ -48,9 +48,9 @@ interface RedisDatabaseCreateArgs {
 
 export const handleRedisDatabaseCreate = async (args: RedisDatabaseCreateArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.createRedisDatabase({
+    const response = await client.api.database.createRedisDatabase({
       data: {
         description: args.description,
         version: args.version || '7.0'
@@ -85,9 +85,9 @@ interface RedisDatabaseGetArgs {
 
 export const handleRedisDatabaseGet = async (args: RedisDatabaseGetArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.getRedisDatabase({
+    const response = await client.api.database.getRedisDatabase({
       redisDatabaseId: args.redisDatabaseId
     });
 
@@ -118,9 +118,9 @@ interface RedisDatabaseDeleteArgs {
 
 export const handleRedisDatabaseDelete = async (args: RedisDatabaseDeleteArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.deleteRedisDatabase({
+    const response = await client.api.database.deleteRedisDatabase({
       redisDatabaseId: args.redisDatabaseId
     });
 
@@ -152,9 +152,9 @@ interface RedisDatabaseUpdateDescriptionArgs {
 
 export const handleRedisDatabaseUpdateDescription = async (args: RedisDatabaseUpdateDescriptionArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.updateRedisDatabaseDescription({
+    const response = await client.api.database.updateRedisDatabaseDescription({
       redisDatabaseId: args.redisDatabaseId,
       data: {
         description: args.description
@@ -193,7 +193,7 @@ interface RedisDatabaseUpdateConfigurationArgs {
 
 export const handleRedisDatabaseUpdateConfiguration = async (args: RedisDatabaseUpdateConfigurationArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
     const configUpdate: any = {};
     if (args.configuration.maxmemoryPolicy) {
@@ -206,7 +206,7 @@ export const handleRedisDatabaseUpdateConfiguration = async (args: RedisDatabase
       configUpdate.persistent = args.configuration.persistentStorage;
     }
     
-    const response = await client.database.updateRedisDatabaseConfiguration({
+    const response = await client.api.database.updateRedisDatabaseConfiguration({
       redisDatabaseId: args.redisDatabaseId,
       data: {
         configuration: configUpdate
@@ -236,9 +236,9 @@ export const handleRedisDatabaseUpdateConfiguration = async (args: RedisDatabase
 
 export const handleRedisGetVersions = async () => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.listRedisVersions({});
+    const response = await client.api.database.listRedisVersions({});
 
     if (response.status === 200) {
       return formatToolResponse({

@@ -9,9 +9,9 @@ interface MySQLDatabaseListArgs {
 
 export const handleMySQLDatabaseList = async (args: MySQLDatabaseListArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.listMysqlDatabases({
+    const response = await client.api.database.listMysqlDatabases({
       projectId: args.projectId
     });
 
@@ -48,9 +48,9 @@ interface MySQLDatabaseCreateArgs {
 
 export const handleMySQLDatabaseCreate = async (args: MySQLDatabaseCreateArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.createMysqlDatabase({
+    const response = await client.api.database.createMysqlDatabase({
       projectId: args.projectId,
       data: {
         database: {
@@ -96,9 +96,9 @@ interface MySQLDatabaseGetArgs {
 
 export const handleMySQLDatabaseGet = async (args: MySQLDatabaseGetArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.getMysqlDatabase({
+    const response = await client.api.database.getMysqlDatabase({
       mysqlDatabaseId: args.mysqlDatabaseId
     });
 
@@ -129,9 +129,9 @@ interface MySQLDatabaseDeleteArgs {
 
 export const handleMySQLDatabaseDelete = async (args: MySQLDatabaseDeleteArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.deleteMysqlDatabase({
+    const response = await client.api.database.deleteMysqlDatabase({
       mysqlDatabaseId: args.mysqlDatabaseId
     });
 
@@ -163,9 +163,9 @@ interface MySQLDatabaseUpdateDescriptionArgs {
 
 export const handleMySQLDatabaseUpdateDescription = async (args: MySQLDatabaseUpdateDescriptionArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.updateMysqlDatabaseDescription({
+    const response = await client.api.database.updateMysqlDatabaseDescription({
       mysqlDatabaseId: args.mysqlDatabaseId,
       data: {
         description: args.description
@@ -201,9 +201,9 @@ interface MySQLDatabaseUpdateCharsetArgs {
 
 export const handleMySQLDatabaseUpdateCharset = async (args: MySQLDatabaseUpdateCharsetArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.updateMysqlDatabaseDefaultCharset({
+    const response = await client.api.database.updateMysqlDatabaseDefaultCharset({
       mysqlDatabaseId: args.mysqlDatabaseId,
       data: {
         characterSettings: {
