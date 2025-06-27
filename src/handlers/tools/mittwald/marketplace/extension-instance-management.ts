@@ -71,7 +71,7 @@ export const handleMittwaldExtensionInstanceList: ToolHandler<{
       MITTWALD_EXTENSION_INSTANCE_LIST_SUCCESS,
       {
         extensionInstances: response.data as any, // SDK returns MarketplaceExtensionInstance[]
-        totalCount: response.data?.length || 0
+        totalCount: (response.data as any)?.length || 0
       }
     );
   } catch (error) {
@@ -433,34 +433,21 @@ export const handleMittwaldExtensionInstanceCreateToken: ToolHandler<{
 
     const response = await client.marketplace.extensionGenerateSessionToken({
       extensionInstanceId,
-      data: requestData
+      sessionId: '',
+      ...requestData
     });
-
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to create tokens for this extension instance"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance with ID ${extensionInstanceId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
         "error",
-        `Failed to create token: ${response.status}`
+        `Failed to generate session token: ${response.status}`
       );
     }
 
     return formatToolResponse<CreateExtensionInstanceTokenResponse>(
       "success",
       MITTWALD_EXTENSION_INSTANCE_CREATE_TOKEN_SUCCESS,
-      response.data
+      response.data as any
     );
   } catch (error) {
     return formatToolResponse(
@@ -479,6 +466,7 @@ export const handleMittwaldExtensionInstanceUpdateSecret: ToolHandler<{
   extensionInstanceId: string;
   secretName: string;
   secretValue: string;
+  allowWebhookFailure?: boolean;
 }> = async (args, context) => {
   try {
     if (!context.authInfo?.mittwald?.apiToken) {
@@ -496,24 +484,10 @@ export const handleMittwaldExtensionInstanceUpdateSecret: ToolHandler<{
       extensionId,
       extensionInstanceId,
       data: {
-        name: secretName,
-        value: secretValue
+        allowWebhookFailure: args.allowWebhookFailure
       }
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to update secrets for this extension instance"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance with ID ${extensionInstanceId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -555,23 +529,9 @@ export const handleMittwaldExtensionInstanceAuthenticateSession: ToolHandler<{
 
     const response = await client.marketplace.extensionAuthenticateInstance({
       extensionInstanceId,
-      sessionId,
-      data: { sessionToken }
+      data: { extensionInstanceSecret: sessionToken }
     });
 
-    if (response.status === 401) {
-      return formatToolResponse(
-        "error",
-        "Invalid session token"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance or session not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -583,7 +543,7 @@ export const handleMittwaldExtensionInstanceAuthenticateSession: ToolHandler<{
     return formatToolResponse<AuthenticateSessionTokenResponse>(
       "success",
       MITTWALD_EXTENSION_INSTANCE_AUTHENTICATE_SESSION_SUCCESS,
-      response.data
+      response.data as any
     );
   } catch (error) {
     return formatToolResponse(

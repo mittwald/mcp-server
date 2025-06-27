@@ -45,7 +45,7 @@ export const handleMittwaldMarketplaceListScopes: ToolHandler<{}> = async (args,
       "success",
       MITTWALD_MARKETPLACE_LIST_SCOPES_SUCCESS,
       {
-        scopes: response.data
+        scopes: response.data as any
       }
     );
   } catch (error) {
@@ -94,7 +94,7 @@ export const handleMittwaldMarketplaceGetPublicKey: ToolHandler<{
     return formatToolResponse<PublicKey>(
       "success",
       MITTWALD_MARKETPLACE_GET_PUBLIC_KEY_SUCCESS,
-      response.data
+      response.data as any
     );
   } catch (error) {
     return formatToolResponse(
@@ -142,7 +142,7 @@ export const handleMittwaldMarketplaceGetWebhookPublicKey: ToolHandler<{
     return formatToolResponse<PublicKey>(
       "success",
       MITTWALD_MARKETPLACE_GET_WEBHOOK_PUBLIC_KEY_SUCCESS,
-      response.data
+      response.data as any
     );
   } catch (error) {
     return formatToolResponse(
@@ -192,7 +192,7 @@ export const handleMittwaldMarketplaceGetCustomerExtension: ToolHandler<{
     return formatToolResponse<Extension>(
       "success",
       MITTWALD_MARKETPLACE_GET_CUSTOMER_EXTENSION_SUCCESS,
-      response.data
+      response.data as any
     );
   } catch (error) {
     return formatToolResponse(
@@ -242,7 +242,7 @@ export const handleMittwaldMarketplaceGetProjectExtension: ToolHandler<{
     return formatToolResponse<Extension>(
       "success",
       MITTWALD_MARKETPLACE_GET_PROJECT_EXTENSION_SUCCESS,
-      response.data
+      response.data as any
     );
   } catch (error) {
     return formatToolResponse(
@@ -276,22 +276,9 @@ export const handleMittwaldMarketplaceDryRunWebhook: ToolHandler<{
       contributorId,
       extensionId,
       extensionInstanceId,
-      webhookKind
+      webhookKind: webhookKind as any
     });
 
-    if (response.status === 403) {
-      return formatToolResponse(
-        "error",
-        "You don't have permission to test webhooks for this extension"
-      );
-    }
-
-    if (response.status === 404) {
-      return formatToolResponse(
-        "error",
-        `Extension instance ${extensionInstanceId} not found`
-      );
-    }
 
     if (!String(response.status).startsWith('2')) {
       return formatToolResponse(
@@ -303,7 +290,7 @@ export const handleMittwaldMarketplaceDryRunWebhook: ToolHandler<{
     return formatToolResponse<DryRunWebhookResponse>(
       "success",
       MITTWALD_MARKETPLACE_DRY_RUN_WEBHOOK_SUCCESS,
-      response.data
+      response.data as any
     );
   } catch (error) {
     return formatToolResponse(
