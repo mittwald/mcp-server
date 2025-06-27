@@ -46,7 +46,7 @@ export const logger = {
    */
   debug: (...args: any[]) => {
     if (process.env.DEBUG === 'true') {
-      console.debug('[DEBUG]', ...args);
+      console.error('[DEBUG]', ...args);
     }
   },
   
@@ -61,7 +61,7 @@ export const logger = {
    * ```
    */
   info: (...args: any[]) => {
-    console.info('[INFO]', ...args);
+    console.error('[INFO]', ...args);
   },
   
   /**
@@ -75,7 +75,7 @@ export const logger = {
    * ```
    */
   warn: (...args: any[]) => {
-    console.warn('[WARN]', ...args);
+    console.error('[WARN]', ...args);
   },
   
   /**
