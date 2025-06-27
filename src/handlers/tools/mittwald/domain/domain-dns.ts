@@ -49,14 +49,14 @@ export const handleDomainUpdateNameservers: ToolHandler<DomainUpdateNameserversA
     
     logger.info('Updating domain nameservers', { domainId: args.domainId, nameservers: args.nameservers });
     
-    const response = await client.api.domain.updateDomainNameservers({
+    const response = await client.typedApi.domain.updateDomainNameservers({
       domainId: args.domainId,
       data: {
         nameservers: args.nameservers as [string, string, ...string[]]
       }
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to update nameservers: ${response.status}`);
     }
 
@@ -90,11 +90,11 @@ export const handleDomainCreateAuthCode: ToolHandler<DomainCreateAuthCodeArgs> =
     
     logger.info('Creating domain auth code', { domainId: args.domainId });
     
-    const response = await client.api.domain.createDomainAuthCode({
+    const response = await client.typedApi.domain.createDomainAuthCode({
       domainId: args.domainId
     });
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to create auth code: ${response.status}`);
     }
 
@@ -128,14 +128,14 @@ export const handleDomainUpdateAuthCode: ToolHandler<DomainUpdateAuthCodeArgs> =
     
     logger.info('Updating domain auth code', { domainId: args.domainId });
     
-    const response = await client.api.domain.updateDomainAuthCode({
+    const response = await client.typedApi.domain.updateDomainAuthCode({
       domainId: args.domainId,
       data: {
         authCode: args.authCode
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to update auth code: ${response.status}`);
     }
 
@@ -168,11 +168,11 @@ export const handleDomainResendEmail: ToolHandler<DomainResendEmailArgs> = async
     
     logger.info('Resending domain email', { domainId: args.domainId });
     
-    const response = await client.api.domain.resendDomainEmail({
+    const response = await client.typedApi.domain.resendDomainEmail({
       domainId: args.domainId
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to resend email: ${response.status}`);
     }
 
@@ -205,11 +205,11 @@ export const handleDomainAbortDeclaration: ToolHandler<DomainAbortDeclarationArg
     
     logger.info('Aborting domain declaration', { domainId: args.domainId });
     
-    const response = await client.api.domain.abortDomainDeclaration({
+    const response = await client.typedApi.domain.abortDomainDeclaration({
       domainId: args.domainId
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to abort declaration: ${response.status}`);
     }
 

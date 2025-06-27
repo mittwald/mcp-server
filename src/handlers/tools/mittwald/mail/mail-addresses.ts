@@ -27,12 +27,12 @@ export const handleListMailAddresses: MittwaldToolHandler<ListMailAddressesArgs>
   try {
     const { projectId, limit = 50, skip = 0 } = args;
 
-    const response = await mittwaldClient.api.mail.listMailAddresses({
+    const response = await mittwaldClient.typedApi.mail.listMailAddresses({
       projectId,
       queryParameters: { limit, skip },
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to list mail addresses', 'API_ERROR', response);
     }
 
@@ -91,12 +91,12 @@ export const handleCreateMailAddress: MittwaldToolHandler<CreateMailAddressArgs>
       throw new MailError('Either mailbox or forwardAddresses must be provided', 'VALIDATION_ERROR');
     }
 
-    const response = await mittwaldClient.api.mail.createMailAddress({
+    const response = await mittwaldClient.typedApi.mail.createMailAddress({
       projectId,
       data: requestBody as any,
     });
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to create mail address', 'API_ERROR', response);
     }
 
@@ -128,11 +128,11 @@ export const handleGetMailAddress: MittwaldToolHandler<GetMailAddressArgs> = asy
   try {
     const { mailAddressId } = args;
 
-    const response = await mittwaldClient.api.mail.getMailAddress({
+    const response = await mittwaldClient.typedApi.mail.getMailAddress({
       mailAddressId,
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to get mail address', 'MAIL_NOT_FOUND', response);
     }
 
@@ -164,11 +164,11 @@ export const handleDeleteMailAddress: MittwaldToolHandler<DeleteMailAddressArgs>
   try {
     const { mailAddressId } = args;
 
-    const response = await mittwaldClient.api.mail.deleteMailAddress({
+    const response = await mittwaldClient.typedApi.mail.deleteMailAddress({
       mailAddressId,
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to delete mail address', 'API_ERROR', response);
     }
 
@@ -199,12 +199,12 @@ export const handleUpdateMailAddressAddress: MittwaldToolHandler<UpdateMailAddre
   try {
     const { mailAddressId, address } = args;
 
-    const response = await mittwaldClient.api.mail.updateMailAddressAddress({
+    const response = await mittwaldClient.typedApi.mail.updateMailAddressAddress({
       mailAddressId,
       data: { address },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update mail address', 'API_ERROR', response);
     }
 
@@ -235,12 +235,12 @@ export const handleUpdateMailAddressPassword: MittwaldToolHandler<UpdateMailAddr
   try {
     const { mailAddressId, password } = args;
 
-    const response = await mittwaldClient.api.mail.updateMailAddressPassword({
+    const response = await mittwaldClient.typedApi.mail.updateMailAddressPassword({
       mailAddressId,
       data: { password },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update mail address password', 'API_ERROR', response);
     }
 
@@ -271,12 +271,12 @@ export const handleUpdateMailAddressQuota: MittwaldToolHandler<UpdateMailAddress
   try {
     const { mailAddressId, quotaInBytes } = args;
 
-    const response = await mittwaldClient.api.mail.updateMailAddressQuota({
+    const response = await mittwaldClient.typedApi.mail.updateMailAddressQuota({
       mailAddressId,
       data: { quotaInBytes },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update mail address quota', 'API_ERROR', response);
     }
 
@@ -307,12 +307,12 @@ export const handleUpdateMailAddressForwardAddresses: MittwaldToolHandler<Update
   try {
     const { mailAddressId, forwardAddresses } = args;
 
-    const response = await mittwaldClient.api.mail.updateMailAddressForwardAddresses({
+    const response = await mittwaldClient.typedApi.mail.updateMailAddressForwardAddresses({
       mailAddressId,
       data: { forwardAddresses },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update forward addresses', 'API_ERROR', response);
     }
 
@@ -356,12 +356,12 @@ export const handleUpdateMailAddressAutoresponder: MittwaldToolHandler<UpdateMai
       } : null,
     };
 
-    const response = await mittwaldClient.api.mail.updateMailAddressAutoresponder({
+    const response = await mittwaldClient.typedApi.mail.updateMailAddressAutoresponder({
       mailAddressId,
       data: autoResponderData as any,
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update autoresponder', 'API_ERROR', response);
     }
 
@@ -405,12 +405,12 @@ export const handleUpdateMailAddressSpamProtection: MittwaldToolHandler<UpdateMa
       },
     };
 
-    const response = await mittwaldClient.api.mail.updateMailAddressSpamProtection({
+    const response = await mittwaldClient.typedApi.mail.updateMailAddressSpamProtection({
       mailAddressId,
       data: spamProtectionData,
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update spam protection', 'API_ERROR', response);
     }
 
@@ -442,12 +442,12 @@ export const handleUpdateMailAddressCatchAll: MittwaldToolHandler<UpdateMailAddr
   try {
     const { mailAddressId, isCatchAll } = args;
 
-    const response = await mittwaldClient.api.mail.updateMailAddressCatchAll({
+    const response = await mittwaldClient.typedApi.mail.updateMailAddressCatchAll({
       mailAddressId,
       data: { active: isCatchAll },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update catch-all setting', 'API_ERROR', response);
     }
 

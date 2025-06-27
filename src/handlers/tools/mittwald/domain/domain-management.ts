@@ -51,7 +51,7 @@ export const handleDomainList: ToolHandler<DomainListArgs> = async (args) => {
     
     logger.info('Listing domains', { args });
     
-    const response = await client.api.domain.listDomains({
+    const response = await client.typedApi.domain.listDomains({
       queryParameters: {
         projectId: args.projectId,
         page: args.page,
@@ -61,7 +61,7 @@ export const handleDomainList: ToolHandler<DomainListArgs> = async (args) => {
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to list domains: ${response.status}`);
     }
 
@@ -100,11 +100,11 @@ export const handleDomainGet: ToolHandler<DomainGetArgs> = async (args) => {
     
     logger.info('Getting domain', { domainId: args.domainId });
     
-    const response = await client.api.domain.getDomain({
+    const response = await client.typedApi.domain.getDomain({
       domainId: args.domainId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get domain: ${response.status}`);
     }
 
@@ -136,11 +136,11 @@ export const handleDomainDelete: ToolHandler<DomainDeleteArgs> = async (args) =>
     
     logger.info('Deleting domain', { domainId: args.domainId });
     
-    const response = await client.api.domain.deleteDomain({
+    const response = await client.typedApi.domain.deleteDomain({
       domainId: args.domainId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to delete domain: ${response.status}`);
     }
 
@@ -173,13 +173,13 @@ export const handleDomainCheckRegistrability: ToolHandler<DomainCheckRegistrabil
     
     logger.info('Checking domain availability', { domain: args.domain });
     
-    const response = await client.api.domain.checkDomainRegistrability({
+    const response = await client.typedApi.domain.checkDomainRegistrability({
       data: {
         domain: args.domain
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to check domain availability: ${response.status}`);
     }
 
@@ -213,14 +213,14 @@ export const handleDomainUpdateProject: ToolHandler<DomainUpdateProjectArgs> = a
     
     logger.info('Updating domain project', { domainId: args.domainId, projectId: args.projectId });
     
-    const response = await client.api.domain.updateDomainProjectId({
+    const response = await client.typedApi.domain.updateDomainProjectId({
       domainId: args.domainId,
       data: {
         projectId: args.projectId
       }
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to update domain project: ${response.status}`);
     }
 
