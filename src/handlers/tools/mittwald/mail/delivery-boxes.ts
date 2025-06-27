@@ -22,12 +22,12 @@ export const handleListDeliveryBoxes: MittwaldToolHandler<ListDeliveryBoxesArgs>
   try {
     const { projectId, limit = 50, skip = 0 } = args;
 
-    const response = await mittwaldClient.api.mail.listDeliveryBoxes({
+    const response = await mittwaldClient.typedApi.mail.listDeliveryBoxes({
       projectId,
       queryParameters: { limit, skip },
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to list delivery boxes', 'API_ERROR', response);
     }
 
@@ -59,12 +59,12 @@ export const handleCreateDeliveryBox: MittwaldToolHandler<CreateDeliveryBoxArgs>
   try {
     const { projectId, ...requestBody } = args;
 
-    const response = await mittwaldClient.api.mail.createDeliverybox({
+    const response = await mittwaldClient.typedApi.mail.createDeliverybox({
       projectId,
       data: requestBody,
     });
 
-    if (response.status !== 201) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to create delivery box', 'API_ERROR', response);
     }
 
@@ -96,11 +96,11 @@ export const handleGetDeliveryBox: MittwaldToolHandler<GetDeliveryBoxArgs> = asy
   try {
     const { deliveryBoxId } = args;
 
-    const response = await mittwaldClient.api.mail.getDeliveryBox({
+    const response = await mittwaldClient.typedApi.mail.getDeliveryBox({
       deliveryBoxId,
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to get delivery box', 'DELIVERY_BOX_NOT_FOUND', response);
     }
 
@@ -132,11 +132,11 @@ export const handleDeleteDeliveryBox: MittwaldToolHandler<DeleteDeliveryBoxArgs>
   try {
     const { deliveryBoxId } = args;
 
-    const response = await mittwaldClient.api.mail.deleteDeliveryBox({
+    const response = await mittwaldClient.typedApi.mail.deleteDeliveryBox({
       deliveryBoxId,
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to delete delivery box', 'API_ERROR', response);
     }
 
@@ -167,12 +167,12 @@ export const handleUpdateDeliveryBoxDescription: MittwaldToolHandler<UpdateDeliv
   try {
     const { deliveryBoxId, description } = args;
 
-    const response = await mittwaldClient.api.mail.updateDeliveryBoxDescription({
+    const response = await mittwaldClient.typedApi.mail.updateDeliveryBoxDescription({
       deliveryBoxId,
       data: { description },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update delivery box description', 'API_ERROR', response);
     }
 
@@ -203,12 +203,12 @@ export const handleUpdateDeliveryBoxPassword: MittwaldToolHandler<UpdateDelivery
   try {
     const { deliveryBoxId, password } = args;
 
-    const response = await mittwaldClient.api.mail.updateDeliveryBoxPassword({
+    const response = await mittwaldClient.typedApi.mail.updateDeliveryBoxPassword({
       deliveryBoxId,
       data: { password },
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update delivery box password', 'API_ERROR', response);
     }
 

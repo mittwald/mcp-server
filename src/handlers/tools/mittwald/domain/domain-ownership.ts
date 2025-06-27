@@ -57,7 +57,7 @@ export const handleDomainUpdateContact: ToolHandler<DomainUpdateContactArgs> = a
     
     logger.info('Updating domain contact', { domainId: args.domainId, contact: args.contact });
     
-    const response = await client.api.domain.updateDomainContact({
+    const response = await client.typedApi.domain.updateDomainContact({
       domainId: args.domainId,
       contact: args.contact as "owner",
       data: {
@@ -68,7 +68,7 @@ export const handleDomainUpdateContact: ToolHandler<DomainUpdateContactArgs> = a
       }
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to update contact: ${response.status}`);
     }
 
@@ -103,11 +103,11 @@ export const handleDomainGetHandleFields: ToolHandler<DomainGetHandleFieldsArgs>
     logger.info('Getting domain handle fields', { domainName: args.domainName });
     
     // Use a fallback implementation since the method might not be available
-    const response = await (client.api.domain as any).getHandleFields?.({
+    const response = await (client.typedApi.domain as any).getHandleFields?.({
       domainName: args.domainName
     }) || { status: 404, data: null };
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get handle fields: ${response.status}`);
     }
 
@@ -171,7 +171,7 @@ export const handleDomainGetSupportedTlds: ToolHandler<DomainGetSupportedTldsArg
     // Use a fallback implementation for supported TLDs
     const response = { status: 200, data: [] };
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get supported TLDs: ${response.status}`);
     }
 
@@ -203,11 +203,11 @@ export const handleDomainGetContract: ToolHandler<DomainGetContractArgs> = async
     
     logger.info('Getting domain contract', { domainId: args.domainId });
     
-    const response = await client.api.contract.getDetailOfContractByDomain({
+    const response = await client.typedApi.contract.getDetailOfContractByDomain({
       domainId: args.domainId
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new Error(`Failed to get contract: ${response.status}`);
     }
 

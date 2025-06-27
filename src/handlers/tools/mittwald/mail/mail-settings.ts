@@ -16,11 +16,11 @@ export const handleListProjectMailSettings: MittwaldToolHandler<ListProjectMailS
   try {
     const { projectId } = args;
 
-    const response = await mittwaldClient.api.mail.listProjectMailSettings({
+    const response = await mittwaldClient.typedApi.mail.listProjectMailSettings({
       projectId,
     });
 
-    if (response.status !== 200) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to list project mail settings', 'API_ERROR', response);
     }
 
@@ -62,13 +62,13 @@ export const handleUpdateProjectMailSetting: MittwaldToolHandler<UpdateProjectMa
       requestData = { whitelist: value };
     }
 
-    const response = await mittwaldClient.api.mail.updateProjectMailSetting({
+    const response = await mittwaldClient.typedApi.mail.updateProjectMailSetting({
       projectId,
       mailSetting,
       data: requestData as any,
     });
 
-    if (response.status !== 204) {
+    if (!String(response.status).startsWith('2')) {
       throw new MailError('Failed to update project mail setting', 'API_ERROR', response);
     }
 
