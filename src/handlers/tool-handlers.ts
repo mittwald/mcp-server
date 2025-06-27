@@ -42,6 +42,65 @@ import {
   handleValidationExample,
 } from './tools/index.js';
 
+// Import all Mittwald handlers and types
+import {
+  // Cronjob handlers and types
+  handleMittwaldCronjobList,
+  handleMittwaldCronjobCreate,
+  handleMittwaldCronjobGet,
+  handleMittwaldCronjobUpdate,
+  handleMittwaldCronjobDelete,
+  handleMittwaldCronjobUpdateAppId,
+  handleMittwaldCronjobTrigger,
+  handleMittwaldCronjobListExecutions,
+  handleMittwaldCronjobGetExecution,
+  handleMittwaldCronjobAbortExecution,
+  type MittwaldCronjobListArgs,
+  type MittwaldCronjobCreateArgs,
+  type MittwaldCronjobGetArgs,
+  type MittwaldCronjobUpdateArgs,
+  type MittwaldCronjobDeleteArgs,
+  type MittwaldCronjobUpdateAppIdArgs,
+  type MittwaldCronjobTriggerArgs,
+  type MittwaldCronjobListExecutionsArgs,
+  type MittwaldCronjobGetExecutionArgs,
+  type MittwaldCronjobAbortExecutionArgs,
+  // Filesystem handlers and types
+  handleMittwaldFilesystemListDirectories,
+  handleMittwaldFilesystemGetDiskUsage,
+  handleMittwaldFilesystemGetFileContent,
+  handleMittwaldFilesystemGetJWT,
+  handleMittwaldFilesystemListFiles,
+  type MittwaldFilesystemListDirectoriesArgs,
+  type MittwaldFilesystemGetDiskUsageArgs,
+  type MittwaldFilesystemGetFileContentArgs,
+  type MittwaldFilesystemGetJWTArgs,
+  type MittwaldFilesystemListFilesArgs,
+  // File handlers and types
+  handleMittwaldFileCreate,
+  handleMittwaldFileGetMeta,
+  handleMittwaldFileGet,
+  handleMittwaldFileGetWithName,
+  handleMittwaldFileGetUploadTokenRules,
+  handleMittwaldFileGetUploadTypeRules,
+  handleMittwaldConversationRequestFileUpload,
+  handleMittwaldConversationGetFileAccessToken,
+  handleMittwaldInvoiceGetFileAccessToken,
+  handleMittwaldDeprecatedFileGetTokenRules,
+  handleMittwaldDeprecatedFileGetTypeRules,
+  type MittwaldFileCreateArgs,
+  type MittwaldFileGetMetaArgs,
+  type MittwaldFileGetArgs,
+  type MittwaldFileGetWithNameArgs,
+  type MittwaldFileGetUploadTokenRulesArgs,
+  type MittwaldFileGetUploadTypeRulesArgs,
+  type MittwaldConversationRequestFileUploadArgs,
+  type MittwaldConversationGetFileAccessTokenArgs,
+  type MittwaldInvoiceGetFileAccessTokenArgs,
+  type MittwaldDeprecatedFileGetTokenRulesArgs,
+  type MittwaldDeprecatedFileGetTypeRulesArgs
+} from './tools/mittwald/index.js';
+
 /**
  * Zod schemas for tool validation
  */
@@ -115,6 +174,136 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+
+  // Mittwald Cronjob schemas
+  mittwald_cronjob_list: z.object({
+    projectId: z.string().describe("The unique identifier of the project")
+  }),
+  
+  mittwald_cronjob_create: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    schedule: z.string().describe("Cron expression defining when the job should run"),
+    command: z.string().describe("The command to execute"),
+    description: z.string().optional().describe("Optional description of what the cronjob does"),
+    appId: z.string().optional().describe("Optional app ID to associate with the cronjob")
+  }),
+
+  mittwald_cronjob_get: z.object({
+    cronjobId: z.string().describe("The unique identifier of the cronjob")
+  }),
+
+  mittwald_cronjob_update: z.object({
+    cronjobId: z.string().describe("The unique identifier of the cronjob"),
+    schedule: z.string().optional().describe("Cron expression defining when the job should run"),
+    command: z.string().optional().describe("The command to execute"),
+    description: z.string().optional().describe("Description of what the cronjob does"),
+    enabled: z.boolean().optional().describe("Whether the cronjob is enabled or disabled")
+  }),
+
+  mittwald_cronjob_delete: z.object({
+    cronjobId: z.string().describe("The unique identifier of the cronjob")
+  }),
+
+  mittwald_cronjob_update_app_id: z.object({
+    cronjobId: z.string().describe("The unique identifier of the cronjob"),
+    appId: z.string().describe("The app ID to associate with the cronjob")
+  }),
+
+  mittwald_cronjob_trigger: z.object({
+    cronjobId: z.string().describe("The unique identifier of the cronjob")
+  }),
+
+  mittwald_cronjob_list_executions: z.object({
+    cronjobId: z.string().describe("The unique identifier of the cronjob")
+  }),
+
+  mittwald_cronjob_get_execution: z.object({
+    cronjobId: z.string().describe("The unique identifier of the cronjob"),
+    executionId: z.string().describe("The unique identifier of the execution")
+  }),
+
+  mittwald_cronjob_abort_execution: z.object({
+    cronjobId: z.string().describe("The unique identifier of the cronjob"),
+    executionId: z.string().describe("The unique identifier of the execution")
+  }),
+
+  // Mittwald Filesystem schemas
+  mittwald_filesystem_list_directories: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    path: z.string().optional().describe("Optional path to list directories from")
+  }),
+
+  mittwald_filesystem_get_disk_usage: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    path: z.string().optional().describe("Optional specific directory path to get usage for")
+  }),
+
+  mittwald_filesystem_get_file_content: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    filePath: z.string().describe("Full path to the file to retrieve content from")
+  }),
+
+  mittwald_filesystem_get_jwt: z.object({
+    projectId: z.string().describe("The unique identifier of the project")
+  }),
+
+  mittwald_filesystem_list_files: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    path: z.string().optional().describe("Optional path to list files from"),
+    recursive: z.boolean().optional().describe("Whether to list files recursively in subdirectories")
+  }),
+
+  // Mittwald File schemas
+  mittwald_file_create: z.object({
+    content: z.string().describe("The file content (base64 encoded for binary files)"),
+    filename: z.string().describe("The name of the file to create"),
+    contentType: z.string().optional().describe("MIME type of the file")
+  }),
+
+  mittwald_file_get_meta: z.object({
+    fileId: z.string().describe("The unique identifier of the file")
+  }),
+
+  mittwald_file_get: z.object({
+    fileId: z.string().describe("The unique identifier of the file")
+  }),
+
+  mittwald_file_get_with_name: z.object({
+    fileId: z.string().describe("The unique identifier of the file"),
+    fileName: z.string().describe("The filename to use in the URL")
+  }),
+
+  mittwald_file_get_upload_token_rules: z.object({
+    fileUploadToken: z.string().describe("The file upload token to get rules for")
+  }),
+
+  mittwald_file_get_upload_type_rules: z.object({
+    fileUploadType: z.string().describe("The file upload type to get rules for")
+  }),
+
+  mittwald_conversation_request_file_upload: z.object({
+    conversationId: z.string().describe("The unique identifier of the conversation"),
+    filename: z.string().describe("The name of the file to upload"),
+    contentType: z.string().optional().describe("MIME type of the file")
+  }),
+
+  mittwald_conversation_get_file_access_token: z.object({
+    conversationId: z.string().describe("The unique identifier of the conversation"),
+    fileId: z.string().describe("The unique identifier of the file")
+  }),
+
+  mittwald_invoice_get_file_access_token: z.object({
+    customerId: z.string().describe("The unique identifier of the customer"),
+    invoiceId: z.string().describe("The unique identifier of the invoice")
+  }),
+
+  mittwald_deprecated_file_get_token_rules: z.object({
+    token: z.string().describe("The deprecated file token to get rules for")
+  }),
+
+  mittwald_deprecated_file_get_type_rules: z.object({
+    name: z.string().describe("The deprecated file type name to get rules for")
   })
 };
 
@@ -136,6 +325,38 @@ type ToolArgs = {
   structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
   validation_example: any;
+  
+  // Mittwald Cronjob tools
+  mittwald_cronjob_list: MittwaldCronjobListArgs;
+  mittwald_cronjob_create: MittwaldCronjobCreateArgs;
+  mittwald_cronjob_get: MittwaldCronjobGetArgs;
+  mittwald_cronjob_update: MittwaldCronjobUpdateArgs;
+  mittwald_cronjob_delete: MittwaldCronjobDeleteArgs;
+  mittwald_cronjob_update_app_id: MittwaldCronjobUpdateAppIdArgs;
+  mittwald_cronjob_trigger: MittwaldCronjobTriggerArgs;
+  mittwald_cronjob_list_executions: MittwaldCronjobListExecutionsArgs;
+  mittwald_cronjob_get_execution: MittwaldCronjobGetExecutionArgs;
+  mittwald_cronjob_abort_execution: MittwaldCronjobAbortExecutionArgs;
+  
+  // Mittwald Filesystem tools
+  mittwald_filesystem_list_directories: MittwaldFilesystemListDirectoriesArgs;
+  mittwald_filesystem_get_disk_usage: MittwaldFilesystemGetDiskUsageArgs;
+  mittwald_filesystem_get_file_content: MittwaldFilesystemGetFileContentArgs;
+  mittwald_filesystem_get_jwt: MittwaldFilesystemGetJWTArgs;
+  mittwald_filesystem_list_files: MittwaldFilesystemListFilesArgs;
+  
+  // Mittwald File tools
+  mittwald_file_create: MittwaldFileCreateArgs;
+  mittwald_file_get_meta: MittwaldFileGetMetaArgs;
+  mittwald_file_get: MittwaldFileGetArgs;
+  mittwald_file_get_with_name: MittwaldFileGetWithNameArgs;
+  mittwald_file_get_upload_token_rules: MittwaldFileGetUploadTokenRulesArgs;
+  mittwald_file_get_upload_type_rules: MittwaldFileGetUploadTypeRulesArgs;
+  mittwald_conversation_request_file_upload: MittwaldConversationRequestFileUploadArgs;
+  mittwald_conversation_get_file_access_token: MittwaldConversationGetFileAccessTokenArgs;
+  mittwald_invoice_get_file_access_token: MittwaldInvoiceGetFileAccessTokenArgs;
+  mittwald_deprecated_file_get_token_rules: MittwaldDeprecatedFileGetTokenRulesArgs;
+  mittwald_deprecated_file_get_type_rules: MittwaldDeprecatedFileGetTypeRulesArgs;
 };
 
 /**
@@ -343,6 +564,91 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
+        
+      // Mittwald Cronjob cases
+      case "mittwald_cronjob_list":
+        result = await handleMittwaldCronjobList(args as MittwaldCronjobListArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_create":
+        result = await handleMittwaldCronjobCreate(args as MittwaldCronjobCreateArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_get":
+        result = await handleMittwaldCronjobGet(args as MittwaldCronjobGetArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_update":
+        result = await handleMittwaldCronjobUpdate(args as MittwaldCronjobUpdateArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_delete":
+        result = await handleMittwaldCronjobDelete(args as MittwaldCronjobDeleteArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_update_app_id":
+        result = await handleMittwaldCronjobUpdateAppId(args as MittwaldCronjobUpdateAppIdArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_trigger":
+        result = await handleMittwaldCronjobTrigger(args as MittwaldCronjobTriggerArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_list_executions":
+        result = await handleMittwaldCronjobListExecutions(args as MittwaldCronjobListExecutionsArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_get_execution":
+        result = await handleMittwaldCronjobGetExecution(args as MittwaldCronjobGetExecutionArgs, handlerContext);
+        break;
+      case "mittwald_cronjob_abort_execution":
+        result = await handleMittwaldCronjobAbortExecution(args as MittwaldCronjobAbortExecutionArgs, handlerContext);
+        break;
+        
+      // Mittwald Filesystem cases
+      case "mittwald_filesystem_list_directories":
+        result = await handleMittwaldFilesystemListDirectories(args as MittwaldFilesystemListDirectoriesArgs, handlerContext);
+        break;
+      case "mittwald_filesystem_get_disk_usage":
+        result = await handleMittwaldFilesystemGetDiskUsage(args as MittwaldFilesystemGetDiskUsageArgs, handlerContext);
+        break;
+      case "mittwald_filesystem_get_file_content":
+        result = await handleMittwaldFilesystemGetFileContent(args as MittwaldFilesystemGetFileContentArgs, handlerContext);
+        break;
+      case "mittwald_filesystem_get_jwt":
+        result = await handleMittwaldFilesystemGetJWT(args as MittwaldFilesystemGetJWTArgs, handlerContext);
+        break;
+      case "mittwald_filesystem_list_files":
+        result = await handleMittwaldFilesystemListFiles(args as MittwaldFilesystemListFilesArgs, handlerContext);
+        break;
+        
+      // Mittwald File cases
+      case "mittwald_file_create":
+        result = await handleMittwaldFileCreate(args as MittwaldFileCreateArgs, handlerContext);
+        break;
+      case "mittwald_file_get_meta":
+        result = await handleMittwaldFileGetMeta(args as MittwaldFileGetMetaArgs, handlerContext);
+        break;
+      case "mittwald_file_get":
+        result = await handleMittwaldFileGet(args as MittwaldFileGetArgs, handlerContext);
+        break;
+      case "mittwald_file_get_with_name":
+        result = await handleMittwaldFileGetWithName(args as MittwaldFileGetWithNameArgs, handlerContext);
+        break;
+      case "mittwald_file_get_upload_token_rules":
+        result = await handleMittwaldFileGetUploadTokenRules(args as MittwaldFileGetUploadTokenRulesArgs, handlerContext);
+        break;
+      case "mittwald_file_get_upload_type_rules":
+        result = await handleMittwaldFileGetUploadTypeRules(args as MittwaldFileGetUploadTypeRulesArgs, handlerContext);
+        break;
+      case "mittwald_conversation_request_file_upload":
+        result = await handleMittwaldConversationRequestFileUpload(args as MittwaldConversationRequestFileUploadArgs, handlerContext);
+        break;
+      case "mittwald_conversation_get_file_access_token":
+        result = await handleMittwaldConversationGetFileAccessToken(args as MittwaldConversationGetFileAccessTokenArgs, handlerContext);
+        break;
+      case "mittwald_invoice_get_file_access_token":
+        result = await handleMittwaldInvoiceGetFileAccessToken(args as MittwaldInvoiceGetFileAccessTokenArgs, handlerContext);
+        break;
+      case "mittwald_deprecated_file_get_token_rules":
+        result = await handleMittwaldDeprecatedFileGetTokenRules(args as MittwaldDeprecatedFileGetTokenRulesArgs, handlerContext);
+        break;
+      case "mittwald_deprecated_file_get_type_rules":
+        result = await handleMittwaldDeprecatedFileGetTypeRules(args as MittwaldDeprecatedFileGetTypeRulesArgs, handlerContext);
+        break;
+        
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);
