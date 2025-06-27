@@ -28,6 +28,34 @@ import type {
   GetNotificationsArgs,
   SearchRedditArgs,
   GetCommentArgs,
+  MittwaldProjectListArgs,
+  MittwaldProjectGetArgs,
+  MittwaldProjectDeleteArgs,
+  MittwaldProjectUpdateDescriptionArgs,
+  MittwaldProjectUploadAvatarArgs,
+  MittwaldProjectDeleteAvatarArgs,
+  MittwaldProjectGetJwtArgs,
+  MittwaldServerListProjectsArgs,
+  MittwaldProjectMembershipListAllArgs,
+  MittwaldProjectMembershipListArgs,
+  MittwaldProjectMembershipGetSelfArgs,
+  MittwaldProjectMembershipGetArgs,
+  MittwaldProjectMembershipUpdateArgs,
+  MittwaldProjectMembershipRemoveArgs,
+  MittwaldProjectLeaveArgs,
+  MittwaldProjectInviteListAllArgs,
+  MittwaldProjectInviteListArgs,
+  MittwaldProjectInviteCreateArgs,
+  MittwaldProjectInviteGetArgs,
+  MittwaldProjectInviteDeleteArgs,
+  MittwaldProjectInviteAcceptArgs,
+  MittwaldProjectInviteDeclineArgs,
+  MittwaldProjectInviteResendArgs,
+  MittwaldProjectTokenInviteGetArgs,
+  MittwaldProjectGetStorageStatisticsArgs,
+  MittwaldProjectUpdateStorageThresholdArgs,
+  MittwaldProjectGetContractArgs,
+  MittwaldProjectListOrdersArgs,
 } from './tools/index.js';
 import {
   handleGetChannel,
@@ -41,6 +69,36 @@ import {
   handleLogging,
   handleValidationExample,
 } from './tools/index.js';
+import {
+  handleProjectList,
+  handleProjectGet,
+  handleProjectDelete,
+  handleProjectUpdateDescription,
+  handleProjectUploadAvatar,
+  handleProjectDeleteAvatar,
+  handleProjectGetJwt,
+  handleServerListProjects,
+  handleProjectMembershipListAll,
+  handleProjectMembershipList,
+  handleProjectMembershipGetSelf,
+  handleProjectMembershipGet,
+  handleProjectMembershipUpdate,
+  handleProjectMembershipRemove,
+  handleProjectLeave,
+  handleProjectInviteListAll,
+  handleProjectInviteList,
+  handleProjectInviteCreate,
+  handleProjectInviteGet,
+  handleProjectInviteDelete,
+  handleProjectInviteAccept,
+  handleProjectInviteDecline,
+  handleProjectInviteResend,
+  handleProjectTokenInviteGet,
+  handleProjectGetStorageStatistics,
+  handleProjectUpdateStorageThreshold,
+  handleProjectGetContract,
+  handleProjectListOrders,
+} from './tools/mittwald/project/index.js';
 
 // Import Mittwald User API handlers
 import {
@@ -168,6 +226,146 @@ const ToolSchemas = {
     subject: z.string().describe("Feedback subject"),
     message: z.string().describe("Feedback message"),
     type: z.enum(["bug", "feature", "improvement", "other"]).optional()
+  }),
+
+  // Mittwald Project API schemas
+  mittwald_project_list: z.object({
+    customerId: z.string().optional().describe("Filter projects by customer ID"),
+    serverId: z.string().optional().describe("Filter projects by server ID"),
+    limit: z.number().int().min(1).max(100).default(50).optional().describe("Maximum number of results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Number of results to skip")
+  }),
+
+  mittwald_project_get: z.object({
+    projectId: z.string().describe("The project ID")
+  }),
+
+  mittwald_project_delete: z.object({
+    projectId: z.string().describe("The project ID to delete")
+  }),
+
+  mittwald_project_update_description: z.object({
+    projectId: z.string().describe("The project ID"),
+    description: z.string().describe("The new project description")
+  }),
+
+  mittwald_project_upload_avatar: z.object({
+    projectId: z.string().describe("The project ID"),
+    fileContent: z.string().describe("Base64 encoded file content"),
+    filename: z.string().describe("The filename including extension"),
+    contentType: z.string().default("image/png").optional().describe("MIME type of the file")
+  }),
+
+  mittwald_project_delete_avatar: z.object({
+    projectId: z.string().describe("The project ID")
+  }),
+
+  mittwald_project_get_jwt: z.object({
+    projectId: z.string().describe("The project ID")
+  }),
+
+  mittwald_server_list_projects: z.object({
+    serverId: z.string().describe("The server ID"),
+    limit: z.number().int().min(1).max(100).default(50).optional().describe("Maximum number of results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Number of results to skip")
+  }),
+
+  mittwald_project_membership_list_all: z.object({
+    userId: z.string().optional().describe("Filter memberships by user ID"),
+    limit: z.number().int().min(1).max(100).default(50).optional().describe("Maximum number of results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Number of results to skip")
+  }),
+
+  mittwald_project_membership_list: z.object({
+    projectId: z.string().describe("The project ID"),
+    limit: z.number().int().min(1).max(100).default(50).optional().describe("Maximum number of results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Number of results to skip")
+  }),
+
+  mittwald_project_membership_get_self: z.object({
+    projectId: z.string().describe("The project ID")
+  }),
+
+  mittwald_project_membership_get: z.object({
+    membershipId: z.string().describe("The membership ID")
+  }),
+
+  mittwald_project_membership_update: z.object({
+    membershipId: z.string().describe("The membership ID"),
+    role: z.enum(["owner", "member"]).optional().describe("The new role for the membership"),
+    expiresAt: z.string().optional().describe("ISO 8601 datetime when the membership should expire")
+  }),
+
+  mittwald_project_membership_remove: z.object({
+    membershipId: z.string().describe("The membership ID to remove")
+  }),
+
+  mittwald_project_leave: z.object({
+    projectId: z.string().describe("The project ID to leave")
+  }),
+
+  mittwald_project_invite_list_all: z.object({
+    limit: z.number().int().min(1).max(100).default(50).optional().describe("Maximum number of results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Number of results to skip")
+  }),
+
+  mittwald_project_invite_list: z.object({
+    projectId: z.string().describe("The project ID"),
+    limit: z.number().int().min(1).max(100).default(50).optional().describe("Maximum number of results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Number of results to skip")
+  }),
+
+  mittwald_project_invite_create: z.object({
+    projectId: z.string().describe("The project ID"),
+    mailAddress: z.string().email().describe("Email address of the person to invite"),
+    role: z.enum(["owner", "member"]).describe("The role to assign to the invited member"),
+    membershipExpiresAt: z.string().optional().describe("ISO 8601 datetime when the membership should expire"),
+    message: z.string().optional().describe("Custom message to include in the invitation email"),
+    language: z.enum(["de", "en"]).default("en").optional().describe("Language for the invitation email")
+  }),
+
+  mittwald_project_invite_get: z.object({
+    inviteId: z.string().describe("The invitation ID")
+  }),
+
+  mittwald_project_invite_delete: z.object({
+    inviteId: z.string().describe("The invitation ID to delete")
+  }),
+
+  mittwald_project_invite_accept: z.object({
+    inviteId: z.string().describe("The invitation ID to accept")
+  }),
+
+  mittwald_project_invite_decline: z.object({
+    inviteId: z.string().describe("The invitation ID to decline")
+  }),
+
+  mittwald_project_invite_resend: z.object({
+    inviteId: z.string().describe("The invitation ID to resend")
+  }),
+
+  mittwald_project_token_invite_get: z.object({
+    token: z.string().describe("The invitation token")
+  }),
+
+  mittwald_project_get_storage_statistics: z.object({
+    projectId: z.string().describe("The project ID")
+  }),
+
+  mittwald_project_update_storage_threshold: z.object({
+    projectId: z.string().describe("The project ID"),
+    enabled: z.boolean().describe("Whether storage notifications are enabled"),
+    thresholdPercentage: z.number().int().min(1).max(100).describe("Storage usage percentage that triggers a notification")
+  }),
+
+  mittwald_project_get_contract: z.object({
+    projectId: z.string().describe("The project ID")
+  }),
+
+  mittwald_project_list_orders: z.object({
+    projectId: z.string().describe("The project ID"),
+    limit: z.number().int().min(1).max(100).default(50).optional().describe("Maximum number of results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Number of results to skip")
   })
 };
 
@@ -189,6 +387,35 @@ type ToolArgs = {
   structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
   validation_example: any;
+  // Mittwald Project API tools
+  mittwald_project_list: MittwaldProjectListArgs;
+  mittwald_project_get: MittwaldProjectGetArgs;
+  mittwald_project_delete: MittwaldProjectDeleteArgs;
+  mittwald_project_update_description: MittwaldProjectUpdateDescriptionArgs;
+  mittwald_project_upload_avatar: MittwaldProjectUploadAvatarArgs;
+  mittwald_project_delete_avatar: MittwaldProjectDeleteAvatarArgs;
+  mittwald_project_get_jwt: MittwaldProjectGetJwtArgs;
+  mittwald_server_list_projects: MittwaldServerListProjectsArgs;
+  mittwald_project_membership_list_all: MittwaldProjectMembershipListAllArgs;
+  mittwald_project_membership_list: MittwaldProjectMembershipListArgs;
+  mittwald_project_membership_get_self: MittwaldProjectMembershipGetSelfArgs;
+  mittwald_project_membership_get: MittwaldProjectMembershipGetArgs;
+  mittwald_project_membership_update: MittwaldProjectMembershipUpdateArgs;
+  mittwald_project_membership_remove: MittwaldProjectMembershipRemoveArgs;
+  mittwald_project_leave: MittwaldProjectLeaveArgs;
+  mittwald_project_invite_list_all: MittwaldProjectInviteListAllArgs;
+  mittwald_project_invite_list: MittwaldProjectInviteListArgs;
+  mittwald_project_invite_create: MittwaldProjectInviteCreateArgs;
+  mittwald_project_invite_get: MittwaldProjectInviteGetArgs;
+  mittwald_project_invite_delete: MittwaldProjectInviteDeleteArgs;
+  mittwald_project_invite_accept: MittwaldProjectInviteAcceptArgs;
+  mittwald_project_invite_decline: MittwaldProjectInviteDeclineArgs;
+  mittwald_project_invite_resend: MittwaldProjectInviteResendArgs;
+  mittwald_project_token_invite_get: MittwaldProjectTokenInviteGetArgs;
+  mittwald_project_get_storage_statistics: MittwaldProjectGetStorageStatisticsArgs;
+  mittwald_project_update_storage_threshold: MittwaldProjectUpdateStorageThresholdArgs;
+  mittwald_project_get_contract: MittwaldProjectGetContractArgs;
+  mittwald_project_list_orders: MittwaldProjectListOrdersArgs;
 };
 
 /**
@@ -430,7 +657,92 @@ export async function handleToolCall(
       case "mittwald_user_create_feedback":
         result = await handleMittwaldUserTool(request.params.name, args);
         break;
-        
+      
+      // Mittwald Project API cases
+      case "mittwald_project_list":
+        result = await handleProjectList(args as MittwaldProjectListArgs);
+        break;
+      case "mittwald_project_get":
+        result = await handleProjectGet(args as MittwaldProjectGetArgs);
+        break;
+      case "mittwald_project_delete":
+        result = await handleProjectDelete(args as MittwaldProjectDeleteArgs);
+        break;
+      case "mittwald_project_update_description":
+        result = await handleProjectUpdateDescription(args as MittwaldProjectUpdateDescriptionArgs);
+        break;
+      case "mittwald_project_upload_avatar":
+        result = await handleProjectUploadAvatar(args as MittwaldProjectUploadAvatarArgs);
+        break;
+      case "mittwald_project_delete_avatar":
+        result = await handleProjectDeleteAvatar(args as MittwaldProjectDeleteAvatarArgs);
+        break;
+      case "mittwald_project_get_jwt":
+        result = await handleProjectGetJwt(args as MittwaldProjectGetJwtArgs);
+        break;
+      case "mittwald_server_list_projects":
+        result = await handleServerListProjects(args as MittwaldServerListProjectsArgs);
+        break;
+      case "mittwald_project_membership_list_all":
+        result = await handleProjectMembershipListAll(args as MittwaldProjectMembershipListAllArgs);
+        break;
+      case "mittwald_project_membership_list":
+        result = await handleProjectMembershipList(args as MittwaldProjectMembershipListArgs);
+        break;
+      case "mittwald_project_membership_get_self":
+        result = await handleProjectMembershipGetSelf(args as MittwaldProjectMembershipGetSelfArgs);
+        break;
+      case "mittwald_project_membership_get":
+        result = await handleProjectMembershipGet(args as MittwaldProjectMembershipGetArgs);
+        break;
+      case "mittwald_project_membership_update":
+        result = await handleProjectMembershipUpdate(args as MittwaldProjectMembershipUpdateArgs);
+        break;
+      case "mittwald_project_membership_remove":
+        result = await handleProjectMembershipRemove(args as MittwaldProjectMembershipRemoveArgs);
+        break;
+      case "mittwald_project_leave":
+        result = await handleProjectLeave(args as MittwaldProjectLeaveArgs);
+        break;
+      case "mittwald_project_invite_list_all":
+        result = await handleProjectInviteListAll(args as MittwaldProjectInviteListAllArgs);
+        break;
+      case "mittwald_project_invite_list":
+        result = await handleProjectInviteList(args as MittwaldProjectInviteListArgs);
+        break;
+      case "mittwald_project_invite_create":
+        result = await handleProjectInviteCreate(args as MittwaldProjectInviteCreateArgs);
+        break;
+      case "mittwald_project_invite_get":
+        result = await handleProjectInviteGet(args as MittwaldProjectInviteGetArgs);
+        break;
+      case "mittwald_project_invite_delete":
+        result = await handleProjectInviteDelete(args as MittwaldProjectInviteDeleteArgs);
+        break;
+      case "mittwald_project_invite_accept":
+        result = await handleProjectInviteAccept(args as MittwaldProjectInviteAcceptArgs);
+        break;
+      case "mittwald_project_invite_decline":
+        result = await handleProjectInviteDecline(args as MittwaldProjectInviteDeclineArgs);
+        break;
+      case "mittwald_project_invite_resend":
+        result = await handleProjectInviteResend(args as MittwaldProjectInviteResendArgs);
+        break;
+      case "mittwald_project_token_invite_get":
+        result = await handleProjectTokenInviteGet(args as MittwaldProjectTokenInviteGetArgs);
+        break;
+      case "mittwald_project_get_storage_statistics":
+        result = await handleProjectGetStorageStatistics(args as MittwaldProjectGetStorageStatisticsArgs);
+        break;
+      case "mittwald_project_update_storage_threshold":
+        result = await handleProjectUpdateStorageThreshold(args as MittwaldProjectUpdateStorageThresholdArgs);
+        break;
+      case "mittwald_project_get_contract":
+        result = await handleProjectGetContract(args as MittwaldProjectGetContractArgs);
+        break;
+      case "mittwald_project_list_orders":
+        result = await handleProjectListOrders(args as MittwaldProjectListOrdersArgs);
+        break;
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);
