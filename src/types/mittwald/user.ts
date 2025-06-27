@@ -16,7 +16,9 @@ export interface AuthenticateResponse {
 }
 
 export interface AuthenticateMfaRequest {
-  authenticationToken: string;
+  authenticationToken?: string;  // Not used in current API
+  email?: string;
+  password?: string;
   multiFactorCode: string;
 }
 
@@ -26,6 +28,7 @@ export interface AuthenticateSessionTokenRequest {
 
 export interface AuthenticateTokenRetrievalKeyRequest {
   tokenRetrievalKey: string;
+  userId?: string;
 }
 
 // User types
@@ -139,6 +142,7 @@ export interface ChangeEmailRequest {
 
 export interface VerifyEmailRequest {
   token: string;
+  email?: string;
 }
 
 // Password management types
@@ -154,6 +158,7 @@ export interface InitPasswordResetRequest {
 export interface ConfirmPasswordResetRequest {
   token: string;
   password: string;
+  userId?: string;
 }
 
 // Settings types

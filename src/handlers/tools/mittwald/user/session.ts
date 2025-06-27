@@ -4,7 +4,7 @@
  */
 
 import { getMittwaldClient } from '../../../../services/mittwald/index.js';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { Session } from '../../../../types/mittwald/user.js';
 import { sessionMessages } from '../../../../constants/tool/mittwald/user/session.js';
 
@@ -58,7 +58,7 @@ export async function handleListSessions(): Promise<CallToolResult> {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.listSessions({});
+    const response = await client.typedApi.user.listSessions({});
 
     if (response.status === 200 && response.data) {
       const sessions = response.data as Session[];
@@ -88,7 +88,7 @@ export async function handleGetSession(args: { tokenId: string }): Promise<CallT
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.getSession({
+    const response = await client.typedApi.user.getSession({
       tokenId: args.tokenId
     });
 
@@ -111,7 +111,16 @@ export async function handleRefreshSessions(): Promise<CallToolResult> {
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.refreshSessions({});
+    // Note: The API only supports refreshing individual sessions
+    // Get current session first
+    const tokenInfo = await client.typedApi.user.checkToken({});
+    const sessionId = tokenInfo.data?.sessionId;
+    
+    if (!sessionId) {
+      throw new Error("Could not retrieve current session ID");
+    }
+    
+    const response = await client.typedApi.user.refreshSession({ sessionId });
 
     if (response.status === 200) {
       return formatResponse({
@@ -133,7 +142,7 @@ export async function handleTerminateSession(args: { tokenId: string }): Promise
   try {
     const client = getMittwaldClient();
     
-    const response = await client.api.user.terminateSession({
+    const response = await client.typedApi.user.terminateSession({
       tokenId: args.tokenId
     });
 
@@ -158,7 +167,7 @@ export async function handleTerminateAllSessions(args: { includeCurrentSession?:
     const client = getMittwaldClient();
     
     // First get all sessions
-    const sessionsResponse = await client.api.user.listSessions({});
+    const sessionsResponse = await client.typedApi.user.listSessions({});
     
     if (sessionsResponse.status !== 200 || !sessionsResponse.data) {
       throw new Error("Failed to retrieve sessions");
@@ -176,7 +185,7 @@ export async function handleTerminateAllSessions(args: { includeCurrentSession?:
       }
 
       try {
-        await client.api.user.terminateSession({
+        await client.typedApi.user.terminateSession({
           tokenId: session.tokenId
         });
         terminatedCount++;

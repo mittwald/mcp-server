@@ -4,7 +4,7 @@
  */
 
 import { getMittwaldClient } from '../../../../services/mittwald/index.js';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
 /**
  * Format success response
@@ -52,46 +52,47 @@ export async function handleMittwaldUserTool(toolName: string, args: any): Promi
     switch (toolName) {
       // SSH Keys
       case "mittwald_user_list_ssh_keys":
-        const sshKeysResponse = await client.api.user.listSshKeys({});
+        const sshKeysResponse = await client.typedApi.user.listSshKeys({});
         return formatResponse({ sshKeys: sshKeysResponse.data });
         
       case "mittwald_user_create_ssh_key":
-        const createSshResponse = await client.api.user.createSshKey({ data: args });
+        const createSshResponse = await client.typedApi.user.createSshKey({ data: args });
         return formatResponse({ sshKey: createSshResponse.data });
         
       case "mittwald_user_delete_ssh_key":
-        await client.api.user.deleteSshKey({ sshKeyId: args.sshKeyId });
+        await client.typedApi.user.deleteSshKey({ sshKeyId: args.sshKeyId });
         return formatResponse({ deleted: true });
         
       // MFA
       case "mittwald_user_get_mfa_status":
-        const mfaResponse = await client.api.user.getMfaStatus({});
+        const mfaResponse = await client.typedApi.user.getMfaStatus({});
         return formatResponse({ mfaStatus: mfaResponse.data });
         
       case "mittwald_user_init_mfa":
-        const initMfaResponse = await client.api.user.initMfa({ data: args });
+        const initMfaResponse = await client.typedApi.user.initMfa({ data: args });
         return formatResponse({ mfaInit: initMfaResponse.data });
         
       // Support
       case "mittwald_user_create_feedback":
-        const feedbackResponse = await client.api.user.createFeedback({ data: args });
+        const feedbackResponse = await client.typedApi.user.createFeedback({ data: args });
         return formatResponse({ feedback: feedbackResponse.data });
         
       case "mittwald_user_get_support_code":
-        const supportCodeResponse = await client.api.user.getSupportCode({});
+        const supportCodeResponse = await client.typedApi.user.getSupportCode({});
         return formatResponse({ supportCode: supportCodeResponse.data });
         
       // Phone
       case "mittwald_user_add_phone":
-        const addPhoneResponse = await client.api.user.addPhone({ 
+        const addPhoneResponse = await client.typedApi.user.addPhoneNumber({ 
           userId: args.userId, 
           data: { phoneNumber: args.phoneNumber, primary: args.primary } 
         });
         return formatResponse({ phone: addPhoneResponse.data });
         
       case "mittwald_user_verify_phone":
-        const verifyPhoneResponse = await client.api.user.verifyPhone({ 
+        const verifyPhoneResponse = await client.typedApi.user.verifyPhoneNumber({ 
           userId: args.userId, 
+          phoneNumber: args.phoneNumber,
           data: { verificationCode: args.verificationCode } 
         });
         return formatResponse({ verified: true });
