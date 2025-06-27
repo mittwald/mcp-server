@@ -1,10 +1,12 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import type { RedditErrorType } from "../../types/reddit.js";
 import type { RedditService } from "../../services/reddit/reddit-service.js";
+import type { MittwaldClient } from "../../services/mittwald/index.js";
 
 // Context passed to individual tool handlers
 export interface ToolHandlerContext {
   redditService: RedditService;
+  mittwaldClient?: MittwaldClient;
   userId: string;
   sessionId?: string;
   progressToken?: string | number;
