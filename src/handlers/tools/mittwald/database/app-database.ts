@@ -11,10 +11,10 @@ interface AppDatabaseUpdateArgs {
 
 export const handleAppDatabaseUpdate = async (args: AppDatabaseUpdateArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
     // Use the generic patch app installation method
-    const response = await client.app.patchAppinstallation({
+    const response = await client.api.app.patchAppinstallation({
       appInstallationId: args.appInstallationId,
       data: {
         description: args.purpose || 'Updated database configuration'
@@ -50,10 +50,10 @@ interface AppDatabaseReplaceArgs {
 
 export const handleAppDatabaseReplace = async (args: AppDatabaseReplaceArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
     // This operation may not be directly available, use setDatabaseUsers
-    const response = await client.app.setDatabaseUsers({
+    const response = await client.api.app.setDatabaseUsers({
       appInstallationId: args.appInstallationId,
       databaseId: args.mysqlDatabaseId,
       data: {
@@ -92,10 +92,10 @@ interface AppDatabaseLinkArgs {
 
 export const handleAppDatabaseLink = async (args: AppDatabaseLinkArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
     // Use setDatabaseUsers to link database
-    const response = await client.app.setDatabaseUsers({
+    const response = await client.api.app.setDatabaseUsers({
       appInstallationId: args.appInstallationId,
       databaseId: args.databaseId,
       data: {
@@ -134,10 +134,10 @@ interface AppDatabaseUnlinkArgs {
 
 export const handleAppDatabaseUnlink = async (args: AppDatabaseUnlinkArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
     // Use setDatabaseUsers with empty users to unlink
-    const response = await client.app.setDatabaseUsers({
+    const response = await client.api.app.setDatabaseUsers({
       appInstallationId: args.appInstallationId,
       databaseId: args.databaseId,
       data: {
@@ -174,14 +174,14 @@ interface AppDatabaseSetUsersArgs {
 
 export const handleAppDatabaseSetUsers = async (args: AppDatabaseSetUsersArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
     const userMapping: { [key: string]: string } = {};
     args.userIds.forEach((userId, index) => {
       userMapping[`user${index}`] = userId;
     });
     
-    const response = await client.app.setDatabaseUsers({
+    const response = await client.api.app.setDatabaseUsers({
       appInstallationId: args.appInstallationId,
       databaseId: args.databaseId,
       data: {

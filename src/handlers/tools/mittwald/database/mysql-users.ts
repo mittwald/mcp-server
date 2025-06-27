@@ -9,9 +9,9 @@ interface MySQLUserListArgs {
 
 export const handleMySQLUserList = async (args: MySQLUserListArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.listMysqlUsers({
+    const response = await client.api.database.listMysqlUsers({
       mysqlDatabaseId: args.mysqlDatabaseId
     });
 
@@ -47,9 +47,9 @@ interface MySQLUserCreateArgs {
 
 export const handleMySQLUserCreate = async (args: MySQLUserCreateArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.createMysqlUser({
+    const response = await client.api.database.createMysqlUser({
       mysqlDatabaseId: args.mysqlDatabaseId,
       data: {
         databaseId: args.mysqlDatabaseId,
@@ -88,9 +88,9 @@ interface MySQLUserGetArgs {
 
 export const handleMySQLUserGet = async (args: MySQLUserGetArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.getMysqlUser({
+    const response = await client.api.database.getMysqlUser({
       mysqlUserId: args.mysqlUserId
     });
 
@@ -124,14 +124,14 @@ interface MySQLUserUpdateArgs {
 
 export const handleMySQLUserUpdate = async (args: MySQLUserUpdateArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
     const updateData: any = {};
     if (args.description !== undefined) updateData.description = args.description;
     if (args.accessLevel !== undefined) updateData.accessLevel = args.accessLevel;
     if (args.accessIpMask !== undefined) updateData.accessIpMask = args.accessIpMask;
     
-    const response = await client.database.updateMysqlUser({
+    const response = await client.api.database.updateMysqlUser({
       mysqlUserId: args.mysqlUserId,
       data: updateData
     });
@@ -163,9 +163,9 @@ interface MySQLUserDeleteArgs {
 
 export const handleMySQLUserDelete = async (args: MySQLUserDeleteArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.deleteMysqlUser({
+    const response = await client.api.database.deleteMysqlUser({
       mysqlUserId: args.mysqlUserId
     });
 
@@ -197,9 +197,9 @@ interface MySQLUserUpdatePasswordArgs {
 
 export const handleMySQLUserUpdatePassword = async (args: MySQLUserUpdatePasswordArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.updateMysqlUserPassword({
+    const response = await client.api.database.updateMysqlUserPassword({
       mysqlUserId: args.mysqlUserId,
       data: {
         password: args.password
@@ -233,9 +233,9 @@ interface MySQLUserEnableArgs {
 
 export const handleMySQLUserEnable = async (args: MySQLUserEnableArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.enableMysqlUser({
+    const response = await client.api.database.enableMysqlUser({
       mysqlUserId: args.mysqlUserId
     });
 
@@ -266,9 +266,9 @@ interface MySQLUserDisableArgs {
 
 export const handleMySQLUserDisable = async (args: MySQLUserDisableArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.disableMysqlUser({
+    const response = await client.api.database.disableMysqlUser({
       mysqlUserId: args.mysqlUserId
     });
 
@@ -299,9 +299,9 @@ interface MySQLUserGetPhpMyAdminUrlArgs {
 
 export const handleMySQLUserGetPhpMyAdminUrl = async (args: MySQLUserGetPhpMyAdminUrlArgs) => {
   try {
-    const client = getMittwaldClient().api;
+    const client = getMittwaldClient();
     
-    const response = await client.database.getMysqlUserPhpMyAdminUrl({
+    const response = await client.api.database.getMysqlUserPhpMyAdminUrl({
       mysqlUserId: args.mysqlUserId
     });
 
