@@ -21,6 +21,45 @@ import { SAMPLING_EXAMPLE_TOOL } from './tool/sampling-example.js';
 import { STRUCTURED_DATA_EXAMPLE_TOOL } from './tool/structured-data-example.js';
 import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
+
+// Mittwald Marketplace tools
+import {
+  mittwald_contributor_list,
+  mittwald_contributor_get,
+  mittwald_contributor_get_extensions,
+  mittwald_extension_list,
+  mittwald_extension_get,
+  mittwald_extension_create,
+  mittwald_extension_update,
+  mittwald_extension_delete,
+  mittwald_extension_publish,
+  mittwald_extension_update_context,
+  mittwald_extension_upload_logo,
+  mittwald_extension_delete_logo,
+  mittwald_extension_upload_asset,
+  mittwald_extension_delete_asset,
+  mittwald_extension_create_secret,
+  mittwald_extension_delete_secret,
+  mittwald_extension_request_verification,
+  mittwald_extension_instance_list,
+  mittwald_extension_instance_get,
+  mittwald_extension_instance_create,
+  mittwald_extension_instance_delete,
+  mittwald_extension_instance_enable,
+  mittwald_extension_instance_disable,
+  mittwald_extension_instance_update_scopes,
+  mittwald_extension_instance_create_retrieval_key,
+  mittwald_extension_instance_create_token,
+  mittwald_extension_instance_update_secret,
+  mittwald_extension_instance_authenticate_session,
+  mittwald_marketplace_list_scopes,
+  mittwald_marketplace_get_public_key,
+  mittwald_marketplace_get_webhook_public_key,
+  mittwald_marketplace_get_customer_extension,
+  mittwald_marketplace_get_project_extension,
+  mittwald_marketplace_dry_run_webhook
+} from './tool/mittwald/marketplace/index.js';
+
 import type { RedditConfigData } from '../types/config.js';
 
 /**
@@ -75,16 +114,62 @@ export const TOOL_RESPONSE_MESSAGES = {
  * @see {@link https://modelcontextprotocol.io/specification/2025-06-18/client/sampling | MCP Sampling}
  */
 export const TOOLS: Tool[] = [
+  // Reddit tools
   getChannel,
   getPost,
   getNotifications,
   searchReddit,
   getComment,
+  
+  // Example tools
   ELICITATION_EXAMPLE_TOOL,
   SAMPLING_EXAMPLE_TOOL,
   STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
+  
+  // Mittwald Marketplace tools
+  // Contributor management
+  mittwald_contributor_list,
+  mittwald_contributor_get,
+  mittwald_contributor_get_extensions,
+  
+  // Extension management
+  mittwald_extension_list,
+  mittwald_extension_get,
+  mittwald_extension_create,
+  mittwald_extension_update,
+  mittwald_extension_delete,
+  mittwald_extension_publish,
+  mittwald_extension_update_context,
+  mittwald_extension_upload_logo,
+  mittwald_extension_delete_logo,
+  mittwald_extension_upload_asset,
+  mittwald_extension_delete_asset,
+  mittwald_extension_create_secret,
+  mittwald_extension_delete_secret,
+  mittwald_extension_request_verification,
+  
+  // Extension instance management
+  mittwald_extension_instance_list,
+  mittwald_extension_instance_get,
+  mittwald_extension_instance_create,
+  mittwald_extension_instance_delete,
+  mittwald_extension_instance_enable,
+  mittwald_extension_instance_disable,
+  mittwald_extension_instance_update_scopes,
+  mittwald_extension_instance_create_retrieval_key,
+  mittwald_extension_instance_create_token,
+  mittwald_extension_instance_update_secret,
+  mittwald_extension_instance_authenticate_session,
+  
+  // Marketplace utilities
+  mittwald_marketplace_list_scopes,
+  mittwald_marketplace_get_public_key,
+  mittwald_marketplace_get_webhook_public_key,
+  mittwald_marketplace_get_customer_extension,
+  mittwald_marketplace_get_project_extension,
+  mittwald_marketplace_dry_run_webhook,
 ];
 
 /**

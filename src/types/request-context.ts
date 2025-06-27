@@ -48,6 +48,35 @@ export interface RedditAuthInfo extends AuthInfo {
 }
 
 /**
+ * Extended authentication information with both Reddit and Mittwald data.
+ * 
+ * @remarks
+ * This interface supports dual authentication for both Reddit and Mittwald APIs.
+ * Tools can check which authentication provider is available and use the appropriate one.
+ */
+export interface UniversalAuthInfo extends AuthInfo {
+  /**
+   * Extended authentication data supporting multiple providers.
+   */
+  extra?: {
+    // Reddit authentication
+    userId?: string;
+    redditAccessToken?: string;
+    redditRefreshToken?: string;
+    
+    // Mittwald authentication
+    mittwaldApiToken?: string;
+  };
+  
+  /**
+   * Mittwald-specific authentication info
+   */
+  mittwald?: {
+    apiToken?: string;
+  };
+}
+
+/**
  * Context passed from MCP server to tool handler functions.
  * 
  * @remarks
@@ -76,9 +105,9 @@ export interface MCPToolContext {
   sessionId: string;
   
   /**
-   * Authentication information including Reddit OAuth tokens.
-   * Contains user identity and API credentials.
+   * Authentication information including Reddit and Mittwald credentials.
+   * Contains user identity and API credentials for multiple providers.
    */
-  authInfo: RedditAuthInfo;
+  authInfo: UniversalAuthInfo;
 }
 

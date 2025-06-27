@@ -42,6 +42,44 @@ import {
   handleValidationExample,
 } from './tools/index.js';
 
+// Mittwald marketplace handlers
+import {
+  handleMittwaldContributorList,
+  handleMittwaldContributorGet,
+  handleMittwaldContributorGetExtensions,
+  handleMittwaldExtensionList,
+  handleMittwaldExtensionGet,
+  handleMittwaldExtensionCreate,
+  handleMittwaldExtensionUpdate,
+  handleMittwaldExtensionDelete,
+  handleMittwaldExtensionPublish,
+  handleMittwaldExtensionUpdateContext,
+  handleMittwaldExtensionUploadLogo,
+  handleMittwaldExtensionDeleteLogo,
+  handleMittwaldExtensionUploadAsset,
+  handleMittwaldExtensionDeleteAsset,
+  handleMittwaldExtensionCreateSecret,
+  handleMittwaldExtensionDeleteSecret,
+  handleMittwaldExtensionRequestVerification,
+  handleMittwaldExtensionInstanceList,
+  handleMittwaldExtensionInstanceGet,
+  handleMittwaldExtensionInstanceCreate,
+  handleMittwaldExtensionInstanceDelete,
+  handleMittwaldExtensionInstanceEnable,
+  handleMittwaldExtensionInstanceDisable,
+  handleMittwaldExtensionInstanceUpdateScopes,
+  handleMittwaldExtensionInstanceCreateRetrievalKey,
+  handleMittwaldExtensionInstanceCreateToken,
+  handleMittwaldExtensionInstanceUpdateSecret,
+  handleMittwaldExtensionInstanceAuthenticateSession,
+  handleMittwaldMarketplaceListScopes,
+  handleMittwaldMarketplaceGetPublicKey,
+  handleMittwaldMarketplaceGetWebhookPublicKey,
+  handleMittwaldMarketplaceGetCustomerExtension,
+  handleMittwaldMarketplaceGetProjectExtension,
+  handleMittwaldMarketplaceDryRunWebhook,
+} from './tools/mittwald/marketplace/index.js';
+
 /**
  * Zod schemas for tool validation
  */
@@ -115,6 +153,224 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+
+  // Mittwald Marketplace tool schemas
+  mittwald_contributor_list: z.object({
+    limit: z.number().int().min(1).max(100).default(50).optional(),
+    offset: z.number().int().min(0).default(0).optional()
+  }),
+  
+  mittwald_contributor_get: z.object({
+    contributorId: z.string().uuid()
+  }),
+  
+  mittwald_contributor_get_extensions: z.object({
+    contributorId: z.string().uuid(),
+    limit: z.number().int().min(1).max(100).default(50).optional(),
+    offset: z.number().int().min(0).default(0).optional()
+  }),
+  
+  mittwald_extension_list: z.object({
+    limit: z.number().int().min(1).max(100).default(50).optional(),
+    offset: z.number().int().min(0).default(0).optional()
+  }),
+  
+  mittwald_extension_get: z.object({
+    extensionId: z.string().uuid()
+  }),
+  
+  mittwald_extension_create: z.object({
+    contributorId: z.string().uuid(),
+    name: z.string().min(1).max(100),
+    shortDescription: z.record(z.string())
+  }),
+  
+  mittwald_extension_update: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    name: z.string().min(1).max(100).optional(),
+    shortDescription: z.record(z.string()).optional(),
+    detailedDescription: z.record(z.object({
+      content: z.string(),
+      format: z.enum(["markdown", "html", "plain"])
+    })).optional(),
+    license: z.string().optional(),
+    privacyUrl: z.string().url().optional(),
+    termsOfServiceUrl: z.string().url().optional(),
+    releaseNotesUrl: z.string().url().optional(),
+    supportUrl: z.string().url().optional(),
+    tags: z.array(z.string()).optional(),
+    version: z.string().optional()
+  }),
+  
+  mittwald_extension_delete: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid()
+  }),
+  
+  mittwald_extension_publish: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    published: z.boolean()
+  }),
+  
+  mittwald_extension_update_context: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    context: z.object({
+      company: z.object({
+        apps: z.array(z.string()).optional(),
+        projects: z.array(z.string()).optional()
+      }).optional(),
+      mittwald: z.object({
+        apps: z.array(z.object({
+          aggregateType: z.string(),
+          aggregateId: z.string().optional(),
+          field: z.string().optional(),
+          operator: z.enum(["eq", "ne", "in", "nin"]).optional(),
+          value: z.any().optional()
+        })).optional(),
+        projects: z.array(z.object({
+          aggregateType: z.string(),
+          aggregateId: z.string().optional(),
+          field: z.string().optional(),
+          operator: z.enum(["eq", "ne", "in", "nin"]).optional(),
+          value: z.any().optional()
+        })).optional()
+      }).optional()
+    })
+  }),
+  
+  mittwald_extension_upload_logo: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    logoBase64: z.string(),
+    contentType: z.enum(["image/png", "image/jpeg", "image/svg+xml"])
+  }),
+  
+  mittwald_extension_delete_logo: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid()
+  }),
+  
+  mittwald_extension_upload_asset: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    filename: z.string(),
+    contentBase64: z.string(),
+    contentType: z.string()
+  }),
+  
+  mittwald_extension_delete_asset: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    assetRefId: z.string().uuid()
+  }),
+  
+  mittwald_extension_create_secret: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    name: z.string(),
+    value: z.string()
+  }),
+  
+  mittwald_extension_delete_secret: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    extensionSecretId: z.string().uuid()
+  }),
+  
+  mittwald_extension_request_verification: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid()
+  }),
+  
+  mittwald_extension_instance_list: z.object({
+    projectId: z.string().uuid().optional(),
+    customerId: z.string().uuid().optional(),
+    limit: z.number().int().min(1).max(100).default(50).optional(),
+    offset: z.number().int().min(0).default(0).optional()
+  }),
+  
+  mittwald_extension_instance_get: z.object({
+    extensionInstanceId: z.string().uuid()
+  }),
+  
+  mittwald_extension_instance_create: z.object({
+    extensionId: z.string().uuid(),
+    projectId: z.string().uuid().optional(),
+    customerId: z.string().uuid().optional(),
+    scopes: z.array(z.string()).optional()
+  }),
+  
+  mittwald_extension_instance_delete: z.object({
+    extensionInstanceId: z.string().uuid()
+  }),
+  
+  mittwald_extension_instance_enable: z.object({
+    extensionInstanceId: z.string().uuid()
+  }),
+  
+  mittwald_extension_instance_disable: z.object({
+    extensionInstanceId: z.string().uuid()
+  }),
+  
+  mittwald_extension_instance_update_scopes: z.object({
+    extensionInstanceId: z.string().uuid(),
+    scopes: z.array(z.string())
+  }),
+  
+  mittwald_extension_instance_create_retrieval_key: z.object({
+    extensionInstanceId: z.string().uuid()
+  }),
+  
+  mittwald_extension_instance_create_token: z.object({
+    extensionInstanceId: z.string().uuid(),
+    description: z.string().optional(),
+    expiresAt: z.string().datetime().optional(),
+    scopes: z.array(z.string()).optional()
+  }),
+  
+  mittwald_extension_instance_update_secret: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    extensionInstanceId: z.string().uuid(),
+    secretName: z.string(),
+    secretValue: z.string()
+  }),
+  
+  mittwald_extension_instance_authenticate_session: z.object({
+    extensionInstanceId: z.string().uuid(),
+    sessionId: z.string().uuid(),
+    sessionToken: z.string()
+  }),
+  
+  mittwald_marketplace_list_scopes: z.object({}),
+  
+  mittwald_marketplace_get_public_key: z.object({
+    serial: z.string()
+  }),
+  
+  mittwald_marketplace_get_webhook_public_key: z.object({
+    serial: z.string()
+  }),
+  
+  mittwald_marketplace_get_customer_extension: z.object({
+    customerId: z.string().uuid(),
+    extensionId: z.string().uuid()
+  }),
+  
+  mittwald_marketplace_get_project_extension: z.object({
+    projectId: z.string().uuid(),
+    extensionId: z.string().uuid()
+  }),
+  
+  mittwald_marketplace_dry_run_webhook: z.object({
+    contributorId: z.string().uuid(),
+    extensionId: z.string().uuid(),
+    extensionInstanceId: z.string().uuid(),
+    webhookKind: z.enum(["install", "uninstall", "enable", "disable", "update"])
   })
 };
 
