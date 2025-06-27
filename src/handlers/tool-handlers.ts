@@ -28,6 +28,15 @@ import type {
   GetNotificationsArgs,
   SearchRedditArgs,
   GetCommentArgs,
+  PageInsightsPerformanceDataArgs,
+  PageInsightsListPerformanceDataForProjectArgs,
+  ServiceTokenAuthenticateArgs,
+  VerificationVerifyAddressArgs,
+  VerificationVerifyCompanyArgs,
+  RelocationCreateRelocationArgs,
+  RelocationCreateLegacyTariffChangeArgs,
+  ArticleGetArticleArgs,
+  ArticleListArticlesArgs,
 } from './tools/index.js';
 import {
   handleGetChannel,
@@ -40,6 +49,15 @@ import {
   handleStructuredDataExample,
   handleLogging,
   handleValidationExample,
+  handlePageInsightsGetPerformanceData,
+  handlePageInsightsListPerformanceDataForProject,
+  handleServiceTokenAuthenticate,
+  handleVerificationVerifyAddress,
+  handleVerificationVerifyCompany,
+  handleRelocationCreateRelocation,
+  handleRelocationCreateLegacyTariffChange,
+  handleArticleGetArticle,
+  handleArticleListArticles,
 } from './tools/index.js';
 
 /**
@@ -115,6 +133,69 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+
+  // Mittwald Miscellaneous API schemas
+  mittwald_pageinsights_get_performance_data: z.object({
+    domain: z.string().min(1).describe("The domain or subdomain to analyze"),
+    path: z.string().min(1).describe("The path on the domain to analyze"),
+    date: z.string().optional().describe("Query data for a specific date (format: YYYY-MM-DD)")
+  }),
+
+  mittwald_pageinsights_list_performance_data_for_project: z.object({
+    projectId: z.string().min(1).describe("The unique identifier of the project")
+  }),
+
+  mittwald_servicetoken_authenticate_service: z.object({
+    accessKeyId: z.string().min(1).describe("The access key ID for the service")
+  }),
+
+  mittwald_verification_verify_address: z.object({
+    address: z.object({
+      street: z.string().min(1).describe("Street name and number"),
+      city: z.string().min(1).describe("City name"),
+      postalCode: z.string().min(1).describe("Postal/ZIP code"),
+      country: z.string().min(2).max(2).describe("Country code (ISO 3166-1 alpha-2)"),
+      state: z.string().optional().describe("State or province (optional)")
+    }).describe("The address object to verify")
+  }),
+
+  mittwald_verification_verify_company: z.object({
+    company: z.object({
+      name: z.string().min(1).describe("Company name"),
+      registrationNumber: z.string().optional().describe("Business registration number"),
+      country: z.string().min(2).max(2).describe("Country code where company is registered"),
+      address: z.object({
+        street: z.string(),
+        city: z.string(),
+        postalCode: z.string(),
+        country: z.string()
+      }).optional().describe("Company address")
+    }).describe("The company information to verify")
+  }),
+
+  mittwald_relocation_create_relocation: z.object({
+    sourceProjectId: z.string().min(1).describe("The ID of the source project to relocate from"),
+    targetProjectId: z.string().min(1).describe("The ID of the target project to relocate to"),
+    resourceType: z.enum(["app", "database", "domain", "all"]).describe("The type of resources to relocate"),
+    resourceIds: z.array(z.string()).optional().describe("Specific resource IDs to relocate")
+  }),
+
+  mittwald_relocation_create_legacy_tariff_change: z.object({
+    contractId: z.string().min(1).describe("The ID of the contract to change"),
+    newTariffId: z.string().min(1).describe("The ID of the new tariff to migrate to"),
+    effectiveDate: z.string().optional().describe("The date when the tariff change should become effective")
+  }),
+
+  mittwald_article_get_article: z.object({
+    articleId: z.string().min(1).describe("The unique identifier of the article to retrieve")
+  }),
+
+  mittwald_article_list_articles: z.object({
+    tags: z.array(z.string()).optional().describe("Filter articles by tags"),
+    templateNames: z.array(z.string()).optional().describe("Filter articles by template names"),
+    limit: z.number().int().min(1).max(100).default(25).describe("Maximum number of articles to return"),
+    offset: z.number().int().min(0).default(0).describe("Number of articles to skip for pagination")
   })
 };
 
@@ -136,6 +217,16 @@ type ToolArgs = {
   structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
   validation_example: any;
+  // Mittwald Miscellaneous API tools
+  mittwald_pageinsights_get_performance_data: PageInsightsPerformanceDataArgs;
+  mittwald_pageinsights_list_performance_data_for_project: PageInsightsListPerformanceDataForProjectArgs;
+  mittwald_servicetoken_authenticate_service: ServiceTokenAuthenticateArgs;
+  mittwald_verification_verify_address: VerificationVerifyAddressArgs;
+  mittwald_verification_verify_company: VerificationVerifyCompanyArgs;
+  mittwald_relocation_create_relocation: RelocationCreateRelocationArgs;
+  mittwald_relocation_create_legacy_tariff_change: RelocationCreateLegacyTariffChangeArgs;
+  mittwald_article_get_article: ArticleGetArticleArgs;
+  mittwald_article_list_articles: ArticleListArticlesArgs;
 };
 
 /**
@@ -255,22 +346,38 @@ export async function handleToolCall(
   
   try {
     logger.info(`🔧 handleToolCall called for tool: ${request.params.name}`);
-    // Extract and validate Reddit credentials from AuthInfo
-    const credentials = extractAndValidateCredentials(context.authInfo);
+    
+    // Check if this is a Mittwald tool (doesn't need Reddit auth)
+    const isMittwaldTool = request.params.name.startsWith('mittwald_');
+    
+    let handlerContext: ToolHandlerContext;
+    
+    if (isMittwaldTool) {
+      // Mittwald tools don't need Reddit authentication
+      handlerContext = {
+        redditService: null as any, // Not used for Mittwald tools
+        userId: 'mittwald-user',
+        sessionId: context.sessionId,
+        progressToken: request.params._meta?.progressToken,
+      };
+    } else {
+      // Extract and validate Reddit credentials from AuthInfo for Reddit tools
+      const credentials = extractAndValidateCredentials(context.authInfo);
 
-    // Create Reddit service with validated tokens
-    const redditService = new RedditService({
-      accessToken: credentials.accessToken,
-      refreshToken: credentials.refreshToken,
-      username: credentials.userId, // Pass the Reddit username from OAuth
-    });
+      // Create Reddit service with validated tokens
+      const redditService = new RedditService({
+        accessToken: credentials.accessToken,
+        refreshToken: credentials.refreshToken,
+        username: credentials.userId, // Pass the Reddit username from OAuth
+      });
 
-    const handlerContext: ToolHandlerContext = {
-      redditService,
-      userId: credentials.userId,
-      sessionId: context.sessionId,
-      progressToken: request.params._meta?.progressToken,
-    };
+      handlerContext = {
+        redditService,
+        userId: credentials.userId,
+        sessionId: context.sessionId,
+        progressToken: request.params._meta?.progressToken,
+      };
+    }
 
     if (!request.params.arguments) {
       logger.error("Tool call missing required arguments", { toolName: request.params?.name });
@@ -343,6 +450,36 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
+      
+      // Mittwald Miscellaneous API tools
+      case "mittwald_pageinsights_get_performance_data":
+        result = await handlePageInsightsGetPerformanceData(args as PageInsightsPerformanceDataArgs);
+        break;
+      case "mittwald_pageinsights_list_performance_data_for_project":
+        result = await handlePageInsightsListPerformanceDataForProject(args as PageInsightsListPerformanceDataForProjectArgs);
+        break;
+      case "mittwald_servicetoken_authenticate_service":
+        result = await handleServiceTokenAuthenticate(args as ServiceTokenAuthenticateArgs);
+        break;
+      case "mittwald_verification_verify_address":
+        result = await handleVerificationVerifyAddress(args as VerificationVerifyAddressArgs);
+        break;
+      case "mittwald_verification_verify_company":
+        result = await handleVerificationVerifyCompany(args as VerificationVerifyCompanyArgs);
+        break;
+      case "mittwald_relocation_create_relocation":
+        result = await handleRelocationCreateRelocation(args as RelocationCreateRelocationArgs);
+        break;
+      case "mittwald_relocation_create_legacy_tariff_change":
+        result = await handleRelocationCreateLegacyTariffChange(args as RelocationCreateLegacyTariffChangeArgs);
+        break;
+      case "mittwald_article_get_article":
+        result = await handleArticleGetArticle(args as ArticleGetArticleArgs);
+        break;
+      case "mittwald_article_list_articles":
+        result = await handleArticleListArticles(args as ArticleListArticlesArgs);
+        break;
+        
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);

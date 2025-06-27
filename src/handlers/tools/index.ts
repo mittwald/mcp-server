@@ -9,6 +9,7 @@ export * from './sampling-example.js';
 export * from './structured-data-example.js';
 export * from './logging.js';
 export * from './validation-example.js';
+export * from './mittwald/miscellaneous/index.js';
 
 export type {
   ToolHandler,
@@ -23,6 +24,19 @@ export type {
   FetchRedditContentArgs,
 } from './types.js';
 
+export type {
+  PageInsightsPerformanceDataArgs,
+  PageInsightsListPerformanceDataForProjectArgs,
+  ServiceTokenAuthenticateArgs,
+  VerificationVerifyAddressArgs,
+  VerificationVerifyCompanyArgs,
+  RelocationCreateRelocationArgs,
+  RelocationCreateLegacyTariffChangeArgs,
+  ArticleGetArticleArgs,
+  ArticleListArticlesArgs,
+  MiscellaneousApiArgs
+} from '../../types/mittwald/miscellaneous.js';
+
 export { handleGetChannel } from './get-channel.js';
 export { handleGetPost } from './get-post.js';
 export { handleGetNotifications } from './get-notifications.js';
@@ -33,3 +47,14 @@ export { handleSamplingExample } from './sampling-example.js';
 export { handleStructuredDataExample } from './structured-data-example.js';
 export { handleLogging } from './logging.js';
 export { handleValidationExample } from './validation-example.js';
+export {
+  handlePageInsightsGetPerformanceData,
+  handlePageInsightsListPerformanceDataForProject,
+  handleServiceTokenAuthenticate,
+  handleVerificationVerifyAddress,
+  handleVerificationVerifyCompany,
+  handleRelocationCreateRelocation,
+  handleRelocationCreateLegacyTariffChange,
+  handleArticleGetArticle,
+  handleArticleListArticles
+} from './mittwald/miscellaneous/index.js';
