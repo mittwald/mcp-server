@@ -15,11 +15,11 @@ import type { Client } from '@modelcontextprotocol/sdk/client/index.js';
 async function testConcurrentTools(client: Client): Promise<void> {
   // Execute multiple tool calls concurrently
   const promises = [
-    client.callTool({ name: 'validation_example', arguments: { name: 'Test One', age: 25, email: 'test1@example.com', role: 'user' } }),
-    client.callTool({ name: 'validation_example', arguments: { name: 'Test Two', age: 30, email: 'test2@example.com', role: 'admin' } }),
-    client.callTool({ name: 'structured_data_example', arguments: { dataType: 'user' } }),
-    client.callTool({ name: 'structured_data_example', arguments: { dataType: 'product' } }),
-    client.callTool({ name: 'search_reddit', arguments: { query: 'typescript', limit: 3 } })
+    client.callTool({ name: 'mcp_logging', arguments: { level: 'info', message: 'Test One' } }),
+    client.callTool({ name: 'mcp_logging', arguments: { level: 'debug', message: 'Test Two' } }),
+    client.callTool({ name: 'get_post', arguments: { id: 'test123' } }),
+    client.callTool({ name: 'get_channel', arguments: { subreddit: 'typescript' } }),
+    client.callTool({ name: 'get_notifications', arguments: { limit: 5 } })
   ];
   
   const results = await Promise.all(promises);
@@ -64,7 +64,7 @@ async function testMixedConcurrent(client: Client): Promise<void> {
   // Mix different types of operations
   const promises = [
     client.listTools(),
-    client.callTool({ name: 'validation_example', arguments: { name: 'Mixed test', age: 28, email: 'mixed@example.com', role: 'moderator' } }),
+    client.callTool({ name: 'mcp_logging', arguments: { level: 'info', message: 'Mixed test' } }),
     client.getPrompt({
       name: 'reddit_suggest_action',
       arguments: {
@@ -93,7 +93,7 @@ async function testHighVolumeConcurrent(client: Client): Promise<void> {
   
   for (let i = 0; i < requestCount; i++) {
     promises.push(
-      client.callTool({ name: 'validation_example', arguments: { name: 'Test User', age: 20 + i, email: `test${i}@example.com`, role: 'user' } })
+      client.callTool({ name: 'mcp_logging', arguments: { level: 'info', message: `Test message ${i}` } })
     );
   }
   

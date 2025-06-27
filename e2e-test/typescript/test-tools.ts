@@ -23,13 +23,12 @@ async function testToolDiscovery(client: Client): Promise<void> {
   
   // Verify expected tools exist
   const expectedTools = [
-    'validation_example',
-    'structured_data_example',
-    'search_reddit',
     'get_post',
     'get_channel',
     'get_notifications',
-    'get_comment'
+    'get_comment',
+    'elicitation_example',
+    'mcp_logging'
   ];
   
   for (const toolName of expectedTools) {
@@ -49,68 +48,36 @@ async function testToolDiscovery(client: Client): Promise<void> {
  * Test example tools
  */
 async function testExampleTools(client: Client): Promise<void> {
-  // Test validation_example tool
-  const validationResult = await client.callTool({
-    name: 'validation_example',
+  // Test mcp_logging tool
+  const loggingResult = await client.callTool({
+    name: 'mcp_logging',
     arguments: {
-      name: 'Test User',
-      age: 25,
-      email: 'test@example.com',
-      role: 'user'
+      level: 'info',
+      message: 'Test log message',
+      data: { test: true }
     }
   });
   
-  const content = validationResult.content as any[];
+  const content = loggingResult.content as any[];
   if (!content?.[0]?.text) {
-    throw new Error('validation_example returned invalid response');
-  }
-  
-  // Test structured_data_example tool
-  const structuredResult = await client.callTool({
-    name: 'structured_data_example',
-    arguments: { dataType: 'user' }
-  });
-  
-  const structContent = structuredResult.content as any[];
-  if (!structContent?.[0]?.text) {
-    throw new Error('structured_data_example returned invalid response');
-  }
-  
-  // The structured_data_example might return text or JSON
-  // Let's just verify we got a response
-  const responseText = structContent[0].text;
-  if (!responseText || responseText.length < 10) {
-    throw new Error('structured_data_example returned empty or too short response');
+    throw new Error('mcp_logging returned invalid response');
   }
 }
 
 /**
- * Test Reddit search tool
+ * Test Reddit get post tool
  */
-async function testRedditSearch(client: Client): Promise<void> {
+async function testRedditGetPost(client: Client): Promise<void> {
   const result = await client.callTool({
-    name: 'search_reddit',
+    name: 'get_post',
     arguments: {
-      query: 'typescript',
-      sort: 'relevance',
-      time: 'week',
-      limit: 5
+      id: 'test123'
     }
   });
   
-  const searchContent = result.content as any[];
-  if (!searchContent?.[0]?.text) {
-    throw new Error('reddit_search returned no content');
-  }
-  
-  let searchData;
-  try {
-    searchData = JSON.parse(searchContent[0].text);
-  } catch (e) {
-    throw new Error(`Failed to parse search_reddit response: ${searchContent[0].text}`);
-  }
-  if (!searchData || typeof searchData !== 'object') {
-    throw new Error('search_reddit returned invalid data structure');
+  const postContent = result.content as any[];
+  if (!postContent?.[0]?.text) {
+    throw new Error('get_post returned no content');
   }
 }
 
@@ -128,7 +95,7 @@ async function testErrorHandling(client: Client): Promise<void> {
   
   // Test with invalid parameters
   try {
-    await client.callTool({ name: 'validation_example', arguments: {} });
+    await client.callTool({ name: 'mcp_logging', arguments: {} });
     throw new Error('Expected error for missing required parameters');
   } catch (error) {
     // Expected error
@@ -150,7 +117,7 @@ export async function testTools(): Promise<void> {
     
     await runTest('Tool Discovery', () => testToolDiscovery(client!), tracker);
     await runTest('Example Tools', () => testExampleTools(client!), tracker);
-    await runTest('Reddit Search', () => testRedditSearch(client!), tracker);
+    await runTest('Reddit Get Post', () => testRedditGetPost(client!), tracker);
     await runTest('Error Handling', () => testErrorHandling(client!), tracker);
     
     tracker.printSummary();

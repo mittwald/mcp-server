@@ -26,7 +26,6 @@ import type {
   GetChannelArgs,
   GetPostArgs,
   GetNotificationsArgs,
-  SearchRedditArgs,
   GetCommentArgs,
   MittwaldProjectListArgs,
   MittwaldProjectGetArgs,
@@ -88,13 +87,9 @@ import {
   handleGetChannel,
   handleGetNotifications,
   handleGetPost,
-  handleSearchReddit,
   handleGetComment,
   handleElicitationExample,
-  handleSamplingExample,
-  handleStructuredDataExample,
   handleLogging,
-  handleValidationExample,
   // Mittwald mail handlers
   handleListMailAddresses,
   handleCreateMailAddress,
@@ -447,13 +442,6 @@ import {
  * Zod schemas for tool validation
  */
 const ToolSchemas = {
-  search_reddit: z.object({
-    query: z.string().min(1).max(500).describe("Search query"),
-    subreddit: z.string().optional().describe("Specific subreddit to search (optional)"),
-    sort: z.enum(["relevance", "hot", "new", "top"]).default("relevance").describe("Sort order for results"),
-    time: z.enum(["hour", "day", "week", "month", "year", "all"]).default("all").describe("Time filter for results"),
-    limit: z.number().int().min(1).max(100).default(25).describe("Maximum number of results")
-  }),
   
   get_channel: z.object({
     subreddit: z.string().min(1).describe("Name of the subreddit (without r/ prefix)"),
@@ -486,36 +474,10 @@ const ToolSchemas = {
     options: z.array(z.string()).optional().describe("Options for choice type")
   }),
   
-  sampling_example: z.object({
-    taskType: z.enum(['summarize', 'generate', 'analyze', 'translate']).describe("The type of sampling task to demonstrate"),
-    content: z.string().describe("Input content for the sampling task"),
-    targetLanguage: z.string().optional().describe("Target language for translation tasks"),
-    style: z.enum(['formal', 'casual', 'technical', 'creative']).optional().describe("Style preferences for generation tasks")
-  }),
-  
-  structured_data_example: z.object({
-    dataType: z.enum(['user', 'analytics', 'weather', 'product']).describe('The type of structured data to return'),
-    id: z.string().optional().describe('Optional ID to fetch specific data'),
-    includeNested: z.boolean().optional().default(false).describe('Whether to include nested data structures'),
-    simulateError: z.boolean().optional().default(false).describe('Whether to simulate validation errors for testing')
-  }).strict(),
-  
   mcp_logging: z.object({
     level: z.enum(["debug", "info", "warning", "error"]).describe("Log level"),
     message: z.string().describe("Message to log"),
     data: z.unknown().optional().describe("Optional additional data")
-  }),
-  
-  validation_example: z.object({
-    name: z.string().min(2).max(50).regex(/^[a-zA-Z ]+$/).describe("Name (letters and spaces only, 2-50 chars)"),
-    age: z.number().int().min(0).max(150).describe("Age in years (0-150)"),
-    email: z.string().email().describe("Valid email address"),
-    role: z.enum(["user", "admin", "moderator"]).describe("User role"),
-    preferences: z.object({
-      theme: z.enum(["light", "dark", "auto"]).optional().default("auto"),
-      notifications: z.boolean().optional().default(true)
-    }).optional(),
-    tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
   }),
 
   // Mittwald User API Schemas
@@ -991,13 +953,9 @@ type ToolArgs = {
   get_channel: GetChannelArgs;
   get_post: GetPostArgs;
   get_notifications: GetNotificationsArgs;
-  search_reddit: SearchRedditArgs;
   get_comment: GetCommentArgs;
   elicitation_example: any; // Example tools use any for flexibility
-  sampling_example: any;
-  structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
-  validation_example: any;
   // Mittwald Project API tools
   mittwald_project_list: MittwaldProjectListArgs;
   mittwald_project_get: MittwaldProjectGetArgs;
@@ -1218,10 +1176,7 @@ export async function handleToolCall(
     const isMittwaldTool = request.params.name.startsWith('mittwald_');
     const isUtilityTool = [
       'mcp_logging',
-      'validation_example',
-      'elicitation_example',
-      'sampling_example',
-      'structured_data_example'
+      'elicitation_example'
     ].includes(request.params.name);
     const isNonRedditTool = isMittwaldTool || isUtilityTool;
     
@@ -1332,23 +1287,11 @@ export async function handleToolCall(
       case "get_comment":
         result = await handleGetComment(args as GetCommentArgs, handlerContext);
         break;
-      case "search_reddit":
-        result = await handleSearchReddit(args as SearchRedditArgs, handlerContext);
-        break;
       case "elicitation_example":
         result = await handleElicitationExample(args, context);
         break;
-      case "sampling_example":
-        result = await handleSamplingExample(args, context);
-        break;
-      case "structured_data_example":
-        result = await handleStructuredDataExample(args, context);
-        break;
       case "mcp_logging":
         result = await handleLogging(args, handlerContext);
-        break;
-      case "validation_example":
-        result = await handleValidationExample(args, handlerContext);
         break;
         
       // Mittwald User API tools

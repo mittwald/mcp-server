@@ -80,9 +80,9 @@ TOOLS=$(curl -s \
 echo -e "${CYAN}Available tools:${NC}"
 echo "$TOOLS" | jq -r '.result.tools[] | "- \(.name): \(.description)"' 2>/dev/null || echo "$TOOLS"
 
-# Test 2: Call structured-data-example (simple tool)
-echo -e "\n${BOLD}📊 Test 2: Structured Data Tool (No Sampling)${NC}"
-STRUCT_RESPONSE=$(curl -s \
+# Test 2: Call mcp_logging (simple tool)
+echo -e "\n${BOLD}📊 Test 2: Logging Tool (No Sampling)${NC}"
+LOG_RESPONSE=$(curl -s \
     -H "Content-Type: application/json" \
     -H "Accept: application/json, text/event-stream" \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
@@ -92,28 +92,25 @@ STRUCT_RESPONSE=$(curl -s \
         "id": 3,
         "method": "tools/call",
         "params": {
-            "name": "structured_data_example",
+            "name": "mcp_logging",
             "arguments": {
-                "dataType": "user",
-                "id": "test-123",
-                "includeNested": true
+                "level": "info",
+                "message": "Test logging message",
+                "data": {"test": true}
             }
         }
     }' \
     "${SERVER_URL}/mcp")
 
 echo -e "${CYAN}Response:${NC}"
-echo "$STRUCT_RESPONSE" | jq '.' 2>/dev/null || echo "$STRUCT_RESPONSE"
+echo "$LOG_RESPONSE" | jq '.' 2>/dev/null || echo "$LOG_RESPONSE"
 
-# Test 3: Call sampling-example tool (triggers full flow)
-echo -e "\n${BOLD}🤖 Test 3: Sampling Example Tool (Full Flow)${NC}"
-echo -e "${YELLOW}This tool will:${NC}"
-echo -e "1. Create a sampling request on the server"
-echo -e "2. Send it to the client for approval"
-echo -e "3. Execute the suggest_action callback on the server"
+# Test 3: Call get_post tool
+echo -e "\n${BOLD}🤖 Test 3: Get Post Tool${NC}"
+echo -e "${YELLOW}This tool will fetch a Reddit post${NC}"
 echo -e ""
 
-SAMPLING_RESPONSE=$(curl -s \
+POST_RESPONSE=$(curl -s \
     -H "Content-Type: application/json" \
     -H "Accept: application/json, text/event-stream" \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
@@ -123,17 +120,16 @@ SAMPLING_RESPONSE=$(curl -s \
         "id": 4,
         "method": "tools/call",
         "params": {
-            "name": "sampling_example",
+            "name": "get_post",
             "arguments": {
-                "taskType": "analyze",
-                "content": "Test the full MCP flow: Tool creates sampling request, client approves, server executes callback"
+                "id": "test123"
             }
         }
     }' \
     "${SERVER_URL}/mcp")
 
-echo -e "${CYAN}Sampling Tool Response:${NC}"
-echo "$SAMPLING_RESPONSE" | jq '.' 2>/dev/null || echo "$SAMPLING_RESPONSE"
+echo -e "${CYAN}Get Post Response:${NC}"
+echo "$POST_RESPONSE" | jq '.' 2>/dev/null || echo "$POST_RESPONSE"
 
 # Test 4: Direct sampling request (bypass tool)
 echo -e "\n${BOLD}📨 Test 4: Direct Sampling Request${NC}"
@@ -167,9 +163,9 @@ DIRECT_SAMPLING=$(curl -s \
 echo -e "${CYAN}Direct Sampling Response:${NC}"
 echo "$DIRECT_SAMPLING" | jq '.' 2>/dev/null || echo "$DIRECT_SAMPLING"
 
-# Test 5: Multiple concurrent sampling requests
-echo -e "\n${BOLD}⚡ Test 5: Concurrent Sampling Requests${NC}"
-echo -e "${CYAN}Sending 3 concurrent sampling requests...${NC}"
+# Test 5: Multiple concurrent tool requests
+echo -e "\n${BOLD}⚡ Test 5: Concurrent Tool Requests${NC}"
+echo -e "${CYAN}Sending 3 concurrent tool requests...${NC}"
 
 for i in {1..3}; do
     (
@@ -183,14 +179,14 @@ for i in {1..3}; do
                 "id": '$((5+i))',
                 "method": "tools/call",
                 "params": {
-                    "name": "sampling_example",
+                    "name": "mcp_logging",
                     "arguments": {
-                        "taskType": "summarize",
-                        "content": "Concurrent test '$i': Testing session isolation and callback handling"
+                        "level": "info",
+                        "message": "Concurrent test '$i': Testing concurrent tool handling"
                     }
                 }
             }' \
-            "${SERVER_URL}/mcp" > /tmp/sampling_result_$i.json 2>&1
+            "${SERVER_URL}/mcp" > /tmp/tool_result_$i.json 2>&1
         
         if [[ $? -eq 0 ]]; then
             echo -e "${GREEN}✅ Concurrent request $i completed${NC}"

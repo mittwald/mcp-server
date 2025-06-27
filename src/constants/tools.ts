@@ -15,12 +15,8 @@ import { getChannel } from '../constants/tool/get-channel.js';
 import { getComment } from '../constants/tool/get-comment.js';
 import { getNotifications } from '../constants/tool/get-notifications.js';
 import { getPost } from '../constants/tool/get-post.js';
-import { searchReddit } from '../constants/tool/search-reddit.js';
 import { ELICITATION_EXAMPLE_TOOL } from './tool/elicitation-example.js';
-import { SAMPLING_EXAMPLE_TOOL } from './tool/sampling-example.js';
-import { STRUCTURED_DATA_EXAMPLE_TOOL } from './tool/structured-data-example.js';
 import { MCP_LOGGING_TOOL } from './tool/logging.js';
-import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import { MITTWALD_PROJECT_TOOLS } from './tool/mittwald/project/index.js';
 import { MITTWALD_DOMAIN_TOOLS } from './tool/mittwald/domain/index.js';
 import type { RedditConfigData } from '../types/config.js';
@@ -138,15 +134,11 @@ export const TOOLS: Tool[] = [
   getChannel,
   getPost,
   getNotifications,
-  searchReddit,
   getComment,
   
   // Example and utility tools
   ELICITATION_EXAMPLE_TOOL,
-  SAMPLING_EXAMPLE_TOOL,
-  STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
-  VALIDATION_EXAMPLE_TOOL,
   
   // Mittwald User API tools
   ...Object.values(MittwaldUserTools).filter(tool => 

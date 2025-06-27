@@ -76,11 +76,11 @@ echo -e "${GREEN}✅ Server ready${NC}"
 # Create 3 sessions and call different tools concurrently
 echo -e "\n${CYAN}Running concurrent tool calls...${NC}"
 
-# Session 1: structured_data_example
+# Session 1: mcp_logging
 (
     SESSION_ID="session_tool_test_1_${RANDOM}"
-    echo -e "${CYAN}Session 1 calling structured_data_example...${NC}"
-    call_tool "$SESSION_ID" "structured_data_example" '{"dataType": "user", "includeNested": true}' 100
+    echo -e "${CYAN}Session 1 calling mcp_logging...${NC}"
+    call_tool "$SESSION_ID" "mcp_logging" '{"level": "info", "message": "Test from session 1"}' 100
 ) &
 
 # Session 2: elicitation_example (doesn't need Reddit auth)
@@ -90,11 +90,11 @@ echo -e "\n${CYAN}Running concurrent tool calls...${NC}"
     call_tool "$SESSION_ID" "elicitation_example" '{"type": "input", "prompt": "Test elicitation from session 2"}' 200
 ) &
 
-# Session 3: sampling_example (doesn't need Reddit auth for the demo)
+# Session 3: get_post (needs Reddit auth but will test error handling)
 (
     SESSION_ID="session_tool_test_3_${RANDOM}"
-    echo -e "${CYAN}Session 3 calling sampling_example...${NC}"
-    call_tool "$SESSION_ID" "sampling_example" '{"taskType": "summarize", "content": "This is a test content to summarize for concurrent testing."}' 300
+    echo -e "${CYAN}Session 3 calling get_post...${NC}"
+    call_tool "$SESSION_ID" "get_post" '{"id": "test123"}' 300
 ) &
 
 # Wait for all to complete
