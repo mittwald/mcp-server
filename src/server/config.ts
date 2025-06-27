@@ -47,6 +47,12 @@ export interface ServerConfig {
   REDDIT_USER_AGENT: string;
   /** Default Reddit username */
   REDDIT_USERNAME: string;
+  /** Mittwald API token (optional) */
+  MITTWALD_API_TOKEN?: string;
+  /** Mittwald SSH password (optional) */
+  MITTWALD_SSH_PASSWORD?: string;
+  /** Mittwald admin email (optional) */
+  MITTWALD_ADMIN_EMAIL?: string;
 }
 
 /**
@@ -89,21 +95,32 @@ export const CONFIG: ServerConfig = {
    * @example 'my_developer_account' (without the /u/ prefix)
    */
   REDDIT_USERNAME: process.env.REDDIT_USERNAME || "reddit-user",
+  // Mittwald configuration (optional, for API key based services)
+  MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN,
+  MITTWALD_SSH_PASSWORD: process.env.MITTWALD_SSH_PASSWORD,
+  MITTWALD_ADMIN_EMAIL: process.env.MITTWALD_ADMIN_EMAIL,
 } as const;
+
+/**
+ * Check if OAuth is disabled
+ */
+export const OAUTH_DISABLED = process.env.DISABLE_OAUTH === 'true';
 
 /**
  * Validates that all required environment variables are present
  * @throws {Error} Thrown if any required environment variable is missing
  * @internal
  */
-const requiredEnvVars: (keyof ServerConfig)[] = [
-  "REDDIT_CLIENT_ID",
-  "REDDIT_CLIENT_SECRET",
-  "JWT_SECRET",
-];
-for (const envVar of requiredEnvVars) {
-  if (!CONFIG[envVar]) {
-    throw new Error(`Missing required environment variable: ${envVar}`);
+if (!OAUTH_DISABLED) {
+  const requiredEnvVars: (keyof ServerConfig)[] = [
+    "REDDIT_CLIENT_ID",
+    "REDDIT_CLIENT_SECRET",
+    "JWT_SECRET",
+  ];
+  for (const envVar of requiredEnvVars) {
+    if (!CONFIG[envVar]) {
+      throw new Error(`Missing required environment variable: ${envVar}`);
+    }
   }
 }
 

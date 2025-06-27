@@ -28,10 +28,12 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
-import { CONFIG, VALID_REDIRECT_URIS } from './server/config.js';
+import { CONFIG, VALID_REDIRECT_URIS, OAUTH_DISABLED } from './server/config.js';
 import { OAuthProvider } from './server/oauth.js';
 import { MCPHandler } from './server/mcp.js';
 import { setMCPHandlerInstance } from './server/mcp.js';
+import { bypassAuthMiddleware } from './server/bypass-auth.js';
+import { getMittwaldClient } from './services/mittwald/index.js';
 
 // Polyfill for jose library
 if (typeof globalThis.crypto === 'undefined') {
@@ -52,11 +54,22 @@ if (typeof globalThis.crypto === 'undefined') {
 export async function createApp(): Promise<express.Application> {
   const app = express();
   
-  // Initialize OAuth provider for MCP authentication
-  const oauthProvider = new OAuthProvider({
-    ...CONFIG,
-    validRedirectUris: VALID_REDIRECT_URIS,
-  });
+  // Initialize auth middleware based on configuration
+  let authMiddleware: express.RequestHandler;
+  
+  if (OAUTH_DISABLED) {
+    // Use bypass auth for non-OAuth environments
+    authMiddleware = bypassAuthMiddleware();
+    console.log('🔓 OAuth disabled - running without authentication');
+  } else {
+    // Initialize OAuth provider for MCP authentication
+    const oauthProvider = new OAuthProvider({
+      ...CONFIG,
+      validRedirectUris: VALID_REDIRECT_URIS,
+    });
+    oauthProvider.setupRoutes(app);
+    authMiddleware = oauthProvider.authMiddleware();
+  }
   
   // Initialize MCP handler for protocol implementation with proper session support
   const mcpHandler = new MCPHandler();
@@ -89,8 +102,7 @@ export async function createApp(): Promise<express.Application> {
   });
 
   // Set up routes
-  oauthProvider.setupRoutes(app);
-  await mcpHandler.setupRoutes(app, oauthProvider.authMiddleware());
+  await mcpHandler.setupRoutes(app, authMiddleware);
   setupUtilityRoutes(app);
 
   return app;
@@ -104,14 +116,43 @@ function setupUtilityRoutes(app: express.Application): void {
   app.get('/health', (_, res) => {
     res.json({
       status: 'ok',
-      service: 'reddit-mcp-server',
+      service: 'mcp-server',
       transport: 'http',
       capabilities: {
-        oauth: true,
+        oauth: !OAUTH_DISABLED,
         mcp: true,
       },
     });
   });
+
+  // Mittwald API test endpoint (only when OAuth is disabled and Mittwald is configured)
+  if (OAUTH_DISABLED && CONFIG.MITTWALD_API_TOKEN) {
+    app.get('/test-auth', async (_req, res) => {
+      try {
+        const client = getMittwaldClient();
+        const connected = await client.testConnection();
+        
+        if (connected) {
+          const userInfo = await client.getUserInfo();
+          res.json({
+            status: 'success',
+            message: 'Successfully authenticated with Mittwald API',
+            user: userInfo,
+          });
+        } else {
+          res.status(401).json({
+            status: 'error',
+            message: 'Failed to authenticate with Mittwald API',
+          });
+        }
+      } catch (error) {
+        res.status(500).json({
+          status: 'error',
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+        });
+      }
+    });
+  }
 
   // Root endpoint with service metadata
   app.get('/', (req, res) => {
@@ -121,19 +162,31 @@ function setupUtilityRoutes(app: express.Application): void {
     const baseUrl = `${protocol}://${req.get('host')}`;
     const basePath = req.baseUrl || '';
     
+    const endpoints: any = {
+      mcp: `${baseUrl}${basePath}/mcp`,
+      health: `${baseUrl}${basePath}/health`,
+    };
+    
+    // Only include OAuth endpoints if OAuth is enabled
+    if (!OAUTH_DISABLED) {
+      endpoints.oauth = {
+        authorize: `${baseUrl}${basePath}/oauth/authorize`,
+        token: `${baseUrl}${basePath}/oauth/token`,
+        metadata: `${baseUrl}/.well-known/oauth-authorization-server`,
+      };
+    }
+    
+    // Include test endpoint if Mittwald is configured
+    if (OAUTH_DISABLED && CONFIG.MITTWALD_API_TOKEN) {
+      endpoints['test-auth'] = `${baseUrl}${basePath}/test-auth`;
+    }
+    
     res.json({
-      service: 'Reddit MCP Server',
+      service: 'MCP Server',
       version: '1.0.0',
       transport: 'http',
-      endpoints: {
-        oauth: {
-          authorize: `${baseUrl}${basePath}/oauth/authorize`,
-          token: `${baseUrl}${basePath}/oauth/token`,
-          metadata: `${baseUrl}/.well-known/oauth-authorization-server`,
-        },
-        mcp: `${baseUrl}${basePath}/mcp`,
-        health: `${baseUrl}${basePath}/health`,
-      },
+      authRequired: !OAUTH_DISABLED,
+      endpoints,
     });
   });
 }
@@ -149,10 +202,15 @@ export async function startServer(port?: number): Promise<ReturnType<express.App
   const serverPort = port || parseInt(CONFIG.PORT, 10);
   
   return app.listen(serverPort, '0.0.0.0', () => {
-    console.log(`🚀 Reddit MCP Server running on port ${serverPort}`);
-    console.log(`🔐 OAuth authorize: ${CONFIG.OAUTH_ISSUER}/oauth/authorize`);
-    console.log(`📡 MCP endpoint: ${CONFIG.OAUTH_ISSUER}/mcp`);
-    console.log(`❤️  Health: ${CONFIG.OAUTH_ISSUER}/health`);
+    console.log(`🚀 MCP Server running on port ${serverPort}`);
+    if (!OAUTH_DISABLED) {
+      console.log(`🔐 OAuth authorize: ${CONFIG.OAUTH_ISSUER}/oauth/authorize`);
+    }
+    console.log(`📡 MCP endpoint: http://localhost:${serverPort}/mcp`);
+    console.log(`❤️  Health: http://localhost:${serverPort}/health`);
+    if (OAUTH_DISABLED && CONFIG.MITTWALD_API_TOKEN) {
+      console.log(`🧪 Test auth: http://localhost:${serverPort}/test-auth`);
+    }
   });
 }
 
