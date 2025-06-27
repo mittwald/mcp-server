@@ -1064,23 +1064,6 @@ export async function handleToolCall(
       };
     }
 
-    // Create Mittwald service for Mittwald tools
-    const mittwaldClient = getMittwaldClient();
-    const mittwaldHandlerContext: MittwaldToolHandlerContext = {
-      mittwaldClient,
-      userId: credentials.userId,
-      sessionId: context.sessionId,
-      progressToken: request.params._meta?.progressToken,
-    };
-
-    // Create Mittwald client context for Mittwald tools
-    const mittwaldClient = getMittwaldClient(CONFIG.MITTWALD_API_TOKEN);
-    const mittwaldHandlerContext: MittwaldToolHandlerContext = {
-      mittwaldClient,
-      userId: credentials.userId,
-      sessionId: context.sessionId,
-      progressToken: request.params._meta?.progressToken,
-    };
 
     if (!request.params.arguments) {
       logger.error("Tool call missing required arguments", { toolName: request.params?.name });
