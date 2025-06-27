@@ -19,9 +19,11 @@ import type {
 import { z } from 'zod';
 import { TOOLS, TOOL_ERROR_MESSAGES } from '../constants/tools.js';
 import { RedditService } from '../services/reddit/reddit-service.js';
+import { getMittwaldClient } from '../services/mittwald/mittwald-client.js';
 import { logger } from '../utils/logger.js';
 import type { RedditAuthInfo, MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
+import type { MittwaldToolHandlerContext } from './tools/mittwald/types.js';
 import type {
   GetChannelArgs,
   GetPostArgs,
@@ -68,6 +70,26 @@ import {
   handleStructuredDataExample,
   handleLogging,
   handleValidationExample,
+  // Mittwald mail handlers
+  handleListMailAddresses,
+  handleCreateMailAddress,
+  handleGetMailAddress,
+  handleDeleteMailAddress,
+  handleUpdateMailAddressAddress,
+  handleUpdateMailAddressPassword,
+  handleUpdateMailAddressQuota,
+  handleUpdateMailAddressForwardAddresses,
+  handleUpdateMailAddressAutoresponder,
+  handleUpdateMailAddressSpamProtection,
+  handleUpdateMailAddressCatchAll,
+  handleListDeliveryBoxes,
+  handleCreateDeliveryBox,
+  handleGetDeliveryBox,
+  handleDeleteDeliveryBox,
+  handleUpdateDeliveryBoxDescription,
+  handleUpdateDeliveryBoxPassword,
+  handleListProjectMailSettings,
+  handleUpdateProjectMailSetting,
 } from './tools/index.js';
 import {
   handleProjectList,
@@ -633,6 +655,15 @@ export async function handleToolCall(
 
     const handlerContext: ToolHandlerContext = {
       redditService,
+      userId: credentials.userId,
+      sessionId: context.sessionId,
+      progressToken: request.params._meta?.progressToken,
+    };
+
+    // Create Mittwald service for Mittwald tools
+    const mittwaldClient = getMittwaldClient();
+    const mittwaldHandlerContext: MittwaldToolHandlerContext = {
+      mittwaldClient,
       userId: credentials.userId,
       sessionId: context.sessionId,
       progressToken: request.params._meta?.progressToken,
