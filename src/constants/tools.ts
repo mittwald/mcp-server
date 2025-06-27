@@ -23,6 +23,33 @@ import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import type { RedditConfigData } from '../types/config.js';
 
+// Import all Mittwald Container API tools
+import {
+  mittwald_container_create_registry,
+  mittwald_container_list_registries,
+  mittwald_container_get_registry,
+  mittwald_container_update_registry,
+  mittwald_container_delete_registry,
+  mittwald_container_validate_registry_uri,
+  mittwald_container_validate_registry_credentials,
+  mittwald_container_list_stacks,
+  mittwald_container_get_stack,
+  mittwald_container_update_stack,
+  mittwald_container_declare_stack,
+  mittwald_container_list_services,
+  mittwald_container_get_service,
+  mittwald_container_get_service_logs,
+  mittwald_container_start_service,
+  mittwald_container_stop_service,
+  mittwald_container_restart_service,
+  mittwald_container_recreate_service,
+  mittwald_container_pull_image_for_service,
+  mittwald_container_list_volumes,
+  mittwald_container_get_volume,
+  mittwald_container_delete_volume,
+  mittwald_container_get_container_image_config,
+} from './tool/mittwald/container/index.js';
+
 /**
  * Standard error messages for tool operations.
  * 
@@ -75,11 +102,45 @@ export const TOOL_RESPONSE_MESSAGES = {
  * @see {@link https://modelcontextprotocol.io/specification/2025-06-18/client/sampling | MCP Sampling}
  */
 export const TOOLS: Tool[] = [
+  // Reddit tools
   getChannel,
   getPost,
   getNotifications,
   searchReddit,
   getComment,
+  
+  // Mittwald Container API tools - Registry management
+  mittwald_container_create_registry,
+  mittwald_container_list_registries,
+  mittwald_container_get_registry,
+  mittwald_container_update_registry,
+  mittwald_container_delete_registry,
+  mittwald_container_validate_registry_uri,
+  mittwald_container_validate_registry_credentials,
+  
+  // Mittwald Container API tools - Stack management
+  mittwald_container_list_stacks,
+  mittwald_container_get_stack,
+  mittwald_container_update_stack,
+  mittwald_container_declare_stack,
+  
+  // Mittwald Container API tools - Service management
+  mittwald_container_list_services,
+  mittwald_container_get_service,
+  mittwald_container_get_service_logs,
+  mittwald_container_start_service,
+  mittwald_container_stop_service,
+  mittwald_container_restart_service,
+  mittwald_container_recreate_service,
+  mittwald_container_pull_image_for_service,
+  
+  // Mittwald Container API tools - Volume and config management
+  mittwald_container_list_volumes,
+  mittwald_container_get_volume,
+  mittwald_container_delete_volume,
+  mittwald_container_get_container_image_config,
+  
+  // Example tools
   ELICITATION_EXAMPLE_TOOL,
   SAMPLING_EXAMPLE_TOOL,
   STRUCTURED_DATA_EXAMPLE_TOOL,

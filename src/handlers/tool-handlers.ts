@@ -41,6 +41,32 @@ import {
   handleLogging,
   handleValidationExample,
 } from './tools/index.js';
+// Import all Mittwald Container API handlers
+import {
+  handleCreateRegistry,
+  handleListRegistries,
+  handleGetRegistry,
+  handleUpdateRegistry,
+  handleDeleteRegistry,
+  handleValidateRegistryUri,
+  handleValidateRegistryCredentials,
+  handleListStacks,
+  handleGetStack,
+  handleUpdateStack,
+  handleDeclareStack,
+  handleListServices,
+  handleGetService,
+  handleGetServiceLogs,
+  handleStartService,
+  handleStopService,
+  handleRestartService,
+  handleRecreateService,
+  handlePullImageForService,
+  handleListVolumes,
+  handleGetVolume,
+  handleDeleteVolume,
+  handleGetContainerImageConfig,
+} from './mittwald/container/index.js';
 
 /**
  * Zod schemas for tool validation
@@ -115,7 +141,169 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
-  })
+  }),
+  
+  // Mittwald Container API Registry tools
+  mittwald_container_create_registry: z.object({
+    projectId: z.string().describe("Project ID"),
+    imageRegistryType: z.enum(["docker", "github", "gitlab"]).describe("Registry type"),
+    uri: z.string().describe("Registry URI"),
+    username: z.string().optional().describe("Registry username"),
+    password: z.string().optional().describe("Registry password")
+  }),
+  
+  mittwald_container_list_registries: z.object({
+    projectId: z.string().describe("Project ID"),
+    limit: z.number().int().min(1).max(1000).default(100).optional().describe("Maximum results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Results to skip"),
+    page: z.number().int().min(1).optional().describe("Page number")
+  }),
+  
+  mittwald_container_get_registry: z.object({
+    registryId: z.string().describe("Registry ID")
+  }),
+  
+  mittwald_container_update_registry: z.object({
+    registryId: z.string().describe("Registry ID"),
+    imageRegistryType: z.enum(["docker", "github", "gitlab"]).optional().describe("New registry type"),
+    uri: z.string().optional().describe("New registry URI"),
+    username: z.string().optional().describe("New registry username"),
+    password: z.string().optional().describe("New registry password")
+  }),
+  
+  mittwald_container_delete_registry: z.object({
+    registryId: z.string().describe("Registry ID")
+  }),
+  
+  mittwald_container_validate_registry_uri: z.object({
+    uri: z.string().describe("Registry URI to validate")
+  }),
+  
+  mittwald_container_validate_registry_credentials: z.object({
+    registryId: z.string().describe("Registry ID")
+  }),
+  
+  // Mittwald Container API Stack tools
+  mittwald_container_list_stacks: z.object({
+    projectId: z.string().describe("Project ID"),
+    limit: z.number().int().min(1).max(1000).default(100).optional().describe("Maximum results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Results to skip"),
+    page: z.number().int().min(1).optional().describe("Page number")
+  }),
+  
+  mittwald_container_get_stack: z.object({
+    stackId: z.string().describe("Stack ID")
+  }),
+  
+  mittwald_container_update_stack: z.object({
+    stackId: z.string().describe("Stack ID"),
+    services: z.array(z.object({
+      name: z.string().describe("Service name"),
+      imageURI: z.string().optional().describe("Docker image URI"),
+      environment: z.record(z.string()).optional().describe("Environment variables"),
+      ports: z.array(z.object({
+        containerPort: z.number().int().describe("Container port"),
+        protocol: z.enum(["tcp", "udp"]).default("tcp").optional().describe("Protocol")
+      })).optional().describe("Port mappings"),
+      volumes: z.array(z.object({
+        name: z.string().describe("Volume name"),
+        mountPath: z.string().describe("Mount path"),
+        readOnly: z.boolean().default(false).optional().describe("Read-only mount")
+      })).optional().describe("Volume mounts")
+    })).optional().describe("Services to update"),
+    volumes: z.array(z.object({
+      name: z.string().describe("Volume name"),
+      size: z.string().optional().describe("Volume size")
+    })).optional().describe("Volumes to update")
+  }),
+  
+  mittwald_container_declare_stack: z.object({
+    stackId: z.string().describe("Stack ID"),
+    desiredServices: z.array(z.object({
+      name: z.string().describe("Service name"),
+      imageURI: z.string().describe("Docker image URI"),
+      environment: z.record(z.string()).optional().describe("Environment variables"),
+      ports: z.array(z.object({
+        containerPort: z.number().int().describe("Container port"),
+        protocol: z.enum(["tcp", "udp"]).default("tcp").optional().describe("Protocol")
+      })).optional().describe("Port mappings"),
+      volumes: z.array(z.object({
+        name: z.string().describe("Volume name"),
+        mountPath: z.string().describe("Mount path"),
+        readOnly: z.boolean().default(false).optional().describe("Read-only mount")
+      })).optional().describe("Volume mounts")
+    })).optional().describe("Desired services"),
+    desiredVolumes: z.array(z.object({
+      name: z.string().describe("Volume name"),
+      size: z.string().optional().describe("Volume size")
+    })).optional().describe("Desired volumes")
+  }),
+  
+  // Mittwald Container API Service tools
+  mittwald_container_list_services: z.object({
+    projectId: z.string().describe("Project ID"),
+    limit: z.number().int().min(1).max(1000).default(100).optional().describe("Maximum results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Results to skip"),
+    page: z.number().int().min(1).optional().describe("Page number")
+  }),
+  
+  mittwald_container_get_service: z.object({
+    stackId: z.string().describe("Stack ID"),
+    serviceId: z.string().describe("Service ID")
+  }),
+  
+  mittwald_container_get_service_logs: z.object({
+    stackId: z.string().describe("Stack ID"),
+    serviceId: z.string().describe("Service ID"),
+    since: z.string().optional().describe("Start time (RFC3339)"),
+    until: z.string().optional().describe("End time (RFC3339)"),
+    limit: z.number().int().min(1).max(10000).default(100).optional().describe("Maximum log lines")
+  }),
+  
+  mittwald_container_start_service: z.object({
+    stackId: z.string().describe("Stack ID"),
+    serviceId: z.string().describe("Service ID")
+  }),
+  
+  mittwald_container_stop_service: z.object({
+    stackId: z.string().describe("Stack ID"),
+    serviceId: z.string().describe("Service ID")
+  }),
+  
+  mittwald_container_restart_service: z.object({
+    stackId: z.string().describe("Stack ID"),
+    serviceId: z.string().describe("Service ID")
+  }),
+  
+  mittwald_container_recreate_service: z.object({
+    stackId: z.string().describe("Stack ID"),
+    serviceId: z.string().describe("Service ID")
+  }),
+  
+  mittwald_container_pull_image_for_service: z.object({
+    stackId: z.string().describe("Stack ID"),
+    serviceId: z.string().describe("Service ID")
+  }),
+  
+  // Mittwald Container API Volume tools
+  mittwald_container_list_volumes: z.object({
+    projectId: z.string().describe("Project ID"),
+    limit: z.number().int().min(1).max(1000).default(100).optional().describe("Maximum results"),
+    skip: z.number().int().min(0).default(0).optional().describe("Results to skip"),
+    page: z.number().int().min(1).optional().describe("Page number")
+  }),
+  
+  mittwald_container_get_volume: z.object({
+    stackId: z.string().describe("Stack ID"),
+    volumeId: z.string().describe("Volume ID")
+  }),
+  
+  mittwald_container_delete_volume: z.object({
+    stackId: z.string().describe("Stack ID"),
+    volumeId: z.string().describe("Volume ID")
+  }),
+  
+  mittwald_container_get_container_image_config: z.object({})
 };
 
 /**
@@ -136,6 +324,31 @@ type ToolArgs = {
   structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
   validation_example: any;
+  
+  // Mittwald Container API types
+  mittwald_container_create_registry: any;
+  mittwald_container_list_registries: any;
+  mittwald_container_get_registry: any;
+  mittwald_container_update_registry: any;
+  mittwald_container_delete_registry: any;
+  mittwald_container_validate_registry_uri: any;
+  mittwald_container_validate_registry_credentials: any;
+  mittwald_container_list_stacks: any;
+  mittwald_container_get_stack: any;
+  mittwald_container_update_stack: any;
+  mittwald_container_declare_stack: any;
+  mittwald_container_list_services: any;
+  mittwald_container_get_service: any;
+  mittwald_container_get_service_logs: any;
+  mittwald_container_start_service: any;
+  mittwald_container_stop_service: any;
+  mittwald_container_restart_service: any;
+  mittwald_container_recreate_service: any;
+  mittwald_container_pull_image_for_service: any;
+  mittwald_container_list_volumes: any;
+  mittwald_container_get_volume: any;
+  mittwald_container_delete_volume: any;
+  mittwald_container_get_container_image_config: any;
 };
 
 /**
@@ -343,6 +556,84 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
+        
+      // Mittwald Container API Registry tools
+      case "mittwald_container_create_registry":
+        result = await handleCreateRegistry(args);
+        break;
+      case "mittwald_container_list_registries":
+        result = await handleListRegistries(args);
+        break;
+      case "mittwald_container_get_registry":
+        result = await handleGetRegistry(args);
+        break;
+      case "mittwald_container_update_registry":
+        result = await handleUpdateRegistry(args);
+        break;
+      case "mittwald_container_delete_registry":
+        result = await handleDeleteRegistry(args);
+        break;
+      case "mittwald_container_validate_registry_uri":
+        result = await handleValidateRegistryUri(args);
+        break;
+      case "mittwald_container_validate_registry_credentials":
+        result = await handleValidateRegistryCredentials(args);
+        break;
+        
+      // Mittwald Container API Stack tools
+      case "mittwald_container_list_stacks":
+        result = await handleListStacks(args);
+        break;
+      case "mittwald_container_get_stack":
+        result = await handleGetStack(args);
+        break;
+      case "mittwald_container_update_stack":
+        result = await handleUpdateStack(args);
+        break;
+      case "mittwald_container_declare_stack":
+        result = await handleDeclareStack(args);
+        break;
+        
+      // Mittwald Container API Service tools
+      case "mittwald_container_list_services":
+        result = await handleListServices(args);
+        break;
+      case "mittwald_container_get_service":
+        result = await handleGetService(args);
+        break;
+      case "mittwald_container_get_service_logs":
+        result = await handleGetServiceLogs(args);
+        break;
+      case "mittwald_container_start_service":
+        result = await handleStartService(args);
+        break;
+      case "mittwald_container_stop_service":
+        result = await handleStopService(args);
+        break;
+      case "mittwald_container_restart_service":
+        result = await handleRestartService(args);
+        break;
+      case "mittwald_container_recreate_service":
+        result = await handleRecreateService(args);
+        break;
+      case "mittwald_container_pull_image_for_service":
+        result = await handlePullImageForService(args);
+        break;
+        
+      // Mittwald Container API Volume tools
+      case "mittwald_container_list_volumes":
+        result = await handleListVolumes(args);
+        break;
+      case "mittwald_container_get_volume":
+        result = await handleGetVolume(args);
+        break;
+      case "mittwald_container_delete_volume":
+        result = await handleDeleteVolume(args);
+        break;
+      case "mittwald_container_get_container_image_config":
+        result = await handleGetContainerImageConfig(args);
+        break;
+        
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);
