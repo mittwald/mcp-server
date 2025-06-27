@@ -86,28 +86,6 @@ import type {
   UpdateBackupScheduleArgs,
   DeleteBackupScheduleArgs,
 } from './tools/index.js';
-import type {
-  MittwaldAppListArgs,
-  MittwaldAppGetArgs,
-  MittwaldAppListVersionsArgs,
-  MittwaldAppGetVersionArgs,
-  MittwaldAppGetVersionUpdateCandidatesArgs,
-  MittwaldAppInstallationListArgs,
-  MittwaldAppInstallationGetArgs,
-  MittwaldAppInstallationCreateArgs,
-  MittwaldAppInstallationUpdateArgs,
-  MittwaldAppInstallationDeleteArgs,
-  MittwaldAppInstallationActionArgs,
-  MittwaldAppInstallationCopyArgs,
-  MittwaldAppInstallationGetStatusArgs,
-  MittwaldAppInstallationGetMissingDependenciesArgs,
-  MittwaldSystemSoftwareListArgs,
-  MittwaldSystemSoftwareGetArgs,
-  MittwaldSystemSoftwareListVersionsArgs,
-  MittwaldSystemSoftwareGetVersionArgs,
-  MittwaldAppInstallationGetSystemSoftwareArgs,
-  MittwaldAppInstallationUpdateSystemSoftwareArgs
-} from './tools/mittwald/app/index.js';
 import {
   handleGetChannel,
   handleGetNotifications,
@@ -169,7 +147,6 @@ import {
   handleDeleteBackupSchedule,
 } from './tools/index.js';
 import {
-<<<<<<< HEAD
   handleProjectList,
   handleProjectGet,
   handleProjectDelete,
@@ -420,29 +397,6 @@ import {
   type MittwaldDeprecatedFileGetTokenRulesArgs,
   type MittwaldDeprecatedFileGetTypeRulesArgs
 } from './tools/mittwald/index.js';
-=======
-  handleMittwaldAppList,
-  handleMittwaldAppGet,
-  handleMittwaldAppListVersions,
-  handleMittwaldAppGetVersion,
-  handleMittwaldAppGetVersionUpdateCandidates,
-  handleMittwaldAppInstallationList,
-  handleMittwaldAppInstallationGet,
-  handleMittwaldAppInstallationCreate,
-  handleMittwaldAppInstallationUpdate,
-  handleMittwaldAppInstallationDelete,
-  handleMittwaldAppInstallationAction,
-  handleMittwaldAppInstallationCopy,
-  handleMittwaldAppInstallationGetStatus,
-  handleMittwaldAppInstallationGetMissingDependencies,
-  handleMittwaldSystemSoftwareList,
-  handleMittwaldSystemSoftwareGet,
-  handleMittwaldSystemSoftwareListVersions,
-  handleMittwaldSystemSoftwareGetVersion,
-  handleMittwaldAppInstallationGetSystemSoftware,
-  handleMittwaldAppInstallationUpdateSystemSoftware,
-} from './tools/mittwald/app/index.js';
->>>>>>> origin/feat/api-app
 
 /**
  * Zod schemas for tool validation
@@ -519,8 +473,6 @@ const ToolSchemas = {
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
   }),
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   // Mittwald User API Schemas
   mittwald_user_authenticate: z.object({
     email: z.string().email().describe("User's email address"),
@@ -716,123 +668,8 @@ const ToolSchemas = {
   mittwald_domain_get_handle_fields: DomainGetHandleFieldsArgsSchema,
   mittwald_domain_get_screenshot: DomainGetScreenshotArgsSchema,
   mittwald_domain_get_supported_tlds: DomainGetSupportedTldsArgsSchema,
-  mittwald_domain_get_contract: DomainGetContractArgsSchema
-=======
-  // Mittwald App API schemas
-  mittwald_app_list: z.object({
-    limit: z.number().int().min(1).max(1000).optional().default(100).describe("Maximum number of apps to return"),
-    skip: z.number().int().min(0).optional().default(0).describe("Number of apps to skip (for pagination)")
-  }),
+  mittwald_domain_get_contract: DomainGetContractArgsSchema,
 
-  mittwald_app_get: z.object({
-    appId: z.string().uuid().describe("The UUID of the app to retrieve")
-  }),
-
-  mittwald_app_list_versions: z.object({
-    appId: z.string().uuid().describe("The UUID of the app to list versions for"),
-    recommended: z.boolean().optional().default(false).describe("Filter to only show recommended versions")
-  }),
-
-  mittwald_app_get_version: z.object({
-    appId: z.string().uuid().describe("The UUID of the app"),
-    appVersionId: z.string().uuid().describe("The UUID of the app version to retrieve")
-  }),
-
-  mittwald_app_get_version_update_candidates: z.object({
-    appId: z.string().uuid().describe("The UUID of the app"),
-    baseAppVersionId: z.string().uuid().describe("The UUID of the current app version to find updates for")
-  }),
-
-  // Mittwald App Installation schemas
-  mittwald_app_installation_list: z.object({
-    projectId: z.string().uuid().describe("The UUID of the project to list app installations for"),
-    limit: z.number().int().min(1).max(1000).optional().default(100).describe("Maximum number of app installations to return"),
-    skip: z.number().int().min(0).optional().default(0).describe("Number of app installations to skip (for pagination)")
-  }),
-
-  mittwald_app_installation_get: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to retrieve")
-  }),
-
-  mittwald_app_installation_create: z.object({
-    appId: z.string().uuid().describe("The UUID of the app to install"),
-    projectId: z.string().uuid().describe("The UUID of the project to install the app in"),
-    description: z.string().min(1).describe("Human-readable description for this app installation"),
-    appVersionId: z.string().uuid().optional().describe("The UUID of the specific app version to install"),
-    updatePolicy: z.enum(["none", "patchLevel", "all"]).optional().default("patchLevel").describe("Automatic update policy"),
-    userInputs: z.array(z.object({
-      name: z.string(),
-      value: z.string()
-    })).optional().describe("Configuration values for app installation")
-  }),
-
-  mittwald_app_installation_update: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to update"),
-    description: z.string().optional().describe("New description for the app installation"),
-    appVersionId: z.string().uuid().optional().describe("The UUID of the app version to update to"),
-    updatePolicy: z.enum(["none", "patchLevel", "all"]).optional().describe("New automatic update policy"),
-    customDocumentRoot: z.string().optional().describe("Custom document root path"),
-    userInputs: z.array(z.object({
-      name: z.string(),
-      value: z.string()
-    })).optional().describe("Updated configuration values")
-  }),
-
-  mittwald_app_installation_delete: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to delete")
-  }),
-
-  mittwald_app_installation_action: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to perform the action on"),
-    action: z.enum(["start", "stop", "restart"]).describe("The action to perform on the app installation")
-  }),
-
-  mittwald_app_installation_copy: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to copy"),
-    description: z.string().min(1).describe("Description for the new copied app installation"),
-    projectId: z.string().uuid().describe("The UUID of the target project to copy the installation to")
-  }),
-
-  mittwald_app_installation_get_status: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to get status for")
-  }),
-
-  mittwald_app_installation_get_missing_dependencies: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to check dependencies for")
-  }),
-
-  // Mittwald System Software schemas
-  mittwald_system_software_list: z.object({
-    limit: z.number().int().min(1).max(1000).optional().default(100).describe("Maximum number of system software packages to return"),
-    skip: z.number().int().min(0).optional().default(0).describe("Number of system software packages to skip")
-  }),
-
-  mittwald_system_software_get: z.object({
-    systemSoftwareId: z.string().uuid().describe("The UUID of the system software package to retrieve")
-  }),
-
-  mittwald_system_software_list_versions: z.object({
-    systemSoftwareId: z.string().uuid().describe("The UUID of the system software to list versions for"),
-    recommended: z.boolean().optional().default(false).describe("Filter to only show recommended versions")
-  }),
-
-  mittwald_system_software_get_version: z.object({
-    systemSoftwareId: z.string().uuid().describe("The UUID of the system software"),
-    systemSoftwareVersionId: z.string().uuid().describe("The UUID of the system software version to retrieve")
-  }),
-
-  mittwald_app_installation_get_system_software: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to get system software for")
-  }),
-
-  mittwald_app_installation_update_system_software: z.object({
-    appInstallationId: z.string().uuid().describe("The UUID of the app installation to update system software for"),
-    systemSoftware: z.array(z.object({
-      systemSoftwareId: z.string().uuid(),
-      systemSoftwareVersionId: z.string().uuid(),
-      updatePolicy: z.enum(["none", "inheritedFromApp", "patchLevel", "all"])
-    })).min(1).describe("List of system software to update")
-=======
   // Mittwald SSH Key tools
   mittwald_list_ssh_keys: z.object({}),
   
@@ -980,9 +817,7 @@ const ToolSchemas = {
   
   mittwald_delete_backup_schedule: z.object({
     projectBackupScheduleId: z.string().describe("The unique identifier of the backup schedule to delete")
->>>>>>> origin/feat/api-ssh-backup
   })
->>>>>>> origin/feat/api-app
 };
 
 /**
@@ -1003,8 +838,6 @@ type ToolArgs = {
   structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
   validation_example: any;
-<<<<<<< HEAD
-<<<<<<< HEAD
   // Mittwald Project API tools
   mittwald_project_list: MittwaldProjectListArgs;
   mittwald_project_get: MittwaldProjectGetArgs;
@@ -1050,32 +883,6 @@ type ToolArgs = {
   mittwald_domain_get_screenshot: DomainGetScreenshotArgs;
   mittwald_domain_get_supported_tlds: DomainGetSupportedTldsArgs;
   mittwald_domain_get_contract: DomainGetContractArgs;
-=======
-  // Mittwald App API tools
-  mittwald_app_list: MittwaldAppListArgs;
-  mittwald_app_get: MittwaldAppGetArgs;
-  mittwald_app_list_versions: MittwaldAppListVersionsArgs;
-  mittwald_app_get_version: MittwaldAppGetVersionArgs;
-  mittwald_app_get_version_update_candidates: MittwaldAppGetVersionUpdateCandidatesArgs;
-  // Mittwald App Installation tools
-  mittwald_app_installation_list: MittwaldAppInstallationListArgs;
-  mittwald_app_installation_get: MittwaldAppInstallationGetArgs;
-  mittwald_app_installation_create: MittwaldAppInstallationCreateArgs;
-  mittwald_app_installation_update: MittwaldAppInstallationUpdateArgs;
-  mittwald_app_installation_delete: MittwaldAppInstallationDeleteArgs;
-  mittwald_app_installation_action: MittwaldAppInstallationActionArgs;
-  mittwald_app_installation_copy: MittwaldAppInstallationCopyArgs;
-  mittwald_app_installation_get_status: MittwaldAppInstallationGetStatusArgs;
-  mittwald_app_installation_get_missing_dependencies: MittwaldAppInstallationGetMissingDependenciesArgs;
-  // Mittwald System Software tools
-  mittwald_system_software_list: MittwaldSystemSoftwareListArgs;
-  mittwald_system_software_get: MittwaldSystemSoftwareGetArgs;
-  mittwald_system_software_list_versions: MittwaldSystemSoftwareListVersionsArgs;
-  mittwald_system_software_get_version: MittwaldSystemSoftwareGetVersionArgs;
-  mittwald_app_installation_get_system_software: MittwaldAppInstallationGetSystemSoftwareArgs;
-  mittwald_app_installation_update_system_software: MittwaldAppInstallationUpdateSystemSoftwareArgs;
->>>>>>> origin/feat/api-app
-=======
   
   // Mittwald SSH/SFTP and Backup tool types
   mittwald_list_ssh_keys: ListSshKeysArgs;
@@ -1105,7 +912,6 @@ type ToolArgs = {
   mittwald_get_backup_schedule: GetBackupScheduleArgs;
   mittwald_update_backup_schedule: UpdateBackupScheduleArgs;
   mittwald_delete_backup_schedule: DeleteBackupScheduleArgs;
->>>>>>> origin/feat/api-ssh-backup
 };
 
 /**
@@ -1250,7 +1056,6 @@ export async function handleToolCall(
         username: credentials.userId, // Pass the Reddit username from OAuth
       });
 
-<<<<<<< HEAD
       handlerContext = {
         redditService,
         userId: credentials.userId,
@@ -1272,11 +1077,6 @@ export async function handleToolCall(
     const mittwaldClient = getMittwaldClient(CONFIG.MITTWALD_API_TOKEN);
     const mittwaldHandlerContext: MittwaldToolHandlerContext = {
       mittwaldClient,
-=======
-    const handlerContext: ToolHandlerContext = {
-      redditService,
-      mittwaldClient: getMittwaldClient(),
->>>>>>> origin/feat/api-app
       userId: credentials.userId,
       sessionId: context.sessionId,
       progressToken: request.params._meta?.progressToken,
@@ -1353,8 +1153,6 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
-<<<<<<< HEAD
-<<<<<<< HEAD
         
       // Mittwald User API tools
       case "mittwald_user_authenticate":
@@ -1522,76 +1320,6 @@ export async function handleToolCall(
       case "mittwald_domain_get_contract":
         result = await handleDomainGetContract(args as DomainGetContractArgs, handlerContext);
         break;
-=======
-      
-      // Mittwald App API tools
-      case "mittwald_app_list":
-        result = await handleMittwaldAppList(args as MittwaldAppListArgs, handlerContext);
-        break;
-      case "mittwald_app_get":
-        result = await handleMittwaldAppGet(args as MittwaldAppGetArgs, handlerContext);
-        break;
-      case "mittwald_app_list_versions":
-        result = await handleMittwaldAppListVersions(args as MittwaldAppListVersionsArgs, handlerContext);
-        break;
-      case "mittwald_app_get_version":
-        result = await handleMittwaldAppGetVersion(args as MittwaldAppGetVersionArgs, handlerContext);
-        break;
-      case "mittwald_app_get_version_update_candidates":
-        result = await handleMittwaldAppGetVersionUpdateCandidates(args as MittwaldAppGetVersionUpdateCandidatesArgs, handlerContext);
-        break;
-      
-      // Mittwald App Installation tools
-      case "mittwald_app_installation_list":
-        result = await handleMittwaldAppInstallationList(args as MittwaldAppInstallationListArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_get":
-        result = await handleMittwaldAppInstallationGet(args as MittwaldAppInstallationGetArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_create":
-        result = await handleMittwaldAppInstallationCreate(args as MittwaldAppInstallationCreateArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_update":
-        result = await handleMittwaldAppInstallationUpdate(args as MittwaldAppInstallationUpdateArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_delete":
-        result = await handleMittwaldAppInstallationDelete(args as MittwaldAppInstallationDeleteArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_action":
-        result = await handleMittwaldAppInstallationAction(args as MittwaldAppInstallationActionArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_copy":
-        result = await handleMittwaldAppInstallationCopy(args as MittwaldAppInstallationCopyArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_get_status":
-        result = await handleMittwaldAppInstallationGetStatus(args as MittwaldAppInstallationGetStatusArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_get_missing_dependencies":
-        result = await handleMittwaldAppInstallationGetMissingDependencies(args as MittwaldAppInstallationGetMissingDependenciesArgs, handlerContext);
-        break;
-      
-      // Mittwald System Software tools
-      case "mittwald_system_software_list":
-        result = await handleMittwaldSystemSoftwareList(args as MittwaldSystemSoftwareListArgs, handlerContext);
-        break;
-      case "mittwald_system_software_get":
-        result = await handleMittwaldSystemSoftwareGet(args as MittwaldSystemSoftwareGetArgs, handlerContext);
-        break;
-      case "mittwald_system_software_list_versions":
-        result = await handleMittwaldSystemSoftwareListVersions(args as MittwaldSystemSoftwareListVersionsArgs, handlerContext);
-        break;
-      case "mittwald_system_software_get_version":
-        result = await handleMittwaldSystemSoftwareGetVersion(args as MittwaldSystemSoftwareGetVersionArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_get_system_software":
-        result = await handleMittwaldAppInstallationGetSystemSoftware(args as MittwaldAppInstallationGetSystemSoftwareArgs, handlerContext);
-        break;
-      case "mittwald_app_installation_update_system_software":
-        result = await handleMittwaldAppInstallationUpdateSystemSoftware(args as MittwaldAppInstallationUpdateSystemSoftwareArgs, handlerContext);
-        break;
-      
->>>>>>> origin/feat/api-app
-=======
         
       // Mittwald SSH Key tools
       case "mittwald_list_ssh_keys":
@@ -1684,7 +1412,6 @@ export async function handleToolCall(
         result = await handleDeleteBackupSchedule(args as DeleteBackupScheduleArgs);
         break;
         
->>>>>>> origin/feat/api-ssh-backup
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);
