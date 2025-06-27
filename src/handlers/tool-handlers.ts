@@ -1214,8 +1214,16 @@ export async function handleToolCall(
   try {
     logger.info(`🔧 handleToolCall called for tool: ${request.params.name}`);
     
-    // Check if this is a Mittwald tool (skip Reddit auth)
+    // Check if this is a non-Reddit tool (skip Reddit auth)
     const isMittwaldTool = request.params.name.startsWith('mittwald_');
+    const isUtilityTool = [
+      'mcp_logging',
+      'validation_example',
+      'elicitation_example',
+      'sampling_example',
+      'structured_data_example'
+    ].includes(request.params.name);
+    const isNonRedditTool = isMittwaldTool || isUtilityTool;
     
     let handlerContext: ToolHandlerContext;
     
@@ -1242,6 +1250,14 @@ export async function handleToolCall(
             apiToken: mittwaldApiToken
           }
         }
+      };
+    } else if (isUtilityTool) {
+      // For utility tools, create minimal context without any service
+      handlerContext = {
+        redditService: null as any, // Not used for utility tools
+        userId: 'utility-user',
+        sessionId: context.sessionId,
+        progressToken: request.params._meta?.progressToken,
       };
     } else {
       // Extract and validate Reddit credentials from AuthInfo for Reddit tools
