@@ -113,6 +113,59 @@ import {
   handleMittwaldUserTool,
 } from './tools/mittwald/user/index.js';
 
+// Import Mittwald Domain API handlers
+import {
+  // Domain management
+  handleDomainList,
+  handleDomainGet,
+  handleDomainDelete,
+  handleDomainCheckRegistrability,
+  handleDomainUpdateProject,
+  DomainListArgsSchema,
+  DomainGetArgsSchema,
+  DomainDeleteArgsSchema,
+  DomainCheckRegistrabilityArgsSchema,
+  DomainUpdateProjectArgsSchema,
+  // DNS and nameservers
+  handleDomainUpdateNameservers,
+  handleDomainCreateAuthCode,
+  handleDomainUpdateAuthCode,
+  handleDomainResendEmail,
+  handleDomainAbortDeclaration,
+  DomainUpdateNameserversArgsSchema,
+  DomainCreateAuthCodeArgsSchema,
+  DomainUpdateAuthCodeArgsSchema,
+  DomainResendEmailArgsSchema,
+  DomainAbortDeclarationArgsSchema,
+  // Ownership and contacts
+  handleDomainUpdateContact,
+  handleDomainGetHandleFields,
+  handleDomainGetScreenshot,
+  handleDomainGetSupportedTlds,
+  handleDomainGetContract,
+  DomainUpdateContactArgsSchema,
+  DomainGetHandleFieldsArgsSchema,
+  DomainGetScreenshotArgsSchema,
+  DomainGetSupportedTldsArgsSchema,
+  DomainGetContractArgsSchema,
+  // Types
+  type DomainListArgs,
+  type DomainGetArgs,
+  type DomainDeleteArgs,
+  type DomainCheckRegistrabilityArgs,
+  type DomainUpdateProjectArgs,
+  type DomainUpdateNameserversArgs,
+  type DomainCreateAuthCodeArgs,
+  type DomainUpdateAuthCodeArgs,
+  type DomainResendEmailArgs,
+  type DomainAbortDeclarationArgs,
+  type DomainUpdateContactArgs,
+  type DomainGetHandleFieldsArgs,
+  type DomainGetScreenshotArgs,
+  type DomainGetSupportedTldsArgs,
+  type DomainGetContractArgs
+} from './tools/mittwald/domain/index.js';
+
 /**
  * Zod schemas for tool validation
  */
@@ -366,7 +419,24 @@ const ToolSchemas = {
     projectId: z.string().describe("The project ID"),
     limit: z.number().int().min(1).max(100).default(50).optional().describe("Maximum number of results"),
     skip: z.number().int().min(0).default(0).optional().describe("Number of results to skip")
-  })
+  }),
+  
+  // Mittwald Domain tools
+  mittwald_domain_list: DomainListArgsSchema,
+  mittwald_domain_get: DomainGetArgsSchema,
+  mittwald_domain_delete: DomainDeleteArgsSchema,
+  mittwald_domain_check_registrability: DomainCheckRegistrabilityArgsSchema,
+  mittwald_domain_update_project: DomainUpdateProjectArgsSchema,
+  mittwald_domain_update_nameservers: DomainUpdateNameserversArgsSchema,
+  mittwald_domain_create_auth_code: DomainCreateAuthCodeArgsSchema,
+  mittwald_domain_update_auth_code: DomainUpdateAuthCodeArgsSchema,
+  mittwald_domain_resend_email: DomainResendEmailArgsSchema,
+  mittwald_domain_abort_declaration: DomainAbortDeclarationArgsSchema,
+  mittwald_domain_update_contact: DomainUpdateContactArgsSchema,
+  mittwald_domain_get_handle_fields: DomainGetHandleFieldsArgsSchema,
+  mittwald_domain_get_screenshot: DomainGetScreenshotArgsSchema,
+  mittwald_domain_get_supported_tlds: DomainGetSupportedTldsArgsSchema,
+  mittwald_domain_get_contract: DomainGetContractArgsSchema
 };
 
 /**
@@ -416,6 +486,22 @@ type ToolArgs = {
   mittwald_project_update_storage_threshold: MittwaldProjectUpdateStorageThresholdArgs;
   mittwald_project_get_contract: MittwaldProjectGetContractArgs;
   mittwald_project_list_orders: MittwaldProjectListOrdersArgs;
+  // Mittwald Domain tools
+  mittwald_domain_list: DomainListArgs;
+  mittwald_domain_get: DomainGetArgs;
+  mittwald_domain_delete: DomainDeleteArgs;
+  mittwald_domain_check_registrability: DomainCheckRegistrabilityArgs;
+  mittwald_domain_update_project: DomainUpdateProjectArgs;
+  mittwald_domain_update_nameservers: DomainUpdateNameserversArgs;
+  mittwald_domain_create_auth_code: DomainCreateAuthCodeArgs;
+  mittwald_domain_update_auth_code: DomainUpdateAuthCodeArgs;
+  mittwald_domain_resend_email: DomainResendEmailArgs;
+  mittwald_domain_abort_declaration: DomainAbortDeclarationArgs;
+  mittwald_domain_update_contact: DomainUpdateContactArgs;
+  mittwald_domain_get_handle_fields: DomainGetHandleFieldsArgs;
+  mittwald_domain_get_screenshot: DomainGetScreenshotArgs;
+  mittwald_domain_get_supported_tlds: DomainGetSupportedTldsArgs;
+  mittwald_domain_get_contract: DomainGetContractArgs;
 };
 
 /**
@@ -742,6 +828,53 @@ export async function handleToolCall(
         break;
       case "mittwald_project_list_orders":
         result = await handleProjectListOrders(args as MittwaldProjectListOrdersArgs);
+        break;
+      
+      // Mittwald Domain tools
+      case "mittwald_domain_list":
+        result = await handleDomainList(args as DomainListArgs, handlerContext);
+        break;
+      case "mittwald_domain_get":
+        result = await handleDomainGet(args as DomainGetArgs, handlerContext);
+        break;
+      case "mittwald_domain_delete":
+        result = await handleDomainDelete(args as DomainDeleteArgs, handlerContext);
+        break;
+      case "mittwald_domain_check_registrability":
+        result = await handleDomainCheckRegistrability(args as DomainCheckRegistrabilityArgs, handlerContext);
+        break;
+      case "mittwald_domain_update_project":
+        result = await handleDomainUpdateProject(args as DomainUpdateProjectArgs, handlerContext);
+        break;
+      case "mittwald_domain_update_nameservers":
+        result = await handleDomainUpdateNameservers(args as DomainUpdateNameserversArgs, handlerContext);
+        break;
+      case "mittwald_domain_create_auth_code":
+        result = await handleDomainCreateAuthCode(args as DomainCreateAuthCodeArgs, handlerContext);
+        break;
+      case "mittwald_domain_update_auth_code":
+        result = await handleDomainUpdateAuthCode(args as DomainUpdateAuthCodeArgs, handlerContext);
+        break;
+      case "mittwald_domain_resend_email":
+        result = await handleDomainResendEmail(args as DomainResendEmailArgs, handlerContext);
+        break;
+      case "mittwald_domain_abort_declaration":
+        result = await handleDomainAbortDeclaration(args as DomainAbortDeclarationArgs, handlerContext);
+        break;
+      case "mittwald_domain_update_contact":
+        result = await handleDomainUpdateContact(args as DomainUpdateContactArgs, handlerContext);
+        break;
+      case "mittwald_domain_get_handle_fields":
+        result = await handleDomainGetHandleFields(args as DomainGetHandleFieldsArgs, handlerContext);
+        break;
+      case "mittwald_domain_get_screenshot":
+        result = await handleDomainGetScreenshot(args as DomainGetScreenshotArgs, handlerContext);
+        break;
+      case "mittwald_domain_get_supported_tlds":
+        result = await handleDomainGetSupportedTlds(args as DomainGetSupportedTldsArgs, handlerContext);
+        break;
+      case "mittwald_domain_get_contract":
+        result = await handleDomainGetContract(args as DomainGetContractArgs, handlerContext);
         break;
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });

@@ -22,6 +22,7 @@ import { STRUCTURED_DATA_EXAMPLE_TOOL } from './tool/structured-data-example.js'
 import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import { MITTWALD_PROJECT_TOOLS } from './tool/mittwald/project/index.js';
+import { MITTWALD_DOMAIN_TOOLS } from './tool/mittwald/domain/index.js';
 import type { RedditConfigData } from '../types/config.js';
 
 // Import all Mittwald User API tools
@@ -98,6 +99,8 @@ export const TOOLS: Tool[] = [
   ) as Tool[],
   // Mittwald Project API tools
   ...MITTWALD_PROJECT_TOOLS,
+  // Mittwald Domain API tools
+  ...MITTWALD_DOMAIN_TOOLS,
 ];
 
 /**
