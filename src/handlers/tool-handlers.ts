@@ -19,9 +19,11 @@ import type {
 import { z } from 'zod';
 import { TOOLS, TOOL_ERROR_MESSAGES } from '../constants/tools.js';
 import { RedditService } from '../services/reddit/reddit-service.js';
+import { getMittwaldClient } from '../services/mittwald/mittwald-client.js';
 import { logger } from '../utils/logger.js';
 import type { RedditAuthInfo, MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
+import type { MittwaldToolHandlerContext } from './tools/mittwald/types.js';
 import type {
   GetChannelArgs,
   GetPostArgs,
@@ -40,6 +42,26 @@ import {
   handleStructuredDataExample,
   handleLogging,
   handleValidationExample,
+  // Mittwald mail handlers
+  handleListMailAddresses,
+  handleCreateMailAddress,
+  handleGetMailAddress,
+  handleDeleteMailAddress,
+  handleUpdateMailAddressAddress,
+  handleUpdateMailAddressPassword,
+  handleUpdateMailAddressQuota,
+  handleUpdateMailAddressForwardAddresses,
+  handleUpdateMailAddressAutoresponder,
+  handleUpdateMailAddressSpamProtection,
+  handleUpdateMailAddressCatchAll,
+  handleListDeliveryBoxes,
+  handleCreateDeliveryBox,
+  handleGetDeliveryBox,
+  handleDeleteDeliveryBox,
+  handleUpdateDeliveryBoxDescription,
+  handleUpdateDeliveryBoxPassword,
+  handleListProjectMailSettings,
+  handleUpdateProjectMailSetting,
 } from './tools/index.js';
 
 /**
@@ -115,6 +137,114 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+
+  // Mittwald Mail API schemas
+  mail_list_mail_addresses: z.object({
+    projectId: z.string().describe("Project ID"),
+    limit: z.number().int().min(1).max(100).default(50).optional(),
+    skip: z.number().int().min(0).default(0).optional()
+  }),
+
+  mail_create_mail_address: z.object({
+    projectId: z.string().describe("Project ID"),
+    address: z.string().email().describe("Email address"),
+    isCatchAll: z.boolean().optional(),
+    mailbox: z.object({
+      enableSpamProtection: z.boolean(),
+      password: z.string(),
+      quotaInBytes: z.number().int().min(0)
+    }).optional(),
+    forwardAddresses: z.array(z.string().email()).optional()
+  }),
+
+  mail_get_mail_address: z.object({
+    mailAddressId: z.string().describe("Mail address ID")
+  }),
+
+  mail_delete_mail_address: z.object({
+    mailAddressId: z.string().describe("Mail address ID")
+  }),
+
+  mail_update_mail_address_address: z.object({
+    mailAddressId: z.string().describe("Mail address ID"),
+    address: z.string().email().describe("New email address")
+  }),
+
+  mail_update_mail_address_password: z.object({
+    mailAddressId: z.string().describe("Mail address ID"),
+    password: z.string().describe("New password")
+  }),
+
+  mail_update_mail_address_quota: z.object({
+    mailAddressId: z.string().describe("Mail address ID"),
+    quotaInBytes: z.number().int().min(0).describe("Quota in bytes")
+  }),
+
+  mail_update_mail_address_forward_addresses: z.object({
+    mailAddressId: z.string().describe("Mail address ID"),
+    forwardAddresses: z.array(z.string().email()).describe("Forward addresses")
+  }),
+
+  mail_update_mail_address_autoresponder: z.object({
+    mailAddressId: z.string().describe("Mail address ID"),
+    enabled: z.boolean().describe("Enable auto-responder"),
+    message: z.string().optional(),
+    expiresAt: z.string().optional(),
+    startsAt: z.string().optional()
+  }),
+
+  mail_update_mail_address_spam_protection: z.object({
+    mailAddressId: z.string().describe("Mail address ID"),
+    enabled: z.boolean().describe("Enable spam protection"),
+    folder: z.enum(["inbox", "spam"]).default("spam").optional(),
+    autoDeleteSpam: z.boolean().default(false).optional(),
+    relocationMinSpamScore: z.number().int().min(1).max(10).default(5).optional()
+  }),
+
+  mail_update_mail_address_catch_all: z.object({
+    mailAddressId: z.string().describe("Mail address ID"),
+    isCatchAll: z.boolean().describe("Is catch-all address")
+  }),
+
+  mail_list_delivery_boxes: z.object({
+    projectId: z.string().describe("Project ID"),
+    limit: z.number().int().min(1).max(100).default(50).optional(),
+    skip: z.number().int().min(0).default(0).optional()
+  }),
+
+  mail_create_delivery_box: z.object({
+    projectId: z.string().describe("Project ID"),
+    description: z.string().describe("Delivery box description"),
+    password: z.string().describe("Delivery box password")
+  }),
+
+  mail_get_delivery_box: z.object({
+    deliveryBoxId: z.string().describe("Delivery box ID")
+  }),
+
+  mail_delete_delivery_box: z.object({
+    deliveryBoxId: z.string().describe("Delivery box ID")
+  }),
+
+  mail_update_delivery_box_description: z.object({
+    deliveryBoxId: z.string().describe("Delivery box ID"),
+    description: z.string().describe("New description")
+  }),
+
+  mail_update_delivery_box_password: z.object({
+    deliveryBoxId: z.string().describe("Delivery box ID"),
+    password: z.string().describe("New password")
+  }),
+
+  mail_list_project_mail_settings: z.object({
+    projectId: z.string().describe("Project ID")
+  }),
+
+  mail_update_project_mail_setting: z.object({
+    projectId: z.string().describe("Project ID"),
+    mailSetting: z.enum(["blacklist", "whitelist"]).describe("Mail setting type"),
+    value: z.array(z.string()).describe("Setting values")
   })
 };
 
@@ -272,6 +402,15 @@ export async function handleToolCall(
       progressToken: request.params._meta?.progressToken,
     };
 
+    // Create Mittwald service for Mittwald tools
+    const mittwaldClient = getMittwaldClient();
+    const mittwaldHandlerContext: MittwaldToolHandlerContext = {
+      mittwaldClient,
+      userId: credentials.userId,
+      sessionId: context.sessionId,
+      progressToken: request.params._meta?.progressToken,
+    };
+
     if (!request.params.arguments) {
       logger.error("Tool call missing required arguments", { toolName: request.params?.name });
       throw new Error("Arguments are required");
@@ -343,6 +482,66 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
+
+      // Mittwald Mail API cases
+      case "mail_list_mail_addresses":
+        result = await handleListMailAddresses(args, mittwaldHandlerContext);
+        break;
+      case "mail_create_mail_address":
+        result = await handleCreateMailAddress(args, mittwaldHandlerContext);
+        break;
+      case "mail_get_mail_address":
+        result = await handleGetMailAddress(args, mittwaldHandlerContext);
+        break;
+      case "mail_delete_mail_address":
+        result = await handleDeleteMailAddress(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_mail_address_address":
+        result = await handleUpdateMailAddressAddress(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_mail_address_password":
+        result = await handleUpdateMailAddressPassword(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_mail_address_quota":
+        result = await handleUpdateMailAddressQuota(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_mail_address_forward_addresses":
+        result = await handleUpdateMailAddressForwardAddresses(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_mail_address_autoresponder":
+        result = await handleUpdateMailAddressAutoresponder(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_mail_address_spam_protection":
+        result = await handleUpdateMailAddressSpamProtection(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_mail_address_catch_all":
+        result = await handleUpdateMailAddressCatchAll(args, mittwaldHandlerContext);
+        break;
+      case "mail_list_delivery_boxes":
+        result = await handleListDeliveryBoxes(args, mittwaldHandlerContext);
+        break;
+      case "mail_create_delivery_box":
+        result = await handleCreateDeliveryBox(args, mittwaldHandlerContext);
+        break;
+      case "mail_get_delivery_box":
+        result = await handleGetDeliveryBox(args, mittwaldHandlerContext);
+        break;
+      case "mail_delete_delivery_box":
+        result = await handleDeleteDeliveryBox(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_delivery_box_description":
+        result = await handleUpdateDeliveryBoxDescription(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_delivery_box_password":
+        result = await handleUpdateDeliveryBoxPassword(args, mittwaldHandlerContext);
+        break;
+      case "mail_list_project_mail_settings":
+        result = await handleListProjectMailSettings(args, mittwaldHandlerContext);
+        break;
+      case "mail_update_project_mail_setting":
+        result = await handleUpdateProjectMailSetting(args, mittwaldHandlerContext);
+        break;
+        
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);

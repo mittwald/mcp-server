@@ -9,6 +9,8 @@ export * from './sampling-example.js';
 export * from './structured-data-example.js';
 export * from './logging.js';
 export * from './validation-example.js';
+export * from './mittwald/types.js';
+export * from './mittwald/mail/index.js';
 
 export type {
   ToolHandler,
@@ -33,3 +35,26 @@ export { handleSamplingExample } from './sampling-example.js';
 export { handleStructuredDataExample } from './structured-data-example.js';
 export { handleLogging } from './logging.js';
 export { handleValidationExample } from './validation-example.js';
+
+// Export Mittwald mail handlers
+export {
+  handleListMailAddresses,
+  handleCreateMailAddress,
+  handleGetMailAddress,
+  handleDeleteMailAddress,
+  handleUpdateMailAddressAddress,
+  handleUpdateMailAddressPassword,
+  handleUpdateMailAddressQuota,
+  handleUpdateMailAddressForwardAddresses,
+  handleUpdateMailAddressAutoresponder,
+  handleUpdateMailAddressSpamProtection,
+  handleUpdateMailAddressCatchAll,
+  handleListDeliveryBoxes,
+  handleCreateDeliveryBox,
+  handleGetDeliveryBox,
+  handleDeleteDeliveryBox,
+  handleUpdateDeliveryBoxDescription,
+  handleUpdateDeliveryBoxPassword,
+  handleListProjectMailSettings,
+  handleUpdateProjectMailSetting,
+} from './mittwald/mail/index.js';
