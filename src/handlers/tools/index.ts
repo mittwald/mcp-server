@@ -33,3 +33,34 @@ export { handleSamplingExample } from './sampling-example.js';
 export { handleStructuredDataExample } from './structured-data-example.js';
 export { handleLogging } from './logging.js';
 export { handleValidationExample } from './validation-example.js';
+
+// Export all Mittwald SSH/SFTP and Backup handlers
+export {
+  handleListSshKeys,
+  handleCreateSshKey,
+  handleGetSshKey,
+  handleUpdateSshKey,
+  handleDeleteSshKey,
+  handleListSshUsers,
+  handleCreateSshUser,
+  handleGetSshUser,
+  handleUpdateSshUser,
+  handleDeleteSshUser,
+  handleListSftpUsers,
+  handleCreateSftpUser,
+  handleGetSftpUser,
+  handleUpdateSftpUser,
+  handleDeleteSftpUser,
+  handleListBackups,
+  handleCreateBackup,
+  handleGetBackup,
+  handleDeleteBackup,
+  handleUpdateBackupDescription,
+  handleCreateBackupExport,
+  handleDeleteBackupExport,
+  handleListBackupSchedules,
+  handleCreateBackupSchedule,
+  handleGetBackupSchedule,
+  handleUpdateBackupSchedule,
+  handleDeleteBackupSchedule,
+} from './mittwald/ssh-backup/index.js';

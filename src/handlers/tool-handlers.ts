@@ -28,6 +28,33 @@ import type {
   GetNotificationsArgs,
   SearchRedditArgs,
   GetCommentArgs,
+  ListSshKeysArgs,
+  CreateSshKeyArgs,
+  GetSshKeyArgs,
+  UpdateSshKeyArgs,
+  DeleteSshKeyArgs,
+  ListSshUsersArgs,
+  CreateSshUserArgs,
+  GetSshUserArgs,
+  UpdateSshUserArgs,
+  DeleteSshUserArgs,
+  ListSftpUsersArgs,
+  CreateSftpUserArgs,
+  GetSftpUserArgs,
+  UpdateSftpUserArgs,
+  DeleteSftpUserArgs,
+  ListBackupsArgs,
+  CreateBackupArgs,
+  GetBackupArgs,
+  DeleteBackupArgs,
+  UpdateBackupDescriptionArgs,
+  CreateBackupExportArgs,
+  DeleteBackupExportArgs,
+  ListBackupSchedulesArgs,
+  CreateBackupScheduleArgs,
+  GetBackupScheduleArgs,
+  UpdateBackupScheduleArgs,
+  DeleteBackupScheduleArgs,
 } from './tools/index.js';
 import {
   handleGetChannel,
@@ -40,6 +67,33 @@ import {
   handleStructuredDataExample,
   handleLogging,
   handleValidationExample,
+  handleListSshKeys,
+  handleCreateSshKey,
+  handleGetSshKey,
+  handleUpdateSshKey,
+  handleDeleteSshKey,
+  handleListSshUsers,
+  handleCreateSshUser,
+  handleGetSshUser,
+  handleUpdateSshUser,
+  handleDeleteSshUser,
+  handleListSftpUsers,
+  handleCreateSftpUser,
+  handleGetSftpUser,
+  handleUpdateSftpUser,
+  handleDeleteSftpUser,
+  handleListBackups,
+  handleCreateBackup,
+  handleGetBackup,
+  handleDeleteBackup,
+  handleUpdateBackupDescription,
+  handleCreateBackupExport,
+  handleDeleteBackupExport,
+  handleListBackupSchedules,
+  handleCreateBackupSchedule,
+  handleGetBackupSchedule,
+  handleUpdateBackupSchedule,
+  handleDeleteBackupSchedule,
 } from './tools/index.js';
 
 /**
@@ -115,6 +169,155 @@ const ToolSchemas = {
       notifications: z.boolean().optional().default(true)
     }).optional(),
     tags: z.array(z.string().min(1)).min(0).max(10).optional().describe("List of tags (max 10, unique)")
+  }),
+
+  // Mittwald SSH Key tools
+  mittwald_list_ssh_keys: z.object({}),
+  
+  mittwald_create_ssh_key: z.object({
+    label: z.string().describe("A descriptive label for the SSH key"),
+    publicKey: z.string().describe("The public key content (OpenSSH format)"),
+    expiresAt: z.string().optional().describe("Optional expiration date for the SSH key (ISO 8601 format)")
+  }),
+  
+  mittwald_get_ssh_key: z.object({
+    sshKeyId: z.string().describe("The unique identifier of the SSH key")
+  }),
+  
+  mittwald_update_ssh_key: z.object({
+    sshKeyId: z.string().describe("The unique identifier of the SSH key"),
+    label: z.string().optional().describe("New label for the SSH key"),
+    expiresAt: z.string().optional().describe("New expiration date for the SSH key (ISO 8601 format)")
+  }),
+  
+  mittwald_delete_ssh_key: z.object({
+    sshKeyId: z.string().describe("The unique identifier of the SSH key to delete")
+  }),
+
+  // Mittwald SSH User tools
+  mittwald_list_ssh_users: z.object({
+    projectId: z.string().describe("The unique identifier of the project")
+  }),
+  
+  mittwald_create_ssh_user: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    username: z.string().describe("The username for the SSH user"),
+    description: z.string().optional().describe("Optional description for the SSH user"),
+    publicKeys: z.array(z.string()).optional().describe("Array of SSH public key IDs to associate with this user")
+  }),
+  
+  mittwald_get_ssh_user: z.object({
+    sshUserId: z.string().describe("The unique identifier of the SSH user")
+  }),
+  
+  mittwald_update_ssh_user: z.object({
+    sshUserId: z.string().describe("The unique identifier of the SSH user"),
+    description: z.string().optional().describe("New description for the SSH user"),
+    publicKeys: z.array(z.string()).optional().describe("Array of SSH public key IDs to associate with this user"),
+    status: z.enum(["active", "inactive"]).optional().describe("Status of the SSH user")
+  }),
+  
+  mittwald_delete_ssh_user: z.object({
+    sshUserId: z.string().describe("The unique identifier of the SSH user to delete")
+  }),
+
+  // Mittwald SFTP User tools
+  mittwald_list_sftp_users: z.object({
+    projectId: z.string().describe("The unique identifier of the project")
+  }),
+  
+  mittwald_create_sftp_user: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    username: z.string().describe("The username for the SFTP user"),
+    description: z.string().optional().describe("Optional description for the SFTP user"),
+    password: z.string().optional().describe("Password for the SFTP user (if not provided, one will be generated)")
+  }),
+  
+  mittwald_get_sftp_user: z.object({
+    sftpUserId: z.string().describe("The unique identifier of the SFTP user")
+  }),
+  
+  mittwald_update_sftp_user: z.object({
+    sftpUserId: z.string().describe("The unique identifier of the SFTP user"),
+    description: z.string().optional().describe("New description for the SFTP user"),
+    password: z.string().optional().describe("New password for the SFTP user"),
+    status: z.enum(["active", "inactive"]).optional().describe("Status of the SFTP user")
+  }),
+  
+  mittwald_delete_sftp_user: z.object({
+    sftpUserId: z.string().describe("The unique identifier of the SFTP user to delete")
+  }),
+
+  // Mittwald Backup tools
+  mittwald_list_backups: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    sort: z.enum(["oldestFirst", "newestFirst"]).optional().describe("Sort order for the backup list"),
+    limit: z.number().optional().describe("Maximum number of backups to return"),
+    offset: z.number().optional().describe("Number of backups to skip for pagination")
+  }),
+  
+  mittwald_create_backup: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    description: z.string().optional().describe("Optional description for the backup"),
+    expirationTime: z.string().optional().describe("When the backup should expire (ISO 8601 format)"),
+    ignoredSources: z.object({
+      files: z.boolean().describe("Whether to exclude files from the backup"),
+      databases: z.array(z.object({
+        kind: z.string().describe("Type of database (e.g., 'mysql', 'redis')"),
+        name: z.string().describe("Name of the database to exclude")
+      })).optional().describe("Array of databases to exclude from the backup")
+    }).optional().describe("Sources to exclude from the backup")
+  }),
+  
+  mittwald_get_backup: z.object({
+    projectBackupId: z.string().describe("The unique identifier of the project backup")
+  }),
+  
+  mittwald_delete_backup: z.object({
+    projectBackupId: z.string().describe("The unique identifier of the project backup to delete")
+  }),
+  
+  mittwald_update_backup_description: z.object({
+    projectBackupId: z.string().describe("The unique identifier of the project backup"),
+    description: z.string().describe("New description for the backup")
+  }),
+  
+  mittwald_create_backup_export: z.object({
+    projectBackupId: z.string().describe("The unique identifier of the project backup"),
+    format: z.string().optional().describe("Export format (default: 'tar')"),
+    withPassword: z.boolean().optional().describe("Whether to password-protect the export"),
+    password: z.string().optional().describe("Password for the export (required if withPassword is true)")
+  }),
+  
+  mittwald_delete_backup_export: z.object({
+    projectBackupId: z.string().describe("The unique identifier of the project backup")
+  }),
+
+  // Mittwald Backup Schedule tools
+  mittwald_list_backup_schedules: z.object({
+    projectId: z.string().describe("The unique identifier of the project")
+  }),
+  
+  mittwald_create_backup_schedule: z.object({
+    projectId: z.string().describe("The unique identifier of the project"),
+    description: z.string().optional().describe("Optional description for the backup schedule"),
+    schedule: z.string().describe("Cron expression defining when backups should be created (e.g., '0 4 * * *' for daily at 4 AM)"),
+    ttl: z.string().optional().describe("Time-to-live for backups created by this schedule (e.g., '7d' for 7 days)")
+  }),
+  
+  mittwald_get_backup_schedule: z.object({
+    projectBackupScheduleId: z.string().describe("The unique identifier of the backup schedule")
+  }),
+  
+  mittwald_update_backup_schedule: z.object({
+    projectBackupScheduleId: z.string().describe("The unique identifier of the backup schedule"),
+    description: z.string().optional().describe("New description for the backup schedule"),
+    schedule: z.string().optional().describe("New cron expression for the backup schedule"),
+    ttl: z.string().optional().describe("New time-to-live for backups created by this schedule")
+  }),
+  
+  mittwald_delete_backup_schedule: z.object({
+    projectBackupScheduleId: z.string().describe("The unique identifier of the backup schedule to delete")
   })
 };
 
@@ -136,6 +339,35 @@ type ToolArgs = {
   structured_data_example: any;
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
   validation_example: any;
+  
+  // Mittwald SSH/SFTP and Backup tool types
+  mittwald_list_ssh_keys: ListSshKeysArgs;
+  mittwald_create_ssh_key: CreateSshKeyArgs;
+  mittwald_get_ssh_key: GetSshKeyArgs;
+  mittwald_update_ssh_key: UpdateSshKeyArgs;
+  mittwald_delete_ssh_key: DeleteSshKeyArgs;
+  mittwald_list_ssh_users: ListSshUsersArgs;
+  mittwald_create_ssh_user: CreateSshUserArgs;
+  mittwald_get_ssh_user: GetSshUserArgs;
+  mittwald_update_ssh_user: UpdateSshUserArgs;
+  mittwald_delete_ssh_user: DeleteSshUserArgs;
+  mittwald_list_sftp_users: ListSftpUsersArgs;
+  mittwald_create_sftp_user: CreateSftpUserArgs;
+  mittwald_get_sftp_user: GetSftpUserArgs;
+  mittwald_update_sftp_user: UpdateSftpUserArgs;
+  mittwald_delete_sftp_user: DeleteSftpUserArgs;
+  mittwald_list_backups: ListBackupsArgs;
+  mittwald_create_backup: CreateBackupArgs;
+  mittwald_get_backup: GetBackupArgs;
+  mittwald_delete_backup: DeleteBackupArgs;
+  mittwald_update_backup_description: UpdateBackupDescriptionArgs;
+  mittwald_create_backup_export: CreateBackupExportArgs;
+  mittwald_delete_backup_export: DeleteBackupExportArgs;
+  mittwald_list_backup_schedules: ListBackupSchedulesArgs;
+  mittwald_create_backup_schedule: CreateBackupScheduleArgs;
+  mittwald_get_backup_schedule: GetBackupScheduleArgs;
+  mittwald_update_backup_schedule: UpdateBackupScheduleArgs;
+  mittwald_delete_backup_schedule: DeleteBackupScheduleArgs;
 };
 
 /**
@@ -343,6 +575,98 @@ export async function handleToolCall(
       case "validation_example":
         result = await handleValidationExample(args, handlerContext);
         break;
+        
+      // Mittwald SSH Key tools
+      case "mittwald_list_ssh_keys":
+        result = await handleListSshKeys(args as ListSshKeysArgs);
+        break;
+      case "mittwald_create_ssh_key":
+        result = await handleCreateSshKey(args as CreateSshKeyArgs);
+        break;
+      case "mittwald_get_ssh_key":
+        result = await handleGetSshKey(args as GetSshKeyArgs);
+        break;
+      case "mittwald_update_ssh_key":
+        result = await handleUpdateSshKey(args as UpdateSshKeyArgs);
+        break;
+      case "mittwald_delete_ssh_key":
+        result = await handleDeleteSshKey(args as DeleteSshKeyArgs);
+        break;
+        
+      // Mittwald SSH User tools
+      case "mittwald_list_ssh_users":
+        result = await handleListSshUsers(args as ListSshUsersArgs);
+        break;
+      case "mittwald_create_ssh_user":
+        result = await handleCreateSshUser(args as CreateSshUserArgs);
+        break;
+      case "mittwald_get_ssh_user":
+        result = await handleGetSshUser(args as GetSshUserArgs);
+        break;
+      case "mittwald_update_ssh_user":
+        result = await handleUpdateSshUser(args as UpdateSshUserArgs);
+        break;
+      case "mittwald_delete_ssh_user":
+        result = await handleDeleteSshUser(args as DeleteSshUserArgs);
+        break;
+        
+      // Mittwald SFTP User tools
+      case "mittwald_list_sftp_users":
+        result = await handleListSftpUsers(args as ListSftpUsersArgs);
+        break;
+      case "mittwald_create_sftp_user":
+        result = await handleCreateSftpUser(args as CreateSftpUserArgs);
+        break;
+      case "mittwald_get_sftp_user":
+        result = await handleGetSftpUser(args as GetSftpUserArgs);
+        break;
+      case "mittwald_update_sftp_user":
+        result = await handleUpdateSftpUser(args as UpdateSftpUserArgs);
+        break;
+      case "mittwald_delete_sftp_user":
+        result = await handleDeleteSftpUser(args as DeleteSftpUserArgs);
+        break;
+        
+      // Mittwald Backup tools
+      case "mittwald_list_backups":
+        result = await handleListBackups(args as ListBackupsArgs);
+        break;
+      case "mittwald_create_backup":
+        result = await handleCreateBackup(args as CreateBackupArgs);
+        break;
+      case "mittwald_get_backup":
+        result = await handleGetBackup(args as GetBackupArgs);
+        break;
+      case "mittwald_delete_backup":
+        result = await handleDeleteBackup(args as DeleteBackupArgs);
+        break;
+      case "mittwald_update_backup_description":
+        result = await handleUpdateBackupDescription(args as UpdateBackupDescriptionArgs);
+        break;
+      case "mittwald_create_backup_export":
+        result = await handleCreateBackupExport(args as CreateBackupExportArgs);
+        break;
+      case "mittwald_delete_backup_export":
+        result = await handleDeleteBackupExport(args as DeleteBackupExportArgs);
+        break;
+        
+      // Mittwald Backup Schedule tools
+      case "mittwald_list_backup_schedules":
+        result = await handleListBackupSchedules(args as ListBackupSchedulesArgs);
+        break;
+      case "mittwald_create_backup_schedule":
+        result = await handleCreateBackupSchedule(args as CreateBackupScheduleArgs);
+        break;
+      case "mittwald_get_backup_schedule":
+        result = await handleGetBackupSchedule(args as GetBackupScheduleArgs);
+        break;
+      case "mittwald_update_backup_schedule":
+        result = await handleUpdateBackupSchedule(args as UpdateBackupScheduleArgs);
+        break;
+      case "mittwald_delete_backup_schedule":
+        result = await handleDeleteBackupSchedule(args as DeleteBackupScheduleArgs);
+        break;
+        
       default:
         logger.error("Unsupported tool in switch statement", { toolName: request.params.name });
         throw new Error(`${TOOL_ERROR_MESSAGES.UNKNOWN_TOOL} ${request.params.name}`);

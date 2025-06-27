@@ -23,6 +23,37 @@ import { MCP_LOGGING_TOOL } from './tool/logging.js';
 import { VALIDATION_EXAMPLE_TOOL } from './tool/validation-example.js';
 import type { RedditConfigData } from '../types/config.js';
 
+// Import all Mittwald SSH/SFTP and Backup tools
+import {
+  mittwaldListSshKeys,
+  mittwaldCreateSshKey,
+  mittwaldGetSshKey,
+  mittwaldUpdateSshKey,
+  mittwaldDeleteSshKey,
+  mittwaldListSshUsers,
+  mittwaldCreateSshUser,
+  mittwaldGetSshUser,
+  mittwaldUpdateSshUser,
+  mittwaldDeleteSshUser,
+  mittwaldListSftpUsers,
+  mittwaldCreateSftpUser,
+  mittwaldGetSftpUser,
+  mittwaldUpdateSftpUser,
+  mittwaldDeleteSftpUser,
+  mittwaldListBackups,
+  mittwaldCreateBackup,
+  mittwaldGetBackup,
+  mittwaldDeleteBackup,
+  mittwaldUpdateBackupDescription,
+  mittwaldCreateBackupExport,
+  mittwaldDeleteBackupExport,
+  mittwaldListBackupSchedules,
+  mittwaldCreateBackupSchedule,
+  mittwaldGetBackupSchedule,
+  mittwaldUpdateBackupSchedule,
+  mittwaldDeleteBackupSchedule,
+} from './tool/mittwald/ssh-backup/index.js';
+
 /**
  * Standard error messages for tool operations.
  * 
@@ -75,16 +106,57 @@ export const TOOL_RESPONSE_MESSAGES = {
  * @see {@link https://modelcontextprotocol.io/specification/2025-06-18/client/sampling | MCP Sampling}
  */
 export const TOOLS: Tool[] = [
+  // Reddit tools
   getChannel,
   getPost,
   getNotifications,
   searchReddit,
   getComment,
+  
+  // Example and utility tools
   ELICITATION_EXAMPLE_TOOL,
   SAMPLING_EXAMPLE_TOOL,
   STRUCTURED_DATA_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   VALIDATION_EXAMPLE_TOOL,
+  
+  // Mittwald SSH/SFTP and Backup tools
+  // SSH Keys
+  mittwaldListSshKeys,
+  mittwaldCreateSshKey,
+  mittwaldGetSshKey,
+  mittwaldUpdateSshKey,
+  mittwaldDeleteSshKey,
+  
+  // SSH Users
+  mittwaldListSshUsers,
+  mittwaldCreateSshUser,
+  mittwaldGetSshUser,
+  mittwaldUpdateSshUser,
+  mittwaldDeleteSshUser,
+  
+  // SFTP Users
+  mittwaldListSftpUsers,
+  mittwaldCreateSftpUser,
+  mittwaldGetSftpUser,
+  mittwaldUpdateSftpUser,
+  mittwaldDeleteSftpUser,
+  
+  // Backups
+  mittwaldListBackups,
+  mittwaldCreateBackup,
+  mittwaldGetBackup,
+  mittwaldDeleteBackup,
+  mittwaldUpdateBackupDescription,
+  mittwaldCreateBackupExport,
+  mittwaldDeleteBackupExport,
+  
+  // Backup Schedules
+  mittwaldListBackupSchedules,
+  mittwaldCreateBackupSchedule,
+  mittwaldGetBackupSchedule,
+  mittwaldUpdateBackupSchedule,
+  mittwaldDeleteBackupSchedule,
 ];
 
 /**
