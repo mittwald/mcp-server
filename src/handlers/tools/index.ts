@@ -25,6 +25,19 @@ export type {
   FetchRedditContentArgs,
 } from './types.js';
 
+export type {
+  PageInsightsPerformanceDataArgs,
+  PageInsightsListPerformanceDataForProjectArgs,
+  ServiceTokenAuthenticateArgs,
+  VerificationVerifyAddressArgs,
+  VerificationVerifyCompanyArgs,
+  RelocationCreateRelocationArgs,
+  RelocationCreateLegacyTariffChangeArgs,
+  ArticleGetArticleArgs,
+  ArticleListArticlesArgs,
+  MiscellaneousApiArgs
+} from '../../types/mittwald/miscellaneous.js';
+
 export { handleGetChannel } from './get-channel.js';
 export { handleGetPost } from './get-post.js';
 export { handleGetNotifications } from './get-notifications.js';
