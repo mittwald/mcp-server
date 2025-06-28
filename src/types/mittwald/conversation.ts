@@ -7,6 +7,15 @@ export interface MittwaldToolHandlerContext {
   userId?: string;
   sessionId?: string;
   progressToken?: string | number;
+  projectContext?: {
+    projectId?: string;
+  };
+  appContext?: {
+    installationId?: string;
+  };
+  orgContext?: {
+    orgId?: string;
+  };
 }
 
 export type MittwaldToolHandler<T = any> = (

@@ -36,6 +36,8 @@ import {
   handleExtensionUninstall,
   handleLoginReset,
 } from './tools/index.js';
+import { handleProjectFilesystem } from './tools/mittwald-cli/project/filesystem.js';
+import { handleProjectInviteListOwn } from './tools/mittwald-cli/project/invite-list-own.js';
 
 // Agent 2 app dependency handlers
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
@@ -56,6 +58,8 @@ import { handleAppList } from './tools/mittwald-cli/app/list.js';
 import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
 import { handleAppSsh } from './tools/mittwald-cli/app/ssh.js';
 import { handleAppUninstall } from './tools/mittwald-cli/app/uninstall.js';
+import { handleAppUpdate } from './tools/mittwald-cli/app/update.js';
+import { mittwald_app_upgrade_handler, mittwald_app_upgrade_schema } from './tools/mittwald-cli/app/upgrade.js';
 
 // Agent 7 cronjob handlers
 import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
@@ -148,6 +152,15 @@ const ToolSchemas = {
   mittwald_project_invite_get: z.object({
     inviteId: z.string().describe("ID of the ProjectInvite to be retrieved"),
     output: z.enum(["json", "table", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_project_invite_list_own: z.object({
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   }),
 
   // Agent 2 app dependency schemas
@@ -295,6 +308,16 @@ const ToolSchemas = {
     force: z.boolean().optional().describe("Do not ask for confirmation"),
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   }),
+
+  mittwald_app_update: z.object({
+    installationId: z.string().optional().describe("ID or short ID of an app installation; this argument is optional if a default app installation is set in the context"),
+    description: z.string().optional().describe("Update the description of the app installation"),
+    documentRoot: z.string().optional().describe("Update the document root of the app installation"),
+    entrypoint: z.string().optional().describe("Update the entrypoint of the app installation (Python and Node.js only)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+
+  mittwald_app_upgrade: mittwald_app_upgrade_schema,
 
   // Agent 14 tools
   mittwald_domain_virtualhost_list: z.object({
@@ -518,6 +541,15 @@ type ToolArgs = {
     inviteId: string;
     output?: 'json' | 'table' | 'yaml';
   };
+  
+  mittwald_project_invite_list_own: {
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
 
   // Agent 2 app dependency types
   mittwald_app_dependency_update: {
@@ -655,6 +687,14 @@ type ToolArgs = {
     force?: boolean;
     quiet?: boolean;
   };
+  mittwald_app_update: {
+    installationId?: string;
+    description?: string;
+    documentRoot?: string;
+    entrypoint?: string;
+    quiet?: boolean;
+  };
+  mittwald_app_upgrade: z.infer<typeof mittwald_app_upgrade_schema>;
 
   // Agent 14 tools
   mittwald_domain_virtualhost_list: {
@@ -1183,6 +1223,32 @@ export async function handleToolCall(
           }
         };
         result = await handleAppUninstall(args, mittwaldAppUninstallContext);
+        break;
+      case "mittwald_app_update":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppUpdateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+          appContext: {
+            installationId: (args as any).installationId
+          }
+        };
+        result = await handleAppUpdate(args, mittwaldAppUpdateContext);
+        break;
+      case "mittwald_app_upgrade":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppUpgradeContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+          appContext: {
+            installationId: (args as any).installationId
+          }
+        };
+        result = await mittwald_app_upgrade_handler(args);
         break;
 
       // Agent 14 tools

@@ -33,13 +33,17 @@ import { mittwald_app_list } from './tool/mittwald-cli/app/list.js';
 import { mittwald_app_open } from './tool/mittwald-cli/app/open.js';
 import { mittwald_app_ssh } from './tool/mittwald-cli/app/ssh.js';
 import { mittwald_app_uninstall } from './tool/mittwald-cli/app/uninstall.js';
+import { mittwald_app_update } from './tool/mittwald-cli/app/update.js';
+import { mittwald_app_upgrade_def } from './tool/mittwald-cli/app/upgrade.js';
 
 // Agent-18 project tools
 import { mittwald_project_create } from './tool/mittwald-cli/project/create.js';
 import { mittwald_project_delete } from './tool/mittwald-cli/project/delete.js';
 import { mittwald_project_get } from './tool/mittwald-cli/project/get.js';
 import { mittwald_project_filesystem_usage } from './tool/mittwald-cli/project/filesystem-usage.js';
+import { mittwald_project_filesystem } from './tool/mittwald-cli/project/filesystem.js';
 import { mittwald_project_invite_get } from './tool/mittwald-cli/project/invite-get.js';
+import { mittwald_project_invite_list_own } from './tool/mittwald-cli/project/invite-list-own.js';
 
 // Agent 14 tools
 import { mittwald_domain_virtualhost_list } from './tool/mittwald-cli/domain/virtualhost-list.js';
@@ -82,6 +86,13 @@ import {
 
 // Agent 11 ddev tools
 import { ddev_init } from './tool/mittwald-cli/ddev/init.js';
+import { ddev_render_config } from './tool/mittwald-cli/ddev/render-config.js';
+import { ddev_main } from './tool/mittwald-cli/ddev/index-command.js';
+import { domain_get } from './tool/mittwald-cli/domain/get.js';
+import { domain_dnszone_get } from './tool/mittwald-cli/domain/dnszone/get.js';
+import { domain_dnszone_list } from './tool/mittwald-cli/domain/dnszone/list.js';
+import { domain_dnszone_update } from './tool/mittwald-cli/domain/dnszone/update.js';
+import { domain_dnszone_main } from './tool/mittwald-cli/domain/dnszone/main.js';
 
 // Agent 15 mail tools
 import { mittwald_mail_deliverybox } from './tool/mittwald-cli/mail/deliverybox.js';
@@ -154,13 +165,17 @@ export const TOOLS: Tool[] = [
   mittwald_app_open,
   mittwald_app_ssh,
   mittwald_app_uninstall,
+  mittwald_app_update,
+  mittwald_app_upgrade_def,
   
   // Agent-18 project tools
   mittwald_project_create,
   mittwald_project_delete,
   mittwald_project_get,
   mittwald_project_filesystem_usage,
+  mittwald_project_filesystem,
   mittwald_project_invite_get,
+  mittwald_project_invite_list_own,
   
   // Agent 14 tools
   mittwald_domain_virtualhost_list,
@@ -202,6 +217,13 @@ export const TOOLS: Tool[] = [
   
   // Agent 11 ddev tools
   ddev_init,
+  ddev_render_config,
+  ddev_main,
+  domain_get,
+  domain_dnszone_get,
+  domain_dnszone_list,
+  domain_dnszone_update,
+  domain_dnszone_main,
   
   // Agent 15 mail tools
   mittwald_mail_deliverybox,
