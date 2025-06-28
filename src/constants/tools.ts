@@ -88,7 +88,7 @@ import {
   MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL,
   MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
   MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
-  mittwaldDatabaseList,
+  mittwald_database_list,
   mittwaldDatabaseMysqlCharsets,
   mittwaldDatabaseMysqlCreate,
   mittwaldDatabaseMysqlDelete
@@ -240,7 +240,7 @@ export const TOOLS: Tool[] = [
   MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL,
   MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
   MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
-  mittwaldDatabaseList,
+  mittwald_database_list,
   mittwaldDatabaseMysqlCharsets,
   mittwaldDatabaseMysqlCreate,
   mittwaldDatabaseMysqlDelete,

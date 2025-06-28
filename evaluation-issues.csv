@@ -19,7 +19,9 @@ mittwald_app_open,agent-3,critical,missing_definition,"Missing definition file: 
 mittwald_app_ssh,agent-3,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/app/ssh.js",open
 mittwald_app_uninstall,agent-3,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/app/uninstall.js",open
 mittwald_app_update,agent-3,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/app/update.js",open
+mittwald_app_upgrade,agent-3,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/app/upgrade.js",open
 mittwald_app_upload,agent-3,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/app/upload.js",open
+mittwald_app_versions,agent-3,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/app/versions.js",open
 mittwald_project_create,agent-18,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/project/create.js",open
 mittwald_project_delete,agent-18,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/project/delete.js",open
 mittwald_project_get,agent-18,critical,missing_definition,"Missing definition file: src/constants/tool/mittwald-cli/project/get.js",open
@@ -97,7 +99,9 @@ mittwald_app_open,agent-3,critical,missing_handler,"Missing handler file: src/ha
 mittwald_app_ssh,agent-3,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/app/ssh.js",open
 mittwald_app_uninstall,agent-3,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/app/uninstall.js",open
 mittwald_app_update,agent-3,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/app/update.js",open
+mittwald_app_upgrade,agent-3,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/app/upgrade.js",open
 mittwald_app_upload,agent-3,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/app/upload.js",open
+mittwald_app_versions,agent-3,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/app/versions.js",open
 mittwald_project_create,agent-18,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/project/create.js",open
 mittwald_project_delete,agent-18,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/project/delete.js",open
 mittwald_project_get,agent-18,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/project/get.js",open
@@ -155,7 +159,6 @@ mittwald_org_get,agent-16,critical,missing_handler,"Missing handler file: src/ha
 mittwald_org_invite,agent-16,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/org/invite.js",open
 mittwald_org_list,agent-16,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/org/list.js",open
 mittwald_org_membership_list_own,agent-16,critical,missing_handler,"Missing handler file: src/handlers/tools/mittwald-cli/org/membership/list/own.js",open
-mittwald_app_upload,agent-3,high,missing_schema,"Missing Zod schema in ToolSchemas",open
 mittwald_project_filesystem,agent-18,high,missing_schema,"Missing Zod schema in ToolSchemas",open
 mittwald_project_invite_list,agent-18,high,missing_schema,"Missing Zod schema in ToolSchemas",open
 mittwald_cronjob_create,agent-8,high,missing_schema,"Missing Zod schema in ToolSchemas",open
@@ -167,13 +170,6 @@ mittwald_org_get,agent-16,high,missing_schema,"Missing Zod schema in ToolSchemas
 mittwald_org_invite,agent-16,high,missing_schema,"Missing Zod schema in ToolSchemas",open
 mittwald_org_list,agent-16,high,missing_schema,"Missing Zod schema in ToolSchemas",open
 mittwald_org_membership_list_own,agent-16,high,missing_schema,"Missing Zod schema in ToolSchemas",open
-mittwald_app_dependency_list,agent-2,high,missing_switch,"Missing switch case in handleToolCall",open
-mittwald_app_download,agent-3,high,missing_switch,"Missing switch case in handleToolCall",open
-mittwald_app_get,agent-3,high,missing_switch,"Missing switch case in handleToolCall",open
-mittwald_app_install,agent-3,high,missing_switch,"Missing switch case in handleToolCall",open
-mittwald_app_install_contao,agent-3,high,missing_switch,"Missing switch case in handleToolCall",open
-mittwald_app_list_upgrade_candidates,agent-3,high,missing_switch,"Missing switch case in handleToolCall",open
-mittwald_app_upload,agent-3,high,missing_switch,"Missing switch case in handleToolCall",open
 mittwald_project_filesystem,agent-18,high,missing_switch,"Missing switch case in handleToolCall",open
 mittwald_project_invite_list_own,agent-18,high,missing_switch,"Missing switch case in handleToolCall",open
 mittwald_project_invite_list,agent-18,high,missing_switch,"Missing switch case in handleToolCall",open

@@ -1,4 +1,8 @@
-export { mittwald_app_install_contao } from './contao.js';
+/**
+ * @file App install-related tool exports
+ * @module constants/tool/mittwald-cli/app/install
+ */
+
 export { mittwald_app_install_joomla } from './joomla.js';
 export { mittwald_app_install_matomo } from './matomo.js';
 export { mittwald_app_install_nextcloud } from './nextcloud.js';

@@ -1,17 +1,17 @@
 # Tool Validation Report
 
-Generated: 2025-06-28T19:35:47.631Z
+Generated: 2025-06-28T20:12:44.008Z
 
 ## Summary
-- **Total Issues**: 205
-- **Critical**: 156 (blocks compilation)
-- **High**: 49 (tool won't work)  
+- **Total Issues**: 201
+- **Critical**: 160 (blocks compilation)
+- **High**: 41 (tool won't work)  
 - **Medium**: 0 (tool works but has issues)
 - **Low**: 0 (minor issues)
 
 ## Issues by Agent
-- **agent-2**: 7 issues
-- **agent-3**: 43 issues
+- **agent-2**: 6 issues
+- **agent-3**: 40 issues
 - **agent-18**: 21 issues
 - **agent-11**: 23 issues
 - **agent-14**: 10 issues
@@ -185,11 +185,27 @@ Generated: 2025-06-28T19:35:47.631Z
 - **Status**: open
 
 
+### mittwald_app_upgrade
+- **Agent**: agent-3
+- **Severity**: critical
+- **Type**: missing_definition
+- **Description**: Missing definition file: src/constants/tool/mittwald-cli/app/upgrade.js
+- **Status**: open
+
+
 ### mittwald_app_upload
 - **Agent**: agent-3
 - **Severity**: critical
 - **Type**: missing_definition
 - **Description**: Missing definition file: src/constants/tool/mittwald-cli/app/upload.js
+- **Status**: open
+
+
+### mittwald_app_versions
+- **Agent**: agent-3
+- **Severity**: critical
+- **Type**: missing_definition
+- **Description**: Missing definition file: src/constants/tool/mittwald-cli/app/versions.js
 - **Status**: open
 
 
@@ -809,11 +825,27 @@ Generated: 2025-06-28T19:35:47.631Z
 - **Status**: open
 
 
+### mittwald_app_upgrade
+- **Agent**: agent-3
+- **Severity**: critical
+- **Type**: missing_handler
+- **Description**: Missing handler file: src/handlers/tools/mittwald-cli/app/upgrade.js
+- **Status**: open
+
+
 ### mittwald_app_upload
 - **Agent**: agent-3
 - **Severity**: critical
 - **Type**: missing_handler
 - **Description**: Missing handler file: src/handlers/tools/mittwald-cli/app/upload.js
+- **Status**: open
+
+
+### mittwald_app_versions
+- **Agent**: agent-3
+- **Severity**: critical
+- **Type**: missing_handler
+- **Description**: Missing handler file: src/handlers/tools/mittwald-cli/app/versions.js
 - **Status**: open
 
 
@@ -1273,14 +1305,6 @@ Generated: 2025-06-28T19:35:47.631Z
 - **Status**: open
 
 
-### mittwald_app_upload
-- **Agent**: agent-3
-- **Severity**: high
-- **Type**: missing_schema
-- **Description**: Missing Zod schema in ToolSchemas
-- **Status**: open
-
-
 ### mittwald_project_filesystem
 - **Agent**: agent-18
 - **Severity**: high
@@ -1366,62 +1390,6 @@ Generated: 2025-06-28T19:35:47.631Z
 - **Severity**: high
 - **Type**: missing_schema
 - **Description**: Missing Zod schema in ToolSchemas
-- **Status**: open
-
-
-### mittwald_app_dependency_list
-- **Agent**: agent-2
-- **Severity**: high
-- **Type**: missing_switch
-- **Description**: Missing switch case in handleToolCall
-- **Status**: open
-
-
-### mittwald_app_download
-- **Agent**: agent-3
-- **Severity**: high
-- **Type**: missing_switch
-- **Description**: Missing switch case in handleToolCall
-- **Status**: open
-
-
-### mittwald_app_get
-- **Agent**: agent-3
-- **Severity**: high
-- **Type**: missing_switch
-- **Description**: Missing switch case in handleToolCall
-- **Status**: open
-
-
-### mittwald_app_install
-- **Agent**: agent-3
-- **Severity**: high
-- **Type**: missing_switch
-- **Description**: Missing switch case in handleToolCall
-- **Status**: open
-
-
-### mittwald_app_install_contao
-- **Agent**: agent-3
-- **Severity**: high
-- **Type**: missing_switch
-- **Description**: Missing switch case in handleToolCall
-- **Status**: open
-
-
-### mittwald_app_list_upgrade_candidates
-- **Agent**: agent-3
-- **Severity**: high
-- **Type**: missing_switch
-- **Description**: Missing switch case in handleToolCall
-- **Status**: open
-
-
-### mittwald_app_upload
-- **Agent**: agent-3
-- **Severity**: high
-- **Type**: missing_switch
-- **Description**: Missing switch case in handleToolCall
 - **Status**: open
 
 

@@ -1,15 +1,8 @@
-export * from './dependency/index.js';
+/**
+ * @file App-related tool exports
+ * @module constants/tool/mittwald-cli/app
+ */
+
+export { mittwald_app } from './app.js';
+// Export install tools from subdirectory
 export * from './install/index.js';
-export * from './list.js';
-export * from './open.js';
-export * from './ssh.js';
-export * from './uninstall.js';
-export * from './update.js';
-export * from './upgrade.js';
-export * from './upload.js';
-export * from './versions.js';
-export { mittwald_app_download } from './download.js';
-export { mittwald_app_get } from './get.js';
-export { mittwald_app_install } from './install.js';
-export { mittwald_app_install_contao } from './install/contao.js';
-export { mittwald_app_list_upgrade_candidates } from './list/upgrade-candidates.js';
