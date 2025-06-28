@@ -83,7 +83,7 @@ import { mittwald_mail_deliverybox } from './tool/mittwald-cli/mail/deliverybox.
 import { mittwald_mail } from './tool/mittwald-cli/mail/mail.js';
 
 // Agent 16 org tools
-import { mittwald_org_membership_list, mittwald_org_membership_revoke } from './tool/mittwald-cli/org/membership/index.js';
+import { mittwald_org_membership_list, mittwald_org_membership_revoke, mittwald_org_membership } from './tool/mittwald-cli/org/index.js';
 
 /**
  * Standard error messages for tool operations.
@@ -188,6 +188,7 @@ export const TOOLS: Tool[] = [
   MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL,
   MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
   MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
+  mittwaldDatabaseList,
   
   // Agent 11 ddev tools
   ddev_init,
@@ -199,6 +200,7 @@ export const TOOLS: Tool[] = [
   // Agent 16 org tools
   mittwald_org_membership_list,
   mittwald_org_membership_revoke,
+  mittwald_org_membership,
 ];
 
 /**

@@ -74,6 +74,7 @@ import { handleMittwaldCronjob } from './tools/mittwald-cli/cronjob/cronjob.js';
 // Agent 9 database handlers
 import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
 import { handleDatabaseMysqlGet, MittwaldDatabaseMysqlGetSchema } from './tools/mittwald-cli/database/mysql/get.js';
+import { handleMittwaldDatabaseList } from './tools/mittwald-cli/database/list.js';
 
 // Agent 11 ddev handlers
 import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';
@@ -84,6 +85,7 @@ import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js'
 // Agent 16 org handlers  
 import { handleOrgMembershipList } from './tools/mittwald-cli/org/membership/list.js';
 import { handleOrgMembershipRevoke } from './tools/mittwald-cli/org/membership/revoke.js';
+import { handleOrgMembership } from './tools/mittwald-cli/org/membership.js';
 
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
@@ -375,6 +377,16 @@ const ToolSchemas = {
   // Agent 9 database tools
   mittwald_database_mysql_dump: MittwaldDatabaseMysqlDumpSchema,
   mittwald_database_mysql_get: MittwaldDatabaseMysqlGetSchema,
+  
+  mittwald_database_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
   
   // Agent 11 ddev tools
   mittwald_ddev_init: ddevInitSchema,
@@ -676,6 +688,16 @@ type ToolArgs = {
     output: 'txt' | 'json' | 'yaml';
   };
   
+  mittwald_database_list: {
+    projectId?: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
+  
   // Agent 15 mail tools
   mittwald_mail_deliverybox: {
     help?: boolean;
@@ -690,6 +712,11 @@ type ToolArgs = {
     noTruncate?: boolean;
     noRelativeDates?: boolean;
     csvSeparator?: ',' | ';';
+  };
+  
+  mittwald_org_membership_revoke: {
+    membershipId: string;
+    quiet?: boolean;
   };
 };
 
@@ -1028,6 +1055,57 @@ export async function handleToolCall(
         result = await handleLoginReset(args, mittwaldLoginResetContext);
         break;
         
+      // Agent 7 cronjob execution tools
+      case "mittwald_cronjob_execution_abort":
+        const mittwaldCronjobExecutionAbortContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleCronjobExecutionAbort(args, mittwaldCronjobExecutionAbortContext);
+        break;
+        
+      case "mittwald_cronjob_execution_get":
+        const mittwaldCronjobExecutionGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleCronjobExecutionGet(args, mittwaldCronjobExecutionGetContext);
+        break;
+        
+      case "mittwald_cronjob_execution_list":
+        const mittwaldCronjobExecutionListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleCronjobExecutionList(args, mittwaldCronjobExecutionListContext);
+        break;
+        
+      case "mittwald_cronjob_execution_logs":
+        const mittwaldCronjobExecutionLogsContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleCronjobExecutionLogs(args, mittwaldCronjobExecutionLogsContext);
+        break;
+        
+      case "mittwald_cronjob_execution":
+        const mittwaldCronjobExecutionContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleCronjobExecution(args, mittwaldCronjobExecutionContext);
+        break;
+        
       // Agent 8 cronjob tools
       case "mittwald_cronjob_get":
         result = await handleMittwaldCronjobGet(args.cronjobId, args.output);
@@ -1096,6 +1174,16 @@ export async function handleToolCall(
           }
         };
         result = await handleOrgMembershipList(args, mittwaldOrgMembershipListContext);
+        break;
+        
+      case "mittwald_org_membership_revoke":
+        const mittwaldOrgMembershipRevokeContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleOrgMembershipRevoke(args, mittwaldOrgMembershipRevokeContext);
         break;
         
       default:
