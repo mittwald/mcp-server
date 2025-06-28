@@ -50,13 +50,22 @@ import { mittwald_login_reset } from './tool/mittwald-cli/login/reset.js';
 // Agent 7 cronjob tools
 import { mittwald_cronjob_create } from './tool/mittwald-cli/cronjob/create.js';
 import { mittwald_cronjob_delete } from './tool/mittwald-cli/cronjob/delete.js';
+import { mittwald_cronjob_execute } from './tool/mittwald-cli/cronjob/execute.js';
 
 // Agent 8 cronjob tools
 import { mittwaldCronjobGet, mittwaldCronjobList } from './tool/mittwald-cli/cronjob/index.js';
 
 // Agent 9 database tools
-import { MITTWALD_DATABASE_MYSQL_DUMP_TOOL } from './tool/mittwald-cli/database/mysql/dump.js';
-import { MITTWALD_DATABASE_MYSQL_GET_TOOL } from './tool/mittwald-cli/database/mysql/get.js';
+import { 
+  MITTWALD_DATABASE_MYSQL_DUMP_TOOL,
+  MITTWALD_DATABASE_MYSQL_GET_TOOL,
+  MITTWALD_DATABASE_MYSQL_IMPORT_TOOL,
+  MITTWALD_DATABASE_MYSQL_LIST_TOOL,
+  MITTWALD_DATABASE_MYSQL_PHPMYADMIN_TOOL,
+  MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL,
+  MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
+  MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL
+} from './tool/mittwald-cli/database/mysql/index.js';
 
 // Agent 11 ddev tools
 import { ddev_init } from './tool/mittwald-cli/ddev/init.js';
@@ -149,6 +158,7 @@ export const TOOLS: Tool[] = [
   // Agent 7 cronjob tools
   mittwald_cronjob_create,
   mittwald_cronjob_delete,
+  mittwald_cronjob_execute,
   
   // Agent 8 cronjob tools
   mittwaldCronjobGet,

@@ -58,6 +58,7 @@ import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
 // Agent 7 cronjob handlers
 import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
 import { handleCronjobDelete } from './tools/mittwald-cli/cronjob/delete.js';
+import { handleCronjobExecute } from './tools/mittwald-cli/cronjob/execute.js';
 
 // Agent 8 cronjob handlers
 import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
@@ -72,6 +73,9 @@ import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.j
 
 // Agent 15 mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
+
+// Agent 16 org handlers  
+import { handleOrgMembershipList } from './tools/mittwald-cli/org/membership/list.js';
 
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
@@ -317,6 +321,17 @@ const ToolSchemas = {
   // Agent 15 mail tools
   mittwald_mail_deliverybox: z.object({
     help: z.boolean().optional().describe("Show help for mail deliverybox commands")
+  }),
+  
+  // Agent 16 org tools
+  mittwald_org_membership_list: z.object({
+    orgId: z.string().optional().describe("ID or short ID of an org; this flag is optional if a default org is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   })
 };
 
@@ -542,6 +557,17 @@ type ToolArgs = {
   // Agent 15 mail tools
   mittwald_mail_deliverybox: {
     help?: boolean;
+  };
+  
+  // Agent 16 org tools
+  mittwald_org_membership_list: {
+    orgId?: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
   };
 };
 
@@ -902,6 +928,20 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleMailDeliverybox(args, mittwaldMailDeliveryboxContext);
+        break;
+        
+      // Agent 16 org tools
+      case "mittwald_org_membership_list":
+        const mittwaldOrgMembershipListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+          orgContext: {
+            orgId: (args as any).orgId
+          }
+        };
+        result = await handleOrgMembershipList(args, mittwaldOrgMembershipListContext);
         break;
         
       default:
