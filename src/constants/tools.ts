@@ -19,6 +19,13 @@ import { mittwald_app_dependency_update } from './tool/mittwald-cli/app/dependen
 import { mittwald_app_dependency_versions } from './tool/mittwald-cli/app/dependency/versions.js';
 import { mittwald_app_dependency_list } from './tool/mittwald-cli/app/dependency/list.js';
 
+// Agent 2 app management tools
+import { mittwald_app_download } from './tool/mittwald-cli/app/download.js';
+import { mittwald_app_get } from './tool/mittwald-cli/app/get.js';
+import { mittwald_app_install } from './tool/mittwald-cli/app/install.js';
+import { mittwald_app_install_contao } from './tool/mittwald-cli/app/install/contao.js';
+import { mittwald_app_list_upgrade_candidates } from './tool/mittwald-cli/app/list/upgrade-candidates.js';
+
 // Agent 3 app install tools
 import { mittwald_app_install_joomla } from './tool/mittwald-cli/app/install/joomla.js';
 import { mittwald_app_install_matomo } from './tool/mittwald-cli/app/install/matomo.js';
@@ -34,7 +41,7 @@ import { mittwald_app_open } from './tool/mittwald-cli/app/open.js';
 import { mittwald_app_ssh } from './tool/mittwald-cli/app/ssh.js';
 import { mittwald_app_uninstall } from './tool/mittwald-cli/app/uninstall.js';
 import { mittwald_app_update } from './tool/mittwald-cli/app/update.js';
-import { mittwald_app_upgrade } from './tool/mittwald-cli/app/upgrade.js';
+// import { mittwald_app_upgrade } from './tool/mittwald-cli/app/upgrade.js'; // TODO: Create upgrade.js file
 import { mittwald_app_upload } from './tool/mittwald-cli/app/upload.js';
 
 // Agent-18 project tools
@@ -101,7 +108,17 @@ import { mittwald_mail_deliverybox } from './tool/mittwald-cli/mail/deliverybox.
 import { mittwald_mail } from './tool/mittwald-cli/mail/mail.js';
 
 // Agent 16 org tools
-import { mittwald_org_membership_list, mittwald_org_membership_revoke, mittwald_org_membership, mittwald_org } from './tool/mittwald-cli/org/index.js';
+import { 
+  mittwald_org_membership_list, 
+  mittwald_org_membership_revoke, 
+  mittwald_org_membership, 
+  mittwald_org,
+  mittwald_org_delete,
+  mittwald_org_get,
+  mittwald_org_invite,
+  mittwald_org_list,
+  mittwald_org_membership_list_own
+} from './tool/mittwald-cli/org/index.js';
 
 /**
  * Standard error messages for tool operations.
@@ -153,6 +170,13 @@ export const TOOLS: Tool[] = [
   mittwald_app_dependency_versions,
   mittwald_app_dependency_list,
   
+  // Agent 2 app management tools
+  mittwald_app_download,
+  mittwald_app_get,
+  mittwald_app_install,
+  mittwald_app_install_contao,
+  mittwald_app_list_upgrade_candidates,
+  
   // Agent 3 app install tools
   mittwald_app_install_joomla,
   mittwald_app_install_matomo,
@@ -168,7 +192,7 @@ export const TOOLS: Tool[] = [
   mittwald_app_ssh,
   mittwald_app_uninstall,
   mittwald_app_update,
-  mittwald_app_upgrade,
+  // mittwald_app_upgrade, // TODO: Create upgrade.js file
   mittwald_app_upload,
   
   // Agent-18 project tools
@@ -238,6 +262,11 @@ export const TOOLS: Tool[] = [
   mittwald_org_membership_revoke,
   mittwald_org_membership,
   mittwald_org,
+  mittwald_org_delete,
+  mittwald_org_get,
+  mittwald_org_invite,
+  mittwald_org_list,
+  mittwald_org_membership_list_own,
 ];
 
 /**

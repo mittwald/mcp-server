@@ -113,12 +113,18 @@ import { handleDomainDnszoneMain, domainDnszoneMainSchema } from './tools/mittwa
 
 // Agent 15 mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
+import { handleMail } from './tools/mittwald-cli/mail/mail.js';
 
 // Agent 16 org handlers  
 import { handleOrgMembershipList } from './tools/mittwald-cli/org/membership/list.js';
 import { handleOrgMembershipRevoke } from './tools/mittwald-cli/org/membership/revoke.js';
 import { handleOrgMembership } from './tools/mittwald-cli/org/membership.js';
 import { handleOrg } from './tools/mittwald-cli/org/org.js';
+import { handleOrgDelete } from './tools/mittwald-cli/org/delete.js';
+import { handleOrgGet } from './tools/mittwald-cli/org/get.js';
+import { handleOrgInvite } from './tools/mittwald-cli/org/invite.js';
+import { handleOrgList } from './tools/mittwald-cli/org/list.js';
+import { handleOrgMembershipListOwn } from './tools/mittwald-cli/org/membership-list-own.js';
 
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
@@ -1620,6 +1626,16 @@ export async function handleToolCall(
         result = await handleMailDeliverybox(args, mittwaldMailDeliveryboxContext);
         break;
         
+      case "mittwald_mail":
+        const mittwaldMailContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMail(args, mittwaldMailContext);
+        break;
+        
       // Agent 16 org tools
       case "mittwald_org_membership_list":
         const mittwaldOrgMembershipListContext: MittwaldToolHandlerContext = {
@@ -1652,6 +1668,56 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleOrg(args, mittwaldOrgContext);
+        break;
+        
+      case "mittwald_org_delete":
+        const mittwaldOrgDeleteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleOrgDelete(args, mittwaldOrgDeleteContext);
+        break;
+        
+      case "mittwald_org_get":
+        const mittwaldOrgGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleOrgGet(args, mittwaldOrgGetContext);
+        break;
+        
+      case "mittwald_org_invite":
+        const mittwaldOrgInviteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleOrgInvite(args, mittwaldOrgInviteContext);
+        break;
+        
+      case "mittwald_org_list":
+        const mittwaldOrgListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleOrgList(args, mittwaldOrgListContext);
+        break;
+        
+      case "mittwald_org_membership_list_own":
+        const mittwaldOrgMembershipListOwnContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleOrgMembershipListOwn(args, mittwaldOrgMembershipListOwnContext);
         break;
         
       default:

@@ -5,7 +5,7 @@ export * from './open.js';
 export * from './ssh.js';
 export * from './uninstall.js';
 export * from './update.js';
-export * from './upgrade.js';
+// export * from './upgrade.js'; // TODO: Create upgrade.js file
 export * from './upload.js';
 export { mittwald_app_download } from './download.js';
 export { mittwald_app_get } from './get.js';

@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "validate-tools": "npx tsx scripts/validate-tools.ts",
+    "dashboard": "chmod +x scripts/evaluation-dashboard.sh && ./scripts/evaluation-dashboard.sh",
+    "validate-agent": "npx tsx scripts/validate-tools.ts --agent",
+    "check-readiness": "npm run validate-tools && npm run typecheck && npm run lint",
+    "evaluation-report": "npm run validate-tools && npm run dashboard"
+  }
+}
