@@ -52,6 +52,9 @@ import { handleAppInstallWordpress } from './tools/mittwald-cli/app/install/word
 // Agent 3 app management handlers
 import { handleAppList } from './tools/mittwald-cli/app/list.js';
 
+// Agent 7 cronjob handlers
+import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
+
 // Agent 8 cronjob handlers
 import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
 
@@ -216,6 +219,17 @@ const ToolSchemas = {
     siteTitle: z.string().optional().describe("Title for the WordPress installation"),
     wait: z.boolean().optional().describe("Wait for installation to complete"),
     waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+  
+  // Agent 3 app management schemas
+  mittwald_app_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   }),
 
   // Agent 14 tools
@@ -401,6 +415,17 @@ type ToolArgs = {
     siteTitle?: string;
     wait?: boolean;
     waitTimeout?: number;
+  };
+  
+  // Agent 3 app management types
+  mittwald_app_list: {
+    projectId?: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
   };
 
   // Agent 14 tools

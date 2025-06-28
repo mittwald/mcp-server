@@ -56,6 +56,9 @@ import { MITTWALD_DATABASE_MYSQL_DUMP_TOOL } from './tool/mittwald-cli/database/
 // Agent 11 ddev tools
 import { ddev_init } from './tool/mittwald-cli/ddev/init.js';
 
+// Agent 15 mail tools
+import { mittwald_mail_deliverybox } from './tool/mittwald-cli/mail/deliverybox.js';
+
 /**
  * Standard error messages for tool operations.
  * 
@@ -131,6 +134,9 @@ export const TOOLS: Tool[] = [
   mittwald_extension_uninstall,
   mittwald_login_reset,
   
+  // Agent 7 cronjob tools
+  mittwald_cronjob_create,
+  
   // Agent 8 cronjob tools
   mittwaldCronjobGet,
   
@@ -139,6 +145,9 @@ export const TOOLS: Tool[] = [
   
   // Agent 11 ddev tools
   ddev_init,
+  
+  // Agent 15 mail tools
+  mittwald_mail_deliverybox,
 ];
 
 /**
