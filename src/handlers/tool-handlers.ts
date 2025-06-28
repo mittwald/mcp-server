@@ -505,6 +505,16 @@ type ToolArgs = {
     output?: 'txt' | 'json' | 'yaml';
   };
   
+  mittwald_cronjob_list: {
+    projectId?: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
+  
   // Agent 9 database tools
   mittwald_database_mysql_dump: {
     databaseId: string;
@@ -853,6 +863,18 @@ export async function handleToolCall(
       // Agent 8 cronjob tools
       case "mittwald_cronjob_get":
         result = await handleMittwaldCronjobGet(args.cronjobId, args.output);
+        break;
+        
+      case "mittwald_cronjob_list":
+        result = await handleMittwaldCronjobList(
+          args.projectId,
+          args.output,
+          args.extended,
+          args.noHeader,
+          args.noTruncate,
+          args.noRelativeDates,
+          args.csvSeparator
+        );
         break;
         
       // Agent 9 database tools

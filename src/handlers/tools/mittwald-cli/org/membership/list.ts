@@ -1,7 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
-import { getOrgId } from '../../../../../utils/mittwald/context.js';
 
 export interface MittwaldOrgMembershipListArgs {
   orgId?: string;
@@ -16,7 +15,7 @@ export interface MittwaldOrgMembershipListArgs {
 export const handleOrgMembershipList: MittwaldToolHandler<MittwaldOrgMembershipListArgs> = async (args, { mittwaldClient, orgContext }) => {
   try {
     // Get org ID from args or context
-    const orgId = await getOrgId(args.orgId, orgContext);
+    const orgId = args.orgId || (orgContext as any)?.orgId;
     
     if (!orgId) {
       throw new Error("Organization ID is required. Either provide it as a parameter or set a default org in the context.");
