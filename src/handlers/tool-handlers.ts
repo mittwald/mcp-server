@@ -40,6 +40,7 @@ import {
 // Agent 2 app dependency handlers
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
 import { handleMittwaldAppDependencyVersions } from './tools/mittwald-cli/app/dependency/versions.js';
+import { handleMittwaldAppDependencyList } from './tools/mittwald-cli/app/dependency/list.js';
 
 // Agent 3 app install handlers
 import { handleAppInstallJoomla } from './tools/mittwald-cli/app/install/joomla.js';
