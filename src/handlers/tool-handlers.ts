@@ -53,6 +53,7 @@ import { handleAppInstallWordpress } from './tools/mittwald-cli/app/install/word
 
 // Agent 3 app management handlers
 import { handleAppList } from './tools/mittwald-cli/app/list.js';
+import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
 
 // Agent 7 cronjob handlers
 import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
