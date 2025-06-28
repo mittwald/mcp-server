@@ -47,6 +47,7 @@ import { mittwald_login_reset } from './tool/mittwald-cli/login/reset.js';
 
 // Agent 7 cronjob tools
 import { mittwald_cronjob_create } from './tool/mittwald-cli/cronjob/create.js';
+import { mittwald_cronjob_delete } from './tool/mittwald-cli/cronjob/delete.js';
 
 // Agent 8 cronjob tools
 import { mittwaldCronjobGet, mittwaldCronjobList } from './tool/mittwald-cli/cronjob/index.js';
