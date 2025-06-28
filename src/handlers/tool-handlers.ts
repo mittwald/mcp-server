@@ -64,6 +64,7 @@ import { handleCronjobExecute } from './tools/mittwald-cli/cronjob/execute.js';
 import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
 import { handleMittwaldCronjobList } from './tools/mittwald-cli/cronjob/list.js';
 import { handleMittwaldCronjobUpdate } from './tools/mittwald-cli/cronjob/update.js';
+import { handleMittwaldCronjob } from './tools/mittwald-cli/cronjob/cronjob.js';
 
 // Agent 9 database handlers
 import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
@@ -326,6 +327,10 @@ const ToolSchemas = {
     timeout: z.string().optional().describe("Timeout after which the process will be killed (duration format like 1h, 30m, 30s)")
   }),
   
+  mittwald_cronjob: z.object({
+    help: z.boolean().optional().describe("Show help for cronjob commands")
+  }),
+  
   // Agent 9 database tools
   mittwald_database_mysql_dump: MittwaldDatabaseMysqlDumpSchema,
   mittwald_database_mysql_get: MittwaldDatabaseMysqlGetSchema,
@@ -567,6 +572,10 @@ type ToolArgs = {
     enable?: boolean;
     disable?: boolean;
     timeout?: string;
+  };
+  
+  mittwald_cronjob: {
+    help?: boolean;
   };
   
   // Agent 9 database tools
@@ -968,6 +977,10 @@ export async function handleToolCall(
           disable: args.disable,
           timeout: args.timeout
         });
+        break;
+        
+      case "mittwald_cronjob":
+        result = await handleMittwaldCronjob(args.help);
         break;
         
       // Agent 9 database tools
