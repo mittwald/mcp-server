@@ -1,6 +1,6 @@
-import { McpTool } from '@/types/mcp';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldDatabaseMysqlCharsets: McpTool = {
+export const mittwaldDatabaseMysqlCharsets: Tool = {
   name: 'mittwald_database_mysql_charsets',
   description: 'List available MySQL character sets and collations, optionally filtered by a MySQLVersion',
   inputSchema: {

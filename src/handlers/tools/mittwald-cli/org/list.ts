@@ -13,8 +13,8 @@ export interface MittwaldOrgListArgs {
 
 export const handleOrgList: MittwaldToolHandler<MittwaldOrgListArgs> = async (args, { mittwaldClient }) => {
   try {
-    // List organizations for the authenticated user
-    const response = await mittwaldClient.customer.listOrganizations({});
+    // List customers the user has access to
+    const response = await mittwaldClient.customer.listCustomers({});
     assertStatus(response, 200);
 
     const orgs = response.data || [];

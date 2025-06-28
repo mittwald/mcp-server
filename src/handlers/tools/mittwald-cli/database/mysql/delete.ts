@@ -1,5 +1,5 @@
-import type { ToolResponse } from '@/utils/format-tool-response';
-import { executeCliCommand } from '@/utils/execute-cli-command';
+import type { ToolResponse } from '../../../../../utils/format-tool-response.js';
+import { executeCliCommand } from '../../../../../utils/execute-cli-command.js';
 
 export async function handleMittwaldDatabaseMysqlDelete(
   databaseId: string,

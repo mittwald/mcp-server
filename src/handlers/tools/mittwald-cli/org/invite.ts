@@ -19,11 +19,11 @@ export const handleOrgInvite: MittwaldToolHandler<MittwaldOrgInviteArgs> = async
       throw new Error("Organization ID is required. Either provide it as a parameter or set a default org in the context.");
     }
 
-    // Invite user to organization
-    const response = await mittwaldClient.customer.createOrganizationInvitation({
-      organizationId: orgId,
+    // Create customer invitation
+    const response = await mittwaldClient.customer.createCustomerInvite({
+      customerId: orgId,
       data: {
-        email: args.email,
+        mailAddress: args.email,
         role: args.role || 'member',
         message: args.message
       }

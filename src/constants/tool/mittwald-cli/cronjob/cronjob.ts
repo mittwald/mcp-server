@@ -3,7 +3,7 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 export const mittwaldCronjob: Tool = {
   name: 'mittwald_cronjob',
   description: 'Manage cronjobs of your projects - shows available cronjob commands',
-  input_schema: {
+  inputSchema: {
     type: 'object',
     properties: {
       help: {

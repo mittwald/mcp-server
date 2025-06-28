@@ -1,4 +1,4 @@
-import { ToolResponse } from '@/types/mcp';
+import type { ToolResponse } from '@/utils/format-tool-response';
 import { executeCliCommand } from '@/utils/execute-cli-command';
 
 export async function handleMittwaldDatabaseList(

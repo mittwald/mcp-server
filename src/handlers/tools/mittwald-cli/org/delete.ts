@@ -25,11 +25,9 @@ export const handleOrgDelete: MittwaldToolHandler<MittwaldOrgDeleteArgs> = async
       );
     }
 
-    // Delete the organization
-    const response = await mittwaldClient.customer.deleteOrganization({
-      organizationId: orgId
-    });
-    assertStatus(response, 204);
+    // Note: Organization deletion is not directly available in the Mittwald API v2
+    // This would need to be done through the customer management interface
+    throw new Error("Organization deletion is not available through the API. Please use the mStudio interface.");
 
     if (args.quiet) {
       return formatToolResponse(

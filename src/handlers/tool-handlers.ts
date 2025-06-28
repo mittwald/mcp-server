@@ -67,6 +67,8 @@ import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
 import { handleAppSsh } from './tools/mittwald-cli/app/ssh.js';
 import { handleAppUninstall } from './tools/mittwald-cli/app/uninstall.js';
 import { handleAppUpdate } from './tools/mittwald-cli/app/update.js';
+import { handleAppUpgrade } from './tools/mittwald-cli/app/upgrade.js';
+import { handleAppUpload } from './tools/mittwald-cli/app/upload.js';
 import { mittwald_app_upgrade_handler, mittwald_app_upgrade_schema } from './tools/mittwald-cli/app/upgrade.js';
 
 // Agent 7 cronjob handlers
@@ -99,8 +101,15 @@ import { handleMittwaldDatabaseMysqlCharsets } from './tools/mittwald-cli/databa
 import { handleMittwaldDatabaseMysqlCreate } from './tools/mittwald-cli/database/mysql/create.js';
 import { handleMittwaldDatabaseMysqlDelete } from './tools/mittwald-cli/database/mysql/delete.js';
 
-// Agent 11 ddev handlers
+// Agent 11 handlers
 import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';
+import { handleDdevRenderConfig, ddevRenderConfigSchema } from './tools/mittwald-cli/ddev/render-config.js';
+import { handleDdevMain, ddevMainSchema } from './tools/mittwald-cli/ddev/index-command.js';
+import { handleDomainGet, domainGetSchema } from './tools/mittwald-cli/domain/get.js';
+import { handleDomainDnszoneGet, domainDnszoneGetSchema } from './tools/mittwald-cli/domain/dnszone/get.js';
+import { handleDomainDnszoneList, domainDnszoneListSchema } from './tools/mittwald-cli/domain/dnszone/list.js';
+import { handleDomainDnszoneUpdate, domainDnszoneUpdateSchema } from './tools/mittwald-cli/domain/dnszone/update.js';
+import { handleDomainDnszoneMain, domainDnszoneMainSchema } from './tools/mittwald-cli/domain/dnszone/main.js';
 
 // Agent 15 mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
@@ -181,6 +190,71 @@ const ToolSchemas = {
 
   mittwald_app_dependency_versions: z.object({
     systemsoftware: z.string().describe("Name of the systemsoftware for which to list versions"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output in a more machine friendly format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    no_header: z.boolean().optional().describe("Hide table header"),
+    no_truncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    no_relative_dates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csv_separator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_app_dependency_list: z.object({
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output in a more machine friendly format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    no_header: z.boolean().optional().describe("Hide table header"),
+    no_truncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    no_relative_dates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csv_separator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_app_download: z.object({
+    installation_id: z.string().optional().describe("ID or short ID of an app installation"),
+    target: z.string().describe("Target directory to download the app installation to"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    ssh_user: z.string().optional().describe("Override the SSH user to connect with"),
+    ssh_identity_file: z.string().optional().describe("The SSH identity file (private key) to use for public key authentication"),
+    exclude: z.array(z.string()).optional().describe("Exclude files matching the given pattern"),
+    dry_run: z.boolean().optional().describe("Do not actually download the app installation"),
+    delete: z.boolean().optional().describe("Delete local files that are not present on the server"),
+    remote_sub_directory: z.string().optional().describe("Specify a sub-directory within the app installation to download")
+  }),
+
+  mittwald_app_get: z.object({
+    installation_id: z.string().optional().describe("ID or short ID of an app installation"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output in a more machine friendly format")
+  }),
+
+  mittwald_app_install: z.object({
+    app_type: z.enum(["contao", "joomla", "matomo", "nextcloud", "shopware5", "shopware6", "typo3", "wordpress"]).describe("Type of application to install"),
+    project_id: z.string().optional().describe("ID or short ID of a project"),
+    version: z.string().optional().describe("Version of the application to be installed"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    host: z.string().optional().describe("Host to initially configure your installation with"),
+    admin_user: z.string().optional().describe("Username for your administrator user"),
+    admin_email: z.string().optional().describe("Email address of your administrator user"),
+    admin_pass: z.string().optional().describe("Password of your administrator user"),
+    site_title: z.string().optional().describe("Site title for your installation"),
+    wait: z.boolean().optional().describe("Wait for the resource to be ready"),
+    wait_timeout: z.string().optional().describe("The duration to wait for the resource to be ready")
+  }),
+
+  mittwald_app_install_contao: z.object({
+    project_id: z.string().optional().describe("ID or short ID of a project"),
+    version: z.string().describe("Version of Contao to be installed"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    host: z.string().optional().describe("Host to initially configure your Contao installation with"),
+    admin_firstname: z.string().optional().describe("First name of your administrator user"),
+    admin_user: z.string().optional().describe("Username for your administrator user"),
+    admin_email: z.string().optional().describe("Email address of your administrator user"),
+    admin_pass: z.string().optional().describe("Password of your administrator user"),
+    admin_lastname: z.string().optional().describe("Last name of your administrator user"),
+    site_title: z.string().optional().describe("Site title for your Contao installation"),
+    wait: z.boolean().optional().describe("Wait for the resource to be ready"),
+    wait_timeout: z.string().optional().describe("The duration to wait for the resource to be ready")
+  }),
+
+  mittwald_app_list_upgrade_candidates: z.object({
+    installation_id: z.string().optional().describe("ID or short ID of an app installation"),
     output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output in a more machine friendly format"),
     extended: z.boolean().optional().describe("Show extended information"),
     no_header: z.boolean().optional().describe("Hide table header"),
@@ -479,8 +553,15 @@ const ToolSchemas = {
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   }),
   
-  // Agent 11 ddev tools
+  // Agent 11 tools
   mittwald_ddev_init: ddevInitSchema,
+  mittwald_ddev_render_config: ddevRenderConfigSchema,
+  mittwald_ddev: ddevMainSchema,
+  mittwald_domain_get: domainGetSchema,
+  mittwald_domain_dnszone_get: domainDnszoneGetSchema,
+  mittwald_domain_dnszone_list: domainDnszoneListSchema,
+  mittwald_domain_dnszone_update: domainDnszoneUpdateSchema,
+  mittwald_domain_dnszone: domainDnszoneMainSchema,
   
   // Agent 15 mail tools
   mittwald_mail_deliverybox: z.object({
@@ -900,6 +981,16 @@ type ToolArgs = {
     force?: boolean;
     quiet?: boolean;
   };
+  
+  // Agent 11 tools
+  mittwald_ddev_init: z.infer<typeof ddevInitSchema>;
+  mittwald_ddev_render_config: z.infer<typeof ddevRenderConfigSchema>;
+  mittwald_ddev: z.infer<typeof ddevMainSchema>;
+  mittwald_domain_get: z.infer<typeof domainGetSchema>;
+  mittwald_domain_dnszone_get: z.infer<typeof domainDnszoneGetSchema>;
+  mittwald_domain_dnszone_list: z.infer<typeof domainDnszoneListSchema>;
+  mittwald_domain_dnszone_update: z.infer<typeof domainDnszoneUpdateSchema>;
+  mittwald_domain_dnszone: z.infer<typeof domainDnszoneMainSchema>;
   
   // Agent 15 mail tools
   mittwald_mail_deliverybox: {
@@ -1483,6 +1574,39 @@ export async function handleToolCall(
           args.force,
           args.quiet
         );
+        break;
+        
+      // Agent 11 tools
+      case "mittwald_ddev_init":
+        result = await handleDdevInit(args);
+        break;
+        
+      case "mittwald_ddev_render_config":
+        result = await handleDdevRenderConfig(args);
+        break;
+        
+      case "mittwald_ddev":
+        result = await handleDdevMain(args);
+        break;
+        
+      case "mittwald_domain_get":
+        result = await handleDomainGet(args);
+        break;
+        
+      case "mittwald_domain_dnszone_get":
+        result = await handleDomainDnszoneGet(args);
+        break;
+        
+      case "mittwald_domain_dnszone_list":
+        result = await handleDomainDnszoneList(args);
+        break;
+        
+      case "mittwald_domain_dnszone_update":
+        result = await handleDomainDnszoneUpdate(args);
+        break;
+        
+      case "mittwald_domain_dnszone":
+        result = await handleDomainDnszoneMain(args);
         break;
         
       // Agent 15 mail tools

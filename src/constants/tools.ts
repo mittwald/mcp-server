@@ -34,7 +34,8 @@ import { mittwald_app_open } from './tool/mittwald-cli/app/open.js';
 import { mittwald_app_ssh } from './tool/mittwald-cli/app/ssh.js';
 import { mittwald_app_uninstall } from './tool/mittwald-cli/app/uninstall.js';
 import { mittwald_app_update } from './tool/mittwald-cli/app/update.js';
-import { mittwald_app_upgrade_def } from './tool/mittwald-cli/app/upgrade.js';
+import { mittwald_app_upgrade } from './tool/mittwald-cli/app/upgrade.js';
+import { mittwald_app_upload } from './tool/mittwald-cli/app/upload.js';
 
 // Agent-18 project tools
 import { mittwald_project_create } from './tool/mittwald-cli/project/create.js';
@@ -167,7 +168,8 @@ export const TOOLS: Tool[] = [
   mittwald_app_ssh,
   mittwald_app_uninstall,
   mittwald_app_update,
-  mittwald_app_upgrade_def,
+  mittwald_app_upgrade,
+  mittwald_app_upload,
   
   // Agent-18 project tools
   mittwald_project_create,

@@ -16,9 +16,9 @@ export const handleOrgGet: MittwaldToolHandler<MittwaldOrgGetArgs> = async (args
       throw new Error("Organization ID is required. Either provide it as a parameter or set a default org in the context.");
     }
 
-    // Get the organization
-    const response = await mittwaldClient.customer.getOrganization({
-      organizationId: orgId
+    // Get the customer details
+    const response = await mittwaldClient.customer.getCustomer({
+      customerId: orgId
     });
     assertStatus(response, 200);
 
@@ -43,11 +43,11 @@ export const handleOrgGet: MittwaldToolHandler<MittwaldOrgGetArgs> = async (args
 
     // Default text format
     const orgDetails = [
-      `Organization: ${org.name || org.id}`,
-      `ID: ${org.id}`,
-      `Status: ${org.enabled ? 'Enabled' : 'Disabled'}`,
-      org.description ? `Description: ${org.description}` : null,
-      org.createdAt ? `Created: ${org.createdAt}` : null
+      `Customer: ${org.name || org.customerId}`,
+      `ID: ${org.customerId}`,
+      `Customer Number: ${org.customerNumber}`,
+      `Status: ${org.activeSuspension ? 'Suspended' : 'Active'}`,
+      org.creationDate ? `Created: ${org.creationDate}` : null
     ].filter(Boolean).join('\n');
 
     return formatToolResponse(

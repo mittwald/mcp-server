@@ -5,6 +5,8 @@ export * from './open.js';
 export * from './ssh.js';
 export * from './uninstall.js';
 export * from './update.js';
+export * from './upgrade.js';
+export * from './upload.js';
 export { mittwald_app_download } from './download.js';
 export { mittwald_app_get } from './get.js';
 export { mittwald_app_install } from './install.js';

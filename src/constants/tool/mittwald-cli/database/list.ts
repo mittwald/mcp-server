@@ -3,7 +3,7 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 export const mittwaldDatabaseList: Tool = {
   name: 'mittwald_database_list',
   description: 'List all kinds of databases belonging to a project',
-  input_schema: {
+  inputSchema: {
     type: 'object',
     properties: {
       projectId: {
