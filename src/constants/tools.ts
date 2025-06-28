@@ -71,8 +71,9 @@ import {
   MITTWALD_DATABASE_MYSQL_PHPMYADMIN_TOOL,
   MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL,
   MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
-  MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL
-} from './tool/mittwald-cli/database/mysql/index.js';
+  MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
+  mittwaldDatabaseList
+} from './tool/mittwald-cli/database/index.js';
 
 // Agent 11 ddev tools
 import { ddev_init } from './tool/mittwald-cli/ddev/init.js';
@@ -82,7 +83,7 @@ import { mittwald_mail_deliverybox } from './tool/mittwald-cli/mail/deliverybox.
 import { mittwald_mail } from './tool/mittwald-cli/mail/mail.js';
 
 // Agent 16 org tools
-import { mittwald_org_membership_list } from './tool/mittwald-cli/org/membership/list.js';
+import { mittwald_org_membership_list, mittwald_org_membership_revoke } from './tool/mittwald-cli/org/membership/index.js';
 
 /**
  * Standard error messages for tool operations.
@@ -166,6 +167,11 @@ export const TOOLS: Tool[] = [
   mittwald_cronjob_create,
   mittwald_cronjob_delete,
   mittwald_cronjob_execute,
+  mittwald_cronjob_execution_abort,
+  mittwald_cronjob_execution_get,
+  mittwald_cronjob_execution_list,
+  mittwald_cronjob_execution_logs,
+  mittwald_cronjob_execution,
   
   // Agent 8 cronjob tools
   mittwaldCronjobGet,
@@ -192,6 +198,7 @@ export const TOOLS: Tool[] = [
   
   // Agent 16 org tools
   mittwald_org_membership_list,
+  mittwald_org_membership_revoke,
 ];
 
 /**

@@ -59,6 +59,11 @@ import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
 import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
 import { handleCronjobDelete } from './tools/mittwald-cli/cronjob/delete.js';
 import { handleCronjobExecute } from './tools/mittwald-cli/cronjob/execute.js';
+import { handleCronjobExecutionAbort } from './tools/mittwald-cli/cronjob/execution-abort.js';
+import { handleCronjobExecutionGet } from './tools/mittwald-cli/cronjob/execution-get.js';
+import { handleCronjobExecutionList } from './tools/mittwald-cli/cronjob/execution-list.js';
+import { handleCronjobExecutionLogs } from './tools/mittwald-cli/cronjob/execution-logs.js';
+import { handleCronjobExecution } from './tools/mittwald-cli/cronjob/execution.js';
 
 // Agent 8 cronjob handlers
 import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
@@ -78,6 +83,7 @@ import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js'
 
 // Agent 16 org handlers  
 import { handleOrgMembershipList } from './tools/mittwald-cli/org/membership/list.js';
+import { handleOrgMembershipRevoke } from './tools/mittwald-cli/org/membership/revoke.js';
 
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
@@ -297,6 +303,41 @@ const ToolSchemas = {
 
   mittwald_login_reset: z.object({}),
   
+  // Agent 7 cronjob execution tools
+  mittwald_cronjob_execution_abort: z.object({
+    cronjobId: z.string().describe("ID of the cronjob the execution belongs to"),
+    executionId: z.string().describe("ID of the cron job execution to abort"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_cronjob_execution_get: z.object({
+    cronjobId: z.string().describe("ID of the cronjob the execution belongs to"),
+    executionId: z.string().describe("ID of the cronjob execution to be retrieved"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_cronjob_execution_list: z.object({
+    cronjobId: z.string().describe("ID of the cron job for which to list executions for"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_cronjob_execution_logs: z.object({
+    cronjobId: z.string().describe("ID of the cronjob the execution belongs to"),
+    executionId: z.string().describe("ID of the cronjob execution to be retrieved"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format"),
+    noPager: z.boolean().optional().describe("Disable pager for output")
+  }),
+  
+  mittwald_cronjob_execution: z.object({
+    command: z.enum(["abort", "get", "list", "logs"]).optional().describe("The execution command to run"),
+    help: z.boolean().optional().describe("Show help for cronjob execution commands")
+  }),
+  
   // Agent 8 cronjob tools
   mittwald_cronjob_get: z.object({
     cronjobId: z.string().describe("ID of the cron job to be retrieved"),
@@ -352,6 +393,11 @@ const ToolSchemas = {
     noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
     noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
     csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_org_membership_revoke: z.object({
+    membershipId: z.string().describe("The ID of the membership to revoke"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   })
 };
 
@@ -543,6 +589,41 @@ type ToolArgs = {
     extensionInstanceId: string;
   };
   mittwald_login_reset: {};
+  
+  // Agent 7 cronjob execution tools
+  mittwald_cronjob_execution_abort: {
+    cronjobId: string;
+    executionId: string;
+    quiet?: boolean;
+  };
+  
+  mittwald_cronjob_execution_get: {
+    cronjobId: string;
+    executionId: string;
+    output?: 'txt' | 'json' | 'yaml';
+  };
+  
+  mittwald_cronjob_execution_list: {
+    cronjobId: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
+  
+  mittwald_cronjob_execution_logs: {
+    cronjobId: string;
+    executionId: string;
+    output?: 'txt' | 'json' | 'yaml';
+    noPager?: boolean;
+  };
+  
+  mittwald_cronjob_execution: {
+    command?: 'abort' | 'get' | 'list' | 'logs';
+    help?: boolean;
+  };
   
   // Agent 8 cronjob tools
   mittwald_cronjob_get: {
