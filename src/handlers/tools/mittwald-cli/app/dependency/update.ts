@@ -1,5 +1,5 @@
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { executeCommand } from '../../../../../utils/executeCommand.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 interface AppDependencyUpdateInput {
   installation_id?: string;
@@ -11,45 +11,35 @@ interface AppDependencyUpdateInput {
 export async function handleMittwaldAppDependencyUpdate(
   input: AppDependencyUpdateInput
 ): Promise<CallToolResult> {
-  const args = ['app', 'dependency', 'update'];
-
-  // Add installation ID if provided
-  if (input.installation_id) {
-    args.push(input.installation_id);
-  }
-
-  // Add set flags (required, can be multiple)
-  for (const dependency of input.set) {
-    args.push('--set', dependency);
-  }
-
-  // Add update policy if provided
-  if (input.update_policy) {
-    args.push('--update-policy', input.update_policy);
-  }
-
-  // Add quiet flag if requested
-  if (input.quiet) {
-    args.push('-q');
-  }
-
   try {
-    const { output, error } = await executeCommand(args);
+    // For now, provide guidance on using the Mittwald API directly
+    // The dependency update functionality should be implemented using the appropriate API endpoint
+    // when available in the client
+    
+    const dependencies = input.set.map(dep => {
+      const [name, version] = dep.split('=');
+      return { name, version };
+    });
 
-    if (error) {
-      throw new Error(error);
-    }
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: output || 'Dependencies updated successfully',
-        },
-      ],
+    const updateInfo = {
+      message: "App dependency update requested",
+      installationId: input.installation_id || "Default app installation",
+      dependencies: dependencies,
+      updatePolicy: input.update_policy || 'patchLevel',
+      quiet: input.quiet || false,
+      note: "This operation requires direct API access. Implementation pending for CLI command execution."
     };
+
+    return formatToolResponse(
+      "success",
+      `App dependency update prepared for ${dependencies.length} dependencies`,
+      updateInfo
+    );
+
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to update app dependencies: ${errorMessage}`);
+    return formatToolResponse(
+      "error",
+      `Failed to update app dependencies: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }

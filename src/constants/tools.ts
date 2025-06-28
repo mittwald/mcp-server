@@ -44,6 +44,9 @@ import { mittwald_extension_list } from './tool/mittwald-cli/extension/list.js';
 import { mittwald_extension_uninstall } from './tool/mittwald-cli/extension/uninstall.js';
 import { mittwald_login_reset } from './tool/mittwald-cli/login/reset.js';
 
+// Agent 7 cronjob tools
+import { mittwald_cronjob_create } from './tool/mittwald-cli/cronjob/create.js';
+
 // Agent 8 cronjob tools
 import { mittwaldCronjobGet } from './tool/mittwald-cli/cronjob/index.js';
 
