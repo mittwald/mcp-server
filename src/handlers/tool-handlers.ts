@@ -955,6 +955,21 @@ export async function handleToolCall(
         );
         break;
         
+      case "mittwald_cronjob_update":
+        result = await handleMittwaldCronjobUpdate(args.cronjobId, {
+          quiet: args.quiet,
+          description: args.description,
+          interval: args.interval,
+          email: args.email,
+          url: args.url,
+          command: args.command,
+          interpreter: args.interpreter,
+          enable: args.enable,
+          disable: args.disable,
+          timeout: args.timeout
+        });
+        break;
+        
       // Agent 9 database tools
       case "mittwald_database_mysql_dump":
         result = await handleDatabaseMysqlDump(args);
