@@ -312,6 +312,20 @@ const ToolSchemas = {
     csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   }),
   
+  mittwald_cronjob_update: z.object({
+    cronjobId: z.string().describe("ID of the cron job to be updated"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    description: z.string().optional().describe("Set cron job description"),
+    interval: z.string().optional().describe("Set the interval for cron jobs to run (cron schedule expression)"),
+    email: z.string().optional().describe("Set the target email to which error messages will be sent"),
+    url: z.string().optional().describe("Set the URL to use when running a cron job"),
+    command: z.string().optional().describe("Specify the file and arguments to be executed when the cron job is run"),
+    interpreter: z.enum(["bash", "php"]).optional().describe("Set the interpreter to be used for execution"),
+    enable: z.boolean().optional().describe("Enable the cron job"),
+    disable: z.boolean().optional().describe("Disable the cron job"),
+    timeout: z.string().optional().describe("Timeout after which the process will be killed (duration format like 1h, 30m, 30s)")
+  }),
+  
   // Agent 9 database tools
   mittwald_database_mysql_dump: MittwaldDatabaseMysqlDumpSchema,
   mittwald_database_mysql_get: MittwaldDatabaseMysqlGetSchema,
@@ -539,6 +553,20 @@ type ToolArgs = {
     noTruncate?: boolean;
     noRelativeDates?: boolean;
     csvSeparator?: ',' | ';';
+  };
+  
+  mittwald_cronjob_update: {
+    cronjobId: string;
+    quiet?: boolean;
+    description?: string;
+    interval?: string;
+    email?: string;
+    url?: string;
+    command?: string;
+    interpreter?: 'bash' | 'php';
+    enable?: boolean;
+    disable?: boolean;
+    timeout?: string;
   };
   
   // Agent 9 database tools

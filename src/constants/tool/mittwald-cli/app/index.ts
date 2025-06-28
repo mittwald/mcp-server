@@ -2,3 +2,8 @@ export * from './dependency/index.js';
 export * from './install/index.js';
 export * from './list.js';
 export * from './open.js';
+export { mittwald_app_download } from './download.js';
+export { mittwald_app_get } from './get.js';
+export { mittwald_app_install } from './install.js';
+export { mittwald_app_install_contao } from './install/contao.js';
+export { mittwald_app_list_upgrade_candidates } from './list/upgrade-candidates.js';
