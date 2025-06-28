@@ -49,7 +49,7 @@ import { mittwald_login_reset } from './tool/mittwald-cli/login/reset.js';
 import { mittwald_cronjob_create } from './tool/mittwald-cli/cronjob/create.js';
 
 // Agent 8 cronjob tools
-import { mittwaldCronjobGet } from './tool/mittwald-cli/cronjob/index.js';
+import { mittwaldCronjobGet, mittwaldCronjobList } from './tool/mittwald-cli/cronjob/index.js';
 
 // Agent 9 database tools
 import { MITTWALD_DATABASE_MYSQL_DUMP_TOOL } from './tool/mittwald-cli/database/mysql/dump.js';

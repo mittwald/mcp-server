@@ -128,6 +128,16 @@ const ToolSchemas = {
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   }),
 
+  mittwald_app_dependency_versions: z.object({
+    systemsoftware: z.string().describe("Name of the systemsoftware for which to list versions"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output in a more machine friendly format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    no_header: z.boolean().optional().describe("Hide table header"),
+    no_truncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    no_relative_dates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csv_separator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
   // Agent 3 app install schemas
   mittwald_app_install_joomla: z.object({
     projectId: z.string().describe("ID or short ID of a project"),
@@ -334,6 +344,16 @@ type ToolArgs = {
     set: string[];
     update_policy?: 'none' | 'inheritedFromApp' | 'patchLevel' | 'all';
     quiet?: boolean;
+  };
+
+  mittwald_app_dependency_versions: {
+    systemsoftware: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    no_header?: boolean;
+    no_truncate?: boolean;
+    no_relative_dates?: boolean;
+    csv_separator?: ',' | ';';
   };
 
   // Agent 3 app install types
