@@ -58,6 +58,7 @@ import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
 
 // Agent 8 cronjob handlers
 import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
+import { handleMittwaldCronjobList } from './tools/mittwald-cli/cronjob/list.js';
 
 // Agent 9 database handlers
 import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
@@ -847,6 +848,17 @@ export async function handleToolCall(
       // Agent 9 database tools
       case "mittwald_database_mysql_dump":
         result = await handleDatabaseMysqlDump(args);
+        break;
+        
+      // Agent 15 mail tools
+      case "mittwald_mail_deliverybox":
+        const mittwaldMailDeliveryboxContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMailDeliverybox(args, mittwaldMailDeliveryboxContext);
         break;
         
       default:
