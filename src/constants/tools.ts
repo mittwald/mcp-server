@@ -16,6 +16,7 @@ import { MCP_LOGGING_TOOL } from './tool/logging.js';
 
 // Agent 2 app dependency tools
 import { mittwald_app_dependency_update } from './tool/mittwald-cli/app/dependency/update.js';
+import { mittwald_app_dependency_versions } from './tool/mittwald-cli/app/dependency/versions.js';
 
 // Agent 3 app install tools
 import { mittwald_app_install_joomla } from './tool/mittwald-cli/app/install/joomla.js';
@@ -107,6 +108,7 @@ export const TOOLS: Tool[] = [
   
   // Agent 2 app dependency tools
   mittwald_app_dependency_update,
+  mittwald_app_dependency_versions,
   
   // Agent 3 app install tools
   mittwald_app_install_joomla,
@@ -143,6 +145,7 @@ export const TOOLS: Tool[] = [
   
   // Agent 9 database tools
   MITTWALD_DATABASE_MYSQL_DUMP_TOOL,
+  MITTWALD_DATABASE_MYSQL_GET_TOOL,
   
   // Agent 11 ddev tools
   ddev_init,

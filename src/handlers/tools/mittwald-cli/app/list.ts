@@ -1,7 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
-import { getProjectId } from '../../../../../utils/mittwald/context.js';
 
 export interface MittwaldAppListArgs {
   projectId?: string;
@@ -16,7 +15,7 @@ export interface MittwaldAppListArgs {
 export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (args, { mittwaldClient, projectContext }) => {
   try {
     // Get project ID from args or context
-    const projectId = await getProjectId(args.projectId, projectContext);
+    const projectId = args.projectId || (projectContext as any)?.projectId;
     
     if (!projectId) {
       throw new Error("Project ID is required. Either provide it as a parameter or set a default project in the context.");

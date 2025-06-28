@@ -39,6 +39,7 @@ import {
 
 // Agent 2 app dependency handlers
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
+import { handleMittwaldAppDependencyVersions } from './tools/mittwald-cli/app/dependency/versions.js';
 
 // Agent 3 app install handlers
 import { handleAppInstallJoomla } from './tools/mittwald-cli/app/install/joomla.js';
@@ -60,9 +61,13 @@ import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
 
 // Agent 9 database handlers
 import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
+import { handleDatabaseMysqlGet, MittwaldDatabaseMysqlGetSchema } from './tools/mittwald-cli/database/mysql/get.js';
 
 // Agent 11 ddev handlers
 import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';
+
+// Agent 15 mail handlers
+import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
 
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
@@ -276,9 +281,15 @@ const ToolSchemas = {
   
   // Agent 9 database tools
   mittwald_database_mysql_dump: MittwaldDatabaseMysqlDumpSchema,
+  mittwald_database_mysql_get: MittwaldDatabaseMysqlGetSchema,
   
   // Agent 11 ddev tools
-  mittwald_ddev_init: ddevInitSchema
+  mittwald_ddev_init: ddevInitSchema,
+  
+  // Agent 15 mail tools
+  mittwald_mail_deliverybox: z.object({
+    help: z.boolean().optional().describe("Show help for mail deliverybox commands")
+  })
 };
 
 /**
@@ -474,6 +485,10 @@ type ToolArgs = {
     temporaryUser?: boolean;
     sshUser?: string;
     sshIdentityFile?: string;
+  };
+  mittwald_database_mysql_get: {
+    databaseId: string;
+    output: 'txt' | 'json' | 'yaml';
   };
 };
 
