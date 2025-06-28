@@ -67,10 +67,9 @@ import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
 import { handleAppSsh } from './tools/mittwald-cli/app/ssh.js';
 import { handleAppUninstall } from './tools/mittwald-cli/app/uninstall.js';
 import { handleAppUpdate } from './tools/mittwald-cli/app/update.js';
-import { handleAppUpgrade } from './tools/mittwald-cli/app/upgrade.js';
 import { handleAppUpload } from './tools/mittwald-cli/app/upload.js';
 import { handleAppVersions } from './tools/mittwald-cli/app/versions.js';
-import { mittwald_app_upgrade_handler, mittwald_app_upgrade_schema } from './tools/mittwald-cli/app/upgrade.js';
+import { handleAppUpgrade, mittwald_app_upgrade_handler, mittwald_app_upgrade_schema } from './tools/mittwald-cli/app/upgrade.js';
 
 // Agent 7 cronjob handlers
 import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';

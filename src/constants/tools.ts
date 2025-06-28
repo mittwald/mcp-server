@@ -41,7 +41,7 @@ import { mittwald_app_open } from './tool/mittwald-cli/app/open.js';
 import { mittwald_app_ssh } from './tool/mittwald-cli/app/ssh.js';
 import { mittwald_app_uninstall } from './tool/mittwald-cli/app/uninstall.js';
 import { mittwald_app_update } from './tool/mittwald-cli/app/update.js';
-// import { mittwald_app_upgrade } from './tool/mittwald-cli/app/upgrade.js'; // TODO: Create upgrade.js file
+import { mittwald_app_upgrade } from './tool/mittwald-cli/app/upgrade.js';
 import { mittwald_app_upload } from './tool/mittwald-cli/app/upload.js';
 import { mittwald_app_versions } from './tool/mittwald-cli/app/versions.js';
 
@@ -193,7 +193,7 @@ export const TOOLS: Tool[] = [
   mittwald_app_ssh,
   mittwald_app_uninstall,
   mittwald_app_update,
-  // mittwald_app_upgrade, // TODO: Create upgrade.js file
+  mittwald_app_upgrade,
   mittwald_app_upload,
   mittwald_app_versions,
   
