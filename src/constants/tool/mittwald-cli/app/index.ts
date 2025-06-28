@@ -3,6 +3,7 @@ export * from './install/index.js';
 export * from './list.js';
 export * from './open.js';
 export * from './ssh.js';
+export * from './uninstall.js';
 export { mittwald_app_download } from './download.js';
 export { mittwald_app_get } from './get.js';
 export { mittwald_app_install } from './install.js';

@@ -55,6 +55,7 @@ import { handleAppInstallWordpress } from './tools/mittwald-cli/app/install/word
 import { handleAppList } from './tools/mittwald-cli/app/list.js';
 import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
 import { handleAppSsh } from './tools/mittwald-cli/app/ssh.js';
+import { handleAppUninstall } from './tools/mittwald-cli/app/uninstall.js';
 
 // Agent 7 cronjob handlers
 import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
@@ -75,8 +76,15 @@ import { handleMittwaldCronjob } from './tools/mittwald-cli/cronjob/cronjob.js';
 // Agent 9 database handlers
 import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
 import { handleDatabaseMysqlGet, MittwaldDatabaseMysqlGetSchema } from './tools/mittwald-cli/database/mysql/get.js';
+import { handleDatabaseMysqlImport, MittwaldDatabaseMysqlImportSchema } from './tools/mittwald-cli/database/mysql/import.js';
+import { handleDatabaseMysqlList, MittwaldDatabaseMysqlListSchema } from './tools/mittwald-cli/database/mysql/list.js';
+import { handleDatabaseMysqlPhpmyadmin, MittwaldDatabaseMysqlPhpmyadminSchema } from './tools/mittwald-cli/database/mysql/phpmyadmin.js';
+import { handleDatabaseMysqlPortForward, MittwaldDatabaseMysqlPortForwardSchema } from './tools/mittwald-cli/database/mysql/port-forward.js';
+import { handleDatabaseMysqlShell, MittwaldDatabaseMysqlShellSchema } from './tools/mittwald-cli/database/mysql/shell.js';
+import { handleDatabaseMysqlVersions, MittwaldDatabaseMysqlVersionsSchema } from './tools/mittwald-cli/database/mysql/versions.js';
 import { handleMittwaldDatabaseList } from './tools/mittwald-cli/database/list.js';
 import { handleMittwaldDatabaseMysqlCharsets } from './tools/mittwald-cli/database/mysql/charsets.js';
+import { handleMittwaldDatabaseMysqlCreate } from './tools/mittwald-cli/database/mysql/create.js';
 
 // Agent 11 ddev handlers
 import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';
@@ -88,6 +96,7 @@ import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js'
 import { handleOrgMembershipList } from './tools/mittwald-cli/org/membership/list.js';
 import { handleOrgMembershipRevoke } from './tools/mittwald-cli/org/membership/revoke.js';
 import { handleOrgMembership } from './tools/mittwald-cli/org/membership.js';
+import { handleOrg } from './tools/mittwald-cli/org/org.js';
 
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
@@ -280,6 +289,12 @@ const ToolSchemas = {
     test: z.boolean().optional().describe("Test connection and exit")
   }),
 
+  mittwald_app_uninstall: z.object({
+    installationId: z.string().optional().describe("ID or short ID of an app installation; this argument is optional if a default app installation is set in the context"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+
   // Agent 14 tools
   mittwald_domain_virtualhost_list: z.object({
     projectId: z.string().optional().describe("ID or short ID of a project"),
@@ -388,6 +403,12 @@ const ToolSchemas = {
   // Agent 9 database tools
   mittwald_database_mysql_dump: MittwaldDatabaseMysqlDumpSchema,
   mittwald_database_mysql_get: MittwaldDatabaseMysqlGetSchema,
+  mittwald_database_mysql_import: MittwaldDatabaseMysqlImportSchema,
+  mittwald_database_mysql_list: MittwaldDatabaseMysqlListSchema,
+  mittwald_database_mysql_phpmyadmin: MittwaldDatabaseMysqlPhpmyadminSchema,
+  mittwald_database_mysql_port_forward: MittwaldDatabaseMysqlPortForwardSchema,
+  mittwald_database_mysql_shell: MittwaldDatabaseMysqlShellSchema,
+  mittwald_database_mysql_versions: MittwaldDatabaseMysqlVersionsSchema,
   
   mittwald_database_list: z.object({
     projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
@@ -435,6 +456,11 @@ const ToolSchemas = {
   mittwald_org_membership: z.object({
     command: z.enum(["list", "list-own", "revoke"]).optional().describe("The membership command to run"),
     help: z.boolean().optional().describe("Show help for org membership commands")
+  }),
+  
+  mittwald_org: z.object({
+    command: z.enum(["delete", "get", "invite", "list", "membership"]).optional().describe("The org command to run"),
+    help: z.boolean().optional().describe("Show help for org commands")
   })
 };
 
@@ -605,6 +631,11 @@ type ToolArgs = {
     info?: boolean;
     test?: boolean;
   };
+  mittwald_app_uninstall: {
+    installationId?: string;
+    force?: boolean;
+    quiet?: boolean;
+  };
 
   // Agent 14 tools
   mittwald_domain_virtualhost_list: {
@@ -720,6 +751,51 @@ type ToolArgs = {
     databaseId: string;
     output: 'txt' | 'json' | 'yaml';
   };
+  mittwald_database_mysql_import: {
+    databaseId: string;
+    input: string;
+    mysqlPassword?: string;
+    quiet?: boolean;
+    gzip?: boolean;
+    mysqlCharset?: string;
+    temporaryUser?: boolean;
+    sshUser?: string;
+    sshIdentityFile?: string;
+  };
+  mittwald_database_mysql_list: {
+    projectId?: string;
+    output: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
+  mittwald_database_mysql_phpmyadmin: {
+    databaseId: string;
+  };
+  mittwald_database_mysql_port_forward: {
+    databaseId: string;
+    port: number;
+    sshUser?: string;
+    sshIdentityFile?: string;
+  };
+  mittwald_database_mysql_shell: {
+    databaseId: string;
+    mysqlPassword?: string;
+    mysqlCharset?: string;
+    temporaryUser?: boolean;
+    sshUser?: string;
+    sshIdentityFile?: string;
+  };
+  mittwald_database_mysql_versions: {
+    output: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
   
   mittwald_database_list: {
     projectId?: string;
@@ -763,6 +839,11 @@ type ToolArgs = {
   
   mittwald_org_membership: {
     command?: 'list' | 'list-own' | 'revoke';
+    help?: boolean;
+  };
+  
+  mittwald_org: {
+    command?: 'delete' | 'get' | 'invite' | 'list' | 'membership';
     help?: boolean;
   };
 };
@@ -1053,6 +1134,19 @@ export async function handleToolCall(
         };
         result = await handleAppSsh(args, mittwaldAppSshContext);
         break;
+      case "mittwald_app_uninstall":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppUninstallContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+          appContext: {
+            installationId: (args as any).installationId
+          }
+        };
+        result = await handleAppUninstall(args, mittwaldAppUninstallContext);
+        break;
 
       // Agent 14 tools
       case "mittwald_domain_virtualhost_list":
@@ -1211,6 +1305,30 @@ export async function handleToolCall(
         result = await handleDatabaseMysqlGet(args);
         break;
         
+      case "mittwald_database_mysql_import":
+        result = await handleDatabaseMysqlImport(args);
+        break;
+        
+      case "mittwald_database_mysql_list":
+        result = await handleDatabaseMysqlList(args);
+        break;
+        
+      case "mittwald_database_mysql_phpmyadmin":
+        result = await handleDatabaseMysqlPhpmyadmin(args);
+        break;
+        
+      case "mittwald_database_mysql_port_forward":
+        result = await handleDatabaseMysqlPortForward(args);
+        break;
+        
+      case "mittwald_database_mysql_shell":
+        result = await handleDatabaseMysqlShell(args);
+        break;
+        
+      case "mittwald_database_mysql_versions":
+        result = await handleDatabaseMysqlVersions(args);
+        break;
+        
       case "mittwald_database_list":
         result = await handleMittwaldDatabaseList(
           args.projectId,
@@ -1267,6 +1385,16 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleOrgMembershipRevoke(args, mittwaldOrgMembershipRevokeContext);
+        break;
+        
+      case "mittwald_org":
+        const mittwaldOrgContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleOrg(args, mittwaldOrgContext);
         break;
         
       default:

@@ -32,6 +32,7 @@ import { mittwald_app_install_wordpress } from './tool/mittwald-cli/app/install/
 import { mittwald_app_list } from './tool/mittwald-cli/app/list.js';
 import { mittwald_app_open } from './tool/mittwald-cli/app/open.js';
 import { mittwald_app_ssh } from './tool/mittwald-cli/app/ssh.js';
+import { mittwald_app_uninstall } from './tool/mittwald-cli/app/uninstall.js';
 
 // Agent-18 project tools
 import { mittwald_project_create } from './tool/mittwald-cli/project/create.js';
@@ -74,7 +75,8 @@ import {
   MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
   MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
   mittwaldDatabaseList,
-  mittwaldDatabaseMysqlCharsets
+  mittwaldDatabaseMysqlCharsets,
+  mittwaldDatabaseMysqlCreate
 } from './tool/mittwald-cli/database/index.js';
 
 // Agent 11 ddev tools
@@ -150,6 +152,7 @@ export const TOOLS: Tool[] = [
   mittwald_app_list,
   mittwald_app_open,
   mittwald_app_ssh,
+  mittwald_app_uninstall,
   
   // Agent-18 project tools
   mittwald_project_create,
@@ -193,6 +196,7 @@ export const TOOLS: Tool[] = [
   MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
   mittwaldDatabaseList,
   mittwaldDatabaseMysqlCharsets,
+  mittwaldDatabaseMysqlCreate,
   
   // Agent 11 ddev tools
   ddev_init,
@@ -205,6 +209,7 @@ export const TOOLS: Tool[] = [
   mittwald_org_membership_list,
   mittwald_org_membership_revoke,
   mittwald_org_membership,
+  mittwald_org,
 ];
 
 /**
