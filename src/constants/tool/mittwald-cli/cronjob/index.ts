@@ -4,3 +4,4 @@ export { mittwald_cronjob_execute } from './execute.js';
 export { mittwaldCronjobGet } from './get.js';
 export { mittwaldCronjobList } from './list.js';
 export { mittwaldCronjobUpdate } from './update.js';
+export { mittwaldCronjob } from './cronjob.js';
