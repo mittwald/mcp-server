@@ -13,7 +13,9 @@
 // export * from './context/index.js';
 // export * from './cronjob/index.js';
 // export * from './database/index.js';
-// export * from './domain/index.js';
+export * from './domain/index.js';
+export * from './extension/index.js';
+export * from './login/index.js';
 // export * from './mail/index.js';
 // export * from './org/index.js';
 // export * from './project/index.js';
