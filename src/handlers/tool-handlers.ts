@@ -24,7 +24,31 @@ import type { ToolHandlerContext } from './tools/types.js';
 import {
   handleElicitationExample,
   handleLogging,
+  handleProjectCreate,
+  handleProjectDelete,
+  handleProjectGet,
+  handleProjectFilesystemUsage,
+  handleProjectInviteGet,
+  handleDomainVirtualhostList,
+  handleExtensionInstall,
+  handleExtensionListInstalled,
+  handleExtensionList,
+  handleExtensionUninstall,
+  handleLoginReset,
 } from './tools/index.js';
+
+// Agent 3 app install handlers
+import { handleAppInstallJoomla } from './tools/mittwald-cli/app/install/joomla.js';
+import { handleAppInstallMatomo } from './tools/mittwald-cli/app/install/matomo.js';
+import { handleAppInstallNextcloud } from './tools/mittwald-cli/app/install/nextcloud.js';
+import { handleAppInstallShopware5 } from './tools/mittwald-cli/app/install/shopware5.js';
+import { handleAppInstallShopware6 } from './tools/mittwald-cli/app/install/shopware6.js';
+import { handleAppInstallTypo3 } from './tools/mittwald-cli/app/install/typo3.js';
+import { handleAppInstallWordpress } from './tools/mittwald-cli/app/install/wordpress.js';
+
+
+import { getMittwaldClient } from '../services/mittwald/index.js';
+import type { MittwaldToolHandlerContext } from '../types/mittwald/conversation.js';
 
 /**
  * Zod schemas for tool validation
@@ -41,7 +65,171 @@ const ToolSchemas = {
     level: z.enum(["debug", "info", "warning", "error"]).describe("Log level"),
     message: z.string().describe("Message to log"),
     data: z.unknown().optional().describe("Optional additional data")
-  })
+  }),
+  
+  
+  // Agent-18 project tools
+  mittwald_project_create: z.object({
+    description: z.string().describe("A description for the project"),
+    serverId: z.string().describe("Server ID to create project on"),
+    wait: z.boolean().optional().describe("Wait for operation to complete"),
+    waitTimeout: z.number().optional().describe("Timeout for wait operation in milliseconds"),
+    updateContext: z.boolean().optional().describe("Update the CLI context to use the newly created project")
+  }),
+
+  mittwald_project_delete: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    force: z.boolean().describe("Do not ask for confirmation (required in MCP context)")
+  }),
+
+  mittwald_project_get: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    output: z.enum(["json", "table", "yaml"]).optional().describe("Output format")
+  }),
+
+  mittwald_project_filesystem_usage: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    human: z.boolean().optional().describe("Display human readable sizes")
+  }),
+
+  mittwald_project_invite_get: z.object({
+    inviteId: z.string().describe("ID of the ProjectInvite to be retrieved"),
+    output: z.enum(["json", "table", "yaml"]).optional().describe("Output format")
+  }),
+
+  // Agent 3 app install schemas
+  mittwald_app_install_joomla: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    version: z.string().optional().describe("Version to install"),
+    host: z.string().optional().describe("Host to configure the app with"),
+    adminUser: z.string().optional().describe("Administrator username"),
+    adminEmail: z.string().optional().describe("Administrator email"),
+    adminPass: z.string().optional().describe("Administrator password"),
+    adminFirstname: z.string().optional().describe("Administrator first name"),
+    adminLastname: z.string().optional().describe("Administrator last name"),
+    siteTitle: z.string().optional().describe("Title for the Joomla installation"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+
+  mittwald_app_install_matomo: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    version: z.string().optional().describe("Version to install"),
+    host: z.string().optional().describe("Host to configure the app with"),
+    adminUser: z.string().optional().describe("Administrator username"),
+    adminEmail: z.string().optional().describe("Administrator email"),
+    adminPass: z.string().optional().describe("Administrator password"),
+    siteTitle: z.string().optional().describe("Title for the Matomo installation"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+
+  mittwald_app_install_nextcloud: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    version: z.string().optional().describe("Version to install"),
+    host: z.string().optional().describe("Host to configure the app with"),
+    adminUser: z.string().optional().describe("Administrator username"),
+    adminEmail: z.string().optional().describe("Administrator email"),
+    adminPass: z.string().optional().describe("Administrator password"),
+    siteTitle: z.string().optional().describe("Title for the Nextcloud installation"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+
+  mittwald_app_install_shopware5: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    version: z.string().optional().describe("Version to install"),
+    host: z.string().optional().describe("Host to configure the app with"),
+    adminUser: z.string().optional().describe("Administrator username"),
+    adminEmail: z.string().optional().describe("Administrator email"),
+    adminPass: z.string().optional().describe("Administrator password"),
+    adminFirstname: z.string().optional().describe("Administrator first name"),
+    adminLastname: z.string().optional().describe("Administrator last name"),
+    siteTitle: z.string().optional().describe("Title for the Shopware installation"),
+    shopEmail: z.string().optional().describe("Shop email address"),
+    shopLang: z.string().optional().describe("Shop language"),
+    shopCurrency: z.string().optional().describe("Shop currency"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+
+  mittwald_app_install_shopware6: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    version: z.string().optional().describe("Version to install"),
+    host: z.string().optional().describe("Host to configure the app with"),
+    adminUser: z.string().optional().describe("Administrator username"),
+    adminEmail: z.string().optional().describe("Administrator email"),
+    adminPass: z.string().optional().describe("Administrator password"),
+    adminFirstname: z.string().optional().describe("Administrator first name"),
+    adminLastname: z.string().optional().describe("Administrator last name"),
+    siteTitle: z.string().optional().describe("Title for the Shopware installation"),
+    shopEmail: z.string().optional().describe("Shop email address"),
+    shopLang: z.string().optional().describe("Shop language"),
+    shopCurrency: z.string().optional().describe("Shop currency"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+
+  mittwald_app_install_typo3: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    version: z.string().optional().describe("Version to install"),
+    host: z.string().optional().describe("Host to configure the app with"),
+    adminUser: z.string().optional().describe("Administrator username"),
+    adminEmail: z.string().optional().describe("Administrator email"),
+    adminPass: z.string().optional().describe("Administrator password"),
+    siteTitle: z.string().optional().describe("Title for the TYPO3 installation"),
+    installMode: z.enum(["composer", "symlink"]).optional().describe("Installation mode"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+
+  mittwald_app_install_wordpress: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    version: z.string().optional().describe("Version to install"),
+    host: z.string().optional().describe("Host to configure the app with"),
+    adminUser: z.string().optional().describe("Administrator username"),
+    adminEmail: z.string().optional().describe("Administrator email"),
+    adminPass: z.string().optional().describe("Administrator password"),
+    siteTitle: z.string().optional().describe("Title for the WordPress installation"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+
+  // Agent 14 tools
+  mittwald_domain_virtualhost_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project"),
+    all: z.boolean().optional().describe("List all virtual hosts (do not filter by project)"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Do not show table headers"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output"),
+    noRelativeDates: z.boolean().optional().describe("Do not use relative dates"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("CSV separator to use")
+  }),
+
+  mittwald_extension_install: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    extensionId: z.string().describe("ID of the extension to install"),
+    description: z.string().optional().describe("Description for the extension installation"),
+    consent: z.boolean().optional().describe("Consent to the extension's terms and conditions"),
+    wait: z.boolean().optional().describe("Wait for the installation to complete"),
+    waitTimeout: z.number().optional().describe("Timeout in milliseconds to wait for the installation to complete")
+  }),
+
+  mittwald_extension_list: z.object({}),
+
+  mittwald_extension_list_installed: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project"),
+    orgId: z.string().optional().describe("ID of an organization")
+  }).refine(data => (data.projectId && !data.orgId) || (!data.projectId && data.orgId), {
+    message: "Exactly one of projectId or orgId must be provided"
+  }),
+
+  mittwald_extension_uninstall: z.object({
+    extensionInstanceId: z.string().describe("ID of the extension instance to uninstall")
+  }),
+
+  mittwald_login_reset: z.object({})
 };
 
 /**
@@ -54,6 +242,152 @@ const ToolSchemas = {
 type ToolArgs = {
   elicitation_example: any; // Example tools use any for flexibility
   mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
+  
+  // Agent-18 project tools
+  mittwald_project_create: {
+    description: string;
+    serverId: string;
+    wait?: boolean;
+    waitTimeout?: number;
+    updateContext?: boolean;
+  };
+  mittwald_project_delete: {
+    projectId: string;
+    force: boolean;
+  };
+  mittwald_project_get: {
+    projectId: string;
+    output?: 'json' | 'table' | 'yaml';
+  };
+  mittwald_project_filesystem_usage: {
+    projectId: string;
+    human?: boolean;
+  };
+  mittwald_project_invite_get: {
+    inviteId: string;
+    output?: 'json' | 'table' | 'yaml';
+  };
+
+  // Agent 3 app install types
+  mittwald_app_install_joomla: {
+    projectId: string;
+    version?: string;
+    host?: string;
+    adminUser?: string;
+    adminEmail?: string;
+    adminPass?: string;
+    adminFirstname?: string;
+    adminLastname?: string;
+    siteTitle?: string;
+    wait?: boolean;
+    waitTimeout?: number;
+  };
+  mittwald_app_install_matomo: {
+    projectId: string;
+    version?: string;
+    host?: string;
+    adminUser?: string;
+    adminEmail?: string;
+    adminPass?: string;
+    siteTitle?: string;
+    wait?: boolean;
+    waitTimeout?: number;
+  };
+  mittwald_app_install_nextcloud: {
+    projectId: string;
+    version?: string;
+    host?: string;
+    adminUser?: string;
+    adminEmail?: string;
+    adminPass?: string;
+    siteTitle?: string;
+    wait?: boolean;
+    waitTimeout?: number;
+  };
+  mittwald_app_install_shopware5: {
+    projectId: string;
+    version?: string;
+    host?: string;
+    adminUser?: string;
+    adminEmail?: string;
+    adminPass?: string;
+    adminFirstname?: string;
+    adminLastname?: string;
+    siteTitle?: string;
+    shopEmail?: string;
+    shopLang?: string;
+    shopCurrency?: string;
+    wait?: boolean;
+    waitTimeout?: number;
+  };
+  mittwald_app_install_shopware6: {
+    projectId: string;
+    version?: string;
+    host?: string;
+    adminUser?: string;
+    adminEmail?: string;
+    adminPass?: string;
+    adminFirstname?: string;
+    adminLastname?: string;
+    siteTitle?: string;
+    shopEmail?: string;
+    shopLang?: string;
+    shopCurrency?: string;
+    wait?: boolean;
+    waitTimeout?: number;
+  };
+  mittwald_app_install_typo3: {
+    projectId: string;
+    version?: string;
+    host?: string;
+    adminUser?: string;
+    adminEmail?: string;
+    adminPass?: string;
+    siteTitle?: string;
+    installMode?: string;
+    wait?: boolean;
+    waitTimeout?: number;
+  };
+  mittwald_app_install_wordpress: {
+    projectId: string;
+    version?: string;
+    host?: string;
+    adminUser?: string;
+    adminEmail?: string;
+    adminPass?: string;
+    siteTitle?: string;
+    wait?: boolean;
+    waitTimeout?: number;
+  };
+
+  // Agent 14 tools
+  mittwald_domain_virtualhost_list: {
+    projectId?: string;
+    all?: boolean;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
+  mittwald_extension_install: {
+    projectId: string;
+    extensionId: string;
+    description?: string;
+    consent?: boolean;
+    wait?: boolean;
+    waitTimeout?: number;
+  };
+  mittwald_extension_list: {};
+  mittwald_extension_list_installed: {
+    projectId?: string;
+    orgId?: string;
+  };
+  mittwald_extension_uninstall: {
+    extensionInstanceId: string;
+  };
+  mittwald_login_reset: {};
 };
 
 /**
@@ -165,6 +499,193 @@ export async function handleToolCall(
         break;
       case "mcp_logging":
         result = await handleLogging(args, handlerContext);
+        break;
+      
+      // Note: Org handlers not yet implemented
+
+      // Agent-18 project tools
+      case "mittwald_project_create":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldProjectCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectCreate(args, mittwaldProjectCreateContext);
+        break;
+      case "mittwald_project_delete":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldProjectDeleteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectDelete(args, mittwaldProjectDeleteContext);
+        break;
+      case "mittwald_project_get":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldProjectGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectGet(args, mittwaldProjectGetContext);
+        break;
+      case "mittwald_project_filesystem_usage":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldProjectFilesystemUsageContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectFilesystemUsage(args, mittwaldProjectFilesystemUsageContext);
+        break;
+      case "mittwald_project_invite_get":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldProjectInviteGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectInviteGet(args, mittwaldProjectInviteGetContext);
+        break;
+
+      // Agent 3 app install tools
+      case "mittwald_app_install_joomla":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppInstallJoomlaContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppInstallJoomla(args, mittwaldAppInstallJoomlaContext);
+        break;
+      case "mittwald_app_install_matomo":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppInstallMatomoContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppInstallMatomo(args, mittwaldAppInstallMatomoContext);
+        break;
+      case "mittwald_app_install_nextcloud":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppInstallNextcloudContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppInstallNextcloud(args, mittwaldAppInstallNextcloudContext);
+        break;
+      case "mittwald_app_install_shopware5":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppInstallShopware5Context: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppInstallShopware5(args, mittwaldAppInstallShopware5Context);
+        break;
+      case "mittwald_app_install_shopware6":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppInstallShopware6Context: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppInstallShopware6(args, mittwaldAppInstallShopware6Context);
+        break;
+      case "mittwald_app_install_typo3":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppInstallTypo3Context: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppInstallTypo3(args, mittwaldAppInstallTypo3Context);
+        break;
+      case "mittwald_app_install_wordpress":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppInstallWordpressContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppInstallWordpress(args, mittwaldAppInstallWordpressContext);
+        break;
+
+      // Agent 14 tools
+      case "mittwald_domain_virtualhost_list":
+        const mittwaldDomainVirtualhostListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleDomainVirtualhostList(args, mittwaldDomainVirtualhostListContext);
+        break;
+      
+      case "mittwald_extension_install":
+        const mittwaldExtensionInstallContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleExtensionInstall(args, mittwaldExtensionInstallContext);
+        break;
+      
+      case "mittwald_extension_list":
+        const mittwaldExtensionListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleExtensionList(args, mittwaldExtensionListContext);
+        break;
+      
+      case "mittwald_extension_list_installed":
+        const mittwaldExtensionListInstalledContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleExtensionListInstalled(args, mittwaldExtensionListInstalledContext);
+        break;
+      
+      case "mittwald_extension_uninstall":
+        const mittwaldExtensionUninstallContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleExtensionUninstall(args, mittwaldExtensionUninstallContext);
+        break;
+      
+      case "mittwald_login_reset":
+        const mittwaldLoginResetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleLoginReset(args, mittwaldLoginResetContext);
         break;
         
       default:
