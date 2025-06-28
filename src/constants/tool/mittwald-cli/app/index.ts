@@ -7,6 +7,7 @@ export * from './uninstall.js';
 export * from './update.js';
 // export * from './upgrade.js'; // TODO: Create upgrade.js file
 export * from './upload.js';
+export * from './versions.js';
 export { mittwald_app_download } from './download.js';
 export { mittwald_app_get } from './get.js';
 export { mittwald_app_install } from './install.js';

@@ -69,6 +69,7 @@ import { handleAppUninstall } from './tools/mittwald-cli/app/uninstall.js';
 import { handleAppUpdate } from './tools/mittwald-cli/app/update.js';
 import { handleAppUpgrade } from './tools/mittwald-cli/app/upgrade.js';
 import { handleAppUpload } from './tools/mittwald-cli/app/upload.js';
+import { handleAppVersions } from './tools/mittwald-cli/app/versions.js';
 import { mittwald_app_upgrade_handler, mittwald_app_upgrade_schema } from './tools/mittwald-cli/app/upgrade.js';
 
 // Agent 7 cronjob handlers
@@ -406,6 +407,28 @@ const ToolSchemas = {
   }),
 
   mittwald_app_upgrade: mittwald_app_upgrade_schema,
+
+  mittwald_app_upload: z.object({
+    installationId: z.string().optional().describe("ID or short ID of an app installation; this argument is optional if a default app installation is set in the context"),
+    source: z.string().describe("Source directory or file to upload"),
+    exclude: z.array(z.string()).optional().describe("Exclude files matching the given pattern"),
+    dryRun: z.boolean().optional().describe("Do not actually upload; only show what would be done"),
+    delete: z.boolean().optional().describe("Delete remote files that are not present locally"),
+    sshUser: z.string().optional().describe("Override the SSH user to connect with"),
+    sshIdentityFile: z.string().optional().describe("The SSH identity file (private key) to use for public key authentication"),
+    remoteSubDirectory: z.string().optional().describe("Specify a sub-directory within the app installation to upload to"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+
+  mittwald_app_versions: z.object({
+    app: z.string().optional().describe("Name of specific app to get versions for (optional)"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
 
   // Agent 14 tools
   mittwald_domain_virtualhost_list: z.object({
@@ -790,6 +813,26 @@ type ToolArgs = {
     quiet?: boolean;
   };
   mittwald_app_upgrade: z.infer<typeof mittwald_app_upgrade_schema>;
+  mittwald_app_upload: {
+    installationId?: string;
+    source: string;
+    exclude?: string[];
+    dryRun?: boolean;
+    delete?: boolean;
+    sshUser?: string;
+    sshIdentityFile?: string;
+    remoteSubDirectory?: string;
+    quiet?: boolean;
+  };
+  mittwald_app_versions: {
+    app?: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
 
   // Agent 14 tools
   mittwald_domain_virtualhost_list: {
@@ -1378,6 +1421,29 @@ export async function handleToolCall(
           }
         };
         result = await mittwald_app_upgrade_handler(args);
+        break;
+      case "mittwald_app_upload":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppUploadContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+          appContext: {
+            installationId: (args as any).installationId
+          }
+        };
+        result = await handleAppUpload(args, mittwaldAppUploadContext);
+        break;
+      case "mittwald_app_versions":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppVersionsContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppVersions(args, mittwaldAppVersionsContext);
         break;
 
       // Agent 14 tools
