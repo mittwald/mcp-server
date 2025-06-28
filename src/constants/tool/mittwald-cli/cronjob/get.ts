@@ -1,9 +1,9 @@
-import { McpTool } from '@/types/mcp';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldCronjobGet: McpTool = {
+export const mittwaldCronjobGet: Tool = {
   name: 'mittwald_cronjob_get',
   description: 'Get details of a cron job',
-  inputSchema: {
+  input_schema: {
     type: 'object',
     properties: {
       cronjobId: {

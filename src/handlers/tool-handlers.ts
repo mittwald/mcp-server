@@ -38,11 +38,19 @@ import {
 } from './tools/index.js';
 import { handleProjectFilesystem } from './tools/mittwald-cli/project/filesystem.js';
 import { handleProjectInviteListOwn } from './tools/mittwald-cli/project/invite-list-own.js';
+import { handleProjectInviteList } from './tools/mittwald-cli/project/invite-list.js';
 
 // Agent 2 app dependency handlers
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
 import { handleMittwaldAppDependencyVersions } from './tools/mittwald-cli/app/dependency/versions.js';
 import { handleMittwaldAppDependencyList } from './tools/mittwald-cli/app/dependency/list.js';
+
+// Agent 2 app management handlers
+import { handleMittwaldAppDownload } from './tools/mittwald-cli/app/download.js';
+import { handleMittwaldAppGet } from './tools/mittwald-cli/app/get.js';
+import { handleMittwaldAppInstall } from './tools/mittwald-cli/app/install.js';
+import { handleMittwaldAppInstallContao } from './tools/mittwald-cli/app/install/contao.js';
+import { handleMittwaldAppListUpgradeCandidates } from './tools/mittwald-cli/app/list/upgrade-candidates.js';
 
 // Agent 3 app install handlers
 import { handleAppInstallJoomla } from './tools/mittwald-cli/app/install/joomla.js';

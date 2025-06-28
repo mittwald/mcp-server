@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgGetArgs {
@@ -17,7 +17,7 @@ export const handleOrgGet: MittwaldToolHandler<MittwaldOrgGetArgs> = async (args
     }
 
     // Get the organization
-    const response = await mittwaldClient.organization.getOrganization({
+    const response = await mittwaldClient.customer.getOrganization({
       organizationId: orgId
     });
     assertStatus(response, 200);

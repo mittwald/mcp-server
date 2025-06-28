@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgMembershipListOwnArgs {
@@ -14,7 +14,7 @@ export interface MittwaldOrgMembershipListOwnArgs {
 export const handleOrgMembershipListOwn: MittwaldToolHandler<MittwaldOrgMembershipListOwnArgs> = async (args, { mittwaldClient }) => {
   try {
     // List user's own organization memberships
-    const response = await mittwaldClient.organization.listOrganizationMemberships();
+    const response = await mittwaldClient.customer.listCustomerMemberships({});
     assertStatus(response, 200);
 
     const memberships = response.data || [];
@@ -39,7 +39,7 @@ export const handleOrgMembershipListOwn: MittwaldToolHandler<MittwaldOrgMembersh
     if (output === 'csv' || output === 'tsv') {
       const separator = output === 'csv' ? (args.csvSeparator || ',') : '\t';
       const headers = args.noHeader ? '' : `ID${separator}Organization${separator}Role${separator}Status${separator}Created\n`;
-      const rows = memberships.map(membership => 
+      const rows = memberships.map((membership: any) => 
         `${membership.id}${separator}${membership.organization?.name || membership.organizationId}${separator}${membership.role}${separator}${membership.status}${separator}${membership.createdAt || ''}`
       ).join('\n');
       
@@ -59,7 +59,7 @@ export const handleOrgMembershipListOwn: MittwaldToolHandler<MittwaldOrgMembersh
       );
     }
 
-    const formattedMemberships = memberships.map(membership => ({
+    const formattedMemberships = memberships.map((membership: any) => ({
       "ID": args.noTruncate ? membership.id : membership.id.substring(0, 8),
       "Organization": membership.organization?.name || membership.organizationId,
       "Role": membership.role,

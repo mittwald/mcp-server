@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgListArgs {
@@ -14,7 +14,7 @@ export interface MittwaldOrgListArgs {
 export const handleOrgList: MittwaldToolHandler<MittwaldOrgListArgs> = async (args, { mittwaldClient }) => {
   try {
     // List organizations for the authenticated user
-    const response = await mittwaldClient.organization.listOrganizations();
+    const response = await mittwaldClient.customer.listOrganizations({});
     assertStatus(response, 200);
 
     const orgs = response.data || [];
@@ -39,7 +39,7 @@ export const handleOrgList: MittwaldToolHandler<MittwaldOrgListArgs> = async (ar
     if (output === 'csv' || output === 'tsv') {
       const separator = output === 'csv' ? (args.csvSeparator || ',') : '\t';
       const headers = args.noHeader ? '' : `ID${separator}Name${separator}Status${separator}Created\n`;
-      const rows = orgs.map(org => 
+      const rows = orgs.map((org: any) => 
         `${org.id}${separator}${org.name || ''}${separator}${org.enabled ? 'Enabled' : 'Disabled'}${separator}${org.createdAt || ''}`
       ).join('\n');
       
@@ -59,7 +59,7 @@ export const handleOrgList: MittwaldToolHandler<MittwaldOrgListArgs> = async (ar
       );
     }
 
-    const formattedOrgs = orgs.map(org => ({
+    const formattedOrgs = orgs.map((org: any) => ({
       "ID": args.noTruncate ? org.id : org.id.substring(0, 8),
       "Name": org.name || 'Unnamed',
       "Status": org.enabled ? 'Enabled' : 'Disabled',

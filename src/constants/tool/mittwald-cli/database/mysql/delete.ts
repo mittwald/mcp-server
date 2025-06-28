@@ -1,6 +1,6 @@
-import { McpTool } from '@/types/mcp';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldDatabaseMysqlDelete: McpTool = {
+export const mittwaldDatabaseMysqlDelete: Tool = {
   name: 'mittwald_database_mysql_delete',
   description: 'Delete a MySQL database',
   inputSchema: {

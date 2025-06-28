@@ -1,9 +1,9 @@
-import { McpTool } from '@/types/mcp';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldDatabaseList: McpTool = {
+export const mittwaldDatabaseList: Tool = {
   name: 'mittwald_database_list',
   description: 'List all kinds of databases belonging to a project',
-  inputSchema: {
+  input_schema: {
     type: 'object',
     properties: {
       projectId: {

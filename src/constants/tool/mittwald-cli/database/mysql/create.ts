@@ -1,6 +1,6 @@
-import { McpTool } from '@/types/mcp';
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldDatabaseMysqlCreate: McpTool = {
+export const mittwaldDatabaseMysqlCreate: Tool = {
   name: 'mittwald_database_mysql_create',
   description: 'Create a new MySQL database',
   inputSchema: {

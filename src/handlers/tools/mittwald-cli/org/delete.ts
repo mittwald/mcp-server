@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgDeleteArgs {
@@ -8,13 +8,13 @@ export interface MittwaldOrgDeleteArgs {
   quiet?: boolean;
 }
 
-export const handleOrgDelete: MittwaldToolHandler<MittwaldOrgDeleteArgs> = async (args, { mittwaldClient, orgContext }) => {
+export const handleOrgDelete: MittwaldToolHandler<MittwaldOrgDeleteArgs> = async (args, { mittwaldClient }) => {
   try {
-    // Get org ID from args or context
-    const orgId = args.orgId || (orgContext as any)?.orgId;
+    // Get org ID from args
+    const orgId = args.orgId;
     
     if (!orgId) {
-      throw new Error("Organization ID is required. Either provide it as a parameter or set a default org in the context.");
+      throw new Error("Organization ID is required. Please provide it as a parameter.");
     }
 
     // In MCP context, force should be true since we can't prompt
@@ -26,7 +26,7 @@ export const handleOrgDelete: MittwaldToolHandler<MittwaldOrgDeleteArgs> = async
     }
 
     // Delete the organization
-    const response = await mittwaldClient.organization.deleteOrganization({
+    const response = await mittwaldClient.customer.deleteOrganization({
       organizationId: orgId
     });
     assertStatus(response, 204);

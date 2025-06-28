@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgInviteArgs {
@@ -20,7 +20,7 @@ export const handleOrgInvite: MittwaldToolHandler<MittwaldOrgInviteArgs> = async
     }
 
     // Invite user to organization
-    const response = await mittwaldClient.organization.createOrganizationInvitation({
+    const response = await mittwaldClient.customer.createOrganizationInvitation({
       organizationId: orgId,
       data: {
         email: args.email,

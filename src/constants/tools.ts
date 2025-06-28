@@ -44,6 +44,7 @@ import { mittwald_project_filesystem_usage } from './tool/mittwald-cli/project/f
 import { mittwald_project_filesystem } from './tool/mittwald-cli/project/filesystem.js';
 import { mittwald_project_invite_get } from './tool/mittwald-cli/project/invite-get.js';
 import { mittwald_project_invite_list_own } from './tool/mittwald-cli/project/invite-list-own.js';
+import { mittwald_project_invite_list } from './tool/mittwald-cli/project/invite-list.js';
 
 // Agent 14 tools
 import { mittwald_domain_virtualhost_list } from './tool/mittwald-cli/domain/virtualhost-list.js';
@@ -176,6 +177,7 @@ export const TOOLS: Tool[] = [
   mittwald_project_filesystem,
   mittwald_project_invite_get,
   mittwald_project_invite_list_own,
+  mittwald_project_invite_list,
   
   // Agent 14 tools
   mittwald_domain_virtualhost_list,
