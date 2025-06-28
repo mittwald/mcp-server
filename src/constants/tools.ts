@@ -52,6 +52,7 @@ import { mittwaldCronjobGet } from './tool/mittwald-cli/cronjob/index.js';
 
 // Agent 9 database tools
 import { MITTWALD_DATABASE_MYSQL_DUMP_TOOL } from './tool/mittwald-cli/database/mysql/dump.js';
+import { MITTWALD_DATABASE_MYSQL_GET_TOOL } from './tool/mittwald-cli/database/mysql/get.js';
 
 // Agent 11 ddev tools
 import { ddev_init } from './tool/mittwald-cli/ddev/init.js';

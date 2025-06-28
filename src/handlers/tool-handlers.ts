@@ -719,6 +719,21 @@ export async function handleToolCall(
         result = await handleAppInstallWordpress(args, mittwaldAppInstallWordpressContext);
         break;
 
+      // Agent 3 app management tools
+      case "mittwald_app_list":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+          projectContext: {
+            projectId: (args as any).projectId
+          }
+        };
+        result = await handleAppList(args, mittwaldAppListContext);
+        break;
+
       // Agent 14 tools
       case "mittwald_domain_virtualhost_list":
         const mittwaldDomainVirtualhostListContext: MittwaldToolHandlerContext = {
@@ -778,6 +793,11 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleLoginReset(args, mittwaldLoginResetContext);
+        break;
+        
+      // Agent 8 cronjob tools
+      case "mittwald_cronjob_get":
+        result = await handleMittwaldCronjobGet(args.cronjobId, args.output);
         break;
         
       // Agent 9 database tools
