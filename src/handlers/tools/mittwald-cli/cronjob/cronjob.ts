@@ -1,9 +1,10 @@
-import type { ToolResponse } from '@/utils/format-tool-response';
-import { executeCliCommand } from '@/utils/execute-cli-command';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '@/utils/format-tool-response.js';
+import { executeCliCommand } from '@/utils/execute-cli-command.js';
 
 export async function handleMittwaldCronjob(
   help?: boolean
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     const args = ['cronjob'];
 
@@ -13,13 +14,8 @@ export async function handleMittwaldCronjob(
 
     const result = await executeCliCommand('mw', args);
 
-    return {
-      toolResult: result,
-    };
+    return formatToolResponse('success', 'Cronjob help retrieved successfully', result);
   } catch (error) {
-    return {
-      toolResult: `Error managing cronjobs: ${error instanceof Error ? error.message : String(error)}`,
-      isError: true,
-    };
+    return formatToolResponse('error', `Error managing cronjobs: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

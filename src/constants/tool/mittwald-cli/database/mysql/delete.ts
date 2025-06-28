@@ -1,6 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldDatabaseMysqlDelete: Tool = {
+export const mittwald_database_mysql_delete: Tool = {
   name: 'mittwald_database_mysql_delete',
   description: 'Delete a MySQL database',
   inputSchema: {

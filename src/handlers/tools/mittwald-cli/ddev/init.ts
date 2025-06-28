@@ -12,7 +12,20 @@ import { join } from "path";
 
 const execAsync = promisify(exec);
 
-export const ddevInitSchema = ddev_init.parameters;
+export const ddevInitSchema = z.object({
+  installationId: z.string().optional(),
+  quiet: z.boolean().optional(),
+  overrideType: z.enum([
+    "backdrop", "craftcms", "django4", "drupal6", "drupal7", "drupal",
+    "laravel", "magento", "magento2", "php", "python", "shopware6",
+    "silverstripe", "typo3", "wordpress", "auto"
+  ]).optional().default("auto"),
+  withoutDatabase: z.boolean().optional(),
+  databaseId: z.string().optional(),
+  projectName: z.string().optional(),
+  overrideMittwaldPlugin: z.string().optional()
+});
+
 export type DdevInitParams = z.infer<typeof ddevInitSchema>;
 
 export async function handleDdevInit(

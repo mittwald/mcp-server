@@ -1627,15 +1627,13 @@ export async function handleToolCall(
         break;
         
       case "mittwald_database_list":
-        result = await handleMittwaldDatabaseList(
-          args.projectId,
-          args.output,
-          args.extended,
-          args.noHeader,
-          args.noTruncate,
-          args.noRelativeDates,
-          args.csvSeparator
-        );
+        const databaseListContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldDatabaseList(args, databaseListContext);
         break;
         
       case "mittwald_database_mysql_charsets":
@@ -1673,35 +1671,35 @@ export async function handleToolCall(
         
       // Agent 11 tools
       case "mittwald_ddev_init":
-        result = await handleDdevInit(args);
+        result = await handleDdevInit(args, handlerContext);
         break;
         
       case "mittwald_ddev_render_config":
-        result = await handleDdevRenderConfig(args);
+        result = await handleDdevRenderConfig(args, handlerContext);
         break;
         
       case "mittwald_ddev":
-        result = await handleDdevMain(args);
+        result = await handleDdevMain(args, handlerContext);
         break;
         
       case "mittwald_domain_get":
-        result = await handleDomainGet(args);
+        result = await handleDomainGet(args, handlerContext);
         break;
         
       case "mittwald_domain_dnszone_get":
-        result = await handleDomainDnszoneGet(args);
+        result = await handleDomainDnszoneGet(args, handlerContext);
         break;
         
       case "mittwald_domain_dnszone_list":
-        result = await handleDomainDnszoneList(args);
+        result = await handleDomainDnszoneList(args, handlerContext);
         break;
         
       case "mittwald_domain_dnszone_update":
-        result = await handleDomainDnszoneUpdate(args);
+        result = await handleDomainDnszoneUpdate(args, handlerContext);
         break;
         
       case "mittwald_domain_dnszone":
-        result = await handleDomainDnszoneMain(args);
+        result = await handleDomainDnszoneMain(args, handlerContext);
         break;
         
       // Agent 15 mail tools

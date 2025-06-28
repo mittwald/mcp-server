@@ -1,6 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldCronjobGet: Tool = {
+export const mittwald_cronjob_get: Tool = {
   name: 'mittwald_cronjob_get',
   description: 'Get details of a cron job',
   inputSchema: {

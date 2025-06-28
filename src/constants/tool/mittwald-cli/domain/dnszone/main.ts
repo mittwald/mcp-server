@@ -1,12 +1,16 @@
-import { z } from "zod";
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const domain_dnszone_main = {
+export const domain_dnszone_main: Tool = {
   name: "mittwald_domain_dnszone",
   description: "DNS zone management for Mittwald domains. Shows available DNS zone subcommands for managing DNS records and zones.",
-  parameters: z.object({
-    help: z
-      .boolean()
-      .optional()
-      .describe("Show help information for DNS zone management commands")
-  })
+  inputSchema: {
+    type: "object",
+    properties: {
+      help: {
+        type: "boolean",
+        description: "Show help information for DNS zone management commands"
+      }
+    },
+    required: []
+  }
 };

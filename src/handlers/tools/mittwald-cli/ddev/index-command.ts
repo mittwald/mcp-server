@@ -10,7 +10,10 @@ import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
-export const ddevMainSchema = ddev_main.parameters;
+export const ddevMainSchema = z.object({
+  help: z.boolean().optional()
+});
+
 export type DdevMainParams = z.infer<typeof ddevMainSchema>;
 
 export async function handleDdevMain(

@@ -1,7 +1,6 @@
 import { MittwaldAPIV2Client } from "@mittwald/api-client";
 import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { domain_dnszone_main } from "../../../../../constants/tool/mittwald-cli/domain/dnszone/main.js";
 import { getMittwaldClient } from "../../../../../services/mittwald/mittwald-client.js";
 import type { RequestContext } from "../../../../../types/request-context.js";
 import { formatToolResponse } from "../../../../../utils/format-tool-response.js";
@@ -10,7 +9,10 @@ import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
-export const domainDnszoneMainSchema = domain_dnszone_main.parameters;
+export const domainDnszoneMainSchema = z.object({
+  help: z.boolean().optional()
+});
+
 export type DomainDnszoneMainParams = z.infer<typeof domainDnszoneMainSchema>;
 
 export async function handleDomainDnszoneMain(

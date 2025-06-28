@@ -1,7 +1,6 @@
 import { MittwaldAPIV2Client } from "@mittwald/api-client";
 import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { domain_dnszone_update } from "../../../../../constants/tool/mittwald-cli/domain/dnszone/update.js";
 import { getMittwaldClient } from "../../../../../services/mittwald/mittwald-client.js";
 import type { RequestContext } from "../../../../../types/request-context.js";
 import { formatToolResponse } from "../../../../../utils/format-tool-response.js";
@@ -10,7 +9,20 @@ import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
-export const domainDnszoneUpdateSchema = domain_dnszone_update.parameters;
+export const domainDnszoneUpdateSchema = z.object({
+  dnszoneId: z.string(),
+  recordSet: z.enum(["a", "mx", "txt", "srv", "cname"]),
+  projectId: z.string().optional(),
+  set: z.array(z.string()).optional(),
+  recordId: z.string().optional(),
+  unset: z.array(z.string()).optional(),
+  // Additional fields used in the handler implementation
+  quiet: z.boolean().optional(),
+  managed: z.boolean().optional(),
+  record: z.array(z.string()).optional(),
+  ttl: z.number().optional()
+});
+
 export type DomainDnszoneUpdateParams = z.infer<typeof domainDnszoneUpdateSchema>;
 
 export async function handleDomainDnszoneUpdate(

@@ -1,6 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const MITTWALD_DATABASE_MYSQL_LIST_TOOL: Tool = {
+export const mittwald_database_mysql_list: Tool = {
   name: "mittwald_database_mysql_list",
   description: "List MySQL databases",
   inputSchema: {

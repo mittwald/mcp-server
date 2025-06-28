@@ -1,7 +1,6 @@
 import { MittwaldAPIV2Client } from "@mittwald/api-client";
 import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { domain_get } from "../../../../constants/tool/mittwald-cli/domain/get.js";
 import { getMittwaldClient } from "../../../../services/mittwald/mittwald-client.js";
 import type { RequestContext } from "../../../../types/request-context.js";
 import { formatToolResponse } from "../../../../utils/format-tool-response.js";
@@ -10,7 +9,11 @@ import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
-export const domainGetSchema = domain_get.parameters;
+export const domainGetSchema = z.object({
+  domainId: z.string(),
+  output: z.enum(["txt", "json", "yaml"]).default("json")
+});
+
 export type DomainGetParams = z.infer<typeof domainGetSchema>;
 
 export async function handleDomainGet(

@@ -1,6 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldDatabaseMysqlCharsets: Tool = {
+export const mittwald_database_mysql_charsets: Tool = {
   name: 'mittwald_database_mysql_charsets',
   description: 'List available MySQL character sets and collations, optionally filtered by a MySQLVersion',
   inputSchema: {

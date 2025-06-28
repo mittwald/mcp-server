@@ -76,22 +76,27 @@ import {
 } from './tool/mittwald-cli/cronjob/index.js';
 
 // Agent 8 cronjob tools
-import { mittwaldCronjobGet, mittwaldCronjobList, mittwaldCronjobUpdate, mittwaldCronjob } from './tool/mittwald-cli/cronjob/index.js';
+import { mittwald_cronjob_get, mittwald_cronjob_list, mittwald_cronjob_update, mittwald_cronjob_cronjob } from './tool/mittwald-cli/cronjob/index.js';
 
 // Agent 9 database tools
 import { 
-  MITTWALD_DATABASE_MYSQL_DUMP_TOOL,
-  MITTWALD_DATABASE_MYSQL_GET_TOOL,
-  MITTWALD_DATABASE_MYSQL_IMPORT_TOOL,
-  MITTWALD_DATABASE_MYSQL_LIST_TOOL,
-  MITTWALD_DATABASE_MYSQL_PHPMYADMIN_TOOL,
-  MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL,
-  MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
-  MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
+  mittwald_database_mysql_dump,
+  mittwald_database_mysql_get,
+  mittwald_database_mysql_import,
+  mittwald_database_mysql_list,
+  mittwald_database_mysql_phpmyadmin,
+  mittwald_database_mysql_port_forward,
+  mittwald_database_mysql_shell,
+  mittwald_database_mysql_versions,
   mittwald_database_list,
-  mittwaldDatabaseMysqlCharsets,
-  mittwaldDatabaseMysqlCreate,
-  mittwaldDatabaseMysqlDelete
+  mittwald_database_mysql_charsets,
+  mittwald_database_mysql_create,
+  mittwald_database_mysql_delete,
+  mittwald_database_redis_create,
+  mittwald_database_redis_get,
+  mittwald_database_redis_list,
+  mittwald_database_redis_shell,
+  mittwald_database_redis_versions
 } from './tool/mittwald-cli/database/index.js';
 
 // Agent 11 ddev tools
@@ -226,24 +231,29 @@ export const TOOLS: Tool[] = [
   mittwald_cronjob_execution,
   
   // Agent 8 cronjob tools
-  mittwaldCronjobGet,
-  mittwaldCronjobList,
-  mittwaldCronjobUpdate,
-  mittwaldCronjob,
+  mittwald_cronjob_get,
+  mittwald_cronjob_list,
+  mittwald_cronjob_update,
+  mittwald_cronjob_cronjob,
   
   // Agent 9 database tools
-  MITTWALD_DATABASE_MYSQL_DUMP_TOOL,
-  MITTWALD_DATABASE_MYSQL_GET_TOOL,
-  MITTWALD_DATABASE_MYSQL_IMPORT_TOOL,
-  MITTWALD_DATABASE_MYSQL_LIST_TOOL,
-  MITTWALD_DATABASE_MYSQL_PHPMYADMIN_TOOL,
-  MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL,
-  MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
-  MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
+  mittwald_database_mysql_dump,
+  mittwald_database_mysql_get,
+  mittwald_database_mysql_import,
+  mittwald_database_mysql_list,
+  mittwald_database_mysql_phpmyadmin,
+  mittwald_database_mysql_port_forward,
+  mittwald_database_mysql_shell,
+  mittwald_database_mysql_versions,
   mittwald_database_list,
-  mittwaldDatabaseMysqlCharsets,
-  mittwaldDatabaseMysqlCreate,
-  mittwaldDatabaseMysqlDelete,
+  mittwald_database_mysql_charsets,
+  mittwald_database_mysql_create,
+  mittwald_database_mysql_delete,
+  mittwald_database_redis_create,
+  mittwald_database_redis_get,
+  mittwald_database_redis_list,
+  mittwald_database_redis_shell,
+  mittwald_database_redis_versions,
   
   // Agent 11 ddev tools
   ddev_init,

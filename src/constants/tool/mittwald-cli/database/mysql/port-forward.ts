@@ -1,6 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL: Tool = {
+export const mittwald_database_mysql_port_forward: Tool = {
   name: "mittwald_database_mysql_port_forward",
   description: "Forward a local port to a MySQL database",
   inputSchema: {

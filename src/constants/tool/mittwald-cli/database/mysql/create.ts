@@ -1,6 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const mittwaldDatabaseMysqlCreate: Tool = {
+export const mittwald_database_mysql_create: Tool = {
   name: 'mittwald_database_mysql_create',
   description: 'Create a new MySQL database',
   inputSchema: {

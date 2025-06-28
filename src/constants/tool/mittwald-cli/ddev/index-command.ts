@@ -1,12 +1,16 @@
-import { z } from "zod";
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const ddev_main = {
+export const ddev_main: Tool = {
   name: "mittwald_ddev",
   description: "Integrate your mittwald projects with DDEV. Shows available DDEV subcommands for working with local development environments.",
-  parameters: z.object({
-    help: z
-      .boolean()
-      .optional()
-      .describe("Show help information for DDEV integration commands")
-  })
+  inputSchema: {
+    type: "object",
+    properties: {
+      help: {
+        type: "boolean",
+        description: "Show help information for DDEV integration commands"
+      }
+    },
+    required: []
+  }
 };

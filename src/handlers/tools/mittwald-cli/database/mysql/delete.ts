@@ -1,11 +1,12 @@
-import type { ToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCliCommand } from '../../../../../utils/execute-cli-command.js';
 
 export async function handleMittwaldDatabaseMysqlDelete(
   databaseId: string,
   force?: boolean,
   quiet?: boolean
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     const args = ['database', 'mysql', 'delete', databaseId];
 
@@ -19,13 +20,8 @@ export async function handleMittwaldDatabaseMysqlDelete(
 
     const result = await executeCliCommand('mw', args);
 
-    return {
-      toolResult: result,
-    };
+    return formatToolResponse('success', 'MySQL database deleted successfully', result);
   } catch (error) {
-    return {
-      toolResult: `Error deleting MySQL database: ${error instanceof Error ? error.message : String(error)}`,
-      isError: true,
-    };
+    return formatToolResponse('error', `Error deleting MySQL database: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

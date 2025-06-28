@@ -10,18 +10,18 @@ export { mittwald_database_redis_list } from './redis-list.js';
 export { mittwald_database_redis_shell } from './redis-shell.js';
 export { mittwald_database_redis_versions } from './redis-versions.js';
 
-// MySQL tools (direct exports)
-export { MITTWALD_DATABASE_MYSQL_DUMP_TOOL } from './mysql/dump.js';
-export { MITTWALD_DATABASE_MYSQL_GET_TOOL } from './mysql/get.js';
-export { MITTWALD_DATABASE_MYSQL_IMPORT_TOOL } from './mysql/import.js';
-export { MITTWALD_DATABASE_MYSQL_LIST_TOOL } from './mysql/list.js';
-export { MITTWALD_DATABASE_MYSQL_PHPMYADMIN_TOOL } from './mysql/phpmyadmin.js';
-export { MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL } from './mysql/port-forward.js';
-export { MITTWALD_DATABASE_MYSQL_SHELL_TOOL } from './mysql/shell.js';
-export { MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL } from './mysql/versions.js';
+// MySQL tools (standardized naming)
+export { mittwald_database_mysql_dump } from './mysql/dump.js';
+export { mittwald_database_mysql_get } from './mysql/get.js';
+export { mittwald_database_mysql_import } from './mysql/import.js';
+export { mittwald_database_mysql_list } from './mysql/list.js';
+export { mittwald_database_mysql_phpmyadmin } from './mysql/phpmyadmin.js';
+export { mittwald_database_mysql_port_forward } from './mysql/port-forward.js';
+export { mittwald_database_mysql_shell } from './mysql/shell.js';
+export { mittwald_database_mysql_versions } from './mysql/versions.js';
 
 // Additional database tools
 export { mittwald_database_list } from './list.js';
-export { mittwaldDatabaseMysqlCharsets } from './mysql/charsets.js';
-export { mittwaldDatabaseMysqlCreate } from './mysql/create.js';
-export { mittwaldDatabaseMysqlDelete } from './mysql/delete.js';
+export { mittwald_database_mysql_charsets } from './mysql/charsets.js';
+export { mittwald_database_mysql_create } from './mysql/create.js';
+export { mittwald_database_mysql_delete } from './mysql/delete.js';

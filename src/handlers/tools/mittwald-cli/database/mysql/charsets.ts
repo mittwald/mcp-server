@@ -1,5 +1,6 @@
-import type { ToolResponse } from '@/utils/format-tool-response';
-import { executeCliCommand } from '@/utils/execute-cli-command';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '@/utils/format-tool-response.js';
+import { executeCliCommand } from '@/utils/execute-cli-command.js';
 
 export async function handleMittwaldDatabaseMysqlCharsets(
   output: string = 'json',
@@ -8,7 +9,7 @@ export async function handleMittwaldDatabaseMysqlCharsets(
   noTruncate?: boolean,
   noRelativeDates?: boolean,
   csvSeparator?: string
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     const args = ['database', 'mysql', 'charsets'];
 
@@ -36,13 +37,8 @@ export async function handleMittwaldDatabaseMysqlCharsets(
 
     const result = await executeCliCommand('mw', args);
 
-    return {
-      toolResult: result,
-    };
+    return formatToolResponse('success', 'MySQL character sets retrieved successfully', result);
   } catch (error) {
-    return {
-      toolResult: `Error listing MySQL character sets: ${error instanceof Error ? error.message : String(error)}`,
-      isError: true,
-    };
+    return formatToolResponse('error', `Error listing MySQL character sets: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

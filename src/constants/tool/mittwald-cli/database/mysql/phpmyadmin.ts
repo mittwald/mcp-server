@@ -1,6 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
-export const MITTWALD_DATABASE_MYSQL_PHPMYADMIN_TOOL: Tool = {
+export const mittwald_database_mysql_phpmyadmin: Tool = {
   name: "mittwald_database_mysql_phpmyadmin",
   description: "Open phpMyAdmin for a MySQL database",
   inputSchema: {

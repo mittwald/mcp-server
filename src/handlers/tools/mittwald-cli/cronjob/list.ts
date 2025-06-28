@@ -1,5 +1,6 @@
-import type { ToolResponse } from '@/utils/format-tool-response';
-import { executeCliCommand } from '@/utils/execute-cli-command';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '@/utils/format-tool-response.js';
+import { executeCliCommand } from '@/utils/execute-cli-command.js';
 
 export async function handleMittwaldCronjobList(
   projectId?: string,
@@ -9,7 +10,7 @@ export async function handleMittwaldCronjobList(
   noTruncate?: boolean,
   noRelativeDates?: boolean,
   csvSeparator: string = ','
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     const args = [
       'cronjob',
@@ -44,13 +45,8 @@ export async function handleMittwaldCronjobList(
 
     const result = await executeCliCommand('mw', args);
 
-    return {
-      toolResult: result,
-    };
+    return formatToolResponse('success', 'Cronjobs listed successfully', result);
   } catch (error) {
-    return {
-      toolResult: `Error listing cron jobs: ${error instanceof Error ? error.message : String(error)}`,
-      isError: true,
-    };
+    return formatToolResponse('error', `Error listing cron jobs: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

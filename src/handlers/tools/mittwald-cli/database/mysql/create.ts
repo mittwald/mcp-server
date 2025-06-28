@@ -1,5 +1,6 @@
-import type { ToolResponse } from '@/utils/format-tool-response';
-import { executeCliCommand } from '@/utils/execute-cli-command';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '@/utils/format-tool-response.js';
+import { executeCliCommand } from '@/utils/execute-cli-command.js';
 
 export async function handleMittwaldDatabaseMysqlCreate(
   description: string,
@@ -11,7 +12,7 @@ export async function handleMittwaldDatabaseMysqlCreate(
   userPassword?: string,
   userExternal?: boolean,
   userAccessLevel?: string
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     const args = ['database', 'mysql', 'create'];
 
@@ -48,13 +49,8 @@ export async function handleMittwaldDatabaseMysqlCreate(
 
     const result = await executeCliCommand('mw', args);
 
-    return {
-      toolResult: result,
-    };
+    return formatToolResponse('success', 'MySQL database created successfully', result);
   } catch (error) {
-    return {
-      toolResult: `Error creating MySQL database: ${error instanceof Error ? error.message : String(error)}`,
-      isError: true,
-    };
+    return formatToolResponse('error', `Error creating MySQL database: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

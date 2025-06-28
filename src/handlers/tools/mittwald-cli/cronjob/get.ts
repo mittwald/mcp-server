@@ -1,10 +1,11 @@
-import type { ToolResponse } from '@/utils/format-tool-response';
-import { executeCliCommand } from '@/utils/execute-cli-command';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '@/utils/format-tool-response.js';
+import { executeCliCommand } from '@/utils/execute-cli-command.js';
 
 export async function handleMittwaldCronjobGet(
   cronjobId: string,
   output: string = 'json'
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     const args = [
       'cronjob',
@@ -16,13 +17,11 @@ export async function handleMittwaldCronjobGet(
 
     const result = await executeCliCommand('mw', args);
 
-    return {
-      toolResult: result,
-    };
+    return formatToolResponse('success', 'Retrieved cronjob details', result);
   } catch (error) {
-    return {
-      toolResult: `Error getting cron job details: ${error instanceof Error ? error.message : String(error)}`,
-      isError: true,
-    };
+    return formatToolResponse(
+      'error', 
+      `Error getting cron job details: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }

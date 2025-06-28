@@ -12,7 +12,30 @@ import { join } from "path";
 
 const execAsync = promisify(exec);
 
-export const ddevRenderConfigSchema = ddev_render_config.parameters;
+export const ddevRenderConfigSchema = z.object({
+  installationId: z.string().optional(),
+  overrideType: z.enum([
+    "backdrop",
+    "craftcms", 
+    "django4",
+    "drupal6",
+    "drupal7",
+    "drupal",
+    "laravel",
+    "magento",
+    "magento2",
+    "php",
+    "python",
+    "shopware6",
+    "silverstripe",
+    "typo3",
+    "wordpress",
+    "auto"
+  ]).default("auto").optional(),
+  withoutDatabase: z.boolean().optional(),
+  databaseId: z.string().optional()
+});
+
 export type DdevRenderConfigParams = z.infer<typeof ddevRenderConfigSchema>;
 
 export async function handleDdevRenderConfig(
