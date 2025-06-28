@@ -63,6 +63,10 @@ import { ddev_init } from './tool/mittwald-cli/ddev/init.js';
 
 // Agent 15 mail tools
 import { mittwald_mail_deliverybox } from './tool/mittwald-cli/mail/deliverybox.js';
+import { mittwald_mail } from './tool/mittwald-cli/mail/mail.js';
+
+// Agent 16 org tools
+import { mittwald_org_membership_list } from './tool/mittwald-cli/org/membership/list.js';
 
 /**
  * Standard error messages for tool operations.
@@ -159,6 +163,10 @@ export const TOOLS: Tool[] = [
   
   // Agent 15 mail tools
   mittwald_mail_deliverybox,
+  mittwald_mail,
+  
+  // Agent 16 org tools
+  mittwald_org_membership_list,
 ];
 
 /**

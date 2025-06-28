@@ -251,6 +251,10 @@ const ToolSchemas = {
     csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   }),
 
+  mittwald_app_open: z.object({
+    installationId: z.string().optional().describe("ID or short ID of an app installation; this argument is optional if a default app installation is set in the context")
+  }),
+
   // Agent 14 tools
   mittwald_domain_virtualhost_list: z.object({
     projectId: z.string().optional().describe("ID or short ID of a project"),
