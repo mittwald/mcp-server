@@ -85,6 +85,7 @@ import { handleDatabaseMysqlVersions, MittwaldDatabaseMysqlVersionsSchema } from
 import { handleMittwaldDatabaseList } from './tools/mittwald-cli/database/list.js';
 import { handleMittwaldDatabaseMysqlCharsets } from './tools/mittwald-cli/database/mysql/charsets.js';
 import { handleMittwaldDatabaseMysqlCreate } from './tools/mittwald-cli/database/mysql/create.js';
+import { handleMittwaldDatabaseMysqlDelete } from './tools/mittwald-cli/database/mysql/delete.js';
 
 // Agent 11 ddev handlers
 import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';
@@ -439,6 +440,12 @@ const ToolSchemas = {
     userPassword: z.string().optional().describe("The password to use for the default user"),
     userExternal: z.boolean().optional().describe("Enable external access for default user"),
     userAccessLevel: z.enum(["full", "readonly"]).optional().describe("The access level preset for the default user")
+  }),
+  
+  mittwald_database_mysql_delete: z.object({
+    databaseId: z.string().describe("ID or name of the database to delete"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   }),
   
   // Agent 11 ddev tools
@@ -838,6 +845,12 @@ type ToolArgs = {
     userPassword?: string;
     userExternal?: boolean;
     userAccessLevel?: 'full' | 'readonly';
+  };
+  
+  mittwald_database_mysql_delete: {
+    databaseId: string;
+    force?: boolean;
+    quiet?: boolean;
   };
   
   // Agent 15 mail tools
@@ -1387,6 +1400,14 @@ export async function handleToolCall(
           args.userPassword,
           args.userExternal,
           args.userAccessLevel
+        );
+        break;
+        
+      case "mittwald_database_mysql_delete":
+        result = await handleMittwaldDatabaseMysqlDelete(
+          args.databaseId,
+          args.force,
+          args.quiet
         );
         break;
         

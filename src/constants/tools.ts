@@ -76,7 +76,8 @@ import {
   MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
   mittwaldDatabaseList,
   mittwaldDatabaseMysqlCharsets,
-  mittwaldDatabaseMysqlCreate
+  mittwaldDatabaseMysqlCreate,
+  mittwaldDatabaseMysqlDelete
 } from './tool/mittwald-cli/database/index.js';
 
 // Agent 11 ddev tools
@@ -197,6 +198,7 @@ export const TOOLS: Tool[] = [
   mittwaldDatabaseList,
   mittwaldDatabaseMysqlCharsets,
   mittwaldDatabaseMysqlCreate,
+  mittwaldDatabaseMysqlDelete,
   
   // Agent 11 ddev tools
   ddev_init,

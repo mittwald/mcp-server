@@ -8,3 +8,4 @@ export * from "./shell";
 export * from "./versions";
 export { mittwaldDatabaseMysqlCharsets } from "./charsets.js";
 export { mittwaldDatabaseMysqlCreate } from "./create.js";
+export { mittwaldDatabaseMysqlDelete } from "./delete.js";
