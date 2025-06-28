@@ -429,6 +429,18 @@ const ToolSchemas = {
     csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   }),
   
+  mittwald_database_mysql_create: z.object({
+    description: z.string().describe("A description for the database"),
+    version: z.string().describe("The MySQL version to use"),
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    collation: z.string().optional().describe("The collation to use"),
+    characterSet: z.string().optional().describe("The character set to use"),
+    userPassword: z.string().optional().describe("The password to use for the default user"),
+    userExternal: z.boolean().optional().describe("Enable external access for default user"),
+    userAccessLevel: z.enum(["full", "readonly"]).optional().describe("The access level preset for the default user")
+  }),
+  
   // Agent 11 ddev tools
   mittwald_ddev_init: ddevInitSchema,
   
@@ -814,6 +826,18 @@ type ToolArgs = {
     noTruncate?: boolean;
     noRelativeDates?: boolean;
     csvSeparator?: ',' | ';';
+  };
+  
+  mittwald_database_mysql_create: {
+    description: string;
+    version: string;
+    projectId?: string;
+    quiet?: boolean;
+    collation?: string;
+    characterSet?: string;
+    userPassword?: string;
+    userExternal?: boolean;
+    userAccessLevel?: 'full' | 'readonly';
   };
   
   // Agent 15 mail tools
@@ -1349,6 +1373,20 @@ export async function handleToolCall(
           args.noTruncate,
           args.noRelativeDates,
           args.csvSeparator
+        );
+        break;
+        
+      case "mittwald_database_mysql_create":
+        result = await handleMittwaldDatabaseMysqlCreate(
+          args.description,
+          args.version,
+          args.projectId,
+          args.quiet,
+          args.collation,
+          args.characterSet,
+          args.userPassword,
+          args.userExternal,
+          args.userAccessLevel
         );
         break;
         
