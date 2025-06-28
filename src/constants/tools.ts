@@ -53,7 +53,7 @@ import { mittwald_cronjob_delete } from './tool/mittwald-cli/cronjob/delete.js';
 import { mittwald_cronjob_execute } from './tool/mittwald-cli/cronjob/execute.js';
 
 // Agent 8 cronjob tools
-import { mittwaldCronjobGet, mittwaldCronjobList } from './tool/mittwald-cli/cronjob/index.js';
+import { mittwaldCronjobGet, mittwaldCronjobList, mittwaldCronjobUpdate } from './tool/mittwald-cli/cronjob/index.js';
 
 // Agent 9 database tools
 import { 
@@ -163,6 +163,7 @@ export const TOOLS: Tool[] = [
   // Agent 8 cronjob tools
   mittwaldCronjobGet,
   mittwaldCronjobList,
+  mittwaldCronjobUpdate,
   
   // Agent 9 database tools
   MITTWALD_DATABASE_MYSQL_DUMP_TOOL,

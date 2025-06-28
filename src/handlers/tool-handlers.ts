@@ -63,6 +63,7 @@ import { handleCronjobExecute } from './tools/mittwald-cli/cronjob/execute.js';
 // Agent 8 cronjob handlers
 import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
 import { handleMittwaldCronjobList } from './tools/mittwald-cli/cronjob/list.js';
+import { handleMittwaldCronjobUpdate } from './tools/mittwald-cli/cronjob/update.js';
 
 // Agent 9 database handlers
 import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
@@ -491,6 +492,9 @@ type ToolArgs = {
     noRelativeDates?: boolean;
     csvSeparator?: ',' | ';';
   };
+  mittwald_app_open: {
+    installationId?: string;
+  };
 
   // Agent 14 tools
   mittwald_domain_virtualhost_list: {
@@ -830,6 +834,19 @@ export async function handleToolCall(
           }
         };
         result = await handleAppList(args, mittwaldAppListContext);
+        break;
+      case "mittwald_app_open":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppOpenContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+          appContext: {
+            installationId: (args as any).installationId
+          }
+        };
+        result = await handleAppOpen(args, mittwaldAppOpenContext);
         break;
 
       // Agent 14 tools

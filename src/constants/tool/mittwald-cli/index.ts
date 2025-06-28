@@ -17,7 +17,7 @@ export * from './domain/index.js';
 export * from './extension/index.js';
 export * from './login/index.js';
 export * from './mail/index.js';
-// export * from './org/index.js';
+export * from './org/index.js';
 // export * from './project/index.js';
 // export * from './server/index.js';
 // export * from './ssh-key/index.js';
