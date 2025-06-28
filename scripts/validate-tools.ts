@@ -230,6 +230,7 @@ async function main() {
   }
 }
 
-if (require.main === module) {
+// Run if this file is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }

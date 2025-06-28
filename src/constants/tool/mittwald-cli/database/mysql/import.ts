@@ -3,7 +3,7 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 export const MITTWALD_DATABASE_MYSQL_IMPORT_TOOL: Tool = {
   name: "mittwald_database_mysql_import",
   description: "Imports a dump of a MySQL database",
-  input_schema: {
+  inputSchema: {
     type: "object",
     properties: {
       databaseId: {

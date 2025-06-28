@@ -1204,6 +1204,30 @@ export async function handleToolCall(
         result = await handleMittwaldAppDependencyVersions(args);
         break;
 
+      case "mittwald_app_dependency_list":
+        result = await handleMittwaldAppDependencyList(args);
+        break;
+
+      case "mittwald_app_download":
+        result = await handleMittwaldAppDownload(args);
+        break;
+
+      case "mittwald_app_get":
+        result = await handleMittwaldAppGet(args);
+        break;
+
+      case "mittwald_app_install":
+        result = await handleMittwaldAppInstall(args);
+        break;
+
+      case "mittwald_app_install_contao":
+        result = await handleMittwaldAppInstallContao(args);
+        break;
+
+      case "mittwald_app_list_upgrade_candidates":
+        result = await handleMittwaldAppListUpgradeCandidates(args);
+        break;
+
       // Agent 3 app install tools
       case "mittwald_app_install_joomla":
         // Create context with mittwaldClient for Mittwald CLI tools
