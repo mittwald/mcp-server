@@ -399,6 +399,15 @@ const ToolSchemas = {
     csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   }),
   
+  mittwald_database_mysql_charsets: z.object({
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
   // Agent 11 ddev tools
   mittwald_ddev_init: ddevInitSchema,
   
@@ -714,6 +723,15 @@ type ToolArgs = {
   
   mittwald_database_list: {
     projectId?: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
+  
+  mittwald_database_mysql_charsets: {
     output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
     extended?: boolean;
     noHeader?: boolean;
@@ -1196,6 +1214,17 @@ export async function handleToolCall(
       case "mittwald_database_list":
         result = await handleMittwaldDatabaseList(
           args.projectId,
+          args.output,
+          args.extended,
+          args.noHeader,
+          args.noTruncate,
+          args.noRelativeDates,
+          args.csvSeparator
+        );
+        break;
+        
+      case "mittwald_database_mysql_charsets":
+        result = await handleMittwaldDatabaseMysqlCharsets(
           args.output,
           args.extended,
           args.noHeader,
