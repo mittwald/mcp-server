@@ -510,6 +510,11 @@ type ToolArgs = {
     databaseId: string;
     output: 'txt' | 'json' | 'yaml';
   };
+  
+  // Agent 15 mail tools
+  mittwald_mail_deliverybox: {
+    help?: boolean;
+  };
 };
 
 /**
@@ -680,6 +685,10 @@ export async function handleToolCall(
       // Agent 2 app dependency tools
       case "mittwald_app_dependency_update":
         result = await handleMittwaldAppDependencyUpdate(args);
+        break;
+
+      case "mittwald_app_dependency_versions":
+        result = await handleMittwaldAppDependencyVersions(args);
         break;
 
       // Agent 3 app install tools

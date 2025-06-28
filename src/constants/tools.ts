@@ -142,6 +142,7 @@ export const TOOLS: Tool[] = [
   
   // Agent 8 cronjob tools
   mittwaldCronjobGet,
+  mittwaldCronjobList,
   
   // Agent 9 database tools
   MITTWALD_DATABASE_MYSQL_DUMP_TOOL,
