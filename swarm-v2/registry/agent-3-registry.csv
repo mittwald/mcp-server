@@ -1,0 +1,9 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+app/list,mittwald_app_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-list.md
+app/open,mittwald_app_open,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-open.md
+app/ssh,mittwald_app_ssh,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-ssh.md
+app/uninstall,mittwald_app_uninstall,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-uninstall.md
+app/update,mittwald_app_update,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-update.md
+app/upgrade,mittwald_app_upgrade,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-upgrade.md
+app/upload,mittwald_app_upload,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-upload.md
+app/versions,mittwald_app_versions,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-versions.md

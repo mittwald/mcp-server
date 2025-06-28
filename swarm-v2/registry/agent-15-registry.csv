@@ -1,0 +1,8 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+mail/deliverybox,mittwald_mail_deliverybox,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-deliverybox.md
+mail,mittwald_mail,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail.md
+org/delete,mittwald_org_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-org-delete.md
+org/get,mittwald_org_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-org-get.md
+org/invite,mittwald_org_invite,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-org-invite.md
+org/list,mittwald_org_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-org-list.md
+org/membership/list/own,mittwald_org_membership_list_own,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-org-membership-list-own.md

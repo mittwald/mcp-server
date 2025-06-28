@@ -1,0 +1,8 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+domain/list,mittwald_domain_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-list.md
+domain/virtualhost/create,mittwald_domain_virtualhost_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-virtualhost-create.md
+domain/virtualhost/delete,mittwald_domain_virtualhost_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-virtualhost-delete.md
+domain/virtualhost/get,mittwald_domain_virtualhost_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-virtualhost-get.md
+domain/virtualhost,mittwald_domain_virtualhost,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-virtualhost.md
+domain,mittwald_domain,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain.md
+extension,mittwald_extension,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-extension.md

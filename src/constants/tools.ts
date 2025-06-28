@@ -14,6 +14,9 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { ELICITATION_EXAMPLE_TOOL } from './tool/elicitation-example.js';
 import { MCP_LOGGING_TOOL } from './tool/logging.js';
 
+// Agent 2 app dependency tools
+import { mittwald_app_dependency_update } from './tool/mittwald-cli/app/dependency/update.js';
+
 // Agent 3 app install tools
 import { mittwald_app_install_joomla } from './tool/mittwald-cli/app/install/joomla.js';
 import { mittwald_app_install_matomo } from './tool/mittwald-cli/app/install/matomo.js';
@@ -22,6 +25,9 @@ import { mittwald_app_install_shopware5 } from './tool/mittwald-cli/app/install/
 import { mittwald_app_install_shopware6 } from './tool/mittwald-cli/app/install/shopware6.js';
 import { mittwald_app_install_typo3 } from './tool/mittwald-cli/app/install/typo3.js';
 import { mittwald_app_install_wordpress } from './tool/mittwald-cli/app/install/wordpress.js';
+
+// Agent 3 app management tools
+import { mittwald_app_list } from './tool/mittwald-cli/app/list.js';
 
 // Agent-18 project tools
 import { mittwald_project_create } from './tool/mittwald-cli/project/create.js';
@@ -37,6 +43,15 @@ import { mittwald_extension_list_installed } from './tool/mittwald-cli/extension
 import { mittwald_extension_list } from './tool/mittwald-cli/extension/list.js';
 import { mittwald_extension_uninstall } from './tool/mittwald-cli/extension/uninstall.js';
 import { mittwald_login_reset } from './tool/mittwald-cli/login/reset.js';
+
+// Agent 8 cronjob tools
+import { mittwaldCronjobGet } from './tool/mittwald-cli/cronjob/index.js';
+
+// Agent 9 database tools
+import { MITTWALD_DATABASE_MYSQL_DUMP_TOOL } from './tool/mittwald-cli/database/mysql/dump.js';
+
+// Agent 11 ddev tools
+import { ddev_init } from './tool/mittwald-cli/ddev/init.js';
 
 /**
  * Standard error messages for tool operations.
@@ -83,6 +98,9 @@ export const TOOLS: Tool[] = [
   ELICITATION_EXAMPLE_TOOL,
   MCP_LOGGING_TOOL,
   
+  // Agent 2 app dependency tools
+  mittwald_app_dependency_update,
+  
   // Agent 3 app install tools
   mittwald_app_install_joomla,
   mittwald_app_install_matomo,
@@ -91,6 +109,9 @@ export const TOOLS: Tool[] = [
   mittwald_app_install_shopware6,
   mittwald_app_install_typo3,
   mittwald_app_install_wordpress,
+  
+  // Agent 3 app management tools
+  mittwald_app_list,
   
   // Agent-18 project tools
   mittwald_project_create,
@@ -106,6 +127,15 @@ export const TOOLS: Tool[] = [
   mittwald_extension_list,
   mittwald_extension_uninstall,
   mittwald_login_reset,
+  
+  // Agent 8 cronjob tools
+  mittwaldCronjobGet,
+  
+  // Agent 9 database tools
+  MITTWALD_DATABASE_MYSQL_DUMP_TOOL,
+  
+  // Agent 11 ddev tools
+  ddev_init,
 ];
 
 /**

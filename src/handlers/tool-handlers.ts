@@ -37,6 +37,9 @@ import {
   handleLoginReset,
 } from './tools/index.js';
 
+// Agent 2 app dependency handlers
+import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
+
 // Agent 3 app install handlers
 import { handleAppInstallJoomla } from './tools/mittwald-cli/app/install/joomla.js';
 import { handleAppInstallMatomo } from './tools/mittwald-cli/app/install/matomo.js';
@@ -45,6 +48,18 @@ import { handleAppInstallShopware5 } from './tools/mittwald-cli/app/install/shop
 import { handleAppInstallShopware6 } from './tools/mittwald-cli/app/install/shopware6.js';
 import { handleAppInstallTypo3 } from './tools/mittwald-cli/app/install/typo3.js';
 import { handleAppInstallWordpress } from './tools/mittwald-cli/app/install/wordpress.js';
+
+// Agent 3 app management handlers
+import { handleAppList } from './tools/mittwald-cli/app/list.js';
+
+// Agent 8 cronjob handlers
+import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
+
+// Agent 9 database handlers
+import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
+
+// Agent 11 ddev handlers
+import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';
 
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
@@ -95,6 +110,14 @@ const ToolSchemas = {
   mittwald_project_invite_get: z.object({
     inviteId: z.string().describe("ID of the ProjectInvite to be retrieved"),
     output: z.enum(["json", "table", "yaml"]).optional().describe("Output format")
+  }),
+
+  // Agent 2 app dependency schemas
+  mittwald_app_dependency_update: z.object({
+    installation_id: z.string().optional().describe("ID or short ID of an app installation"),
+    set: z.array(z.string()).min(1).describe("Set a dependency to a specific version. Format: <dependency>=<version>"),
+    update_policy: z.enum(["none", "inheritedFromApp", "patchLevel", "all"]).optional().describe("Set the update policy for the configured dependencies"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   }),
 
   // Agent 3 app install schemas
@@ -229,7 +252,19 @@ const ToolSchemas = {
     extensionInstanceId: z.string().describe("ID of the extension instance to uninstall")
   }),
 
-  mittwald_login_reset: z.object({})
+  mittwald_login_reset: z.object({}),
+  
+  // Agent 8 cronjob tools
+  mittwald_cronjob_get: z.object({
+    cronjobId: z.string().describe("ID of the cron job to be retrieved"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  // Agent 9 database tools
+  mittwald_database_mysql_dump: MittwaldDatabaseMysqlDumpSchema,
+  
+  // Agent 11 ddev tools
+  mittwald_ddev_init: ddevInitSchema
 };
 
 /**
@@ -266,6 +301,14 @@ type ToolArgs = {
   mittwald_project_invite_get: {
     inviteId: string;
     output?: 'json' | 'table' | 'yaml';
+  };
+
+  // Agent 2 app dependency types
+  mittwald_app_dependency_update: {
+    installation_id?: string;
+    set: string[];
+    update_policy?: 'none' | 'inheritedFromApp' | 'patchLevel' | 'all';
+    quiet?: boolean;
   };
 
   // Agent 3 app install types
@@ -388,6 +431,25 @@ type ToolArgs = {
     extensionInstanceId: string;
   };
   mittwald_login_reset: {};
+  
+  // Agent 8 cronjob tools
+  mittwald_cronjob_get: {
+    cronjobId: string;
+    output?: 'txt' | 'json' | 'yaml';
+  };
+  
+  // Agent 9 database tools
+  mittwald_database_mysql_dump: {
+    databaseId: string;
+    output: string;
+    mysqlPassword?: string;
+    quiet?: boolean;
+    gzip?: boolean;
+    mysqlCharset?: string;
+    temporaryUser?: boolean;
+    sshUser?: string;
+    sshIdentityFile?: string;
+  };
 };
 
 /**
@@ -555,6 +617,11 @@ export async function handleToolCall(
         result = await handleProjectInviteGet(args, mittwaldProjectInviteGetContext);
         break;
 
+      // Agent 2 app dependency tools
+      case "mittwald_app_dependency_update":
+        result = await handleMittwaldAppDependencyUpdate(args);
+        break;
+
       // Agent 3 app install tools
       case "mittwald_app_install_joomla":
         // Create context with mittwaldClient for Mittwald CLI tools
@@ -686,6 +753,11 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleLoginReset(args, mittwaldLoginResetContext);
+        break;
+        
+      // Agent 9 database tools
+      case "mittwald_database_mysql_dump":
+        result = await handleDatabaseMysqlDump(args);
         break;
         
       default:

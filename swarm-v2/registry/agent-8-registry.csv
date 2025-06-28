@@ -1,0 +1,9 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+cronjob/get,mittwald_cronjob_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-get.md
+cronjob/list,mittwald_cronjob_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-list.md
+cronjob/update,mittwald_cronjob_update,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-update.md
+cronjob,mittwald_cronjob,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob.md
+database/list,mittwald_database_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-list.md
+database/mysql/charsets,mittwald_database_mysql_charsets,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-charsets.md
+database/mysql/create,mittwald_database_mysql_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-create.md
+database/mysql/delete,mittwald_database_mysql_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-delete.md

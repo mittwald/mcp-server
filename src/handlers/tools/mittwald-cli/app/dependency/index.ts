@@ -1,0 +1,1 @@
+export { handleMittwaldAppDependencyUpdate } from './update.js';

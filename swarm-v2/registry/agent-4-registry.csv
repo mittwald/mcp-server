@@ -1,0 +1,9 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+app,mittwald_app,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app.md
+backup/create,mittwald_backup_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-create.md
+backup/delete,mittwald_backup_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-delete.md
+backup/download,mittwald_backup_download,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-download.md
+backup/get,mittwald_backup_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-get.md
+backup/list,mittwald_backup_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-list.md
+backup/schedule/create,mittwald_backup_schedule_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-schedule-create.md
+backup/schedule/delete,mittwald_backup_schedule_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-schedule-delete.md

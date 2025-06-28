@@ -1,0 +1,1 @@
+export { ddev_init } from "./init.js";

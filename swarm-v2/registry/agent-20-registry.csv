@@ -1,0 +1,8 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+ssh/user/update,mittwald_ssh_user_update,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-ssh-user-update.md
+ssh/user,mittwald_ssh_user,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-ssh-user.md
+user/api/token/create,mittwald_user_api_token_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-user-api-token-create.md
+user/api/token/get,mittwald_user_api_token_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-user-api-token-get.md
+user/api/token,mittwald_user_api_token,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-user-api-token.md
+user/get,mittwald_user_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-user-get.md
+user,mittwald_user,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-user.md

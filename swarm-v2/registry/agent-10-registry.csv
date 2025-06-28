@@ -1,0 +1,9 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+database/mysql,mittwald_database_mysql,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql.md
+database/redis/create,mittwald_database_redis_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-redis-create.md
+database/redis/get,mittwald_database_redis_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-redis-get.md
+database/redis/list,mittwald_database_redis_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-redis-list.md
+database/redis/shell,mittwald_database_redis_shell,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-redis-shell.md
+database/redis/versions,mittwald_database_redis_versions,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-redis-versions.md
+database/redis,mittwald_database_redis,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-redis.md
+database,mittwald_database,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database.md

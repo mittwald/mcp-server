@@ -109,3 +109,59 @@ When adding new MCP tools, there are three critical places that must be updated 
 **Root Cause**: Missing Zod schema in `ToolSchemas` object in tool-handlers.ts
 
 **Fix**: Always ensure all three registration points are updated when adding new tools.
+
+## Git Worktrees for Parallel Development with Multiple Agents
+
+### The Problem
+When running multiple AI agents or Claude Code sessions to work on the same repository in parallel, they can interfere with each other by:
+- Modifying the same files simultaneously
+- Committing to wrong branches
+- Creating merge conflicts
+- Overwriting each other's work
+
+### The Solution: Git Worktrees
+Git worktrees allow checking out multiple branches from the same repository into separate directories, providing complete isolation between parallel development sessions.
+
+### How to Set Up Worktrees for Parallel Agents
+```bash
+# Create a worktree for each agent/session
+git worktree add ../project-agent-1 -b feature-agent-1
+git worktree add ../project-agent-2 -b feature-agent-2
+# ... continue for all agents
+
+# Each agent works in their own directory
+cd ../project-agent-1
+claude code  # Agent 1 works here
+
+cd ../project-agent-2  
+claude code  # Agent 2 works here
+```
+
+### Benefits for Multi-Agent Development
+1. **Complete Isolation**: Each agent has its own working directory
+2. **No File Conflicts**: Changes in one worktree don't affect others
+3. **Shared Git History**: All worktrees share the same repository history
+4. **Parallel Execution**: Multiple agents can work simultaneously without interference
+5. **Clean Merging**: Each agent's work stays on its own branch until ready to merge
+
+### Management Commands
+```bash
+# List all active worktrees
+git worktree list
+
+# Remove a worktree when done
+git worktree remove ../project-agent-1
+
+# Prune stale worktree information
+git worktree prune
+```
+
+### Best Practices for Agent Swarms
+1. **Naming Convention**: Use descriptive names like `mittwald-agent-1`, `mittwald-agent-2`
+2. **Branch Strategy**: Create a dedicated branch for each worktree/agent
+3. **Documentation**: Place agent-specific instructions in each worktree
+4. **Environment Setup**: Remember to set up dependencies in each worktree
+5. **Registry Tracking**: Use a central registry (in main) to track agent progress
+
+### Lesson Learned
+In our CLI migration swarm, multiple agents accidentally worked on the same branch (cli-migration-agent-7) because they were all operating in the same directory. Using worktrees would have prevented this by giving each agent their own isolated workspace.

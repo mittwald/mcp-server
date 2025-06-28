@@ -1,0 +1,9 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+cronjob/create,mittwald_cronjob_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-create.md
+cronjob/delete,mittwald_cronjob_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-delete.md
+cronjob/execute,mittwald_cronjob_execute,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-execute.md
+cronjob/execution/abort,mittwald_cronjob_execution_abort,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-execution-abort.md
+cronjob/execution/get,mittwald_cronjob_execution_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-execution-get.md
+cronjob/execution/list,mittwald_cronjob_execution_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-execution-list.md
+cronjob/execution/logs,mittwald_cronjob_execution_logs,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-execution-logs.md
+cronjob/execution,mittwald_cronjob_execution,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-cronjob-execution.md

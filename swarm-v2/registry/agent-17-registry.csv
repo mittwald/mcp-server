@@ -1,0 +1,8 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+project/invite,mittwald_project_invite,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-project-invite.md
+project/list,mittwald_project_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-project-list.md
+project/membership/get/own,mittwald_project_membership_get_own,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-project-membership-get-own.md
+project/membership/get,mittwald_project_membership_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-project-membership-get.md
+project/membership/list/own,mittwald_project_membership_list_own,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-project-membership-list-own.md
+project/membership/list,mittwald_project_membership_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-project-membership-list.md
+project/membership,mittwald_project_membership,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-project-membership.md

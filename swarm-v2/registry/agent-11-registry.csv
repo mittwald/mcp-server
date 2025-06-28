@@ -1,0 +1,9 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+ddev/init,mittwald_ddev_init,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-ddev-init.md
+ddev/render/config,mittwald_ddev_render_config,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-ddev-render-config.md
+ddev,mittwald_ddev,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-ddev.md
+domain/dnszone/get,mittwald_domain_dnszone_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-dnszone-get.md
+domain/dnszone/list,mittwald_domain_dnszone_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-dnszone-list.md
+domain/dnszone/update,mittwald_domain_dnszone_update,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-dnszone-update.md
+domain/dnszone,mittwald_domain_dnszone,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-dnszone.md
+domain/get,mittwald_domain_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-domain-get.md

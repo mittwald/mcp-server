@@ -1,0 +1,8 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+sftp/user/delete,mittwald_sftp_user_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-sftp-user-delete.md
+sftp/user/list,mittwald_sftp_user_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-sftp-user-list.md
+sftp/user/update,mittwald_sftp_user_update,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-sftp-user-update.md
+sftp/user,mittwald_sftp_user,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-sftp-user.md
+ssh/user/create,mittwald_ssh_user_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-ssh-user-create.md
+ssh/user/delete,mittwald_ssh_user_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-ssh-user-delete.md
+ssh/user/list,mittwald_ssh_user_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-ssh-user-list.md

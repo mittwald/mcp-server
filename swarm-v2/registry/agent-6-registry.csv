@@ -1,0 +1,9 @@
+command_path,mcp_tool_name,status,commit_hash,completion_time,notes
+contributor,mittwald_contributor,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-contributor.md
+conversation/categories,mittwald_conversation_categories,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-conversation-categories.md
+conversation/close,mittwald_conversation_close,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-conversation-close.md
+conversation/create,mittwald_conversation_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-conversation-create.md
+conversation/list,mittwald_conversation_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-conversation-list.md
+conversation/reply,mittwald_conversation_reply,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-conversation-reply.md
+conversation/show,mittwald_conversation_show,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-conversation-show.md
+conversation,mittwald_conversation,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-conversation.md
