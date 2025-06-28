@@ -54,6 +54,7 @@ import { handleAppInstallWordpress } from './tools/mittwald-cli/app/install/word
 // Agent 3 app management handlers
 import { handleAppList } from './tools/mittwald-cli/app/list.js';
 import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
+import { handleAppSsh } from './tools/mittwald-cli/app/ssh.js';
 
 // Agent 7 cronjob handlers
 import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
@@ -410,6 +411,11 @@ const ToolSchemas = {
   mittwald_org_membership_revoke: z.object({
     membershipId: z.string().describe("The ID of the membership to revoke"),
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_org_membership: z.object({
+    command: z.enum(["list", "list-own", "revoke"]).optional().describe("The membership command to run"),
+    help: z.boolean().optional().describe("Show help for org membership commands")
   })
 };
 
@@ -717,6 +723,11 @@ type ToolArgs = {
   mittwald_org_membership_revoke: {
     membershipId: string;
     quiet?: boolean;
+  };
+  
+  mittwald_org_membership: {
+    command?: 'list' | 'list-own' | 'revoke';
+    help?: boolean;
   };
 };
 

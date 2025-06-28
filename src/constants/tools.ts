@@ -31,6 +31,7 @@ import { mittwald_app_install_wordpress } from './tool/mittwald-cli/app/install/
 // Agent 3 app management tools
 import { mittwald_app_list } from './tool/mittwald-cli/app/list.js';
 import { mittwald_app_open } from './tool/mittwald-cli/app/open.js';
+import { mittwald_app_ssh } from './tool/mittwald-cli/app/ssh.js';
 
 // Agent-18 project tools
 import { mittwald_project_create } from './tool/mittwald-cli/project/create.js';
@@ -147,6 +148,7 @@ export const TOOLS: Tool[] = [
   // Agent 3 app management tools
   mittwald_app_list,
   mittwald_app_open,
+  mittwald_app_ssh,
   
   // Agent-18 project tools
   mittwald_project_create,
