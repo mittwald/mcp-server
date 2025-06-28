@@ -270,6 +270,15 @@ const ToolSchemas = {
     installationId: z.string().optional().describe("ID or short ID of an app installation; this argument is optional if a default app installation is set in the context")
   }),
 
+  mittwald_app_ssh: z.object({
+    installationId: z.string().optional().describe("ID or short ID of an app installation; this argument is optional if a default app installation is set in the context"),
+    sshUser: z.string().optional().describe("SSH user for the connection"),
+    sshIdentityFile: z.string().optional().describe("SSH private key file"),
+    cd: z.boolean().optional().describe("Change to installation path after connecting"),
+    info: z.boolean().optional().describe("Only print connection info without connecting"),
+    test: z.boolean().optional().describe("Test connection and exit")
+  }),
+
   // Agent 14 tools
   mittwald_domain_virtualhost_list: z.object({
     projectId: z.string().optional().describe("ID or short ID of a project"),
@@ -1160,6 +1169,18 @@ export async function handleToolCall(
         
       case "mittwald_database_mysql_get":
         result = await handleDatabaseMysqlGet(args);
+        break;
+        
+      case "mittwald_database_list":
+        result = await handleMittwaldDatabaseList(
+          args.projectId,
+          args.output,
+          args.extended,
+          args.noHeader,
+          args.noTruncate,
+          args.noRelativeDates,
+          args.csvSeparator
+        );
         break;
         
       // Agent 15 mail tools
