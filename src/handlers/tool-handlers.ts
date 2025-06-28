@@ -587,6 +587,14 @@ type ToolArgs = {
   mittwald_app_open: {
     installationId?: string;
   };
+  mittwald_app_ssh: {
+    installationId?: string;
+    sshUser?: string;
+    sshIdentityFile?: string;
+    cd?: boolean;
+    info?: boolean;
+    test?: boolean;
+  };
 
   // Agent 14 tools
   mittwald_domain_virtualhost_list: {
@@ -1012,6 +1020,19 @@ export async function handleToolCall(
           }
         };
         result = await handleAppOpen(args, mittwaldAppOpenContext);
+        break;
+      case "mittwald_app_ssh":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldAppSshContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+          appContext: {
+            installationId: (args as any).installationId
+          }
+        };
+        result = await handleAppSsh(args, mittwaldAppSshContext);
         break;
 
       // Agent 14 tools
