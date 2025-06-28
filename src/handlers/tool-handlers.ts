@@ -76,6 +76,7 @@ import { handleMittwaldCronjob } from './tools/mittwald-cli/cronjob/cronjob.js';
 import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
 import { handleDatabaseMysqlGet, MittwaldDatabaseMysqlGetSchema } from './tools/mittwald-cli/database/mysql/get.js';
 import { handleMittwaldDatabaseList } from './tools/mittwald-cli/database/list.js';
+import { handleMittwaldDatabaseMysqlCharsets } from './tools/mittwald-cli/database/mysql/charsets.js';
 
 // Agent 11 ddev handlers
 import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';

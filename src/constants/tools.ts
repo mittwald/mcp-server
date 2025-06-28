@@ -73,7 +73,8 @@ import {
   MITTWALD_DATABASE_MYSQL_PORT_FORWARD_TOOL,
   MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
   MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
-  mittwaldDatabaseList
+  mittwaldDatabaseList,
+  mittwaldDatabaseMysqlCharsets
 } from './tool/mittwald-cli/database/index.js';
 
 // Agent 11 ddev tools
@@ -191,6 +192,7 @@ export const TOOLS: Tool[] = [
   MITTWALD_DATABASE_MYSQL_SHELL_TOOL,
   MITTWALD_DATABASE_MYSQL_VERSIONS_TOOL,
   mittwaldDatabaseList,
+  mittwaldDatabaseMysqlCharsets,
   
   // Agent 11 ddev tools
   ddev_init,
