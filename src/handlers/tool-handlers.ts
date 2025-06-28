@@ -55,6 +55,7 @@ import { handleAppList } from './tools/mittwald-cli/app/list.js';
 
 // Agent 7 cronjob handlers
 import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
+import { handleCronjobDelete } from './tools/mittwald-cli/cronjob/delete.js';
 
 // Agent 8 cronjob handlers
 import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
