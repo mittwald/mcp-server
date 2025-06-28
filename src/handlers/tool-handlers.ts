@@ -290,6 +290,16 @@ const ToolSchemas = {
     output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
   }),
   
+  mittwald_cronjob_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
   // Agent 9 database tools
   mittwald_database_mysql_dump: MittwaldDatabaseMysqlDumpSchema,
   mittwald_database_mysql_get: MittwaldDatabaseMysqlGetSchema,
@@ -848,6 +858,10 @@ export async function handleToolCall(
       // Agent 9 database tools
       case "mittwald_database_mysql_dump":
         result = await handleDatabaseMysqlDump(args);
+        break;
+        
+      case "mittwald_database_mysql_get":
+        result = await handleDatabaseMysqlGet(args);
         break;
         
       // Agent 15 mail tools
