@@ -136,6 +136,15 @@ import { handleBackupScheduleList } from './tools/mittwald-cli/backup/schedule-l
 import { handleBackupScheduleUpdate } from './tools/mittwald-cli/backup/schedule-update.js';
 import { handleBackupSchedule } from './tools/mittwald-cli/backup/backup-schedule.js';
 
+// Conversation handlers
+import { handleConversationCreate } from './tools/mittwald-cli/conversation/create.js';
+import { handleConversationClose } from './tools/mittwald-cli/conversation/close.js';
+import { handleConversationList } from './tools/mittwald-cli/conversation/list.js';
+import { handleConversationReply } from './tools/mittwald-cli/conversation/reply.js';
+import { handleConversationShow } from './tools/mittwald-cli/conversation/show.js';
+import { handleConversationCategories } from './tools/mittwald-cli/conversation/categories.js';
+import { handleConversation } from './tools/mittwald-cli/conversation/conversation.js';
+
 // Agent 15 mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
 import { handleMail } from './tools/mittwald-cli/mail/mail.js';
@@ -722,6 +731,52 @@ const ToolSchemas = {
   
   mittwald_backup_schedule: z.object({
     help: z.boolean().optional().describe("Show help for backup schedule commands")
+  }),
+  
+  // Conversation tools
+  mittwald_conversation_create: z.object({
+    subject: z.string().describe("Subject of the conversation"),
+    message: z.string().describe("Initial message content"),
+    category: z.string().describe("Category of the conversation"),
+    priority: z.enum(["low", "normal", "high", "urgent"]).optional().describe("Priority of the conversation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_conversation_close: z.object({
+    conversationId: z.string().describe("ID of the conversation to close"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_conversation_list: z.object({
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_conversation_reply: z.object({
+    conversationId: z.string().describe("ID of the conversation to reply to"),
+    message: z.string().describe("Reply message content"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_conversation_show: z.object({
+    conversationId: z.string().describe("ID of the conversation to show"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_conversation_categories: z.object({
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_conversation: z.object({
+    help: z.boolean().optional().describe("Show help for conversation commands")
   }),
   
   // Agent 11 tools
@@ -1987,6 +2042,71 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleBackupSchedule(args, mittwaldBackupScheduleContext);
+        break;
+        
+      // Conversation tools
+      case "mittwald_conversation_create":
+        const mittwaldConversationCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleConversationCreate(args, mittwaldConversationCreateContext);
+        break;
+        
+      case "mittwald_conversation_close":
+        const mittwaldConversationCloseContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleConversationClose(args, mittwaldConversationCloseContext);
+        break;
+        
+      case "mittwald_conversation_list":
+        const mittwaldConversationListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleConversationList(args, mittwaldConversationListContext);
+        break;
+        
+      case "mittwald_conversation_reply":
+        const mittwaldConversationReplyContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleConversationReply(args, mittwaldConversationReplyContext);
+        break;
+        
+      case "mittwald_conversation_show":
+        const mittwaldConversationShowContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleConversationShow(args, mittwaldConversationShowContext);
+        break;
+        
+      case "mittwald_conversation_categories":
+        const mittwaldConversationCategoriesContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleConversationCategories(args, mittwaldConversationCategoriesContext);
+        break;
+        
+      case "mittwald_conversation":
+        result = await handleConversation();
         break;
         
       // Redis database tools
