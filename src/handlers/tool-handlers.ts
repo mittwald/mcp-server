@@ -40,6 +40,7 @@ import { handleProjectFilesystem } from './tools/mittwald-cli/project/filesystem
 import { handleProjectInviteListOwn } from './tools/mittwald-cli/project/invite-list-own.js';
 import { handleProjectInviteList } from './tools/mittwald-cli/project/invite-list.js';
 import { handleMittwaldProjectList } from './tools/mittwald-cli/project/list.js';
+import { handleProjectSSH } from './tools/mittwald-cli/project/ssh.js';
 import { handleServerList } from './tools/mittwald-cli/server/list.js';
 import { handleServerGet } from './tools/mittwald-cli/server/get.js';
 import { handleServer } from './tools/mittwald-cli/server/server.js';
@@ -185,6 +186,12 @@ const ToolSchemas = {
     noHeader: z.boolean().optional().describe("Hide table header"),
     noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
     noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)")
+  }),
+  
+  mittwald_project_ssh: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    sshUser: z.string().optional().describe("Override the SSH user to connect with"),
+    sshIdentityFile: z.string().optional().describe("The SSH identity file (private key) to use for public key authentication")
   }),
 
   mittwald_server_list: z.object({
@@ -1291,6 +1298,17 @@ export async function handleToolCall(
         };
         result = await handleMittwaldProjectList(args, mittwaldProjectListContext);
         break;
+        
+      case "mittwald_project_ssh":
+        const mittwaldProjectSSHContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectSSH(args, mittwaldProjectSSHContext);
+        break;
+        
       case "mittwald_server_list":
         // Create context with mittwaldClient for Mittwald CLI tools
         const mittwaldServerListContext: MittwaldToolHandlerContext = {
