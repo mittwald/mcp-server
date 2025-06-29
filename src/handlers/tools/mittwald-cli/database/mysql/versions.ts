@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { executeCommand } from "../../../../utils/executeCommand.js";
+import { executeCommand } from "../../../../../utils/executeCommand.js";
 
 export const MittwaldDatabaseMysqlVersionsSchema = z.object({
   output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).default("txt"),
@@ -39,7 +39,7 @@ export async function handleDatabaseMysqlVersions(
   }
 
   try {
-    const result = await executeCommand("mw", args);
+    const result = await executeCommand(`mw ${args.join(' ')}`);
 
     return {
       content: [

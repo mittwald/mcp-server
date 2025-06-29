@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { executeCommand } from "../../../../utils/executeCommand.js";
+import { executeCommand } from "../../../../../utils/executeCommand.js";
 
 export const MittwaldDatabaseMysqlImportSchema = z.object({
   databaseId: z.string(),
@@ -50,7 +50,7 @@ export async function handleDatabaseMysqlImport(
   }
 
   try {
-    const result = await executeCommand("mw", args);
+    const result = await executeCommand(`mw ${args.join(' ')}`);
 
     const isStdin = input.input === "-" || input.input === "/dev/stdin";
     

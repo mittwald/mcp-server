@@ -1,6 +1,6 @@
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { formatToolResponse } from '@/utils/format-tool-response.js';
-import { executeCliCommand } from '@/utils/execute-cli-command.js';
+import { executeCommand } from '@/utils/executeCommand.js';
 
 export async function handleMittwaldDatabaseMysqlCharsets(
   output: string = 'json',
@@ -35,7 +35,7 @@ export async function handleMittwaldDatabaseMysqlCharsets(
       args.push('--csv-separator', csvSeparator);
     }
 
-    const result = await executeCliCommand('mw', args);
+    const result = await executeCommand(`mw ${args.join(' ')}`);
 
     return formatToolResponse('success', 'MySQL character sets retrieved successfully', result);
   } catch (error) {

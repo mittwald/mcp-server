@@ -1,6 +1,6 @@
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { formatToolResponse } from '@/utils/format-tool-response.js';
-import { executeCliCommand } from '@/utils/execute-cli-command.js';
+import { executeCommand } from '@/utils/executeCommand.js';
 
 export async function handleMittwaldDatabaseMysqlCreate(
   description: string,
@@ -47,7 +47,7 @@ export async function handleMittwaldDatabaseMysqlCreate(
       args.push('--user-access-level', userAccessLevel);
     }
 
-    const result = await executeCliCommand('mw', args);
+    const result = await executeCommand(`mw ${args.join(' ')}`);
 
     return formatToolResponse('success', 'MySQL database created successfully', result);
   } catch (error) {
