@@ -45,18 +45,13 @@ export const handleCronjobCreate: MittwaldToolHandler<Args> = async (args, { mit
       );
     }
 
-    // Get installation ID from context if not provided
-    let appInstallationId = installationId;
+    // Installation ID is required
+    const appInstallationId = installationId;
     if (!appInstallationId) {
-      const contextData = await mittwaldClient.conversation.getContext();
-      appInstallationId = contextData.appInstallation?.appInstallationId;
-      
-      if (!appInstallationId) {
-        return formatToolResponse(
-          "error",
-          "No installation ID provided and no default app installation set in context. Use 'mittwald_context_set' to set a default or provide an installation ID."
-        );
-      }
+      return formatToolResponse(
+        "error",
+        "Installation ID is required. Please provide an 'installationId' parameter."
+      );
     }
 
     // Parse timeout to milliseconds
@@ -75,55 +70,102 @@ export const handleCronjobCreate: MittwaldToolHandler<Args> = async (args, { mit
       active: !disable,
       appId: appInstallationId,
       description,
-      interval
+      interval,
+      timeout: timeoutMs / 1000 // Convert to seconds
     };
 
+    // Set destination based on URL or command
     if (url) {
-      createData.url = url;
+      createData.destination = { url };
+    } else if (command) {
+      createData.destination = {
+        path: command,
+        interpreter: interpreter || 'bash'
+      };
     } else {
-      createData.command = command;
-      createData.interpreter = interpreter;
+      return formatToolResponse(
+        "error",
+        "Either 'url' or 'command' must be provided for cronjob destination"
+      );
     }
 
     if (email) {
       createData.email = email;
     }
 
-    if (timeout !== '3600s') {
-      createData.timeout = timeoutMs;
+    // Need to get project ID from app installation
+    const appResponse = await mittwaldClient.api.app.getAppinstallation({
+      appInstallationId: appInstallationId
+    });
+
+    if (appResponse.status !== 200) {
+      return formatToolResponse(
+        "error",
+        `Failed to get app installation details: ${appResponse.status}`
+      );
     }
 
-    const response = await mittwaldClient.cronjob.createCronjob({
+    const projectId = appResponse.data.projectId;
+    
+    if (!projectId) {
+      return formatToolResponse(
+        "error",
+        "Failed to get project ID from app installation"
+      );
+    }
+
+    const response = await mittwaldClient.api.cronjob.createCronjob({
+      projectId,
       data: createData
     });
 
-    const cronjobId = response.id;
+    if (response.status !== 201) {
+      return formatToolResponse(
+        "error",
+        `Failed to create cronjob: ${response.status}`
+      );
+    }
+
+    const cronjobId = response.data.id;
 
     // Get the created cron job details for confirmation
-    const cronjob = await mittwaldClient.cronjob.getCronjob({
+    const cronjobResponse = await mittwaldClient.api.cronjob.getCronjob({
       cronjobId
     });
+
+    if (cronjobResponse.status !== 200) {
+      return formatToolResponse(
+        "error",
+        `Failed to get created cronjob details: ${cronjobResponse.status}`
+      );
+    }
+
+    const cronjob = cronjobResponse.data;
 
     if (quiet) {
       return formatToolResponse(
         "success",
-        cronjobId
+        "Cronjob created successfully",
+        { id: cronjobId }
       );
     }
 
     const details: any = {
-      id: cronjob.id,
+      id: cronjobId,
       description: cronjob.description,
       interval: cronjob.interval,
       active: cronjob.active,
       appInstallationId: cronjob.appId
     };
 
-    if (cronjob.url) {
-      details.url = cronjob.url;
-    } else {
-      details.command = cronjob.command;
-      details.interpreter = cronjob.interpreter;
+    // Handle destination details
+    if (cronjob.destination) {
+      if ('url' in cronjob.destination) {
+        details.url = cronjob.destination.url;
+      } else if ('path' in cronjob.destination) {
+        details.command = cronjob.destination.path;
+        details.interpreter = cronjob.destination.interpreter;
+      }
     }
 
     if (cronjob.email) {

@@ -16,20 +16,21 @@ export const handleMittwaldProjectList: MittwaldToolHandler<MittwaldProjectListA
     const result = await mittwaldClient.api.project.listProjects({});
 
     if (!result.data) {
-      return formatToolResponse({
-        success: false,
-        error: 'No project data received from API'
-      });
+      return formatToolResponse(
+        'error',
+        'No project data received from API'
+      );
     }
 
-    const projects = result.data;
+    const projects = result.data as any[];
     
     // Apply formatting based on output type
     if (args.output === 'json') {
-      return formatToolResponse({
-        success: true,
-        data: projects
-      });
+      return formatToolResponse(
+        'success',
+        'Projects retrieved successfully',
+        projects
+      );
     }
 
     if (args.output === 'yaml') {
@@ -44,10 +45,11 @@ export const handleMittwaldProjectList: MittwaldToolHandler<MittwaldProjectListA
   enabled: ${project.enabled ?? 'N/A'}
   readiness: ${project.readiness || 'N/A'}` : ''}`).join('\n');
 
-      return formatToolResponse({
-        success: true,
-        data: yamlOutput
-      });
+      return formatToolResponse(
+        'success',
+        'Projects retrieved in YAML format',
+        yamlOutput
+      );
     }
 
     if (args.output === 'csv' || args.output === 'tsv') {
@@ -76,18 +78,20 @@ export const handleMittwaldProjectList: MittwaldToolHandler<MittwaldProjectListA
         return basicData.join(separator);
       }).join('\n');
 
-      return formatToolResponse({
-        success: true,
-        data: headerRow + dataRows
-      });
+      return formatToolResponse(
+        'success',
+        'Projects retrieved in CSV/TSV format',
+        headerRow + dataRows
+      );
     }
 
     // Default txt format (table-like)
     if (projects.length === 0) {
-      return formatToolResponse({
-        success: true,
-        data: 'No projects found.'
-      });
+      return formatToolResponse(
+        'success',
+        'No projects found',
+        'No projects found.'
+      );
     }
 
     const formatDate = (dateStr: string | undefined) => {
@@ -140,15 +144,16 @@ export const handleMittwaldProjectList: MittwaldToolHandler<MittwaldProjectListA
       output += row.join('\t') + '\n';
     });
 
-    return formatToolResponse({
-      success: true,
-      data: output.trim()
-    });
+    return formatToolResponse(
+      'success',
+      'Projects retrieved successfully',
+      output.trim()
+    );
 
   } catch (error) {
-    return formatToolResponse({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    });
+    return formatToolResponse(
+      'error',
+      error instanceof Error ? error.message : 'Unknown error occurred'
+    );
   }
 };
