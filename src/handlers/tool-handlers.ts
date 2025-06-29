@@ -123,6 +123,19 @@ import { handleDomainDnszoneList, domainDnszoneListSchema } from './tools/mittwa
 import { handleDomainDnszoneUpdate, domainDnszoneUpdateSchema } from './tools/mittwald-cli/domain/dnszone/update.js';
 import { handleDomainDnszoneMain, domainDnszoneMainSchema } from './tools/mittwald-cli/domain/dnszone/main.js';
 
+// Backup handlers
+import { handleBackupCreate } from './tools/mittwald-cli/backup/create.js';
+import { handleBackupDelete } from './tools/mittwald-cli/backup/delete.js';
+import { handleBackupDownload } from './tools/mittwald-cli/backup/download.js';
+import { handleBackupGet } from './tools/mittwald-cli/backup/get.js';
+import { handleBackupList } from './tools/mittwald-cli/backup/list.js';
+import { handleBackup } from './tools/mittwald-cli/backup/backup.js';
+import { handleBackupScheduleCreate } from './tools/mittwald-cli/backup/schedule/create.js';
+import { handleBackupScheduleDelete } from './tools/mittwald-cli/backup/schedule/delete.js';
+import { handleBackupScheduleList } from './tools/mittwald-cli/backup/schedule-list.js';
+import { handleBackupScheduleUpdate } from './tools/mittwald-cli/backup/schedule-update.js';
+import { handleBackupSchedule } from './tools/mittwald-cli/backup/backup-schedule.js';
+
 // Agent 15 mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
 import { handleMail } from './tools/mittwald-cli/mail/mail.js';
@@ -631,6 +644,84 @@ const ToolSchemas = {
     databaseId: z.string().describe("ID or name of the database to delete"),
     force: z.boolean().optional().describe("Do not ask for confirmation"),
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  // Backup tools
+  mittwald_backup_create: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    expires: z.string().describe("Set the backup expiration time (duration format like 30d, 1y)"),
+    description: z.string().optional().describe("Set a description for the backup"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    wait: z.boolean().optional().describe("Wait for the resource to be ready"),
+    waitTimeout: z.string().optional().describe("The duration to wait for the resource to be ready")
+  }),
+  
+  mittwald_backup_delete: z.object({
+    backupId: z.string().describe("ID of the ProjectBackup to be deleted"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_backup_download: z.object({
+    backupId: z.string().describe("ID of the ProjectBackup to be downloaded"),
+    target: z.string().describe("Target directory to download the backup to"),
+    force: z.boolean().optional().describe("Force download even if target exists"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_backup_get: z.object({
+    backupId: z.string().describe("ID of the ProjectBackup to be retrieved"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_backup_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_backup: z.object({
+    help: z.boolean().optional().describe("Show help for backup commands")
+  }),
+  
+  mittwald_backup_schedule_create: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    schedule: z.string().describe("Schedule for the backup (cron expression)"),
+    retention: z.string().describe("Set the backup retention time (duration format like 30d, 1y)"),
+    description: z.string().optional().describe("Set a description for the backup schedule"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_backup_schedule_delete: z.object({
+    scheduleId: z.string().describe("ID of the ProjectBackupSchedule to be deleted"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_backup_schedule_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_backup_schedule_update: z.object({
+    scheduleId: z.string().describe("ID of the ProjectBackupSchedule to be updated"),
+    schedule: z.string().optional().describe("Update schedule for the backup (cron expression)"),
+    retention: z.string().optional().describe("Update the backup retention time (duration format like 30d, 1y)"),
+    description: z.string().optional().describe("Update description for the backup schedule"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_backup_schedule: z.object({
+    help: z.boolean().optional().describe("Show help for backup schedule commands")
   }),
   
   // Agent 11 tools
@@ -1785,6 +1876,117 @@ export async function handleToolCall(
           args.force,
           args.quiet
         );
+        break;
+        
+      // Backup tools
+      case "mittwald_backup_create":
+        const mittwaldBackupCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupCreate(args, mittwaldBackupCreateContext);
+        break;
+        
+      case "mittwald_backup_delete":
+        const mittwaldBackupDeleteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupDelete(args, mittwaldBackupDeleteContext);
+        break;
+        
+      case "mittwald_backup_download":
+        const mittwaldBackupDownloadContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupDownload(args, mittwaldBackupDownloadContext);
+        break;
+        
+      case "mittwald_backup_get":
+        const mittwaldBackupGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupGet(args, mittwaldBackupGetContext);
+        break;
+        
+      case "mittwald_backup_list":
+        const mittwaldBackupListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupList(args, mittwaldBackupListContext);
+        break;
+        
+      case "mittwald_backup":
+        const mittwaldBackupContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackup(args, mittwaldBackupContext);
+        break;
+        
+      case "mittwald_backup_schedule_create":
+        const mittwaldBackupScheduleCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupScheduleCreate(args, mittwaldBackupScheduleCreateContext);
+        break;
+        
+      case "mittwald_backup_schedule_delete":
+        const mittwaldBackupScheduleDeleteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupScheduleDelete(args, mittwaldBackupScheduleDeleteContext);
+        break;
+        
+      case "mittwald_backup_schedule_list":
+        const mittwaldBackupScheduleListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupScheduleList(args, mittwaldBackupScheduleListContext);
+        break;
+        
+      case "mittwald_backup_schedule_update":
+        const mittwaldBackupScheduleUpdateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupScheduleUpdate(args, mittwaldBackupScheduleUpdateContext);
+        break;
+        
+      case "mittwald_backup_schedule":
+        const mittwaldBackupScheduleContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleBackupSchedule(args, mittwaldBackupScheduleContext);
         break;
         
       // Redis database tools
