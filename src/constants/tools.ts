@@ -74,10 +74,13 @@ import {
 
 // Agent 14 tools
 import { mittwald_domain_virtualhost_list } from './tool/mittwald-cli/domain/virtualhost-list.js';
-import { mittwald_extension_install } from './tool/mittwald-cli/extension/install.js';
-import { mittwald_extension_list_installed } from './tool/mittwald-cli/extension/list-installed.js';
-import { mittwald_extension_list } from './tool/mittwald-cli/extension/list.js';
-import { mittwald_extension_uninstall } from './tool/mittwald-cli/extension/uninstall.js';
+import { 
+  mittwald_extension,
+  mittwald_extension_install,
+  mittwald_extension_list_installed,
+  mittwald_extension_list,
+  mittwald_extension_uninstall 
+} from './tool/mittwald-cli/extension/index.js';
 
 // Agent 7 cronjob tools
 import { mittwald_cronjob_create } from './tool/mittwald-cli/cronjob/create.js';
@@ -161,6 +164,8 @@ import {
   backupScheduleListTool,
   backupScheduleUpdateTool
 } from './tool/mittwald-cli/backup/index.js';
+import { mittwald_backup_schedule_create } from './tool/mittwald-cli/backup/schedule/create.js';
+import { mittwald_backup_schedule_delete } from './tool/mittwald-cli/backup/schedule/delete.js';
 
 // Conversation tools
 import {
@@ -195,6 +200,7 @@ import { mittwaldMailDeliveryboxDelete } from './tool/mittwald-cli/mail/delivery
 import { mittwaldMailDeliveryboxGet } from './tool/mittwald-cli/mail/deliverybox-get.js';
 import { mittwaldMailDeliveryboxList } from './tool/mittwald-cli/mail/deliverybox-list.js';
 import { mittwaldMailDeliveryboxUpdate } from './tool/mittwald-cli/mail/deliverybox-update.js';
+import { mittwaldMailAddressUpdate } from './tool/mittwald-cli/mail/address-update.js';
 
 // SFTP tools
 import {
@@ -220,7 +226,11 @@ import {
   mittwaldUserGetTool,
   mittwaldUserApiTokenTool,
   mittwaldUserApiTokenCreateTool,
-  mittwaldUserApiTokenGetTool
+  mittwaldUserApiTokenGetTool,
+  mittwaldUserApiTokenListTool,
+  mittwaldUserApiTokenRevokeTool,
+  mittwaldUserSessionGetTool,
+  mittwaldUserSessionListTool
 } from './tool/mittwald-cli/user/index.js';
 
 // Missing project SSH tool
@@ -338,6 +348,7 @@ export const TOOLS: Tool[] = [
   
   // Agent 14 tools
   mittwald_domain_virtualhost_list,
+  mittwald_extension,
   mittwald_extension_install,
   mittwald_extension_list_installed,
   mittwald_extension_list,
@@ -427,6 +438,8 @@ export const TOOLS: Tool[] = [
   mittwald_backup_get,
   mittwald_backup_list,
   mittwald_backup_schedule,
+  mittwald_backup_schedule_create,
+  mittwald_backup_schedule_delete,
   backupScheduleListTool,
   backupScheduleUpdateTool,
   
@@ -459,6 +472,7 @@ export const TOOLS: Tool[] = [
   mittwaldMailDeliveryboxGet,
   mittwaldMailDeliveryboxList,
   mittwaldMailDeliveryboxUpdate,
+  mittwaldMailAddressUpdate,
   
   // SFTP tools
   mittwaldSftpUser,
@@ -480,6 +494,10 @@ export const TOOLS: Tool[] = [
   mittwaldUserApiTokenTool,
   mittwaldUserApiTokenCreateTool,
   mittwaldUserApiTokenGetTool,
+  mittwaldUserApiTokenListTool,
+  mittwaldUserApiTokenRevokeTool,
+  mittwaldUserSessionGetTool,
+  mittwaldUserSessionListTool,
   
   // Missing project SSH tool
   mittwald_project_ssh,
