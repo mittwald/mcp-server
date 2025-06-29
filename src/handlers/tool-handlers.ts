@@ -103,6 +103,13 @@ import { handleMittwaldDatabaseMysqlCharsets } from './tools/mittwald-cli/databa
 import { handleMittwaldDatabaseMysqlCreate } from './tools/mittwald-cli/database/mysql/create.js';
 import { handleMittwaldDatabaseMysqlDelete } from './tools/mittwald-cli/database/mysql/delete.js';
 
+// Redis database handlers
+import { handleMittwaldDatabaseRedisCreate, MittwaldDatabaseRedisCreateSchema } from './tools/mittwald-cli/database/redis-create.js';
+import { handleMittwaldDatabaseRedisGet, MittwaldDatabaseRedisGetSchema } from './tools/mittwald-cli/database/redis-get.js';
+import { handleMittwaldDatabaseRedisList, MittwaldDatabaseRedisListSchema } from './tools/mittwald-cli/database/redis-list.js';
+import { handleMittwaldDatabaseRedisShell, MittwaldDatabaseRedisShellSchema } from './tools/mittwald-cli/database/redis-shell.js';
+import { handleMittwaldDatabaseRedisVersions, MittwaldDatabaseRedisVersionsSchema } from './tools/mittwald-cli/database/redis-versions.js';
+
 // Agent 11 handlers
 import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';
 import { handleDdevRenderConfig, ddevRenderConfigSchema } from './tools/mittwald-cli/ddev/render-config.js';
@@ -563,6 +570,13 @@ const ToolSchemas = {
   mittwald_database_mysql_port_forward: MittwaldDatabaseMysqlPortForwardSchema,
   mittwald_database_mysql_shell: MittwaldDatabaseMysqlShellSchema,
   mittwald_database_mysql_versions: MittwaldDatabaseMysqlVersionsSchema,
+  
+  // Redis database tools
+  mittwald_database_redis_create: MittwaldDatabaseRedisCreateSchema,
+  mittwald_database_redis_get: MittwaldDatabaseRedisGetSchema,
+  mittwald_database_redis_list: MittwaldDatabaseRedisListSchema,
+  mittwald_database_redis_shell: MittwaldDatabaseRedisShellSchema,
+  mittwald_database_redis_versions: MittwaldDatabaseRedisVersionsSchema,
   
   mittwald_database_list: z.object({
     projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
@@ -1722,6 +1736,57 @@ export async function handleToolCall(
           args.force,
           args.quiet
         );
+        break;
+        
+      // Redis database tools
+      case "mittwald_database_redis_create":
+        const mittwaldDatabaseRedisCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldDatabaseRedisCreate(args, mittwaldDatabaseRedisCreateContext);
+        break;
+        
+      case "mittwald_database_redis_get":
+        const mittwaldDatabaseRedisGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldDatabaseRedisGet(args, mittwaldDatabaseRedisGetContext);
+        break;
+        
+      case "mittwald_database_redis_list":
+        const mittwaldDatabaseRedisListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldDatabaseRedisList(args, mittwaldDatabaseRedisListContext);
+        break;
+        
+      case "mittwald_database_redis_shell":
+        const mittwaldDatabaseRedisShellContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldDatabaseRedisShell(args, mittwaldDatabaseRedisShellContext);
+        break;
+        
+      case "mittwald_database_redis_versions":
+        const mittwaldDatabaseRedisVersionsContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldDatabaseRedisVersions(args, mittwaldDatabaseRedisVersionsContext);
         break;
         
       // Agent 11 tools
