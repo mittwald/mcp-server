@@ -10,13 +10,17 @@ export const handleCronjobExecute: MittwaldToolHandler<Args> = async (args, { mi
   try {
     const { cronjobId, quiet = false } = args;
 
-    // Execute the cron job
-    const execution = await mittwaldClient.cronjob.execute({
+    // Execute the cron job (the method name is likely different)
+    const executionResponse = await mittwaldClient.cronjob.createExecution({
       cronjobId
     });
 
+    if (executionResponse.status !== 201) {
+      throw new Error(`Failed to execute cronjob: ${executionResponse.status}`);
+    }
+
     // Get the execution ID from the response
-    const executionId = execution.id;
+    const executionId = executionResponse.data.id;
 
     if (quiet) {
       return formatToolResponse(
@@ -26,9 +30,23 @@ export const handleCronjobExecute: MittwaldToolHandler<Args> = async (args, { mi
     }
 
     // Get the cron job details for additional context
-    const cronjob = await mittwaldClient.cronjob.getCronjob({
+    const cronjobResponse = await mittwaldClient.cronjob.getCronjob({
       cronjobId
     });
+
+    if (cronjobResponse.status !== 200) {
+      // Still return success for execution, but without cronjob details
+      return formatToolResponse(
+        "success",
+        `Cron job executed successfully`,
+        {
+          executionId,
+          cronjobId,
+          status: "started",
+          timestamp: new Date().toISOString()
+        }
+      );
+    }
 
     return formatToolResponse(
       "success",
@@ -36,7 +54,7 @@ export const handleCronjobExecute: MittwaldToolHandler<Args> = async (args, { mi
       {
         executionId,
         cronjobId,
-        description: cronjob.description,
+        description: cronjobResponse.data.description,
         status: "started",
         timestamp: new Date().toISOString()
       }

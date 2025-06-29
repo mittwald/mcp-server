@@ -59,8 +59,8 @@ export const handleMittwaldCronjobUpdate: MittwaldToolHandler<MittwaldCronjobUpd
       data: updateData
     });
     
-    if (response.status === 200 || response.status === 204) {
-      return formatToolResponse('success', 'Cronjob updated successfully', response.status === 200 ? response.data : {});
+    if (response.status === 204) {
+      return formatToolResponse('success', 'Cronjob updated successfully', {});
     }
     
     throw new Error(`API call failed with status: ${response.status}`);
