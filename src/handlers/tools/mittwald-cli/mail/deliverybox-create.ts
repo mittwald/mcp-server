@@ -1,5 +1,6 @@
 import type { MittwaldToolHandler, MittwaldToolHandlerContext } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { generatePassword } from '../../../../utils/password-generator.js';
 
 interface MittwaldMailDeliveryboxCreateArgs {
   description: string;
@@ -17,7 +18,7 @@ export const handleMailDeliveryboxCreate: MittwaldToolHandler<MittwaldMailDelive
     let generatedPassword: string | undefined;
     
     if (args.randomPassword) {
-      generatedPassword = PasswordGenerator.generate(32);
+      generatedPassword = generatePassword(32);
       password = generatedPassword;
     }
     
@@ -35,7 +36,7 @@ export const handleMailDeliveryboxCreate: MittwaldToolHandler<MittwaldMailDelive
     };
     
     // Create the delivery box
-    const createResponse = await mittwaldClient.api.mail.createDeliveryBox({
+    const createResponse = await mittwaldClient.api.mail.createDeliverybox({
       projectId: args.projectId!,
       data: createData
     });
@@ -47,7 +48,7 @@ export const handleMailDeliveryboxCreate: MittwaldToolHandler<MittwaldMailDelive
       );
     }
 
-    const deliveryBoxId = createResponse.data;
+    const deliveryBoxId = createResponse.data.id;
 
     // If quiet mode, return just the ID (and password if generated)
     if (args.quiet) {
@@ -71,7 +72,7 @@ export const handleMailDeliveryboxCreate: MittwaldToolHandler<MittwaldMailDelive
       result.message += ` (Generated password: ${generatedPassword})`;
     }
 
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", result.message, result);
   } catch (error) {
     return formatToolResponse("error", `Error creating delivery box: ${error instanceof Error ? error.message : String(error)}`);
   }

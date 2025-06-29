@@ -26,7 +26,7 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.domain.listIngresses({
+    const ingressResponse = await mittwaldClient.api.project.listIngresses({
       projectId: args.projectId,
     });
     assertStatus(ingressResponse, 200);

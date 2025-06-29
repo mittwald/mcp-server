@@ -4,7 +4,8 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../../../../types/tool-response.js';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 /**
  * Get all mail addresses for a project ID
@@ -24,14 +25,14 @@ export async function handleMittwaldMailAddressList(
     noRelativeDates?: boolean;
     csvSeparator?: ',' | ';';
   }
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     // If no projectId provided, we need one from context or error
     if (!args.projectId) {
-      return {
-        success: false,
-        error: 'Project ID is required. Please provide --project-id or set a default project context.',
-      };
+      return formatToolResponse(
+        'error',
+        'Project ID is required. Please provide --project-id or set a default project context.'
+      );
     }
 
     // Get the mail addresses for the project
@@ -45,27 +46,29 @@ export async function handleMittwaldMailAddressList(
       // Format the output based on the requested format
       switch (args.output) {
         case 'json':
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            `Retrieved ${mailAddresses.length} mail addresses`,
+            {
               format: 'json',
               content: JSON.stringify(mailAddresses, null, 2),
               mailAddresses,
               count: mailAddresses.length,
-            },
-          };
+            }
+          );
           
         case 'yaml':
           const yamlContent = formatAsYaml(mailAddresses);
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            `Retrieved ${mailAddresses.length} mail addresses`,
+            {
               format: 'yaml',
               content: yamlContent,
               mailAddresses,
               count: mailAddresses.length,
-            },
-          };
+            }
+          );
           
         case 'csv':
           const csvContent = formatAsCsv(mailAddresses, args.csvSeparator || ',', !args.noHeader, args.extended || false);

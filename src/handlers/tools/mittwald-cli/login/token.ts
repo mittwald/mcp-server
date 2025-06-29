@@ -4,7 +4,8 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../../types/tool-response.js';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
 /**
  * Authenticate using an API token
@@ -19,54 +20,55 @@ export async function handleMittwaldLoginToken(
     overwrite?: boolean;
     quiet?: boolean;
   }
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     // In the MCP context, we assume the API token is already configured
     // We'll validate it by trying to get the current user
-    const userResponse = await client.user.api.user.getOwnAccount();
+    const userResponse = await client.api.user.getOwnAccount();
     
     if (userResponse.status === 200 && userResponse.data) {
       const user = userResponse.data;
       
       if (args.quiet) {
-        return {
-          success: true,
-          data: {
+        return formatToolResponse(
+          'success',
+          'Authenticated successfully',
+          {
             authenticated: true,
             userId: user.userId,
-          },
-        };
+          }
+        );
       }
       
-      return {
-        success: true,
-        data: {
+      return formatToolResponse(
+        'success',
+        `Successfully authenticated as ${user.email}`,
+        {
           authenticated: true,
-          message: `Successfully authenticated as ${user.email}`,
           userId: user.userId,
           email: user.email,
           customer: user.person || undefined,
-        },
-      };
+        }
+      );
     }
     
-    return {
-      success: false,
-      error: 'Authentication failed - invalid or missing API token',
-    };
+    return formatToolResponse(
+      'error',
+      'Authentication failed - invalid or missing API token'
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     if (args.quiet) {
-      return {
-        success: false,
-        error: 'Authentication failed',
-      };
+      return formatToolResponse(
+        'error',
+        'Authentication failed'
+      );
     }
     
-    return {
-      success: false,
-      error: `Authentication failed: ${errorMessage}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Authentication failed: ${errorMessage}`
+    );
   }
 }

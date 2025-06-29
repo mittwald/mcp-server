@@ -28,6 +28,10 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     
     const appInstallation = appResponse.data;
     const projectId = appInstallation.projectId;
+    
+    if (!projectId) {
+      throw new Error("App installation has no associated project ID");
+    }
 
     // Get project details to determine cluster
     const projectResponse = await mittwaldClient.api.project.getProject({

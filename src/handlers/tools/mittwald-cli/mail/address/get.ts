@@ -4,7 +4,8 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../../../../types/tool-response.js';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 /**
  * Get a specific mail address
@@ -19,7 +20,7 @@ export async function handleMittwaldMailAddressGet(
     mailAddressId: string;
     output: 'txt' | 'json' | 'yaml';
   }
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     // Get the mail address details
     const response = await client.mail.getMailAddress({
@@ -32,39 +33,42 @@ export async function handleMittwaldMailAddressGet(
       // Format the output based on the requested format
       switch (args.output) {
         case 'json':
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            'Mail address retrieved successfully',
+            {
               format: 'json',
               content: JSON.stringify(mailAddress, null, 2),
               mailAddress,
-            },
-          };
+            }
+          );
           
         case 'yaml':
           // Simple YAML formatting
           const yamlContent = formatAsYaml(mailAddress);
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            'Mail address retrieved successfully',
+            {
               format: 'yaml',
               content: yamlContent,
               mailAddress,
-            },
-          };
+            }
+          );
           
         case 'txt':
         default:
           // Human-readable text format
           const textContent = formatAsText(mailAddress);
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            'Mail address retrieved successfully',
+            {
               format: 'txt',
               content: textContent,
               mailAddress,
-            },
-          };
+            }
+          );
       }
     }
 

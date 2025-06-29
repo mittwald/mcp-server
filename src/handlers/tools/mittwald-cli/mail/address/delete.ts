@@ -4,7 +4,8 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../../../../types/tool-response.js';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 /**
  * Delete a mail address
@@ -20,14 +21,14 @@ export async function handleMittwaldMailAddressDelete(
     force: boolean;
     quiet?: boolean;
   }
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     // In MCP context, force is always required as there's no interactive confirmation
     if (!args.force) {
-      return {
-        success: false,
-        error: 'Force flag is required in MCP context as interactive confirmation is not possible',
-      };
+      return formatToolResponse(
+        'error',
+        'Force flag is required in MCP context as interactive confirmation is not possible'
+      );
     }
 
     // Get mail address details first for confirmation message
@@ -51,12 +52,13 @@ export async function handleMittwaldMailAddressDelete(
 
     if (response.status === 204) {
       if (args.quiet) {
-        return {
-          success: true,
-          data: {
+        return formatToolResponse(
+          'success',
+          `Mail address ${args.mailAddressId} deleted successfully`,
+          {
             mailAddressId: args.mailAddressId,
-          },
-        };
+          }
+        );
       }
 
       const result: any = {
@@ -69,37 +71,38 @@ export async function handleMittwaldMailAddressDelete(
         result.address = mailAddressDetails.address;
       }
 
-      return {
-        success: true,
-        data: result,
-      };
+      return formatToolResponse(
+        'success',
+        result.message,
+        result
+      );
     }
 
-    return {
-      success: false,
-      error: `Failed to delete mail address: HTTP ${response.status}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Failed to delete mail address: HTTP ${response.status}`
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     // Handle common error cases
     if (errorMessage.includes('404') || errorMessage.includes('not found')) {
-      return {
-        success: false,
-        error: `Mail address ${args.mailAddressId} not found`,
-      };
+      return formatToolResponse(
+        'error',
+        `Mail address ${args.mailAddressId} not found`
+      );
     }
     
     if (errorMessage.includes('403') || errorMessage.includes('forbidden')) {
-      return {
-        success: false,
-        error: `Access denied: You don't have permission to delete mail address ${args.mailAddressId}`,
-      };
+      return formatToolResponse(
+        'error',
+        `Access denied: You don't have permission to delete mail address ${args.mailAddressId}`
+      );
     }
 
-    return {
-      success: false,
-      error: `Failed to delete mail address: ${errorMessage}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Failed to delete mail address: ${errorMessage}`
+    );
   }
 }

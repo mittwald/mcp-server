@@ -27,10 +27,8 @@ export const handleAppOpen: MittwaldToolHandler<MittwaldAppOpenArgs> = async (ar
     const appInstallation = appResponse.data;
     
     // Get project ingresses to find the hostname
-    const ingressResponse = await mittwaldClient.api.domain.listIngresses({
-      queryParameters: {
-        projectId: appInstallation.projectId
-      }
+    const ingressResponse = await mittwaldClient.api.project.listIngresses({
+      projectId: appInstallation.projectId
     });
     assertStatus(ingressResponse, 200);
 
@@ -47,7 +45,7 @@ export const handleAppOpen: MittwaldToolHandler<MittwaldAppOpenArgs> = async (ar
     }
 
     // Find the primary ingress (prefer non-.mittwaldurl.dev domains)
-    const primaryIngress = appIngresses.find(ingress => 
+    const primaryIngress = appIngresses.find((ingress: any) => 
       ingress.hostname && !ingress.hostname.endsWith('.mittwaldurl.dev')
     ) || appIngresses[0];
 
@@ -63,7 +61,7 @@ export const handleAppOpen: MittwaldToolHandler<MittwaldAppOpenArgs> = async (ar
     const url = `${protocol}://${primaryIngress.hostname}`;
 
     // Find the specific path for this app (if any)
-    const appPath = primaryIngress.paths?.find(path => 
+    const appPath = primaryIngress.paths?.find((path: any) => 
       path.target?.appInstallationId === installationId
     );
     
@@ -74,7 +72,7 @@ export const handleAppOpen: MittwaldToolHandler<MittwaldAppOpenArgs> = async (ar
       `App installation opened in browser`,
       {
         appInstallationId: installationId,
-        appName: appInstallation.app?.name || 'Unknown',
+        appName: appInstallation.description || 'Unknown',
         url: fullUrl,
         hostname: primaryIngress.hostname,
         message: `Would open ${fullUrl} in your default browser`

@@ -1,5 +1,6 @@
 import type { MittwaldToolHandler, MittwaldToolHandlerContext } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { generatePassword } from '../../../../utils/password-generator.js';
 
 interface MittwaldMailAddressUpdateArgs {
   mailaddressId: string;
@@ -45,7 +46,7 @@ export const handleMailAddressUpdate: MittwaldToolHandler<MittwaldMailAddressUpd
     // Handle password update
     let generatedPassword: string | undefined;
     if (args.randomPassword) {
-      generatedPassword = PasswordGenerator.generate(32);
+      generatedPassword = generatePassword(32);
       updateData.password = generatedPassword;
     } else if (args.password !== undefined) {
       updateData.password = args.password;
@@ -63,16 +64,51 @@ export const handleMailAddressUpdate: MittwaldToolHandler<MittwaldMailAddressUpd
       }
     }
     
-    // Update the mail address
-    const updateResponse = await mittwaldClient.api.mail.updateMailAddress({
-      mailAddressId: args.mailaddressId,
-      data: updateData
-    });
-
-    if (updateResponse.status !== 200) {
+    // Update the mail address using individual API methods
+    const updatePromises: Promise<any>[] = [];
+    
+    if (updateData.address !== undefined) {
+      updatePromises.push(mittwaldClient.api.mail.updateMailAddressAddress({
+        mailAddressId: args.mailaddressId,
+        data: { address: updateData.address }
+      }));
+    }
+    
+    if (updateData.catchAll !== undefined) {
+      updatePromises.push(mittwaldClient.api.mail.updateMailAddressCatchAll({
+        mailAddressId: args.mailaddressId,
+        data: { active: updateData.catchAll }
+      }));
+    }
+    
+    if (updateData.quotaInMB !== undefined) {
+      updatePromises.push(mittwaldClient.api.mail.updateMailAddressQuota({
+        mailAddressId: args.mailaddressId,
+        data: { quotaInBytes: updateData.quotaInMB * 1024 * 1024 }
+      }));
+    }
+    
+    if (updateData.password !== undefined) {
+      updatePromises.push(mittwaldClient.api.mail.updateMailAddressPassword({
+        mailAddressId: args.mailaddressId,
+        data: { password: updateData.password }
+      }));
+    }
+    
+    if (updateData.forwardAddresses !== undefined) {
+      updatePromises.push(mittwaldClient.api.mail.updateMailAddressForwardAddresses({
+        mailAddressId: args.mailaddressId,
+        data: { forwardAddresses: updateData.forwardAddresses }
+      }));
+    }
+    
+    // Execute all updates
+    try {
+      await Promise.all(updatePromises);
+    } catch (updateError) {
       return formatToolResponse(
         "error",
-        `Failed to update mail address: ${updateResponse.status}`
+        `Failed to update mail address: ${updateError instanceof Error ? updateError.message : String(updateError)}`
       );
     }
 
@@ -94,7 +130,7 @@ export const handleMailAddressUpdate: MittwaldToolHandler<MittwaldMailAddressUpd
       result.message += ` (Generated password: ${generatedPassword})`;
     }
 
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", result.message, result);
   } catch (error) {
     return formatToolResponse("error", `Error updating mail address: ${error instanceof Error ? error.message : String(error)}`);
   }

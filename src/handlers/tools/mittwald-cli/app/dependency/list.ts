@@ -1,5 +1,5 @@
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { formatToolResponse } from '../../../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 interface AppDependencyListInput {
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';

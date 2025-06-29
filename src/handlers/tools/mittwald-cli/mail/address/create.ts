@@ -4,7 +4,8 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../../../../types/tool-response.js';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 /**
  * Create a new mail address
@@ -26,31 +27,31 @@ export async function handleMittwaldMailAddressCreate(
     randomPassword?: boolean;
     forwardTo?: string[];
   }
-): Promise<ToolResponse> {
+): Promise<CallToolResult> {
   try {
     // Validate mutually exclusive options
     if (args.password && args.randomPassword) {
-      return {
-        success: false,
-        error: 'Cannot specify both password and randomPassword',
-      };
+      return formatToolResponse(
+        'error',
+        'Cannot specify both password and randomPassword'
+      );
     }
     
     if (args.forwardTo && args.forwardTo.length > 0) {
       if (args.catchAll || args.password || args.randomPassword || (args.quota && args.quota !== '1GiB')) {
-        return {
-          success: false,
-          error: 'forwardTo is exclusive with catchAll, quota, password, and randomPassword',
-        };
+        return formatToolResponse(
+          'error',
+          'forwardTo is exclusive with catchAll, quota, password, and randomPassword'
+        );
       }
     }
 
     // If no projectId provided, we need one from context or error
     if (!args.projectId) {
-      return {
-        success: false,
-        error: 'Project ID is required. Please provide --project-id or set a default project context.',
-      };
+      return formatToolResponse(
+        'error',
+        'Project ID is required. Please provide --project-id or set a default project context.'
+      );
     }
 
     // Generate random password if requested
@@ -88,20 +89,22 @@ export async function handleMittwaldMailAddressCreate(
       
       if (args.quiet) {
         if (args.randomPassword && actualPassword) {
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            'Mail address created successfully',
+            {
               mailAddressId,
               password: actualPassword,
-            },
-          };
+            }
+          );
         }
-        return {
-          success: true,
-          data: {
+        return formatToolResponse(
+          'success',
+          'Mail address created successfully',
+          {
             mailAddressId,
-          },
-        };
+          }
+        );
       }
 
       const result: any = {
@@ -124,22 +127,23 @@ export async function handleMittwaldMailAddressCreate(
         }
       }
 
-      return {
-        success: true,
-        data: result,
-      };
+      return formatToolResponse(
+        'success',
+        'Mail address created successfully',
+        result
+      );
     }
 
-    return {
-      success: false,
-      error: `Failed to create mail address: ${response.status}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Failed to create mail address: ${response.status}`
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return {
-      success: false,
-      error: `Failed to create mail address: ${errorMessage}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Failed to create mail address: ${errorMessage}`
+    );
   }
 }
 

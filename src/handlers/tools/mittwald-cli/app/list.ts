@@ -26,9 +26,7 @@ export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (ar
 
     // List app installations for the project
     const response = await mittwaldClient.api.app.listAppinstallations({
-      queryParameters: {
-        projectId: projectId
-      }
+      projectId: projectId
     });
     assertStatus(response, 200);
 

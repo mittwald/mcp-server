@@ -1,5 +1,6 @@
 import type { MittwaldToolHandler, MittwaldToolHandlerContext } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { generatePassword } from '../../../../utils/password-generator.js';
 
 interface MittwaldMailDeliveryboxUpdateArgs {
   maildeliveryboxId: string;
@@ -22,22 +23,36 @@ export const handleMailDeliveryboxUpdate: MittwaldToolHandler<MittwaldMailDelive
     // Handle password update
     let generatedPassword: string | undefined;
     if (args.randomPassword) {
-      generatedPassword = PasswordGenerator.generate(32);
+      generatedPassword = generatePassword(32);
       updateData.password = generatedPassword;
     } else if (args.password !== undefined) {
       updateData.password = args.password;
     }
     
-    // Update the delivery box
-    const updateResponse = await mittwaldClient.api.mail.updateDeliveryBox({
-      deliveryBoxId: args.maildeliveryboxId,
-      data: updateData
-    });
-
-    if (updateResponse.status !== 200) {
+    // Update the delivery box using individual API methods
+    const updatePromises: Promise<any>[] = [];
+    
+    if (updateData.description !== undefined) {
+      updatePromises.push(mittwaldClient.api.mail.updateDeliveryBoxDescription({
+        deliveryBoxId: args.maildeliveryboxId,
+        data: { description: updateData.description }
+      }));
+    }
+    
+    if (updateData.password !== undefined) {
+      updatePromises.push(mittwaldClient.api.mail.updateDeliveryBoxPassword({
+        deliveryBoxId: args.maildeliveryboxId,
+        data: { password: updateData.password }
+      }));
+    }
+    
+    // Execute all updates
+    try {
+      await Promise.all(updatePromises);
+    } catch (updateError) {
       return formatToolResponse(
         "error",
-        `Failed to update delivery box: ${updateResponse.status}`
+        `Failed to update delivery box: ${updateError instanceof Error ? updateError.message : String(updateError)}`
       );
     }
 
@@ -59,7 +74,7 @@ export const handleMailDeliveryboxUpdate: MittwaldToolHandler<MittwaldMailDelive
       result.message += ` (Generated password: ${generatedPassword})`;
     }
 
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", result.message, result);
   } catch (error) {
     return formatToolResponse("error", `Error updating delivery box: ${error instanceof Error ? error.message : String(error)}`);
   }

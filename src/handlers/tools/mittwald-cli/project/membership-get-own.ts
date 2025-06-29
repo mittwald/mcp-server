@@ -45,9 +45,7 @@ export const handleMittwaldProjectMembershipGetOwn: MittwaldToolHandler<Mittwald
 id: ${membership.id || 'N/A'}
 projectId: ${membership.projectId || 'N/A'}
 userId: ${membership.userId || 'N/A'}
-role: ${membership.role || 'N/A'}
-createdAt: ${membership.createdAt || 'N/A'}
-updatedAt: ${membership.updatedAt || 'N/A'}`;
+role: ${membership.role || 'N/A'}`;
 
       return formatToolResponse(
         'success',
@@ -61,9 +59,7 @@ updatedAt: ${membership.updatedAt || 'N/A'}`;
 ID: ${membership.id || 'N/A'}
 Project ID: ${membership.projectId || 'N/A'}
 User ID: ${membership.userId || 'N/A'}
-Role: ${membership.role || 'N/A'}
-Created At: ${membership.createdAt || 'N/A'}
-Updated At: ${membership.updatedAt || 'N/A'}`;
+Role: ${membership.role || 'N/A'}`;
 
     return formatToolResponse(
       'success',

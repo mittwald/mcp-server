@@ -58,7 +58,7 @@ export const handleMailDeliveryboxList: MittwaldToolHandler<MittwaldMailDelivery
       return formatToolResponse("success", csvOutput);
     } else {
       // Default txt format
-      return formatToolResponse("success", deliveryBoxes);
+      return formatToolResponse("success", "Delivery boxes retrieved successfully", deliveryBoxes);
     }
   } catch (error) {
     return formatToolResponse("error", `Error listing delivery boxes: ${error instanceof Error ? error.message : String(error)}`);

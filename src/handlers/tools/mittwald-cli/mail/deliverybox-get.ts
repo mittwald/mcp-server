@@ -34,7 +34,7 @@ export const handleMailDeliveryboxGet: MittwaldToolHandler<MittwaldMailDeliveryb
       return formatToolResponse("success", yamlOutput);
     } else {
       // Default txt format
-      return formatToolResponse("success", deliveryBox);
+      return formatToolResponse("success", "Delivery box retrieved successfully", deliveryBox);
     }
   } catch (error) {
     return formatToolResponse("error", `Error getting delivery box: ${error instanceof Error ? error.message : String(error)}`);
