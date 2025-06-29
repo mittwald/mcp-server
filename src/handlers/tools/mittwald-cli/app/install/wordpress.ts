@@ -26,8 +26,8 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.project.listIngresses({
-      queryParameters: {
+    const ingressResponse = await mittwaldClient.api.domain.listIngresses({
+      
         projectId: args.projectId
       }
     });

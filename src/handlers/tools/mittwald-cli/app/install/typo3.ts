@@ -27,7 +27,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.project.listIngresses({
+    const ingressResponse = await mittwaldClient.api.domain.listIngresses({
       projectId: args.projectId,
     });
     assertStatus(ingressResponse, 200);
@@ -36,7 +36,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.project.api.getProject({
+    const projectResponse = await mittwaldClient.api.project.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);

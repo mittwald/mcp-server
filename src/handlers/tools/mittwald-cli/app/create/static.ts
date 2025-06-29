@@ -22,7 +22,7 @@ export const handleAppCreateStatic: MittwaldToolHandler<MittwaldAppCreateStaticA
     const staticAppId = "d20baefd-81d2-42aa-bfba-9a3220ae839b";
     
     // Get latest Static site app version
-    const versionsResponse = await mittwaldClient.api.app.api.listAppversions({ 
+    const versionsResponse = await mittwaldClient.api.app.listAppversions({ 
       appId: staticAppId 
     });
     
@@ -49,7 +49,7 @@ export const handleAppCreateStatic: MittwaldToolHandler<MittwaldAppCreateStaticA
     }
 
     // Create the app installation
-    const response = await mittwaldClient.api.app.api.requestAppinstallation({
+    const response = await mittwaldClient.api.app.requestAppinstallation({
       projectId,
       data: {
         appVersionId,

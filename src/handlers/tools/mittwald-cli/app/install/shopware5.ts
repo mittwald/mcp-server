@@ -31,7 +31,7 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.project.listIngresses({
+    const ingressResponse = await mittwaldClient.api.domain.listIngresses({
       projectId: args.projectId,
     });
     assertStatus(ingressResponse, 200);

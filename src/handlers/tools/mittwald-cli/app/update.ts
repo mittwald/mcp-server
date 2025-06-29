@@ -25,7 +25,7 @@ export const handleAppUpdate: MittwaldToolHandler<MittwaldAppUpdateArgs> = async
     }
 
     // Get current app installation details for validation and logging
-    const appResponse = await mittwaldClient.app.api.getAppinstallation({
+    const appResponse = await mittwaldClient.api.app.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(appResponse, 200);
@@ -56,7 +56,7 @@ export const handleAppUpdate: MittwaldToolHandler<MittwaldAppUpdateArgs> = async
     }
 
     // Perform the update
-    const updateResponse = await mittwaldClient.app.api.patchAppinstallation({
+    const updateResponse = await mittwaldClient.api.app.patchAppinstallation({
       appInstallationId: installationId,
       data: updatePayload
     });

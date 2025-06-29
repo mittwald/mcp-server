@@ -18,7 +18,7 @@ export const handleAppUpload: MittwaldToolHandler<MittwaldAppUploadArgs> = async
     const { installationId, source, exclude, dryRun, delete: deleteFlag, remoteSubDirectory, sshUser, sshIdentityFile } = args;
 
     // Get app installation details
-    const appResponse = await mittwaldClient.app.api.getAppinstallation({
+    const appResponse = await mittwaldClient.api.app.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(appResponse, 200);
@@ -27,7 +27,7 @@ export const handleAppUpload: MittwaldToolHandler<MittwaldAppUploadArgs> = async
     const projectId = appInstallation.projectId;
 
     // Get SSH users for the project
-    const sshUsersResponse = await mittwaldClient.project.api.listSshUsers({
+    const sshUsersResponse = await mittwaldClient.api.project.listSshUsers({
       projectId: projectId
     });
     assertStatus(sshUsersResponse, 200);

@@ -22,7 +22,7 @@ export const handleAppCreatePython: MittwaldToolHandler<MittwaldAppCreatePythonA
     const pythonAppId = "be57d166-dae9-4480-bae2-da3f3c6f0a2e";
     
     // Get latest Python app version
-    const versionsResponse = await mittwaldClient.api.app.api.listAppversions({ 
+    const versionsResponse = await mittwaldClient.api.app.listAppversions({ 
       appId: pythonAppId 
     });
     
@@ -49,7 +49,7 @@ export const handleAppCreatePython: MittwaldToolHandler<MittwaldAppCreatePythonA
     }
 
     // Create the app installation
-    const response = await mittwaldClient.api.app.api.requestAppinstallation({
+    const response = await mittwaldClient.api.app.requestAppinstallation({
       projectId,
       data: {
         appVersionId,

@@ -15,7 +15,7 @@ export const handleAppDependencyList: MittwaldToolHandler<MittwaldAppDependencyL
     const outputFormat = args.output || "txt";
 
     // Get system software dependencies from the API
-    const response = await mittwaldClient.app.api.listSystemsoftwares({});
+    const response = await mittwaldClient.api.app.listSystemsoftwares({});
     
     if (response.status !== 200) {
       throw new Error(`Failed to fetch system software: ${response.status}`);
