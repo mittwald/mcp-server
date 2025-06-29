@@ -41,11 +41,20 @@ import { handleProjectInviteListOwn } from './tools/mittwald-cli/project/invite-
 import { handleProjectInviteList } from './tools/mittwald-cli/project/invite-list.js';
 import { handleMittwaldProjectList } from './tools/mittwald-cli/project/list.js';
 import { handleProjectSSH } from './tools/mittwald-cli/project/ssh.js';
+import { handleProject } from './tools/mittwald-cli/project/project.js';
+import { handleMittwaldProjectInvite } from './tools/mittwald-cli/project/invite.js';
+import { handleMittwaldProjectMembership } from './tools/mittwald-cli/project/membership.js';
+import { handleMittwaldProjectMembershipGet } from './tools/mittwald-cli/project/membership-get.js';
+import { handleMittwaldProjectMembershipGetOwn } from './tools/mittwald-cli/project/membership-get-own.js';
+import { handleMittwaldProjectMembershipList } from './tools/mittwald-cli/project/membership-list.js';
+import { handleMittwaldProjectMembershipListOwn } from './tools/mittwald-cli/project/membership-list-own.js';
+import { handleProjectUpdate } from './tools/mittwald-cli/project/update.js';
 import { handleServerList } from './tools/mittwald-cli/server/list.js';
 import { handleServerGet } from './tools/mittwald-cli/server/get.js';
 import { handleServer } from './tools/mittwald-cli/server/server.js';
 
 // Agent 2 app dependency handlers
+import { handleAppDependency } from './tools/mittwald-cli/app/dependency/index.js';
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
 import { handleMittwaldAppDependencyVersions } from './tools/mittwald-cli/app/dependency/versions.js';
 import { handleMittwaldAppDependencyList } from './tools/mittwald-cli/app/dependency/list.js';
@@ -74,6 +83,9 @@ import { handleAppCreatePython } from './tools/mittwald-cli/app/create/python.js
 import { handleAppCreateStatic } from './tools/mittwald-cli/app/create/static.js';
 
 // Agent 3 app management handlers
+import { handleApp } from './tools/mittwald-cli/app/app.js';
+import { handleAppCopy } from './tools/mittwald-cli/app/copy.js';
+import { handleAppCreate } from './tools/mittwald-cli/app/create.js';
 import { handleAppList } from './tools/mittwald-cli/app/list.js';
 import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
 import { handleAppSsh } from './tools/mittwald-cli/app/ssh.js';
@@ -157,6 +169,9 @@ import { handleConversationReply } from './tools/mittwald-cli/conversation/reply
 import { handleConversationShow } from './tools/mittwald-cli/conversation/show.js';
 import { handleConversationCategories } from './tools/mittwald-cli/conversation/categories.js';
 import { handleConversation } from './tools/mittwald-cli/conversation/conversation.js';
+
+// Contributor handler
+import { handleContributor } from './tools/mittwald-cli/contributor/contributor.js';
 
 // User handlers
 import { handleUserGet } from './tools/mittwald-cli/user/get.js';
