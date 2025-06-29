@@ -1,5 +1,5 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 interface MittwaldDomainListArgs {
   projectId?: string;
@@ -18,9 +18,9 @@ export const handleDomainList: MittwaldToolHandler<MittwaldDomainListArgs> = asy
       queryParameters: args.projectId ? { projectId: args.projectId } : {},
     });
 
-    const data = response.data;
+    const data = response.data as any[];
     
-    if (!data || data.length === 0) {
+    if (!data || (data as any[]).length === 0) {
       return formatToolResponse(
         "success",
         "No domains found",

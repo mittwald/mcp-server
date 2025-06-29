@@ -1,5 +1,5 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { MittwaldAPIV2 } from '@mittwald/api-client';
 import { Simplify } from '@mittwald/api-client-commons';
 

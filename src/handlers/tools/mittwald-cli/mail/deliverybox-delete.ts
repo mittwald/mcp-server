@@ -19,7 +19,7 @@ export const handleMailDeliveryboxDelete: MittwaldToolHandler<MittwaldMailDelive
     }
 
     // Delete the delivery box
-    const deleteResponse = await mittwaldClient.api.mail.deliveryBoxDeleteDeliveryBox({
+    const deleteResponse = await mittwaldClient.api.mail.deleteDeliveryBox({
       deliveryBoxId: args.id
     });
 
@@ -41,7 +41,7 @@ export const handleMailDeliveryboxDelete: MittwaldToolHandler<MittwaldMailDelive
       return formatToolResponse("success", "");
     }
 
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", result.message, result);
   } catch (error) {
     return formatToolResponse("error", `Error deleting delivery box: ${error instanceof Error ? error.message : String(error)}`);
   }

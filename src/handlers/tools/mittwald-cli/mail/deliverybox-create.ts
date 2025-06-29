@@ -1,6 +1,5 @@
 import type { MittwaldToolHandler, MittwaldToolHandlerContext } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { PasswordGenerator } from "@mittwald/api-client-commons";
 
 interface MittwaldMailDeliveryboxCreateArgs {
   description: string;
@@ -36,7 +35,7 @@ export const handleMailDeliveryboxCreate: MittwaldToolHandler<MittwaldMailDelive
     };
     
     // Create the delivery box
-    const createResponse = await mittwaldClient.api.mail.deliveryBoxCreateDeliveryBox({
+    const createResponse = await mittwaldClient.api.mail.createDeliveryBox({
       projectId: args.projectId!,
       data: createData
     });

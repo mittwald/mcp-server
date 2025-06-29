@@ -40,7 +40,7 @@ export const handleUserApiTokenGet: MittwaldToolHandler<MittwaldUserApiTokenGetA
       default:
         // Human-readable text output
         formattedOutput = `API Token Details:
-ID: ${token.apiTokenId || token.id}
+ID: ${token.apiTokenId}
 Description: ${token.description || 'N/A'}
 Roles: ${Array.isArray(token.roles) ? token.roles.join(', ') : token.roles || 'N/A'}
 Created: ${token.createdAt || 'N/A'}

@@ -4,7 +4,7 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../types/tool-response.js';
+import { ToolResponse } from '../../../../types/tool-response.js';
 
 /**
  * Checks your current authentication status
@@ -17,7 +17,7 @@ export async function handleMittwaldLoginStatus(
 ): Promise<ToolResponse> {
   try {
     // Try to get the current user to verify authentication
-    const userResponse = await client.user.getOwnAccount();
+    const userResponse = await client.user.api.user.getOwnAccount();
     
     if (userResponse.status === 200 && userResponse.data) {
       const user = userResponse.data;

@@ -44,11 +44,11 @@ export const handleUserGet: MittwaldToolHandler<MittwaldUserGetArgs> = async (ar
         formattedOutput = `User Profile:
 ID: ${user.userId || 'N/A'}
 Email: ${user.email || 'N/A'}
-First Name: ${user.person?.firstName || 'N/A'}
-Last Name: ${user.person?.lastName || 'N/A'}
+First Name: ${(user.person as any)?.firstName || 'N/A'}
+Last Name: ${(user.person as any)?.lastName || 'N/A'}
 Phone: ${user.phoneNumber || 'N/A'}
 Registered: ${user.registeredAt || 'N/A'}
-MFA Active: ${user.mfa?.active ? 'Yes' : 'No'}`;
+MFA Active: ${(user as any).mfa?.active ? 'Yes' : 'No'}`;
         break;
     }
 

@@ -2,8 +2,8 @@ import { MittwaldAPIV2Client } from "@mittwald/api-client";
 import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { getMittwaldClient } from "../../../../../services/mittwald/mittwald-client.js";
-import type { RequestContext } from "../../../../types/request-context.js";
-import { formatToolResponse } from "../../../../utils/format-tool-response.js";
+import type { RequestContext } from "../../../../../types/request-context.js";
+import { formatToolResponse } from "../../../../../utils/format-tool-response.js";
 import { exec } from "child_process";
 import { promisify } from "util";
 

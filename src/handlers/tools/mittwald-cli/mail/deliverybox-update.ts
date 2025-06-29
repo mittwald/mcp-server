@@ -1,6 +1,5 @@
 import type { MittwaldToolHandler, MittwaldToolHandlerContext } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { PasswordGenerator } from "@mittwald/api-client-commons";
 
 interface MittwaldMailDeliveryboxUpdateArgs {
   maildeliveryboxId: string;
@@ -30,7 +29,7 @@ export const handleMailDeliveryboxUpdate: MittwaldToolHandler<MittwaldMailDelive
     }
     
     // Update the delivery box
-    const updateResponse = await mittwaldClient.api.mail.deliveryBoxUpdateDeliveryBox({
+    const updateResponse = await mittwaldClient.api.mail.updateDeliveryBox({
       deliveryBoxId: args.maildeliveryboxId,
       data: updateData
     });

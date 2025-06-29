@@ -4,7 +4,7 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../../types/tool-response.js';
+import { ToolResponse } from '../../../../../../types/tool-response.js';
 
 /**
  * Create a new mail address
@@ -84,7 +84,7 @@ export async function handleMittwaldMailAddressCreate(
     });
 
     if (response.status === 201 && response.data) {
-      const mailAddressId = response.data.mailAddressId;
+      const mailAddressId = response.data.id;
       
       if (args.quiet) {
         if (args.randomPassword && actualPassword) {

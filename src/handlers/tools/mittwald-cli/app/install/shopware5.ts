@@ -26,12 +26,12 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     }
 
     // Get user details for defaults
-    const userResponse = await mittwaldClient.api.user.getProfile({});
+    const userResponse = await mittwaldClient.api.user.getOwnAccount({});
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.domain.listIngresses({
+    const ingressResponse = await mittwaldClient.api.project.listIngresses({
       projectId: args.projectId,
     });
     assertStatus(ingressResponse, 200);
@@ -40,7 +40,7 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.project.api.getProject({
+    const projectResponse = await mittwaldClient.api.project.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);
@@ -62,38 +62,40 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
 
     // Shopware 5 app ID from CLI
     const appId = "a23acf9c-9298-4082-9e7d-25356f9976dc";
-    const versionsResponse = await mittwaldClient.app.api.listAppVersions({ appId });
+    const versionsResponse = await mittwaldClient.api.app.listAppversions({ appId });
     assertStatus(versionsResponse, 200);
 
     let appVersion;
     if (version === "latest") {
       appVersion = versionsResponse.data[0];
     } else {
-      appVersion = versionsResponse.data.find(v => v.number === version);
+      appVersion = versionsResponse.data.find((v: any) => v.externalVersion === version);
       if (!appVersion) {
         throw new Error(`no version ${version} found for app Shopware 5`);
       }
     }
 
     // Trigger app installation
-    const installResponse = await mittwaldClient.app.api.requestAppInstallation({
+    const installResponse = await mittwaldClient.api.app.requestAppinstallation({
       projectId: args.projectId,
-      appVersionId: appVersion.id,
-      description: siteTitle,
-      updatePolicy: "none",
-      userInputs: [
-        { name: "version", value: appVersion.number },
-        { name: "host", value: host },
-        { name: "admin_user", value: adminUser },
-        { name: "admin_email", value: adminEmail },
-        { name: "admin_pass", value: adminPass },
-        { name: "admin_firstname", value: adminFirstname },
-        { name: "admin_lastname", value: adminLastname },
-        { name: "site_title", value: siteTitle },
-        { name: "shop_email", value: shopEmail },
-        { name: "shop_lang", value: shopLang },
-        { name: "shop_currency", value: shopCurrency },
-      ],
+      data: {
+        appVersionId: appVersion.id,
+        description: siteTitle,
+        updatePolicy: "none",
+        userInputs: [
+          { name: "version", value: appVersion.externalVersion },
+          { name: "host", value: host },
+          { name: "admin_user", value: adminUser },
+          { name: "admin_email", value: adminEmail },
+          { name: "admin_pass", value: adminPass },
+          { name: "admin_firstname", value: adminFirstname },
+          { name: "admin_lastname", value: adminLastname },
+          { name: "site_title", value: siteTitle },
+          { name: "shop_email", value: shopEmail },
+          { name: "shop_lang", value: shopLang },
+          { name: "shop_currency", value: shopCurrency },
+        ]
+      }
     });
     assertStatus(installResponse, 201);
     const appInstallationId = installResponse.data.id;
@@ -105,7 +107,7 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     
     do {
       try {
-        const checkResponse = await mittwaldClient.app.api.getAppInstallation({
+        const checkResponse = await mittwaldClient.api.app.getAppinstallation({
           appInstallationId,
         });
         if (checkResponse.status === 200) {
@@ -132,7 +134,7 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
       const startTime = Date.now();
       
       while (true) {
-        const statusResponse = await mittwaldClient.app.api.getAppInstallation({
+        const statusResponse = await mittwaldClient.api.app.getAppinstallation({
           appInstallationId,
         });
         assertStatus(statusResponse, 200);
@@ -154,11 +156,12 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
       ? "Your Shopware 5 installation is now complete. Have fun! 🎉"
       : "Your Shopware 5 installation has started. Have fun when it's ready! 🎉";
 
-    return formatToolResponse({
-      message: successText,
-      result: {
+    return formatToolResponse(
+      "success",
+      successText,
+      {
         appInstallationId,
-        version: appVersion.number,
+        version: appVersion.externalVersion,
         host,
         adminUser,
         adminEmail,
@@ -168,18 +171,14 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
         shopEmail,
         shopLang,
         shopCurrency,
-        generatedPassword: args.adminPass ? undefined : adminPass,
+        generatedPassword: args.adminPass ? undefined : adminPass
       }
-    });
+    );
   } catch (error: any) {
-    return formatToolResponse({
-      status: "error",
-      message: error.message,
-      error: {
-        type: "CLI_ERROR",
-        details: error
-      }
-    });
+    return formatToolResponse(
+      "error",
+      error.message || "An error occurred during installation"
+    );
   }
 };
 

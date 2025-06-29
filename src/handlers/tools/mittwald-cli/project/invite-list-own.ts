@@ -14,7 +14,7 @@ export interface MittwaldProjectInviteListOwnArgs {
 export const handleProjectInviteListOwn: MittwaldToolHandler<MittwaldProjectInviteListOwnArgs> = async (args, { mittwaldClient }) => {
   try {
     // List project invites for the current user
-    const response = await mittwaldClient.project.api.listProjectInvites({});
+    const response = await mittwaldClient.api.project.listProjectInvites({});
     assertStatus(response, 200);
 
     const invites = response.data || [];
@@ -23,10 +23,10 @@ export const handleProjectInviteListOwn: MittwaldToolHandler<MittwaldProjectInvi
     let extendedInvites = invites;
     if (args.extended && invites.length > 0) {
       extendedInvites = await Promise.all(
-        invites.map(async (invite) => {
+        invites.map(async (invite: any) => {
           try {
             // Get project details for each invite
-            const projectResponse = await mittwaldClient.project.api.getProject({
+            const projectResponse = await mittwaldClient.api.project.getProject({
               projectId: invite.projectId
             });
             assertStatus(projectResponse, 200);
@@ -55,7 +55,7 @@ export const handleProjectInviteListOwn: MittwaldToolHandler<MittwaldProjectInvi
     }
 
     // For text output, create a simplified view
-    const formattedInvites = extendedInvites.map(invite => ({
+    const formattedInvites = extendedInvites.map((invite: any) => ({
       id: invite.id,
       projectId: invite.projectId,
       projectName: invite.projectDetails?.description || 'Unknown Project',
@@ -76,7 +76,7 @@ export const handleProjectInviteListOwn: MittwaldToolHandler<MittwaldProjectInvi
     if (output === 'csv' || output === 'tsv') {
       const separator = output === 'csv' ? (args.csvSeparator || ',') : '\t';
       const headers = args.noHeader ? '' : `ID${separator}Project ID${separator}Project Name${separator}Role${separator}Status${separator}Created${separator}Expires\n`;
-      const rows = formattedInvites.map(invite => 
+      const rows = formattedInvites.map((invite: any) => 
         `${invite.id}${separator}${invite.projectId}${separator}${invite.projectName}${separator}${invite.role}${separator}${invite.status}${separator}${invite.createdAt}${separator}${invite.expiresAt}`
       ).join('\n');
       

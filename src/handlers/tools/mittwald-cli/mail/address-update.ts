@@ -1,6 +1,5 @@
 import type { MittwaldToolHandler, MittwaldToolHandlerContext } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { PasswordGenerator } from "@mittwald/api-client-commons";
 
 interface MittwaldMailAddressUpdateArgs {
   mailaddressId: string;
@@ -17,7 +16,7 @@ export const handleMailAddressUpdate: MittwaldToolHandler<MittwaldMailAddressUpd
   
   try {
     // Get mail address details first
-    const mailAddressResponse = await mittwaldClient.api.mail.mailAddressGetMailAddress({
+    const mailAddressResponse = await mittwaldClient.api.mail.getMailAddress({
       mailAddressId: args.mailaddressId
     });
 
@@ -65,7 +64,7 @@ export const handleMailAddressUpdate: MittwaldToolHandler<MittwaldMailAddressUpd
     }
     
     // Update the mail address
-    const updateResponse = await mittwaldClient.api.mail.mailAddressUpdateMailAddress({
+    const updateResponse = await mittwaldClient.api.mail.updateMailAddress({
       mailAddressId: args.mailaddressId,
       data: updateData
     });

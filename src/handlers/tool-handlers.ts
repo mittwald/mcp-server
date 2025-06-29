@@ -1419,7 +1419,7 @@ export async function handleToolCall(
             installationId: (args as any).installationId
           }
         };
-        result = await mittwald_app_upgrade_handler(args);
+        result = await mittwald_app_upgrade_handler(args, mittwaldAppUpgradeContext);
         break;
       case "mittwald_app_upload":
         // Create context with mittwaldClient for Mittwald CLI tools
@@ -1600,31 +1600,87 @@ export async function handleToolCall(
         
       // Agent 9 database tools
       case "mittwald_database_mysql_dump":
-        result = await handleDatabaseMysqlDump(args);
+        const mittwaldDatabaseMysqlDumpContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          resources: {
+            baseUrl: handlerContext.resources?.baseUrl
+          }
+        };
+        result = await handleDatabaseMysqlDump(args, mittwaldDatabaseMysqlDumpContext);
         break;
         
       case "mittwald_database_mysql_get":
-        result = await handleDatabaseMysqlGet(args);
+        const mittwaldDatabaseMysqlGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          resources: {
+            baseUrl: handlerContext.resources?.baseUrl
+          }
+        };
+        result = await handleDatabaseMysqlGet(args, mittwaldDatabaseMysqlGetContext);
         break;
         
       case "mittwald_database_mysql_import":
-        result = await handleDatabaseMysqlImport(args);
+        const mittwaldDatabaseMysqlImportContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          resources: {
+            baseUrl: handlerContext.resources?.baseUrl
+          }
+        };
+        result = await handleDatabaseMysqlImport(args, mittwaldDatabaseMysqlImportContext);
         break;
         
       case "mittwald_database_mysql_list":
-        result = await handleDatabaseMysqlList(args);
+        const mittwaldDatabaseMysqlListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          resources: {
+            baseUrl: handlerContext.resources?.baseUrl
+          }
+        };
+        result = await handleDatabaseMysqlList(args, mittwaldDatabaseMysqlListContext);
         break;
         
       case "mittwald_database_mysql_phpmyadmin":
-        result = await handleDatabaseMysqlPhpmyadmin(args);
+        const mittwaldDatabaseMysqlPhpmyadminContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          resources: {
+            baseUrl: handlerContext.resources?.baseUrl
+          }
+        };
+        result = await handleDatabaseMysqlPhpmyadmin(args, mittwaldDatabaseMysqlPhpmyadminContext);
         break;
         
       case "mittwald_database_mysql_port_forward":
-        result = await handleDatabaseMysqlPortForward(args);
+        const mittwaldDatabaseMysqlPortForwardContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          resources: {
+            baseUrl: handlerContext.resources?.baseUrl
+          }
+        };
+        result = await handleDatabaseMysqlPortForward(args, mittwaldDatabaseMysqlPortForwardContext);
         break;
         
       case "mittwald_database_mysql_shell":
-        result = await handleDatabaseMysqlShell(args);
+        const mittwaldDatabaseMysqlShellContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          resources: {
+            baseUrl: handlerContext.resources?.baseUrl
+          }
+        };
+        result = await handleDatabaseMysqlShell(args, mittwaldDatabaseMysqlShellContext);
         break;
         
       case "mittwald_database_mysql_versions":

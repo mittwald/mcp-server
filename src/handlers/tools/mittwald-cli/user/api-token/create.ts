@@ -33,14 +33,21 @@ export const handleUserApiTokenCreate: MittwaldToolHandler<MittwaldUserApiTokenC
     }
 
     const tokenData = result.data;
+    const token = (tokenData as any).token;
+
+    if (!token) {
+      return formatToolResponse(
+        "error",
+        "Failed to create API token - no token returned"
+      );
+    }
 
     if (args.quiet) {
       return formatToolResponse(
         "success",
-        tokenData.id || "API token created",
+        token,
         { 
-          tokenId: tokenData.id,
-          token: tokenData.token // This might be the actual token value
+          token: token
         }
       );
     }
@@ -49,13 +56,10 @@ export const handleUserApiTokenCreate: MittwaldToolHandler<MittwaldUserApiTokenC
       "success",
       `API token created successfully`,
       {
-        tokenId: tokenData.id,
+        token: token,
         description: args.description,
         roles: args.roles,
-        expires: args.expires,
-        token: tokenData.token, // The actual token value for immediate use
-        createdAt: tokenData.createdAt,
-        result: tokenData
+        expires: args.expires
       }
     );
 

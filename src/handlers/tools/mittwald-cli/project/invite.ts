@@ -15,21 +15,21 @@ export const handleMittwaldProjectInvite: MittwaldToolHandler<MittwaldProjectInv
         'list-own': 'List all project invites for the executing user. Use mittwald_project_invite_list_own tool.'
       };
 
-      return formatToolResponse({
-        success: true,
-        data: {
+      return formatToolResponse(
+        'success',
+        commandHelp[args.command],
+        {
           command: args.command,
-          description: commandHelp[args.command],
           usage: `Use the specific tool: mittwald_project_invite_${args.command.replace('-', '_')}`
         }
-      });
+      );
     }
 
     // Show general help
-    return formatToolResponse({
-      success: true,
-      data: {
-        description: 'Invite users to your projects and manage their invitations',
+    return formatToolResponse(
+      'success',
+      'Invite users to your projects and manage their invitations',
+      {
         availableCommands: [
           {
             command: 'get',
@@ -49,12 +49,12 @@ export const handleMittwaldProjectInvite: MittwaldToolHandler<MittwaldProjectInv
         ],
         usage: 'Use the specific invite tools listed above for actual operations'
       }
-    });
+    );
 
   } catch (error) {
-    return formatToolResponse({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    });
+    return formatToolResponse(
+      'error',
+      error instanceof Error ? error.message : 'Unknown error occurred'
+    );
   }
 }

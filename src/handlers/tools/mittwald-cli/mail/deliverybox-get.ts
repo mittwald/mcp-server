@@ -10,7 +10,7 @@ export const handleMailDeliveryboxGet: MittwaldToolHandler<MittwaldMailDeliveryb
   
   try {
     // Get the delivery box
-    const getResponse = await mittwaldClient.api.mail.deliveryBoxGetDeliveryBox({
+    const getResponse = await mittwaldClient.api.mail.getDeliveryBox({
       deliveryBoxId: args.id
     });
 

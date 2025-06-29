@@ -4,7 +4,7 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../../types/tool-response.js';
+import { ToolResponse } from '../../../../../../types/tool-response.js';
 
 /**
  * Get all mail addresses for a project ID

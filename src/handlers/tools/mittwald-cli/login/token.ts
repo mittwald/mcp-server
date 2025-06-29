@@ -4,7 +4,7 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../types/tool-response.js';
+import { ToolResponse } from '../../../../types/tool-response.js';
 
 /**
  * Authenticate using an API token
@@ -23,7 +23,7 @@ export async function handleMittwaldLoginToken(
   try {
     // In the MCP context, we assume the API token is already configured
     // We'll validate it by trying to get the current user
-    const userResponse = await client.user.getOwnAccount();
+    const userResponse = await client.user.api.user.getOwnAccount();
     
     if (userResponse.status === 200 && userResponse.data) {
       const user = userResponse.data;

@@ -1,5 +1,5 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 interface MittwaldDomainVirtualhostGetArgs {
   ingressId: string;
@@ -13,7 +13,7 @@ export const handleDomainVirtualhostGet: MittwaldToolHandler<MittwaldDomainVirtu
       ingressId: args.ingressId,
     });
 
-    const data = response.data;
+    const data = response.data as any;
     
     if (!data) {
       return formatToolResponse(
@@ -27,7 +27,7 @@ export const handleDomainVirtualhostGet: MittwaldToolHandler<MittwaldDomainVirtu
       id: data.id,
       hostname: data.hostname,
       projectId: data.projectId,
-      paths: data.paths.map((p: any) => {
+      paths: (data.paths || []).map((p: any) => {
         if ('directory' in p.target) {
           return {
             path: p.path,
@@ -52,7 +52,7 @@ export const handleDomainVirtualhostGet: MittwaldToolHandler<MittwaldDomainVirtu
         };
       }),
       ips: {
-        v4: data.ips.v4,
+        v4: (data.ips as any)?.v4 || [],
       },
       dnsValidationErrors: data.dnsValidationErrors,
     };
