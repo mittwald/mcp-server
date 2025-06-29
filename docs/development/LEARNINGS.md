@@ -1,4 +1,34 @@
-# MCP STDIO Transport Logging Best Practices - Critical Learnings
+# Key Learnings from Mittwald MCP Development
+
+## Critical Security: MCP Servers Must Never Include Login Tools
+
+**Key Learning**: MCP servers should NEVER implement authentication/login tools. Authentication must be handled exclusively through API tokens in environment variables.
+
+### Why This Is Critical
+1. **Security Risk**: Login tools in MCP expose authentication flows to untrusted clients
+2. **Design Principle**: MCP servers are API clients, not authentication providers  
+3. **Best Practice**: Use pre-configured API tokens (e.g., MITTWALD_API_TOKEN in .env)
+
+### What Was Removed
+- All login-related handlers (`login`, `login reset`, `login status`, `login token`)
+- All login-related constants and tool definitions
+- All authentication flow implementations
+
+### Correct Pattern
+```typescript
+// Authentication via environment variable (server/config.ts)
+export const CONFIG = {
+  MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
+  // ... other config
+};
+
+// Used in MittwaldClient initialization
+const client = MittwaldAPIV2Client.newWithToken(CONFIG.MITTWALD_API_TOKEN);
+```
+
+This ensures authentication is secure, centralized, and never exposed through tool interfaces.
+
+## MCP STDIO Transport Logging Best Practices - Critical Learnings
 
 ## The Problem
 When implementing STDIO transport for Model Context Protocol (MCP) servers, incorrect logging can completely break the protocol communication, causing Claude Desktop and other MCP clients to receive parsing errors like "Unexpected token" instead of connecting successfully.

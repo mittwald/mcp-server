@@ -205,6 +205,11 @@ import { handleOrgInvite } from './tools/mittwald-cli/org/invite.js';
 import { handleOrgList } from './tools/mittwald-cli/org/list.js';
 import { handleOrgMembershipListOwn } from './tools/mittwald-cli/org/membership-list-own.js';
 
+// Context handlers
+import { handleContext } from './tools/mittwald-cli/context/context.js';
+import { handleContextGet } from './tools/mittwald-cli/context/get.js';
+import { handleContextReset } from './tools/mittwald-cli/context/reset.js';
+import { handleContextSet } from './tools/mittwald-cli/context/set.js';
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
 import type { MittwaldToolHandlerContext } from '../types/mittwald/conversation.js';
@@ -1130,6 +1135,31 @@ const ToolSchemas = {
   mittwald_org: z.object({
     command: z.enum(["delete", "get", "invite", "list", "membership"]).optional().describe("The org command to run"),
     help: z.boolean().optional().describe("Show help for org commands")
+  }),
+  
+  // Context tools
+  mittwald_context: z.object({
+    command: z.enum(["get", "reset", "set"]).describe("The context command to execute"),
+    projectId: z.string().optional().describe("ID or short ID of a project (set command)"),
+    serverId: z.string().optional().describe("ID or short ID of a server (set command)"),
+    orgId: z.string().optional().describe("ID or short ID of an organization (set command)"),
+    installationId: z.string().optional().describe("ID or short ID of an app installation (set command)"),
+    output: z.enum(["txt", "json"]).optional().describe("Output format for get command")
+  }),
+  
+  mittwald_context_get: z.object({
+    output: z.enum(["txt", "json"]).optional().describe("Output format")
+  }),
+  
+  mittwald_context_reset: z.object({
+    force: z.boolean().optional().describe("Do not ask for confirmation")
+  }),
+  
+  mittwald_context_set: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project"),
+    serverId: z.string().optional().describe("ID or short ID of a server"),
+    orgId: z.string().optional().describe("ID or short ID of an organization"),
+    installationId: z.string().optional().describe("ID or short ID of an app installation")
   })
 };
 
@@ -1578,6 +1608,31 @@ type ToolArgs = {
   mittwald_org: {
     command?: 'delete' | 'get' | 'invite' | 'list' | 'membership';
     help?: boolean;
+  };
+  
+  // Context tools
+  mittwald_context: {
+    command: 'get' | 'reset' | 'set';
+    projectId?: string;
+    serverId?: string;
+    orgId?: string;
+    installationId?: string;
+    output?: 'txt' | 'json';
+  };
+  
+  mittwald_context_get: {
+    output?: 'txt' | 'json';
+  };
+  
+  mittwald_context_reset: {
+    force?: boolean;
+  };
+  
+  mittwald_context_set: {
+    projectId?: string;
+    serverId?: string;
+    orgId?: string;
+    installationId?: string;
   };
 };
 
@@ -2971,6 +3026,47 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleOrgMembershipListOwn(args, mittwaldOrgMembershipListOwnContext);
+        break;
+        
+      // Context tools
+      case "mittwald_context":
+        const mittwaldContextContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContext(args, mittwaldContextContext);
+        break;
+        
+      case "mittwald_context_get":
+        const mittwaldContextGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContextGet(args, mittwaldContextGetContext);
+        break;
+        
+      case "mittwald_context_reset":
+        const mittwaldContextResetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContextReset(args, mittwaldContextResetContext);
+        break;
+        
+      case "mittwald_context_set":
+        const mittwaldContextSetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContextSet(args, mittwaldContextSetContext);
         break;
         
       default:

@@ -133,6 +133,14 @@ import {
   mittwald_org_membership_list_own
 } from './tool/mittwald-cli/org/index.js';
 
+// Context tools
+import {
+  mittwald_context,
+  mittwald_context_get,
+  mittwald_context_reset,
+  mittwald_context_set
+} from './tool/mittwald-cli/context/index.js';
+
 /**
  * Standard error messages for tool operations.
  * 
@@ -291,6 +299,12 @@ export const TOOLS: Tool[] = [
   mittwald_org_invite,
   mittwald_org_list,
   mittwald_org_membership_list_own,
+  
+  // Context tools
+  mittwald_context,
+  mittwald_context_get,
+  mittwald_context_reset,
+  mittwald_context_set,
 ];
 
 /**
