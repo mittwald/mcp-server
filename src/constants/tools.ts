@@ -181,21 +181,20 @@ import { mittwald_domain_virtualhost } from './tool/mittwald-cli/domain/virtualh
 import { mittwald_domain_list } from './tool/mittwald-cli/domain/list.js';
 import { mittwald_domain } from './tool/mittwald-cli/domain/domain.js';
 
-// Mail address tools (commented out due to export name mismatches)
+// Mail address tools (commented out due to readonly TypeScript issues)
 // import {
 //   mittwald_mail_address_create,
 //   mittwald_mail_address_delete,
 //   mittwald_mail_address_get,
-//   mittwald_mail_address_list,
-//   mittwald_mail_address_update
+//   mittwald_mail_address_list
 // } from './tool/mittwald-cli/mail/address/index.js';
 
-// Additional mail tools (commented out due to export name mismatches)
-// import { mittwald_mail_deliverybox_create } from './tool/mittwald-cli/mail/deliverybox-create.js';
-// import { mittwald_mail_deliverybox_delete } from './tool/mittwald-cli/mail/deliverybox-delete.js';
-// import { mittwald_mail_deliverybox_get } from './tool/mittwald-cli/mail/deliverybox-get.js';
-// import { mittwald_mail_deliverybox_list } from './tool/mittwald-cli/mail/deliverybox-list.js';
-// import { mittwald_mail_deliverybox_update } from './tool/mittwald-cli/mail/deliverybox-update.js';
+// Additional mail tools
+import { mittwaldMailDeliveryboxCreate } from './tool/mittwald-cli/mail/deliverybox-create.js';
+import { mittwaldMailDeliveryboxDelete } from './tool/mittwald-cli/mail/deliverybox-delete.js';
+import { mittwaldMailDeliveryboxGet } from './tool/mittwald-cli/mail/deliverybox-get.js';
+import { mittwaldMailDeliveryboxList } from './tool/mittwald-cli/mail/deliverybox-list.js';
+import { mittwaldMailDeliveryboxUpdate } from './tool/mittwald-cli/mail/deliverybox-update.js';
 
 // SFTP tools
 import {
@@ -204,6 +203,7 @@ import {
   mittwaldSftpUserList,
   mittwaldSftpUserUpdate
 } from './tool/mittwald-cli/sftp/index.js';
+import { mittwald_sftp_user_create } from './tool/mittwald-cli/sftp/user/index.js';
 
 // SSH tools
 import {
@@ -447,22 +447,22 @@ export const TOOLS: Tool[] = [
   mittwald_domain_list,
   mittwald_domain,
   
-  // Mail address tools (commented out - export name mismatches)
+  // Mail address tools (commented out due to readonly TypeScript issues)
   // mittwald_mail_address_create,
   // mittwald_mail_address_delete,
   // mittwald_mail_address_get,
   // mittwald_mail_address_list,
-  // mittwald_mail_address_update,
   
-  // Additional mail tools (commented out - export name mismatches)
-  // mittwald_mail_deliverybox_create,
-  // mittwald_mail_deliverybox_delete,
-  // mittwald_mail_deliverybox_get,
-  // mittwald_mail_deliverybox_list,
-  // mittwald_mail_deliverybox_update,
+  // Additional mail tools
+  mittwaldMailDeliveryboxCreate,
+  mittwaldMailDeliveryboxDelete,
+  mittwaldMailDeliveryboxGet,
+  mittwaldMailDeliveryboxList,
+  mittwaldMailDeliveryboxUpdate,
   
   // SFTP tools
   mittwaldSftpUser,
+  mittwald_sftp_user_create,
   mittwaldSftpUserDelete,
   mittwaldSftpUserList,
   mittwaldSftpUserUpdate,
