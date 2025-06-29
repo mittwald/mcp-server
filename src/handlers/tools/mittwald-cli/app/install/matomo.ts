@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldAppInstallMatomoArgs {
@@ -17,16 +17,16 @@ export interface MittwaldAppInstallMatomoArgs {
 export const handleAppInstallMatomo: MittwaldToolHandler<MittwaldAppInstallMatomoArgs> = async (args, { mittwaldClient }) => {
   try {
     if (!args.projectId) {
-      throw new Error("Project ID is required");
+      return formatToolResponse("error", "Project ID is required");
     }
 
     // Get user details for defaults
-    const userResponse = await mittwaldClient.user.getProfile({});
+    const userResponse = await mittwaldClient.api.user.getProfile({});
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.project.listIngresses({
+    const ingressResponse = await mittwaldClient.api.domain.listIngresses({
       projectId: args.projectId,
     });
     assertStatus(ingressResponse, 200);

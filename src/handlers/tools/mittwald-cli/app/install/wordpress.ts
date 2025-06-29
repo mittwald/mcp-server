@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldAppInstallWordpressArgs {
@@ -17,16 +17,16 @@ export interface MittwaldAppInstallWordpressArgs {
 export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWordpressArgs> = async (args, { mittwaldClient }) => {
   try {
     if (!args.projectId) {
-      throw new Error("Project ID is required");
+      return formatToolResponse("error", "Project ID is required");
     }
 
     // Get user details for defaults
-    const userResponse = await mittwaldClient.user.getProfile({});
+    const userResponse = await mittwaldClient.api.user.getProfile({});
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.domain.listIngresses({
+    const ingressResponse = await mittwaldClient.api.domain.listIngresses({
       queryParameters: {
         projectId: args.projectId
       }
@@ -44,7 +44,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
     }
 
     if (!hostname) {
-      throw new Error("No hostname found for project. Please specify a host parameter.");
+      return formatToolResponse("error", "No hostname found for project. Please specify a host parameter.");
     }
 
     // Prepare installation parameters
@@ -70,7 +70,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
     };
 
     // Create the installation
-    const installResponse = await mittwaldClient.app.createAppinstallation(installParams);
+    const installResponse = await mittwaldClient.api.app.createAppinstallation(installParams);
     assertStatus(installResponse, 201);
 
     const appInstallationId = installResponse.data.id;
@@ -81,7 +81,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
       const startTime = Date.now();
 
       while (Date.now() - startTime < timeout) {
-        const statusResponse = await mittwaldClient.app.getAppinstallation({
+        const statusResponse = await mittwaldClient.api.app.getAppinstallation({
           appInstallationId
         });
         assertStatus(statusResponse, 200);

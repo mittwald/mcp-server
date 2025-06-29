@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldAppListArgs {
@@ -12,17 +12,20 @@ export interface MittwaldAppListArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (args, { mittwaldClient, projectContext }) => {
+export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (args, { mittwaldClient }) => {
   try {
-    // Get project ID from args or context
-    const projectId = args.projectId || (projectContext as any)?.projectId;
+    // Get project ID from args
+    const projectId = args.projectId;
     
     if (!projectId) {
-      throw new Error("Project ID is required. Either provide it as a parameter or set a default project in the context.");
+      return formatToolResponse(
+        'error',
+        'Project ID is required. Please provide the projectId parameter.'
+      );
     }
 
     // List app installations for the project
-    const response = await mittwaldClient.app.listAppinstallations({
+    const response = await mittwaldClient.api.app.listAppinstallations({
       queryParameters: {
         projectId: projectId
       }
@@ -37,7 +40,7 @@ export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (ar
       extendedApps = await Promise.all(
         apps.map(async (app) => {
           try {
-            const detailResponse = await mittwaldClient.app.getAppinstallation({
+            const detailResponse = await mittwaldClient.api.app.getAppinstallation({
               appInstallationId: app.id
             });
             assertStatus(detailResponse, 200);
@@ -62,12 +65,12 @@ export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (ar
     }
 
     // For text output, create a simplified view
-    const formattedApps = extendedApps.map(app => ({
+    const formattedApps = extendedApps.map((app: any) => ({
       id: app.id,
-      name: app.app.name,
+      name: app.app?.name || app.appId || 'Unknown',
       version: app.appVersion?.current || 'unknown',
       status: app.appVersion?.current ? 'installed' : 'installing',
-      createdAt: app.createdAt
+      createdAt: app.createdAt || new Date().toISOString()
     }));
 
     if (output === 'yaml') {
