@@ -66,6 +66,13 @@ import { handleAppInstallShopware6 } from './tools/mittwald-cli/app/install/shop
 import { handleAppInstallTypo3 } from './tools/mittwald-cli/app/install/typo3.js';
 import { handleAppInstallWordpress } from './tools/mittwald-cli/app/install/wordpress.js';
 
+// App create handlers
+import { handleAppCreateNode } from './tools/mittwald-cli/app/create/node.js';
+import { handleAppCreatePhp } from './tools/mittwald-cli/app/create/php.js';
+import { handleAppCreatePhpWorker } from './tools/mittwald-cli/app/create/php-worker.js';
+import { handleAppCreatePython } from './tools/mittwald-cli/app/create/python.js';
+import { handleAppCreateStatic } from './tools/mittwald-cli/app/create/static.js';
+
 // Agent 3 app management handlers
 import { handleAppList } from './tools/mittwald-cli/app/list.js';
 import { handleAppOpen } from './tools/mittwald-cli/app/open.js';
@@ -468,6 +475,51 @@ const ToolSchemas = {
     adminEmail: z.string().optional().describe("Administrator email"),
     adminPass: z.string().optional().describe("Administrator password"),
     siteTitle: z.string().optional().describe("Title for the WordPress installation"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+  
+  // App create schemas
+  mittwald_app_create_node: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    siteTitle: z.string().optional().describe("Title for the Node.js application"),
+    entrypoint: z.string().optional().describe("Entry point file for the Node.js application"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+  
+  mittwald_app_create_php: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    documentRoot: z.string().describe("Document root path for the PHP application"),
+    siteTitle: z.string().optional().describe("Title for the PHP application"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+  
+  mittwald_app_create_php_worker: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    siteTitle: z.string().optional().describe("Title for the PHP worker application"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+  
+  mittwald_app_create_python: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    documentRoot: z.string().describe("Document root path for the Python application"),
+    siteTitle: z.string().optional().describe("Title for the Python application"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    wait: z.boolean().optional().describe("Wait for installation to complete"),
+    waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
+  }),
+  
+  mittwald_app_create_static: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    documentRoot: z.string().describe("Document root path for the static site"),
+    siteTitle: z.string().optional().describe("Title for the static site"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
     wait: z.boolean().optional().describe("Wait for installation to complete"),
     waitTimeout: z.number().optional().describe("Maximum time to wait in seconds")
   }),
@@ -1847,6 +1899,57 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleAppInstallWordpress(args, mittwaldAppInstallWordpressContext);
+        break;
+
+      // App create tools
+      case "mittwald_app_create_node":
+        const mittwaldAppCreateNodeContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleAppCreateNode(args, mittwaldAppCreateNodeContext);
+        break;
+        
+      case "mittwald_app_create_php":
+        const mittwaldAppCreatePhpContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleAppCreatePhp(args, mittwaldAppCreatePhpContext);
+        break;
+        
+      case "mittwald_app_create_php_worker":
+        const mittwaldAppCreatePhpWorkerContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleAppCreatePhpWorker(args, mittwaldAppCreatePhpWorkerContext);
+        break;
+        
+      case "mittwald_app_create_python":
+        const mittwaldAppCreatePythonContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleAppCreatePython(args, mittwaldAppCreatePythonContext);
+        break;
+        
+      case "mittwald_app_create_static":
+        const mittwaldAppCreateStaticContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleAppCreateStatic(args, mittwaldAppCreateStaticContext);
         break;
 
       // Agent 3 app management tools
