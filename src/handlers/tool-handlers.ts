@@ -152,6 +152,20 @@ import { handleUserApiTokenCreate } from './tools/mittwald-cli/user/api-token/cr
 import { handleUserApiTokenGet } from './tools/mittwald-cli/user/api-token/get.js';
 import { handleUser } from './tools/mittwald-cli/user/user.js';
 
+// SSH user handlers
+import { handleSshUserCreate } from './tools/mittwald-cli/ssh/user-create.js';
+import { handleSshUserDelete } from './tools/mittwald-cli/ssh/user-delete.js';
+import { handleSshUserList } from './tools/mittwald-cli/ssh/user-list.js';
+import { handleSshUserUpdate } from './tools/mittwald-cli/ssh/user-update.js';
+import { handleSshUser } from './tools/mittwald-cli/ssh/user.js';
+
+// SFTP user handlers
+import { handleSftpUserCreate } from './tools/mittwald-cli/sftp/user/create.js';
+import { handleSftpUserDelete } from './tools/mittwald-cli/sftp/user-delete.js';
+import { handleSftpUserList } from './tools/mittwald-cli/sftp/user-list.js';
+import { handleSftpUserUpdate } from './tools/mittwald-cli/sftp/user-update.js';
+import { handleSftpUser } from './tools/mittwald-cli/sftp/user.js';
+
 // Agent 15 mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
 import { handleMail } from './tools/mittwald-cli/mail/mail.js';
@@ -809,6 +823,88 @@ const ToolSchemas = {
   
   mittwald_user: z.object({
     help: z.boolean().optional().describe("Show help for user commands")
+  }),
+  
+  // SSH user tools
+  mittwald_ssh_user_create: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    description: z.string().describe("Description for the SSH user"),
+    authenticationMethod: z.enum(["password", "publickey"]).describe("Authentication method for the SSH user"),
+    password: z.string().optional().describe("Password for the SSH user (required if authenticationMethod is password)"),
+    publicKey: z.string().optional().describe("SSH public key (required if authenticationMethod is publickey)"),
+    expiresAt: z.string().optional().describe("Expiration date for the SSH user (ISO 8601 format)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_ssh_user_delete: z.object({
+    sshUserId: z.string().describe("ID of the SSH user to delete"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_ssh_user_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_ssh_user_update: z.object({
+    sshUserId: z.string().describe("ID of the SSH user to update"),
+    description: z.string().optional().describe("Update description for the SSH user"),
+    authenticationMethod: z.enum(["password", "publickey"]).optional().describe("Update authentication method for the SSH user"),
+    password: z.string().optional().describe("Update password for the SSH user"),
+    publicKey: z.string().optional().describe("Update SSH public key"),
+    expiresAt: z.string().optional().describe("Update expiration date for the SSH user (ISO 8601 format)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_ssh_user: z.object({
+    help: z.boolean().optional().describe("Show help for SSH user commands")
+  }),
+  
+  // SFTP user tools
+  mittwald_sftp_user_create: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    description: z.string().describe("Description for the SFTP user"),
+    password: z.string().describe("Password for the SFTP user"),
+    accessLevel: z.enum(["read", "full"]).optional().describe("Access level for the SFTP user"),
+    directories: z.array(z.string()).optional().describe("List of directories the SFTP user has access to"),
+    expiresAt: z.string().optional().describe("Expiration date for the SFTP user (ISO 8601 format)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_sftp_user_delete: z.object({
+    sftpUserId: z.string().describe("ID of the SFTP user to delete"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_sftp_user_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_sftp_user_update: z.object({
+    sftpUserId: z.string().describe("ID of the SFTP user to update"),
+    description: z.string().optional().describe("Update description for the SFTP user"),
+    password: z.string().optional().describe("Update password for the SFTP user"),
+    accessLevel: z.enum(["read", "full"]).optional().describe("Update access level for the SFTP user"),
+    directories: z.array(z.string()).optional().describe("Update list of directories the SFTP user has access to"),
+    expiresAt: z.string().optional().describe("Update expiration date for the SFTP user (ISO 8601 format)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_sftp_user: z.object({
+    help: z.boolean().optional().describe("Show help for SFTP user commands")
   }),
   
   // Agent 11 tools
@@ -2190,6 +2286,66 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleUser(args, mittwaldUserContext);
+        break;
+        
+      // SSH user tools (mixed patterns)
+      case "mittwald_ssh_user_create":
+        result = await handleSshUserCreate(args, getMittwaldClient().api);
+        break;
+        
+      case "mittwald_ssh_user_delete":
+        result = await handleSshUserDelete(args, getMittwaldClient().api);
+        break;
+        
+      case "mittwald_ssh_user_list":
+        result = await handleSshUserList(args, getMittwaldClient().api);
+        break;
+        
+      case "mittwald_ssh_user_update":
+        const mittwaldSshUserUpdateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleSshUserUpdate(args, mittwaldSshUserUpdateContext);
+        break;
+        
+      case "mittwald_ssh_user":
+        const mittwaldSshUserContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleSshUser(args, mittwaldSshUserContext);
+        break;
+        
+      // SFTP user tools (mixed patterns)
+      case "mittwald_sftp_user_create":
+        const mittwaldSftpUserCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleSftpUserCreate(args, mittwaldSftpUserCreateContext);
+        break;
+        
+      case "mittwald_sftp_user_delete":
+        result = await handleSftpUserDelete(args, getMittwaldClient().api);
+        break;
+        
+      case "mittwald_sftp_user_list":
+        result = await handleSftpUserList(args, getMittwaldClient().api);
+        break;
+        
+      case "mittwald_sftp_user_update":
+        result = await handleSftpUserUpdate(args, getMittwaldClient().api);
+        break;
+        
+      case "mittwald_sftp_user":
+        result = await handleSftpUser(args, getMittwaldClient().api);
         break;
         
       // Redis database tools
