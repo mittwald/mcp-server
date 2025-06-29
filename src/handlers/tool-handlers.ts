@@ -41,6 +41,8 @@ import { handleProjectInviteListOwn } from './tools/mittwald-cli/project/invite-
 import { handleProjectInviteList } from './tools/mittwald-cli/project/invite-list.js';
 import { handleMittwaldProjectList } from './tools/mittwald-cli/project/list.js';
 import { handleServerList } from './tools/mittwald-cli/server/list.js';
+import { handleServerGet } from './tools/mittwald-cli/server/get.js';
+import { handleServer } from './tools/mittwald-cli/server/server.js';
 
 // Agent 2 app dependency handlers
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
@@ -192,6 +194,15 @@ const ToolSchemas = {
     noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
     noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
     csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_server_get: z.object({
+    serverId: z.string().describe("ID of the server to retrieve"),
+    output: z.enum(["txt", "json", "yaml"]).optional().default("txt").describe("Output format")
+  }),
+  
+  mittwald_server: z.object({
+    help: z.boolean().optional().describe("Show help for server commands")
   }),
 
   mittwald_project_filesystem_usage: z.object({
@@ -1289,6 +1300,26 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleServerList(args, mittwaldServerListContext);
+        break;
+        
+      case "mittwald_server_get":
+        const mittwaldServerGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleServerGet(args, mittwaldServerGetContext);
+        break;
+        
+      case "mittwald_server":
+        const mittwaldServerContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleServer(args, mittwaldServerContext);
         break;
 
       // Agent 2 app dependency tools
