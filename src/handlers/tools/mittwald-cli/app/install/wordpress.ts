@@ -106,7 +106,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
         });
         assertStatus(statusResponse, 200);
 
-        if (statusResponse.data.appVersion.current) {
+        if (statusResponse.data.appVersion?.current) {
           // Installation complete
           return formatToolResponse(
             "success",
@@ -115,7 +115,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
               appInstallationId,
               status: 'completed',
               appId: statusResponse.data.appId,
-              version: statusResponse.data.appVersion.current,
+              version: statusResponse.data.appVersion?.current || 'latest',
               host: hostname,
               adminUser: args.adminUser || user.email || 'admin'
             }

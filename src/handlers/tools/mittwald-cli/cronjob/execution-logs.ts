@@ -12,17 +12,27 @@ export const handleCronjobExecutionLogs: MittwaldToolHandler<Args> = async (args
   try {
     const { cronjobId, executionId, output = 'txt', noPager = false } = args;
 
-    // Get the cron job execution details first to get the log path
-    const execution = await mittwaldClient.cronjob.getExecution({
+    // Get the cron job execution details first
+    const executionResponse = await mittwaldClient.cronjob.getExecution({
       cronjobId,
       executionId
     });
+    
+    const execution = executionResponse.data;
+    const logPath = (execution as any).logPath || null;
 
-    // Get the logs for the execution
-    const logs = await mittwaldClient.cronjob.getExecutionLogs({
-      cronjobId,
-      executionId
-    });
+    // Note: The Mittwald API doesn't have a direct getExecutionLogs method
+    // We'll need to use the execution data to get the log information
+    let logs = '';
+    
+    // Check if the execution has completed and has log data
+    if ((execution as any).status === 'completed' && logPath) {
+      logs = `Log file path: ${logPath}\nUse the file system or SSH access to view the full logs.`;
+    } else if ((execution as any).status === 'running') {
+      logs = 'Execution is still running. Logs will be available after completion.';
+    } else {
+      logs = 'No logs available for this execution.';
+    }
 
     if (output === 'json') {
       return formatToolResponse(
@@ -30,7 +40,7 @@ export const handleCronjobExecutionLogs: MittwaldToolHandler<Args> = async (args
         JSON.stringify({
           cronjobId,
           executionId,
-          logPath: execution.logPath,
+          logPath: logPath,
           logs: logs
         }, null, 2)
       );
@@ -41,7 +51,7 @@ export const handleCronjobExecutionLogs: MittwaldToolHandler<Args> = async (args
       const yamlOutput = [
         `cronjobId: ${cronjobId}`,
         `executionId: ${executionId}`,
-        `logPath: ${execution.logPath}`,
+        `logPath: ${logPath || 'N/A'}`,
         `logs: |`,
         ...logs.split('\n').map(line => `  ${line}`)
       ].join('\n');

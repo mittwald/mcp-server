@@ -25,9 +25,16 @@ export const handleAppUpload: MittwaldToolHandler<MittwaldAppUploadArgs> = async
     
     const appInstallation = appResponse.data;
     const projectId = appInstallation.projectId;
+    
+    if (!projectId) {
+      return formatToolResponse(
+        "error",
+        "App installation has no associated project ID"
+      );
+    }
 
     // Get SSH users for the project
-    const sshUsersResponse = await mittwaldClient.project.listSshUsers({
+    const sshUsersResponse = await mittwaldClient.sshsftpUser.sshUserListSshUsers({
       projectId: projectId
     });
     assertStatus(sshUsersResponse, 200);
@@ -35,7 +42,7 @@ export const handleAppUpload: MittwaldToolHandler<MittwaldAppUploadArgs> = async
     // Find appropriate SSH user
     let selectedSshUser = sshUser;
     if (!selectedSshUser && sshUsersResponse.data.length > 0) {
-      selectedSshUser = sshUsersResponse.data[0].userName;
+      selectedSshUser = (sshUsersResponse.data[0] as any).userName || sshUsersResponse.data[0].id;
     }
 
     if (!selectedSshUser) {
@@ -89,7 +96,7 @@ export const handleAppUpload: MittwaldToolHandler<MittwaldAppUploadArgs> = async
       "File upload instructions prepared",
       {
         appInstallationId: installationId,
-        appName: appInstallation.app.name,
+        appName: (appInstallation as any).appId || 'App',
         projectId: projectId,
         source: source,
         destination: `${selectedSshUser}@${sshHostname}:${remotePath}`,

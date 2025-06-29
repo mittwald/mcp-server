@@ -57,7 +57,7 @@ export const handleAppOpen: MittwaldToolHandler<MittwaldAppOpenArgs> = async (ar
     }
 
     // Construct the URL
-    const protocol = primaryIngress.tls?.length > 0 ? 'https' : 'http';
+    const protocol = (primaryIngress.tls && Array.isArray(primaryIngress.tls) && primaryIngress.tls.length > 0) ? 'https' : 'http';
     const url = `${protocol}://${primaryIngress.hostname}`;
 
     // Find the specific path for this app (if any)
@@ -65,7 +65,7 @@ export const handleAppOpen: MittwaldToolHandler<MittwaldAppOpenArgs> = async (ar
       path.target?.appInstallationId === installationId
     );
     
-    const fullUrl = appPath?.source ? `${url}${appPath.source}` : url;
+    const fullUrl = appPath && (appPath as any).source ? `${url}${(appPath as any).source}` : url;
 
     return formatToolResponse(
       "success",

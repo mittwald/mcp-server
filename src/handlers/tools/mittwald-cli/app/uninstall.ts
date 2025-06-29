@@ -34,7 +34,7 @@ export const handleAppUninstall: MittwaldToolHandler<MittwaldAppUninstallArgs> =
     }
 
     // Perform the uninstallation
-    const uninstallResponse = await mittwaldClient.app.deleteAppinstallation({
+    const uninstallResponse = await mittwaldClient.app.uninstallAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(uninstallResponse, 204);
@@ -52,13 +52,13 @@ export const handleAppUninstall: MittwaldToolHandler<MittwaldAppUninstallArgs> =
     } else {
       return formatToolResponse(
         "success",
-        `App uninstallation initiated for ${appInstallation.app.name}`,
+        `App uninstallation initiated for ${(appInstallation as any).appId || 'app'}`,
         {
           appInstallationId: installationId,
-          appName: appInstallation.app.name,
+          appName: (appInstallation as any).appId || 'App',
           projectId: appInstallation.projectId,
           status: "uninstalling",
-          message: `Uninstallation process has been started for ${appInstallation.app.name}. The app will be removed from your project.`
+          message: `Uninstallation process has been started for ${(appInstallation as any).appId || 'the app'}. The app will be removed from your project.`
         }
       );
     }

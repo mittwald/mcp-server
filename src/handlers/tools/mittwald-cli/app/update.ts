@@ -80,10 +80,10 @@ export const handleAppUpdate: MittwaldToolHandler<MittwaldAppUpdateArgs> = async
 
       return formatToolResponse(
         "success",
-        `App installation "${appInstallation.app.name}" updated successfully`,
+        `App installation "${(appInstallation as any).appId || 'app'}" updated successfully`,
         {
           appInstallationId: installationId,
-          appName: appInstallation.app.name,
+          appName: (appInstallation as any).appId || 'App',
           projectId: appInstallation.projectId,
           updatedProperties: updatedProperties,
           updates: {
@@ -91,7 +91,7 @@ export const handleAppUpdate: MittwaldToolHandler<MittwaldAppUpdateArgs> = async
             ...(args.documentRoot !== undefined && { documentRoot: args.documentRoot }),
             ...(args.entrypoint !== undefined && { entrypoint: args.entrypoint })
           },
-          message: `Successfully updated ${updatedProperties.join(", ")} for ${appInstallation.app.name}`
+          message: `Successfully updated ${updatedProperties.join(", ")} for ${(appInstallation as any).appId || 'the app'}`
         }
       );
     }

@@ -70,7 +70,7 @@ export const handleAppUpgrade: MittwaldToolHandler<MittwaldAppUpgradeArgs> = asy
     }
 
     // Check if target version is supported
-    if (!targetVersionObj.supported) {
+    if (!(targetVersionObj as any).supported) {
       if (!force) {
         return formatToolResponse(
           "error",
@@ -79,26 +79,24 @@ export const handleAppUpgrade: MittwaldToolHandler<MittwaldAppUpgradeArgs> = asy
       }
     }
 
-    // Perform the upgrade
-    const upgradeResponse = await mittwaldClient.app.requestAppinstallationUpgrade({
+    // Perform the upgrade - using patchAppinstallation to update version
+    const upgradeResponse = await mittwaldClient.app.patchAppinstallation({
       appInstallationId: installationId,
       data: {
         appVersionId: targetVersionObj.id
       }
     });
-    assertStatus(upgradeResponse, 201);
+    assertStatus(upgradeResponse, 204);
 
-    const upgradeRequest = upgradeResponse.data;
-
+    // patchAppinstallation returns 204 No Content on success
     if (!quiet) {
       return formatToolResponse(
         "success",
         `App upgrade initiated successfully`,
         {
           installationId: installationId,
-          currentVersion: installation.appVersionId,
+          currentVersion: installation.appVersion?.current || 'unknown',
           targetVersion: targetVersionObj.externalVersion,
-          upgradeId: upgradeRequest.id,
           status: "initiated",
           wait: wait,
           waitTimeout: waitTimeout
@@ -110,7 +108,7 @@ export const handleAppUpgrade: MittwaldToolHandler<MittwaldAppUpgradeArgs> = asy
       "success",
       "App upgrade initiated",
       {
-        upgradeId: upgradeRequest.id,
+        installationId: installationId,
         status: "initiated"
       }
     );

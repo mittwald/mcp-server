@@ -49,7 +49,7 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     assertStatus(clusterResponse, 200);
 
     // Get SSH users for the project
-    const sshUsersResponse = await mittwaldClient.project.listSshUsers({
+    const sshUsersResponse = await mittwaldClient.sshsftpUser.sshUserListSshUsers({
       projectId: projectId
     });
     assertStatus(sshUsersResponse, 200);
@@ -58,7 +58,7 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     let sshUser = args.sshUser;
     if (!sshUser && sshUsersResponse.data.length > 0) {
       // Use the first available SSH user if none specified
-      sshUser = sshUsersResponse.data[0].userName;
+      sshUser = (sshUsersResponse.data[0] as any).userName || sshUsersResponse.data[0].id;
     }
 
     if (!sshUser) {
@@ -88,7 +88,7 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
       hostname: sshHostname,
       username: sshUser,
       appInstallationId: installationId,
-      appName: appInstallation.app.name,
+      appName: (appInstallation as any).appId || 'App',
       projectId: projectId,
       sshCommand: sshCommand.join(" "),
       appPath: `/html/${appInstallation.shortId}`

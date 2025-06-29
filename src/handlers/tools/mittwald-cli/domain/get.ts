@@ -1,6 +1,12 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from "../../../../utils/format-tool-response.js";
 import { executeCommand } from "../../../../utils/executeCommand.js";
+import { z } from 'zod';
+
+export const domainGetSchema = z.object({
+  domainId: z.string().describe("The domain ID"),
+  output: z.enum(['txt', 'json', 'yaml']).optional().describe("Output format")
+});
 
 interface MittwaldDomainGetArgs {
   domainId: string;

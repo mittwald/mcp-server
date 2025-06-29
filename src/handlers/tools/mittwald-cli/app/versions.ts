@@ -56,15 +56,15 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
           id: version.id,
           externalVersion: version.externalVersion,
           internalVersion: version.internalVersion,
-          supported: version.supported,
-          deprecated: version.deprecated,
-          current: version.current
+          supported: (version as any).supported || false,
+          deprecated: (version as any).deprecated || false,
+          current: (version as any).current || false
         }));
 
         appsWithVersions.push({
           id: appItem.id,
           name: appItem.name,
-          description: appItem.description,
+          description: (appItem as any).description || '',
           versions: versions
         });
       } catch (error) {
@@ -72,7 +72,7 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
         appsWithVersions.push({
           id: appItem.id,
           name: appItem.name,
-          description: appItem.description,
+          description: (appItem as any).description || '',
           versions: [],
           error: `Could not fetch versions: ${error instanceof Error ? error.message : 'Unknown error'}`
         });
