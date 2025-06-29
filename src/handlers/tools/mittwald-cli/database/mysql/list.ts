@@ -19,9 +19,9 @@ export const handleDatabaseMysqlList: MittwaldToolHandler<MittwaldDatabaseMysqlL
     const { projectId, output = "txt", extended, noHeader, noTruncate, noRelativeDates, csvSeparator } = args;
 
     // List MySQL databases
-    const response = await mittwaldClient.database.listMysqlDatabases({
-      queryParameters: projectId ? { projectId } : {}
-    });
+    const response = projectId 
+      ? await mittwaldClient.database.listMysqlDatabases({ projectId })
+      : await mittwaldClient.database.listMysqlDatabases({} as any);
 
     if (response.status !== 200) {
       return formatToolResponse(
@@ -51,7 +51,7 @@ export const handleDatabaseMysqlList: MittwaldToolHandler<MittwaldDatabaseMysqlL
   version: ${db.version || 'N/A'}
   createdAt: ${db.createdAt || 'N/A'}${extended ? `
   isReady: ${db.isReady ?? 'N/A'}
-  storageUsage: ${db.storageUsage?.total || 'N/A'}` : ''}`).join('\n');
+  storageUsage: ${(db as any).storageUsage?.total || 'N/A'}` : ''}`).join('\n');
 
       return formatToolResponse(
         'success',
@@ -80,7 +80,7 @@ export const handleDatabaseMysqlList: MittwaldToolHandler<MittwaldDatabaseMysqlL
         if (extended) {
           basicData.push(
             String(db.isReady ?? ''),
-            String(db.storageUsage?.total || '')
+            String((db as any).storageUsage?.total || '')
           );
         }
         

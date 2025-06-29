@@ -1,70 +1,31 @@
-import { MittwaldAPIV2Client } from "@mittwald/api-client";
-import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { ddev_render_config } from "../../../../constants/tool/mittwald-cli/ddev/render-config.js";
-import { getMittwaldClient } from "../../../../services/mittwald/mittwald-client.js";
-import type { RequestContext } from "../../../../types/request-context.js";
-import { formatToolResponse } from "../../../../utils/format-tool-response.js";
-import { exec } from "child_process";
-import { promisify } from "util";
-import { existsSync } from "fs";
-import { join } from "path";
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { executeCommand } from '../../../../utils/executeCommand.js';
 
-const execAsync = promisify(exec);
+export interface DdevRenderConfigArgs {
+  appInstallationId: string;
+  force?: boolean;
+}
 
-export const ddevRenderConfigSchema = z.object({
-  installationId: z.string().optional(),
-  overrideType: z.enum([
-    "backdrop",
-    "craftcms", 
-    "django4",
-    "drupal6",
-    "drupal7",
-    "drupal",
-    "laravel",
-    "magento",
-    "magento2",
-    "php",
-    "python",
-    "shopware6",
-    "silverstripe",
-    "typo3",
-    "wordpress",
-    "auto"
-  ]).default("auto").optional(),
-  withoutDatabase: z.boolean().optional(),
-  databaseId: z.string().optional()
-});
-
-export type DdevRenderConfigParams = z.infer<typeof ddevRenderConfigSchema>;
-
-export async function handleDdevRenderConfig(
-  params: DdevRenderConfigParams,
-  context: RequestContext
-): Promise<CallToolRequestSchema> {
+export const handleDdevRenderConfig: MittwaldToolHandler<DdevRenderConfigArgs> = async (args, { mittwaldClient }) => {
   try {
-    const client = getMittwaldClient(context.authStore);
+    // Validate required parameters
+    if (!args.appInstallationId) {
+      return formatToolResponse(
+        "error",
+        "app-installation-id is required"
+      );
+    }
     
     // Build the command
-    let command = "mw ddev render-config";
+    let command = `mw ddev render-config "${args.appInstallationId}"`;
     
-    if (params.installationId) {
-      command += ` ${params.installationId}`;
-    }
-    
-    // Add flags
-    if (params.overrideType && params.overrideType !== "auto") {
-      command += ` --override-type ${params.overrideType}`;
-    }
-    
-    if (params.withoutDatabase) {
-      command += " --without-database";
-    } else if (params.databaseId) {
-      command += ` --database-id ${params.databaseId}`;
+    if (args.force) {
+      command += " --force";
     }
     
     // Execute the command
-    const { stdout, stderr } = await execAsync(command);
+    const { stdout, stderr } = await executeCommand(command);
     
     // Parse the output
     const output = stdout.trim();
@@ -74,27 +35,26 @@ export async function handleDdevRenderConfig(
       throw new Error(`DDEV render-config failed: ${error}`);
     }
     
-    // Check if config.yaml was created or output was generated
-    const configPath = join(process.cwd(), ".ddev", "config.yaml");
-    const configExists = existsSync(configPath);
+    // Parse config path from output if available
+    let configPath = null;
+    const configPathMatch = output.match(/Generated configuration file: (.+)/);
+    if (configPathMatch) {
+      configPath = configPathMatch[1];
+    }
     
-    // Format the response
     const result = {
-      success: Boolean(output),
-      message: output 
-        ? "DDEV configuration rendered successfully" 
-        : "No DDEV configuration output generated",
-      configPath: configExists ? configPath : null,
+      success: true,
+      message: "DDEV configuration rendered successfully",
+      configPath: configPath,
       output: output || null,
       command: command
     };
     
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", JSON.stringify(result));
   } catch (error) {
     return formatToolResponse(
       "error",
-      {},
       error instanceof Error ? error.message : "Unknown error occurred"
     );
   }
-}
+};

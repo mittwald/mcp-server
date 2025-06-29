@@ -1702,19 +1702,43 @@ export async function handleToolCall(
         break;
         
       case "mittwald_domain_dnszone_get":
-        result = await handleDomainDnszoneGet(args, handlerContext);
+        const mittwaldDnszoneGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainDnszoneGet(args, mittwaldDnszoneGetContext);
         break;
         
       case "mittwald_domain_dnszone_list":
-        result = await handleDomainDnszoneList(args, handlerContext);
+        const mittwaldDnszoneListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainDnszoneList(args, mittwaldDnszoneListContext);
         break;
         
       case "mittwald_domain_dnszone_update":
-        result = await handleDomainDnszoneUpdate(args, handlerContext);
+        const mittwaldDnszoneUpdateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainDnszoneUpdate(args, mittwaldDnszoneUpdateContext);
         break;
         
       case "mittwald_domain_dnszone":
-        result = await handleDomainDnszoneMain(args, handlerContext);
+        const mittwaldDnszoneMainContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainDnszoneMain(args, mittwaldDnszoneMainContext);
         break;
         
       // Agent 15 mail tools

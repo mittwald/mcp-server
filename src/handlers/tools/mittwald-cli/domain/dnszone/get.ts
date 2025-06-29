@@ -1,39 +1,36 @@
-import { MittwaldAPIV2Client } from "@mittwald/api-client";
-import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { getMittwaldClient } from "../../../../../services/mittwald/mittwald-client.js";
-import type { RequestContext } from "../../../../../types/request-context.js";
-import { formatToolResponse } from "../../../../../utils/format-tool-response.js";
+import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { exec } from "child_process";
 import { promisify } from "util";
+import { z } from "zod";
 
 const execAsync = promisify(exec);
 
 export const domainDnszoneGetSchema = z.object({
   dnszoneId: z.string(),
-  output: z.enum(["txt", "json", "yaml"]).default("json")
+  output: z.enum(["txt", "json", "yaml"]).optional().default("txt")
 });
 
-export type DomainDnszoneGetParams = z.infer<typeof domainDnszoneGetSchema>;
+interface DomainDnszoneGetArgs {
+  dnszoneId: string;
+  output?: 'txt' | 'json' | 'yaml';
+}
 
-export async function handleDomainDnszoneGet(
-  params: DomainDnszoneGetParams,
-  context: RequestContext
-): Promise<CallToolRequestSchema> {
+export const handleDomainDnszoneGet: MittwaldToolHandler<DomainDnszoneGetArgs> = async (args) => {
   try {
-    const client = getMittwaldClient(context.authStore);
+    const output = args.output || 'json';
     
     // Build the command
-    let command = `mw domain dnszone get ${params.dnszoneId}`;
+    let command = `mw domain dnszone get ${args.dnszoneId}`;
     
     // Add output format flag
-    command += ` --output ${params.output}`;
+    command += ` --output ${output}`;
     
     // Execute the command
     const { stdout, stderr } = await execAsync(command);
     
     // Parse the output
-    const output = stdout.trim();
+    const commandOutput = stdout.trim();
     const error = stderr.trim();
     
     if (error) {
@@ -42,9 +39,9 @@ export async function handleDomainDnszoneGet(
     
     // Try to parse JSON/YAML output if applicable
     let parsedData = null;
-    if (params.output === "json") {
+    if (output === "json") {
       try {
-        parsedData = JSON.parse(output);
+        parsedData = JSON.parse(commandOutput);
       } catch {
         // If parsing fails, just use raw output
       }
@@ -52,21 +49,20 @@ export async function handleDomainDnszoneGet(
     
     // Format the response
     const result = {
-      success: Boolean(output),
-      message: `DNS zone information retrieved for ${params.dnszoneId}`,
-      dnszoneId: params.dnszoneId,
-      output: output || null,
+      success: Boolean(commandOutput),
+      message: `DNS zone information retrieved for ${args.dnszoneId}`,
+      dnszoneId: args.dnszoneId,
+      output: commandOutput || null,
       parsedData: parsedData,
-      format: params.output,
+      format: output,
       command: command
     };
     
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", `DNS zone information retrieved for ${args.dnszoneId}`, result);
   } catch (error) {
     return formatToolResponse(
       "error",
-      {},
       error instanceof Error ? error.message : "Unknown error occurred"
     );
   }
-}
+};

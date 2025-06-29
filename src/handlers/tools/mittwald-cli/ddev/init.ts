@@ -1,112 +1,91 @@
-import { MittwaldAPIV2Client } from "@mittwald/api-client";
-import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { ddev_init } from "../../../../constants/tool/mittwald-cli/ddev/init.js";
-import { getMittwaldClient } from "../../../../services/mittwald/mittwald-client.js";
-import type { RequestContext } from "../../../../types/request-context.js";
-import { formatToolResponse } from "../../../../utils/format-tool-response.js";
-import { exec } from "child_process";
-import { promisify } from "util";
-import { existsSync, mkdirSync } from "fs";
-import { join } from "path";
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { executeCommand } from '../../../../utils/executeCommand.js';
 
-const execAsync = promisify(exec);
+export interface DdevInitArgs {
+  directory?: string;
+  appId?: string;
+  serverId?: string;
+  projectId?: string;
+  sshHost?: string;
+  sshUser?: string;
+  documentRoot?: string;
+  ddevDirectory?: string;
+  workingCopy?: boolean;
+}
 
-export const ddevInitSchema = z.object({
-  installationId: z.string().optional(),
-  quiet: z.boolean().optional(),
-  overrideType: z.enum([
-    "backdrop", "craftcms", "django4", "drupal6", "drupal7", "drupal",
-    "laravel", "magento", "magento2", "php", "python", "shopware6",
-    "silverstripe", "typo3", "wordpress", "auto"
-  ]).optional().default("auto"),
-  withoutDatabase: z.boolean().optional(),
-  databaseId: z.string().optional(),
-  projectName: z.string().optional(),
-  overrideMittwaldPlugin: z.string().optional()
-});
-
-export type DdevInitParams = z.infer<typeof ddevInitSchema>;
-
-export async function handleDdevInit(
-  params: DdevInitParams,
-  context: RequestContext
-): Promise<CallToolRequestSchema> {
+export const handleDdevInit: MittwaldToolHandler<DdevInitArgs> = async (args, { mittwaldClient }) => {
   try {
-    const client = getMittwaldClient(context.authStore);
-    
     // Build the command
     let command = "mw ddev init";
     
-    if (params.installationId) {
-      command += ` ${params.installationId}`;
+    if (args.directory) {
+      command += ` --directory "${args.directory}"`;
     }
     
-    // Add flags
-    if (params.quiet) {
-      command += " --quiet";
+    if (args.appId) {
+      command += ` --app-id "${args.appId}"`;
     }
     
-    if (params.overrideType && params.overrideType !== "auto") {
-      command += ` --override-type ${params.overrideType}`;
+    if (args.serverId) {
+      command += ` --server-id "${args.serverId}"`;
     }
     
-    if (params.withoutDatabase) {
-      command += " --without-database";
-    } else if (params.databaseId) {
-      command += ` --database-id ${params.databaseId}`;
+    if (args.projectId) {
+      command += ` --project-id "${args.projectId}"`;
     }
     
-    if (params.projectName) {
-      command += ` --project-name ${params.projectName}`;
+    if (args.sshHost) {
+      command += ` --ssh-host "${args.sshHost}"`;
     }
     
-    if (params.overrideMittwaldPlugin) {
-      command += ` --override-mittwald-plugin ${params.overrideMittwaldPlugin}`;
+    if (args.sshUser) {
+      command += ` --ssh-user "${args.sshUser}"`;
+    }
+    
+    if (args.documentRoot) {
+      command += ` --document-root "${args.documentRoot}"`;
+    }
+    
+    if (args.ddevDirectory) {
+      command += ` --ddev-directory "${args.ddevDirectory}"`;
+    }
+    
+    if (args.workingCopy) {
+      command += " --working-copy";
     }
     
     // Execute the command
-    const { stdout, stderr } = await execAsync(command);
+    const { stdout, stderr } = await executeCommand(command);
     
     // Parse the output
     const output = stdout.trim();
     const error = stderr.trim();
     
-    if (error && !params.quiet) {
+    if (error) {
       throw new Error(`DDEV init failed: ${error}`);
     }
     
-    // Check if .ddev directory was created
-    const ddevDir = join(process.cwd(), ".ddev");
-    const ddevExists = existsSync(ddevDir);
+    // Parse ddev directory from output if available
+    let ddevDirectory = null;
+    const ddevDirMatch = output.match(/Created DDEV configuration in: (.+)/);
+    if (ddevDirMatch) {
+      ddevDirectory = ddevDirMatch[1];
+    }
     
-    // Format the response
     const result = {
-      success: ddevExists,
-      message: ddevExists 
-        ? "DDEV project initialized successfully" 
-        : "DDEV initialization may have failed",
-      ddevDirectory: ddevExists ? ddevDir : null,
+      success: true,
+      message: "DDEV project initialized successfully",
+      ddevDirectory: ddevDirectory,
       output: output || null,
       command: command
     };
     
-    if (params.quiet && output) {
-      // In quiet mode, output is machine-readable
-      try {
-        const parsedOutput = JSON.parse(output);
-        Object.assign(result, { parsedOutput });
-      } catch {
-        // If parsing fails, just include raw output
-      }
-    }
-    
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", JSON.stringify(result));
   } catch (error) {
     return formatToolResponse(
       "error",
-      {},
       error instanceof Error ? error.message : "Unknown error occurred"
     );
   }
-}
+};

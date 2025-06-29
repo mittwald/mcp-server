@@ -12,10 +12,19 @@ export const handleCronjobExecutionGet: MittwaldToolHandler<Args> = async (args,
     const { cronjobId, executionId, output = 'txt' } = args;
 
     // Get the cron job execution details
-    const execution = await mittwaldClient.cronjob.getExecution({
+    const response = await mittwaldClient.cronjob.getExecution({
       cronjobId,
       executionId
     });
+
+    if (response.status !== 200) {
+      return formatToolResponse(
+        "error",
+        `Failed to get cron job execution: ${response.status}`
+      );
+    }
+
+    const execution = response.data;
 
     if (output === 'json') {
       return formatToolResponse(
@@ -47,7 +56,7 @@ export const handleCronjobExecutionGet: MittwaldToolHandler<Args> = async (args,
         createdAt: execution.createdAt,
         finishedAt: execution.finishedAt,
         duration: execution.durationInMilliseconds ? `${execution.durationInMilliseconds}ms` : 'N/A',
-        logPath: execution.logPath,
+        logPath: (execution as any).logPath,
         abortedBy: execution.abortedBy
       }
     );

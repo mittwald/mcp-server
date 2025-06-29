@@ -1,11 +1,8 @@
-import { MittwaldAPIV2Client } from "@mittwald/api-client";
-import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { getMittwaldClient } from "../../../../../services/mittwald/mittwald-client.js";
-import type { RequestContext } from "../../../../../types/request-context.js";
-import { formatToolResponse } from "../../../../../utils/format-tool-response.js";
+import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { exec } from "child_process";
 import { promisify } from "util";
+import { z } from "zod";
 
 const execAsync = promisify(exec);
 
@@ -23,43 +20,50 @@ export const domainDnszoneUpdateSchema = z.object({
   ttl: z.number().optional()
 });
 
-export type DomainDnszoneUpdateParams = z.infer<typeof domainDnszoneUpdateSchema>;
+interface DomainDnszoneUpdateArgs {
+  dnszoneId: string;
+  recordSet: 'a' | 'mx' | 'txt' | 'srv' | 'cname';
+  projectId?: string;
+  set?: string[];
+  recordId?: string;
+  unset?: string[];
+  // Additional fields used in the handler implementation
+  quiet?: boolean;
+  managed?: boolean;
+  record?: string[];
+  ttl?: number;
+}
 
-export async function handleDomainDnszoneUpdate(
-  params: DomainDnszoneUpdateParams,
-  context: RequestContext
-): Promise<CallToolRequestSchema> {
+export const handleDomainDnszoneUpdate: MittwaldToolHandler<DomainDnszoneUpdateArgs> = async (args) => {
   try {
-    const client = getMittwaldClient(context.authStore);
-    
     // Build the command
-    let command = `mw domain dnszone update ${params.dnszoneId} ${params.recordSet}`;
+    let command = `mw domain dnszone update ${args.dnszoneId} ${args.recordSet}`;
     
     // Add flags
-    if (params.projectId) {
-      command += ` --project-id ${params.projectId}`;
+    if (args.projectId) {
+      command += ` --project-id ${args.projectId}`;
     }
     
-    if (params.quiet) {
+    if (args.quiet) {
       command += " --quiet";
     }
     
-    if (params.managed) {
+    if (args.managed) {
       command += " --managed";
     }
     
-    if (params.unset) {
+    if (args.unset) {
       command += " --unset";
     }
     
-    if (params.record && params.record.length > 0) {
-      for (const record of params.record) {
+    if (args.record && args.record.length > 0) {
+      for (const record of args.record) {
         command += ` --record "${record}"`;
       }
     }
     
-    if (params.ttl) {
-      command += ` --ttl ${params.ttl}`;
+    if (args.ttl) {
+      command += ` --ttl ${args.ttl}`;
     }
     
     // Execute the command
@@ -69,25 +73,25 @@ export async function handleDomainDnszoneUpdate(
     const output = stdout.trim();
     const error = stderr.trim();
     
-    if (error && !params.quiet) {
+    if (error && !args.quiet) {
       throw new Error(`DNS zone update failed: ${error}`);
     }
     
     // Format the response
     const result = {
       success: true,
-      message: `DNS zone ${params.dnszoneId} record set '${params.recordSet}' updated successfully`,
-      dnszoneId: params.dnszoneId,
-      recordSet: params.recordSet,
+      message: `DNS zone ${args.dnszoneId} record set '${args.recordSet}' updated successfully`,
+      dnszoneId: args.dnszoneId,
+      recordSet: args.recordSet,
       output: output || null,
       command: command,
-      recordsSet: params.record || null,
-      ttl: params.ttl || null,
-      managed: params.managed || false,
-      unset: params.unset || false
+      recordsSet: args.record || null,
+      ttl: args.ttl || null,
+      managed: args.managed || false,
+      unset: args.unset || false
     };
     
-    if (params.quiet && output) {
+    if (args.quiet && output) {
       // In quiet mode, output is machine-readable
       try {
         const parsedOutput = JSON.parse(output);
@@ -97,12 +101,11 @@ export async function handleDomainDnszoneUpdate(
       }
     }
     
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", `DNS zone ${args.dnszoneId} record set '${args.recordSet}' updated successfully`, result);
   } catch (error) {
     return formatToolResponse(
       "error",
-      {},
       error instanceof Error ? error.message : "Unknown error occurred"
     );
   }
-}
+};

@@ -24,9 +24,18 @@ export const handleCronjobExecutionList: MittwaldToolHandler<Args> = async (args
     } = args;
 
     // List the cron job executions
-    const executions = await mittwaldClient.cronjob.listExecutions({
+    const response = await mittwaldClient.cronjob.listExecutions({
       cronjobId
     });
+
+    if (response.status !== 200) {
+      return formatToolResponse(
+        "error",
+        `Failed to list cron job executions: ${response.status}`
+      );
+    }
+
+    const executions = response.data;
 
     if (output === 'json') {
       return formatToolResponse(
@@ -37,7 +46,7 @@ export const handleCronjobExecutionList: MittwaldToolHandler<Args> = async (args
 
     if (output === 'yaml') {
       // Convert to YAML-like format
-      const yamlOutput = executions.map(execution => 
+      const yamlOutput = executions.map((execution: any) => 
         Object.entries(execution)
           .map(([key, value]) => `  ${key}: ${typeof value === 'object' ? JSON.stringify(value) : value}`)
           .join('\n')
@@ -54,7 +63,7 @@ export const handleCronjobExecutionList: MittwaldToolHandler<Args> = async (args
       const headers = ['executionId', 'status', 'createdAt', 'finishedAt', 'duration'];
       const headerLine = noHeader ? '' : headers.join(separator) + '\n';
       
-      const dataLines = executions.map(execution => 
+      const dataLines = executions.map((execution: any) => 
         [
           execution.id,
           execution.status,
@@ -71,14 +80,14 @@ export const handleCronjobExecutionList: MittwaldToolHandler<Args> = async (args
     }
 
     // Default txt format
-    const executionData = executions.map(execution => ({
+    const executionData = executions.map((execution: any) => ({
       id: execution.id,
       status: execution.status,
       createdAt: execution.createdAt,
       finishedAt: execution.finishedAt,
       duration: execution.durationInMilliseconds ? `${execution.durationInMilliseconds}ms` : 'N/A',
       ...(extended && {
-        logPath: execution.logPath,
+        logPath: (execution as any).logPath,
         abortedBy: execution.abortedBy
       })
     }));

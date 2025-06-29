@@ -1,11 +1,8 @@
-import { MittwaldAPIV2Client } from "@mittwald/api-client";
-import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { getMittwaldClient } from "../../../../../services/mittwald/mittwald-client.js";
-import type { RequestContext } from "../../../../../types/request-context.js";
-import { formatToolResponse } from "../../../../../utils/format-tool-response.js";
+import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { exec } from "child_process";
 import { promisify } from "util";
+import { z } from "zod";
 
 const execAsync = promisify(exec);
 
@@ -13,19 +10,16 @@ export const domainDnszoneMainSchema = z.object({
   help: z.boolean().optional()
 });
 
-export type DomainDnszoneMainParams = z.infer<typeof domainDnszoneMainSchema>;
+interface DomainDnszoneMainArgs {
+  help?: boolean;
+}
 
-export async function handleDomainDnszoneMain(
-  params: DomainDnszoneMainParams,
-  context: RequestContext
-): Promise<CallToolRequestSchema> {
+export const handleDomainDnszoneMain: MittwaldToolHandler<DomainDnszoneMainArgs> = async (args) => {
   try {
-    const client = getMittwaldClient(context.authStore);
-    
     // Build the command
     let command = "mw domain dnszone";
     
-    if (params.help) {
+    if (args.help) {
       command += " --help";
     }
     
@@ -62,12 +56,11 @@ export async function handleDomainDnszoneMain(
       command: command
     };
     
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", "DNS zone management help", result);
   } catch (error) {
     return formatToolResponse(
       "error",
-      {},
       error instanceof Error ? error.message : "Unknown error occurred"
     );
   }
-}
+};

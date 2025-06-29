@@ -1,58 +1,61 @@
-import { MittwaldAPIV2Client } from "@mittwald/api-client";
-import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { getMittwaldClient } from "../../../../../services/mittwald/mittwald-client.js";
-import type { RequestContext } from "../../../../../types/request-context.js";
-import { formatToolResponse } from "../../../../../utils/format-tool-response.js";
+import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { exec } from "child_process";
 import { promisify } from "util";
+import { z } from "zod";
 
 const execAsync = promisify(exec);
 
 export const domainDnszoneListSchema = z.object({
-  output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).default("json"),
+  output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().default("json"),
   projectId: z.string().optional(),
   extended: z.boolean().optional(),
   noHeader: z.boolean().optional(),
   noTruncate: z.boolean().optional(),
   noRelativeDates: z.boolean().optional(),
-  csvSeparator: z.enum([",", ";"]).default(",")
+  csvSeparator: z.enum([",", ";"]).optional().default(",")
 });
 
-export type DomainDnszoneListParams = z.infer<typeof domainDnszoneListSchema>;
+interface DomainDnszoneListArgs {
+  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+  projectId?: string;
+  extended?: boolean;
+  noHeader?: boolean;
+  noTruncate?: boolean;
+  noRelativeDates?: boolean;
+  csvSeparator?: ',' | ';';
+}
 
-export async function handleDomainDnszoneList(
-  params: DomainDnszoneListParams,
-  context: RequestContext
-): Promise<CallToolRequestSchema> {
+export const handleDomainDnszoneList: MittwaldToolHandler<DomainDnszoneListArgs> = async (args) => {
   try {
     let command = "mw domain dnszone list";
 
     // Add optional project ID
-    if (params.projectId) {
-      command += ` --project-id ${params.projectId}`;
+    if (args.projectId) {
+      command += ` --project-id ${args.projectId}`;
     }
 
     // Add output format
-    if (params.output && params.output !== "txt") {
-      command += ` --output ${params.output}`;
+    const output = args.output || 'txt';
+    if (output !== "txt") {
+      command += ` --output ${output}`;
     }
 
     // Add other flags
-    if (params.extended) {
+    if (args.extended) {
       command += " --extended";
     }
-    if (params.noHeader) {
+    if (args.noHeader) {
       command += " --no-header";
     }
-    if (params.noTruncate) {
+    if (args.noTruncate) {
       command += " --no-truncate";
     }
-    if (params.noRelativeDates) {
+    if (args.noRelativeDates) {
       command += " --no-relative-dates";
     }
-    if (params.csvSeparator && params.output === "csv") {
-      command += ` --csv-separator "${params.csvSeparator}"`;
+    if (args.csvSeparator && output === "csv") {
+      command += ` --csv-separator "${args.csvSeparator}"`;
     }
 
     const { stdout, stderr } = await execAsync(command);
@@ -61,9 +64,10 @@ export async function handleDomainDnszoneList(
       return formatToolResponse("error", stderr);
     }
 
-    return formatToolResponse("success", stdout, {
+    return formatToolResponse("success", "DNS zones listed successfully", {
       command: command,
-      format: params.output || "txt"
+      format: output,
+      output: stdout
     });
   } catch (error) {
     return formatToolResponse(
@@ -71,4 +75,4 @@ export async function handleDomainDnszoneList(
       error instanceof Error ? error.message : "Failed to list DNS zones"
     );
   }
-}
+};

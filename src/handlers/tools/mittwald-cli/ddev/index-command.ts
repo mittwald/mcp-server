@@ -1,37 +1,22 @@
-import { MittwaldAPIV2Client } from "@mittwald/api-client";
-import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { ddev_main } from "../../../../constants/tool/mittwald-cli/ddev/index-command.js";
-import { getMittwaldClient } from "../../../../services/mittwald/mittwald-client.js";
-import type { RequestContext } from "../../../../types/request-context.js";
-import { formatToolResponse } from "../../../../utils/format-tool-response.js";
-import { exec } from "child_process";
-import { promisify } from "util";
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { executeCommand } from '../../../../utils/executeCommand.js';
 
-const execAsync = promisify(exec);
+export interface DdevMainArgs {
+  help?: boolean;
+}
 
-export const ddevMainSchema = z.object({
-  help: z.boolean().optional()
-});
-
-export type DdevMainParams = z.infer<typeof ddevMainSchema>;
-
-export async function handleDdevMain(
-  params: DdevMainParams,
-  context: RequestContext
-): Promise<CallToolRequestSchema> {
+export const handleDdevMain: MittwaldToolHandler<DdevMainArgs> = async (args, { mittwaldClient }) => {
   try {
-    const client = getMittwaldClient(context.authStore);
-    
     // Build the command
     let command = "mw ddev";
     
-    if (params.help) {
+    if (args.help) {
       command += " --help";
     }
     
     // Execute the command
-    const { stdout, stderr } = await execAsync(command);
+    const { stdout, stderr } = await executeCommand(command);
     
     // Parse the output
     const output = stdout.trim();
@@ -59,12 +44,11 @@ export async function handleDdevMain(
       command: command
     };
     
-    return formatToolResponse("success", result);
+    return formatToolResponse("success", JSON.stringify(result));
   } catch (error) {
     return formatToolResponse(
       "error",
-      {},
       error instanceof Error ? error.message : "Unknown error occurred"
     );
   }
-}
+};
