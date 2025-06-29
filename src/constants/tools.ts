@@ -142,6 +142,90 @@ import {
   mittwald_org_membership_list_own
 } from './tool/mittwald-cli/org/index.js';
 
+// App create tools
+import { mittwald_app_create_node } from './tool/mittwald-cli/app/create/node.js';
+import { mittwald_app_create_php } from './tool/mittwald-cli/app/create/php.js';
+import { mittwald_app_create_php_worker } from './tool/mittwald-cli/app/create/php-worker.js';
+import { mittwald_app_create_python } from './tool/mittwald-cli/app/create/python.js';
+import { mittwald_app_create_static } from './tool/mittwald-cli/app/create/static.js';
+
+// Backup tools
+import {
+  mittwald_backup,
+  mittwald_backup_create,
+  mittwald_backup_delete,
+  mittwald_backup_download,
+  mittwald_backup_get,
+  mittwald_backup_list,
+  mittwald_backup_schedule,
+  backupScheduleListTool,
+  backupScheduleUpdateTool
+} from './tool/mittwald-cli/backup/index.js';
+
+// Conversation tools
+import {
+  conversationTool,
+  conversationCategoriesTool,
+  conversationCloseTool,
+  conversationCreateTool,
+  conversationListTool,
+  conversationReplyTool,
+  conversationShowTool
+} from './tool/mittwald-cli/conversation/index.js';
+
+// Domain tools (additional missing ones)
+import { mittwald_domain_virtualhost_create } from './tool/mittwald-cli/domain/virtualhost-create.js';
+import { mittwald_domain_virtualhost_delete } from './tool/mittwald-cli/domain/virtualhost-delete.js';
+import { mittwald_domain_virtualhost_get } from './tool/mittwald-cli/domain/virtualhost-get.js';
+import { mittwald_domain_virtualhost } from './tool/mittwald-cli/domain/virtualhost.js';
+import { mittwald_domain_list } from './tool/mittwald-cli/domain/list.js';
+import { mittwald_domain } from './tool/mittwald-cli/domain/domain.js';
+
+// Mail address tools (commented out due to export name mismatches)
+// import {
+//   mittwald_mail_address_create,
+//   mittwald_mail_address_delete,
+//   mittwald_mail_address_get,
+//   mittwald_mail_address_list,
+//   mittwald_mail_address_update
+// } from './tool/mittwald-cli/mail/address/index.js';
+
+// Additional mail tools (commented out due to export name mismatches)
+// import { mittwald_mail_deliverybox_create } from './tool/mittwald-cli/mail/deliverybox-create.js';
+// import { mittwald_mail_deliverybox_delete } from './tool/mittwald-cli/mail/deliverybox-delete.js';
+// import { mittwald_mail_deliverybox_get } from './tool/mittwald-cli/mail/deliverybox-get.js';
+// import { mittwald_mail_deliverybox_list } from './tool/mittwald-cli/mail/deliverybox-list.js';
+// import { mittwald_mail_deliverybox_update } from './tool/mittwald-cli/mail/deliverybox-update.js';
+
+// SFTP tools
+import {
+  mittwaldSftpUser,
+  mittwaldSftpUserDelete,
+  mittwaldSftpUserList,
+  mittwaldSftpUserUpdate
+} from './tool/mittwald-cli/sftp/index.js';
+
+// SSH tools
+import {
+  mittwaldSshUserTool,
+  mittwaldSshUserCreate,
+  mittwaldSshUserDelete,
+  mittwaldSshUserList,
+  mittwaldSshUserUpdateTool
+} from './tool/mittwald-cli/ssh/index.js';
+
+// User/API token tools
+import {
+  mittwaldUserTool,
+  mittwaldUserGetTool,
+  mittwaldUserApiTokenTool,
+  mittwaldUserApiTokenCreateTool,
+  mittwaldUserApiTokenGetTool
+} from './tool/mittwald-cli/user/index.js';
+
+// Missing project SSH tool
+import { mittwald_project_ssh } from './tool/mittwald-cli/project/ssh.js';
+
 // Contributor tool
 import { contributorTool as mittwald_contributor } from './tool/mittwald-cli/contributor/contributor.js';
 
@@ -327,6 +411,78 @@ export const TOOLS: Tool[] = [
   mittwald_context_get,
   mittwald_context_reset,
   mittwald_context_set,
+  
+  // App create tools
+  mittwald_app_create_node,
+  mittwald_app_create_php,
+  mittwald_app_create_php_worker,
+  mittwald_app_create_python,
+  mittwald_app_create_static,
+  
+  // Backup tools
+  mittwald_backup,
+  mittwald_backup_create,
+  mittwald_backup_delete,
+  mittwald_backup_download,
+  mittwald_backup_get,
+  mittwald_backup_list,
+  mittwald_backup_schedule,
+  backupScheduleListTool,
+  backupScheduleUpdateTool,
+  
+  // Conversation tools
+  conversationTool,
+  conversationCategoriesTool,
+  conversationCloseTool,
+  conversationCreateTool,
+  conversationListTool,
+  conversationReplyTool,
+  conversationShowTool,
+  
+  // Additional domain tools
+  mittwald_domain_virtualhost_create,
+  mittwald_domain_virtualhost_delete,
+  mittwald_domain_virtualhost_get,
+  mittwald_domain_virtualhost,
+  mittwald_domain_list,
+  mittwald_domain,
+  
+  // Mail address tools (commented out - export name mismatches)
+  // mittwald_mail_address_create,
+  // mittwald_mail_address_delete,
+  // mittwald_mail_address_get,
+  // mittwald_mail_address_list,
+  // mittwald_mail_address_update,
+  
+  // Additional mail tools (commented out - export name mismatches)
+  // mittwald_mail_deliverybox_create,
+  // mittwald_mail_deliverybox_delete,
+  // mittwald_mail_deliverybox_get,
+  // mittwald_mail_deliverybox_list,
+  // mittwald_mail_deliverybox_update,
+  
+  // SFTP tools
+  mittwaldSftpUser,
+  mittwaldSftpUserDelete,
+  mittwaldSftpUserList,
+  mittwaldSftpUserUpdate,
+  
+  // SSH tools
+  mittwaldSshUserTool,
+  mittwaldSshUserCreate,
+  mittwaldSshUserDelete,
+  mittwaldSshUserList,
+  mittwaldSshUserUpdateTool,
+  
+  // User/API token tools
+  mittwaldUserTool,
+  mittwaldUserGetTool,
+  mittwaldUserApiTokenTool,
+  mittwaldUserApiTokenCreateTool,
+  mittwaldUserApiTokenGetTool,
+  
+  // Missing project SSH tool
+  mittwald_project_ssh,
 ];
 
 /**
