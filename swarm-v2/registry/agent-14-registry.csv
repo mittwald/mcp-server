@@ -1,8 +1,0 @@
-command_path,mcp_tool_name,status,commit_hash,completion_time,notes
-mail/address/update,mittwald_mail_address_update,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-address-update.md
-mail/address,mittwald_mail_address,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-address.md
-mail/deliverybox/create,mittwald_mail_deliverybox_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-deliverybox-create.md
-mail/deliverybox/delete,mittwald_mail_deliverybox_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-deliverybox-delete.md
-mail/deliverybox/get,mittwald_mail_deliverybox_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-deliverybox-get.md
-mail/deliverybox/list,mittwald_mail_deliverybox_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-deliverybox-list.md
-mail/deliverybox/update,mittwald_mail_deliverybox_update,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-deliverybox-update.md

@@ -1,8 +1,0 @@
-command_path,mcp_tool_name,status,commit_hash,completion_time,notes
-login/status,mittwald_login_status,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-login-status.md
-login/token,mittwald_login_token,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-login-token.md
-login,mittwald_login,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-login.md
-mail/address/create,mittwald_mail_address_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-address-create.md
-mail/address/delete,mittwald_mail_address_delete,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-address-delete.md
-mail/address/get,mittwald_mail_address_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-address-get.md
-mail/address/list,mittwald_mail_address_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-mail-address-list.md

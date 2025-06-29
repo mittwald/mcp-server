@@ -1,9 +1,0 @@
-command_path,mcp_tool_name,status,commit_hash,completion_time,notes
-app/copy,mittwald_app_copy,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-copy.md
-app/create/node,mittwald_app_create_node,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-create-node.md
-app/create/php/worker,mittwald_app_create_php_worker,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-create-php-worker.md
-app/create/php,mittwald_app_create_php,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-create-php.md
-app/create/python,mittwald_app_create_python,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-create-python.md
-app/create/static,mittwald_app_create_static,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-create-static.md
-app/create,mittwald_app_create,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-create.md
-app/dependency/list,mittwald_app_dependency_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-app-dependency-list.md

@@ -1,9 +1,0 @@
-command_path,mcp_tool_name,status,commit_hash,completion_time,notes
-database/mysql/dump,mittwald_database_mysql_dump,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-dump.md
-database/mysql/get,mittwald_database_mysql_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-get.md
-database/mysql/import,mittwald_database_mysql_import,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-import.md
-database/mysql/list,mittwald_database_mysql_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-list.md
-database/mysql/phpmyadmin,mittwald_database_mysql_phpmyadmin,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-phpmyadmin.md
-database/mysql/port/forward,mittwald_database_mysql_port_forward,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-port-forward.md
-database/mysql/shell,mittwald_database_mysql_shell,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-shell.md
-database/mysql/versions,mittwald_database_mysql_versions,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-database-mysql-versions.md

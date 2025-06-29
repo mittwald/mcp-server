@@ -1,9 +1,0 @@
-command_path,mcp_tool_name,status,commit_hash,completion_time,notes
-backup/schedule/list,mittwald_backup_schedule_list,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-schedule-list.md
-backup/schedule/update,mittwald_backup_schedule_update,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-schedule-update.md
-backup/schedule,mittwald_backup_schedule,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup-schedule.md
-backup,mittwald_backup,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-backup.md
-context/get,mittwald_context_get,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-context-get.md
-context/reset,mittwald_context_reset,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-context-reset.md
-context/set,mittwald_context_set,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-context-set.md
-context,mittwald_context,pending,,,CLI: /Users/robert/Code/Mittwald/cli-commands/mw-context.md
