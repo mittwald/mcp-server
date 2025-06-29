@@ -145,6 +145,13 @@ import { handleConversationShow } from './tools/mittwald-cli/conversation/show.j
 import { handleConversationCategories } from './tools/mittwald-cli/conversation/categories.js';
 import { handleConversation } from './tools/mittwald-cli/conversation/conversation.js';
 
+// User handlers
+import { handleUserGet } from './tools/mittwald-cli/user/get.js';
+import { handleUserApiToken } from './tools/mittwald-cli/user/api-token.js';
+import { handleUserApiTokenCreate } from './tools/mittwald-cli/user/api-token/create.js';
+import { handleUserApiTokenGet } from './tools/mittwald-cli/user/api-token/get.js';
+import { handleUser } from './tools/mittwald-cli/user/user.js';
+
 // Agent 15 mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
 import { handleMail } from './tools/mittwald-cli/mail/mail.js';
@@ -777,6 +784,31 @@ const ToolSchemas = {
   
   mittwald_conversation: z.object({
     help: z.boolean().optional().describe("Show help for conversation commands")
+  }),
+  
+  // User tools
+  mittwald_user_get: z.object({
+    userId: z.string().optional().describe("ID of the user to retrieve (defaults to current user)"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_user_api_token_create: z.object({
+    description: z.string().describe("Description for the API token"),
+    expiresAt: z.string().optional().describe("Expiration date for the token (ISO 8601 format)"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_user_api_token_get: z.object({
+    tokenId: z.string().describe("ID of the API token to retrieve"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_user_api_token: z.object({
+    help: z.boolean().optional().describe("Show help for user API token commands")
+  }),
+  
+  mittwald_user: z.object({
+    help: z.boolean().optional().describe("Show help for user commands")
   }),
   
   // Agent 11 tools
@@ -2107,6 +2139,57 @@ export async function handleToolCall(
         
       case "mittwald_conversation":
         result = await handleConversation();
+        break;
+        
+      // User tools
+      case "mittwald_user_get":
+        const mittwaldUserGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleUserGet(args, mittwaldUserGetContext);
+        break;
+        
+      case "mittwald_user_api_token_create":
+        const mittwaldUserApiTokenCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleUserApiTokenCreate(args, mittwaldUserApiTokenCreateContext);
+        break;
+        
+      case "mittwald_user_api_token_get":
+        const mittwaldUserApiTokenGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleUserApiTokenGet(args, mittwaldUserApiTokenGetContext);
+        break;
+        
+      case "mittwald_user_api_token":
+        const mittwaldUserApiTokenContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleUserApiToken(args, mittwaldUserApiTokenContext);
+        break;
+        
+      case "mittwald_user":
+        const mittwaldUserContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleUser(args, mittwaldUserContext);
         break;
         
       // Redis database tools
