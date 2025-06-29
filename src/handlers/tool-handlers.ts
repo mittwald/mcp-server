@@ -118,10 +118,16 @@ import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.j
 import { handleDdevRenderConfig, ddevRenderConfigSchema } from './tools/mittwald-cli/ddev/render-config.js';
 import { handleDdevMain, ddevMainSchema } from './tools/mittwald-cli/ddev/index-command.js';
 import { handleDomainGet, domainGetSchema } from './tools/mittwald-cli/domain/get.js';
+import { handleDomainList } from './tools/mittwald-cli/domain/list.js';
+import { handleDomain } from './tools/mittwald-cli/domain/domain.js';
 import { handleDomainDnszoneGet, domainDnszoneGetSchema } from './tools/mittwald-cli/domain/dnszone/get.js';
 import { handleDomainDnszoneList, domainDnszoneListSchema } from './tools/mittwald-cli/domain/dnszone/list.js';
 import { handleDomainDnszoneUpdate, domainDnszoneUpdateSchema } from './tools/mittwald-cli/domain/dnszone/update.js';
 import { handleDomainDnszoneMain, domainDnszoneMainSchema } from './tools/mittwald-cli/domain/dnszone/main.js';
+import { handleDomainVirtualhost } from './tools/mittwald-cli/domain/virtualhost.js';
+import { handleDomainVirtualhostCreate } from './tools/mittwald-cli/domain/virtualhost-create.js';
+import { handleDomainVirtualhostDelete } from './tools/mittwald-cli/domain/virtualhost-delete.js';
+import { handleDomainVirtualhostGet } from './tools/mittwald-cli/domain/virtualhost-get.js';
 
 // Backup handlers
 import { handleBackupCreate } from './tools/mittwald-cli/backup/create.js';
@@ -923,10 +929,40 @@ const ToolSchemas = {
   mittwald_ddev_render_config: ddevRenderConfigSchema,
   mittwald_ddev: ddevMainSchema,
   mittwald_domain_get: domainGetSchema,
+  mittwald_domain_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  mittwald_domain: z.object({
+    help: z.boolean().optional().describe("Show help for domain commands")
+  }),
   mittwald_domain_dnszone_get: domainDnszoneGetSchema,
   mittwald_domain_dnszone_list: domainDnszoneListSchema,
   mittwald_domain_dnszone_update: domainDnszoneUpdateSchema,
   mittwald_domain_dnszone: domainDnszoneMainSchema,
+  mittwald_domain_virtualhost: z.object({
+    help: z.boolean().optional().describe("Show help for virtualhost commands")
+  }),
+  mittwald_domain_virtualhost_create: z.object({
+    hostname: z.string().describe("Hostname for the virtual host"),
+    path: z.string().optional().describe("Path for the virtual host"),
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    wait: z.boolean().optional().describe("Wait for operation to complete"),
+    waitTimeout: z.number().optional().describe("Timeout for wait operation in milliseconds")
+  }),
+  mittwald_domain_virtualhost_delete: z.object({
+    ingressId: z.string().describe("ID of the ingress to delete"),
+    force: z.boolean().optional().describe("Do not ask for confirmation")
+  }),
+  mittwald_domain_virtualhost_get: z.object({
+    ingressId: z.string().describe("ID of the ingress to retrieve"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
   
   // Mail tools
   mittwald_mail: z.object({
@@ -2534,6 +2570,26 @@ export async function handleToolCall(
         result = await handleDomainGet(args, mittwaldDomainGetContext);
         break;
         
+      case "mittwald_domain_list":
+        const mittwaldDomainListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainList(args, mittwaldDomainListContext);
+        break;
+        
+      case "mittwald_domain":
+        const mittwaldDomainContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomain(args, mittwaldDomainContext);
+        break;
+        
       case "mittwald_domain_dnszone_get":
         const mittwaldDnszoneGetContext: MittwaldToolHandlerContext = {
           mittwaldClient: getMittwaldClient(),
@@ -2572,6 +2628,46 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleDomainDnszoneMain(args, mittwaldDnszoneMainContext);
+        break;
+        
+      case "mittwald_domain_virtualhost":
+        const mittwaldDomainVirtualhostContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainVirtualhost(args, mittwaldDomainVirtualhostContext);
+        break;
+        
+      case "mittwald_domain_virtualhost_create":
+        const mittwaldDomainVirtualhostCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainVirtualhostCreate(args, mittwaldDomainVirtualhostCreateContext);
+        break;
+        
+      case "mittwald_domain_virtualhost_delete":
+        const mittwaldDomainVirtualhostDeleteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainVirtualhostDelete(args, mittwaldDomainVirtualhostDeleteContext);
+        break;
+        
+      case "mittwald_domain_virtualhost_get":
+        const mittwaldDomainVirtualhostGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainVirtualhostGet(args, mittwaldDomainVirtualhostGetContext);
         break;
         
       // Agent 15 mail tools
