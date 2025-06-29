@@ -1559,7 +1559,13 @@ export async function handleToolCall(
         
       // Agent 8 cronjob tools
       case "mittwald_cronjob_get":
-        result = await handleMittwaldCronjobGet(args.cronjobId, args.output);
+        const cronjobGetContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldCronjobGet(args, cronjobGetContext);
         break;
         
       case "mittwald_cronjob_list":

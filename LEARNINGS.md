@@ -165,3 +165,87 @@ git worktree prune
 
 ### Lesson Learned
 In our CLI migration swarm, multiple agents accidentally worked on the same branch (cli-migration-agent-7) because they were all operating in the same directory. Using worktrees would have prevented this by giving each agent their own isolated workspace.
+
+## CRITICAL: MCP Servers Must Use API Client Only - NO CLI Dependencies
+
+### The Fundamental Rule
+**MCP servers MUST NEVER depend on external CLI tools being installed or available in the runtime environment.**
+
+### Why This Is Critical
+1. **MCP Runtime Environment**: MCP servers run in controlled environments where CLI tools may not be installed
+2. **Portability**: MCP servers must work across different systems without external dependencies
+3. **Security**: Depending on external CLI execution creates security vulnerabilities
+4. **Reliability**: API calls are more reliable than CLI command execution
+
+### What Is TABOO ❌
+```typescript
+// ❌ NEVER DO THIS IN MCP SERVERS
+import { executeCliCommand } from '@/utils/execute-cli-command.js';
+const result = await executeCliCommand('mw', ['project', 'list']);
+
+// ❌ NEVER DO THIS
+const { exec } = require('child_process');
+exec('mw cronjob get ' + cronjobId);
+
+// ❌ NEVER DO THIS  
+process.spawn('mw', ['app', 'install', 'wordpress']);
+```
+
+### What Is CORRECT ✅
+```typescript
+// ✅ ALWAYS USE API CLIENT
+import { getMittwaldClient } from '@/services/mittwald-client.js';
+const client = getMittwaldClient();
+const response = await client.project.listProjects({});
+
+// ✅ USE OFFICIAL SDK
+const result = await mittwaldClient.app.requestAppInstallation({
+  projectId: args.projectId,
+  appVersionId: versionId
+});
+```
+
+### Why CLI Exists in This Project
+The Mittwald CLI code in this repository exists ONLY for:
+1. **Study purposes** - to understand API usage patterns
+2. **Reference implementation** - to see how CLI commands map to API calls
+3. **Documentation** - to understand parameter mappings and workflows
+
+**The CLI is NOT for execution in the MCP server!**
+
+### Correct Implementation Pattern
+1. Study the CLI command implementation
+2. Identify which API client methods it uses
+3. Extract the core API calls
+4. Implement the same logic using direct API client calls
+5. Handle errors and responses properly
+
+### API Client Usage Pattern
+```typescript
+export async function handleMittwaldToolCall(
+  args: ToolArgs,
+  context: RequestContext
+): Promise<CallToolResult> {
+  try {
+    const client = getMittwaldClient(context.authStore);
+    
+    // Use official API client methods
+    const response = await client.category.methodName({
+      param1: args.param1,
+      param2: args.param2
+    });
+    
+    // Handle response
+    if (response.status === 200) {
+      return formatToolResponse('success', 'Operation completed', response.data);
+    }
+    
+    throw new Error(`API call failed: ${response.status}`);
+  } catch (error) {
+    return formatToolResponse('error', `Failed: ${error.message}`);
+  }
+}
+```
+
+### Key Takeaway
+**MCP servers are API-driven, not CLI-driven. The API client is the only acceptable way to interact with external services.**
