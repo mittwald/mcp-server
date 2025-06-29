@@ -1,73 +1,73 @@
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { formatToolResponse } from '@/utils/format-tool-response.js';
-import { executeCliCommand } from '@/utils/execute-cli-command.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
-export async function handleMittwaldCronjobUpdate(
-  cronjobId: string,
-  options: {
-    quiet?: boolean;
-    description?: string;
-    interval?: string;
-    email?: string;
-    url?: string;
-    command?: string;
-    interpreter?: 'bash' | 'php';
-    enable?: boolean;
-    disable?: boolean;
-    timeout?: string;
-  }
-): Promise<CallToolResult> {
-  try {
-    const args = [
-      'cronjob',
-      'update',
-      cronjobId
-    ];
-
-    if (options.quiet) {
-      args.push('-q');
-    }
-
-    if (options.description) {
-      args.push('--description', options.description);
-    }
-
-    if (options.interval) {
-      args.push('--interval', options.interval);
-    }
-
-    if (options.email) {
-      args.push('--email', options.email);
-    }
-
-    if (options.url) {
-      args.push('--url', options.url);
-    }
-
-    if (options.command) {
-      args.push('--command', options.command);
-    }
-
-    if (options.interpreter) {
-      args.push('--interpreter', options.interpreter);
-    }
-
-    if (options.enable) {
-      args.push('--enable');
-    }
-
-    if (options.disable) {
-      args.push('--disable');
-    }
-
-    if (options.timeout) {
-      args.push('--timeout', options.timeout);
-    }
-
-    const result = await executeCliCommand('mw', args);
-
-    return formatToolResponse('success', 'Cronjob updated successfully', result);
-  } catch (error) {
-    return formatToolResponse('error', `Error updating cron job: ${error instanceof Error ? error.message : String(error)}`);
-  }
+interface MittwaldCronjobUpdateArgs {
+  cronjobId: string;
+  quiet?: boolean;
+  description?: string;
+  interval?: string;
+  email?: string;
+  url?: string;
+  command?: string;
+  interpreter?: 'bash' | 'php';
+  enable?: boolean;
+  disable?: boolean;
+  timeout?: string;
 }
+
+export const handleMittwaldCronjobUpdate: MittwaldToolHandler<MittwaldCronjobUpdateArgs> = async (args, { mittwaldClient }) => {
+  try {
+    // Build update data
+    const updateData: any = {};
+    
+    if (args.description !== undefined) {
+      updateData.description = args.description;
+    }
+    
+    if (args.interval !== undefined) {
+      updateData.interval = args.interval;
+    }
+    
+    if (args.email !== undefined) {
+      updateData.email = args.email;
+    }
+    
+    if (args.enable !== undefined || args.disable !== undefined) {
+      updateData.active = args.enable === true || args.disable !== true;
+    }
+    
+    if (args.timeout !== undefined) {
+      // Convert timeout string to number (assuming it's in seconds)
+      updateData.timeout = parseInt(args.timeout, 10);
+    }
+    
+    // Handle destination (either URL or command)
+    if (args.url !== undefined) {
+      updateData.destination = {
+        url: args.url
+      };
+    } else if (args.command !== undefined) {
+      updateData.destination = {
+        path: args.command,
+        interpreter: args.interpreter || 'bash'
+      };
+    }
+    
+    // Call API to update cronjob
+    const response = await mittwaldClient.api.cronjob.updateCronjob({
+      cronjobId: args.cronjobId,
+      data: updateData
+    });
+    
+    if (response.status === 200) {
+      return formatToolResponse('success', 'Cronjob updated successfully', response.data);
+    }
+    
+    throw new Error(`API call failed with status: ${response.status}`);
+  } catch (error) {
+    return formatToolResponse(
+      'error', 
+      `Error updating cron job: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+};

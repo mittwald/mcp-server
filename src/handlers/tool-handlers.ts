@@ -1569,34 +1569,33 @@ export async function handleToolCall(
         break;
         
       case "mittwald_cronjob_list":
-        result = await handleMittwaldCronjobList(
-          args.projectId,
-          args.output,
-          args.extended,
-          args.noHeader,
-          args.noTruncate,
-          args.noRelativeDates,
-          args.csvSeparator
-        );
+        const cronjobListContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldCronjobList(args, cronjobListContext);
         break;
         
       case "mittwald_cronjob_update":
-        result = await handleMittwaldCronjobUpdate(args.cronjobId, {
-          quiet: args.quiet,
-          description: args.description,
-          interval: args.interval,
-          email: args.email,
-          url: args.url,
-          command: args.command,
-          interpreter: args.interpreter,
-          enable: args.enable,
-          disable: args.disable,
-          timeout: args.timeout
-        });
+        const cronjobUpdateContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldCronjobUpdate(args, cronjobUpdateContext);
         break;
         
       case "mittwald_cronjob":
-        result = await handleMittwaldCronjob(args.help);
+        const cronjobMainContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldCronjob(args, cronjobMainContext);
         break;
         
       // Agent 9 database tools

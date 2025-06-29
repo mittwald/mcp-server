@@ -1,52 +1,62 @@
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { formatToolResponse } from '@/utils/format-tool-response.js';
-import { executeCliCommand } from '@/utils/execute-cli-command.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
-export async function handleMittwaldCronjobList(
-  projectId?: string,
-  output: string = 'json',
-  extended?: boolean,
-  noHeader?: boolean,
-  noTruncate?: boolean,
-  noRelativeDates?: boolean,
-  csvSeparator: string = ','
-): Promise<CallToolResult> {
+interface MittwaldCronjobListArgs {
+  projectId?: string;
+  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+  extended?: boolean;
+  noHeader?: boolean;
+  noTruncate?: boolean;
+  noRelativeDates?: boolean;
+  csvSeparator?: ',' | ';';
+}
+
+export const handleMittwaldCronjobList: MittwaldToolHandler<MittwaldCronjobListArgs> = async (args, { mittwaldClient }) => {
   try {
-    const args = [
-      'cronjob',
-      'list',
-      '-o',
-      output
-    ];
+    // Get cronjobs from API
+    const response = await mittwaldClient.api.cronjob.listCronjobs({
+      projectId: args.projectId || undefined
+    });
 
-    if (projectId) {
-      args.push('-p', projectId);
+    if (response.status !== 200) {
+      throw new Error(`API call failed with status: ${response.status}`);
     }
 
-    if (extended) {
-      args.push('-x');
+    const cronjobs = response.data;
+
+    // Format the output based on requested format
+    let formattedOutput;
+    const outputFormat = args.output || 'json';
+
+    switch (outputFormat) {
+      case 'json':
+        formattedOutput = cronjobs;
+        break;
+      
+      case 'txt':
+      case 'yaml':
+      case 'csv':
+      case 'tsv':
+        // For other formats, return the raw data and let the client handle formatting
+        formattedOutput = {
+          format: outputFormat,
+          data: cronjobs,
+          options: {
+            extended: args.extended,
+            noHeader: args.noHeader,
+            noTruncate: args.noTruncate,
+            noRelativeDates: args.noRelativeDates,
+            csvSeparator: args.csvSeparator
+          }
+        };
+        break;
+        
+      default:
+        formattedOutput = cronjobs;
     }
 
-    if (noHeader) {
-      args.push('--no-header');
-    }
-
-    if (noTruncate) {
-      args.push('--no-truncate');
-    }
-
-    if (noRelativeDates) {
-      args.push('--no-relative-dates');
-    }
-
-    if (csvSeparator !== ',') {
-      args.push('--csv-separator', csvSeparator);
-    }
-
-    const result = await executeCliCommand('mw', args);
-
-    return formatToolResponse('success', 'Cronjobs listed successfully', result);
+    return formatToolResponse('success', 'Retrieved cronjob list', formattedOutput);
   } catch (error) {
     return formatToolResponse('error', `Error listing cron jobs: ${error instanceof Error ? error.message : String(error)}`);
   }
-}
+};
