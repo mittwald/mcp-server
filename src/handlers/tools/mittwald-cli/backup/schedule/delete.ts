@@ -30,10 +30,10 @@ export const handleBackupScheduleDelete: MittwaldToolHandler<MittwaldBackupSched
           try {
             // Try to get the backup schedule from this project
             const scheduleResponse = await mittwaldClient.api.backup.getBackupSchedule({
-              pathParameters: { 
+              
                 projectId: project.id,
                 scheduleId: args.backupScheduleId
-              },
+             
             });
             
             if (scheduleResponse.data) {
@@ -65,10 +65,10 @@ export const handleBackupScheduleDelete: MittwaldToolHandler<MittwaldBackupSched
     // Now delete the backup schedule
     try {
       await mittwaldClient.api.backup.deleteBackupSchedule({
-        pathParameters: { 
+        
           projectId: foundProjectId,
           scheduleId: args.backupScheduleId
-        },
+       
       });
 
       if (args.quiet) {

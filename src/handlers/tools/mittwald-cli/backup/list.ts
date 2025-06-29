@@ -20,7 +20,7 @@ export const handleBackupList: MittwaldToolHandler<MittwaldBackupListArgs> = asy
       // List backups for specific project
       try {
         const backupsResponse = await mittwaldClient.api.backup.listProjectBackups({
-          pathParameters: { projectId: args.projectId },
+          projectId: args.projectId
         });
 
         if (backupsResponse.data) {
@@ -44,7 +44,7 @@ export const handleBackupList: MittwaldToolHandler<MittwaldBackupListArgs> = asy
           for (const project of projectsResponse.data) {
             try {
               const backupsResponse = await mittwaldClient.api.backup.listProjectBackups({
-                pathParameters: { projectId: project.id },
+                projectId: project.id
               });
               
               if (backupsResponse.data) {

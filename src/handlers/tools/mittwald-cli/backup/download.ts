@@ -44,10 +44,10 @@ export const handleBackupDownload: MittwaldToolHandler<MittwaldBackupDownloadArg
           try {
             // Try to get the backup from this project
             const backupResponse = await mittwaldClient.api.backup.getProjectBackup({
-              pathParameters: { 
+              
                 projectId: project.id,
                 backupId: args.backupId
-              },
+             
             });
             
             if (backupResponse.data) {
@@ -79,14 +79,12 @@ export const handleBackupDownload: MittwaldToolHandler<MittwaldBackupDownloadArg
     // Now request the backup download
     try {
       const downloadResponse = await mittwaldClient.api.backup.requestProjectBackupExport({
-        pathParameters: { 
-          projectId: foundProjectId,
-          backupId: args.backupId
-        },
+        projectId: foundProjectId,
+        backupId: args.backupId,
         data: {
           format: args.format || 'tar',
-          password: encryptionPassword,
-        },
+          password: encryptionPassword
+        }
       });
 
       if (!downloadResponse.data) {

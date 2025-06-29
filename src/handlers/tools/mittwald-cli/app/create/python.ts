@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 export interface MittwaldAppCreatePythonArgs {
   projectId?: string;
@@ -22,7 +22,7 @@ export const handleAppCreatePython: MittwaldToolHandler<MittwaldAppCreatePythonA
     const pythonAppId = "be57d166-dae9-4480-bae2-da3f3c6f0a2e";
     
     // Get latest Python app version
-    const versionsResponse = await mittwaldClient.app.api.listAppversions({ 
+    const versionsResponse = await mittwaldClient.api.app.api.listAppversions({ 
       appId: pythonAppId 
     });
     
@@ -49,7 +49,7 @@ export const handleAppCreatePython: MittwaldToolHandler<MittwaldAppCreatePythonA
     }
 
     // Create the app installation
-    const response = await mittwaldClient.app.api.requestAppinstallation({
+    const response = await mittwaldClient.api.app.api.requestAppinstallation({
       projectId,
       data: {
         appVersionId,

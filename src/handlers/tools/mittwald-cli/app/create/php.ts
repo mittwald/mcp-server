@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 
 export interface MittwaldAppCreatePhpArgs {
   projectId?: string;
@@ -22,7 +22,7 @@ export const handleAppCreatePhp: MittwaldToolHandler<MittwaldAppCreatePhpArgs> =
     const phpAppId = "34220303-cb87-4592-8a95-2eb20a97b2ac";
     
     // Get latest PHP app version
-    const versionsResponse = await mittwaldClient.app.api.listAppversions({ 
+    const versionsResponse = await mittwaldClient.api.app.api.listAppversions({ 
       appId: phpAppId 
     });
     
@@ -49,7 +49,7 @@ export const handleAppCreatePhp: MittwaldToolHandler<MittwaldAppCreatePhpArgs> =
     }
 
     // Create the app installation
-    const response = await mittwaldClient.app.api.requestAppinstallation({
+    const response = await mittwaldClient.api.app.api.requestAppinstallation({
       projectId,
       data: {
         appVersionId,

@@ -21,10 +21,10 @@ export const handleBackupGet: MittwaldToolHandler<MittwaldBackupGetArgs> = async
           try {
             // Try to get the backup from this project
             const backupResponse = await mittwaldClient.api.backup.getProjectBackup({
-              pathParameters: { 
+              
                 projectId: project.id,
                 backupId: args.backupId
-              },
+             
             });
             
             if (backupResponse.data) {

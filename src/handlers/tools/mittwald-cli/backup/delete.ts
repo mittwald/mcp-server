@@ -33,10 +33,10 @@ export const handleBackupDelete: MittwaldToolHandler<MittwaldBackupDeleteArgs> =
           try {
             // Try to get the backup from this project
             const backupResponse = await mittwaldClient.api.backup.getProjectBackup({
-              pathParameters: { 
+              
                 projectId: project.id,
                 backupId: args.backupId
-              },
+             
             });
             
             if (backupResponse.data) {
@@ -68,10 +68,10 @@ export const handleBackupDelete: MittwaldToolHandler<MittwaldBackupDeleteArgs> =
     // Now delete the backup
     try {
       await mittwaldClient.api.backup.deleteProjectBackup({
-        pathParameters: { 
+        
           projectId: foundProjectId,
           backupId: args.backupId
-        },
+       
       });
 
       if (args.quiet) {

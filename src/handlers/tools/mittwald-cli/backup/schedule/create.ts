@@ -48,14 +48,14 @@ export const handleBackupScheduleCreate: MittwaldToolHandler<MittwaldBackupSched
     // Create the backup schedule
     try {
       const response = await mittwaldClient.api.backup.createBackupSchedule({
-        pathParameters: { projectId: args.projectId },
+        projectId: args.projectId,
         data: {
           schedule: args.schedule,
           description: args.description,
           retention: {
             days: ttlDays
           }
-        },
+        }
       });
 
       if (!response.data) {
