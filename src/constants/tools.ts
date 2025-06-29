@@ -36,6 +36,9 @@ import { mittwald_app_install_typo3 } from './tool/mittwald-cli/app/install/typo
 import { mittwald_app_install_wordpress } from './tool/mittwald-cli/app/install/wordpress.js';
 
 // Agent 3 app management tools
+import { mittwald_app } from './tool/mittwald-cli/app/app.js';
+import { mittwald_app_copy } from './tool/mittwald-cli/app/copy.js';
+import { mittwald_app_create } from './tool/mittwald-cli/app/create.js';
 import { mittwald_app_list } from './tool/mittwald-cli/app/list.js';
 import { mittwald_app_open } from './tool/mittwald-cli/app/open.js';
 import { mittwald_app_ssh } from './tool/mittwald-cli/app/ssh.js';
@@ -55,6 +58,14 @@ import { mittwald_project_filesystem } from './tool/mittwald-cli/project/filesys
 import { mittwald_project_invite_get } from './tool/mittwald-cli/project/invite-get.js';
 import { mittwald_project_invite_list_own } from './tool/mittwald-cli/project/invite-list-own.js';
 import { mittwald_project_invite_list } from './tool/mittwald-cli/project/invite-list.js';
+import { mittwald_project } from './tool/mittwald-cli/project/project.js';
+import { mittwald_project_invite } from './tool/mittwald-cli/project/invite.js';
+import { mittwald_project_membership } from './tool/mittwald-cli/project/membership.js';
+import { mittwald_project_membership_get } from './tool/mittwald-cli/project/membership-get.js';
+import { mittwald_project_membership_get_own } from './tool/mittwald-cli/project/membership-get-own.js';
+import { mittwald_project_membership_list } from './tool/mittwald-cli/project/membership-list.js';
+import { mittwald_project_membership_list_own } from './tool/mittwald-cli/project/membership-list-own.js';
+import { mittwald_project_update } from './tool/mittwald-cli/project/update.js';
 
 // Server tools
 import { 
@@ -133,6 +144,9 @@ import {
   mittwald_org_membership_list_own
 } from './tool/mittwald-cli/org/index.js';
 
+// Contributor tool
+import { contributorTool as mittwald_contributor } from './tool/mittwald-cli/contributor/contributor.js';
+
 // Context tools
 import {
   mittwald_context,
@@ -208,6 +222,9 @@ export const TOOLS: Tool[] = [
   mittwald_app_install_wordpress,
   
   // Agent 3 app management tools
+  mittwald_app,
+  mittwald_app_copy,
+  mittwald_app_create,
   mittwald_app_list,
   mittwald_app_open,
   mittwald_app_ssh,
@@ -227,6 +244,14 @@ export const TOOLS: Tool[] = [
   mittwald_project_invite_get,
   mittwald_project_invite_list_own,
   mittwald_project_invite_list,
+  mittwald_project,
+  mittwald_project_invite,
+  mittwald_project_membership,
+  mittwald_project_membership_get,
+  mittwald_project_membership_get_own,
+  mittwald_project_membership_list,
+  mittwald_project_membership_list_own,
+  mittwald_project_update,
   
   // Server tools
   mittwald_server_get,
@@ -299,6 +324,9 @@ export const TOOLS: Tool[] = [
   mittwald_org_invite,
   mittwald_org_list,
   mittwald_org_membership_list_own,
+  
+  // Contributor tool
+  mittwald_contributor,
   
   // Context tools
   mittwald_context,

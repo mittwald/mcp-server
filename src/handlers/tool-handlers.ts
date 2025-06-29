@@ -54,7 +54,6 @@ import { handleServerGet } from './tools/mittwald-cli/server/get.js';
 import { handleServer } from './tools/mittwald-cli/server/server.js';
 
 // Agent 2 app dependency handlers
-import { handleAppDependency } from './tools/mittwald-cli/app/dependency/index.js';
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
 import { handleMittwaldAppDependencyVersions } from './tools/mittwald-cli/app/dependency/versions.js';
 import { handleMittwaldAppDependencyList } from './tools/mittwald-cli/app/dependency/list.js';
@@ -170,9 +169,6 @@ import { handleConversationShow } from './tools/mittwald-cli/conversation/show.j
 import { handleConversationCategories } from './tools/mittwald-cli/conversation/categories.js';
 import { handleConversation } from './tools/mittwald-cli/conversation/conversation.js';
 
-// Contributor handler
-import { handleContributor } from './tools/mittwald-cli/contributor/contributor.js';
-
 // User handlers
 import { handleUserGet } from './tools/mittwald-cli/user/get.js';
 import { handleUserApiToken } from './tools/mittwald-cli/user/api-token.js';
@@ -225,6 +221,9 @@ import { handleContext } from './tools/mittwald-cli/context/context.js';
 import { handleContextGet } from './tools/mittwald-cli/context/get.js';
 import { handleContextReset } from './tools/mittwald-cli/context/reset.js';
 import { handleContextSet } from './tools/mittwald-cli/context/set.js';
+
+// Contributor handler
+import { handleContributor } from './tools/mittwald-cli/contributor/contributor.js';
 
 import { getMittwaldClient } from '../services/mittwald/index.js';
 import type { MittwaldToolHandlerContext } from '../types/mittwald/conversation.js';
@@ -279,6 +278,55 @@ const ToolSchemas = {
     projectId: z.string().describe("ID or short ID of a project"),
     sshUser: z.string().optional().describe("Override the SSH user to connect with"),
     sshIdentityFile: z.string().optional().describe("The SSH identity file (private key) to use for public key authentication")
+  }),
+  
+  mittwald_project: z.object({
+    help: z.boolean().optional().describe("Show help for project commands")
+  }),
+  
+  mittwald_project_invite: z.object({
+    command: z.enum(["get", "list", "list-own"]).optional().describe("The invite command to run"),
+    help: z.boolean().optional().describe("Show help for project invite commands")
+  }),
+  
+  mittwald_project_membership: z.object({
+    command: z.enum(["get", "get-own", "list", "list-own"]).optional().describe("The membership command to run"),
+    help: z.boolean().optional().describe("Show help for project membership commands")
+  }),
+  
+  mittwald_project_membership_get: z.object({
+    membershipId: z.string().describe("ID of the project membership"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_project_membership_get_own: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_project_membership_list: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output")
+  }),
+  
+  mittwald_project_membership_list_own: z.object({
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output")
+  }),
+  
+  mittwald_project_update: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    description: z.string().optional().describe("New description for the project"),
+    defaultIp: z.enum(["v4", "v6"]).optional().describe("Default IP version to use for new app installations")
   }),
 
   mittwald_server_list: z.object({
@@ -545,6 +593,20 @@ const ToolSchemas = {
   }),
   
   // Agent 3 app management schemas
+  mittwald_app: z.object({
+    help: z.boolean().optional().describe("Show help for app commands")
+  }),
+  
+  mittwald_app_copy: z.object({
+    installationId: z.string().describe("ID of the app installation to copy"),
+    description: z.string().describe("Description for the copied app"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_app_create: z.object({
+    help: z.boolean().optional().describe("Show help for app create commands")
+  }),
+  
   mittwald_app_list: z.object({
     projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
     output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
@@ -1152,6 +1214,11 @@ const ToolSchemas = {
     help: z.boolean().optional().describe("Show help for org commands")
   }),
   
+  // Contributor tool
+  mittwald_contributor: z.object({
+    help: z.boolean().optional().describe("Show help for contributor commands")
+  }),
+  
   // Context tools
   mittwald_context: z.object({
     command: z.enum(["get", "reset", "set"]).describe("The context command to execute"),
@@ -1221,6 +1288,70 @@ type ToolArgs = {
     noTruncate?: boolean;
     noRelativeDates?: boolean;
     csvSeparator?: ',' | ';';
+  };
+  
+  mittwald_project_list: {
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    csvSeparator?: ',' | ';';
+    noHeader?: boolean;
+    noRelativeDates?: boolean;
+    noTruncate?: boolean;
+  };
+  
+  mittwald_project_ssh: {
+    projectId: string;
+    sshUser?: string;
+    sshIdentityFile?: string;
+  };
+  
+  mittwald_project: {
+    help?: boolean;
+  };
+  
+  mittwald_project_invite: {
+    command?: 'get' | 'list' | 'list-own';
+    help?: boolean;
+  };
+  
+  mittwald_project_membership: {
+    command?: 'get' | 'get-own' | 'list' | 'list-own';
+    help?: boolean;
+  };
+  
+  mittwald_project_membership_get: {
+    membershipId: string;
+    output?: 'txt' | 'json' | 'yaml';
+  };
+  
+  mittwald_project_membership_get_own: {
+    projectId: string;
+    output?: 'txt' | 'json' | 'yaml';
+  };
+  
+  mittwald_project_membership_list: {
+    projectId: string;
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
+  
+  mittwald_project_membership_list_own: {
+    output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+    extended?: boolean;
+    noHeader?: boolean;
+    noTruncate?: boolean;
+    noRelativeDates?: boolean;
+    csvSeparator?: ',' | ';';
+  };
+  
+  mittwald_project_update: {
+    projectId: string;
+    description?: string;
+    defaultIp?: 'v4' | 'v6';
   };
 
   // Agent 2 app dependency types
@@ -1334,6 +1465,20 @@ type ToolArgs = {
   };
   
   // Agent 3 app management types
+  mittwald_app: {
+    help?: boolean;
+  };
+  
+  mittwald_app_copy: {
+    installationId: string;
+    description: string;
+    quiet?: boolean;
+  };
+  
+  mittwald_app_create: {
+    help?: boolean;
+  };
+  
   mittwald_app_list: {
     projectId?: string;
     output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
@@ -1625,6 +1770,11 @@ type ToolArgs = {
     help?: boolean;
   };
   
+  // Contributor tool
+  mittwald_contributor: {
+    help?: boolean;
+  };
+  
   // Context tools
   mittwald_context: {
     command: 'get' | 'reset' | 'set';
@@ -1836,6 +1986,76 @@ export async function handleToolCall(
         result = await handleProjectSSH(args, mittwaldProjectSSHContext);
         break;
         
+      case "mittwald_project_invite":
+        const mittwaldProjectInviteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldProjectInvite(args, mittwaldProjectInviteContext);
+        break;
+        
+      case "mittwald_project_membership":
+        const mittwaldProjectMembershipContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldProjectMembership(args, mittwaldProjectMembershipContext);
+        break;
+        
+      case "mittwald_project_membership_get":
+        const mittwaldProjectMembershipGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldProjectMembershipGet(args, mittwaldProjectMembershipGetContext);
+        break;
+        
+      case "mittwald_project_membership_get_own":
+        const mittwaldProjectMembershipGetOwnContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldProjectMembershipGetOwn(args, mittwaldProjectMembershipGetOwnContext);
+        break;
+        
+      case "mittwald_project_membership_list":
+        const mittwaldProjectMembershipListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldProjectMembershipList(args, mittwaldProjectMembershipListContext);
+        break;
+        
+      case "mittwald_project_membership_list_own":
+        const mittwaldProjectMembershipListOwnContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldProjectMembershipListOwn(args, mittwaldProjectMembershipListOwnContext);
+        break;
+        
+      case "mittwald_project_update":
+        const mittwaldProjectUpdateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectUpdate(args, mittwaldProjectUpdateContext);
+        break;
+        
       case "mittwald_server_list":
         // Create context with mittwaldClient for Mittwald CLI tools
         const mittwaldServerListContext: MittwaldToolHandlerContext = {
@@ -2024,6 +2244,36 @@ export async function handleToolCall(
         break;
 
       // Agent 3 app management tools
+      case "mittwald_app":
+        const mittwaldAppContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleApp(args, mittwaldAppContext);
+        break;
+        
+      case "mittwald_app_copy":
+        const mittwaldAppCopyContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleAppCopy(args, mittwaldAppCopyContext);
+        break;
+        
+      case "mittwald_app_create":
+        const mittwaldAppCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleAppCreate(args, mittwaldAppCreateContext);
+        break;
+        
       case "mittwald_app_list":
         // Create context with mittwaldClient for Mittwald CLI tools
         const mittwaldAppListContext: MittwaldToolHandlerContext = {
@@ -3082,6 +3332,10 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleContextSet(args, mittwaldContextSetContext);
+        break;
+        
+      case "mittwald_contributor":
+        result = await handleContributor();
         break;
         
       default:
