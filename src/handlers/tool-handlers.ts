@@ -35,7 +35,6 @@ import {
   handleExtensionListInstalled,
   handleExtensionList,
   handleExtensionUninstall,
-  handleLoginReset,
 } from './tools/index.js';
 import { handleProjectFilesystem } from './tools/mittwald-cli/project/filesystem.js';
 import { handleProjectInviteListOwn } from './tools/mittwald-cli/project/invite-list-own.js';
@@ -624,8 +623,6 @@ const ToolSchemas = {
   mittwald_extension_uninstall: z.object({
     extensionInstanceId: z.string().describe("ID of the extension instance to uninstall")
   }),
-
-  mittwald_login_reset: z.object({}),
   
   // Agent 7 cronjob execution tools
   mittwald_cronjob_execution_abort: z.object({
@@ -1373,7 +1370,6 @@ type ToolArgs = {
   mittwald_extension_uninstall: {
     extensionInstanceId: string;
   };
-  mittwald_login_reset: {};
   
   // Agent 7 cronjob execution tools
   mittwald_cronjob_execution_abort: {
@@ -2119,16 +2115,6 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleExtensionUninstall(args, mittwaldExtensionUninstallContext);
-        break;
-      
-      case "mittwald_login_reset":
-        const mittwaldLoginResetContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken,
-        };
-        result = await handleLoginReset(args, mittwaldLoginResetContext);
         break;
         
       // Agent 7 cronjob execution tools

@@ -35,6 +35,3 @@ export { handleExtensionInstall } from './mittwald-cli/extension/install.js';
 export { handleExtensionList } from './mittwald-cli/extension/list.js';
 export { handleExtensionListInstalled } from './mittwald-cli/extension/list-installed.js';
 export { handleExtensionUninstall } from './mittwald-cli/extension/uninstall.js';
-
-// Agent 14 login handlers
-export { handleLoginReset } from './mittwald-cli/login/reset.js';

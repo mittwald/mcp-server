@@ -69,7 +69,6 @@ import { mittwald_extension_install } from './tool/mittwald-cli/extension/instal
 import { mittwald_extension_list_installed } from './tool/mittwald-cli/extension/list-installed.js';
 import { mittwald_extension_list } from './tool/mittwald-cli/extension/list.js';
 import { mittwald_extension_uninstall } from './tool/mittwald-cli/extension/uninstall.js';
-import { mittwald_login_reset } from './tool/mittwald-cli/login/reset.js';
 
 // Agent 7 cronjob tools
 import { mittwald_cronjob_create } from './tool/mittwald-cli/cronjob/create.js';
@@ -232,7 +231,6 @@ export const TOOLS: Tool[] = [
   mittwald_extension_list_installed,
   mittwald_extension_list,
   mittwald_extension_uninstall,
-  mittwald_login_reset,
   
   // Agent 7 cronjob tools
   mittwald_cronjob_create,
