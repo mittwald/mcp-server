@@ -85,6 +85,43 @@ Don't forget to set:
 - Required API tokens
 - Any other service-specific variables
 
+## MCP Server OAuth Configuration for Testing
+
+When testing MCP servers that support both OAuth and API token authentication, the server should be configured to run without OAuth for easier development and testing.
+
+### Problem
+By default, MCP servers may require OAuth authentication, which creates barriers during development and testing phases.
+
+### Solution  
+Use the `DISABLE_OAUTH=true` environment variable to run the server in permissionless mode:
+
+1. **Set in .env file:**
+   ```
+   DISABLE_OAUTH=true
+   MITTWALD_API_TOKEN=your-api-token-here
+   ```
+
+2. **Server behavior when OAuth disabled:**
+   - No authentication required for MCP client connections
+   - Tool calls work directly with API tokens from environment variables
+   - Session creation works without requiring OAuth flow
+   - `authRequired: false` in server capabilities response
+
+3. **Implementation details:**
+   - Server uses `bypassAuthMiddleware()` instead of OAuth middleware
+   - MCP session creation allows undefined `sessionAuth` 
+   - Tool calls use `CONFIG.MITTWALD_API_TOKEN` when no OAuth session exists
+   - Server endpoints show `authRequired: false` in capabilities
+
+### Why This Approach
+- Enables rapid testing and development
+- Allows direct API token usage without OAuth complexity  
+- Maintains same MCP protocol interface
+- OAuth can be enabled later for production with `DISABLE_OAUTH=false`
+
+### Testing
+With OAuth disabled, MCP clients can connect and call tools immediately without any authentication flow, making the server effectively "permissionless" for development purposes.
+
 ## Key Takeaways
 1. **STDIO transport requires stderr for ALL logging**
 2. **stdout pollution breaks MCP protocol completely** 

@@ -37,6 +37,7 @@
   "dependencies": {
     "@mittwald/api-client": "^4.169.0",
     "@modelcontextprotocol/sdk": "^1.13.0",
+    "@robertdouglass/mcp-tester": "^1.0.3",
     "ajv-formats": "^3.0.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

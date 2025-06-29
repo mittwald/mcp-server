@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-06-29T14:47:09.771Z",
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "byTransport": {
+      "sse": {
+        "total": 1,
+        "passed": 0,
+        "failed": 1
+      }
+    },
+    "totalTests": 0,
+    "passedTests": 0,
+    "failedTests": 0
+  },
+  "results": [
+    {
+      "name": "Mittwald MCP Server Tests",
+      "transport": "sse",
+      "config": {
+        "type": "sse",
+        "url": "http://localhost:3000/mcp"
+      },
+      "startTime": "2025-06-29T14:47:09.755Z",
+      "tests": [],
+      "status": "failed",
+      "error": "An invalid or illegal string was specified",
+      "duration": 16
+    }
+  ]
+}

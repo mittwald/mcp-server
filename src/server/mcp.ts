@@ -31,6 +31,7 @@ import { logger } from "../utils/logger.js";
 import { rateLimitMiddleware, validateProtocolVersion, requestSizeLimit } from "./middleware.js";
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import type { AuthenticatedRequest } from "./oauth.js";
+import { OAUTH_DISABLED, CONFIG } from "./config.js";
 
 // Per-session auth context storage
 interface SessionAuth {
@@ -93,11 +94,11 @@ export class MCPHandler implements IMCPHandler {
     server.setRequestHandler(CallToolRequestSchema, (request) => {
       logger.debug(`🔧 [${sessionId}] Calling tool: ${request.params.name}`);
 
-      if (!sessionAuth) {
+      if (!OAUTH_DISABLED && !sessionAuth) {
         throw new Error("Authentication required for tool calls");
       }
 
-      const authInfo: AuthInfo = {
+      const authInfo: AuthInfo = sessionAuth ? {
         token: sessionAuth.accessToken,
         clientId: "mcp-client",
         scopes: ["read"],
@@ -105,6 +106,14 @@ export class MCPHandler implements IMCPHandler {
           userId: sessionAuth.username,
           redditAccessToken: sessionAuth.accessToken,
           redditRefreshToken: sessionAuth.refreshToken,
+        },
+      } : {
+        token: CONFIG.MITTWALD_API_TOKEN || "",
+        clientId: "mcp-client",
+        scopes: ["read"],
+        extra: {
+          userId: "mittwald-user",
+          mittwaldApiToken: CONFIG.MITTWALD_API_TOKEN || "",
         },
       };
 

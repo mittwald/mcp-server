@@ -39,6 +39,8 @@ import {
 import { handleProjectFilesystem } from './tools/mittwald-cli/project/filesystem.js';
 import { handleProjectInviteListOwn } from './tools/mittwald-cli/project/invite-list-own.js';
 import { handleProjectInviteList } from './tools/mittwald-cli/project/invite-list.js';
+import { handleMittwaldProjectList } from './tools/mittwald-cli/project/list.js';
+import { handleServerList } from './tools/mittwald-cli/server/list.js';
 
 // Agent 2 app dependency handlers
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
@@ -165,6 +167,24 @@ const ToolSchemas = {
   mittwald_project_get: z.object({
     projectId: z.string().describe("ID or short ID of a project"),
     output: z.enum(["json", "table", "yaml"]).optional().describe("Output format")
+  }),
+
+  mittwald_project_list: z.object({
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)")
+  }),
+
+  mittwald_server_list: z.object({
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   }),
 
   mittwald_project_filesystem_usage: z.object({
@@ -1235,6 +1255,26 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleProjectInviteGet(args, mittwaldProjectInviteGetContext);
+        break;
+      case "mittwald_project_list":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldProjectListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldProjectList(args, mittwaldProjectListContext);
+        break;
+      case "mittwald_server_list":
+        // Create context with mittwaldClient for Mittwald CLI tools
+        const mittwaldServerListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleServerList(args, mittwaldServerListContext);
         break;
 
       // Agent 2 app dependency tools
