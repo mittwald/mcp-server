@@ -47,7 +47,7 @@ export const handleBackupCreate: MittwaldToolHandler<MittwaldBackupCreateArgs> =
       projectId: args.projectId!,
       data: {
         description: args.description,
-        expiresAt: expiresAt.toISOString()
+        expirationTime: expiresAt.toISOString()
       }
     });
 
@@ -58,7 +58,7 @@ export const handleBackupCreate: MittwaldToolHandler<MittwaldBackupCreateArgs> =
       );
     }
 
-    const backupId = response.data;
+    const backupId = typeof response.data === 'string' ? response.data : (response.data as any)?.id || 'unknown';
 
     // If wait flag is set, poll for completion
     if (args.wait) {
@@ -68,10 +68,7 @@ export const handleBackupCreate: MittwaldToolHandler<MittwaldBackupCreateArgs> =
       while (Date.now() - startTime < timeout) {
         try {
           const statusResponse = await mittwaldClient.backup.getProjectBackup({
-            
-              projectId: args.projectId!, 
-              backupId: backupId 
-           
+            projectBackupId: backupId
           });
 
           if (statusResponse.data?.status === 'ready') {
@@ -81,7 +78,7 @@ export const handleBackupCreate: MittwaldToolHandler<MittwaldBackupCreateArgs> =
           if (statusResponse.data?.status === 'failed') {
             return formatToolResponse(
               "error",
-              `Backup creation failed: ${statusResponse.data.message || 'Unknown error'}`
+              `Backup creation failed: Unknown error`
             );
           }
 
@@ -110,7 +107,7 @@ export const handleBackupCreate: MittwaldToolHandler<MittwaldBackupCreateArgs> =
         projectId: args.projectId,
         description: args.description,
         expires: args.expires,
-        expiresAt: expiresAt.toISOString(),
+        expirationTime: expiresAt.toISOString(),
       }
     );
 

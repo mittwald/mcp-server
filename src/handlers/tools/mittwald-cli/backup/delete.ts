@@ -28,15 +28,12 @@ export const handleBackupDelete: MittwaldToolHandler<MittwaldBackupDeleteArgs> =
       // Get all projects and search for the backup
       const projectsResponse = await mittwaldClient.project.listProjects({});
       
-      if (projectsResponse.data) {
+      if (projectsResponse.data && Array.isArray(projectsResponse.data)) {
         for (const project of projectsResponse.data) {
           try {
             // Try to get the backup from this project
             const backupResponse = await mittwaldClient.backup.getProjectBackup({
-              
-                projectId: project.id,
-                backupId: args.backupId
-             
+              projectBackupId: args.backupId
             });
             
             if (backupResponse.data) {
@@ -68,10 +65,7 @@ export const handleBackupDelete: MittwaldToolHandler<MittwaldBackupDeleteArgs> =
     // Now delete the backup
     try {
       await mittwaldClient.backup.deleteProjectBackup({
-        
-          projectId: foundProjectId,
-          backupId: args.backupId
-       
+        projectBackupId: args.backupId
       });
 
       if (args.quiet) {

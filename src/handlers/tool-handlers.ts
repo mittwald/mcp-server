@@ -1686,19 +1686,43 @@ export async function handleToolCall(
         
       // Agent 11 tools
       case "mittwald_ddev_init":
-        result = await handleDdevInit(args, handlerContext);
+        const mittwaldDdevInitContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDdevInit(args, mittwaldDdevInitContext);
         break;
         
       case "mittwald_ddev_render_config":
-        result = await handleDdevRenderConfig(args, handlerContext);
+        const mittwaldDdevRenderContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDdevRenderConfig(args, mittwaldDdevRenderContext);
         break;
         
       case "mittwald_ddev":
-        result = await handleDdevMain(args, handlerContext);
+        const mittwaldDdevMainContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDdevMain(args, mittwaldDdevMainContext);
         break;
         
       case "mittwald_domain_get":
-        result = await handleDomainGet(args, handlerContext);
+        const mittwaldDomainGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleDomainGet(args, mittwaldDomainGetContext);
         break;
         
       case "mittwald_domain_dnszone_get":

@@ -24,10 +24,10 @@ export const handleBackupList: MittwaldToolHandler<MittwaldBackupListArgs> = asy
         });
 
         if (backupsResponse.data) {
-          backups = backupsResponse.data.map(backup => ({
+          backups = Array.isArray(backupsResponse.data) ? backupsResponse.data.map((backup: any) => ({
             ...backup,
             projectId: args.projectId
-          }));
+          })) : [];
         }
       } catch (error) {
         return formatToolResponse(
@@ -40,7 +40,7 @@ export const handleBackupList: MittwaldToolHandler<MittwaldBackupListArgs> = asy
       try {
         const projectsResponse = await mittwaldClient.project.listProjects({});
         
-        if (projectsResponse.data) {
+        if (projectsResponse.data && Array.isArray(projectsResponse.data)) {
           for (const project of projectsResponse.data) {
             try {
               const backupsResponse = await mittwaldClient.backup.listProjectBackups({
@@ -48,11 +48,11 @@ export const handleBackupList: MittwaldToolHandler<MittwaldBackupListArgs> = asy
               });
               
               if (backupsResponse.data) {
-                const projectBackups = backupsResponse.data.map(backup => ({
+                const projectBackups = Array.isArray(backupsResponse.data) ? backupsResponse.data.map((backup: any) => ({
                   ...backup,
                   projectId: project.id,
                   projectName: project.description || project.shortId
-                }));
+                })) : [];
                 backups.push(...projectBackups);
               }
             } catch (err) {
@@ -139,7 +139,7 @@ export const handleBackupList: MittwaldToolHandler<MittwaldBackupListArgs> = asy
       // Add data rows
       for (const item of formattedData) {
         const values = headers.map(header => {
-          const value = item[header];
+          const value = (item as any)[header];
           if (typeof value === 'object') {
             return JSON.stringify(value);
           }

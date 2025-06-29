@@ -1,6 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCommand } from '../../../../utils/executeCommand.js';
+import { z } from 'zod';
+
+export const ddevMainSchema = z.object({
+  help: z.boolean().optional()
+});
 
 export interface DdevMainArgs {
   help?: boolean;

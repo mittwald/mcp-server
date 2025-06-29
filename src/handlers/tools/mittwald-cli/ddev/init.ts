@@ -1,6 +1,19 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCommand } from '../../../../utils/executeCommand.js';
+import { z } from 'zod';
+
+export const ddevInitSchema = z.object({
+  directory: z.string().optional(),
+  appId: z.string().optional(),
+  serverId: z.string().optional(),
+  projectId: z.string().optional(),
+  sshHost: z.string().optional(),
+  sshUser: z.string().optional(),
+  documentRoot: z.string().optional(),
+  ddevDirectory: z.string().optional(),
+  workingCopy: z.boolean().optional()
+});
 
 export interface DdevInitArgs {
   directory?: string;

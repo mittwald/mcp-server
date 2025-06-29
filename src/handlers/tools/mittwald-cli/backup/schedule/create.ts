@@ -52,9 +52,7 @@ export const handleBackupScheduleCreate: MittwaldToolHandler<MittwaldBackupSched
         data: {
           schedule: args.schedule,
           description: args.description,
-          retention: {
-            days: ttlDays
-          }
+          ttl: args.ttl
         }
       });
 

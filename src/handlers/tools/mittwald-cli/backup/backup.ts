@@ -3,7 +3,7 @@ import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { BackupParameters } from '../../../../constants/tool/mittwald-cli/backup/backup.js';
 
 export const handleBackup: MittwaldToolHandler<BackupParameters> = async (params, { mittwaldClient }) => {
-  const { command, projectId, backupId, description, expiresAt, wait, waitTimeout, output, resume, outputFormat = 'json', extended, noHeader, noTruncate, noRelativeDates, csvSeparator } = params;
+  const { command, projectId, backupId, description, expirationTime, wait, waitTimeout, output, resume, outputFormat = 'json', extended, noHeader, noTruncate, noRelativeDates, csvSeparator } = params;
   
   try {
     switch (command) {
@@ -16,12 +16,11 @@ export const handleBackup: MittwaldToolHandler<BackupParameters> = async (params
         }
         
         // Build request data
-        const createData: Record<string, any> = {};
+        const createData: { description?: string; expirationTime: string } = {
+          expirationTime: expirationTime || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // Default to 7 days
+        };
         if (description) {
           createData.description = description;
-        }
-        if (expiresAt) {
-          createData.expiresAt = expiresAt;
         }
         
         // Use the real API client to create a backup
@@ -158,14 +157,14 @@ export const handleBackup: MittwaldToolHandler<BackupParameters> = async (params
           case 'yaml':
             formattedOutput = backups.length === 0 
               ? 'backups: []'
-              : `backups:\n${backups.map(b => `  - id: ${b.id}\n    description: ${b.description || 'N/A'}\n    status: ${b.status}\n    createdAt: ${b.createdAt}\n    expiresAt: ${b.expiresAt || 'N/A'}`).join('\n')}`;
+              : `backups:\n${backups.map((b: any) => `  - id: ${b.id}\n    description: ${b.description || 'N/A'}\n    status: ${b.status}\n    createdAt: ${b.createdAt}\n    expiresAt: ${b.expiresAt || 'N/A'}`).join('\n')}`;
             break;
           case 'csv':
           case 'tsv':
             const separator = outputFormat === 'csv' ? (csvSeparator || ',') : '\t';
             const headers = ['ID', 'Description', 'Status', 'Created At', 'Expires At'];
             const headerLine = noHeader ? '' : headers.join(separator) + '\n';
-            const dataLines = backups.map(b => [
+            const dataLines = backups.map((b: any) => [
               b.id, 
               b.description || 'N/A', 
               b.status, 
@@ -179,7 +178,7 @@ export const handleBackup: MittwaldToolHandler<BackupParameters> = async (params
             if (backups.length === 0) {
               formattedOutput = `No backups found for project ${projectId}.`;
             } else {
-              formattedOutput = backups.map(b => 
+              formattedOutput = backups.map((b: any) => 
                 `${b.id}: ${b.description || 'No description'} (${b.status}, created: ${b.createdAt})`
               ).join('\n');
             }

@@ -25,15 +25,12 @@ export const handleBackupScheduleDelete: MittwaldToolHandler<MittwaldBackupSched
       // Get all projects and search for the backup schedule
       const projectsResponse = await mittwaldClient.project.listProjects({});
       
-      if (projectsResponse.data) {
+      if (projectsResponse.data && Array.isArray(projectsResponse.data)) {
         for (const project of projectsResponse.data) {
           try {
             // Try to get the backup schedule from this project
             const scheduleResponse = await mittwaldClient.backup.getProjectBackupSchedule({
-              
-                projectId: project.id,
-                scheduleId: args.backupScheduleId
-             
+              projectBackupScheduleId: args.backupScheduleId
             });
             
             if (scheduleResponse.data) {
@@ -65,10 +62,7 @@ export const handleBackupScheduleDelete: MittwaldToolHandler<MittwaldBackupSched
     // Now delete the backup schedule
     try {
       await mittwaldClient.backup.deleteProjectBackupSchedule({
-        
-          projectId: foundProjectId,
-          scheduleId: args.backupScheduleId
-       
+        projectBackupScheduleId: args.backupScheduleId
       });
 
       if (args.quiet) {

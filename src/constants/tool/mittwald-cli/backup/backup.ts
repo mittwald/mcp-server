@@ -7,7 +7,7 @@ export interface BackupParameters {
   backupId?: string;
   // Create parameters
   description?: string;
-  expiresAt?: string;
+  expirationTime?: string;
   wait?: boolean;
   waitTimeout?: number;
   // Download parameters
@@ -47,7 +47,7 @@ export const mittwald_backup: Tool = {
         type: "string",
         description: "Description for the backup (create command)"
       },
-      expiresAt: {
+      expirationTime: {
         type: "string",
         description: "Expiration date for the backup in ISO format (create command)"
       },

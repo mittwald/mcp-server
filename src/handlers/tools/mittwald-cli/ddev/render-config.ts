@@ -1,6 +1,12 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCommand } from '../../../../utils/executeCommand.js';
+import { z } from 'zod';
+
+export const ddevRenderConfigSchema = z.object({
+  appInstallationId: z.string(),
+  force: z.boolean().optional()
+});
 
 export interface DdevRenderConfigArgs {
   appInstallationId: string;
