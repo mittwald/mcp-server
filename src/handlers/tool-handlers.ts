@@ -1869,10 +1869,10 @@ export async function handleToolCall(
       throw new Error(`No validation schema found for tool: ${toolName}`);
     }
     
-    let args: ToolArgs[keyof ToolArgs];
+    let args: any;
     try {
       const validatedArgs = schema.parse(request.params.arguments);
-      args = validatedArgs as ToolArgs[keyof ToolArgs];
+      args = validatedArgs;
     } catch (error) {
       if (error instanceof z.ZodError) {
         logger.error("Tool argument validation failed", { 
@@ -1898,7 +1898,7 @@ export async function handleToolCall(
           sessionId: handlerContext.sessionId,
           progressToken: handlerContext.progressToken,
         };
-        result = await handleProjectCreate(args, mittwaldProjectCreateContext);
+        result = await handleProjectCreate(args as ToolArgs['mittwald_project_create'], mittwaldProjectCreateContext);
         break;
       case "mittwald_project_delete":
         // Create context with mittwaldClient for Mittwald CLI tools
@@ -1908,7 +1908,7 @@ export async function handleToolCall(
           sessionId: handlerContext.sessionId,
           progressToken: handlerContext.progressToken,
         };
-        result = await handleProjectDelete(args, mittwaldProjectDeleteContext);
+        result = await handleProjectDelete(args as ToolArgs['mittwald_project_delete'], mittwaldProjectDeleteContext);
         break;
       case "mittwald_project_get":
         // Create context with mittwaldClient for Mittwald CLI tools
@@ -1918,7 +1918,7 @@ export async function handleToolCall(
           sessionId: handlerContext.sessionId,
           progressToken: handlerContext.progressToken,
         };
-        result = await handleProjectGet(args, mittwaldProjectGetContext);
+        result = await handleProjectGet(args as ToolArgs['mittwald_project_get'], mittwaldProjectGetContext);
         break;
       case "mittwald_project_filesystem_usage":
         // Create context with mittwaldClient for Mittwald CLI tools
@@ -1928,7 +1928,7 @@ export async function handleToolCall(
           sessionId: handlerContext.sessionId,
           progressToken: handlerContext.progressToken,
         };
-        result = await handleProjectFilesystemUsage(args, mittwaldProjectFilesystemUsageContext);
+        result = await handleProjectFilesystemUsage(args as ToolArgs['mittwald_project_filesystem_usage'], mittwaldProjectFilesystemUsageContext);
         break;
       case "mittwald_project_invite_get":
         // Create context with mittwaldClient for Mittwald CLI tools
@@ -1938,7 +1938,7 @@ export async function handleToolCall(
           sessionId: handlerContext.sessionId,
           progressToken: handlerContext.progressToken,
         };
-        result = await handleProjectInviteGet(args, mittwaldProjectInviteGetContext);
+        result = await handleProjectInviteGet(args as ToolArgs['mittwald_project_invite_get'], mittwaldProjectInviteGetContext);
         break;
       case "mittwald_project_list":
         // Create context with mittwaldClient for Mittwald CLI tools
