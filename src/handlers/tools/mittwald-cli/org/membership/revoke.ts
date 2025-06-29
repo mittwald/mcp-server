@@ -18,7 +18,7 @@ export const handleOrgMembershipRevoke: MittwaldToolHandler<MittwaldOrgMembershi
       assertStatus(membershipResponse, 200);
       
       // Get user details for display purposes
-      const userResponse = await mittwaldClient.api.user.getUser({
+      const userResponse = await mittwaldClient.user.getUser({
         userId: membershipResponse.data.userId
       });
       assertStatus(userResponse, 200);

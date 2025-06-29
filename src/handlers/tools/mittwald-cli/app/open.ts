@@ -19,7 +19,7 @@ export const handleAppOpen: MittwaldToolHandler<MittwaldAppOpenArgs> = async (ar
     }
 
     // Get app installation details
-    const appResponse = await mittwaldClient.api.app.getAppinstallation({
+    const appResponse = await mittwaldClient.app.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(appResponse, 200);
@@ -27,8 +27,8 @@ export const handleAppOpen: MittwaldToolHandler<MittwaldAppOpenArgs> = async (ar
     const appInstallation = appResponse.data;
     
     // Get project ingresses to find the hostname
-    const ingressResponse = await mittwaldClient.api.project.listIngresses({
-      projectId: appInstallation.projectId
+    const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
+      queryParameters: { projectId: appInstallation.projectId }
     });
     assertStatus(ingressResponse, 200);
 

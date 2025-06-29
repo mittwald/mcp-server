@@ -18,7 +18,7 @@ export const handleAppUninstall: MittwaldToolHandler<MittwaldAppUninstallArgs> =
     }
 
     // Get app installation details for confirmation and logging
-    const appResponse = await mittwaldClient.api.app.getAppinstallation({
+    const appResponse = await mittwaldClient.app.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(appResponse, 200);
@@ -34,7 +34,7 @@ export const handleAppUninstall: MittwaldToolHandler<MittwaldAppUninstallArgs> =
     }
 
     // Perform the uninstallation
-    const uninstallResponse = await mittwaldClient.api.app.deleteAppinstallation({
+    const uninstallResponse = await mittwaldClient.app.deleteAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(uninstallResponse, 204);

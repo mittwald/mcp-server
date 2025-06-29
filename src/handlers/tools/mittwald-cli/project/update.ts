@@ -24,7 +24,7 @@ export const handleProjectUpdate: MittwaldToolHandler<MittwaldProjectUpdateArgs>
     }
 
     // Update project using the Mittwald API
-    const result = await mittwaldClient.api.project.updateProjectDescription({
+    const result = await mittwaldClient.project.updateProjectDescription({
       projectId: args.projectId,
       data: {
         description: args.description,
@@ -32,7 +32,7 @@ export const handleProjectUpdate: MittwaldToolHandler<MittwaldProjectUpdateArgs>
     });
 
     // Get updated project details
-    const project = await mittwaldClient.api.project.getProject({
+    const project = await mittwaldClient.project.getProject({
       projectId: args.projectId
     });
 

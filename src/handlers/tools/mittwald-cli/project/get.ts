@@ -9,7 +9,7 @@ interface MittwaldProjectGetArgs {
 export const handleProjectGet: MittwaldToolHandler<MittwaldProjectGetArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get project details from the API
-    const result = await mittwaldClient.api.project.getProject({
+    const result = await mittwaldClient.project.getProject({
       projectId: args.projectId,
     });
 

@@ -1,5 +1,5 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
 interface MittwaldDomainVirtualhostDeleteArgs {
   virtualHostId: string;
@@ -18,7 +18,7 @@ export const handleDomainVirtualhostDelete: MittwaldToolHandler<MittwaldDomainVi
     }
 
     // Delete the virtual host (ingress)
-    await mittwaldClient.api.domain.ingressDeleteIngress({
+    await mittwaldClient.domain.ingressDeleteIngress({
       ingressId: args.virtualHostId,
     });
 

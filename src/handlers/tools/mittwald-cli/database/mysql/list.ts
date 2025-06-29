@@ -19,7 +19,7 @@ export const handleDatabaseMysqlList: MittwaldToolHandler<MittwaldDatabaseMysqlL
     const { projectId, output = "txt", extended, noHeader, noTruncate, noRelativeDates, csvSeparator } = args;
 
     // List MySQL databases
-    const response = await mittwaldClient.api.database.listMysqlDatabases({
+    const response = await mittwaldClient.database.listMysqlDatabases({
       queryParameters: projectId ? { projectId } : {}
     });
 
@@ -137,7 +137,7 @@ export const handleDatabaseMysqlList: MittwaldToolHandler<MittwaldDatabaseMysqlL
       const row = [
         truncate(db.id),
         truncate(db.name || 'N/A'),
-        truncate(db.characterSettings || 'N/A'),
+        truncate(db.characterSettings ? `${db.characterSettings.characterSet}/${db.characterSettings.collation}` : 'N/A'),
         db.version || 'N/A',
         formatDate(db.createdAt)
       ];

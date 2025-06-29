@@ -18,7 +18,7 @@ export const handleMittwaldProjectMembershipGetOwn: MittwaldToolHandler<Mittwald
     }
 
     // Get the current user's membership for the specified project
-    const result = await mittwaldClient.api.project.getSelfMembershipForProject({
+    const result = await mittwaldClient.project.getSelfMembershipForProject({
       projectId: args.projectId,
     });
 

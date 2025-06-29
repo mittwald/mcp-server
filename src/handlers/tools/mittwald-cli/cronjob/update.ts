@@ -54,7 +54,7 @@ export const handleMittwaldCronjobUpdate: MittwaldToolHandler<MittwaldCronjobUpd
     }
     
     // Call API to update cronjob
-    const response = await mittwaldClient.api.cronjob.updateCronjob({
+    const response = await mittwaldClient.cronjob.updateCronjob({
       cronjobId: args.cronjobId,
       data: updateData
     });

@@ -36,7 +36,7 @@ export const handleMailDeliveryboxCreate: MittwaldToolHandler<MittwaldMailDelive
     };
     
     // Create the delivery box
-    const createResponse = await mittwaldClient.api.mail.createDeliverybox({
+    const createResponse = await mittwaldClient.mail.createDeliverybox({
       projectId: args.projectId!,
       data: createData
     });

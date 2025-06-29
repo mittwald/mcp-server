@@ -23,7 +23,7 @@ export const handleProjectSSH: MittwaldToolHandler<MittwaldProjectSSHArgs> = asy
     }
     
     // Get project details to validate and get connection info
-    const project = await mittwaldClient.api.project.getProject({
+    const project = await mittwaldClient.project.getProject({
       projectId: projectId
     });
     

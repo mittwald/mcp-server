@@ -45,7 +45,7 @@ export const handleConversationCreate: MittwaldToolHandler<ConversationCreateArg
     let categoryId = category;
     if (category && category !== "general") {
       try {
-        const categoriesResult = await mittwaldClient.api.conversation.listCategories();
+        const categoriesResult = await mittwaldClient.conversation.listCategories();
         if (categoriesResult.data && Array.isArray(categoriesResult.data)) {
           const foundCategory = categoriesResult.data.find((cat: any) => 
             cat.name?.toLowerCase() === category.toLowerCase()
@@ -60,7 +60,7 @@ export const handleConversationCreate: MittwaldToolHandler<ConversationCreateArg
     }
     
     // Create the conversation using the API
-    const result = await mittwaldClient.api.conversation.createConversation({
+    const result = await mittwaldClient.conversation.createConversation({
       data: {
         title: title,
         categoryId: categoryId
@@ -77,7 +77,7 @@ export const handleConversationCreate: MittwaldToolHandler<ConversationCreateArg
     const conversationId = result.data.conversationId;
     
     // Add the initial message to the conversation
-    const messageResult = await mittwaldClient.api.conversation.createMessage({
+    const messageResult = await mittwaldClient.conversation.createMessage({
       conversationId: conversationId,
       data: {
         messageContent: message

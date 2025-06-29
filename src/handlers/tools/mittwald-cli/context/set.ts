@@ -23,7 +23,7 @@ export const handleContextSet: MittwaldToolHandler<ContextSetParameters> = async
     // Validate project ID if provided by making an API call
     if (projectId) {
       try {
-        const projectResponse = await mittwaldClient.project.api.getProject({ projectId });
+        const projectResponse = await mittwaldClient.project.getProject({ projectId });
         if (projectResponse.status !== 200) {
           return formatToolResponse(
             "error",

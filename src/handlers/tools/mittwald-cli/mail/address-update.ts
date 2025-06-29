@@ -17,7 +17,7 @@ export const handleMailAddressUpdate: MittwaldToolHandler<MittwaldMailAddressUpd
   
   try {
     // Get mail address details first
-    const mailAddressResponse = await mittwaldClient.api.mail.getMailAddress({
+    const mailAddressResponse = await mittwaldClient.mail.getMailAddress({
       mailAddressId: args.mailaddressId
     });
 
@@ -68,35 +68,35 @@ export const handleMailAddressUpdate: MittwaldToolHandler<MittwaldMailAddressUpd
     const updatePromises: Promise<any>[] = [];
     
     if (updateData.address !== undefined) {
-      updatePromises.push(mittwaldClient.api.mail.updateMailAddressAddress({
+      updatePromises.push(mittwaldClient.mail.updateMailAddressAddress({
         mailAddressId: args.mailaddressId,
         data: { address: updateData.address }
       }));
     }
     
     if (updateData.catchAll !== undefined) {
-      updatePromises.push(mittwaldClient.api.mail.updateMailAddressCatchAll({
+      updatePromises.push(mittwaldClient.mail.updateMailAddressCatchAll({
         mailAddressId: args.mailaddressId,
         data: { active: updateData.catchAll }
       }));
     }
     
     if (updateData.quotaInMB !== undefined) {
-      updatePromises.push(mittwaldClient.api.mail.updateMailAddressQuota({
+      updatePromises.push(mittwaldClient.mail.updateMailAddressQuota({
         mailAddressId: args.mailaddressId,
         data: { quotaInBytes: updateData.quotaInMB * 1024 * 1024 }
       }));
     }
     
     if (updateData.password !== undefined) {
-      updatePromises.push(mittwaldClient.api.mail.updateMailAddressPassword({
+      updatePromises.push(mittwaldClient.mail.updateMailAddressPassword({
         mailAddressId: args.mailaddressId,
         data: { password: updateData.password }
       }));
     }
     
     if (updateData.forwardAddresses !== undefined) {
-      updatePromises.push(mittwaldClient.api.mail.updateMailAddressForwardAddresses({
+      updatePromises.push(mittwaldClient.mail.updateMailAddressForwardAddresses({
         mailAddressId: args.mailaddressId,
         data: { forwardAddresses: updateData.forwardAddresses }
       }));

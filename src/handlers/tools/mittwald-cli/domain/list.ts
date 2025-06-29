@@ -1,5 +1,5 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
 interface MittwaldDomainListArgs {
   projectId?: string;
@@ -14,7 +14,7 @@ interface MittwaldDomainListArgs {
 export const handleDomainList: MittwaldToolHandler<MittwaldDomainListArgs> = async (args, { mittwaldClient }) => {
   try {
     // Fetch domains for the project using the correct API method
-    const response = await mittwaldClient.api.domain.listDomains({
+    const response = await mittwaldClient.domain.listDomains({
       queryParameters: args.projectId ? { projectId: args.projectId } : {},
     });
 

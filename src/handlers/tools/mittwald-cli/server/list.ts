@@ -13,7 +13,7 @@ interface MittwaldServerListArgs {
 export const handleServerList: MittwaldToolHandler<MittwaldServerListArgs> = async (args, { mittwaldClient }) => {
   try {
     // List servers using the Mittwald API
-    const servers = await mittwaldClient.api.project.listServers({});
+    const servers = await mittwaldClient.project.listServers({});
 
     if (!servers.data || servers.data.length === 0) {
       return formatToolResponse(

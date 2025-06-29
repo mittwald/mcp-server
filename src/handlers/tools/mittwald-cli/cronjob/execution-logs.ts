@@ -13,13 +13,13 @@ export const handleCronjobExecutionLogs: MittwaldToolHandler<Args> = async (args
     const { cronjobId, executionId, output = 'txt', noPager = false } = args;
 
     // Get the cron job execution details first to get the log path
-    const execution = await mittwaldClient.cronjob.api.getCronjobExecution({
+    const execution = await mittwaldClient.cronjob.getExecution({
       cronjobId,
       executionId
     });
 
     // Get the logs for the execution
-    const logs = await mittwaldClient.cronjob.api.getCronjobExecutionLogs({
+    const logs = await mittwaldClient.cronjob.getExecutionLogs({
       cronjobId,
       executionId
     });

@@ -13,7 +13,7 @@ interface ConversationListArgs {
 export const handleConversationList: MittwaldToolHandler<ConversationListArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get conversations from the API
-    const result = await mittwaldClient.api.conversation.listConversations();
+    const result = await mittwaldClient.conversation.listConversations();
     
     if (!result.data) {
       return formatToolResponse(

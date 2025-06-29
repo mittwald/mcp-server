@@ -49,7 +49,7 @@ export const handleConversationReply: MittwaldToolHandler<ConversationReplyArgs>
     }
     
     // Reply to the conversation using the API
-    const result = await mittwaldClient.api.conversation.createMessage({
+    const result = await mittwaldClient.conversation.createMessage({
       conversationId: conversationId,
       data: {
         messageContent: message

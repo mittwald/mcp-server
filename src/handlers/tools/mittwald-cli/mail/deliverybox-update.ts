@@ -33,14 +33,14 @@ export const handleMailDeliveryboxUpdate: MittwaldToolHandler<MittwaldMailDelive
     const updatePromises: Promise<any>[] = [];
     
     if (updateData.description !== undefined) {
-      updatePromises.push(mittwaldClient.api.mail.updateDeliveryBoxDescription({
+      updatePromises.push(mittwaldClient.mail.updateDeliveryBoxDescription({
         deliveryBoxId: args.maildeliveryboxId,
         data: { description: updateData.description }
       }));
     }
     
     if (updateData.password !== undefined) {
-      updatePromises.push(mittwaldClient.api.mail.updateDeliveryBoxPassword({
+      updatePromises.push(mittwaldClient.mail.updateDeliveryBoxPassword({
         deliveryBoxId: args.maildeliveryboxId,
         data: { password: updateData.password }
       }));

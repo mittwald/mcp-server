@@ -4,7 +4,8 @@
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
-import { ToolResponse } from '../../../../types/tool-response.js';
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
 /**
  * Manage your client authentication - shows available login commands
@@ -16,10 +17,11 @@ import { ToolResponse } from '../../../../types/tool-response.js';
 export async function handleMittwaldLogin(
   _client: MittwaldAPIV2Client,
   _args: Record<string, never>
-): Promise<ToolResponse> {
-  return {
-    success: true,
-    data: {
+): Promise<CallToolResult> {
+  return formatToolResponse(
+    'success',
+    'Manage your client authentication',
+    {
       description: 'Manage your client authentication',
       commands: [
         {
@@ -36,6 +38,6 @@ export async function handleMittwaldLogin(
         },
       ],
       usage: 'Use one of the specific login commands for authentication operations',
-    },
-  };
+    }
+  );
 }

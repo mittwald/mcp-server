@@ -94,7 +94,7 @@ export const handleCronjobCreate: MittwaldToolHandler<Args> = async (args, { mit
     }
 
     // Need to get project ID from app installation
-    const appResponse = await mittwaldClient.api.app.getAppinstallation({
+    const appResponse = await mittwaldClient.app.getAppinstallation({
       appInstallationId: appInstallationId
     });
 
@@ -114,7 +114,7 @@ export const handleCronjobCreate: MittwaldToolHandler<Args> = async (args, { mit
       );
     }
 
-    const response = await mittwaldClient.api.cronjob.createCronjob({
+    const response = await mittwaldClient.cronjob.createCronjob({
       projectId,
       data: createData
     });
@@ -129,7 +129,7 @@ export const handleCronjobCreate: MittwaldToolHandler<Args> = async (args, { mit
     const cronjobId = response.data.id;
 
     // Get the created cron job details for confirmation
-    const cronjobResponse = await mittwaldClient.api.cronjob.getCronjob({
+    const cronjobResponse = await mittwaldClient.cronjob.getCronjob({
       cronjobId
     });
 

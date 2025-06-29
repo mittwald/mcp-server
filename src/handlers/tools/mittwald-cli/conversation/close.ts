@@ -17,7 +17,7 @@ export const handleConversationClose: MittwaldToolHandler<ConversationCloseArgs>
     }
     
     // Close the conversation using the API
-    const result = await mittwaldClient.api.conversation.setConversationStatus({
+    const result = await mittwaldClient.conversation.setConversationStatus({
       conversationId: conversationId,
       data: {
         status: "closed"

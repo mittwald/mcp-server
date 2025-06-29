@@ -26,13 +26,13 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     }
 
     // Get user details for defaults
-    const userResponse = await mittwaldClient.api.user.getOwnAccount({});
+    const userResponse = await mittwaldClient.user.getUser({ userId: "self" });
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.project.listIngresses({
-      projectId: args.projectId,
+    const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
+      queryParameters: { projectId: args.projectId },
     });
     assertStatus(ingressResponse, 200);
     const defaultHost = ingressResponse.data.length > 0 
@@ -40,7 +40,7 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.api.project.getProject({
+    const projectResponse = await mittwaldClient.project.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);
@@ -51,18 +51,18 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     const host = args.host || defaultHost || "";
     const adminUser = args.adminUser || 
       `${user.person?.firstName?.charAt(0).toLowerCase() || 'a'}${user.person?.lastName?.toLowerCase() || 'admin'}`;
-    const adminEmail = args.adminEmail || user.email;
+    const adminEmail = args.adminEmail || user.email || "admin@example.com";
     const adminPass = args.adminPass || generateSecurePassword();
     const adminFirstname = args.adminFirstname || user.person?.firstName || "Admin";
     const adminLastname = args.adminLastname || user.person?.lastName || "User";
     const siteTitle = args.siteTitle || `Shopware 5 (${project.shortId})`;
-    const shopEmail = args.shopEmail || user.email;
+    const shopEmail = args.shopEmail || user.email || "shop@example.com";
     const shopLang = args.shopLang || "en";
     const shopCurrency = args.shopCurrency || "EUR";
 
     // Shopware 5 app ID from CLI
     const appId = "a23acf9c-9298-4082-9e7d-25356f9976dc";
-    const versionsResponse = await mittwaldClient.api.app.listAppversions({ appId });
+    const versionsResponse = await mittwaldClient.app.listAppversions({ appId });
     assertStatus(versionsResponse, 200);
 
     let appVersion;
@@ -76,7 +76,7 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     }
 
     // Trigger app installation
-    const installResponse = await mittwaldClient.api.app.requestAppinstallation({
+    const installResponse = await mittwaldClient.app.requestAppinstallation({
       projectId: args.projectId,
       data: {
         appVersionId: appVersion.id,
@@ -107,7 +107,7 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     
     do {
       try {
-        const checkResponse = await mittwaldClient.api.app.getAppinstallation({
+        const checkResponse = await mittwaldClient.app.getAppinstallation({
           appInstallationId,
         });
         if (checkResponse.status === 200) {
@@ -134,7 +134,7 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
       const startTime = Date.now();
       
       while (true) {
-        const statusResponse = await mittwaldClient.api.app.getAppinstallation({
+        const statusResponse = await mittwaldClient.app.getAppinstallation({
           appInstallationId,
         });
         assertStatus(statusResponse, 200);

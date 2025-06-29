@@ -8,7 +8,7 @@ interface MittwaldExtensionUninstallArgs {
 export const handleExtensionUninstall: MittwaldToolHandler<MittwaldExtensionUninstallArgs> = async (args, { mittwaldClient }) => {
   try {
     // Delete the extension instance
-    const response = await mittwaldClient.api.marketplace.extensionDeleteExtensionInstance({
+    const response = await mittwaldClient.marketplace.extensionDeleteExtensionInstance({
       extensionInstanceId: args.extensionInstanceId,
     });
 

@@ -12,7 +12,7 @@ interface MittwaldProjectCreateArgs {
 export const handleProjectCreate: MittwaldToolHandler<MittwaldProjectCreateArgs> = async (args, { mittwaldClient }) => {
   try {
     // Create project using the Mittwald API
-    const result = await mittwaldClient.api.project.createProject({
+    const result = await mittwaldClient.project.createProject({
       serverId: args.serverId,
       data: {
         description: args.description,
@@ -36,7 +36,7 @@ export const handleProjectCreate: MittwaldToolHandler<MittwaldProjectCreateArgs>
       
       while (Date.now() - startTime < timeout) {
         try {
-          const projectStatus = await mittwaldClient.api.project.getProject({
+          const projectStatus = await mittwaldClient.project.getProject({
             projectId: projectId,
           });
 

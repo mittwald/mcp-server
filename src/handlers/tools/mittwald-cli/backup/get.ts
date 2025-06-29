@@ -14,13 +14,13 @@ export const handleBackupGet: MittwaldToolHandler<MittwaldBackupGetArgs> = async
 
     try {
       // Get all projects and search for the backup
-      const projectsResponse = await mittwaldClient.api.project.listProjects({});
+      const projectsResponse = await mittwaldClient.project.listProjects({});
       
       if (projectsResponse.data) {
         for (const project of projectsResponse.data) {
           try {
             // Try to get the backup from this project
-            const backupResponse = await mittwaldClient.api.backup.getProjectBackup({
+            const backupResponse = await mittwaldClient.backup.getProjectBackup({
               
                 projectId: project.id,
                 backupId: args.backupId

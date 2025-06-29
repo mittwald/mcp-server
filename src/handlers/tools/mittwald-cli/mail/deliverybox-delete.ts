@@ -19,7 +19,7 @@ export const handleMailDeliveryboxDelete: MittwaldToolHandler<MittwaldMailDelive
     }
 
     // Delete the delivery box
-    const deleteResponse = await mittwaldClient.api.mail.deleteDeliveryBox({
+    const deleteResponse = await mittwaldClient.mail.deleteDeliveryBox({
       deliveryBoxId: args.id
     });
 

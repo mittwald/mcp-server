@@ -17,7 +17,7 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
     const { app, output = 'txt' } = args;
 
     // Get all available apps
-    const appsResponse = await mittwaldClient.api.app.listApps({});
+    const appsResponse = await mittwaldClient.app.listApps({});
     assertStatus(appsResponse, 200);
     
     const allApps = appsResponse.data;
@@ -47,7 +47,7 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
     
     for (const appItem of targetApps) {
       try {
-        const versionsResponse = await mittwaldClient.api.app.listAppversions({
+        const versionsResponse = await mittwaldClient.app.listAppversions({
           appId: appItem.id
         });
         assertStatus(versionsResponse, 200);

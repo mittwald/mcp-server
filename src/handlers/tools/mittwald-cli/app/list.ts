@@ -25,7 +25,7 @@ export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (ar
     }
 
     // List app installations for the project
-    const response = await mittwaldClient.api.app.listAppinstallations({
+    const response = await mittwaldClient.app.listAppinstallations({
       projectId: projectId
     });
     assertStatus(response, 200);
@@ -38,7 +38,7 @@ export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (ar
       extendedApps = await Promise.all(
         apps.map(async (app) => {
           try {
-            const detailResponse = await mittwaldClient.api.app.getAppinstallation({
+            const detailResponse = await mittwaldClient.app.getAppinstallation({
               appInstallationId: app.id
             });
             assertStatus(detailResponse, 200);

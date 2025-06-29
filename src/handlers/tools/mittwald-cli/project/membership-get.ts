@@ -9,7 +9,7 @@ interface MittwaldProjectMembershipGetArgs {
 export const handleMittwaldProjectMembershipGet: MittwaldToolHandler<MittwaldProjectMembershipGetArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get the project membership by ID
-    const result = await mittwaldClient.api.project.getProjectMembership({
+    const result = await mittwaldClient.project.getProjectMembership({
       projectMembershipId: args.membershipId,
     });
 

@@ -14,7 +14,7 @@ interface MittwaldExtensionListArgs {
 export const handleExtensionList: MittwaldToolHandler<MittwaldExtensionListArgs> = async (args, { mittwaldClient }) => {
   try {
     // List all available extensions from the marketplace
-    const response = await mittwaldClient.api.marketplace.extensionListExtensions();
+    const response = await mittwaldClient.marketplace.extensionListExtensions();
 
     const data = response.data as ResponseItem[];
     

@@ -14,9 +14,9 @@ interface MittwaldCronjobListArgs {
 export const handleMittwaldCronjobList: MittwaldToolHandler<MittwaldCronjobListArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get cronjobs from API
-    const response = await mittwaldClient.api.cronjob.listCronjobs({
-      projectId: args.projectId || undefined
-    });
+    const response = await mittwaldClient.cronjob.listCronjobs(
+      args.projectId ? { projectId: args.projectId } : {}
+    );
 
     if (response.status !== 200) {
       throw new Error(`API call failed with status: ${response.status}`);

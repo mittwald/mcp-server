@@ -17,7 +17,7 @@ export const handleCronjobDelete: MittwaldToolHandler<Args> = async (args, { mit
     // First, get the cron job details for reference (optional, but good for logging)
     let cronjobDetails;
     try {
-      cronjobDetails = await mittwaldClient.cronjob.api.getCronjob({
+      cronjobDetails = await mittwaldClient.cronjob.getCronjob({
         cronjobId
       });
     } catch (error) {
@@ -29,7 +29,7 @@ export const handleCronjobDelete: MittwaldToolHandler<Args> = async (args, { mit
     }
 
     // Delete the cron job
-    await mittwaldClient.cronjob.api.deleteCronjob({
+    await mittwaldClient.cronjob.deleteCronjob({
       cronjobId
     });
 

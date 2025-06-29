@@ -24,7 +24,7 @@ export async function handleMittwaldLoginToken(
   try {
     // In the MCP context, we assume the API token is already configured
     // We'll validate it by trying to get the current user
-    const userResponse = await client.api.user.getOwnAccount();
+    const userResponse = await client.user.getUser({ userId: "self" });
     
     if (userResponse.status === 200 && userResponse.data) {
       const user = userResponse.data;

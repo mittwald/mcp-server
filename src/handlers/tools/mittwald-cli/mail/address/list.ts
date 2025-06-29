@@ -72,27 +72,29 @@ export async function handleMittwaldMailAddressList(
           
         case 'csv':
           const csvContent = formatAsCsv(mailAddresses, args.csvSeparator || ',', !args.noHeader, args.extended || false);
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            'Mail addresses retrieved successfully',
+            {
               format: 'csv',
               content: csvContent,
               mailAddresses,
               count: mailAddresses.length,
-            },
-          };
+            }
+          );
           
         case 'tsv':
           const tsvContent = formatAsCsv(mailAddresses, '\t', !args.noHeader, args.extended || false);
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            'Mail addresses retrieved successfully',
+            {
               format: 'tsv',
               content: tsvContent,
               mailAddresses,
               count: mailAddresses.length,
-            },
-          };
+            }
+          );
           
         case 'txt':
         default:
@@ -102,51 +104,52 @@ export async function handleMittwaldMailAddressList(
             noTruncate: args.noTruncate || false,
             noRelativeDates: args.noRelativeDates || false,
           });
-          return {
-            success: true,
-            data: {
+          return formatToolResponse(
+            'success',
+            'Mail addresses retrieved successfully',
+            {
               format: 'txt',
               content: textContent,
               mailAddresses,
               count: mailAddresses.length,
-            },
-          };
+            }
+          );
       }
     }
 
     if (response.status === 404) {
-      return {
-        success: false,
-        error: `Project ${args.projectId} not found`,
-      };
+      return formatToolResponse(
+        'error',
+        `Project ${args.projectId} not found`
+      );
     }
 
-    return {
-      success: false,
-      error: `Failed to list mail addresses: HTTP ${response.status}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Failed to list mail addresses: HTTP ${response.status}`
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     // Handle common error cases
     if (errorMessage.includes('404') || errorMessage.includes('not found')) {
-      return {
-        success: false,
-        error: `Project ${args.projectId} not found`,
-      };
+      return formatToolResponse(
+        'error',
+        `Project ${args.projectId} not found`
+      );
     }
     
     if (errorMessage.includes('403') || errorMessage.includes('forbidden')) {
-      return {
-        success: false,
-        error: `Access denied: You don't have permission to access project ${args.projectId}`,
-      };
+      return formatToolResponse(
+        'error',
+        `Access denied: You don't have permission to access project ${args.projectId}`
+      );
     }
 
-    return {
-      success: false,
-      error: `Failed to list mail addresses: ${errorMessage}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Failed to list mail addresses: ${errorMessage}`
+    );
   }
 }
 

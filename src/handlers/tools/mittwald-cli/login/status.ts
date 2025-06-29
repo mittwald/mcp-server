@@ -18,7 +18,7 @@ export async function handleMittwaldLoginStatus(
 ): Promise<CallToolResult> {
   try {
     // Try to get the current user to verify authentication
-    const userResponse = await client.api.user.getOwnAccount();
+    const userResponse = await client.user.getUser({ userId: "self" });
     
     if (userResponse.status === 200 && userResponse.data) {
       const user = userResponse.data;

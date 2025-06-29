@@ -9,7 +9,7 @@ interface MittwaldProjectInviteGetArgs {
 export const handleProjectInviteGet: MittwaldToolHandler<MittwaldProjectInviteGetArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get project invite details from the API
-    const result = await mittwaldClient.api.project.getProjectInvite({
+    const result = await mittwaldClient.project.getProjectInvite({
       projectInviteId: args.inviteId,
     });
 

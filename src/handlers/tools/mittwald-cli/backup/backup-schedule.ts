@@ -26,7 +26,7 @@ export const handleBackupSchedule: MittwaldToolHandler<BackupScheduleParameters>
         }
         
         // Use the real API client to create the backup schedule
-        const createResponse = await mittwaldClient.backup.api.createProjectBackupSchedule({
+        const createResponse = await mittwaldClient.backup.createProjectBackupSchedule({
           projectId,
           data: createData
         });
@@ -63,7 +63,7 @@ export const handleBackupSchedule: MittwaldToolHandler<BackupScheduleParameters>
         }
         
         // Use the real API client to delete the backup schedule
-        const deleteResponse = await mittwaldClient.backup.api.deleteProjectBackupSchedule({
+        const deleteResponse = await mittwaldClient.backup.deleteProjectBackupSchedule({
           projectBackupScheduleId: backupScheduleId
         });
 

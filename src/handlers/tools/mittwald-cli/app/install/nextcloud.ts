@@ -21,13 +21,13 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
     }
 
     // Get user details for defaults
-    const userResponse = await mittwaldClient.api.user.getOwnAccount({});
+    const userResponse = await mittwaldClient.user.getUser({ userId: "self" });
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.project.listIngresses({
-      projectId: args.projectId,
+    const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
+      queryParameters: { projectId: args.projectId },
     });
     assertStatus(ingressResponse, 200);
     const defaultHost = ingressResponse.data.length > 0 
@@ -35,7 +35,7 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.api.project.getProject({
+    const projectResponse = await mittwaldClient.project.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);
@@ -46,13 +46,13 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
     const host = args.host || defaultHost || "";
     const adminUser = args.adminUser || 
       `${user.person?.firstName?.charAt(0).toLowerCase() || 'a'}${user.person?.lastName?.toLowerCase() || 'admin'}`;
-    const adminEmail = args.adminEmail || user.email;
+    const adminEmail = args.adminEmail || user.email || "admin@example.com";
     const adminPass = args.adminPass || generateSecurePassword();
     const siteTitle = args.siteTitle || `Nextcloud (${project.shortId})`;
 
     // Nextcloud app ID from CLI
     const appId = "0b97d59f-ee13-4f18-a1f6-53e1beaf2e70";
-    const versionsResponse = await mittwaldClient.api.app.listAppversions({ appId });
+    const versionsResponse = await mittwaldClient.app.listAppversions({ appId });
     assertStatus(versionsResponse, 200);
 
     let appVersion;
@@ -66,7 +66,7 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
     }
 
     // Trigger app installation
-    const installResponse = await mittwaldClient.api.app.requestAppinstallation({
+    const installResponse = await mittwaldClient.app.requestAppinstallation({
       projectId: args.projectId,
       data: {
         appVersionId: appVersion.id,
@@ -92,7 +92,7 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
     
     do {
       try {
-        const checkResponse = await mittwaldClient.api.app.getAppinstallation({
+        const checkResponse = await mittwaldClient.app.getAppinstallation({
           appInstallationId,
         });
         if (checkResponse.status === 200) {
@@ -119,7 +119,7 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
       const startTime = Date.now();
       
       while (true) {
-        const statusResponse = await mittwaldClient.api.app.getAppinstallation({
+        const statusResponse = await mittwaldClient.app.getAppinstallation({
           appInstallationId,
         });
         assertStatus(statusResponse, 200);

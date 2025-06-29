@@ -15,7 +15,7 @@ export const handleMailDeliveryboxList: MittwaldToolHandler<MittwaldMailDelivery
   
   try {
     // List delivery boxes for the project
-    const listResponse = await mittwaldClient.api.mail.listDeliveryBoxes({
+    const listResponse = await mittwaldClient.mail.listDeliveryBoxes({
       projectId: args.projectId!
     });
 

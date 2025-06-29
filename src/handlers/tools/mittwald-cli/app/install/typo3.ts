@@ -22,13 +22,13 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
     }
 
     // Get user details for defaults
-    const userResponse = await mittwaldClient.api.user.getOwnAccount({});
+    const userResponse = await mittwaldClient.user.getUser({ userId: "self" });
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.project.listIngresses({
-      projectId: args.projectId,
+    const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
+      queryParameters: { projectId: args.projectId },
     });
     assertStatus(ingressResponse, 200);
     const defaultHost = ingressResponse.data.length > 0 
@@ -36,7 +36,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.api.project.getProject({
+    const projectResponse = await mittwaldClient.project.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);
@@ -47,14 +47,14 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
     const host = args.host || defaultHost || "";
     const adminUser = args.adminUser || 
       `${user.person?.firstName?.charAt(0).toLowerCase() || 'a'}${user.person?.lastName?.toLowerCase() || 'admin'}`;
-    const adminEmail = args.adminEmail || user.email;
+    const adminEmail = args.adminEmail || user.email || "admin@example.com";
     const adminPass = args.adminPass || generateSecurePassword();
     const siteTitle = args.siteTitle || `TYPO3 (${project.shortId})`;
     const installMode = args.installMode || "composer";
 
     // TYPO3 app ID from CLI
     const appId = "352971cc-b96a-4a26-8651-b08d7c8a7357";
-    const versionsResponse = await mittwaldClient.api.app.listAppversions({ appId });
+    const versionsResponse = await mittwaldClient.app.listAppversions({ appId });
     assertStatus(versionsResponse, 200);
 
     let appVersion;
@@ -68,7 +68,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
     }
 
     // Trigger app installation
-    const installResponse = await mittwaldClient.api.app.requestAppinstallation({
+    const installResponse = await mittwaldClient.app.requestAppinstallation({
       projectId: args.projectId,
       data: {
         appVersionId: appVersion.id,
@@ -95,7 +95,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
     
     do {
       try {
-        const checkResponse = await mittwaldClient.api.app.getAppinstallation({
+        const checkResponse = await mittwaldClient.app.getAppinstallation({
           appInstallationId,
         });
         if (checkResponse.status === 200) {
@@ -122,7 +122,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
       const startTime = Date.now();
       
       while (true) {
-        const statusResponse = await mittwaldClient.api.app.getAppinstallation({
+        const statusResponse = await mittwaldClient.app.getAppinstallation({
           appInstallationId,
         });
         assertStatus(statusResponse, 200);

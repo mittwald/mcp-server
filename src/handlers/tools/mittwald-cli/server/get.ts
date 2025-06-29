@@ -16,7 +16,7 @@ export const handleServerGet: MittwaldToolHandler<MittwaldServerGetArgs> = async
     }
 
     // Get server details using the Mittwald API
-    const server = await mittwaldClient.api.project.getServer({
+    const server = await mittwaldClient.project.getServer({
       serverId: args.serverId
     });
 

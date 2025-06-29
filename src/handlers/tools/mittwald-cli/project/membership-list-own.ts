@@ -13,7 +13,7 @@ interface MittwaldProjectMembershipListOwnArgs {
 export const handleMittwaldProjectMembershipListOwn: MittwaldToolHandler<MittwaldProjectMembershipListOwnArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get the current user's project memberships
-    const result = await mittwaldClient.api.project.listProjectMemberships({});
+    const result = await mittwaldClient.project.listProjectMemberships({});
 
     if (!result.data) {
       return formatToolResponse(

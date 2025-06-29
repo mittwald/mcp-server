@@ -37,13 +37,13 @@ export const handleBackupDownload: MittwaldToolHandler<MittwaldBackupDownloadArg
 
     try {
       // Get all projects and search for the backup
-      const projectsResponse = await mittwaldClient.api.project.listProjects({});
+      const projectsResponse = await mittwaldClient.project.listProjects({});
       
       if (projectsResponse.data) {
         for (const project of projectsResponse.data) {
           try {
             // Try to get the backup from this project
-            const backupResponse = await mittwaldClient.api.backup.getProjectBackup({
+            const backupResponse = await mittwaldClient.backup.getProjectBackup({
               
                 projectId: project.id,
                 backupId: args.backupId
@@ -78,7 +78,7 @@ export const handleBackupDownload: MittwaldToolHandler<MittwaldBackupDownloadArg
 
     // Now request the backup download
     try {
-      const downloadResponse = await mittwaldClient.api.backup.requestProjectBackupExport({
+      const downloadResponse = await mittwaldClient.backup.requestProjectBackupExport({
         projectId: foundProjectId,
         backupId: args.backupId,
         data: {

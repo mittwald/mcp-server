@@ -21,7 +21,7 @@ export const handleUserApiTokenCreate: MittwaldToolHandler<MittwaldUserApiTokenC
     }
 
     // Create API token via API
-    const result = await mittwaldClient.api.user.createApiToken({
+    const result = await mittwaldClient.user.createApiToken({
       data: createData
     });
 

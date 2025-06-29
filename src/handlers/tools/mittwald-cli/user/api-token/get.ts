@@ -9,7 +9,7 @@ interface MittwaldUserApiTokenGetArgs {
 export const handleUserApiTokenGet: MittwaldToolHandler<MittwaldUserApiTokenGetArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get API token details from the API
-    const result = await mittwaldClient.api.user.getApiToken({
+    const result = await mittwaldClient.user.getApiToken({
       apiTokenId: args.tokenId
     });
 

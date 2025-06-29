@@ -14,7 +14,7 @@ export const handleExtensionInstall: MittwaldToolHandler<MittwaldExtensionInstal
   
   try {
     // Load extension details
-    const extensionResponse = await mittwaldClient.api.marketplace.extensionGetExtension({
+    const extensionResponse = await mittwaldClient.marketplace.extensionGetExtension({
       extensionId: args.extensionId,
     });
 
@@ -36,7 +36,7 @@ export const handleExtensionInstall: MittwaldToolHandler<MittwaldExtensionInstal
     }
 
     // Install the extension
-    const installResponse = await mittwaldClient.api.marketplace.extensionCreateExtensionInstance({
+    const installResponse = await mittwaldClient.marketplace.extensionCreateExtensionInstance({
       data: {
         extensionId: args.extensionId,
         context: 'project',
@@ -61,7 +61,7 @@ export const handleExtensionInstall: MittwaldToolHandler<MittwaldExtensionInstal
       
       while (Date.now() - startTime < timeout) {
         try {
-          const instanceResponse = await mittwaldClient.api.marketplace.extensionGetExtensionInstance({
+          const instanceResponse = await mittwaldClient.marketplace.extensionGetExtensionInstance({
             extensionInstanceId: extensionInstanceId,
           });
 

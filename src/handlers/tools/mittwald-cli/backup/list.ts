@@ -19,7 +19,7 @@ export const handleBackupList: MittwaldToolHandler<MittwaldBackupListArgs> = asy
     if (args.projectId) {
       // List backups for specific project
       try {
-        const backupsResponse = await mittwaldClient.api.backup.listProjectBackups({
+        const backupsResponse = await mittwaldClient.backup.listProjectBackups({
           projectId: args.projectId
         });
 
@@ -38,12 +38,12 @@ export const handleBackupList: MittwaldToolHandler<MittwaldBackupListArgs> = asy
     } else {
       // List backups for all accessible projects
       try {
-        const projectsResponse = await mittwaldClient.api.project.listProjects({});
+        const projectsResponse = await mittwaldClient.project.listProjects({});
         
         if (projectsResponse.data) {
           for (const project of projectsResponse.data) {
             try {
-              const backupsResponse = await mittwaldClient.api.backup.listProjectBackups({
+              const backupsResponse = await mittwaldClient.backup.listProjectBackups({
                 projectId: project.id
               });
               

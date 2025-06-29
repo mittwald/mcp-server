@@ -22,7 +22,7 @@ export const handleAppCreatePhpWorker: MittwaldToolHandler<MittwaldAppCreatePhpW
     const phpWorkerAppId = "fcac178a-e606-4460-a5fd-b3ad0ae7a3cc";
     
     // Get latest PHP Worker app version
-    const versionsResponse = await mittwaldClient.api.app.listAppversions({ 
+    const versionsResponse = await mittwaldClient.app.listAppversions({ 
       appId: phpWorkerAppId 
     });
     
@@ -49,7 +49,7 @@ export const handleAppCreatePhpWorker: MittwaldToolHandler<MittwaldAppCreatePhpW
     }
 
     // Create the app installation
-    const response = await mittwaldClient.api.app.requestAppinstallation({
+    const response = await mittwaldClient.app.requestAppinstallation({
       projectId,
       data: {
         appVersionId,

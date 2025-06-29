@@ -1,5 +1,5 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
 interface MittwaldDomainVirtualhostCreateArgs {
   hostname: string;
@@ -70,7 +70,7 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
       createRequest.projectId = args.projectId;
     }
 
-    const response = await mittwaldClient.api.domain.ingressCreateIngress({
+    const response = await mittwaldClient.domain.ingressCreateIngress({
       data: createRequest,
     });
 

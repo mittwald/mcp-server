@@ -39,7 +39,7 @@ export const handleOrgMembershipList: MittwaldToolHandler<MittwaldOrgMembershipL
         memberships.map(async (membership) => {
           try {
             // Get user details for each membership
-            const userResponse = await mittwaldClient.api.user.getUser({
+            const userResponse = await mittwaldClient.user.getUser({
               userId: membership.userId
             });
             assertStatus(userResponse, 200);

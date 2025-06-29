@@ -1,5 +1,5 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
 interface MittwaldDomainVirtualhostGetArgs {
   ingressId: string;
@@ -9,7 +9,7 @@ interface MittwaldDomainVirtualhostGetArgs {
 export const handleDomainVirtualhostGet: MittwaldToolHandler<MittwaldDomainVirtualhostGetArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get the specific ingress
-    const response = await mittwaldClient.api.domain.ingressGetIngress({
+    const response = await mittwaldClient.domain.ingressGetIngress({
       ingressId: args.ingressId,
     });
 

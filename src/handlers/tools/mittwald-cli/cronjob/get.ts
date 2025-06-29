@@ -9,7 +9,7 @@ interface MittwaldCronjobGetArgs {
 export const handleMittwaldCronjobGet: MittwaldToolHandler<MittwaldCronjobGetArgs> = async (args, { mittwaldClient }) => {
   try {
     // Use API client to get cronjob details
-    const response = await mittwaldClient.api.cronjob.getCronjob({
+    const response = await mittwaldClient.cronjob.getCronjob({
       cronjobId: args.cronjobId
     });
     

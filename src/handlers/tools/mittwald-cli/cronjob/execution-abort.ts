@@ -12,7 +12,7 @@ export const handleCronjobExecutionAbort: MittwaldToolHandler<Args> = async (arg
     const { cronjobId, executionId, quiet = false } = args;
 
     // Abort the cron job execution
-    await mittwaldClient.cronjob.api.abortCronjobExecution({
+    await mittwaldClient.cronjob.abortExecution({
       cronjobId,
       executionId
     });

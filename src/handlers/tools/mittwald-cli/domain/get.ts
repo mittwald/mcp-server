@@ -1,35 +1,22 @@
-import { MittwaldAPIV2Client } from "@mittwald/api-client";
-import { type CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
-import { getMittwaldClient } from "../../../../services/mittwald/mittwald-client.js";
-import { formatToolResponse } from "../../../../../utils/format-tool-response.js";
-import { exec } from "child_process";
-import { promisify } from "util";
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from "../../../../utils/format-tool-response.js";
+import { executeCommand } from "../../../../utils/executeCommand.js";
 
-const execAsync = promisify(exec);
+interface MittwaldDomainGetArgs {
+  domainId: string;
+  output?: 'txt' | 'json' | 'yaml';
+}
 
-export const domainGetSchema = z.object({
-  domainId: z.string(),
-  output: z.enum(["txt", "json", "yaml"]).default("json")
-});
-
-export type DomainGetParams = z.infer<typeof domainGetSchema>;
-
-export async function handleDomainGet(
-  params: DomainGetParams,
-  context: RequestContext
-): Promise<CallToolRequestSchema> {
+export const handleDomainGet: MittwaldToolHandler<MittwaldDomainGetArgs> = async (args, { mittwaldClient }) => {
   try {
-    const client = getMittwaldClient(context.authStore);
-    
     // Build the command
-    let command = `mw domain get ${params.domainId}`;
+    let command = `mw domain get ${args.domainId}`;
     
     // Add output format flag
-    command += ` --output ${params.output}`;
+    command += ` --output ${args.output || 'json'}`;
     
     // Execute the command
-    const { stdout, stderr } = await execAsync(command);
+    const { stdout, stderr } = await executeCommand(command);
     
     // Parse the output
     const output = stdout.trim();
@@ -41,7 +28,7 @@ export async function handleDomainGet(
     
     // Try to parse JSON/YAML output if applicable
     let parsedData = null;
-    if (params.output === "json") {
+    if ((args.output || 'json') === "json") {
       try {
         parsedData = JSON.parse(output);
       } catch {
@@ -52,11 +39,11 @@ export async function handleDomainGet(
     // Format the response
     const result = {
       success: Boolean(output),
-      message: `Domain information retrieved for ${params.domainId}`,
-      domainId: params.domainId,
+      message: `Domain information retrieved for ${args.domainId}`,
+      domainId: args.domainId,
       output: output || null,
       parsedData: parsedData,
-      format: params.output,
+      format: args.output || 'json',
       command: command
     };
     
@@ -67,4 +54,4 @@ export async function handleDomainGet(
       error instanceof Error ? error.message : "Unknown error occurred"
     );
   }
-}
+};

@@ -29,7 +29,7 @@ export const handleBackupScheduleUpdate: MittwaldToolHandler<BackupScheduleUpdat
     }
     
     // Use the real API client to update the backup schedule
-    const response = await mittwaldClient.backup.api.updateProjectBackupSchedule({
+    const response = await mittwaldClient.backup.updateProjectBackupSchedule({
       projectBackupScheduleId: backupScheduleId,
       data: updateData
     });

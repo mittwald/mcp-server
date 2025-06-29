@@ -22,7 +22,7 @@ export const handleAppCreateNode: MittwaldToolHandler<MittwaldAppCreateNodeArgs>
     const nodeJsAppId = "3e7f920b-a711-4d2f-9871-661e1b41a2f0";
     
     // Get latest Node.js app version
-    const versionsResponse = await mittwaldClient.api.app.listAppversions({ 
+    const versionsResponse = await mittwaldClient.app.listAppversions({ 
       appId: nodeJsAppId 
     });
     
@@ -51,7 +51,7 @@ export const handleAppCreateNode: MittwaldToolHandler<MittwaldAppCreateNodeArgs>
     }
 
     // Create the app installation
-    const response = await mittwaldClient.api.app.requestAppinstallation({
+    const response = await mittwaldClient.app.requestAppinstallation({
       projectId,
       data: {
         appVersionId,

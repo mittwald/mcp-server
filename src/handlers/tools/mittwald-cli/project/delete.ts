@@ -19,7 +19,7 @@ export const handleProjectDelete: MittwaldToolHandler<MittwaldProjectDeleteArgs>
     // Get project info first for confirmation
     let projectInfo;
     try {
-      const projectResult = await mittwaldClient.api.project.getProject({
+      const projectResult = await mittwaldClient.project.getProject({
         projectId: args.projectId,
       });
       projectInfo = projectResult.data;
@@ -31,7 +31,7 @@ export const handleProjectDelete: MittwaldToolHandler<MittwaldProjectDeleteArgs>
     }
 
     // Delete the project
-    await mittwaldClient.api.project.deleteProject({
+    await mittwaldClient.project.deleteProject({
       projectId: args.projectId,
     });
 

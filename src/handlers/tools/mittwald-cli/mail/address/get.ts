@@ -73,38 +73,38 @@ export async function handleMittwaldMailAddressGet(
     }
 
     if (response.status === 404) {
-      return {
-        success: false,
-        error: `Mail address ${args.mailAddressId} not found`,
-      };
+      return formatToolResponse(
+        'error',
+        `Mail address ${args.mailAddressId} not found`
+      );
     }
 
-    return {
-      success: false,
-      error: `Failed to get mail address: HTTP ${response.status}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Failed to get mail address: HTTP ${response.status}`
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     // Handle common error cases
     if (errorMessage.includes('404') || errorMessage.includes('not found')) {
-      return {
-        success: false,
-        error: `Mail address ${args.mailAddressId} not found`,
-      };
+      return formatToolResponse(
+        'error',
+        `Mail address ${args.mailAddressId} not found`
+      );
     }
     
     if (errorMessage.includes('403') || errorMessage.includes('forbidden')) {
-      return {
-        success: false,
-        error: `Access denied: You don't have permission to access mail address ${args.mailAddressId}`,
-      };
+      return formatToolResponse(
+        'error',
+        `Access denied: You don't have permission to access mail address ${args.mailAddressId}`
+      );
     }
 
-    return {
-      success: false,
-      error: `Failed to get mail address: ${errorMessage}`,
-    };
+    return formatToolResponse(
+      'error',
+      `Failed to get mail address: ${errorMessage}`
+    );
   }
 }
 

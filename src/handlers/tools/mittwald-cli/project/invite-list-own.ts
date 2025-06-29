@@ -14,7 +14,7 @@ export interface MittwaldProjectInviteListOwnArgs {
 export const handleProjectInviteListOwn: MittwaldToolHandler<MittwaldProjectInviteListOwnArgs> = async (args, { mittwaldClient }) => {
   try {
     // List project invites for the current user
-    const response = await mittwaldClient.api.project.listProjectInvites({});
+    const response = await mittwaldClient.project.listProjectInvites({});
     assertStatus(response, 200);
 
     const invites = response.data || [];
@@ -26,7 +26,7 @@ export const handleProjectInviteListOwn: MittwaldToolHandler<MittwaldProjectInvi
         invites.map(async (invite: any) => {
           try {
             // Get project details for each invite
-            const projectResponse = await mittwaldClient.api.project.getProject({
+            const projectResponse = await mittwaldClient.project.getProject({
               projectId: invite.projectId
             });
             assertStatus(projectResponse, 200);

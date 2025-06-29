@@ -10,7 +10,7 @@ interface MittwaldProjectFilesystemUsageArgs {
 export const handleProjectFilesystemUsage: MittwaldToolHandler<MittwaldProjectFilesystemUsageArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get project details for storage quota
-    const projectResponse = await mittwaldClient.api.project.getProject({
+    const projectResponse = await mittwaldClient.project.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);

@@ -41,7 +41,7 @@ export const handleExtensionListInstalled: MittwaldToolHandler<MittwaldExtension
     }
 
     // List extension instances
-    const response = await mittwaldClient.api.marketplace.extensionListExtensionInstances({
+    const response = await mittwaldClient.marketplace.extensionListExtensionInstances({
       queryParameters: {
         context: args.orgId ? 'customer' : 'project',
         contextId: (args.orgId || args.projectId)!,
@@ -61,7 +61,7 @@ export const handleExtensionListInstalled: MittwaldToolHandler<MittwaldExtension
     // Fetch extension details for each instance
     const extendedItems: ExtendedResponseItem[] = await Promise.all(
       data.map(async (item) => {
-        const extResponse = await mittwaldClient.api.marketplace.extensionGetExtension({
+        const extResponse = await mittwaldClient.marketplace.extensionGetExtension({
           extensionId: item.extensionId,
         });
 

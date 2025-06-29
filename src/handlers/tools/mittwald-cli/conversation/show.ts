@@ -17,7 +17,7 @@ export const handleConversationShow: MittwaldToolHandler<ConversationShowArgs> =
     }
     
     // Get conversation details and messages from the API
-    const conversationResult = await mittwaldClient.api.conversation.getConversation({
+    const conversationResult = await mittwaldClient.conversation.getConversation({
       conversationId: conversationId
     });
     
@@ -30,7 +30,7 @@ export const handleConversationShow: MittwaldToolHandler<ConversationShowArgs> =
     
     const conversation = conversationResult.data;
     
-    const messagesResult = await mittwaldClient.api.conversation.listMessagesByConversation({
+    const messagesResult = await mittwaldClient.conversation.listMessagesByConversation({
       conversationId: conversationId
     });
     

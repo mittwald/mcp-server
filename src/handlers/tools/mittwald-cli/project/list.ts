@@ -13,7 +13,7 @@ interface MittwaldProjectListArgs {
 export const handleMittwaldProjectList: MittwaldToolHandler<MittwaldProjectListArgs> = async (args, { mittwaldClient }) => {
   try {
     // Get the list of projects from the API
-    const result = await mittwaldClient.api.project.listProjects({});
+    const result = await mittwaldClient.project.listProjects({});
 
     if (!result.data) {
       return formatToolResponse(

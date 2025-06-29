@@ -43,7 +43,7 @@ export const handleBackupCreate: MittwaldToolHandler<MittwaldBackupCreateArgs> =
     }
 
     // Create the backup
-    const response = await mittwaldClient.api.backup.createProjectBackup({
+    const response = await mittwaldClient.backup.createProjectBackup({
       projectId: args.projectId!,
       data: {
         description: args.description,
@@ -67,7 +67,7 @@ export const handleBackupCreate: MittwaldToolHandler<MittwaldBackupCreateArgs> =
 
       while (Date.now() - startTime < timeout) {
         try {
-          const statusResponse = await mittwaldClient.api.backup.getProjectBackup({
+          const statusResponse = await mittwaldClient.backup.getProjectBackup({
             
               projectId: args.projectId!, 
               backupId: backupId 

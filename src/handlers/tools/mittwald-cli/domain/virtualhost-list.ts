@@ -1,5 +1,5 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { MittwaldAPIV2 } from '@mittwald/api-client';
 import { Simplify } from '@mittwald/api-client-commons';
 
@@ -22,8 +22,8 @@ export const handleDomainVirtualhostList: MittwaldToolHandler<MittwaldDomainVirt
   try {
     // Fetch ingresses (virtual hosts)
     const response = args.all
-      ? await mittwaldClient.api.domain.ingressListIngresses({})
-      : await mittwaldClient.api.domain.ingressListIngresses({
+      ? await mittwaldClient.domain.ingressListIngresses({})
+      : await mittwaldClient.domain.ingressListIngresses({
           queryParameters: { projectId: args.projectId },
         });
 

@@ -21,13 +21,13 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
     }
 
     // Get user details for defaults
-    const userResponse = await mittwaldClient.api.user.getOwnAccount({});
+    const userResponse = await mittwaldClient.user.getUser({ userId: "self" });
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
     // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.api.project.listIngresses({
-      projectId: args.projectId
+    const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
+      queryParameters: { projectId: args.projectId }
     });
     assertStatus(ingressResponse, 200);
 
@@ -49,7 +49,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
     const wordpressAppId = "da3e6217-b4aa-43d6-bfb9-9f22f92fa37b"; // WordPress app ID from CLI
     
     // Get available versions
-    const versionsResponse = await mittwaldClient.api.app.listAppversions({ 
+    const versionsResponse = await mittwaldClient.app.listAppversions({ 
       appId: wordpressAppId 
     });
     assertStatus(versionsResponse, 200);
@@ -75,14 +75,14 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
     // Prepare installation parameters
     const userInputs = [
       { name: "adminUser", value: args.adminUser || user.email || 'admin' },
-      { name: "adminEmail", value: args.adminEmail || user.email },
+      { name: "adminEmail", value: args.adminEmail || user.email || "admin@example.com" },
       { name: "adminPass", value: args.adminPass || generatePassword() },
       { name: "siteTitle", value: args.siteTitle || 'My WordPress Site' },
       { name: "host", value: hostname }
     ];
 
     // Create the installation
-    const installResponse = await mittwaldClient.api.app.requestAppinstallation({
+    const installResponse = await mittwaldClient.app.requestAppinstallation({
       projectId: args.projectId,
       data: {
         appVersionId,
@@ -101,7 +101,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
       const startTime = Date.now();
 
       while (Date.now() - startTime < timeout) {
-        const statusResponse = await mittwaldClient.api.app.getAppinstallation({
+        const statusResponse = await mittwaldClient.app.getAppinstallation({
           appInstallationId
         });
         assertStatus(statusResponse, 200);
@@ -117,7 +117,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
               appId: statusResponse.data.appId,
               version: statusResponse.data.appVersion.current,
               host: hostname,
-              adminUser: args.adminUser || user.loginName || 'admin'
+              adminUser: args.adminUser || user.email || 'admin'
             }
           );
         }
@@ -137,7 +137,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
         appInstallationId,
         status: 'installing',
         host: hostname,
-        adminUser: args.adminUser || user.loginName || 'admin'
+        adminUser: args.adminUser || user.email || 'admin'
       }
     );
 

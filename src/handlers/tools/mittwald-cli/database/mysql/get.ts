@@ -14,7 +14,7 @@ export const handleDatabaseMysqlGet: MittwaldToolHandler<MittwaldDatabaseMysqlGe
     const { databaseId, output = "txt" } = args;
 
     // Get MySQL database details
-    const response = await mittwaldClient.api.database.getMysqlDatabase({
+    const response = await mittwaldClient.database.getMysqlDatabase({
       mysqlDatabaseId: databaseId
     });
 

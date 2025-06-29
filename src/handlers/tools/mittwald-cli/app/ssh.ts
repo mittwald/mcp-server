@@ -21,7 +21,7 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     }
 
     // Get app installation details
-    const appResponse = await mittwaldClient.api.app.getAppinstallation({
+    const appResponse = await mittwaldClient.app.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(appResponse, 200);
@@ -34,7 +34,7 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     }
 
     // Get project details to determine cluster
-    const projectResponse = await mittwaldClient.api.project.getProject({
+    const projectResponse = await mittwaldClient.project.getProject({
       projectId: projectId
     });
     assertStatus(projectResponse, 200);
@@ -43,13 +43,13 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     const clusterId = project.clusterID;
 
     // Get cluster information for SSH hostname
-    const clusterResponse = await mittwaldClient.api.project.getProject({
+    const clusterResponse = await mittwaldClient.project.getProject({
       projectId: projectId
     });
     assertStatus(clusterResponse, 200);
 
     // Get SSH users for the project
-    const sshUsersResponse = await mittwaldClient.api.project.listSshUsers({
+    const sshUsersResponse = await mittwaldClient.project.listSshUsers({
       projectId: projectId
     });
     assertStatus(sshUsersResponse, 200);

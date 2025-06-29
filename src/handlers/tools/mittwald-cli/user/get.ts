@@ -11,7 +11,7 @@ export const handleUserGet: MittwaldToolHandler<MittwaldUserGetArgs> = async (ar
     const userId = args.userId || 'self';
     
     // Get user details from the API
-    const result = await mittwaldClient.api.user.getUser({
+    const result = await mittwaldClient.user.getUser({
       userId: userId
     });
 
