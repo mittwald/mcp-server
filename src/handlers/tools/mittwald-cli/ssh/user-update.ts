@@ -59,7 +59,7 @@ export const handleSshUserUpdate: MittwaldToolHandler<MittwaldSshUserUpdateArgs>
     }
 
     // Update SSH user via API
-    const result = await mittwaldClient.api.sshsftpUser.updateSshUser({
+    const result = await mittwaldClient.api.sshsftpUser.sshUserUpdateSshUser({
       sshUserId: args.sshUserId,
       data: updateData
     });

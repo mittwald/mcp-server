@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldAppVersionsArgs {
@@ -17,7 +17,7 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
     const { app, output = 'txt' } = args;
 
     // Get all available apps
-    const appsResponse = await mittwaldClient.app.listApps();
+    const appsResponse = await mittwaldClient.api.app.listApps({});
     assertStatus(appsResponse, 200);
     
     const allApps = appsResponse.data;
@@ -47,7 +47,7 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
     
     for (const appItem of targetApps) {
       try {
-        const versionsResponse = await mittwaldClient.app.listAppversions({
+        const versionsResponse = await mittwaldClient.api.app.listAppversions({
           appId: appItem.id
         });
         assertStatus(versionsResponse, 200);

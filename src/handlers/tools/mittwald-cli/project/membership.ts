@@ -16,20 +16,22 @@ export const handleMittwaldProjectMembership: MittwaldToolHandler<MittwaldProjec
         'list-own': 'List ProjectMemberships belonging to the executing user. Use mittwald_project_membership_list_own tool.'
       };
 
-      return formatToolResponse({
-        success: true,
-        data: {
+      return formatToolResponse(
+        'success',
+        commandHelp[args.command],
+        {
           command: args.command,
           description: commandHelp[args.command],
           usage: `Use the specific tool: mittwald_project_membership_${args.command.replace('-', '_')}`
         }
-      });
+      );
     }
 
     // Show general help
-    return formatToolResponse({
-      success: true,
-      data: {
+    return formatToolResponse(
+      'success',
+      'Control who gets to work on your projects, and who doesn\'t',
+      {
         description: 'Control who gets to work on your projects, and who doesn\'t',
         availableCommands: [
           {
@@ -55,12 +57,12 @@ export const handleMittwaldProjectMembership: MittwaldToolHandler<MittwaldProjec
         ],
         usage: 'Use the specific membership tools listed above for actual operations'
       }
-    });
+    );
 
   } catch (error) {
-    return formatToolResponse({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    });
+    return formatToolResponse(
+      'error',
+      error instanceof Error ? error.message : 'Unknown error occurred'
+    );
   }
 };

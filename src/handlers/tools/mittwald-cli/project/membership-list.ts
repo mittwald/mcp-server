@@ -14,10 +14,10 @@ interface MittwaldProjectMembershipListArgs {
 export const handleMittwaldProjectMembershipList: MittwaldToolHandler<MittwaldProjectMembershipListArgs> = async (args, { mittwaldClient }) => {
   try {
     if (!args.projectId) {
-      return formatToolResponse({
-        success: false,
-        error: 'Project ID is required. Use the projectId parameter to specify a project.'
-      });
+      return formatToolResponse(
+        'error',
+        'Project ID is required. Use the projectId parameter to specify a project.'
+      );
     }
 
     // Get memberships for the specified project
@@ -26,20 +26,21 @@ export const handleMittwaldProjectMembershipList: MittwaldToolHandler<MittwaldPr
     });
 
     if (!result.data) {
-      return formatToolResponse({
-        success: false,
-        error: 'No membership data received from API'
-      });
+      return formatToolResponse(
+        'error',
+        'No membership data received from API'
+      );
     }
 
-    const memberships = result.data;
+    const memberships = result.data as any[];
     
     // Apply formatting based on output type (reusing logic from membership-list-own)
     if (args.output === 'json') {
-      return formatToolResponse({
-        success: true,
-        data: memberships
-      });
+      return formatToolResponse(
+        'success',
+        'Memberships retrieved successfully',
+        memberships
+      );
     }
 
     if (args.output === 'yaml') {
@@ -52,10 +53,11 @@ export const handleMittwaldProjectMembershipList: MittwaldToolHandler<MittwaldPr
   ${args.extended ? `
   updatedAt: ${membership.updatedAt || 'N/A'}` : ''}`).join('\n');
 
-      return formatToolResponse({
-        success: true,
-        data: yamlOutput
-      });
+      return formatToolResponse(
+        'success',
+        'Memberships retrieved in YAML format',
+        yamlOutput
+      );
     }
 
     if (args.output === 'csv' || args.output === 'tsv') {
@@ -81,18 +83,20 @@ export const handleMittwaldProjectMembershipList: MittwaldToolHandler<MittwaldPr
         return basicData.join(separator);
       }).join('\n');
 
-      return formatToolResponse({
-        success: true,
-        data: headerRow + dataRows
-      });
+      return formatToolResponse(
+        'success',
+        'Memberships retrieved in CSV/TSV format',
+        headerRow + dataRows
+      );
     }
 
     // Default txt format (table-like)
     if (memberships.length === 0) {
-      return formatToolResponse({
-        success: true,
-        data: 'No memberships found for this project.'
-      });
+      return formatToolResponse(
+        'success',
+        'No memberships found for this project.',
+        'No memberships found for this project.'
+      );
     }
 
     const formatDate = (dateStr: string | undefined) => {
@@ -141,15 +145,16 @@ export const handleMittwaldProjectMembershipList: MittwaldToolHandler<MittwaldPr
       output += row.join('\t') + '\n';
     });
 
-    return formatToolResponse({
-      success: true,
-      data: output.trim()
-    });
+    return formatToolResponse(
+      'success',
+      'Memberships retrieved successfully',
+      output.trim()
+    );
 
   } catch (error) {
-    return formatToolResponse({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    });
+    return formatToolResponse(
+      'error',
+      error instanceof Error ? error.message : 'Unknown error occurred'
+    );
   }
 };
