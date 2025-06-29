@@ -11,8 +11,6 @@
  */
 
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import { ELICITATION_EXAMPLE_TOOL } from './tool/elicitation-example.js';
-import { MCP_LOGGING_TOOL } from './tool/logging.js';
 
 // Agent 2 app dependency tools
 import { mittwald_app_dependency_update } from './tool/mittwald-cli/app/dependency/update.js';
@@ -196,10 +194,6 @@ export const TOOL_RESPONSE_MESSAGES = {
  * @see {@link https://modelcontextprotocol.io/specification/2025-06-18/core/tools | MCP Tools}
  */
 export const TOOLS: Tool[] = [
-  // Example and utility tools
-  ELICITATION_EXAMPLE_TOOL,
-  MCP_LOGGING_TOOL,
-  
   // Agent 2 app dependency tools
   mittwald_app_dependency_update,
   mittwald_app_dependency_versions,

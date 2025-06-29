@@ -3,6 +3,7 @@
  * @module constants/tool/mittwald-cli/extension
  */
 
+export { mittwald_extension } from './extension.js';
 export { mittwald_extension_install } from './install.js';
 export { mittwald_extension_list_installed } from './list-installed.js';
 export { mittwald_extension_list } from './list.js';

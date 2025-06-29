@@ -22,8 +22,6 @@ import { logger } from '../utils/logger.js';
 import type { MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
 import {
-  handleElicitationExample,
-  handleLogging,
   handleProjectCreate,
   handleProjectDelete,
   handleProjectGet,
@@ -233,17 +231,6 @@ import type { MittwaldToolHandlerContext } from '../types/mittwald/conversation.
  */
 const ToolSchemas = {
   
-  elicitation_example: z.object({
-    type: z.enum(["input", "confirm", "choice"]).describe("Type of elicitation"),
-    prompt: z.string().describe("Prompt to show to user"),
-    options: z.array(z.string()).optional().describe("Options for choice type")
-  }),
-  
-  mcp_logging: z.object({
-    level: z.enum(["debug", "info", "warning", "error"]).describe("Log level"),
-    message: z.string().describe("Message to log"),
-    data: z.unknown().optional().describe("Optional additional data")
-  }),
   
   
   // Agent-18 project tools
@@ -1253,9 +1240,6 @@ const ToolSchemas = {
  * to their respective handlers.
  */
 type ToolArgs = {
-  elicitation_example: any; // Example tools use any for flexibility
-  mcp_logging: { level: 'debug' | 'info' | 'warning' | 'error'; message: string; data?: any };
-  
   // Agent-18 project tools
   mittwald_project_create: {
     description: string;
@@ -1905,15 +1889,6 @@ export async function handleToolCall(
     let result: CallToolResult;
 
     switch (request.params.name) {
-      case "elicitation_example":
-        result = await handleElicitationExample(args, context);
-        break;
-      case "mcp_logging":
-        result = await handleLogging(args, handlerContext);
-        break;
-      
-      // Note: Org handlers not yet implemented
-
       // Agent-18 project tools
       case "mittwald_project_create":
         // Create context with mittwaldClient for Mittwald CLI tools
