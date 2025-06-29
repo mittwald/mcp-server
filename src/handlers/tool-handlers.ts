@@ -166,9 +166,20 @@ import { handleSftpUserList } from './tools/mittwald-cli/sftp/user-list.js';
 import { handleSftpUserUpdate } from './tools/mittwald-cli/sftp/user-update.js';
 import { handleSftpUser } from './tools/mittwald-cli/sftp/user.js';
 
-// Agent 15 mail handlers
+// Mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
 import { handleMail } from './tools/mittwald-cli/mail/mail.js';
+import { handleMittwaldMailAddressCreate } from './tools/mittwald-cli/mail/address/create.js';
+import { handleMittwaldMailAddressDelete } from './tools/mittwald-cli/mail/address/delete.js';
+import { handleMittwaldMailAddressGet } from './tools/mittwald-cli/mail/address/get.js';
+import { handleMittwaldMailAddressList } from './tools/mittwald-cli/mail/address/list.js';
+import { handleMailAddress } from './tools/mittwald-cli/mail/address/index.js';
+import { handleMailAddressUpdate } from './tools/mittwald-cli/mail/address-update.js';
+import { handleMailDeliveryboxCreate } from './tools/mittwald-cli/mail/deliverybox-create.js';
+import { handleMailDeliveryboxDelete } from './tools/mittwald-cli/mail/deliverybox-delete.js';
+import { handleMailDeliveryboxGet } from './tools/mittwald-cli/mail/deliverybox-get.js';
+import { handleMailDeliveryboxList } from './tools/mittwald-cli/mail/deliverybox-list.js';
+import { handleMailDeliveryboxUpdate } from './tools/mittwald-cli/mail/deliverybox-update.js';
 
 // Agent 16 org handlers  
 import { handleOrgMembershipList } from './tools/mittwald-cli/org/membership/list.js';
@@ -917,9 +928,92 @@ const ToolSchemas = {
   mittwald_domain_dnszone_update: domainDnszoneUpdateSchema,
   mittwald_domain_dnszone: domainDnszoneMainSchema,
   
-  // Agent 15 mail tools
+  // Mail tools
+  mittwald_mail: z.object({
+    help: z.boolean().optional().describe("Show help for mail commands")
+  }),
+  
   mittwald_mail_deliverybox: z.object({
     help: z.boolean().optional().describe("Show help for mail deliverybox commands")
+  }),
+  
+  mittwald_mail_address_create: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    address: z.string().describe("Email address to create"),
+    password: z.string().optional().describe("Password for the email address"),
+    forwards: z.array(z.string()).optional().describe("List of forwarding addresses"),
+    catchAll: z.boolean().optional().describe("Set as catch-all address"),
+    autoresponder: z.string().optional().describe("Auto-responder message"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_mail_address_delete: z.object({
+    addressId: z.string().describe("ID of the mail address to delete"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_mail_address_get: z.object({
+    addressId: z.string().describe("ID of the mail address to retrieve"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_mail_address_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_mail_address: z.object({
+    help: z.boolean().optional().describe("Show help for mail address commands")
+  }),
+  
+  mittwald_mail_address_update: z.object({
+    addressId: z.string().describe("ID of the mail address to update"),
+    password: z.string().optional().describe("Update password for the email address"),
+    forwards: z.array(z.string()).optional().describe("Update list of forwarding addresses"),
+    catchAll: z.boolean().optional().describe("Update catch-all setting"),
+    autoresponder: z.string().optional().describe("Update auto-responder message"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_mail_deliverybox_create: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    description: z.string().describe("Description for the deliverybox"),
+    password: z.string().describe("Password for the deliverybox"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_mail_deliverybox_delete: z.object({
+    deliveryboxId: z.string().describe("ID of the deliverybox to delete"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+  
+  mittwald_mail_deliverybox_get: z.object({
+    deliveryboxId: z.string().describe("ID of the deliverybox to retrieve"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+  
+  mittwald_mail_deliverybox_list: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+  
+  mittwald_mail_deliverybox_update: z.object({
+    deliveryboxId: z.string().describe("ID of the deliverybox to update"),
+    description: z.string().optional().describe("Update description for the deliverybox"),
+    password: z.string().optional().describe("Update password for the deliverybox"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   }),
   
   // Agent 16 org tools
@@ -2499,6 +2593,100 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken,
         };
         result = await handleMail(args, mittwaldMailContext);
+        break;
+        
+      // Mail address tools
+      case "mittwald_mail_address_create":
+        const mittwaldMailAddressCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMittwaldMailAddressCreate(getMittwaldClient().api, args);
+        break;
+        
+      case "mittwald_mail_address_delete":
+        result = await handleMittwaldMailAddressDelete(getMittwaldClient().api, args);
+        break;
+        
+      case "mittwald_mail_address_get":
+        result = await handleMittwaldMailAddressGet(getMittwaldClient().api, args);
+        break;
+        
+      case "mittwald_mail_address_list":
+        result = await handleMittwaldMailAddressList(getMittwaldClient().api, args);
+        break;
+        
+      case "mittwald_mail_address":
+        const mittwaldMailAddressContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMailAddress(args, mittwaldMailAddressContext);
+        break;
+        
+      case "mittwald_mail_address_update":
+        const mittwaldMailAddressUpdateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMailAddressUpdate(args, mittwaldMailAddressUpdateContext);
+        break;
+        
+      // Mail deliverybox tools  
+      case "mittwald_mail_deliverybox_create":
+        const mittwaldMailDeliveryboxCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMailDeliveryboxCreate(args, mittwaldMailDeliveryboxCreateContext);
+        break;
+        
+      case "mittwald_mail_deliverybox_delete":
+        const mittwaldMailDeliveryboxDeleteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMailDeliveryboxDelete(args, mittwaldMailDeliveryboxDeleteContext);
+        break;
+        
+      case "mittwald_mail_deliverybox_get":
+        const mittwaldMailDeliveryboxGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMailDeliveryboxGet(args, mittwaldMailDeliveryboxGetContext);
+        break;
+        
+      case "mittwald_mail_deliverybox_list":
+        const mittwaldMailDeliveryboxListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMailDeliveryboxList(args, mittwaldMailDeliveryboxListContext);
+        break;
+        
+      case "mittwald_mail_deliverybox_update":
+        const mittwaldMailDeliveryboxUpdateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleMailDeliveryboxUpdate(args, mittwaldMailDeliveryboxUpdateContext);
         break;
         
       // Agent 16 org tools
