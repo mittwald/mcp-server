@@ -30,6 +30,7 @@ import {
   handleProjectFilesystemUsage,
   handleProjectInviteGet,
   handleDomainVirtualhostList,
+  handleExtension,
   handleExtensionInstall,
   handleExtensionListInstalled,
   handleExtensionList,
@@ -596,6 +597,10 @@ const ToolSchemas = {
     noTruncate: z.boolean().optional().describe("Do not truncate output"),
     noRelativeDates: z.boolean().optional().describe("Do not use relative dates"),
     csvSeparator: z.enum([",", ";"]).optional().describe("CSV separator to use")
+  }),
+
+  mittwald_extension: z.object({
+    help: z.boolean().optional().describe("Show help for extension commands")
   }),
 
   mittwald_extension_install: z.object({
@@ -2066,6 +2071,16 @@ export async function handleToolCall(
         result = await handleDomainVirtualhostList(args, mittwaldDomainVirtualhostListContext);
         break;
       
+      case "mittwald_extension":
+        const mittwaldExtensionContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleExtension(args, mittwaldExtensionContext);
+        break;
+        
       case "mittwald_extension_install":
         const mittwaldExtensionInstallContext: MittwaldToolHandlerContext = {
           mittwaldClient: getMittwaldClient(),

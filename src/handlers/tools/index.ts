@@ -30,6 +30,7 @@ export { handleAppInstallWordpress } from './mittwald-cli/app/install/wordpress.
 export { handleDomainVirtualhostList } from './mittwald-cli/domain/virtualhost-list.js';
 
 // Agent 14 extension handlers
+export { handleExtension } from './mittwald-cli/extension/extension.js';
 export { handleExtensionInstall } from './mittwald-cli/extension/install.js';
 export { handleExtensionList } from './mittwald-cli/extension/list.js';
 export { handleExtensionListInstalled } from './mittwald-cli/extension/list-installed.js';
