@@ -21,7 +21,7 @@ export const handleMittwaldProjectMembershipList: MittwaldToolHandler<MittwaldPr
     }
 
     // Get memberships for the specified project
-    const result = await mittwaldClient.api.project.listProjectMemberships({
+    const result = await mittwaldClient.api.project.listMembershipsForProject({
       projectId: args.projectId,
     });
 

@@ -42,13 +42,13 @@ export const handleUserGet: MittwaldToolHandler<MittwaldUserGetArgs> = async (ar
       default:
         // Human-readable text output
         formattedOutput = `User Profile:
-ID: ${user.userId || user.id}
+ID: ${user.userId || 'N/A'}
 Email: ${user.email || 'N/A'}
 First Name: ${user.person?.firstName || 'N/A'}
 Last Name: ${user.person?.lastName || 'N/A'}
-Status: ${user.status || 'N/A'}
-Created: ${user.createdAt || 'N/A'}
-Updated: ${user.updatedAt || 'N/A'}`;
+Phone: ${user.phoneNumber || 'N/A'}
+Registered: ${user.registeredAt || 'N/A'}
+MFA Active: ${user.mfa?.active ? 'Yes' : 'No'}`;
         break;
     }
 

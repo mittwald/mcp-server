@@ -21,7 +21,7 @@ export const handleAppDependencyList: MittwaldToolHandler<MittwaldAppDependencyL
       throw new Error(`Failed to fetch system software: ${response.status}`);
     }
     
-    const dependencies = response.data.map(sw => ({
+    const dependencies = response.data.map((sw: any) => ({
       id: sw.id,
       name: sw.name,
       tags: sw.tags?.join(", ") || "",
@@ -52,7 +52,7 @@ export const handleAppDependencyList: MittwaldToolHandler<MittwaldAppDependencyL
         const separator = outputFormat === "csv" ? (args.csvSeparator || ",") : "\t";
         const headers = ["ID", "Name", "Tags", "Description"];
         
-        const csvRows = dependencies.map(dep => 
+        const csvRows = dependencies.map((dep: any) => 
           [dep.id, dep.name, dep.tags, dep.description].join(separator)
         );
 
@@ -71,7 +71,7 @@ export const handleAppDependencyList: MittwaldToolHandler<MittwaldAppDependencyL
         );
 
       default: // txt format
-        const textLines = dependencies.map(dep => 
+        const textLines = dependencies.map((dep: any) => 
           `${dep.name} [${dep.tags}] - ${dep.description}`
         );
 

@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgMembershipRevokeArgs {
@@ -12,13 +12,13 @@ export const handleOrgMembershipRevoke: MittwaldToolHandler<MittwaldOrgMembershi
     // First, get the membership details to retrieve user information for confirmation
     let userEmail = 'unknown';
     try {
-      const membershipResponse = await mittwaldClient.customer.getCustomerMembership({
+      const membershipResponse = await mittwaldClient.api.customer.getCustomerMembership({
         customerMembershipId: args.membershipId
       });
       assertStatus(membershipResponse, 200);
       
       // Get user details for display purposes
-      const userResponse = await mittwaldClient.user.api.getUser({
+      const userResponse = await mittwaldClient.api.user.getUser({
         userId: membershipResponse.data.userId
       });
       assertStatus(userResponse, 200);
@@ -30,7 +30,7 @@ export const handleOrgMembershipRevoke: MittwaldToolHandler<MittwaldOrgMembershi
     }
 
     // Revoke the membership
-    const response = await mittwaldClient.customer.deleteCustomerMembership({
+    const response = await mittwaldClient.api.customer.deleteCustomerMembership({
       customerMembershipId: args.membershipId
     });
     assertStatus(response, 204);

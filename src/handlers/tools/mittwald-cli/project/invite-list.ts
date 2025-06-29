@@ -22,7 +22,7 @@ export const handleProjectInviteList: MittwaldToolHandler<MittwaldProjectInviteL
     }
 
     // List invites for the project
-    const response = await mittwaldClient.project.api.listInvitesForProject({
+    const response = await mittwaldClient.api.project.listInvitesForProject({
       projectId: projectId
     });
     assertStatus(response, 200);
@@ -33,11 +33,11 @@ export const handleProjectInviteList: MittwaldToolHandler<MittwaldProjectInviteL
     let extendedInvites = invites;
     if (args.extended && invites.length > 0) {
       extendedInvites = await Promise.all(
-        invites.map(async (invite) => {
+        invites.map(async (invite: any) => {
           try {
             // For extended info, we might fetch user details if available
             if (invite.userId) {
-              const userResponse = await mittwaldClient.user.api.getUser({
+              const userResponse = await mittwaldClient.api.user.getUser({
                 userId: invite.userId
               });
               assertStatus(userResponse, 200);
@@ -68,7 +68,7 @@ export const handleProjectInviteList: MittwaldToolHandler<MittwaldProjectInviteL
     }
 
     // For text output, create a simplified view
-    const formattedInvites = extendedInvites.map(invite => ({
+    const formattedInvites = extendedInvites.map((invite: any) => ({
       id: invite.id,
       email: invite.mailAddress,
       userName: invite.userDetails?.person?.name || invite.mailAddress,

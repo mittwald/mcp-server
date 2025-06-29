@@ -32,7 +32,7 @@ export const handleAppCreatePhpWorker: MittwaldToolHandler<MittwaldAppCreatePhpW
     
     // Find the recommended version or latest version
     const versions = versionsResponse.data;
-    const recommendedVersion = versions.find(v => v.recommended);
+    const recommendedVersion = versions.find((v: any) => v.recommended);
     const appVersionId = recommendedVersion?.id || versions[0]?.id;
     
     if (!appVersionId) {

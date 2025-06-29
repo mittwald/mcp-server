@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgMembershipListArgs {
@@ -12,17 +12,20 @@ export interface MittwaldOrgMembershipListArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleOrgMembershipList: MittwaldToolHandler<MittwaldOrgMembershipListArgs> = async (args, { mittwaldClient, orgContext }) => {
+export const handleOrgMembershipList: MittwaldToolHandler<MittwaldOrgMembershipListArgs> = async (args, { mittwaldClient }) => {
   try {
-    // Get org ID from args or context
-    const orgId = args.orgId || (orgContext as any)?.orgId;
+    // Get org ID from args
+    const orgId = args.orgId;
     
     if (!orgId) {
-      throw new Error("Organization ID is required. Either provide it as a parameter or set a default org in the context.");
+      return formatToolResponse(
+        'error',
+        'Organization ID is required. Please provide the orgId parameter.'
+      );
     }
 
     // List memberships for the organization
-    const response = await mittwaldClient.customer.listMembershipsForCustomer({
+    const response = await mittwaldClient.api.customer.listMembershipsForCustomer({
       customerId: orgId
     });
     assertStatus(response, 200);
@@ -36,7 +39,7 @@ export const handleOrgMembershipList: MittwaldToolHandler<MittwaldOrgMembershipL
         memberships.map(async (membership) => {
           try {
             // Get user details for each membership
-            const userResponse = await mittwaldClient.user.api.getUser({
+            const userResponse = await mittwaldClient.api.user.getUser({
               userId: membership.userId
             });
             assertStatus(userResponse, 200);
@@ -65,10 +68,10 @@ export const handleOrgMembershipList: MittwaldToolHandler<MittwaldOrgMembershipL
     }
 
     // For text output, create a simplified view
-    const formattedMemberships = extendedMemberships.map(membership => ({
+    const formattedMemberships = extendedMemberships.map((membership: any) => ({
       userId: membership.userId,
       userEmail: membership.userDetails?.email || 'unknown',
-      userName: membership.userDetails?.person?.name || 'unknown',
+      userName: membership.userDetails?.person?.firstName || 'unknown',
       role: membership.role,
       memberSince: membership.memberSince
     }));
