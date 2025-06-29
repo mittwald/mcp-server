@@ -1,6 +1,6 @@
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCliCommand } from '../../../../../utils/execute-cli-command.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { executeCliCommand } from '../../../../utils/execute-cli-command.js';
 
 export async function handleMittwaldDatabaseMysqlDelete(
   databaseId: string,

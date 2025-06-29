@@ -35,7 +35,7 @@ export const handleAppInstallMatomo: MittwaldToolHandler<MittwaldAppInstallMatom
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.project.getProject({
+    const projectResponse = await mittwaldClient.project.api.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);
@@ -52,7 +52,7 @@ export const handleAppInstallMatomo: MittwaldToolHandler<MittwaldAppInstallMatom
 
     // Matomo app ID from CLI
     const appId = "91fa05e7-34f7-42e8-a8d3-a9c42abd5f8c";
-    const versionsResponse = await mittwaldClient.app.listAppVersions({ appId });
+    const versionsResponse = await mittwaldClient.app.api.listAppVersions({ appId });
     assertStatus(versionsResponse, 200);
 
     let appVersion;
@@ -66,7 +66,7 @@ export const handleAppInstallMatomo: MittwaldToolHandler<MittwaldAppInstallMatom
     }
 
     // Trigger app installation
-    const installResponse = await mittwaldClient.app.requestAppInstallation({
+    const installResponse = await mittwaldClient.app.api.requestAppInstallation({
       projectId: args.projectId,
       appVersionId: appVersion.id,
       description: siteTitle,
@@ -90,7 +90,7 @@ export const handleAppInstallMatomo: MittwaldToolHandler<MittwaldAppInstallMatom
     
     do {
       try {
-        const checkResponse = await mittwaldClient.app.getAppInstallation({
+        const checkResponse = await mittwaldClient.app.api.getAppInstallation({
           appInstallationId,
         });
         if (checkResponse.status === 200) {
@@ -117,7 +117,7 @@ export const handleAppInstallMatomo: MittwaldToolHandler<MittwaldAppInstallMatom
       const startTime = Date.now();
       
       while (true) {
-        const statusResponse = await mittwaldClient.app.getAppInstallation({
+        const statusResponse = await mittwaldClient.app.api.getAppInstallation({
           appInstallationId,
         });
         assertStatus(statusResponse, 200);

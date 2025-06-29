@@ -18,7 +18,7 @@ export const handleAppCopy: MittwaldToolHandler<MittwaldAppCopyArgs> = async (ar
     }
 
     // Call the actual Mittwald API to copy the app installation
-    const response = await mittwaldClient.app.requestAppinstallationCopy({
+    const response = await mittwaldClient.app.api.requestAppinstallationCopy({
       appInstallationId: args.installationId,
       data: {
         description: args.description,

@@ -37,7 +37,7 @@ export const handleAppInstallJoomla: MittwaldToolHandler<MittwaldAppInstallJooml
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.project.getProject({
+    const projectResponse = await mittwaldClient.project.api.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);
@@ -56,7 +56,7 @@ export const handleAppInstallJoomla: MittwaldToolHandler<MittwaldAppInstallJooml
 
     // Joomla app ID from CLI
     const appId = "8d404bff-6d75-4833-9eed-1b83b0552585";
-    const versionsResponse = await mittwaldClient.app.listAppVersions({ appId });
+    const versionsResponse = await mittwaldClient.app.api.listAppVersions({ appId });
     assertStatus(versionsResponse, 200);
 
     let appVersion;
@@ -70,7 +70,7 @@ export const handleAppInstallJoomla: MittwaldToolHandler<MittwaldAppInstallJooml
     }
 
     // Trigger app installation
-    const installResponse = await mittwaldClient.app.requestAppInstallation({
+    const installResponse = await mittwaldClient.app.api.requestAppInstallation({
       projectId: args.projectId,
       appVersionId: appVersion.id,
       description: siteTitle,
@@ -96,7 +96,7 @@ export const handleAppInstallJoomla: MittwaldToolHandler<MittwaldAppInstallJooml
     
     do {
       try {
-        const checkResponse = await mittwaldClient.app.getAppInstallation({
+        const checkResponse = await mittwaldClient.app.api.getAppInstallation({
           appInstallationId,
         });
         if (checkResponse.status === 200) {
@@ -123,7 +123,7 @@ export const handleAppInstallJoomla: MittwaldToolHandler<MittwaldAppInstallJooml
       const startTime = Date.now();
       
       while (true) {
-        const statusResponse = await mittwaldClient.app.getAppInstallation({
+        const statusResponse = await mittwaldClient.app.api.getAppInstallation({
           appInstallationId,
         });
         assertStatus(statusResponse, 200);

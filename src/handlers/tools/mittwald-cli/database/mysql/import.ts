@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { executeCommand } from "../../../../../utils/executeCommand.js";
+import { executeCommand } from "../../../../utils/executeCommand.js";
 
 export const MittwaldDatabaseMysqlImportSchema = z.object({
   databaseId: z.string(),

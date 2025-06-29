@@ -15,7 +15,7 @@ export const handleBackupScheduleList: MittwaldToolHandler<BackupScheduleListPar
     }
 
     // Use the real API client to list backup schedules
-    const response = await mittwaldClient.backup.listProjectBackupSchedules({
+    const response = await mittwaldClient.backup.api.listProjectBackupSchedules({
       projectId
     });
 

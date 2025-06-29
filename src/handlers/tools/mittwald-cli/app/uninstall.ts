@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldAppUninstallArgs {
@@ -18,7 +18,7 @@ export const handleAppUninstall: MittwaldToolHandler<MittwaldAppUninstallArgs> =
     }
 
     // Get app installation details for confirmation and logging
-    const appResponse = await mittwaldClient.app.getAppinstallation({
+    const appResponse = await mittwaldClient.app.api.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(appResponse, 200);
@@ -34,7 +34,7 @@ export const handleAppUninstall: MittwaldToolHandler<MittwaldAppUninstallArgs> =
     }
 
     // Perform the uninstallation
-    const uninstallResponse = await mittwaldClient.app.deleteAppinstallation({
+    const uninstallResponse = await mittwaldClient.app.api.deleteAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(uninstallResponse, 204);

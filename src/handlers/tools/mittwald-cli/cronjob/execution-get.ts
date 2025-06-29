@@ -12,7 +12,7 @@ export const handleCronjobExecutionGet: MittwaldToolHandler<Args> = async (args,
     const { cronjobId, executionId, output = 'txt' } = args;
 
     // Get the cron job execution details
-    const execution = await mittwaldClient.cronjob.getCronjobExecution({
+    const execution = await mittwaldClient.cronjob.api.getCronjobExecution({
       cronjobId,
       executionId
     });

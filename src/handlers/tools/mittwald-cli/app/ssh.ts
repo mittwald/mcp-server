@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldAppSshArgs {
@@ -21,7 +21,7 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     }
 
     // Get app installation details
-    const appResponse = await mittwaldClient.app.getAppinstallation({
+    const appResponse = await mittwaldClient.app.api.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(appResponse, 200);
@@ -30,7 +30,7 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     const projectId = appInstallation.projectId;
 
     // Get project details to determine cluster
-    const projectResponse = await mittwaldClient.project.getProject({
+    const projectResponse = await mittwaldClient.project.api.getProject({
       projectId: projectId
     });
     assertStatus(projectResponse, 200);
@@ -39,13 +39,13 @@ export const handleAppSsh: MittwaldToolHandler<MittwaldAppSshArgs> = async (args
     const clusterId = project.clusterID;
 
     // Get cluster information for SSH hostname
-    const clusterResponse = await mittwaldClient.project.getProject({
+    const clusterResponse = await mittwaldClient.project.api.getProject({
       projectId: projectId
     });
     assertStatus(clusterResponse, 200);
 
     // Get SSH users for the project
-    const sshUsersResponse = await mittwaldClient.project.listSshUsers({
+    const sshUsersResponse = await mittwaldClient.project.api.listSshUsers({
       projectId: projectId
     });
     assertStatus(sshUsersResponse, 200);

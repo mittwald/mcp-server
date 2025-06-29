@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgMembershipRevokeArgs {
@@ -18,7 +18,7 @@ export const handleOrgMembershipRevoke: MittwaldToolHandler<MittwaldOrgMembershi
       assertStatus(membershipResponse, 200);
       
       // Get user details for display purposes
-      const userResponse = await mittwaldClient.user.getUser({
+      const userResponse = await mittwaldClient.user.api.getUser({
         userId: membershipResponse.data.userId
       });
       assertStatus(userResponse, 200);

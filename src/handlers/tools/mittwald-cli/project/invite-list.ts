@@ -22,7 +22,7 @@ export const handleProjectInviteList: MittwaldToolHandler<MittwaldProjectInviteL
     }
 
     // List invites for the project
-    const response = await mittwaldClient.project.listInvitesForProject({
+    const response = await mittwaldClient.project.api.listInvitesForProject({
       projectId: projectId
     });
     assertStatus(response, 200);
@@ -37,7 +37,7 @@ export const handleProjectInviteList: MittwaldToolHandler<MittwaldProjectInviteL
           try {
             // For extended info, we might fetch user details if available
             if (invite.userId) {
-              const userResponse = await mittwaldClient.user.getUser({
+              const userResponse = await mittwaldClient.user.api.getUser({
                 userId: invite.userId
               });
               assertStatus(userResponse, 200);

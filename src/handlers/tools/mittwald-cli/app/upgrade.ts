@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 import { z } from 'zod';
 
@@ -37,7 +37,7 @@ export const handleAppUpgrade: MittwaldToolHandler<MittwaldAppUpgradeArgs> = asy
     }
 
     // Get current app installation details
-    const installationResponse = await mittwaldClient.app.getAppinstallation({
+    const installationResponse = await mittwaldClient.app.api.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(installationResponse, 200);
@@ -51,7 +51,7 @@ export const handleAppUpgrade: MittwaldToolHandler<MittwaldAppUpgradeArgs> = asy
     }
 
     // Get available versions for this app
-    const versionsResponse = await mittwaldClient.app.listAppversions({
+    const versionsResponse = await mittwaldClient.app.api.listAppversions({
       appId: installation.appId
     });
     assertStatus(versionsResponse, 200);
@@ -80,7 +80,7 @@ export const handleAppUpgrade: MittwaldToolHandler<MittwaldAppUpgradeArgs> = asy
     }
 
     // Perform the upgrade
-    const upgradeResponse = await mittwaldClient.app.requestAppinstallationUpgrade({
+    const upgradeResponse = await mittwaldClient.app.api.requestAppinstallationUpgrade({
       appInstallationId: installationId,
       data: {
         appVersionId: targetVersionObj.id

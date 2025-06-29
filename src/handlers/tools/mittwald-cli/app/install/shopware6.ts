@@ -40,7 +40,7 @@ export const handleAppInstallShopware6: MittwaldToolHandler<MittwaldAppInstallSh
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.project.getProject({
+    const projectResponse = await mittwaldClient.project.api.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);
@@ -62,7 +62,7 @@ export const handleAppInstallShopware6: MittwaldToolHandler<MittwaldAppInstallSh
 
     // Shopware 6 app ID from CLI
     const appId = "12d54d05-7e55-4cf3-90c4-093516e0eaf8";
-    const versionsResponse = await mittwaldClient.app.listAppVersions({ appId });
+    const versionsResponse = await mittwaldClient.app.api.listAppVersions({ appId });
     assertStatus(versionsResponse, 200);
 
     let appVersion;
@@ -76,7 +76,7 @@ export const handleAppInstallShopware6: MittwaldToolHandler<MittwaldAppInstallSh
     }
 
     // Trigger app installation
-    const installResponse = await mittwaldClient.app.requestAppInstallation({
+    const installResponse = await mittwaldClient.app.api.requestAppInstallation({
       projectId: args.projectId,
       appVersionId: appVersion.id,
       description: siteTitle,
@@ -105,7 +105,7 @@ export const handleAppInstallShopware6: MittwaldToolHandler<MittwaldAppInstallSh
     
     do {
       try {
-        const checkResponse = await mittwaldClient.app.getAppInstallation({
+        const checkResponse = await mittwaldClient.app.api.getAppInstallation({
           appInstallationId,
         });
         if (checkResponse.status === 200) {
@@ -132,7 +132,7 @@ export const handleAppInstallShopware6: MittwaldToolHandler<MittwaldAppInstallSh
       const startTime = Date.now();
       
       while (true) {
-        const statusResponse = await mittwaldClient.app.getAppInstallation({
+        const statusResponse = await mittwaldClient.app.api.getAppInstallation({
           appInstallationId,
         });
         assertStatus(statusResponse, 200);

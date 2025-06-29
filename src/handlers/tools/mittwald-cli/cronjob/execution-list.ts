@@ -24,7 +24,7 @@ export const handleCronjobExecutionList: MittwaldToolHandler<Args> = async (args
     } = args;
 
     // List the cron job executions
-    const executions = await mittwaldClient.cronjob.listCronjobExecutions({
+    const executions = await mittwaldClient.cronjob.api.listCronjobExecutions({
       cronjobId
     });
 

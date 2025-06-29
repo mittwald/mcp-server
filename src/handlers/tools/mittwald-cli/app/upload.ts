@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldAppUploadArgs {
@@ -18,7 +18,7 @@ export const handleAppUpload: MittwaldToolHandler<MittwaldAppUploadArgs> = async
     const { installationId, source, exclude, dryRun, delete: deleteFlag, remoteSubDirectory, sshUser, sshIdentityFile } = args;
 
     // Get app installation details
-    const appResponse = await mittwaldClient.app.getAppinstallation({
+    const appResponse = await mittwaldClient.app.api.getAppinstallation({
       appInstallationId: installationId
     });
     assertStatus(appResponse, 200);
@@ -27,7 +27,7 @@ export const handleAppUpload: MittwaldToolHandler<MittwaldAppUploadArgs> = async
     const projectId = appInstallation.projectId;
 
     // Get SSH users for the project
-    const sshUsersResponse = await mittwaldClient.project.listSshUsers({
+    const sshUsersResponse = await mittwaldClient.project.api.listSshUsers({
       projectId: projectId
     });
     assertStatus(sshUsersResponse, 200);

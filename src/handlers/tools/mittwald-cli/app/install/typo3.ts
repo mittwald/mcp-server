@@ -36,7 +36,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
       : undefined;
 
     // Get project details for site title generation
-    const projectResponse = await mittwaldClient.project.getProject({
+    const projectResponse = await mittwaldClient.project.api.getProject({
       projectId: args.projectId,
     });
     assertStatus(projectResponse, 200);
@@ -54,7 +54,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
 
     // TYPO3 app ID from CLI
     const appId = "352971cc-b96a-4a26-8651-b08d7c8a7357";
-    const versionsResponse = await mittwaldClient.app.listAppVersions({ appId });
+    const versionsResponse = await mittwaldClient.app.api.listAppVersions({ appId });
     assertStatus(versionsResponse, 200);
 
     let appVersion;
@@ -68,7 +68,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
     }
 
     // Trigger app installation
-    const installResponse = await mittwaldClient.app.requestAppInstallation({
+    const installResponse = await mittwaldClient.app.api.requestAppInstallation({
       projectId: args.projectId,
       appVersionId: appVersion.id,
       description: siteTitle,
@@ -93,7 +93,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
     
     do {
       try {
-        const checkResponse = await mittwaldClient.app.getAppInstallation({
+        const checkResponse = await mittwaldClient.app.api.getAppInstallation({
           appInstallationId,
         });
         if (checkResponse.status === 200) {
@@ -120,7 +120,7 @@ export const handleAppInstallTypo3: MittwaldToolHandler<MittwaldAppInstallTypo3A
       const startTime = Date.now();
       
       while (true) {
-        const statusResponse = await mittwaldClient.app.getAppInstallation({
+        const statusResponse = await mittwaldClient.app.api.getAppInstallation({
           appInstallationId,
         });
         assertStatus(statusResponse, 200);

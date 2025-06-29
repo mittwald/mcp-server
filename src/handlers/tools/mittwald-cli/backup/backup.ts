@@ -25,7 +25,7 @@ export const handleBackup: MittwaldToolHandler<BackupParameters> = async (params
         }
         
         // Use the real API client to create a backup
-        const createResponse = await mittwaldClient.backup.createProjectBackup({
+        const createResponse = await mittwaldClient.backup.api.createProjectBackup({
           projectId,
           data: createData
         });
@@ -64,7 +64,7 @@ export const handleBackup: MittwaldToolHandler<BackupParameters> = async (params
         
         // Check if backup export exists, if not create one
         try {
-          const exportResponse = await mittwaldClient.backup.createProjectBackupExport({
+          const exportResponse = await mittwaldClient.backup.api.createProjectBackupExport({
             projectBackupId: backupId,
             data: {
               format: output?.endsWith('.zip') ? 'zip' : 'tar'
@@ -104,7 +104,7 @@ export const handleBackup: MittwaldToolHandler<BackupParameters> = async (params
         }
         
         // Use the real API client to get backup details
-        const getResponse = await mittwaldClient.backup.getProjectBackup({
+        const getResponse = await mittwaldClient.backup.api.getProjectBackup({
           projectBackupId: backupId
         });
 
@@ -134,7 +134,7 @@ export const handleBackup: MittwaldToolHandler<BackupParameters> = async (params
         }
         
         // Use the real API client to list backups
-        const listResponse = await mittwaldClient.backup.listProjectBackups({
+        const listResponse = await mittwaldClient.backup.api.listProjectBackups({
           projectId
         });
 

@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
 export interface MittwaldOrgMembershipListArgs {
@@ -36,7 +36,7 @@ export const handleOrgMembershipList: MittwaldToolHandler<MittwaldOrgMembershipL
         memberships.map(async (membership) => {
           try {
             // Get user details for each membership
-            const userResponse = await mittwaldClient.user.getUser({
+            const userResponse = await mittwaldClient.user.api.getUser({
               userId: membership.userId
             });
             assertStatus(userResponse, 200);

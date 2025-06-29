@@ -1,5 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 
 export interface MittwaldAppCreateStaticArgs {
   projectId?: string;
@@ -22,7 +22,7 @@ export const handleAppCreateStatic: MittwaldToolHandler<MittwaldAppCreateStaticA
     const staticAppId = "d20baefd-81d2-42aa-bfba-9a3220ae839b";
     
     // Get latest Static site app version
-    const versionsResponse = await mittwaldClient.app.listAppversions({ 
+    const versionsResponse = await mittwaldClient.app.api.listAppversions({ 
       appId: staticAppId 
     });
     
@@ -49,7 +49,7 @@ export const handleAppCreateStatic: MittwaldToolHandler<MittwaldAppCreateStaticA
     }
 
     // Create the app installation
-    const response = await mittwaldClient.app.requestAppinstallation({
+    const response = await mittwaldClient.app.api.requestAppinstallation({
       projectId,
       data: {
         appVersionId,

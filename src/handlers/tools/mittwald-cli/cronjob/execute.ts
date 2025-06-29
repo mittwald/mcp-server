@@ -11,7 +11,7 @@ export const handleCronjobExecute: MittwaldToolHandler<Args> = async (args, { mi
     const { cronjobId, quiet = false } = args;
 
     // Execute the cron job
-    const execution = await mittwaldClient.cronjob.executeCronjob({
+    const execution = await mittwaldClient.cronjob.api.executeCronjob({
       cronjobId
     });
 
@@ -26,7 +26,7 @@ export const handleCronjobExecute: MittwaldToolHandler<Args> = async (args, { mi
     }
 
     // Get the cron job details for additional context
-    const cronjob = await mittwaldClient.cronjob.getCronjob({
+    const cronjob = await mittwaldClient.cronjob.api.getCronjob({
       cronjobId
     });
 
