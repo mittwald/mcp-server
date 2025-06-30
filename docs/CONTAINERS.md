@@ -2,6 +2,13 @@
 
 This document describes the container management capabilities available through the Mittwald MCP server.
 
+## 📚 Additional Documentation
+
+- **[User Guide](./CONTAINER_USER_GUIDE.md)** - Natural language examples and prompts
+- **[Quick Reference](./CONTAINER_QUICK_REFERENCE.md)** - Command cheat sheet and patterns
+- **[Example Conversation](./CONTAINER_EXAMPLE_CONVERSATION.md)** - Real-world deployment scenario
+- **[Implementation Summary](./CONTAINER_IMPLEMENTATION_SUMMARY.md)** - Technical implementation details
+
 ## Overview
 
 Mittwald provides a comprehensive container platform that allows you to deploy Docker containers alongside traditional applications. The platform uses a **stack-based approach** where containers run as services within stacks.

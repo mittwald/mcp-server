@@ -31,7 +31,8 @@ describe('Container Operations', () => {
     logger.info('Setting up container tests...');
     
     // Create MCP client
-    client = await MCPTestClient.create();
+    client = new MCPTestClient();
+    await client.initialize();
     projectManager = new TestProjectManager(client);
     
     // Create test project
