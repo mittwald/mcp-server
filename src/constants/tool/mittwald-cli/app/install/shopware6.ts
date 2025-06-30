@@ -48,11 +48,13 @@ export const mittwald_app_install_shopware6: Tool = {
       },
       shopLang: {
         type: "string",
-        description: "Shop language"
+        description: "Shop language in locale format (e.g. 'de-DE', 'en-GB', 'en-US', 'fr-FR', 'es-ES', 'it-IT', 'nl-NL', 'pl-PL'). Default: 'de-DE'",
+        enum: ["de-DE", "en-GB", "en-US", "fr-FR", "es-ES", "it-IT", "nl-NL", "pl-PL"]
       },
       shopCurrency: {
         type: "string",
-        description: "Shop currency"
+        description: "Shop currency (e.g. 'EUR', 'USD', 'GBP', 'CHF'). Default: 'EUR'",
+        enum: ["EUR", "USD", "GBP", "CHF"]
       },
       wait: {
         type: "boolean",

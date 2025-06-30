@@ -23,8 +23,18 @@ export interface MittwaldAppInstallShopware5Args {
 
 export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallShopware5Args> = async (args, { mittwaldClient }) => {
   try {
+    logger.info('Shopware 5 handler received args:', JSON.stringify(args));
+    
     if (!args.projectId) {
       return formatToolResponse("error", "Project ID is required");
+    }
+    
+    // Validate shopLang format
+    if (args.shopLang) {
+      const validLangFormats = ['de-DE', 'en-GB', 'en-US', 'fr-FR', 'es-ES', 'it-IT', 'nl-NL', 'pl-PL'];
+      if (!validLangFormats.includes(args.shopLang)) {
+        return formatToolResponse("error", `Invalid shop_lang format. Must be one of: ${validLangFormats.join(', ')}. Example: 'de-DE'`);
+      }
     }
 
     // Get user details for defaults
@@ -62,6 +72,8 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
 
     // Shopware 5 app ID from CLI
     const shopware5AppId = "a23acf9c-9298-4082-9e7d-25356f9976dc";
+    logger.info('Using Shopware 5 app ID:', shopware5AppId);
+    
     // Get available versions
     const versionsResponse = await mittwaldClient.app.listAppversions({ 
       appId: shopware5AppId 
@@ -70,10 +82,14 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     
     // Find the recommended version or use specified version
     const versions = versionsResponse.data;
+    logger.info(`Found ${versions.length} Shopware 5 versions`);
+    logger.info('Available versions:', versions.map((v: any) => v.externalVersion).join(', '));
+    
     let appVersionId;
     if (args.version) {
       const specificVersion = versions.find((v: any) => v.externalVersion === args.version);
       if (!specificVersion) {
+        logger.error(`Version ${args.version} not found in:`, versions.map((v: any) => v.externalVersion));
         return formatToolResponse("error", `Shopware 5 version ${args.version} not found`);
       }
       appVersionId = specificVersion.id;
@@ -96,10 +112,17 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
       { name: "site_title", value: args.siteTitle || 'My Shopware 5 Shop' },
       { name: "host", value: hostname || '' },
       { name: "shop_email", value: args.shopEmail || user.email || "shop@example.com" },
-      { name: "shop_lang", value: args.shopLang || "en" },
+      { name: "shop_lang", value: args.shopLang || "de-DE" },
       { name: "shop_currency", value: args.shopCurrency || "EUR" }
     ];
 
+    logger.info('Shopware 5 installation request:', {
+      projectId: args.projectId,
+      appVersionId,
+      description: args.siteTitle || `Shopware 5 - ${args.projectId}`,
+      userInputs
+    });
+    
     // Create the installation
     const installResponse = await mittwaldClient.app.requestAppinstallation({
       projectId: args.projectId,
@@ -167,6 +190,9 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
       }
     );
   } catch (error: any) {
+    logger.error('Shopware 5 installation error:', error);
+    logger.error('Error response:', error.response?.data);
+    
     return formatToolResponse(
       "error",
       error.message || "An error occurred during installation"

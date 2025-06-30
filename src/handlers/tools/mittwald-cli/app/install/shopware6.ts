@@ -23,8 +23,18 @@ export interface MittwaldAppInstallShopware6Args {
 
 export const handleAppInstallShopware6: MittwaldToolHandler<MittwaldAppInstallShopware6Args> = async (args, { mittwaldClient }) => {
   try {
+    logger.info('Shopware 6 handler received args:', JSON.stringify(args));
+    
     if (!args.projectId) {
       return formatToolResponse("error", "Project ID is required");
+    }
+    
+    // Validate shopLang format
+    if (args.shopLang) {
+      const validLangFormats = ['de-DE', 'en-GB', 'en-US', 'fr-FR', 'es-ES', 'it-IT', 'nl-NL', 'pl-PL'];
+      if (!validLangFormats.includes(args.shopLang)) {
+        return formatToolResponse("error", `Invalid shop_lang format. Must be one of: ${validLangFormats.join(', ')}. Example: 'de-DE'`);
+      }
     }
 
     // Get user details for defaults
@@ -96,7 +106,7 @@ export const handleAppInstallShopware6: MittwaldToolHandler<MittwaldAppInstallSh
       { name: "site_title", value: args.siteTitle || 'My Shopware 6 Shop' },
       { name: "host", value: hostname || '' },
       { name: "shop_email", value: args.shopEmail || user.email || "shop@example.com" },
-      { name: "shop_lang", value: args.shopLang || "en" },
+      { name: "shop_lang", value: args.shopLang || "de-DE" },
       { name: "shop_currency", value: args.shopCurrency || "EUR" }
     ];
 
@@ -167,6 +177,9 @@ export const handleAppInstallShopware6: MittwaldToolHandler<MittwaldAppInstallSh
       }
     );
   } catch (error: any) {
+    logger.error('Shopware 6 installation error:', error);
+    logger.error('Error response:', error.response?.data);
+    
     return formatToolResponse(
       "error",
       error.message || "An error occurred during installation"

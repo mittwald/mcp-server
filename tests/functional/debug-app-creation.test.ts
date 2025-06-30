@@ -12,11 +12,8 @@ describe('Debug App Creation', () => {
   let existingProjectUuid = ''; // We'll fetch this from the API
   
   const APP_TYPES_TO_TEST = [
-    { type: 'wordpress', name: 'WordPress' },
-    { type: 'nextcloud', name: 'Nextcloud' },
-    { type: 'matomo', name: 'Matomo' },
-    { type: 'typo3', name: 'TYPO3' },
-    { type: 'contao', name: 'Contao' }
+    { type: 'shopware5', name: 'Shopware 5' },
+    { type: 'shopware6', name: 'Shopware 6' }
   ];
 
   beforeAll(async () => {
