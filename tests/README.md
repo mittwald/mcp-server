@@ -77,6 +77,15 @@ Comprehensive test suite that:
 - Validates installation responses
 - Cleans up all resources after tests
 
+### System Software Tests (`system-software.test.ts`)
+Full lifecycle testing of system software management:
+- Lists all available system software (Composer, ImageMagick, etc.)
+- Gets versions for specific software packages
+- Installs/updates system software on apps
+- Verifies installations and update policies
+- Tests error handling and edge cases
+- Demonstrates real-world scenarios
+
 ### Test Utilities
 
 - **MCPTestClient**: Wrapper for testing MCP tool calls

@@ -55,6 +55,7 @@ import { handleServer } from './tools/mittwald-cli/server/server.js';
 import { handleMittwaldAppDependencyUpdate } from './tools/mittwald-cli/app/dependency/update.js';
 import { handleMittwaldAppDependencyVersions } from './tools/mittwald-cli/app/dependency/versions.js';
 import { handleMittwaldAppDependencyList } from './tools/mittwald-cli/app/dependency/list.js';
+import { handleMittwaldAppDependencyGet } from './tools/mittwald-cli/app/dependency/get.js';
 
 // Agent 2 app management handlers
 import { handleMittwaldAppDownload } from './tools/mittwald-cli/app/download.js';
@@ -379,9 +380,9 @@ const ToolSchemas = {
 
   // Agent 2 app dependency schemas
   mittwald_app_dependency_update: z.object({
-    installation_id: z.string().optional().describe("ID or short ID of an app installation"),
+    installationId: z.string().describe("ID of the app installation"),
     set: z.array(z.string()).min(1).describe("Set a dependency to a specific version. Format: <dependency>=<version>"),
-    update_policy: z.enum(["none", "inheritedFromApp", "patchLevel", "all"]).optional().describe("Set the update policy for the configured dependencies"),
+    updatePolicy: z.enum(["none", "inheritedFromApp", "patchLevel", "all"]).optional().describe("Set the update policy for the configured dependencies"),
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   }),
 
@@ -389,19 +390,24 @@ const ToolSchemas = {
     systemsoftware: z.string().describe("Name of the systemsoftware for which to list versions"),
     output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output in a more machine friendly format"),
     extended: z.boolean().optional().describe("Show extended information"),
-    no_header: z.boolean().optional().describe("Hide table header"),
-    no_truncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
-    no_relative_dates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
-    csv_separator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
   }),
 
   mittwald_app_dependency_list: z.object({
     output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output in a more machine friendly format"),
     extended: z.boolean().optional().describe("Show extended information"),
-    no_header: z.boolean().optional().describe("Hide table header"),
-    no_truncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
-    no_relative_dates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
-    csv_separator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_app_dependency_get: z.object({
+    installationId: z.string().describe("ID of the app installation"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
   }),
 
   mittwald_app_download: z.object({
@@ -1889,6 +1895,14 @@ export async function handleToolCall(
     const toolName = request.params.name as keyof typeof ToolSchemas;
     const schema = ToolSchemas[toolName];
     
+    // Debug: Check schema lookup for Python
+    if (toolName === 'mittwald_app_create_python') {
+      logger.info('Looking up schema for Python:', {
+        toolName,
+        schemaFound: !!schema
+      });
+    }
+    
     if (!schema) {
       logger.error("No Zod schema found for tool", { toolName });
       throw new Error(`No validation schema found for tool: ${toolName}`);
@@ -1903,6 +1917,12 @@ export async function handleToolCall(
         logger.info('Original args:', JSON.stringify(request.params.arguments));
         argumentsToValidate = mapAppInstallParams(request.params.arguments);
         logger.info('Mapped args:', JSON.stringify(argumentsToValidate));
+      }
+      
+      // Debug logging for create tools
+      if (toolName.startsWith('mittwald_app_create_')) {
+        logger.info(`Validating ${toolName} with args:`, JSON.stringify(argumentsToValidate));
+        logger.info(`Schema for ${toolName}:`, schema);
       }
       
       const validatedArgs = schema.parse(argumentsToValidate);
@@ -2098,15 +2118,43 @@ export async function handleToolCall(
 
       // Agent 2 app dependency tools
       case "mittwald_app_dependency_update":
-        result = await handleMittwaldAppDependencyUpdate(args);
+        const mittwaldAppDependencyUpdateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldAppDependencyUpdate(args, mittwaldAppDependencyUpdateContext);
         break;
 
       case "mittwald_app_dependency_versions":
-        result = await handleMittwaldAppDependencyVersions(args);
+        const mittwaldAppDependencyVersionsContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldAppDependencyVersions(args, mittwaldAppDependencyVersionsContext);
         break;
 
       case "mittwald_app_dependency_list":
-        result = await handleMittwaldAppDependencyList(args);
+        const mittwaldAppDependencyListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldAppDependencyList(args, mittwaldAppDependencyListContext);
+        break;
+
+      case "mittwald_app_dependency_get":
+        const mittwaldAppDependencyGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldAppDependencyGet(args, mittwaldAppDependencyGetContext);
         break;
 
       case "mittwald_app_download":

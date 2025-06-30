@@ -373,7 +373,16 @@ export class TestProjectManager {
     const content = parseToolContent(response.result);
     if (content.status !== 'success') {
       logger.warn(`Failed to delete project ${projectId}: ${content.message}`);
+      // Even on error, the project might be deleted - API sometimes returns errors
+      // for projects that are already being deleted
+    } else {
+      logger.info(`Project deletion initiated for ${projectId}`);
     }
+    
+    // Project deletion is asynchronous in Mittwald API
+    // Wait longer to ensure deletion completes
+    logger.info(`Waiting for project ${projectId} deletion to complete...`);
+    await sleep(15000); // Wait 15 seconds for deletion to propagate
   }
 
   /**
@@ -382,26 +391,60 @@ export class TestProjectManager {
   async cleanup(): Promise<void> {
     logger.info('Cleaning up test resources');
     
-    // Uninstall all apps
-    for (const app of this.installedApps) {
-      if (app.installationId) {
-        try {
-          await this.uninstallApp(app.installationId);
-        } catch (error) {
-          logger.error(`Failed to uninstall ${app.appType}:`, error);
+    // Uninstall all apps first
+    if (this.installedApps.length > 0) {
+      logger.info(`Uninstalling ${this.installedApps.length} apps...`);
+      for (const app of this.installedApps) {
+        if (app.installationId) {
+          try {
+            await this.uninstallApp(app.installationId);
+          } catch (error) {
+            logger.error(`Failed to uninstall ${app.appType}:`, error);
+          }
         }
       }
+      
+      // Wait for uninstalls to process
+      logger.info('Waiting for app uninstalls to complete...');
+      await sleep(10000); // 10 seconds
     }
     
-    // Wait a bit for uninstalls to process
-    await sleep(5000);
-    
     // Delete all projects
-    for (const project of this.createdProjects) {
+    if (this.createdProjects.length > 0) {
+      logger.info(`Deleting ${this.createdProjects.length} projects...`);
+      for (const project of this.createdProjects) {
+        try {
+          await this.deleteProject(project.projectId);
+        } catch (error) {
+          logger.error(`Failed to delete project ${project.shortId}:`, error);
+        }
+      }
+      
+      // Final verification after all deletions
+      logger.info('Waiting for all deletions to complete...');
+      await sleep(20000); // 20 seconds total wait after all deletions
+      
+      // Optionally verify projects are gone
       try {
-        await this.deleteProject(project.projectId);
+        const listResponse = await this.client.callTool('mittwald_project_list', {
+          output: 'json'
+        });
+        const listContent = parseToolContent(listResponse.result);
+        if (listContent.status === 'success') {
+          const remainingProjects = this.createdProjects.filter(project =>
+            listContent.data.some((p: any) => p.id === project.projectId)
+          );
+          if (remainingProjects.length > 0) {
+            logger.warn(`${remainingProjects.length} projects still exist after cleanup:`);
+            remainingProjects.forEach(p => 
+              logger.warn(`  - ${p.shortId}: ${p.description}`)
+            );
+          } else {
+            logger.info('All test projects successfully cleaned up');
+          }
+        }
       } catch (error) {
-        logger.error(`Failed to delete project ${project.shortId}:`, error);
+        logger.debug('Could not verify project cleanup:', error);
       }
     }
     

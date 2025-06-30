@@ -16,6 +16,7 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { mittwald_app_dependency_update } from './tool/mittwald-cli/app/dependency/update.js';
 import { mittwald_app_dependency_versions } from './tool/mittwald-cli/app/dependency/versions.js';
 import { mittwald_app_dependency_list } from './tool/mittwald-cli/app/dependency/list.js';
+import { mittwald_app_dependency_get } from './tool/mittwald-cli/app/dependency/get.js';
 
 // Agent 2 app management tools
 import { mittwald_app_download } from './tool/mittwald-cli/app/download.js';
@@ -292,6 +293,7 @@ export const TOOLS: Tool[] = [
   mittwald_app_dependency_update,
   mittwald_app_dependency_versions,
   mittwald_app_dependency_list,
+  mittwald_app_dependency_get,
   
   // Agent 2 app management tools
   mittwald_app_download,
