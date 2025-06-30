@@ -579,6 +579,7 @@ const ToolSchemas = {
   
   mittwald_app_create_php_worker: z.object({
     projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    entrypoint: z.string().optional().describe("Command to start the PHP worker (e.g., 'php worker.php')"),
     siteTitle: z.string().optional().describe("Title for the PHP worker application"),
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
     wait: z.boolean().optional().describe("Wait for installation to complete"),
@@ -587,7 +588,7 @@ const ToolSchemas = {
   
   mittwald_app_create_python: z.object({
     projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
-    documentRoot: z.string().describe("Document root path for the Python application"),
+    entrypoint: z.string().optional().describe("Command to start the Python application (e.g., 'python app.py')"),
     siteTitle: z.string().optional().describe("Title for the Python application"),
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
     wait: z.boolean().optional().describe("Wait for installation to complete"),
