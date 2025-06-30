@@ -65,3 +65,12 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 .dockerignore.local
+
+# Test scripts
+*.test.sh
+test-*.ts
+check-*.ts
+parse-*.ts
+list-*.ts
+monitor-*.sh
+run-*.sh
