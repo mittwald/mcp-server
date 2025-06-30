@@ -221,6 +221,15 @@ import { handleContextGet } from './tools/mittwald-cli/context/get.js';
 import { handleContextReset } from './tools/mittwald-cli/context/reset.js';
 import { handleContextSet } from './tools/mittwald-cli/context/set.js';
 
+// Container handlers
+import { handleContainerListStacks } from './tools/mittwald-cli/container/list-stacks.js';
+import { handleContainerListServices } from './tools/mittwald-cli/container/list-services.js';
+import { handleContainerListVolumes } from './tools/mittwald-cli/container/list-volumes.js';
+import { handleContainerListRegistries } from './tools/mittwald-cli/container/list-registries.js';
+import { handleContainerDeclareStack } from './tools/mittwald-cli/container/declare-stack.js';
+import { handleContainerGetServiceLogs } from './tools/mittwald-cli/container/get-service-logs.js';
+import { handleContainerCreateRegistry } from './tools/mittwald-cli/container/create-registry.js';
+
 // Contributor handler
 import { handleContributor } from './tools/mittwald-cli/contributor/contributor.js';
 
@@ -1260,6 +1269,80 @@ const ToolSchemas = {
     serverId: z.string().optional().describe("ID or short ID of a server"),
     orgId: z.string().optional().describe("ID or short ID of an organization"),
     installationId: z.string().optional().describe("ID or short ID of an app installation")
+  }),
+
+  // Container tools
+  mittwald_container_list_stacks: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    output: z.enum(["json", "table", "csv", "tsv"]).optional().describe("Output format (default: table)"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header (only relevant for table output)"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for table output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_container_list_services: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    output: z.enum(["json", "table", "csv", "tsv"]).optional().describe("Output format (default: table)"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header (only relevant for table output)"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for table output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_container_list_volumes: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    output: z.enum(["json", "table", "csv", "tsv"]).optional().describe("Output format (default: table)"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header (only relevant for table output)"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for table output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_container_list_registries: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    output: z.enum(["json", "table", "csv", "tsv"]).optional().describe("Output format (default: table)"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header (only relevant for table output)"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for table output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_container_declare_stack: z.object({
+    stackId: z.string().describe("ID of the stack to update"),
+    desiredServices: z.record(z.string(), z.object({
+      imageUri: z.string().describe("Container image URI"),
+      environment: z.record(z.string(), z.string()).optional().describe("Environment variables"),
+      ports: z.array(z.object({
+        containerPort: z.number().describe("Port inside the container"),
+        protocol: z.enum(["tcp", "udp"]).optional().describe("Protocol (default: tcp)")
+      })).optional().describe("Port mappings"),
+      volumes: z.array(z.object({
+        name: z.string().describe("Volume name or absolute path"),
+        mountPath: z.string().describe("Mount path inside the container"),
+        readOnly: z.boolean().optional().describe("Mount as read-only")
+      })).optional().describe("Volume mounts")
+    })).optional().describe("Service configurations"),
+    desiredVolumes: z.record(z.string(), z.object({
+      size: z.string().optional().describe("Volume size (e.g., 1Gi)")
+    })).optional().describe("Volume configurations")
+  }),
+
+  mittwald_container_get_service_logs: z.object({
+    stackId: z.string().describe("ID of the stack"),
+    serviceId: z.string().describe("ID of the service"),
+    since: z.string().optional().describe("Show logs since timestamp (RFC3339)"),
+    until: z.string().optional().describe("Show logs until timestamp (RFC3339)"),
+    limit: z.number().optional().describe("Maximum number of log lines"),
+    follow: z.boolean().optional().describe("Follow log output (not supported in MCP)")
+  }),
+
+  mittwald_container_create_registry: z.object({
+    projectId: z.string().describe("ID or short ID of a project"),
+    uri: z.string().describe("Registry URI"),
+    imageRegistryType: z.enum(["docker", "github", "gitlab", "custom"]).optional().describe("Type of registry"),
+    username: z.string().optional().describe("Registry username"),
+    password: z.string().optional().describe("Registry password or token")
   })
 };
 
@@ -1814,6 +1897,15 @@ type ToolArgs = {
     orgId?: string;
     installationId?: string;
   };
+
+  // Container tools
+  mittwald_container_list_stacks: z.infer<typeof ToolSchemas.mittwald_container_list_stacks>;
+  mittwald_container_list_services: z.infer<typeof ToolSchemas.mittwald_container_list_services>;
+  mittwald_container_list_volumes: z.infer<typeof ToolSchemas.mittwald_container_list_volumes>;
+  mittwald_container_list_registries: z.infer<typeof ToolSchemas.mittwald_container_list_registries>;
+  mittwald_container_declare_stack: z.infer<typeof ToolSchemas.mittwald_container_declare_stack>;
+  mittwald_container_get_service_logs: z.infer<typeof ToolSchemas.mittwald_container_get_service_logs>;
+  mittwald_container_create_registry: z.infer<typeof ToolSchemas.mittwald_container_create_registry>;
 };
 
 /**
@@ -3401,6 +3493,77 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleContextSet(args, mittwaldContextSetContext);
+        break;
+
+      // Container tools
+      case "mittwald_container_list_stacks":
+        const mittwaldContainerListStacksContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerListStacks(args as ToolArgs['mittwald_container_list_stacks'], mittwaldContainerListStacksContext);
+        break;
+
+      case "mittwald_container_list_services":
+        const mittwaldContainerListServicesContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerListServices(args as ToolArgs['mittwald_container_list_services'], mittwaldContainerListServicesContext);
+        break;
+
+      case "mittwald_container_list_volumes":
+        const mittwaldContainerListVolumesContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerListVolumes(args as ToolArgs['mittwald_container_list_volumes'], mittwaldContainerListVolumesContext);
+        break;
+
+      case "mittwald_container_list_registries":
+        const mittwaldContainerListRegistriesContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerListRegistries(args as ToolArgs['mittwald_container_list_registries'], mittwaldContainerListRegistriesContext);
+        break;
+
+      case "mittwald_container_declare_stack":
+        const mittwaldContainerDeclareStackContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerDeclareStack(args as ToolArgs['mittwald_container_declare_stack'], mittwaldContainerDeclareStackContext);
+        break;
+
+      case "mittwald_container_get_service_logs":
+        const mittwaldContainerGetServiceLogsContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerGetServiceLogs(args as ToolArgs['mittwald_container_get_service_logs'], mittwaldContainerGetServiceLogsContext);
+        break;
+
+      case "mittwald_container_create_registry":
+        const mittwaldContainerCreateRegistryContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerCreateRegistry(args as ToolArgs['mittwald_container_create_registry'], mittwaldContainerCreateRegistryContext);
         break;
         
       case "mittwald_contributor":

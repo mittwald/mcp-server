@@ -146,6 +146,17 @@ import {
   mittwald_org_membership_list_own
 } from './tool/mittwald-cli/org/index.js';
 
+// Container tools
+import {
+  mittwald_container_list_stacks,
+  mittwald_container_list_services,
+  mittwald_container_list_volumes,
+  mittwald_container_list_registries,
+  mittwald_container_declare_stack,
+  mittwald_container_get_service_logs,
+  mittwald_container_create_registry
+} from './tool/mittwald-cli/container/index.js';
+
 // App create tools
 import { mittwald_app_create_node } from './tool/mittwald-cli/app/create/node.js';
 import { mittwald_app_create_php } from './tool/mittwald-cli/app/create/php.js';
@@ -424,6 +435,15 @@ export const TOOLS: Tool[] = [
   mittwald_context_get,
   mittwald_context_reset,
   mittwald_context_set,
+  
+  // Container tools
+  mittwald_container_list_stacks,
+  mittwald_container_list_services,
+  mittwald_container_list_volumes,
+  mittwald_container_list_registries,
+  mittwald_container_declare_stack,
+  mittwald_container_get_service_logs,
+  mittwald_container_create_registry,
   
   // App create tools
   mittwald_app_create_node,
