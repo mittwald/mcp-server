@@ -1,6 +1,7 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
+import { filterAppDataForLLM } from '../../../../utils/version-filter.js';
 
 export interface MittwaldAppVersionsArgs {
   app?: string;
@@ -15,6 +16,10 @@ export interface MittwaldAppVersionsArgs {
 export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = async (args, { mittwaldClient }) => {
   try {
     const { app, output = 'txt' } = args;
+
+    // Note: This handler returns filtered versions (latest per major version) to reduce LLM token usage.
+    // ALL versions are still available for installation - users can specify any exact version
+    // when installing apps, even if not shown in this filtered list.
 
     // Get all available apps
     const appsResponse = await mittwaldClient.app.listApps({});
@@ -61,18 +66,20 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
           current: (version as any).current || false
         }));
 
-        appsWithVersions.push({
+        // Apply filtering for LLM consumption
+        const filteredApp = filterAppDataForLLM({
           id: appItem.id,
           name: appItem.name,
           description: (appItem as any).description || '',
           versions: versions
         });
+
+        appsWithVersions.push(filteredApp);
       } catch (error) {
         // If we can't get versions for an app, include it with empty versions
         appsWithVersions.push({
           id: appItem.id,
           name: appItem.name,
-          description: (appItem as any).description || '',
           versions: [],
           error: `Could not fetch versions: ${error instanceof Error ? error.message : 'Unknown error'}`
         });
@@ -91,14 +98,7 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
     // For text output, format as readable text
     const formattedOutput = appsWithVersions.map(app => {
       const versionsText = app.versions.length > 0 
-        ? app.versions.map(v => {
-            const status = [];
-            if (v.current) status.push('current');
-            if (v.deprecated) status.push('deprecated');
-            if (!v.supported) status.push('unsupported');
-            const statusText = status.length > 0 ? ` (${status.join(', ')})` : '';
-            return `  ${v.externalVersion}${statusText}`;
-          }).join('\n')
+        ? app.versions.map(v => `  ${v.externalVersion}`).join('\n')
         : '  No versions available';
       
       return `${app.name}:\n${versionsText}`;
@@ -109,8 +109,9 @@ export const handleAppVersions: MittwaldToolHandler<MittwaldAppVersionsArgs> = a
       app ? `Versions for app "${app}"` : "All app versions",
       {
         output: formattedOutput,
-        summary: `Found ${appsWithVersions.length} app(s) with versions`,
-        totalVersions: appsWithVersions.reduce((sum, app) => sum + app.versions.length, 0)
+        summary: `Found ${appsWithVersions.length} app(s) showing latest version per major release`,
+        totalVersionsShown: appsWithVersions.reduce((sum, app) => sum + app.versions.length, 0),
+        note: "All versions remain available for installation - specify exact version when installing"
       }
     );
 
