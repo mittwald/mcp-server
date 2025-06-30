@@ -1,5 +1,14 @@
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+// import { handleAppInstallContao } from './install/contao.js'; // Not a real handler yet
+import { handleAppInstallJoomla } from './install/joomla.js';
+import { handleAppInstallMatomo } from './install/matomo.js';
+import { handleAppInstallNextcloud } from './install/nextcloud.js';
+import { handleAppInstallShopware5 } from './install/shopware5.js';
+import { handleAppInstallShopware6 } from './install/shopware6.js';
+import { handleAppInstallTypo3 } from './install/typo3.js';
+import { handleAppInstallWordpress } from './install/wordpress.js';
 
 interface AppInstallInput {
   app_type: 'contao' | 'joomla' | 'matomo' | 'nextcloud' | 'shopware5' | 'shopware6' | 'typo3' | 'wordpress';
@@ -15,31 +24,68 @@ interface AppInstallInput {
   wait_timeout?: string;
 }
 
-export async function handleMittwaldAppInstall(
-  input: AppInstallInput
-): Promise<CallToolResult> {
+export const handleMittwaldAppInstall: MittwaldToolHandler<AppInstallInput> = async (
+  input,
+  context
+) => {
   try {
-    const installInfo = {
-      message: `${input.app_type} installation requested`,
-      app_type: input.app_type,
-      project_id: input.project_id || "Default project",
-      version: input.version || 'latest',
-      quiet: input.quiet || false,
+    // Validate required project_id
+    if (!input.project_id) {
+      return formatToolResponse("error", "Project ID is required");
+    }
+
+    // Map the generic parameters to app-specific parameters
+    const commonArgs = {
+      projectId: input.project_id,
+      version: input.version,
       host: input.host,
-      admin_user: input.admin_user,
-      admin_email: input.admin_email,
-      admin_pass: input.admin_pass ? "***" : undefined,
-      site_title: input.site_title,
-      wait: input.wait || false,
-      wait_timeout: input.wait_timeout || '600s',
-      note: "This operation requires API access. Implementation pending for CLI command execution."
+      adminUser: input.admin_user,
+      adminEmail: input.admin_email,
+      adminPass: input.admin_pass,
+      siteTitle: input.site_title,
+      wait: input.wait,
+      waitTimeout: input.wait_timeout ? parseInt(input.wait_timeout.replace('s', '')) : 600
     };
 
-    return formatToolResponse(
-      "success",
-      `${input.app_type} installation prepared for version: ${input.version || 'latest'}`,
-      installInfo
-    );
+    // Dispatch to the appropriate app-specific handler
+    switch (input.app_type) {
+      case 'contao':
+        // Contao handler is not implemented yet
+        return formatToolResponse(
+          "error",
+          "Contao installation is not yet implemented"
+        );
+      
+      case 'joomla':
+        return await handleAppInstallJoomla(commonArgs, context);
+      
+      case 'matomo':
+        return await handleAppInstallMatomo(commonArgs, context);
+      
+      case 'nextcloud':
+        return await handleAppInstallNextcloud(commonArgs, context);
+      
+      case 'shopware5':
+        return await handleAppInstallShopware5(commonArgs, context);
+      
+      case 'shopware6':
+        return await handleAppInstallShopware6(commonArgs, context);
+      
+      case 'typo3':
+        return await handleAppInstallTypo3({
+          ...commonArgs,
+          installMode: 'composer' // Default for TYPO3
+        }, context);
+      
+      case 'wordpress':
+        return await handleAppInstallWordpress(commonArgs, context);
+      
+      default:
+        return formatToolResponse(
+          "error",
+          `Unknown app type: ${input.app_type}. Valid types are: contao, joomla, matomo, nextcloud, shopware5, shopware6, typo3, wordpress`
+        );
+    }
 
   } catch (error) {
     return formatToolResponse(

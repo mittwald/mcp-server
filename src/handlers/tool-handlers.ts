@@ -2084,7 +2084,13 @@ export async function handleToolCall(
         break;
 
       case "mittwald_app_install":
-        result = await handleMittwaldAppInstall(args);
+        const mittwaldAppInstallContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldAppInstall(args, mittwaldAppInstallContext);
         break;
 
       case "mittwald_app_install_contao":

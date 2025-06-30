@@ -26,9 +26,13 @@
     "build": "tsc && tsc-alias && chmod +x build/index.js && echo \"export * from './config.js';\nexport * from './oauth.js';\nexport * from './mcp.js';\nexport * from './auth-store.js';\nexport * from './types.js';\" > build/server/index.js",
     "watch": "tsc --watch",
     "docker": "docker-compose build && docker-compose up -d",
-    "test": "cd e2e-test && npm test",
-    "inspector": "npx @modelcontextprotocol/inspector",
-    "e2e": "cd e2e-test && npm install && npm test"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "inspector": "npx @modelcontextprotocol/inspector"
   },
   "repository": {
     "type": "git",
@@ -54,13 +58,16 @@
     "@types/node": "^22.15.33",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
+    "@vitest/ui": "^3.2.4",
+    "c8": "^10.1.3",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
     "prettier": "^3.5.3",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
   "keywords": [
     "systemprompt",

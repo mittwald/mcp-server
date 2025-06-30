@@ -46,7 +46,7 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
     }
 
     // Get WordPress app ID and version
-    const wordpressAppId = "da3e6217-b4aa-43d6-bfb9-9f22f92fa37b"; // WordPress app ID from CLI
+    const wordpressAppId = "da3aa3ae-4b6b-4398-a4a8-ee8def827876"; // WordPress app ID
     
     // Get available versions
     const versionsResponse = await mittwaldClient.app.listAppversions({ 
