@@ -7,6 +7,7 @@ import { MCPTestClient } from '../utils/mcp-test-client';
 import { TestProjectManager, TestAppInstallation } from '../utils/test-project-manager';
 import { isDockerRunning, validateMCPResponse, parseToolContent } from '../utils/test-helpers';
 import { createProgressReporter, sleep } from '../utils/async-operations';
+import { fetchAppVersions } from '../utils/version-helper';
 import { logger } from '../../src/utils/logger';
 
 describe('Partial App Lifecycle Test', () => {
@@ -55,11 +56,17 @@ describe('Partial App Lifecycle Test', () => {
     logger.info('Waiting 30 seconds for project to stabilize...');
     await sleep(30000);
     
-    // Install apps
-    logger.info(`Step 2: Installing ${TEST_APPS.length} apps...`);
+    // Fetch versions for test apps
     const appTypes = TEST_APPS.map(app => app.type);
-    const appOptions = TEST_APPS.reduce((acc, app) => {
+    const appVersions = await fetchAppVersions(client, appTypes);
+    
+    // Install apps
+    logger.info(`\nStep 2: Installing ${TEST_APPS.length} apps...`);
+    const appTypesWithVersions = TEST_APPS.filter(app => appVersions[app.type]);
+    const appTypes = appTypesWithVersions.map(app => app.type);
+    const appOptions = appTypesWithVersions.reduce((acc, app) => {
       acc[app.type] = {
+        version: appVersions[app.type],
         siteTitle: `Test ${app.name}`,
         adminUser: `admin_${app.type}`,
         adminEmail: `admin@${app.type}.test`,

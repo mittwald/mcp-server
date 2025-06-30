@@ -8,6 +8,7 @@ import { MCPTestClient } from '../utils/mcp-test-client';
 import { TestProjectManager, TestAppInstallation } from '../utils/test-project-manager';
 import { isDockerRunning, validateMCPResponse, parseToolContent } from '../utils/test-helpers';
 import { createProgressReporter, sleep } from '../utils/async-operations';
+import { fetchAppVersions } from '../utils/version-helper';
 import { logger } from '../../src/utils/logger';
 
 // Extended timeout for comprehensive tests
@@ -72,9 +73,17 @@ describe('Full App Lifecycle Test', { timeout: FULL_TEST_TIMEOUT }, () => {
   it('should install all available app types in parallel', async () => {
     logger.info(`Step 2: Installing ${ALL_APP_TYPES.length} apps in parallel...`);
     
+    // First, fetch versions for all app types
     const appTypes = ALL_APP_TYPES.map(app => app.type);
-    const appOptions = ALL_APP_TYPES.reduce((acc, app) => {
+    const appVersions = await fetchAppVersions(client, appTypes);
+    
+    // Filter to only apps we have versions for
+    const appTypesWithVersions = ALL_APP_TYPES.filter(app => appVersions[app.type]);
+    const validAppTypes = appTypesWithVersions.map(app => app.type);
+    
+    const appOptions = appTypesWithVersions.reduce((acc, app) => {
       acc[app.type] = {
+        version: appVersions[app.type],
         siteTitle: `Test ${app.name} Installation`,
         adminUser: `admin_${app.type}`,
         adminEmail: `admin@${app.type}.test`,
@@ -83,10 +92,12 @@ describe('Full App Lifecycle Test', { timeout: FULL_TEST_TIMEOUT }, () => {
       return acc;
     }, {} as Record<string, any>);
     
+    logger.info(`\nInstalling ${validAppTypes.length} apps with valid versions...`);
+    
     const startTime = Date.now();
     installedApps = await projectManager.installAppsInParallel(
       testProject.projectId,
-      appTypes,
+      validAppTypes,
       appOptions
     );
     

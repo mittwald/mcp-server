@@ -151,12 +151,12 @@ export class TestProjectManager {
     projectId: string,
     appType: string,
     options: {
-      version?: string;
+      version: string; // Now required
       adminUser?: string;
       adminEmail?: string;
       adminPass?: string;
       siteTitle?: string;
-    } = {}
+    }
   ): Promise<TestAppInstallation> {
     logger.info(`Installing ${appType} in project ${projectId}`);
     
@@ -181,7 +181,7 @@ export class TestProjectManager {
     const installResponse = await this.client.callTool('mittwald_app_install', {
       app_type: appType,
       project_id: projectId,
-      version: options.version, // Don't default to 'latest' - let the handler choose
+      version: options.version, // Required version
       host,
       admin_user: options.adminUser || `admin_${appType}`,
       admin_email: options.adminEmail || `admin@${appType}.test`,
@@ -201,7 +201,7 @@ export class TestProjectManager {
       appType,
       installationId,
       projectId,
-      version: options.version || 'latest',
+      version: options.version,
       host,
       status: 'installing'
     };
