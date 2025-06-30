@@ -1,206 +1,178 @@
-# Mittwald MCP Server Test Suite
+# Mittwald MCP Test Suite
 
-This directory contains the comprehensive test suite for the Mittwald MCP server.
+## Overview
 
-## Structure
+This test suite provides comprehensive testing for the Mittwald MCP server, including:
+- Unit tests for individual components
+- Integration tests for API interactions
+- Functional tests for end-to-end workflows
+
+## Test Structure
 
 ```
 tests/
-├── unit/              # Unit tests for individual functions/utilities
-├── integration/       # Integration tests for MCP tools and endpoints
-├── functional/        # End-to-end tests with real API operations
-├── utils/            # Test utilities and helpers
-└── setup.ts          # Global test setup
+├── unit/          # Unit tests for individual functions
+├── integration/   # Integration tests for API calls
+├── functional/    # End-to-end functional tests
+├── utils/         # Test utilities and helpers
+└── config/        # Test configuration
 ```
 
 ## Running Tests
 
 ### Prerequisites
 
-1. Docker must be running
-2. Server must be started: `docker compose up -d`
-3. Mittwald API token must be configured in `.env`
-
-### Test Commands
-
+1. Set up your `.env` file with required test configuration:
 ```bash
-# Run all tests
+# Required
+MITTWALD_API_TOKEN=your_api_token
+TEST_SERVER_ID=your_test_server_id
+
+# Optional
+TEST_ADMIN_EMAIL=test@example.com
+SKIP_TEST_CLEANUP=false
+TEST_PARALLEL=true
+```
+
+2. Build the project:
+```bash
+npm run build
+```
+
+### Run All Tests
+```bash
 npm test
+```
 
-# Run tests in watch mode
-npm run test:watch
-
-# Run with UI
-npm run test:ui
-
-# Run with coverage
-npm run test:coverage
-
-# Run only unit tests
+### Run Specific Test Suites
+```bash
+# Unit tests only
 npm run test:unit
 
-# Run only integration tests
+# Integration tests only
 npm run test:integration
 
-# Run functional tests (creates real resources!)
+# Functional tests only
 npm run test:functional
 
-# Run functional test demo
-npx tsx tests/functional/run-demo.ts
-
+# Watch mode for development
+npm run test:watch
 ```
 
-## Test Framework
+### Run Specific Test Files
+```bash
+# Run a specific test file
+npm test tests/functional/app-installations.test.ts
 
-We use [Vitest](https://vitest.dev/) as our test framework because:
-- Fast execution with native ESM support
-- Compatible with Jest API
-- Built-in TypeScript support
-- Excellent watch mode
-- UI mode for debugging
+# Run tests matching a pattern
+npm test -- -t "should install WordPress"
+```
 
-## Writing Tests
+## Key Test Files
 
-### Unit Tests
+### App Installation Tests (`app-installations.test.ts`)
+Comprehensive test suite that:
+- Creates a new test project
+- Tests all 8 app types (WordPress, Nextcloud, Matomo, TYPO3, Contao, Joomla, Shopware 5/6)
+- Validates installation responses
+- Cleans up all resources after tests
 
-Unit tests go in `tests/unit/` and test individual functions in isolation:
+### Test Utilities
 
+- **MCPTestClient**: Wrapper for testing MCP tool calls
+- **TestProjectManager**: Manages project lifecycle for tests
+- **parseToolContent**: Parses MCP tool responses consistently
+
+## Writing New Tests
+
+### Example Test Structure
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { myFunction } from '@/utils/my-function';
-
-describe('myFunction', () => {
-  it('should do something', () => {
-    expect(myFunction('input')).toBe('expected output');
-  });
-});
-```
-
-### Integration Tests
-
-Integration tests go in `tests/integration/` and test MCP tools with the running server.
-
-### Functional Tests
-
-Functional tests go in `tests/functional/` and perform real API operations:
-
-```typescript
-import { TestProjectManager } from '../utils/test-project-manager';
-
-describe('App Deployment', () => {
-  let projectManager: TestProjectManager;
-  
-  beforeAll(async () => {
-    projectManager = new TestProjectManager(client);
-  });
-  
-  afterAll(async () => {
-    await projectManager.cleanup(); // Always clean up!
-  });
-  
-  it('should deploy apps', async () => {
-    const project = await projectManager.createTestProject('Test');
-    const apps = await projectManager.installAppsInParallel(
-      project.projectId,
-      ['wordpress', 'nextcloud']
-    );
-  });
-});
-```
-
-Integration tests go in `tests/integration/` and test MCP tools with the running server:
-
-```typescript
-import { describe, it, expect, beforeAll } from 'vitest';
 import { MCPTestClient } from '../utils/mcp-test-client';
 
-describe('My Tool', () => {
+describe('My Feature', () => {
   let client: MCPTestClient;
-
+  
   beforeAll(async () => {
     client = new MCPTestClient();
     await client.initialize();
   });
-
-  it('should work correctly', async () => {
-    const response = await client.callTool('my_tool', { arg: 'value' });
+  
+  afterAll(async () => {
+    await client.close();
+  });
+  
+  it('should do something', async () => {
+    const response = await client.callTool('tool_name', {
+      param: 'value'
+    });
+    
     expect(response.result).toBeDefined();
   });
 });
 ```
 
-## Test Utilities
+### Best Practices
 
-### MCPTestClient
+1. **Always clean up resources**: Use afterAll hooks to clean up projects/apps
+2. **Use descriptive test names**: Tests should clearly state what they're testing
+3. **Isolate tests**: Each test should be independent and not rely on others
+4. **Use timeouts appropriately**: Long operations should have appropriate timeouts
+5. **Log useful information**: Use logger for debugging, but avoid excessive logging
 
-A reusable client for testing MCP endpoints:
+## Debugging Failed Tests
 
-```typescript
-const client = new MCPTestClient();
-await client.initialize();
-await client.callTool('tool_name', { args });
-await client.listTools();
-await client.listResources();
+### Keep Test Resources
+To debug failing tests, prevent automatic cleanup:
+```bash
+SKIP_TEST_CLEANUP=true npm test
 ```
 
-### Test Helpers
-
-- `isDockerRunning()` - Check if Docker container is running
-- `validateMCPResponse()` - Validate MCP response structure
-- `validateToolResponse()` - Validate tool response format
-- `parseToolContent()` - Parse tool response content
-
-### TestProjectManager
-
-Manages test projects and app installations:
-
-```typescript
-const projectManager = new TestProjectManager(client);
-
-// Create project
-const project = await projectManager.createTestProject('Test');
-
-// Install apps
-const apps = await projectManager.installAppsInParallel(
-  project.projectId,
-  ['wordpress', 'nextcloud', 'matomo']
-);
-
-// Cleanup
-await projectManager.cleanup();
+### Verbose Logging
+Enable debug logging:
+```bash
+DEBUG=* npm test
 ```
 
-### Async Operations
-
-- `pollOperation()` - Poll long-running operations
-- `sleep()` - Async delay
-- `runParallelOperations()` - Run multiple operations concurrently
-- `retryWithBackoff()` - Retry with exponential backoff
-- `createProgressReporter()` - Console progress reporting
-
-## Coverage
-
-Run `npm run test:coverage` to generate coverage reports. Coverage files are generated in:
-- Terminal output
-- `coverage/` directory (HTML report)
-
-
-## Adding New Tests
-
-1. **For new utilities**: Add unit tests in `tests/unit/`
-2. **For new tools**: Add integration tests in `tests/integration/tools/`
-3. **For new features**: Add appropriate tests in the relevant directory
-4. **Always test**:
-   - Happy path
-   - Error cases
-   - Edge cases
-   - Performance (for heavy operations)
+### Run Tests Sequentially
+To avoid concurrency issues:
+```bash
+TEST_PARALLEL=false npm test
+```
 
 ## CI/CD Integration
 
-Tests are run automatically on:
-- Pull requests
-- Commits to main branch
-- Before releases
+The test suite is designed to run in CI environments:
 
-Ensure all tests pass before merging!
+1. All tests create and clean up their own resources
+2. Tests use environment variables for configuration
+3. Proper timeouts prevent hanging tests
+4. Exit codes indicate success/failure
+
+Example GitHub Actions workflow:
+```yaml
+- name: Run tests
+  env:
+    MITTWALD_API_TOKEN: ${{ secrets.MITTWALD_API_TOKEN }}
+    TEST_SERVER_ID: ${{ secrets.TEST_SERVER_ID }}
+  run: |
+    npm ci
+    npm run build
+    npm test
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **"No servers available"**: Ensure TEST_SERVER_ID is set correctly
+2. **"Project creation timeout"**: Mittwald API might be slow, increase timeout
+3. **"App installation failed"**: Check app versions are current
+4. **"Cleanup failed"**: Resources might be in use, wait and retry
+
+### Getting Help
+
+- Check test logs for detailed error messages
+- Run with DEBUG=* for verbose output
+- Ensure all environment variables are set correctly
+- Verify Mittwald API token has necessary permissions

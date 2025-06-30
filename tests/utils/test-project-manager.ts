@@ -34,6 +34,50 @@ export class TestProjectManager {
   }
 
   /**
+   * Create a project with minimal configuration
+   */
+  async createProject(options: { 
+    description: string; 
+    serverId?: string;
+  }): Promise<{ status: string; data: { id: string } }> {
+    const serverId = options.serverId || process.env.TEST_SERVER_ID;
+    
+    if (!serverId) {
+      // Get first available server
+      const serversResponse = await this.client.callTool('mittwald_server_list', {
+        output: 'json'
+      });
+      const serversContent = parseToolContent(serversResponse.result);
+      
+      if (serversContent.status !== 'success' || !serversContent.data?.length) {
+        throw new Error('No servers available and no TEST_SERVER_ID provided');
+      }
+      
+      options.serverId = serversContent.data[0].id;
+    }
+    
+    const response = await this.client.callTool('mittwald_project_create', {
+      description: options.description,
+      serverId: options.serverId || serverId,
+      wait: false
+    });
+    
+    const content = parseToolContent(response.result);
+    
+    // Track created project if successful
+    if (content.status === 'success' && content.data?.id) {
+      this.createdProjects.push({
+        projectId: content.data.id,
+        shortId: content.data.id, // Will be updated later
+        serverId: options.serverId || serverId,
+        description: options.description
+      });
+    }
+    
+    return content;
+  }
+
+  /**
    * Create a test project and wait for it to be ready
    */
   async createTestProject(description: string): Promise<TestProject> {
