@@ -8,6 +8,7 @@ This directory contains the comprehensive test suite for the Mittwald MCP server
 tests/
 ├── unit/              # Unit tests for individual functions/utilities
 ├── integration/       # Integration tests for MCP tools and endpoints
+├── functional/        # End-to-end tests with real API operations
 ├── utils/            # Test utilities and helpers
 └── setup.ts          # Global test setup
 ```
@@ -41,6 +42,12 @@ npm run test:unit
 # Run only integration tests
 npm run test:integration
 
+# Run functional tests (creates real resources!)
+npm run test:functional
+
+# Run functional test demo
+npx tsx tests/functional/run-demo.ts
+
 ```
 
 ## Test Framework
@@ -70,6 +77,36 @@ describe('myFunction', () => {
 ```
 
 ### Integration Tests
+
+Integration tests go in `tests/integration/` and test MCP tools with the running server.
+
+### Functional Tests
+
+Functional tests go in `tests/functional/` and perform real API operations:
+
+```typescript
+import { TestProjectManager } from '../utils/test-project-manager';
+
+describe('App Deployment', () => {
+  let projectManager: TestProjectManager;
+  
+  beforeAll(async () => {
+    projectManager = new TestProjectManager(client);
+  });
+  
+  afterAll(async () => {
+    await projectManager.cleanup(); // Always clean up!
+  });
+  
+  it('should deploy apps', async () => {
+    const project = await projectManager.createTestProject('Test');
+    const apps = await projectManager.installAppsInParallel(
+      project.projectId,
+      ['wordpress', 'nextcloud']
+    );
+  });
+});
+```
 
 Integration tests go in `tests/integration/` and test MCP tools with the running server:
 
@@ -112,6 +149,34 @@ await client.listResources();
 - `validateMCPResponse()` - Validate MCP response structure
 - `validateToolResponse()` - Validate tool response format
 - `parseToolContent()` - Parse tool response content
+
+### TestProjectManager
+
+Manages test projects and app installations:
+
+```typescript
+const projectManager = new TestProjectManager(client);
+
+// Create project
+const project = await projectManager.createTestProject('Test');
+
+// Install apps
+const apps = await projectManager.installAppsInParallel(
+  project.projectId,
+  ['wordpress', 'nextcloud', 'matomo']
+);
+
+// Cleanup
+await projectManager.cleanup();
+```
+
+### Async Operations
+
+- `pollOperation()` - Poll long-running operations
+- `sleep()` - Async delay
+- `runParallelOperations()` - Run multiple operations concurrently
+- `retryWithBackoff()` - Retry with exponential backoff
+- `createProgressReporter()` - Console progress reporting
 
 ## Coverage
 
