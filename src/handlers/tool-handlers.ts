@@ -227,6 +227,30 @@ import { getMittwaldClient } from '../services/mittwald/index.js';
 import type { MittwaldToolHandlerContext } from '../types/mittwald/conversation.js';
 
 /**
+ * Helper function to map snake_case parameters to camelCase for app install handlers
+ */
+function mapAppInstallParams(args: any): any {
+  const mapped: any = {};
+  if (args.project_id !== undefined) mapped.projectId = args.project_id;
+  if (args.version !== undefined) mapped.version = args.version;
+  if (args.host !== undefined) mapped.host = args.host;
+  if (args.admin_user !== undefined) mapped.adminUser = args.admin_user;
+  if (args.admin_email !== undefined) mapped.adminEmail = args.admin_email;
+  if (args.admin_pass !== undefined) mapped.adminPass = args.admin_pass;
+  if (args.admin_firstname !== undefined) mapped.adminFirstname = args.admin_firstname;
+  if (args.admin_lastname !== undefined) mapped.adminLastname = args.admin_lastname;
+  if (args.site_title !== undefined) mapped.siteTitle = args.site_title;
+  if (args.shopware_title !== undefined) mapped.shopwareTitle = args.shopware_title;
+  if (args.shop_email !== undefined) mapped.shopEmail = args.shop_email;
+  if (args.shop_lang !== undefined) mapped.shopLang = args.shop_lang;
+  if (args.shop_currency !== undefined) mapped.shopCurrency = args.shop_currency;
+  if (args.wait !== undefined) mapped.wait = args.wait;
+  if (args.wait_timeout !== undefined) mapped.waitTimeout = args.wait_timeout;
+  if (args.install_mode !== undefined) mapped.installMode = args.install_mode;
+  return mapped;
+}
+
+/**
  * Zod schemas for tool validation
  */
 const ToolSchemas = {
@@ -398,32 +422,32 @@ const ToolSchemas = {
   }),
 
   mittwald_app_install: z.object({
-    app_type: z.enum(["contao", "joomla", "matomo", "nextcloud", "shopware5", "shopware6", "typo3", "wordpress"]).describe("Type of application to install"),
-    project_id: z.string().optional().describe("ID or short ID of a project"),
+    appType: z.enum(["contao", "joomla", "matomo", "nextcloud", "shopware5", "shopware6", "typo3", "wordpress"]).describe("Type of application to install"),
+    projectId: z.string().optional().describe("ID or short ID of a project"),
     version: z.string().optional().describe("Version of the application to be installed"),
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
     host: z.string().optional().describe("Host to initially configure your installation with"),
-    admin_user: z.string().optional().describe("Username for your administrator user"),
-    admin_email: z.string().optional().describe("Email address of your administrator user"),
-    admin_pass: z.string().optional().describe("Password of your administrator user"),
-    site_title: z.string().optional().describe("Site title for your installation"),
+    adminUser: z.string().optional().describe("Username for your administrator user"),
+    adminEmail: z.string().optional().describe("Email address of your administrator user"),
+    adminPass: z.string().optional().describe("Password of your administrator user"),
+    siteTitle: z.string().optional().describe("Site title for your installation"),
     wait: z.boolean().optional().describe("Wait for the resource to be ready"),
-    wait_timeout: z.string().optional().describe("The duration to wait for the resource to be ready")
+    waitTimeout: z.string().optional().describe("The duration to wait for the resource to be ready")
   }),
 
   mittwald_app_install_contao: z.object({
-    project_id: z.string().optional().describe("ID or short ID of a project"),
+    projectId: z.string().optional().describe("ID or short ID of a project"),
     version: z.string().describe("Version of Contao to be installed"),
     quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
     host: z.string().optional().describe("Host to initially configure your Contao installation with"),
-    admin_firstname: z.string().optional().describe("First name of your administrator user"),
-    admin_user: z.string().optional().describe("Username for your administrator user"),
-    admin_email: z.string().optional().describe("Email address of your administrator user"),
-    admin_pass: z.string().optional().describe("Password of your administrator user"),
-    admin_lastname: z.string().optional().describe("Last name of your administrator user"),
-    site_title: z.string().optional().describe("Site title for your Contao installation"),
+    adminFirstname: z.string().optional().describe("First name of your administrator user"),
+    adminUser: z.string().optional().describe("Username for your administrator user"),
+    adminEmail: z.string().optional().describe("Email address of your administrator user"),
+    adminPass: z.string().optional().describe("Password of your administrator user"),
+    adminLastname: z.string().optional().describe("Last name of your administrator user"),
+    siteTitle: z.string().optional().describe("Site title for your Contao installation"),
     wait: z.boolean().optional().describe("Wait for the resource to be ready"),
-    wait_timeout: z.string().optional().describe("The duration to wait for the resource to be ready")
+    waitTimeout: z.string().optional().describe("The duration to wait for the resource to be ready")
   }),
 
   mittwald_app_list_upgrade_candidates: z.object({
@@ -1871,7 +1895,16 @@ export async function handleToolCall(
     
     let args: any;
     try {
-      const validatedArgs = schema.parse(request.params.arguments);
+      // For app install tools, map snake_case to camelCase before validation
+      let argumentsToValidate = request.params.arguments;
+      if (toolName.startsWith('mittwald_app_install_') && toolName !== 'mittwald_app_install') {
+        logger.info('Mapping app install params for', toolName);
+        logger.info('Original args:', JSON.stringify(request.params.arguments));
+        argumentsToValidate = mapAppInstallParams(request.params.arguments);
+        logger.info('Mapped args:', JSON.stringify(argumentsToValidate));
+      }
+      
+      const validatedArgs = schema.parse(argumentsToValidate);
       args = validatedArgs;
     } catch (error) {
       if (error instanceof z.ZodError) {

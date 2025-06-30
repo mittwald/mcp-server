@@ -20,7 +20,12 @@ export interface MittwaldAppInstallContaoArgs {
 
 export const handleAppInstallContao: MittwaldToolHandler<MittwaldAppInstallContaoArgs> = async (args, { mittwaldClient }) => {
   try {
+    logger.info('Contao handler received args:', JSON.stringify(args));
+    logger.info('Contao handler args.projectId:', args.projectId);
+    logger.info('Contao handler args.project_id:', (args as any).project_id);
+    
     if (!args.projectId) {
+      logger.error('Contao handler: projectId is missing!');
       return formatToolResponse("error", "Project ID is required");
     }
 

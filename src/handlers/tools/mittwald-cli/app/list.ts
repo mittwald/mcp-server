@@ -2,6 +2,18 @@ import type { MittwaldToolHandler } from '../../../../types/mittwald/conversatio
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 
+// Map of known app UUIDs to friendly names
+const APP_UUID_MAP: Record<string, string> = {
+  '0b97d59f-ee13-4f18-a1f6-53e1beaf2e70': 'Nextcloud',
+  '91fa05e7-34f7-42e8-a8d3-a9c42abd5f8c': 'Matomo', 
+  '352971cc-b96a-4a26-8651-b08d7c8a7357': 'TYPO3',
+  'da3aa3ae-4b6b-4398-a4a8-ee8def827876': 'WordPress',
+  '4916ce3e-cba4-4d2e-9798-a8764aa14cf3': 'Contao',
+  '5aac2f76-1ddb-4f32-863d-0acc4618fb7d': 'Joomla',
+  '595ff9f9-cdaf-4c29-b3f1-18dd3bfc36f0': 'Shopware 5',
+  'b41dc9f0-f6d7-4f7d-9db5-ff45a20a13a2': 'Shopware 6'
+};
+
 export interface MittwaldAppListArgs {
   projectId?: string;
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
@@ -65,7 +77,7 @@ export const handleAppList: MittwaldToolHandler<MittwaldAppListArgs> = async (ar
     // For text output, create a simplified view
     const formattedApps = extendedApps.map((app: any) => ({
       id: app.id,
-      name: app.app?.name || app.appId || 'Unknown',
+      name: APP_UUID_MAP[app.appId] || app.app?.name || app.appId || 'Unknown',
       version: app.appVersion?.current || 'unknown',
       status: app.appVersion?.current ? 'installed' : 'installing',
       createdAt: app.createdAt || new Date().toISOString()
