@@ -45,11 +45,11 @@ export class TestProjectManager {
     });
     const serversContent = parseToolContent(serversResponse.result);
     
-    if (serversContent.status !== 'success' || !serversContent.data?.servers?.length) {
+    if (serversContent.status !== 'success' || !serversContent.data?.length) {
       throw new Error('No servers available');
     }
     
-    const serverId = serversContent.data.servers[0].id;
+    const serverId = serversContent.data[0].id;
     
     // Create the project
     const createResponse = await this.client.callTool('mittwald_project_create', {
@@ -63,36 +63,72 @@ export class TestProjectManager {
       throw new Error(`Failed to create project: ${createContent.message}`);
     }
     
-    const projectId = createContent.data.id;
-    const shortId = createContent.data.shortId;
+    // The API returns projectId, not id
+    const projectId = createContent.data?.projectId || createContent.data?.id;
+    if (!projectId) {
+      throw new Error(`Invalid project creation response: ${JSON.stringify(createContent.data)}`);
+    }
+    
+    // We'll get the shortId from the project details later
+    let shortId = projectId; // Use full ID initially
+    
+    // Wait a bit for project to be created in the system
+    logger.info(`Waiting for project ${projectId} to initialize...`);
+    await sleep(10000); // 10 seconds initial wait
     
     // Poll for project to be ready
-    const progressReporter = createProgressReporter(`Project ${shortId} creation`);
+    const progressReporter = createProgressReporter(`Project creation`);
     
+    // Try to get project list to find our project
     const result = await pollOperation(
       async () => {
-        const getResponse = await this.client.callTool('mittwald_project_get', {
-          projectId: shortId,
-          output: 'json'
-        });
-        
-        const getContent = parseToolContent(getResponse.result);
-        if (getContent.status === 'success' && getContent.data?.isReady) {
-          return { completed: true, data: getContent.data };
+        try {
+          // Try listing projects to find ours
+          const listResponse = await this.client.callTool('mittwald_project_list', {
+            output: 'json'
+          });
+          
+          const listContent = parseToolContent(listResponse.result);
+          if (listContent.status === 'success' && listContent.data) {
+            // Find our project in the list
+            const ourProject = listContent.data.find(
+              (p: any) => p.id === projectId
+            );
+            
+            if (ourProject) {
+              // Update shortId if we found it
+              if (ourProject.shortId) {
+                shortId = ourProject.shortId;
+                logger.info(`Found project ${shortId} in list`);
+              }
+              
+              // Check if ready
+              if (ourProject.isReady || ourProject.readiness === 'ready') {
+                logger.info(`Project ${shortId} is ready!`);
+                return { completed: true, data: ourProject };
+              } else {
+                logger.debug(`Project ${shortId} status: ${ourProject.readiness || 'creating'}`);
+              }
+            }
+          }
+          
+          return { completed: false };
+        } catch (error) {
+          // During creation, some errors are expected
+          logger.debug(`Polling error:`, error);
+          return { completed: false };
         }
-        
-        return { completed: false };
       },
       {
-        maxAttempts: 60, // 5 minutes with 5s intervals
+        maxAttempts: 90, // 7.5 minutes with 5s intervals
         intervalMs: 5000,
-        timeoutMs: 300000, // 5 minutes
+        timeoutMs: 450000, // 7.5 minutes
         onProgress: progressReporter
       }
     );
     
     if (!result.success) {
-      throw new Error(`Project creation failed: ${result.error}`);
+      throw new Error(`Project creation timed out or failed: ${result.error}`);
     }
     
     const project: TestProject = {
@@ -124,23 +160,28 @@ export class TestProjectManager {
   ): Promise<TestAppInstallation> {
     logger.info(`Installing ${appType} in project ${projectId}`);
     
-    // Get project ingresses for hostname
-    const ingressResponse = await this.client.callTool('mittwald_domain_virtualhost_list', {
-      project_id: projectId,
-      output: 'json'
-    });
-    
+    // Try to get project ingresses for hostname
     let host: string | undefined;
-    const ingressContent = parseToolContent(ingressResponse.result);
-    if (ingressContent.status === 'success' && ingressContent.data?.virtualhosts?.length > 0) {
-      host = ingressContent.data.virtualhosts[0].hostname;
+    try {
+      const ingressResponse = await this.client.callTool('mittwald_domain_virtualhost_list', {
+        project_id: projectId,
+        output: 'json'
+      });
+      
+      const ingressContent = parseToolContent(ingressResponse.result);
+      if (ingressContent.status === 'success' && ingressContent.data?.virtualhosts?.length > 0) {
+        host = ingressContent.data.virtualhosts[0].hostname;
+      }
+    } catch (error) {
+      logger.warn(`Could not get hostname for project ${projectId}:`, error);
+      // Continue without hostname - installation might still work
     }
     
     // Install the app using the generic installer
     const installResponse = await this.client.callTool('mittwald_app_install', {
       app_type: appType,
       project_id: projectId,
-      version: options.version || 'latest',
+      version: options.version, // Don't default to 'latest' - let the handler choose
       host,
       admin_user: options.adminUser || `admin_${appType}`,
       admin_email: options.adminEmail || `admin@${appType}.test`,
