@@ -2,6 +2,7 @@ import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 import { logger } from '../../../../../utils/logger.js';
+import { validateAppVersion } from './version-validator.js';
 
 export interface MittwaldAppInstallNextcloudArgs {
   projectId: string;
@@ -62,23 +63,15 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
     });
     assertStatus(versionsResponse, 200);
     
-    // Find the recommended version or use specified version
+    // Validate version using the helper
     const versions = versionsResponse.data;
-    let appVersionId;
-    if (args.version) {
-      const specificVersion = versions.find((v: any) => v.externalVersion === args.version);
-      if (!specificVersion) {
-        return formatToolResponse("error", `Nextcloud version ${args.version} not found`);
-      }
-      appVersionId = specificVersion.id;
-    } else {
-      const recommendedVersion = versions.find((v: any) => v.recommended);
-      appVersionId = recommendedVersion?.id || versions[0]?.id;
+    const versionValidation = validateAppVersion('Nextcloud', args.version, versions);
+    
+    if (versionValidation.error) {
+      return versionValidation.error;
     }
     
-    if (!appVersionId) {
-      return formatToolResponse("error", "No Nextcloud versions available");
-    }
+    const appVersionId = versionValidation.appVersionId!;
 
     // Prepare installation parameters with correct field names
     const userInputs = [

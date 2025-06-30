@@ -164,7 +164,7 @@ export class TestProjectManager {
     let host: string | undefined;
     try {
       const ingressResponse = await this.client.callTool('mittwald_domain_virtualhost_list', {
-        project_id: projectId,
+        projectId: projectId,
         output: 'json'
       });
       
@@ -224,7 +224,7 @@ export class TestProjectManager {
     const result = await pollOperation(
       async () => {
         const getResponse = await this.client.callTool('mittwald_app_get', {
-          installation_id: installation.installationId,
+          installationId: installation.installationId,
           output: 'json'
         });
         
@@ -304,8 +304,9 @@ export class TestProjectManager {
     logger.info(`Uninstalling app ${installationId}`);
     
     const response = await this.client.callTool('mittwald_app_uninstall', {
-      installation_id: installationId,
-      force: true
+      installationId: installationId,
+      force: true,
+      quiet: true
     });
     
     const content = parseToolContent(response.result);

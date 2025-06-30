@@ -12,8 +12,7 @@ export const mittwald_app_install_contao: Tool = {
       },
       version: {
         type: 'string',
-        description: 'Version of Contao to be installed',
-        default: 'latest',
+        description: 'REQUIRED: Exact Contao version to install. You MUST first call mittwald_app_versions with app type \'contao\' to get valid versions. Do NOT use \'latest\' - choose the recommended version or a specific version from the list.',
       },
       quiet: {
         type: 'boolean',

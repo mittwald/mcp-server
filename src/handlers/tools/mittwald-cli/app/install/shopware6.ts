@@ -2,6 +2,7 @@ import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
 import { logger } from '../../../../../utils/logger.js';
+import { validateAppVersion } from './version-validator.js';
 
 export interface MittwaldAppInstallShopware6Args {
   projectId: string;

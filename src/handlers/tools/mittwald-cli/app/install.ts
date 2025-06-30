@@ -1,7 +1,7 @@
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
-// import { handleAppInstallContao } from './install/contao.js'; // Not a real handler yet
+import { handleAppInstallContao } from './install/contao.js';
 import { handleAppInstallJoomla } from './install/joomla.js';
 import { handleAppInstallMatomo } from './install/matomo.js';
 import { handleAppInstallNextcloud } from './install/nextcloud.js';
@@ -29,9 +29,23 @@ export const handleMittwaldAppInstall: MittwaldToolHandler<AppInstallInput> = as
   context
 ) => {
   try {
-    // Validate required project_id
+    // Validate required fields
     if (!input.project_id) {
       return formatToolResponse("error", "Project ID is required");
+    }
+    
+    if (!input.version) {
+      return formatToolResponse(
+        "error", 
+        "Version is required. Please use mittwald_app_versions to get valid versions for your chosen app type and specify one explicitly."
+      );
+    }
+    
+    if (input.version === 'latest') {
+      return formatToolResponse(
+        "error", 
+        "'latest' is not a valid version. Please use mittwald_app_versions to get valid versions for your chosen app type and choose the recommended version or a specific version from the list."
+      );
     }
 
     // Map the generic parameters to app-specific parameters
@@ -50,11 +64,7 @@ export const handleMittwaldAppInstall: MittwaldToolHandler<AppInstallInput> = as
     // Dispatch to the appropriate app-specific handler
     switch (input.app_type) {
       case 'contao':
-        // Contao handler is not implemented yet
-        return formatToolResponse(
-          "error",
-          "Contao installation is not yet implemented"
-        );
+        return await handleAppInstallContao(commonArgs, context);
       
       case 'joomla':
         return await handleAppInstallJoomla(commonArgs, context);

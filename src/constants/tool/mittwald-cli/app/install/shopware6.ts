@@ -12,8 +12,7 @@ export const mittwald_app_install_shopware6: Tool = {
       },
       version: {
         type: "string",
-        description: "Version to install",
-        default: "latest"
+        description: "REQUIRED: Exact Shopware 6 version to install. You MUST first call mittwald_app_versions with app type 'shopware6' to get valid versions. Do NOT use 'latest' - choose the recommended version or a specific version from the list."
       },
       host: {
         type: "string",
@@ -65,6 +64,6 @@ export const mittwald_app_install_shopware6: Tool = {
         default: 600
       }
     },
-    required: ["projectId"]
+    required: ["projectId", "version"]
   }
 };

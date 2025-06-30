@@ -17,8 +17,7 @@ export const mittwald_app_install: Tool = {
       },
       version: {
         type: 'string',
-        description: 'Version of the application to be installed',
-        default: 'latest',
+        description: 'REQUIRED: Exact version number to install. You MUST first call mittwald_app_versions to get valid versions. Do NOT use "latest" - choose the recommended version or most recent stable version from the list.',
       },
       quiet: {
         type: 'boolean',
@@ -56,6 +55,6 @@ export const mittwald_app_install: Tool = {
         default: '600s',
       },
     },
-    required: ['app_type'],
+    required: ['app_type', 'version'],
   },
 };
