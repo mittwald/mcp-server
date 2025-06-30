@@ -3,6 +3,7 @@
  * @module handlers/tools/mittwald-cli/app/install
  */
 
+export { handleAppInstallContao } from './contao.js';
 export { handleAppInstallJoomla } from './joomla.js';
 export { handleAppInstallMatomo } from './matomo.js';
 export { handleAppInstallNextcloud } from './nextcloud.js';

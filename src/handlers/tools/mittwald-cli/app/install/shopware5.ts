@@ -1,6 +1,7 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
+import { logger } from '../../../../../utils/logger.js';
 
 export interface MittwaldAppInstallShopware5Args {
   projectId: string;
@@ -30,148 +31,138 @@ export const handleAppInstallShopware5: MittwaldToolHandler<MittwaldAppInstallSh
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
-    // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
-      queryParameters: { projectId: args.projectId },
-    });
-    assertStatus(ingressResponse, 200);
-    const defaultHost = ingressResponse.data.length > 0 
-      ? `https://${ingressResponse.data[0].hostname}`
-      : undefined;
-
-    // Get project details for site title generation
-    const projectResponse = await mittwaldClient.project.getProject({
-      projectId: args.projectId,
-    });
-    assertStatus(projectResponse, 200);
-    const project = projectResponse.data;
-
-    // Auto-fill flags with defaults
-    const version = args.version || "latest";
-    const host = args.host || defaultHost || "";
-    const adminUser = args.adminUser || 
-      `${user.person?.firstName?.charAt(0).toLowerCase() || 'a'}${user.person?.lastName?.toLowerCase() || 'admin'}`;
-    const adminEmail = args.adminEmail || user.email || "admin@example.com";
-    const adminPass = args.adminPass || generateSecurePassword();
-    const adminFirstname = args.adminFirstname || user.person?.firstName || "Admin";
-    const adminLastname = args.adminLastname || user.person?.lastName || "User";
-    const siteTitle = args.siteTitle || `Shopware 5 (${project.shortId})`;
-    const shopEmail = args.shopEmail || user.email || "shop@example.com";
-    const shopLang = args.shopLang || "en";
-    const shopCurrency = args.shopCurrency || "EUR";
-
-    // Shopware 5 app ID from CLI
-    const appId = "a23acf9c-9298-4082-9e7d-25356f9976dc";
-    const versionsResponse = await mittwaldClient.app.listAppversions({ appId });
-    assertStatus(versionsResponse, 200);
-
-    let appVersion;
-    if (version === "latest") {
-      appVersion = versionsResponse.data[0];
-    } else {
-      appVersion = versionsResponse.data.find((v: any) => v.externalVersion === version);
-      if (!appVersion) {
-        throw new Error(`no version ${version} found for app Shopware 5`);
+    // Try to get project ingresses for default host
+    let hostname = args.host;
+    if (!hostname) {
+      try {
+        const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
+          queryParameters: { projectId: args.projectId }
+        });
+        
+        if (ingressResponse.status === 200 && ingressResponse.data.length > 0) {
+          // Find first hostname that is not .mittwaldurl.dev
+          const ingress = ingressResponse.data.find((i: any) => 
+            i.hostname && !i.hostname.endsWith('.mittwaldurl.dev')
+          ) || ingressResponse.data[0];
+          hostname = ingress.hostname;
+        }
+      } catch (error) {
+        // If we can't get ingresses, generate a default hostname
+        logger.debug('Could not get ingresses, using default hostname');
+      }
+      
+      // If still no hostname, generate a default one
+      if (!hostname) {
+        // Extract project short ID if available
+        const projectShortId = args.projectId.substring(0, 8);
+        hostname = `shopware5-${projectShortId}.project.space`;
       }
     }
 
-    // Trigger app installation
+    // Shopware 5 app ID from CLI
+    const shopware5AppId = "a23acf9c-9298-4082-9e7d-25356f9976dc";
+    // Get available versions
+    const versionsResponse = await mittwaldClient.app.listAppversions({ 
+      appId: shopware5AppId 
+    });
+    assertStatus(versionsResponse, 200);
+    
+    // Find the recommended version or use specified version
+    const versions = versionsResponse.data;
+    let appVersionId;
+    if (args.version) {
+      const specificVersion = versions.find((v: any) => v.externalVersion === args.version);
+      if (!specificVersion) {
+        return formatToolResponse("error", `Shopware 5 version ${args.version} not found`);
+      }
+      appVersionId = specificVersion.id;
+    } else {
+      const recommendedVersion = versions.find((v: any) => v.recommended);
+      appVersionId = recommendedVersion?.id || versions[0]?.id;
+    }
+    
+    if (!appVersionId) {
+      return formatToolResponse("error", "No Shopware 5 versions available");
+    }
+
+    // Prepare installation parameters with correct field names
+    const userInputs = [
+      { name: "admin_user", value: args.adminUser || 'admin' },
+      { name: "admin_email", value: args.adminEmail || user.email || "admin@example.com" },
+      { name: "admin_pass", value: args.adminPass || generateSecurePassword() },
+      { name: "admin_firstname", value: args.adminFirstname || user.person?.firstName || "Admin" },
+      { name: "admin_lastname", value: args.adminLastname || user.person?.lastName || "User" },
+      { name: "site_title", value: args.siteTitle || 'My Shopware 5 Shop' },
+      { name: "host", value: hostname || '' },
+      { name: "shop_email", value: args.shopEmail || user.email || "shop@example.com" },
+      { name: "shop_lang", value: args.shopLang || "en" },
+      { name: "shop_currency", value: args.shopCurrency || "EUR" }
+    ];
+
+    // Create the installation
     const installResponse = await mittwaldClient.app.requestAppinstallation({
       projectId: args.projectId,
       data: {
-        appVersionId: appVersion.id,
-        description: siteTitle,
+        appVersionId,
+        description: args.siteTitle || `Shopware 5 - ${args.projectId}`,
         updatePolicy: "none",
-        userInputs: [
-          { name: "version", value: appVersion.externalVersion },
-          { name: "host", value: host },
-          { name: "admin_user", value: adminUser },
-          { name: "admin_email", value: adminEmail },
-          { name: "admin_pass", value: adminPass },
-          { name: "admin_firstname", value: adminFirstname },
-          { name: "admin_lastname", value: adminLastname },
-          { name: "site_title", value: siteTitle },
-          { name: "shop_email", value: shopEmail },
-          { name: "shop_lang", value: shopLang },
-          { name: "shop_currency", value: shopCurrency },
-        ]
+        userInputs
       }
     });
     assertStatus(installResponse, 201);
     const appInstallationId = installResponse.data.id;
 
-    // Wait for installation to be retrievable
-    let installation;
-    let attempts = 0;
-    const maxAttempts = 10;
-    
-    do {
-      try {
-        const checkResponse = await mittwaldClient.app.getAppinstallation({
-          appInstallationId,
-        });
-        if (checkResponse.status === 200) {
-          installation = checkResponse.data;
-          break;
-        }
-      } catch (error) {
-        // Continue retrying
-      }
-      
-      attempts++;
-      if (attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-    } while (attempts < maxAttempts);
-
-    if (!installation) {
-      throw new Error("Installation could not be retrieved after creation");
-    }
-
-    // If wait flag, poll until installation completes
+    // Wait for installation if requested
     if (args.wait) {
-      const waitTimeout = args.waitTimeout || 600;
+      const timeout = (args.waitTimeout || 600) * 1000; // Convert to milliseconds
       const startTime = Date.now();
-      
-      while (true) {
+
+      while (Date.now() - startTime < timeout) {
         const statusResponse = await mittwaldClient.app.getAppinstallation({
-          appInstallationId,
+          appInstallationId
         });
         assertStatus(statusResponse, 200);
-        const currentInstallation = statusResponse.data;
-        
-        if (currentInstallation.appVersion?.current === currentInstallation.appVersion?.desired) {
-          break;
+
+        if (statusResponse.data.appVersion?.current) {
+          // Installation complete
+          return formatToolResponse(
+            "success",
+            "Shopware 5 installation completed successfully",
+            {
+              appInstallationId,
+              status: 'completed',
+              appId: statusResponse.data.appId,
+              version: statusResponse.data.appVersion?.current || 'latest',
+              host: hostname,
+              adminUser: args.adminUser || 'admin',
+              adminEmail: args.adminEmail || user.email || "admin@example.com",
+              shopEmail: args.shopEmail || user.email || "shop@example.com",
+              shopLang: args.shopLang || "en",
+              shopCurrency: args.shopCurrency || "EUR"
+            }
+          );
         }
-        
-        if ((Date.now() - startTime) / 1000 > waitTimeout) {
-          throw new Error(`waiting for app installation to be ready took longer than ${waitTimeout}s`);
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Wait 5 seconds before checking again
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
+
+      throw new Error(`Installation timed out after ${args.waitTimeout || 600} seconds`);
     }
 
-    const successText = args.wait
-      ? "Your Shopware 5 installation is now complete. Have fun! 🎉"
-      : "Your Shopware 5 installation has started. Have fun when it's ready! 🎉";
-
+    // Return immediately without waiting
     return formatToolResponse(
       "success",
-      successText,
+      "Shopware 5 installation started",
       {
         appInstallationId,
-        version: appVersion.externalVersion,
-        host,
-        adminUser,
-        adminEmail,
-        adminFirstname,
-        adminLastname,
-        siteTitle,
-        shopEmail,
-        shopLang,
-        shopCurrency,
-        generatedPassword: args.adminPass ? undefined : adminPass
+        status: 'installing',
+        host: hostname,
+        adminUser: args.adminUser || 'admin',
+        adminEmail: args.adminEmail || user.email || "admin@example.com",
+        shopEmail: args.shopEmail || user.email || "shop@example.com",
+        shopLang: args.shopLang || "en",
+        shopCurrency: args.shopCurrency || "EUR"
       }
     );
   } catch (error: any) {

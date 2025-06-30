@@ -60,7 +60,7 @@ import { handleMittwaldAppDependencyList } from './tools/mittwald-cli/app/depend
 import { handleMittwaldAppDownload } from './tools/mittwald-cli/app/download.js';
 import { handleMittwaldAppGet } from './tools/mittwald-cli/app/get.js';
 import { handleMittwaldAppInstall } from './tools/mittwald-cli/app/install.js';
-import { handleMittwaldAppInstallContao } from './tools/mittwald-cli/app/install/contao.js';
+import { handleAppInstallContao } from './tools/mittwald-cli/app/install/contao.js';
 import { handleMittwaldAppListUpgradeCandidates } from './tools/mittwald-cli/app/list/upgrade-candidates.js';
 
 // Agent 3 app install handlers
@@ -2094,7 +2094,13 @@ export async function handleToolCall(
         break;
 
       case "mittwald_app_install_contao":
-        result = await handleMittwaldAppInstallContao(args);
+        const mittwaldAppInstallContaoContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleAppInstallContao(args, mittwaldAppInstallContaoContext);
         break;
 
       case "mittwald_app_list_upgrade_candidates":

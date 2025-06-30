@@ -1,6 +1,7 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
+import { logger } from '../../../../../utils/logger.js';
 
 export interface MittwaldAppInstallNextcloudArgs {
   projectId: string;
@@ -25,133 +26,125 @@ export const handleAppInstallNextcloud: MittwaldToolHandler<MittwaldAppInstallNe
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
-    // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
-      queryParameters: { projectId: args.projectId },
-    });
-    assertStatus(ingressResponse, 200);
-    const defaultHost = ingressResponse.data.length > 0 
-      ? `https://${ingressResponse.data[0].hostname}`
-      : undefined;
-
-    // Get project details for site title generation
-    const projectResponse = await mittwaldClient.project.getProject({
-      projectId: args.projectId,
-    });
-    assertStatus(projectResponse, 200);
-    const project = projectResponse.data;
-
-    // Auto-fill flags with defaults
-    const version = args.version || "latest";
-    const host = args.host || defaultHost || "";
-    const adminUser = args.adminUser || 
-      `${user.person?.firstName?.charAt(0).toLowerCase() || 'a'}${user.person?.lastName?.toLowerCase() || 'admin'}`;
-    const adminEmail = args.adminEmail || user.email || "admin@example.com";
-    const adminPass = args.adminPass || generateSecurePassword();
-    const siteTitle = args.siteTitle || `Nextcloud (${project.shortId})`;
-
-    // Nextcloud app ID from CLI
-    const appId = "0b97d59f-ee13-4f18-a1f6-53e1beaf2e70";
-    const versionsResponse = await mittwaldClient.app.listAppversions({ appId });
-    assertStatus(versionsResponse, 200);
-
-    let appVersion;
-    if (version === "latest") {
-      appVersion = versionsResponse.data[0];
-    } else {
-      appVersion = versionsResponse.data.find((v: any) => v.externalVersion === version);
-      if (!appVersion) {
-        throw new Error(`no version ${version} found for app Nextcloud`);
+    // Try to get project ingresses for default host
+    let hostname = args.host;
+    if (!hostname) {
+      try {
+        const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
+          queryParameters: { projectId: args.projectId }
+        });
+        
+        if (ingressResponse.status === 200 && ingressResponse.data.length > 0) {
+          // Find first hostname that is not .mittwaldurl.dev
+          const ingress = ingressResponse.data.find((i: any) => 
+            i.hostname && !i.hostname.endsWith('.mittwaldurl.dev')
+          ) || ingressResponse.data[0];
+          hostname = ingress.hostname;
+        }
+      } catch (error) {
+        // If we can't get ingresses, generate a default hostname
+        logger.debug('Could not get ingresses, using default hostname');
+      }
+      
+      // If still no hostname, generate a default one
+      if (!hostname) {
+        // Extract project short ID if available
+        const projectShortId = args.projectId.substring(0, 8);
+        hostname = `nextcloud-${projectShortId}.project.space`;
       }
     }
 
-    // Trigger app installation
+    // Nextcloud app ID from CLI
+    const nextcloudAppId = "0b97d59f-ee13-4f18-a1f6-53e1beaf2e70";
+    // Get available versions
+    const versionsResponse = await mittwaldClient.app.listAppversions({ 
+      appId: nextcloudAppId 
+    });
+    assertStatus(versionsResponse, 200);
+    
+    // Find the recommended version or use specified version
+    const versions = versionsResponse.data;
+    let appVersionId;
+    if (args.version) {
+      const specificVersion = versions.find((v: any) => v.externalVersion === args.version);
+      if (!specificVersion) {
+        return formatToolResponse("error", `Nextcloud version ${args.version} not found`);
+      }
+      appVersionId = specificVersion.id;
+    } else {
+      const recommendedVersion = versions.find((v: any) => v.recommended);
+      appVersionId = recommendedVersion?.id || versions[0]?.id;
+    }
+    
+    if (!appVersionId) {
+      return formatToolResponse("error", "No Nextcloud versions available");
+    }
+
+    // Prepare installation parameters with correct field names
+    const userInputs = [
+      { name: "admin_user", value: args.adminUser || 'admin' },
+      { name: "admin_email", value: args.adminEmail || user.email || "admin@example.com" },
+      { name: "admin_pass", value: args.adminPass || generateSecurePassword() },
+      { name: "site_title", value: args.siteTitle || 'My Nextcloud' },
+      { name: "host", value: hostname || '' }
+    ];
+
+    // Create the installation
     const installResponse = await mittwaldClient.app.requestAppinstallation({
       projectId: args.projectId,
       data: {
-        appVersionId: appVersion.id,
-        description: siteTitle,
+        appVersionId,
+        description: args.siteTitle || `Nextcloud - ${args.projectId}`,
         updatePolicy: "none",
-        userInputs: [
-          { name: "version", value: appVersion.externalVersion },
-          { name: "host", value: host },
-          { name: "admin_user", value: adminUser },
-          { name: "admin_email", value: adminEmail },
-          { name: "admin_pass", value: adminPass },
-          { name: "site_title", value: siteTitle },
-        ]
+        userInputs
       }
     });
     assertStatus(installResponse, 201);
     const appInstallationId = installResponse.data.id;
 
-    // Wait for installation to be retrievable
-    let installation;
-    let attempts = 0;
-    const maxAttempts = 10;
-    
-    do {
-      try {
-        const checkResponse = await mittwaldClient.app.getAppinstallation({
-          appInstallationId,
-        });
-        if (checkResponse.status === 200) {
-          installation = checkResponse.data;
-          break;
-        }
-      } catch (error) {
-        // Continue retrying
-      }
-      
-      attempts++;
-      if (attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-    } while (attempts < maxAttempts);
-
-    if (!installation) {
-      throw new Error("Installation could not be retrieved after creation");
-    }
-
-    // If wait flag, poll until installation completes
+    // Wait for installation if requested
     if (args.wait) {
-      const waitTimeout = args.waitTimeout || 600;
+      const timeout = (args.waitTimeout || 600) * 1000; // Convert to milliseconds
       const startTime = Date.now();
-      
-      while (true) {
+
+      while (Date.now() - startTime < timeout) {
         const statusResponse = await mittwaldClient.app.getAppinstallation({
-          appInstallationId,
+          appInstallationId
         });
         assertStatus(statusResponse, 200);
-        const currentInstallation = statusResponse.data;
-        
-        if (currentInstallation.appVersion?.current === currentInstallation.appVersion?.desired) {
-          break;
+
+        if (statusResponse.data.appVersion?.current) {
+          // Installation complete
+          return formatToolResponse(
+            "success",
+            "Nextcloud installation completed successfully",
+            {
+              appInstallationId,
+              status: 'completed',
+              appId: statusResponse.data.appId,
+              version: statusResponse.data.appVersion?.current || 'latest',
+              host: hostname,
+              adminUser: args.adminUser || 'admin'
+            }
+          );
         }
-        
-        if ((Date.now() - startTime) / 1000 > waitTimeout) {
-          throw new Error(`waiting for app installation to be ready took longer than ${waitTimeout}s`);
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Wait 5 seconds before checking again
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
+
+      throw new Error(`Installation timed out after ${args.waitTimeout || 600} seconds`);
     }
 
-    const successText = args.wait
-      ? "Your Nextcloud installation is now complete. Have fun! 🎉"
-      : "Your Nextcloud installation has started. Have fun when it's ready! 🎉";
-
+    // Return immediately without waiting
     return formatToolResponse(
       "success",
-      successText,
+      "Nextcloud installation started",
       {
         appInstallationId,
-        version: appVersion.externalVersion,
-        host,
-        adminUser,
-        adminEmail,
-        siteTitle,
-        generatedPassword: args.adminPass ? undefined : adminPass
+        status: 'installing',
+        host: hostname,
+        adminUser: args.adminUser || 'admin'
       }
     );
   } catch (error: any) {

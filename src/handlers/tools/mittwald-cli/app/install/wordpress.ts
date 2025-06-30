@@ -1,6 +1,7 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { assertStatus } from '@mittwald/api-client';
+import { logger } from '../../../../../utils/logger.js';
 
 export interface MittwaldAppInstallWordpressArgs {
   projectId: string;
@@ -25,24 +26,32 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
     assertStatus(userResponse, 200);
     const user = userResponse.data;
 
-    // Get project ingresses for default host
-    const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
-      queryParameters: { projectId: args.projectId }
-    });
-    assertStatus(ingressResponse, 200);
-
-    // Find a suitable hostname
+    // Try to get project ingresses for default host
     let hostname = args.host;
-    if (!hostname && ingressResponse.data.length > 0) {
-      // Find first hostname that is not .mittwaldurl.dev
-      const ingress = ingressResponse.data.find((i: any) => 
-        i.hostname && !i.hostname.endsWith('.mittwaldurl.dev')
-      ) || ingressResponse.data[0];
-      hostname = ingress.hostname;
-    }
-
     if (!hostname) {
-      return formatToolResponse("error", "No hostname found for project. Please specify a host parameter.");
+      try {
+        const ingressResponse = await mittwaldClient.domain.ingressListIngresses({
+          queryParameters: { projectId: args.projectId }
+        });
+        
+        if (ingressResponse.status === 200 && ingressResponse.data.length > 0) {
+          // Find first hostname that is not .mittwaldurl.dev
+          const ingress = ingressResponse.data.find((i: any) => 
+            i.hostname && !i.hostname.endsWith('.mittwaldurl.dev')
+          ) || ingressResponse.data[0];
+          hostname = ingress.hostname;
+        }
+      } catch (error) {
+        // If we can't get ingresses, generate a default hostname
+        logger.debug('Could not get ingresses, using default hostname');
+      }
+      
+      // If still no hostname, generate a default one
+      if (!hostname) {
+        // Extract project short ID if available
+        const projectShortId = args.projectId.substring(0, 8);
+        hostname = `wordpress-${projectShortId}.project.space`;
+      }
     }
 
     // Get WordPress app ID and version
@@ -72,13 +81,13 @@ export const handleAppInstallWordpress: MittwaldToolHandler<MittwaldAppInstallWo
       return formatToolResponse("error", "No WordPress versions available");
     }
 
-    // Prepare installation parameters
+    // Prepare installation parameters with correct field names
     const userInputs = [
-      { name: "adminUser", value: args.adminUser || user.email || 'admin' },
-      { name: "adminEmail", value: args.adminEmail || user.email || "admin@example.com" },
-      { name: "adminPass", value: args.adminPass || generatePassword() },
-      { name: "siteTitle", value: args.siteTitle || 'My WordPress Site' },
-      { name: "host", value: hostname }
+      { name: "admin_user", value: args.adminUser || 'admin' },
+      { name: "admin_email", value: args.adminEmail || user.email || "admin@example.com" },
+      { name: "admin_pass", value: args.adminPass || generatePassword() },
+      { name: "site_title", value: args.siteTitle || 'My WordPress Site' },
+      { name: "host", value: hostname || '' }
     ];
 
     // Create the installation
