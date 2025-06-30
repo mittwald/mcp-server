@@ -11,7 +11,12 @@ const APP_UUID_MAP: Record<string, string> = {
   '4916ce3e-cba4-4d2e-9798-a8764aa14cf3': 'Contao',
   '5aac2f76-1ddb-4f32-863d-0acc4618fb7d': 'Joomla',
   '595ff9f9-cdaf-4c29-b3f1-18dd3bfc36f0': 'Shopware 5',
-  'b41dc9f0-f6d7-4f7d-9db5-ff45a20a13a2': 'Shopware 6'
+  'b41dc9f0-f6d7-4f7d-9db5-ff45a20a13a2': 'Shopware 6',
+  '3e7f920b-a711-4d2f-9871-661e1b41a2f0': 'Node.js',
+  '34220303-cb87-4592-8a95-2eb20a97b2ac': 'PHP',
+  'fcac178a-e606-4460-a5fd-b3ad0ae7a3cc': 'PHP-Worker',
+  'be57d166-dae9-4480-bae2-da3f3c6f0a2e': 'Python',
+  'd20baefd-81d2-42aa-bfba-9a3220ae839b': 'Static Files'
 };
 
 export interface MittwaldAppListArgs {
