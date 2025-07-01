@@ -3,17 +3,12 @@
  * @module constants/resources
  */
 
+import { resources } from '../resources/index.js';
+
 /**
  * Resource definitions for the MCP server
  */
-export const RESOURCES = [
-  {
-    uri: "mittwald://container-comprehensive-guide",
-    name: "Mittwald Container Operations Complete Guide",
-    description: "Comprehensive guide for safely working with Mittwald container stacks, including safety guidelines, common pitfalls, and best practices",
-    mimeType: "text/markdown",
-  },
-] as const;
+export const RESOURCES = resources;
 
 
 /**
@@ -28,7 +23,7 @@ export const SERVER_INFO = {
  * Error messages for resource operations
  */
 export const RESOURCE_ERROR_MESSAGES = {
-  INVALID_URI: (uri: string) => `Invalid resource URI: ${uri}. Available resources: mittwald://container-comprehensive-guide`,
+  INVALID_URI: (uri: string) => `Invalid resource URI: ${uri}. Available resources: ${RESOURCES.map(r => r.uri).join(', ')}`,
   FETCH_FAILED: (error: unknown) => `Failed to fetch resource: ${error instanceof Error ? error.message : "Unknown error"}`,
   LIST_FAILED: (error: unknown) => `Failed to list resources: ${error instanceof Error ? error.message : "Unknown error"}`,
 } as const;

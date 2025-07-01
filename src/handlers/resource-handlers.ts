@@ -8,7 +8,7 @@ import {
   RESOURCES, 
   RESOURCE_ERROR_MESSAGES
 } from '../constants/resources.js';
-import { containerComprehensiveGuideContent } from '../resources/container-comprehensive-guide.js';
+import { getResourceContent } from '../resources/index.js';
 
 
 
@@ -27,20 +27,24 @@ export async function handleResourceCall(
   try {
     const { uri } = request.params;
 
-    if (uri === "mittwald://container-comprehensive-guide") {
-      return {
-        contents: [
-          {
-            uri: request.params.uri,
-            mimeType: "text/markdown",
-            text: containerComprehensiveGuideContent,
-          },
-        ],
-      };
+    // Check if resource exists
+    const resource = RESOURCES.find(r => r.uri === uri);
+    if (!resource) {
+      throw new Error(RESOURCE_ERROR_MESSAGES.INVALID_URI(uri));
     }
 
+    // Get content using the resource content handler
+    const content = await getResourceContent(uri);
 
-    throw new Error(RESOURCE_ERROR_MESSAGES.INVALID_URI(uri));
+    return {
+      contents: [
+        {
+          uri: request.params.uri,
+          mimeType: resource.mimeType,
+          text: content,
+        },
+      ],
+    };
   } catch (error) {
     throw new Error(RESOURCE_ERROR_MESSAGES.FETCH_FAILED(error));
   }
