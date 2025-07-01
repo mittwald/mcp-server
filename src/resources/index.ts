@@ -3,13 +3,15 @@ import { containerComprehensiveGuideResource, containerComprehensiveGuideContent
 import { containerVirtualhostGuideResource, containerVirtualhostGuideContent } from './container-virtualhost-guide.js';
 import { domainsGuideResource, domainsGuideContent } from './domains-guide.js';
 import { commonConfusionsGuideResource, commonConfusionsGuideContent } from './common-confusions-guide.js';
+import { opensearchStackExampleResource, opensearchStackExampleContent } from './opensearch-stack-example.js';
 
 // Export all available resources
 export const resources: Resource[] = [
   containerComprehensiveGuideResource,
   containerVirtualhostGuideResource,
   domainsGuideResource,
-  commonConfusionsGuideResource
+  commonConfusionsGuideResource,
+  opensearchStackExampleResource
 ];
 
 // Resource content handlers
@@ -23,6 +25,8 @@ export async function getResourceContent(uri: string): Promise<string> {
       return domainsGuideContent;
     case 'guide://mittwald/common-confusions':
       return commonConfusionsGuideContent;
+    case 'mittwald://opensearch-stack-example':
+      return opensearchStackExampleContent;
     default:
       throw new Error(`Unknown resource: ${uri}`);
   }
