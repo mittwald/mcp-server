@@ -21,9 +21,18 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
         if (!path || !appId) {
           return formatToolResponse(
             "error",
-            `Invalid path-to-app format: ${pathMapping}. Expected format: path:appId`
+            `Invalid path-to-app format: ${pathMapping}. Expected format: path:appId (e.g., '/:a-123456')`
           );
         }
+        
+        // Validate app ID format
+        if (!appId.match(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/) && !appId.match(/^a-[a-z0-9]{6}$/)) {
+          return formatToolResponse(
+            "error",
+            `Invalid app ID format: ${appId}. App IDs should be either a UUID (e.g., '3ecaf1a9-6eb4-4869-b811-8a13c3a2e745') or a short ID starting with 'a-' (e.g., 'a-3c96b5'). Note: Container service IDs start with 'c-', not 'a-'.`
+          );
+        }
+        
         paths.push({
           path,
           target: {

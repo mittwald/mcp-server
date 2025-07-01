@@ -2,7 +2,7 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export const mittwald_domain_virtualhost_create: Tool = {
   name: "mittwald_domain_virtualhost_create",
-  description: "Create a new ingress (virtual host). IMPORTANT: At least one path mapping (pathToApp or pathToUrl) is required. Example: pathToApp: ['/:a-3c96b5'] or pathToUrl: ['/api:https://api.example.com']",
+  description: "Create a new ingress (virtual host). IMPORTANT: At least one path mapping (pathToApp or pathToUrl) is required. App IDs start with 'a-' (e.g., 'a-3c96b5'). Example: pathToApp: ['/:a-3c96b5'] maps root path to app a-3c96b5. pathToUrl: ['/api:https://api.example.com'] maps /api to external URL.",
   inputSchema: {
     type: "object",
     properties: {
@@ -23,7 +23,7 @@ export const mittwald_domain_virtualhost_create: Tool = {
         items: {
           type: "string"
         },
-        description: "Add a path mapping to an app (format: path:appId, e.g. /:3ecaf1a9-6eb4-4869-b811-8a13c3a2e745)"
+        description: "Add a path mapping to an app (format: path:appId, e.g. '/:a-3c96b5' or '/:3ecaf1a9-6eb4-4869-b811-8a13c3a2e745'). App IDs start with 'a-'."
       },
       pathToUrl: {
         type: "array",
