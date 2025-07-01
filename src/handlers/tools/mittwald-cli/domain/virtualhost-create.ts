@@ -121,16 +121,37 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
       createRequest.projectId = args.projectId;
     }
 
-    const response = await mittwaldClient.domain.ingressCreateIngress({
-      data: createRequest,
-    });
+    let response;
+    try {
+      response = await mittwaldClient.domain.ingressCreateIngress({
+        data: createRequest,
+      });
+      
+      // Debug: Log the actual response structure (avoid circular references)
+      console.log('API Response Status:', response.status);
+      console.log('API Response Data:', response.data);
+    } catch (apiError) {
+      console.log('API call failed:', apiError instanceof Error ? apiError.message : 'Unknown API error');
+      return formatToolResponse(
+        "error",
+        `API call failed: ${apiError instanceof Error ? apiError.message : 'Unknown API error'}`
+      );
+    }
+
+    // Check status code first (like other handlers do)
+    if (response.status !== 201) {
+      return formatToolResponse(
+        "error",
+        `Failed to create ingress: HTTP ${response.status}. Data: ${JSON.stringify(response.data)}`
+      );
+    }
 
     const ingressId = response.data?.id;
     
     if (!ingressId) {
       return formatToolResponse(
         "error",
-        "Failed to create ingress: No ID returned"
+        `Failed to create ingress: No ID returned. Status: ${response.status}, Data: ${JSON.stringify(response.data)}`
       );
     }
 
@@ -155,9 +176,32 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
     );
 
   } catch (error) {
+    console.log('Error during virtual host creation:', error instanceof Error ? error.message : 'Unknown error');
+    
+    // Handle potential circular reference errors
+    let errorMessage = 'Unknown error occurred';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else {
+      // Avoid circular reference issues by extracting key properties
+      if (error && typeof error === 'object') {
+        errorMessage = `Error object: ${error.constructor?.name || 'Unknown'}`;
+        if ('message' in error) {
+          errorMessage += ` - ${error.message}`;
+        }
+        if ('status' in error) {
+          errorMessage += ` (HTTP ${error.status})`;
+        }
+      } else {
+        errorMessage = 'Complex error object (cannot serialize)';
+      }
+    }
+    
     return formatToolResponse(
       "error",
-      `Failed to create virtual host: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create virtual host: ${errorMessage}`
     );
   }
 };

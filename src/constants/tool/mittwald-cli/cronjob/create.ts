@@ -48,14 +48,6 @@ export const mittwald_cronjob_create: Tool = {
         description: "Suppress process output and only display a machine-readable summary."
       }
     },
-    required: ["description", "interval"],
-    anyOf: [
-      {
-        required: ["command", "interpreter"]
-      },
-      {
-        required: ["url"]
-      }
-    ]
+    required: ["description", "interval"]
   }
 };
