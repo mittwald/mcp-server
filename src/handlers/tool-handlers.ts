@@ -1123,8 +1123,9 @@ const ToolSchemas = {
     pathToUrl: z.array(z.string()).optional().describe("Path to URL mappings in format 'path:url' (e.g., '/api:https://api.example.com')")
   }),
   mittwald_domain_virtualhost_delete: z.object({
-    ingressId: z.string().describe("ID of the ingress to delete"),
-    force: z.boolean().optional().describe("Do not ask for confirmation")
+    virtualHostId: z.string().describe("ID of the virtual host to delete"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
   }),
   mittwald_domain_virtualhost_get: z.object({
     ingressId: z.string().describe("ID of the ingress to retrieve"),
