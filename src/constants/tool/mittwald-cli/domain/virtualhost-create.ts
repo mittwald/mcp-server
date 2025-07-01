@@ -2,7 +2,7 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export const mittwald_domain_virtualhost_create: Tool = {
   name: "mittwald_domain_virtualhost_create",
-  description: "Create a new ingress (virtual host).",
+  description: "Create a new ingress (virtual host). IMPORTANT: At least one path mapping (pathToApp or pathToUrl) is required. Example: pathToApp: ['/:a-3c96b5'] or pathToUrl: ['/api:https://api.example.com']",
   inputSchema: {
     type: "object",
     properties: {

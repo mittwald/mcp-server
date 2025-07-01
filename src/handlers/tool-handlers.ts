@@ -1115,10 +1115,10 @@ const ToolSchemas = {
   }),
   mittwald_domain_virtualhost_create: z.object({
     hostname: z.string().describe("Hostname for the virtual host"),
-    path: z.string().optional().describe("Path for the virtual host"),
     projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
-    wait: z.boolean().optional().describe("Wait for operation to complete"),
-    waitTimeout: z.number().optional().describe("Timeout for wait operation in milliseconds")
+    quiet: z.boolean().optional().describe("Suppress process output"),
+    pathToApp: z.array(z.string()).optional().describe("Path to app mappings in format 'path:appId' (e.g., '/:a-3c96b5')"),
+    pathToUrl: z.array(z.string()).optional().describe("Path to URL mappings in format 'path:url' (e.g., '/api:https://api.example.com')")
   }),
   mittwald_domain_virtualhost_delete: z.object({
     ingressId: z.string().describe("ID of the ingress to delete"),
@@ -1985,8 +1985,15 @@ export async function handleToolCall(
 
 
     if (!request.params.arguments) {
-      logger.error("Tool call missing required arguments", { toolName: request.params?.name });
-      throw new Error("Arguments are required");
+      const toolName = request.params?.name || 'unknown';
+      logger.error("Tool call missing required arguments", { toolName });
+      
+      // Provide helpful error message for specific tools
+      if (toolName === 'mittwald_domain_virtualhost_create') {
+        throw new Error("Arguments are required. Expected: { hostname: string, pathToApp?: string[], pathToUrl?: string[] }. At least one path mapping is required.");
+      }
+      
+      throw new Error(`Arguments are required for tool '${toolName}'`);
     }
 
     const tool = TOOLS.find((t) => t.name === request.params.name);
