@@ -222,6 +222,7 @@ import { handleContext } from './tools/mittwald-cli/context/context.js';
 import { handleContextGet } from './tools/mittwald-cli/context/get.js';
 import { handleContextReset } from './tools/mittwald-cli/context/reset.js';
 import { handleContextSet } from './tools/mittwald-cli/context/set.js';
+import { handleContextDetect } from './tools/mittwald-cli/context/detect.js';
 
 // Container handlers
 import { handleContainerListStacks } from './tools/mittwald-cli/container/list-stacks.js';
@@ -233,6 +234,11 @@ import { handleContainerGetServiceLogs } from './tools/mittwald-cli/container/ge
 import { handleContainerCreateRegistry } from './tools/mittwald-cli/container/create-registry.js';
 import { handleContainerGetService } from './tools/mittwald-cli/container/get-service.js';
 import { handleContainerGetStack } from './tools/mittwald-cli/container/get-stack.js';
+import { handleContainerRestartService } from './tools/mittwald-cli/container/restart-service.js';
+import { handleContainerRecreateService } from './tools/mittwald-cli/container/recreate-service.js';
+import { handleContainerStartService } from './tools/mittwald-cli/container/start-service.js';
+import { handleContainerStopService } from './tools/mittwald-cli/container/stop-service.js';
+import { handleContainerPullImage } from './tools/mittwald-cli/container/pull-image.js';
 
 // Contributor handler
 import { handleContributor } from './tools/mittwald-cli/contributor/contributor.js';
@@ -1277,6 +1283,10 @@ const ToolSchemas = {
     installationId: z.string().optional().describe("ID or short ID of an app installation")
   }),
 
+  mittwald_context_detect: z.object({
+    id: z.string().describe("Any Mittwald ID to detect and analyze")
+  }),
+
   // Container tools
   mittwald_container_list_stacks: z.object({
     projectId: z.string().describe("ID or short ID of a project"),
@@ -1358,6 +1368,31 @@ const ToolSchemas = {
   
   mittwald_container_get_stack: z.object({
     stackId: z.string().describe("ID of the stack to retrieve")
+  }),
+
+  mittwald_container_restart_service: z.object({
+    stackId: z.string().describe("ID of the stack the service belongs to"),
+    serviceId: z.string().describe("ID of the service to restart")
+  }),
+
+  mittwald_container_recreate_service: z.object({
+    stackId: z.string().describe("ID of the stack the service belongs to"),
+    serviceId: z.string().describe("ID of the service to recreate")
+  }),
+
+  mittwald_container_start_service: z.object({
+    stackId: z.string().describe("ID of the stack the service belongs to"),
+    serviceId: z.string().describe("ID of the service to start")
+  }),
+
+  mittwald_container_stop_service: z.object({
+    stackId: z.string().describe("ID of the stack the service belongs to"),
+    serviceId: z.string().describe("ID of the service to stop")
+  }),
+
+  mittwald_container_pull_image: z.object({
+    stackId: z.string().describe("ID of the stack the service belongs to"),
+    serviceId: z.string().describe("ID of the service to pull the image for")
   })
 };
 
@@ -1913,6 +1948,8 @@ type ToolArgs = {
     installationId?: string;
   };
 
+  mittwald_context_detect: z.infer<typeof ToolSchemas.mittwald_context_detect>;
+
   // Container tools
   mittwald_container_list_stacks: z.infer<typeof ToolSchemas.mittwald_container_list_stacks>;
   mittwald_container_list_services: z.infer<typeof ToolSchemas.mittwald_container_list_services>;
@@ -1923,6 +1960,11 @@ type ToolArgs = {
   mittwald_container_create_registry: z.infer<typeof ToolSchemas.mittwald_container_create_registry>;
   mittwald_container_get_service: z.infer<typeof ToolSchemas.mittwald_container_get_service>;
   mittwald_container_get_stack: z.infer<typeof ToolSchemas.mittwald_container_get_stack>;
+  mittwald_container_restart_service: z.infer<typeof ToolSchemas.mittwald_container_restart_service>;
+  mittwald_container_recreate_service: z.infer<typeof ToolSchemas.mittwald_container_recreate_service>;
+  mittwald_container_start_service: z.infer<typeof ToolSchemas.mittwald_container_start_service>;
+  mittwald_container_stop_service: z.infer<typeof ToolSchemas.mittwald_container_stop_service>;
+  mittwald_container_pull_image: z.infer<typeof ToolSchemas.mittwald_container_pull_image>;
 };
 
 /**
@@ -2325,7 +2367,13 @@ export async function handleToolCall(
         break;
 
       case "mittwald_app_get":
-        result = await handleMittwaldAppGet(args);
+        const mittwaldAppGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldAppGet(args, mittwaldAppGetContext);
         break;
 
       case "mittwald_app_install":
@@ -3570,6 +3618,16 @@ export async function handleToolCall(
         result = await handleContextSet(args, mittwaldContextSetContext);
         break;
 
+      case "mittwald_context_detect":
+        const mittwaldContextDetectContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContextDetect(args as ToolArgs['mittwald_context_detect'], mittwaldContextDetectContext);
+        break;
+
       // Container tools
       case "mittwald_container_list_stacks":
         const mittwaldContainerListStacksContext: MittwaldToolHandlerContext = {
@@ -3659,6 +3717,56 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleContainerGetStack(args as ToolArgs['mittwald_container_get_stack'], mittwaldContainerGetStackContext);
+        break;
+
+      case "mittwald_container_restart_service":
+        const mittwaldContainerRestartServiceContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerRestartService(args as ToolArgs['mittwald_container_restart_service'], mittwaldContainerRestartServiceContext);
+        break;
+
+      case "mittwald_container_recreate_service":
+        const mittwaldContainerRecreateServiceContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerRecreateService(args as ToolArgs['mittwald_container_recreate_service'], mittwaldContainerRecreateServiceContext);
+        break;
+
+      case "mittwald_container_start_service":
+        const mittwaldContainerStartServiceContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerStartService(args as ToolArgs['mittwald_container_start_service'], mittwaldContainerStartServiceContext);
+        break;
+
+      case "mittwald_container_stop_service":
+        const mittwaldContainerStopServiceContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerStopService(args as ToolArgs['mittwald_container_stop_service'], mittwaldContainerStopServiceContext);
+        break;
+
+      case "mittwald_container_pull_image":
+        const mittwaldContainerPullImageContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerPullImage(args as ToolArgs['mittwald_container_pull_image'], mittwaldContainerPullImageContext);
         break;
         
       case "mittwald_contributor":

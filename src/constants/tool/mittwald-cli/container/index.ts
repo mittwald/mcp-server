@@ -12,3 +12,8 @@ export { mittwald_container_get_service_logs } from './get-service-logs.js';
 export { mittwald_container_create_registry } from './create-registry.js';
 export { mittwald_container_get_service } from './get-service.js';
 export { mittwald_container_get_stack } from './get-stack.js';
+export { mittwald_container_restart_service } from './restart-service.js';
+export { mittwald_container_recreate_service } from './recreate-service.js';
+export { mittwald_container_start_service } from './start-service.js';
+export { mittwald_container_stop_service } from './stop-service.js';
+export { mittwald_container_pull_image } from './pull-image.js';

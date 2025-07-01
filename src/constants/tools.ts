@@ -156,7 +156,12 @@ import {
   mittwald_container_get_service_logs,
   mittwald_container_create_registry,
   mittwald_container_get_service,
-  mittwald_container_get_stack
+  mittwald_container_get_stack,
+  mittwald_container_restart_service,
+  mittwald_container_recreate_service,
+  mittwald_container_start_service,
+  mittwald_container_stop_service,
+  mittwald_container_pull_image
 } from './tool/mittwald-cli/container/index.js';
 
 // App create tools
@@ -258,7 +263,8 @@ import {
   mittwald_context,
   mittwald_context_get,
   mittwald_context_reset,
-  mittwald_context_set
+  mittwald_context_set,
+  mittwald_context_detect
 } from './tool/mittwald-cli/context/index.js';
 
 /**
@@ -437,6 +443,7 @@ export const TOOLS: Tool[] = [
   mittwald_context_get,
   mittwald_context_reset,
   mittwald_context_set,
+  mittwald_context_detect,
   
   // Container tools
   mittwald_container_list_stacks,
@@ -448,6 +455,11 @@ export const TOOLS: Tool[] = [
   mittwald_container_create_registry,
   mittwald_container_get_service,
   mittwald_container_get_stack,
+  mittwald_container_restart_service,
+  mittwald_container_recreate_service,
+  mittwald_container_start_service,
+  mittwald_container_stop_service,
+  mittwald_container_pull_image,
   
   // App create tools
   mittwald_app_create_node,

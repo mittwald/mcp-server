@@ -1,5 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { detectIdMixup } from '../../../../utils/context-validator.js';
 
 interface MittwaldDomainVirtualhostCreateArgs {
   hostname: string;
@@ -118,6 +119,21 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
     };
     
     if (args.projectId) {
+      // Basic format validation for project ID
+      if (!args.projectId.match(/^p-[a-z0-9]{6}$/)) {
+        const mixupSuggestions = detectIdMixup(args.projectId);
+        return formatToolResponse(
+          "error",
+          `Invalid project ID format: ${args.projectId}`,
+          {
+            providedId: args.projectId,
+            expectedFormat: "p-XXXXXX (e.g., p-cz3ys3)",
+            suggestions: mixupSuggestions,
+            hint: "Project IDs start with 'p-' followed by 6 alphanumeric characters"
+          }
+        );
+      }
+
       createRequest.projectId = args.projectId;
     }
 

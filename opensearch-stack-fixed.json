@@ -1,0 +1,51 @@
+{
+  "stackId": "5455f22d-9c41-4405-804b-40e5a31945d8",
+  "desiredVolumes": {
+    "opensearch-data": {
+      "size": "10Gi"
+    }
+  },
+  "desiredServices": {
+    "opensearch": {
+      "ports": [
+        {
+          "protocol": "tcp",
+          "containerPort": 9200
+        }
+      ],
+      "volumes": [
+        {
+          "name": "opensearch-data",
+          "mountPath": "/usr/share/opensearch/data"
+        }
+      ],
+      "imageUri": "opensearchproject/opensearch:2.11.1",
+      "description": "opensearch single-node container",
+      "environment": {
+        "cluster.name": "opensearch-cluster",
+        "node.name": "opensearch-node1",
+        "discovery.type": "single-node",
+        "bootstrap.memory_lock": "false",
+        "OPENSEARCH_JAVA_OPTS": "-Xms256m -Xmx256m",
+        "DISABLE_INSTALL_DEMO_CONFIG": "true",
+        "DISABLE_SECURITY_PLUGIN": "true",
+        "network.host": "0.0.0.0"
+      }
+    },
+    "opensearch-dashboards": {
+      "ports": [
+        {
+          "protocol": "tcp",
+          "containerPort": 5601
+        }
+      ],
+      "imageUri": "opensearchproject/opensearch-dashboards:2.11.1",
+      "description": "opensearch-dashboards container",
+      "environment": {
+        "OPENSEARCH_HOSTS": "[\"http://opensearch:9200\"]",
+        "DISABLE_SECURITY_DASHBOARDS_PLUGIN": "true",
+        "server.host": "0.0.0.0"
+      }
+    }
+  }
+}
