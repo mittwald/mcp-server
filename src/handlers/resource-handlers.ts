@@ -8,7 +8,7 @@ import {
   RESOURCES, 
   RESOURCE_ERROR_MESSAGES
 } from '../constants/resources.js';
-import { containerSafetyGuideContent } from '../resources/container-safety-guide.js';
+import { containerComprehensiveGuideContent } from '../resources/container-comprehensive-guide.js';
 
 
 
@@ -27,13 +27,13 @@ export async function handleResourceCall(
   try {
     const { uri } = request.params;
 
-    if (uri === "mittwald://container-safety-guide") {
+    if (uri === "mittwald://container-comprehensive-guide") {
       return {
         contents: [
           {
             uri: request.params.uri,
             mimeType: "text/markdown",
-            text: containerSafetyGuideContent,
+            text: containerComprehensiveGuideContent,
           },
         ],
       };

@@ -2,7 +2,7 @@ import { Tool } from "@modelcontextprotocol/sdk/types.js";
 
 export const mittwaldSshUserCreate: Tool = {
   name: "mittwald_ssh_user_create",
-  description: "Create a new SSH user",
+  description: "Create a new SSH user. You must specify authenticationMethod as either 'password' or 'publickey' and provide the corresponding credential.",
   inputSchema: {
     type: "object",
     properties: {
@@ -14,24 +14,29 @@ export const mittwaldSshUserCreate: Tool = {
         type: "string",
         description: "Set description for SSH user"
       },
+      authenticationMethod: {
+        type: "string",
+        enum: ["password", "publickey"],
+        description: "Authentication method for the SSH user (required)"
+      },
       quiet: {
         type: "boolean",
         description: "Suppress process output and only display a machine-readable summary",
         default: false
       },
-      expires: {
+      expiresAt: {
         type: "string",
-        description: "An interval after which the SSH user expires (examples: 30m, 30d, 1y)"
+        description: "Expiration date for the SSH user (ISO 8601 format, e.g., '2024-12-31T23:59:59Z')"
       },
       publicKey: {
         type: "string",
-        description: "Public key used for authentication"
+        description: "SSH public key (required if authenticationMethod is 'publickey'). Format: 'ssh-rsa AAAA...'"
       },
       password: {
         type: "string",
-        description: "Password used for authentication"
+        description: "Password for SSH authentication (required if authenticationMethod is 'password')"
       }
     },
-    required: ["description"]
+    required: ["description", "authenticationMethod"]
   }
 };

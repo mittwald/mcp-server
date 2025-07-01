@@ -1,12 +1,12 @@
 import type { Resource } from '@modelcontextprotocol/sdk/types.js';
-import { containerSafetyGuideResource, containerSafetyGuideContent } from './container-safety-guide.js';
+import { containerComprehensiveGuideResource, containerComprehensiveGuideContent } from './container-comprehensive-guide.js';
 import { containerVirtualhostGuideResource, containerVirtualhostGuideContent } from './container-virtualhost-guide.js';
 import { domainsGuideResource, domainsGuideContent } from './domains-guide.js';
 import { commonConfusionsGuideResource, commonConfusionsGuideContent } from './common-confusions-guide.js';
 
 // Export all available resources
 export const resources: Resource[] = [
-  containerSafetyGuideResource,
+  containerComprehensiveGuideResource,
   containerVirtualhostGuideResource,
   domainsGuideResource,
   commonConfusionsGuideResource
@@ -15,8 +15,8 @@ export const resources: Resource[] = [
 // Resource content handlers
 export async function getResourceContent(uri: string): Promise<string> {
   switch (uri) {
-    case 'mittwald://container-safety-guide':
-      return containerSafetyGuideContent;
+    case 'mittwald://container-comprehensive-guide':
+      return containerComprehensiveGuideContent;
     case 'guide://mittwald/container-virtualhost':
       return containerVirtualhostGuideContent;
     case 'guide://mittwald/domains-and-virtual-hosts':

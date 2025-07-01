@@ -3076,7 +3076,11 @@ export async function handleToolCall(
         
       // SSH user tools (mixed patterns)
       case "mittwald_ssh_user_create":
-        result = await handleSshUserCreate(args, getMittwaldClient().api);
+        result = await handleSshUserCreate(args, { 
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId
+        });
         break;
         
       case "mittwald_ssh_user_delete":

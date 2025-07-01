@@ -99,7 +99,30 @@ export const commonConfusionsGuideContent = `# Common Confusions Guide
 | Delete virtual host | \`virtualHostId\` | \`"uuid-string"\` |
 | Get virtual host | \`ingressId\` | \`"uuid-string"\` |
 
-### 7. Full Working Examples
+### 7. SSH User Creation
+
+**Required Parameters:**
+\`\`\`json
+{
+  "tool": "mittwald_ssh_user_create",
+  "args": {
+    "description": "SSH user for deployment",  // ✅ REQUIRED
+    "authenticationMethod": "publickey",       // ✅ REQUIRED: "password" or "publickey"
+    "publicKey": "ssh-rsa AAAA...",          // Required if method is "publickey"
+    "password": "securepass123",              // Required if method is "password"
+    "projectId": "p-b9hpjf",
+    "expiresAt": "2024-12-31T23:59:59Z"      // Optional expiration date
+  }
+}
+\`\`\`
+
+**Common Errors:**
+- Arguments are required - Missing description or authenticationMethod  
+- Invalid enum value - authenticationMethod must be exactly password or publickey
+- Missing publicKey - When using publickey method without providing the key
+- Missing password - When using password method without providing password
+
+### 8. Full Working Examples
 
 **OpenSearch with Dashboard:**
 \`\`\`json
