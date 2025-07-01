@@ -7,6 +7,7 @@ interface MittwaldDomainVirtualhostCreateArgs {
   quiet?: boolean;
   pathToApp?: string[];
   pathToUrl?: string[];
+  pathToContainer?: string[];
 }
 
 export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVirtualhostCreateArgs> = async (args, { mittwaldClient }) => {
@@ -61,11 +62,52 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
       }
     }
 
+    // Process pathToContainer mappings
+    if (args.pathToContainer) {
+      for (const pathMapping of args.pathToContainer) {
+        const parts = pathMapping.split(':');
+        if (parts.length !== 3) {
+          return formatToolResponse(
+            "error",
+            `Invalid path-to-container format: ${pathMapping}. Expected format: path:containerId:port (e.g., '/:c-f6kw84:5601/tcp')`
+          );
+        }
+        
+        const [path, containerId, port] = parts;
+        
+        // Validate container ID format
+        if (!containerId.match(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/) && !containerId.match(/^c-[a-z0-9]{6}$/)) {
+          return formatToolResponse(
+            "error",
+            `Invalid container ID format: ${containerId}. Container IDs should be either a UUID or a short ID starting with 'c-' (e.g., 'c-f6kw84').`
+          );
+        }
+        
+        // Validate port format
+        if (!port.match(/^\d+\/(tcp|udp)$/)) {
+          return formatToolResponse(
+            "error",
+            `Invalid port format: ${port}. Expected format: port/protocol (e.g., '5601/tcp', '8080/tcp')`
+          );
+        }
+        
+        paths.push({
+          path,
+          target: {
+            container: {
+              id: containerId,
+              portProtocol: port
+            }
+          }
+        });
+      }
+    }
+
     // If no paths specified, we need at least one path mapping
     if (paths.length === 0) {
       return formatToolResponse(
         "error",
-        "At least one path mapping (pathToApp or pathToUrl) must be specified"
+        "At least one path mapping (pathToApp, pathToUrl, or pathToContainer) must be specified"
       );
     }
 
@@ -99,6 +141,7 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
         path: p.path,
         target: 'installationId' in p.target ? `app:${p.target.installationId}` :
                 'url' in p.target ? `url:${p.target.url}` :
+                'container' in p.target ? `container:${p.target.container.id}:${p.target.container.portProtocol}` :
                 'directory' in p.target ? `dir:${p.target.directory}` : 'unknown'
       }))
     };

@@ -1120,7 +1120,8 @@ const ToolSchemas = {
     projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
     quiet: z.boolean().optional().describe("Suppress process output"),
     pathToApp: z.array(z.string()).optional().describe("Path to app mappings in format 'path:appId' (e.g., '/:a-3c96b5')"),
-    pathToUrl: z.array(z.string()).optional().describe("Path to URL mappings in format 'path:url' (e.g., '/api:https://api.example.com')")
+    pathToUrl: z.array(z.string()).optional().describe("Path to URL mappings in format 'path:url' (e.g., '/api:https://api.example.com')"),
+    pathToContainer: z.array(z.string()).optional().describe("Path to container mappings in format 'path:containerId:port' (e.g., '/:c-f6kw84:5601/tcp')")
   }),
   mittwald_domain_virtualhost_delete: z.object({
     virtualHostId: z.string().describe("ID of the virtual host to delete"),
@@ -2040,7 +2041,7 @@ export async function handleToolCall(
       
       // Provide helpful error message for specific tools
       if (toolName === 'mittwald_domain_virtualhost_create') {
-        throw new Error("Arguments are required. Expected: { hostname: string, pathToApp?: string[], pathToUrl?: string[] }. At least one path mapping is required.");
+        throw new Error("Arguments are required. Expected: { hostname: string, pathToApp?: string[], pathToUrl?: string[], pathToContainer?: string[] }. At least one path mapping is required. For containers use pathToContainer: ['/:c-xxxxx:port/tcp'].");
       }
       
       throw new Error(`Arguments are required for tool '${toolName}'`);
