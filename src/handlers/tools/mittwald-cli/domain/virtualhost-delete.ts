@@ -9,6 +9,14 @@ interface MittwaldDomainVirtualhostDeleteArgs {
 
 export const handleDomainVirtualhostDelete: MittwaldToolHandler<MittwaldDomainVirtualhostDeleteArgs> = async (args, { mittwaldClient }) => {
   try {
+    // Validate required parameter
+    if (!args.virtualHostId) {
+      return formatToolResponse(
+        "error",
+        "Missing required parameter 'virtualHostId'. Note: Use 'virtualHostId', not 'ingressId'."
+      );
+    }
+    
     // In MCP context, we assume force=true since we can't prompt for confirmation
     if (!args.force && !args.quiet) {
       return formatToolResponse(

@@ -46,6 +46,12 @@ export const handleDomainVirtualhostGet: MittwaldToolHandler<MittwaldDomainVirtu
             target: `app:${p.target.installationId}`
           };
         }
+        if ('container' in p.target && p.target.container) {
+          return {
+            path: p.path,
+            target: `container:${p.target.container.id}:${p.target.container.portProtocol}`
+          };
+        }
         return {
           path: p.path,
           target: 'unknown'

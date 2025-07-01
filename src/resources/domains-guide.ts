@@ -170,7 +170,7 @@ This creates:
 {
   "tool": "mittwald_domain_virtualhost_get",
   "args": {
-    "ingressId": "i-123456"
+    "ingressId": "i-123456"  // Note: Uses 'ingressId' parameter
   }
 }
 \`\`\`
@@ -180,11 +180,16 @@ This creates:
 {
   "tool": "mittwald_domain_virtualhost_delete",
   "args": {
-    "virtualHostId": "i-123456",
+    "virtualHostId": "i-123456",  // Note: Uses 'virtualHostId' parameter (NOT 'ingressId')
     "force": true
   }
 }
 \`\`\`
+
+**⚠️ Parameter Name Warning**: 
+- \`virtualhost_get\` uses \`ingressId\` parameter
+- \`virtualhost_delete\` uses \`virtualHostId\` parameter
+- Both refer to the same ID, just different parameter names
 
 ## Best Practices
 
