@@ -151,49 +151,5 @@ export const REDDIT_MESSAGE_RESPONSE_SCHEMA: JSONSchema7 = {
   required: ["recipient", "subject", "content"],
 };
 
-/**
- * JSON Schema for validating Reddit action suggestion responses from LLM sampling.
- * 
- * @remarks
- * This schema is used when the AI analyzes Reddit content and suggests
- * appropriate actions to take, providing both the action and reasoning.
- * 
- * @example
- * ```json
- * {
- *   "action": "reply",
- *   "subreddit": "typescript",
- *   "reasoning": "This post asks a question about TypeScript generics that I can answer helpfully",
- *   "content": "Here's how you can use conditional types with generics...",
- *   "id": "t3_xyz789"
- * }
- * ```
- */
-export const REDDIT_SUGGEST_ACTION_RESPONSE_SCHEMA: JSONSchema7 = {
-  type: "object",
-  properties: {
-    action: {
-      type: "string",
-      description: "Suggested action to take (e.g., 'create_post', 'reply', 'wait')",
-    },
-    subreddit: {
-      type: "string",
-      description: "Suggested subreddit for the action",
-    },
-    reasoning: {
-      type: "string",
-      description: "Explanation for why this action is suggested",
-    },
-    content: {
-      type: "string",
-      description: "Suggested content or topic for the action",
-    },
-    id: {
-      type: "string",
-      description: "ID of parent post/comment to reply to (if action is 'reply')",
-    },
-  },
-  required: ["action", "reasoning"],
-};
 
 

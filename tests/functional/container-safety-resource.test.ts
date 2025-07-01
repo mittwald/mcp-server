@@ -28,6 +28,9 @@ describe('Container Safety Guide Resource', () => {
     const resources = response.result?.resources || response.resources;
     logger.info('Available resources:', resources?.length || 0);
     
+    // Should only have one resource
+    expect(resources).toHaveLength(1);
+    
     // Find the container safety guide
     const safetyGuide = resources?.find(
       r => r.uri === 'mittwald://container-safety-guide'

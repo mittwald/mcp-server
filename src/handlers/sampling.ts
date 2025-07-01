@@ -31,9 +31,7 @@ import { z } from 'zod';
 import { getMCPHandlerInstance } from '../server/mcp.js';
 import { logger } from '../utils/logger.js';
 
-import {
-  handleSuggestActionCallback,
-} from './callbacks.js';
+// Callback imports will be added here as needed
 import { sendOperationNotification } from './notifications.js';
 
 /**
@@ -223,14 +221,9 @@ async function handleCallback(
   try {
     await sendOperationNotification(callback, `Callback started: ${callback}`, sessionId);
 
-    switch (callback) {
-      case 'suggest_action':
-        await handleSuggestActionCallback(result, sessionId);
-        break;
-      default:
-        logger.error('❌ Unknown callback type', { callback });
-        throw new Error(`Unknown callback type: ${callback}`);
-    }
+    // No callbacks currently defined
+    logger.error('❌ Unknown callback type', { callback });
+    throw new Error(`Unknown callback type: ${callback}`);
 
   } catch (error) {
     logger.error('💥 CALLBACK HANDLER FAILED', {

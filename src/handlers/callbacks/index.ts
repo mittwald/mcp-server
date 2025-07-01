@@ -1,3 +1,10 @@
-export { handleSuggestActionCallback } from './suggest-action.js';
+// Callback handlers will be defined here
 
-export type { GeneratedSuggestAction } from './suggest-action.js';
+export interface GeneratedSuggestAction {
+  // Define the interface when needed
+}
+
+export function handleSuggestActionCallback() {
+  // Implementation when needed
+  throw new Error('Suggest action callback not implemented');
+}
