@@ -21,6 +21,8 @@ import { TOOLS, TOOL_ERROR_MESSAGES } from '../constants/tools.js';
 import { logger } from '../utils/logger.js';
 import type { MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
+import { filterTools, getToolCategories, getToolCountByCategory } from '../utils/tool-filter.js';
+import { CONFIG } from '../server/config.js';
 import {
   handleProjectCreate,
   handleProjectDelete,
@@ -1937,8 +1939,55 @@ type ToolArgs = {
 export async function handleListTools(_request: ListToolsRequest): Promise<ListToolsResult> {
   try {
     logger.info(`🔧 handleListTools called, TOOLS.length: ${TOOLS.length}`);
+    
+    // Check if tool filtering is enabled
+    if (CONFIG.TOOL_FILTER_ENABLED === 'true') {
+      const maxTools = CONFIG.MAX_TOOLS_PER_RESPONSE ? parseInt(CONFIG.MAX_TOOLS_PER_RESPONSE, 10) : 50;
+      const allowedCategories = CONFIG.ALLOWED_TOOL_CATEGORIES?.split(',').map(c => c.trim()).filter(Boolean);
+      
+      const filterOptions = {
+        maxTools,
+        categories: allowedCategories && allowedCategories.length > 0 ? allowedCategories : undefined,
+      };
+      
+      const result = filterTools(TOOLS, filterOptions);
+      
+      logger.info(`📊 Tool filtering enabled:`);
+      logger.info(`   Total tools: ${TOOLS.length}`);
+      logger.info(`   Filtered tools: ${result.tools.length}`);
+      logger.info(`   Max per response: ${maxTools}`);
+      if (allowedCategories?.length) {
+        logger.info(`   Allowed categories: ${allowedCategories.join(', ')}`);
+      }
+      
+      // Log tool counts by category for debugging
+      const categoryCounts = getToolCountByCategory(TOOLS);
+      logger.info(`   Available categories: ${Object.entries(categoryCounts).map(([cat, count]) => `${cat}(${count})`).join(', ')}`);
+      
+      return { 
+        tools: result.tools,
+        // Include metadata about pagination if there are more tools
+        ...(result.nextCursor && {
+          _meta: {
+            nextCursor: result.nextCursor,
+            totalCount: result.totalCount,
+            hasMore: !!result.nextCursor
+          }
+        })
+      };
+    }
+    
+    // Default behavior: return all tools sorted
     const tools = [...TOOLS].sort((a, b) => a.name.localeCompare(b.name));
-    logger.info(`✅ Returning ${tools.length} tools: ${tools.map(t => t.name).join(', ')}`);
+    
+    // Log warning about large tool list
+    const estimatedSize = JSON.stringify({ tools }).length;
+    if (estimatedSize > 100000) { // > 100KB
+      logger.warn(`⚠️  Large tool list response: ${tools.length} tools, estimated ${Math.round(estimatedSize / 1024)}KB`);
+      logger.warn(`   Consider enabling TOOL_FILTER_ENABLED=true to reduce response size`);
+    }
+    
+    logger.info(`✅ Returning ${tools.length} tools (filtering disabled)`);
     return { tools };
   } catch (error) {
     logger.error("Failed to list tools", {

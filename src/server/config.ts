@@ -49,6 +49,12 @@ export interface ServerConfig {
   REDDIT_USERNAME: string;
   /** Mittwald API token (optional) */
   MITTWALD_API_TOKEN?: string;
+  /** Tool filtering configuration */
+  TOOL_FILTER_ENABLED?: string;
+  /** Maximum tools per response */
+  MAX_TOOLS_PER_RESPONSE?: string;
+  /** Allowed tool categories (comma-separated) */
+  ALLOWED_TOOL_CATEGORIES?: string;
   /** Mittwald SSH password (optional) */
   MITTWALD_SSH_PASSWORD?: string;
   /** Mittwald admin email (optional) */
@@ -99,6 +105,10 @@ export const CONFIG: ServerConfig = {
   MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN,
   MITTWALD_SSH_PASSWORD: process.env.MITTWALD_SSH_PASSWORD,
   MITTWALD_ADMIN_EMAIL: process.env.MITTWALD_ADMIN_EMAIL,
+  // Tool filtering configuration
+  TOOL_FILTER_ENABLED: process.env.TOOL_FILTER_ENABLED,
+  MAX_TOOLS_PER_RESPONSE: process.env.MAX_TOOLS_PER_RESPONSE,
+  ALLOWED_TOOL_CATEGORIES: process.env.ALLOWED_TOOL_CATEGORIES,
 } as const;
 
 /**

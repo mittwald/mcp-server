@@ -34,6 +34,7 @@ import { MCPHandler } from './server/mcp.js';
 import { setMCPHandlerInstance } from './server/mcp.js';
 import { bypassAuthMiddleware } from './server/bypass-auth.js';
 import { getMittwaldClient } from './services/mittwald/index.js';
+import { responseLoggerMiddleware } from './server/response-logger.js';
 
 // Polyfill for jose library
 if (typeof globalThis.crypto === 'undefined') {
@@ -88,6 +89,9 @@ export async function createApp(): Promise<express.Application> {
   );
   
   app.use(cookieParser());
+
+  // Add response size logging middleware
+  app.use(responseLoggerMiddleware());
 
   // Selective body parsing - skip for MCP streaming endpoints
   app.use((req, res, next) => {
