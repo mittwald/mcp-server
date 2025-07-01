@@ -11,6 +11,7 @@ import {
   RESOURCE_ERROR_MESSAGES,
   SERVER_INFO
 } from '../constants/resources.js';
+import { containerSafetyGuideContent } from '../resources/container-safety-guide.js';
 
 
 
@@ -30,6 +31,18 @@ export async function handleResourceCall(
 
   try {
     const { uri } = request.params;
+
+    if (uri === "mittwald://container-safety-guide") {
+      return {
+        contents: [
+          {
+            uri: request.params.uri,
+            mimeType: "text/markdown",
+            text: containerSafetyGuideContent,
+          },
+        ],
+      };
+    }
 
     if (uri === "reddit://config") {
       if (!authInfo?.extra?.redditAccessToken) {

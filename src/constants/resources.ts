@@ -8,6 +8,12 @@
  */
 export const RESOURCES = [
   {
+    uri: "mittwald://container-safety-guide",
+    name: "Container Operations Safety Guide",
+    description: "Critical safety information for working with Mittwald container stacks - READ BEFORE using container tools",
+    mimeType: "text/markdown",
+  },
+  {
     uri: "reddit://config",
     name: "Reddit Configuration",
     description: "Current Reddit authentication and configuration settings",
@@ -171,7 +177,7 @@ export const SERVER_INFO = {
  */
 export const RESOURCE_ERROR_MESSAGES = {
   AUTHENTICATION_REQUIRED: "Authentication required: Reddit access token not found",
-  INVALID_URI: (uri: string) => `Invalid resource URI: ${uri}. Available resources: reddit://config, guidelines://*, demo://*, template://user-profile, stats://server`,
+  INVALID_URI: (uri: string) => `Invalid resource URI: ${uri}. Available resources: mittwald://container-safety-guide, reddit://config, guidelines://*, demo://*, template://user-profile, stats://server`,
   FETCH_FAILED: (error: unknown) => `Failed to fetch resource: ${error instanceof Error ? error.message : "Unknown error"}`,
   LIST_FAILED: (error: unknown) => `Failed to list resources: ${error instanceof Error ? error.message : "Unknown error"}`,
 } as const;

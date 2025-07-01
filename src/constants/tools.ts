@@ -154,7 +154,9 @@ import {
   mittwald_container_list_registries,
   mittwald_container_declare_stack,
   mittwald_container_get_service_logs,
-  mittwald_container_create_registry
+  mittwald_container_create_registry,
+  mittwald_container_get_service,
+  mittwald_container_get_stack
 } from './tool/mittwald-cli/container/index.js';
 
 // App create tools
@@ -444,6 +446,8 @@ export const TOOLS: Tool[] = [
   mittwald_container_declare_stack,
   mittwald_container_get_service_logs,
   mittwald_container_create_registry,
+  mittwald_container_get_service,
+  mittwald_container_get_stack,
   
   // App create tools
   mittwald_app_create_node,

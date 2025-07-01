@@ -1,59 +1,69 @@
 /**
- * Simplified functional test for app deployments
- * Focuses on demonstrating the full cycle with better error handling
+ * Phase-aware functional test for app deployments
+ * Supports running in separate phases: setup, test, teardown
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { PhaseTestBase, getTestPhaseConfig, TestProject } from '../utils/phase-test-base';
 import { MCPTestClient } from '../utils/mcp-test-client';
 import { TestProjectManager } from '../utils/test-project-manager';
-import { isDockerRunning, validateMCPResponse, parseToolContent } from '../utils/test-helpers';
+import { isDockerRunning, parseToolContent } from '../utils/test-helpers';
 import { sleep } from '../utils/async-operations';
 import { logger } from '../../src/utils/logger';
 
-describe('Simple App Deployment Test', () => {
-  let client: MCPTestClient;
-  let projectManager: TestProjectManager;
-  let testProject: any;
+class SimpleDeploymentTest extends PhaseTestBase {
+  constructor() {
+    super(getTestPhaseConfig('simple-deployment'));
+  }
 
-  beforeAll(async () => {
-    const dockerRunning = await isDockerRunning();
-    if (!dockerRunning) {
-      throw new Error('Docker container is not running. Run: docker compose up -d');
-    }
-
-    client = new MCPTestClient();
-    await client.initialize();
-    projectManager = new TestProjectManager(client);
+  /**
+   * Phase 1: Create test projects
+   */
+  protected async createTestProjects(): Promise<TestProject[]> {
+    const projects: TestProject[] = [];
     
-    logger.info('=== Starting Simple Deployment Test ===');
-  }, 60000);
-
-  afterAll(async () => {
-    logger.info('=== Cleaning up ===');
-    await projectManager.cleanup();
-    await client.close();
-  });
-
-  it('should create a project and install WordPress', async () => {
-    // Create project
-    logger.info('Creating test project...');
-    testProject = await projectManager.createTestProject('Simple Test Project');
-    expect(testProject.projectId).toBeTruthy();
-    expect(testProject.shortId).toBeTruthy();
+    // Create one project for simple test
+    const project = await this.projectManager.createTestProject('Simple Deployment');
+    projects.push(project);
     
-    logger.info(`Project created: ${testProject.shortId}`);
-    
-    // Wait a bit for project to fully initialize
+    // Wait for project to fully initialize
     logger.info('Waiting for project to fully initialize...');
     await sleep(30000); // 30 seconds
     
-    // Install WordPress
-    logger.info('Installing WordPress...');
+    return projects;
+  }
+
+  /**
+   * Phase 2: Run the actual tests
+   */
+  protected async runTests(projects: TestProject[]): Promise<void> {
+    if (projects.length === 0) {
+      throw new Error('No projects available for testing');
+    }
+    
+    const testProject = projects[0];
+    
+    // Run the simple deployment test
+    await this.testSimpleWordPressDeployment(testProject);
+    
+    // Run multi-app test if we have an existing suitable project
+    await this.testMultiAppDeployment();
+  }
+
+  /**
+   * Test simple WordPress deployment
+   */
+  private async testSimpleWordPressDeployment(testProject: TestProject): Promise<void> {
+    logger.info('=== Testing Simple WordPress Deployment ===');
+    logger.info(`Using project: ${testProject.shortId}`);
+    
     try {
-      const installation = await projectManager.installApp(
+      // Install WordPress with version
+      const installation = await this.projectManager.installApp(
         testProject.projectId,
         'wordpress',
         {
+          version: 'latest', // Required version field
           adminUser: 'test_admin',
           adminEmail: 'test@example.com',
           adminPass: 'TestPass123!',
@@ -66,13 +76,13 @@ describe('Simple App Deployment Test', () => {
       
       // Wait for installation
       logger.info('Waiting for WordPress to install (this takes 2-5 minutes)...');
-      await projectManager.waitForAppInstallation(installation, 300000); // 5 min timeout
+      await this.projectManager.waitForAppInstallation(installation, 300000); // 5 min timeout
       
       expect(installation.status).toBe('completed');
       logger.info('WordPress installed successfully!');
       
       // Verify installation
-      const listResponse = await client.callTool('mittwald_app_list', {
+      const listResponse = await this.client.callTool('mittwald_app_list', {
         project_id: testProject.projectId,
         output: 'json'
       });
@@ -92,42 +102,26 @@ describe('Simple App Deployment Test', () => {
       }
       throw error;
     }
-  }, 600000); // 10 minute timeout for the whole test
-});
+  }
 
-describe('Multi-App Deployment Test', () => {
-  let client: MCPTestClient;
-  let projectManager: TestProjectManager;
-
-  beforeAll(async () => {
-    const dockerRunning = await isDockerRunning();
-    if (!dockerRunning) {
-      throw new Error('Docker container is not running. Run: docker compose up -d');
-    }
-
-    client = new MCPTestClient();
-    await client.initialize();
-    projectManager = new TestProjectManager(client);
-  }, 60000);
-
-  afterAll(async () => {
-    await projectManager.cleanup();
-    await client.close();
-  });
-
-  it('should install multiple apps in parallel', async () => {
+  /**
+   * Test multi-app deployment using existing project
+   */
+  private async testMultiAppDeployment(): Promise<void> {
+    logger.info('=== Testing Multi-App Deployment ===');
+    
     // Use an existing project to avoid permission issues
-    const projectsResponse = await client.callTool('mittwald_project_list', {
+    const projectsResponse = await this.client.callTool('mittwald_project_list', {
       output: 'json'
     });
     
     const projectsContent = parseToolContent(projectsResponse.result);
     const existingProject = projectsContent.data.find((p: any) => 
-      p.isReady && p.description?.includes('Test')
+      p.isReady && p.description?.includes('Test') && !p.description?.includes('[TEST]')
     );
     
     if (!existingProject) {
-      logger.warn('No suitable existing project found, skipping test');
+      logger.warn('No suitable existing project found, skipping multi-app test');
       return;
     }
     
@@ -137,13 +131,13 @@ describe('Multi-App Deployment Test', () => {
     const appTypes = ['wordpress', 'nextcloud', 'matomo'];
     logger.info(`Installing ${appTypes.length} apps in parallel...`);
     
-    const installations = await projectManager.installAppsInParallel(
+    const installations = await this.projectManager.installAppsInParallel(
       existingProject.id,
       appTypes,
       {
-        wordpress: { siteTitle: 'Test WordPress' },
-        nextcloud: { siteTitle: 'Test Nextcloud' },
-        matomo: { siteTitle: 'Test Matomo' }
+        wordpress: { version: 'latest', siteTitle: 'Test WordPress' },
+        nextcloud: { version: 'latest', siteTitle: 'Test Nextcloud' },
+        matomo: { version: 'latest', siteTitle: 'Test Matomo' }
       }
     );
     
@@ -161,6 +155,21 @@ describe('Multi-App Deployment Test', () => {
     
     // At least one should succeed
     expect(successful.length).toBeGreaterThan(0);
-    
+  }
+}
+
+// Traditional test structure for backward compatibility
+describe('Simple App Deployment Test (Phase-Aware)', () => {
+  const test = new SimpleDeploymentTest();
+  
+  beforeAll(async () => {
+    const dockerRunning = await isDockerRunning();
+    if (!dockerRunning) {
+      throw new Error('Docker container is not running. Run: docker compose up -d');
+    }
+  }, 60000);
+  
+  it('should run the configured test phase', async () => {
+    await test.run();
   }, 900000); // 15 minute timeout
 });

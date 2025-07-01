@@ -6,6 +6,7 @@ interface DeclareStackArgs {
   stackId: string;
   desiredServices?: Record<string, {
     imageUri: string;
+    description?: string;
     environment?: Record<string, string>;
     ports?: Array<{
       containerPort: number;
@@ -16,6 +17,8 @@ interface DeclareStackArgs {
       mountPath: string;
       readOnly?: boolean;
     }>;
+    command?: string[];
+    entrypoint?: string[];
   }>;
   desiredVolumes?: Record<string, {
     size?: string;
@@ -24,66 +27,121 @@ interface DeclareStackArgs {
 
 export const handleContainerDeclareStack: MittwaldToolHandler<DeclareStackArgs> = async (args, { mittwaldClient }) => {
   try {
-    // First get the current stack to find the default stack ID if needed
-    let stackId = args.stackId;
+    // Stack ID must be a valid UUID
+    const stackId = args.stackId;
     
-    // If stackId is "default", we need to find the actual default stack
-    if (stackId === 'default' || !stackId) {
-      // Extract project ID from the stack operations
-      const projectIdMatch = args.stackId?.match(/project-([\w-]+)/);
-      if (!projectIdMatch) {
-        return formatToolResponse(
-          "error",
-          "Invalid stack ID format. Expected format: 'default' or actual stack ID"
-        );
+    if (!stackId) {
+      return formatToolResponse(
+        "error",
+        "Stack ID is required. Please provide a valid stack UUID."
+      );
+    }
+    
+    // Validate that stackId looks like a UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(stackId)) {
+      return formatToolResponse(
+        "error",
+        `Invalid stack ID format: ${stackId}. Stack ID must be a valid UUID. Use 'mittwald_container_list_stacks' to find valid stack IDs for a project.`
+      );
+    }
+    
+    // Validate services before processing
+    if (args.desiredServices) {
+      const validationErrors: string[] = [];
+      
+      for (const [serviceName, config] of Object.entries(args.desiredServices)) {
+        // Validate required fields
+        if (!config.imageUri) {
+          validationErrors.push(`Service '${serviceName}': imageUri is required`);
+        }
+        
+        // Validate ports - required field even if empty
+        if (!config.ports) {
+          validationErrors.push(`Service '${serviceName}': ports array is required (use empty array [] if no ports needed)`);
+        }
+        
+        // Validate port configurations
+        if (config.ports && config.ports.length > 0) {
+          config.ports.forEach((port, index) => {
+            if (!port.containerPort) {
+              validationErrors.push(`Service '${serviceName}': ports[${index}].containerPort is required`);
+            }
+          });
+        }
+        
+        // Validate volume configurations
+        if (config.volumes && config.volumes.length > 0) {
+          config.volumes.forEach((volume, index) => {
+            if (!volume.name) {
+              validationErrors.push(`Service '${serviceName}': volumes[${index}].name is required`);
+            }
+            if (!volume.mountPath) {
+              validationErrors.push(`Service '${serviceName}': volumes[${index}].mountPath is required`);
+            }
+          });
+        }
       }
       
-      const projectId = projectIdMatch[1];
-      const stacksResponse = await mittwaldClient.container.listStacks({
-        projectId
-      });
-      
-      assertStatus(stacksResponse, 200);
-      
-      // Find the default stack (the first one is usually default)
-      const defaultStack = stacksResponse.data?.[0];
-      if (!defaultStack) {
+      if (validationErrors.length > 0) {
         return formatToolResponse(
           "error",
-          "No stack found for this project"
+          "Invalid service configuration:\n" + validationErrors.join("\n")
         );
       }
-      
-      stackId = defaultStack.id;
     }
     
     // Prepare the request body
     const requestBody: any = {};
     
-    // Convert services to API format
+    // Convert services to API format - API expects an object, not an array
     if (args.desiredServices) {
-      requestBody.desiredServices = Object.entries(args.desiredServices).map(([name, config]) => ({
-        name,
-        imageUri: config.imageUri,
-        environment: config.environment || {},
-        ports: config.ports?.map(p => ({
-          containerPort: p.containerPort,
-          protocol: p.protocol || 'tcp'
-        })) || [],
-        volumes: config.volumes?.map(v => ({
-          name: v.name,
-          mountPath: v.mountPath,
-          readOnly: v.readOnly || false
-        })) || []
-      }));
+      requestBody.services = {};
+      for (const [serviceName, config] of Object.entries(args.desiredServices)) {
+        // Ensure all required fields are present
+        const service: any = {
+          image: config.imageUri, // API expects 'image', not 'imageUri'
+          description: config.description || `${serviceName} container`,
+          ports: config.ports?.map(p => `${p.containerPort}/${p.protocol || 'tcp'}`) || [] // Format: "80/tcp"
+        };
+        
+        // Add optional fields
+        if (config.environment && Object.keys(config.environment).length > 0) {
+          service.envs = config.environment; // API expects 'envs', not 'environment'
+        }
+        
+        if (config.volumes && config.volumes.length > 0) {
+          service.volumes = config.volumes.map(v => {
+            // Format: "volume-name:/mount/path" or "volume-name:/mount/path:ro"
+            const mode = v.readOnly ? ':ro' : '';
+            return `${v.name}:${v.mountPath}${mode}`;
+          });
+        }
+        
+        requestBody.services[serviceName] = service;
+        
+        // Add optional fields
+        if (config.command) {
+          requestBody.services[serviceName].command = config.command;
+        }
+        if (config.entrypoint) {
+          requestBody.services[serviceName].entrypoint = config.entrypoint;
+        }
+      }
     }
     
-    // Convert volumes to API format
+    // Convert volumes to API format - API expects an object, not an array
     if (args.desiredVolumes) {
-      requestBody.desiredVolumes = Object.entries(args.desiredVolumes).map(([name, config]) => ({
-        name,
-        size: config.size
-      }));
+      requestBody.volumes = {};
+      for (const [volumeName, config] of Object.entries(args.desiredVolumes)) {
+        requestBody.volumes[volumeName] = {
+          name: volumeName
+        };
+        // Note: size might not be used by the API, but we'll include it if provided
+        if (config.size) {
+          requestBody.volumes[volumeName].size = config.size;
+        }
+      }
     }
     
     // Call the declare stack API
@@ -96,14 +154,57 @@ export const handleContainerDeclareStack: MittwaldToolHandler<DeclareStackArgs> 
     
     const result = response.data;
     
-    // Prepare summary
+    // The API returns 200 even if nothing was created (e.g., due to permissions)
+    // We need to verify what was actually created by querying the stack
+    
+    // Wait a moment for the declaration to be processed
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Query the stack to see what services and volumes actually exist
+    let actualServices = 0;
+    let actualVolumes = 0;
+    
+    try {
+      // Get stack details to see actual state
+      const stackResponse = await mittwaldClient.container.getStack({
+        stackId
+      });
+      
+      if (stackResponse.status === 200 && stackResponse.data) {
+        actualServices = stackResponse.data.services?.length || 0;
+        actualVolumes = stackResponse.data.volumes?.length || 0;
+      }
+    } catch (queryError) {
+      // If we can't query the stack, fall back to requested counts
+      console.warn('Could not query stack after declaration:', queryError);
+      console.warn('Stack ID:', stackId);
+      console.warn('Error details:', queryError instanceof Error ? queryError.message : String(queryError));
+      actualServices = Object.keys(requestBody.services || {}).length;
+      actualVolumes = Object.keys(requestBody.volumes || {}).length;
+    }
+    
+    // Prepare summary with actual counts
     const summary = {
       stackId,
-      services: result?.services?.length || 0,
-      volumes: result?.volumes?.length || 0,
+      services: actualServices,
+      volumes: actualVolumes,
       requestedServices: Object.keys(args.desiredServices || {}),
-      requestedVolumes: Object.keys(args.desiredVolumes || {})
+      requestedVolumes: Object.keys(args.desiredVolumes || {}),
+      declarationAccepted: true
     };
+    
+    // Check if what was requested matches what was created
+    const requestedServiceCount = Object.keys(args.desiredServices || {}).length;
+    const requestedVolumeCount = Object.keys(args.desiredVolumes || {}).length;
+    
+    if (actualServices < requestedServiceCount || actualVolumes < requestedVolumeCount) {
+      // Include warning in the message but use error status for visibility
+      return formatToolResponse(
+        "error",
+        `Stack declaration was accepted by the API but only ${actualServices} of ${requestedServiceCount} services and ${actualVolumes} of ${requestedVolumeCount} volumes were created. This usually indicates permission issues with the stack ID or invalid configuration. Please verify you have access to stack ${stackId}.`,
+        summary
+      );
+    }
     
     return formatToolResponse(
       "success",

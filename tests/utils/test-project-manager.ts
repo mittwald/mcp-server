@@ -40,6 +40,12 @@ export class TestProjectManager {
     description: string; 
     serverId?: string;
   }): Promise<{ status: string; data: { id: string } }> {
+    // Apply [TEST] timestamp naming convention if not already present
+    if (!options.description.startsWith('[TEST]')) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      options.description = `[TEST] ${timestamp} - ${options.description}`;
+    }
+    
     const serverId = options.serverId || process.env.TEST_SERVER_ID;
     
     if (!serverId) {
@@ -81,6 +87,12 @@ export class TestProjectManager {
    * Create a test project and wait for it to be ready
    */
   async createTestProject(description: string): Promise<TestProject> {
+    // Apply [TEST] timestamp naming convention if not already present
+    if (!description.startsWith('[TEST]')) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      description = `[TEST] ${timestamp} - ${description}`;
+    }
+    
     logger.info(`Creating test project: ${description}`);
     
     // First, get a server to create the project on
@@ -472,5 +484,51 @@ export class TestProjectManager {
       projects: [...this.createdProjects],
       apps: [...this.installedApps]
     };
+  }
+
+  /**
+   * Find test projects by naming pattern
+   * Useful for resuming tests with existing projects
+   */
+  async findTestProjectsByPattern(pattern: string = '[TEST]'): Promise<TestProject[]> {
+    logger.info(`Searching for projects matching pattern: ${pattern}`);
+    
+    const listResponse = await this.client.callTool('mittwald_project_list', {
+      output: 'json'
+    });
+    
+    const listContent = parseToolContent(listResponse.result);
+    if (listContent.status !== 'success' || !listContent.data) {
+      return [];
+    }
+    
+    const matchingProjects = listContent.data.filter((project: any) => 
+      project.description && project.description.includes(pattern)
+    );
+    
+    return matchingProjects.map((project: any) => ({
+      projectId: project.id,
+      shortId: project.shortId || project.id,
+      serverId: project.serverId || '',
+      description: project.description
+    }));
+  }
+
+  /**
+   * Restore projects to internal tracking
+   * Useful when running test phase with existing projects
+   */
+  restoreProjects(projects: TestProject[]): void {
+    this.createdProjects = [...projects];
+    logger.info(`Restored ${projects.length} project(s) to tracking`);
+  }
+
+  /**
+   * Clear internal tracking without cleanup
+   * Useful when handing off cleanup to another phase
+   */
+  clearTracking(): void {
+    this.createdProjects = [];
+    this.installedApps = [];
   }
 }

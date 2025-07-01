@@ -35,6 +35,11 @@
     "test:functional": "vitest run tests/functional --reporter=verbose --no-file-parallelism",
     "test:functional:watch": "vitest tests/functional --reporter=verbose --no-file-parallelism",
     "test:cleanup": "vitest run tests/functional/full-lifecycle.test.ts -t 'Manual Cleanup'",
+    "test:phases": "tsx tests/run-phase-tests.ts",
+    "test:phase:setup": "TEST_PHASE=setup npm run test:functional",
+    "test:phase:test": "TEST_PHASE=test npm run test:functional",
+    "test:phase:teardown": "TEST_PHASE=teardown npm run test:functional",
+    "test:single": "vitest run --reporter=verbose --no-file-parallelism",
     "inspector": "npx @modelcontextprotocol/inspector"
   },
   "repository": {

@@ -10,3 +10,5 @@ export { mittwald_container_list_registries } from './list-registries.js';
 export { mittwald_container_declare_stack } from './declare-stack.js';
 export { mittwald_container_get_service_logs } from './get-service-logs.js';
 export { mittwald_container_create_registry } from './create-registry.js';
+export { mittwald_container_get_service } from './get-service.js';
+export { mittwald_container_get_stack } from './get-stack.js';

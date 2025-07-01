@@ -229,6 +229,8 @@ import { handleContainerListRegistries } from './tools/mittwald-cli/container/li
 import { handleContainerDeclareStack } from './tools/mittwald-cli/container/declare-stack.js';
 import { handleContainerGetServiceLogs } from './tools/mittwald-cli/container/get-service-logs.js';
 import { handleContainerCreateRegistry } from './tools/mittwald-cli/container/create-registry.js';
+import { handleContainerGetService } from './tools/mittwald-cli/container/get-service.js';
+import { handleContainerGetStack } from './tools/mittwald-cli/container/get-stack.js';
 
 // Contributor handler
 import { handleContributor } from './tools/mittwald-cli/contributor/contributor.js';
@@ -1343,6 +1345,15 @@ const ToolSchemas = {
     imageRegistryType: z.enum(["docker", "github", "gitlab", "custom"]).optional().describe("Type of registry"),
     username: z.string().optional().describe("Registry username"),
     password: z.string().optional().describe("Registry password or token")
+  }),
+  
+  mittwald_container_get_service: z.object({
+    stackId: z.string().describe("ID of the stack the service belongs to"),
+    serviceId: z.string().describe("ID of the service to retrieve")
+  }),
+  
+  mittwald_container_get_stack: z.object({
+    stackId: z.string().describe("ID of the stack to retrieve")
   })
 };
 
@@ -1906,6 +1917,8 @@ type ToolArgs = {
   mittwald_container_declare_stack: z.infer<typeof ToolSchemas.mittwald_container_declare_stack>;
   mittwald_container_get_service_logs: z.infer<typeof ToolSchemas.mittwald_container_get_service_logs>;
   mittwald_container_create_registry: z.infer<typeof ToolSchemas.mittwald_container_create_registry>;
+  mittwald_container_get_service: z.infer<typeof ToolSchemas.mittwald_container_get_service>;
+  mittwald_container_get_stack: z.infer<typeof ToolSchemas.mittwald_container_get_stack>;
 };
 
 /**
@@ -3564,6 +3577,26 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleContainerCreateRegistry(args as ToolArgs['mittwald_container_create_registry'], mittwaldContainerCreateRegistryContext);
+        break;
+        
+      case "mittwald_container_get_service":
+        const mittwaldContainerGetServiceContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerGetService(args as ToolArgs['mittwald_container_get_service'], mittwaldContainerGetServiceContext);
+        break;
+        
+      case "mittwald_container_get_stack":
+        const mittwaldContainerGetStackContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleContainerGetStack(args as ToolArgs['mittwald_container_get_stack'], mittwaldContainerGetStackContext);
         break;
         
       case "mittwald_contributor":
