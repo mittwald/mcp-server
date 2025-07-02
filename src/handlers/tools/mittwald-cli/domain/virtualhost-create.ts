@@ -99,16 +99,25 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
           // Automatically resolve short ID to full UUID by listing services
           try {
             // We need to find the service by short ID
-            // First, we need the project ID
-            if (!args.projectId) {
-              return formatToolResponse(
-                "error",
-                `Cannot resolve container short ID ${containerId} without a project ID. Please provide the projectId parameter.`
-              );
+            // First, we need the project ID - check argument or context
+            let resolveProjectId = args.projectId;
+            
+            if (!resolveProjectId) {
+              // Try to get project ID from context
+              const contextProjectId = process.env.MITTWALD_PROJECT_ID;
+              if (contextProjectId) {
+                resolveProjectId = contextProjectId;
+                resolutionNotes.push(`Using project ID from context: ${contextProjectId}`);
+              } else {
+                return formatToolResponse(
+                  "error",
+                  `Cannot resolve container short ID ${containerId} without a project ID. Please provide the projectId parameter or set a project context.`
+                );
+              }
             }
             
             const servicesResponse = await mittwaldClient.container.listServices({
-              projectId: args.projectId
+              projectId: resolveProjectId
             });
             
             if (servicesResponse.status === 200 && servicesResponse.data) {
@@ -171,22 +180,31 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
       );
     }
 
-    // Validate project ID is provided (required by API)
-    if (!args.projectId) {
-      return formatToolResponse(
-        "error",
-        "Project ID is required to create a virtual host"
-      );
+    // Get project ID from args or context
+    let projectId = args.projectId;
+    
+    if (!projectId) {
+      // Try to get project ID from context
+      const contextProjectId = process.env.MITTWALD_PROJECT_ID;
+      if (contextProjectId) {
+        projectId = contextProjectId;
+        resolutionNotes.push(`Using project ID from context: ${contextProjectId}`);
+      } else {
+        return formatToolResponse(
+          "error",
+          "Project ID is required to create a virtual host. Please provide the projectId parameter or set a project context."
+        );
+      }
     }
     
     // Basic format validation for project ID
-    if (!args.projectId.match(/^p-[a-z0-9]{6}$/)) {
-      const mixupSuggestions = detectIdMixup(args.projectId);
+    if (!projectId.match(/^p-[a-z0-9]{6}$/)) {
+      const mixupSuggestions = detectIdMixup(projectId);
       return formatToolResponse(
         "error",
-        `Invalid project ID format: ${args.projectId}`,
+        `Invalid project ID format: ${projectId}`,
         {
-          providedId: args.projectId,
+          providedId: projectId,
           expectedFormat: "p-XXXXXX (e.g., p-cz3ys3)",
           suggestions: mixupSuggestions,
           hint: "Project IDs start with 'p-' followed by 6 alphanumeric characters"
@@ -196,7 +214,7 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
 
     // Create the ingress using the correct API method
     const createRequest: any = {
-      projectId: args.projectId,
+      projectId: projectId,
       hostname: args.hostname,
       paths
     };
