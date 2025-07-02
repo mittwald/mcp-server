@@ -34,8 +34,9 @@ Create a new virtual host (ingress) for a domain.
 
 2. **pathToContainer**: Maps to a container
    - Format: `["path:containerId:port/protocol"]`
-   - Example: `["/:c-f6kw84:5601/tcp"]`
-   - Container IDs always start with `c-`
+   - Example: `["/:c-f6kw84:5601/tcp"]` (using short ID) or `["/:d0590cac-8281-4350-a15c-636497854bf1:5601/tcp"]` (using full UUID)
+   - Container IDs: Short IDs start with `c-`, but the API requires full UUIDs for creation
+   - **Important**: When using the API, you must provide the full UUID, not the short ID
 
 3. **pathToUrl**: Maps to external URL (redirect)
    - Format: `["path:url"]`
@@ -220,9 +221,10 @@ mittwald_app_update
 
 ### 2. ID Confusion
 - Use `mittwald_context_detect --id "xxxxx"` to identify what type of ID you have
-- App IDs start with `a-`
-- Container IDs start with `c-`
-- Project IDs start with `p-`
+- App IDs: Short format `a-XXXXXX` or full UUID
+- Container IDs: Short format `c-XXXXXX` or full UUID (API requires full UUID)
+- Project IDs: Short format `p-XXXXXX` or full UUID
+- **Container UUID Resolution**: Use `mittwald_container_list_services` with JSON output to map short IDs to full UUIDs
 
 ### 3. Delete Operations
 - Use `virtualHostId` (NOT `ingressId`) for deletion
@@ -242,14 +244,53 @@ mittwald_app_update
   3. Examine generated vhost configuration
   4. Wait for configuration to propagate after changes
 
+## Subdomain Creation
+
+### Project.space Subdomains
+Mittwald projects include a default domain: `p-XXXXXX.project.space`. You can create subdomains of this domain:
+
+1. **Subdomain Format**: `subdomain.p-XXXXXX.project.space`
+2. **API Support**: The API fully supports creating subdomains
+3. **Common Use Cases**:
+   - Service-specific endpoints (e.g., `opensearch.p-luln2c.project.space`)
+   - Environment separation (e.g., `staging.p-luln2c.project.space`)
+   - Microservice routing
+
+### Container ID Requirements
+When creating virtual hosts that point to containers:
+
+1. **UI vs API Difference**:
+   - **mStudio UI**: Accepts short container IDs (e.g., `c-k2rl3w`)
+   - **API**: Requires full UUID (e.g., `d0590cac-8281-4350-a15c-636497854bf1`)
+
+2. **Finding Container UUIDs**:
+   ```bash
+   # List all container services with full details
+   mittwald_container_list_services --projectId "p-XXXXXX" --output "json"
+   
+   # Look for:
+   # - "shortId": "c-k2rl3w"  ← Short ID shown in UI
+   # - "id": "d0590cac-8281-4350-a15c-636497854bf1"  ← Full UUID for API
+   ```
+
+3. **Common Error**:
+   ```
+   "Container.id: Does not match format 'uuid'"
+   ```
+   This means you're using a short ID where the API expects a full UUID.
+
 ## Best Practices
 
 1. **Always verify IDs**: Use `mittwald_context_detect` when unsure
 2. **Check existing virtual hosts**: List before creating to avoid conflicts
 3. **Document root paths**: Always relative to the app's installation path
 4. **Path mappings**: Start with root `/` unless you need specific routing
+5. **Container routing**: Always use full UUIDs when creating virtual hosts via API
+6. **Subdomain DNS**: Allow 1-2 minutes for DNS propagation after creating subdomains
 
-## Complete Example: StaticSite Setup
+## Complete Examples
+
+### Example 1: StaticSite Setup
 ```bash
 # 1. Create StaticSite app
 mittwald_app_create_static
@@ -270,10 +311,56 @@ mittwald_domain_virtualhost_create
 # Result: mywebsite.com → StaticSite app → serves from /public directory
 ```
 
+### Example 2: Container Service Subdomain
+```bash
+# 1. List container services to find short ID
+mittwald_container_list_services --projectId "p-luln2c" --output "json"
+# Find your container (e.g., opensearch-dashboards with shortId: c-k2rl3w)
+
+# 2. Get full UUID for the container
+# Note: The API requires full UUIDs, not short IDs
+# Use this script or similar to resolve short ID to UUID:
+mittwald_container_list_services --projectId "p-luln2c" --output "json"
+# Find the container with matching shortId and note its full 'id' field
+# Example: c-k2rl3w → d0590cac-8281-4350-a15c-636497854bf1
+
+# 3. Create subdomain pointing to container
+mittwald_domain_virtualhost_create
+  --hostname "opensearch.p-luln2c.project.space"
+  --pathToContainer ["/:d0590cac-8281-4350-a15c-636497854bf1:5601/tcp"]
+  --projectId "p-luln2c"
+
+# Result: opensearch.p-luln2c.project.space → OpenSearch Dashboards on port 5601
+```
+
+## Available MCP Tools
+
+### Domain/Virtual Host Management
+- `mittwald_domain_virtualhost_create` - Create new virtual host/ingress
+- `mittwald_domain_virtualhost_list` - List all virtual hosts for a project
+- `mittwald_domain_virtualhost_get` - Get details of a specific virtual host
+- `mittwald_domain_virtualhost_delete` - Delete a virtual host
+- `mittwald_domain_virtualhost_help` - Show this help guide
+
+### Container Management (for UUID resolution)
+- `mittwald_container_list_services` - List container services with IDs
+- `mittwald_container_get_service` - Get details of a specific service
+- `mittwald_container_list_stacks` - List container stacks
+
+### App Management
+- `mittwald_app_list` - List apps to get IDs for virtual host mapping
+- `mittwald_app_get` - Get app configuration including document root
+- `mittwald_app_update` - Update app settings like document root
+
+### Utility Tools
+- `mittwald_context_detect` - Identify what type of ID you have
+- `mittwald_project_ssh` - SSH into server for debugging
+
 ## Troubleshooting Commands
 - `mittwald_domain_virtualhost_get --ingressId "xxx"` - Get virtual host details
 - `mittwald_app_get --installation_id "xxx"` - Get app configuration
 - `mittwald_context_detect --id "xxx"` - Identify ID type
+- `mittwald_container_list_services --projectId "p-xxx" --output "json"` - Get container UUIDs
 
 ## SSH Troubleshooting Guide
 
