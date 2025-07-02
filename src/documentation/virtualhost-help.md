@@ -34,9 +34,9 @@ Create a new virtual host (ingress) for a domain.
 
 2. **pathToContainer**: Maps to a container
    - Format: `["path:containerId:port/protocol"]`
-   - Example: `["/:c-f6kw84:5601/tcp"]` (using short ID) or `["/:d0590cac-8281-4350-a15c-636497854bf1:5601/tcp"]` (using full UUID)
-   - Container IDs: Short IDs start with `c-`, but the API requires full UUIDs for creation
-   - **Important**: When using the API, you must provide the full UUID, not the short ID
+   - Example: `["/:c-f6kw84:5601/tcp"]` or `["/:c440aa00-ece8-496f-bfaa-a3237f589535:5601/tcp"]`
+   - **AUTO-RESOLUTION**: The system automatically converts short IDs to full UUIDs
+   - You can use either format - the system handles the conversion for you!
 
 3. **pathToUrl**: Maps to external URL (redirect)
    - Format: `["path:url"]`
@@ -259,9 +259,10 @@ Mittwald projects include a default domain: `p-XXXXXX.project.space`. You can cr
 ### Container ID Requirements
 When creating virtual hosts that point to containers:
 
-1. **UI vs API Difference**:
-   - **mStudio UI**: Accepts short container IDs (e.g., `c-k2rl3w`)
-   - **API**: Requires full UUID (e.g., `d0590cac-8281-4350-a15c-636497854bf1`)
+1. **Automatic UUID Resolution**:
+   - **Short IDs**: You can use short container IDs (e.g., `c-k2rl3w`)
+   - **Full UUIDs**: You can also use full UUIDs (e.g., `c440aa00-ece8-496f-bfaa-a3237f589535`)
+   - **The system automatically converts short IDs to UUIDs for you!**
 
 2. **Finding Container UUIDs**:
    ```bash
@@ -325,9 +326,10 @@ mittwald_container_list_services --projectId "p-luln2c" --output "json"
 # Example: c-k2rl3w → d0590cac-8281-4350-a15c-636497854bf1
 
 # 3. Create subdomain pointing to container
+# You can use the short ID directly - it will be auto-resolved!
 mittwald_domain_virtualhost_create
   --hostname "opensearch.p-luln2c.project.space"
-  --pathToContainer ["/:d0590cac-8281-4350-a15c-636497854bf1:5601/tcp"]
+  --pathToContainer ["/:c-k2rl3w:5601/tcp"]
   --projectId "p-luln2c"
 
 # Result: opensearch.p-luln2c.project.space → OpenSearch Dashboards on port 5601

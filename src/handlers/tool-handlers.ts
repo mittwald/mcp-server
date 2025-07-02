@@ -138,7 +138,6 @@ import { handleDdevRenderConfig, ddevRenderConfigSchema } from './tools/mittwald
 import { handleDdevMain, ddevMainSchema } from './tools/mittwald-cli/ddev/index-command.js';
 import { handleDomainGet, domainGetSchema } from './tools/mittwald-cli/domain/get.js';
 import { handleDomainList } from './tools/mittwald-cli/domain/list.js';
-import { handleDomain } from './tools/mittwald-cli/domain/domain.js';
 import { handleDomainDnszoneGet, domainDnszoneGetSchema } from './tools/mittwald-cli/domain/dnszone/get.js';
 import { handleDomainDnszoneList, domainDnszoneListSchema } from './tools/mittwald-cli/domain/dnszone/list.js';
 import { handleDomainDnszoneUpdate, domainDnszoneUpdateSchema } from './tools/mittwald-cli/domain/dnszone/update.js';
@@ -1111,9 +1110,6 @@ const ToolSchemas = {
     noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
     noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
     csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
-  }),
-  mittwald_domain: z.object({
-    help: z.boolean().optional().describe("Show help for domain commands")
   }),
   mittwald_domain_dnszone_get: domainDnszoneGetSchema,
   mittwald_domain_dnszone_list: domainDnszoneListSchema,
@@ -3319,16 +3315,6 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleDomainList(args, mittwaldDomainListContext);
-        break;
-        
-      case "mittwald_domain":
-        const mittwaldDomainContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleDomain(args, mittwaldDomainContext);
         break;
         
       case "mittwald_domain_dnszone_get":

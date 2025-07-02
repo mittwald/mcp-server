@@ -3,7 +3,6 @@
  * @module constants/tool/mittwald-cli/domain
  */
 
-export { mittwald_domain } from './domain.js';
 export { domain_get } from './get.js';
 export { mittwald_domain_list } from './list.js';
 export { mittwald_domain_virtualhost_create } from './virtualhost-create.js';

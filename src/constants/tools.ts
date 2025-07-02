@@ -204,7 +204,6 @@ import { mittwald_domain_virtualhost_get } from './tool/mittwald-cli/domain/virt
 import { mittwald_domain_virtualhost_help } from './tool/mittwald-cli/domain/virtualhost-help.js';
 import { mittwald_domain_virtualhost } from './tool/mittwald-cli/domain/virtualhost.js';
 import { mittwald_domain_list } from './tool/mittwald-cli/domain/list.js';
-import { mittwald_domain } from './tool/mittwald-cli/domain/domain.js';
 
 // Mail address tools (commented out due to readonly TypeScript issues)
 // import {
@@ -498,7 +497,6 @@ export const TOOLS: Tool[] = [
   mittwald_domain_virtualhost_help,
   mittwald_domain_virtualhost,
   mittwald_domain_list,
-  mittwald_domain,
   
   // Mail address tools (commented out due to readonly TypeScript issues)
   // mittwald_mail_address_create,

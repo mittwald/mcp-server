@@ -11,10 +11,25 @@ interface MittwaldDomainVirtualhostCreateArgs {
   pathToContainer?: string[];
 }
 
+/**
+ * CRITICAL CONTAINER UUID REQUIREMENTS:
+ * 
+ * When creating virtual hosts with container mappings, you MUST use the FULL UUID, not the short ID!
+ * 
+ * CORRECT: pathToContainer: ['/:c440aa00-ece8-496f-bfaa-a3237f589535:5601/tcp']
+ * WRONG:   pathToContainer: ['/:c-ba5s0g:5601/tcp']
+ * 
+ * The API requires the full UUID for containers. Short IDs (like c-ba5s0g) will fail.
+ * To get the full UUID, use container get/list commands first.
+ * 
+ * SUBDOMAIN CREATION:
+ * You can create subdomains for projects, e.g.: opensearch.p-b95iip.project.space
+ */
 export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVirtualhostCreateArgs> = async (args, { mittwaldClient }) => {
   try {
     // Parse path mappings
     const paths: any[] = [];
+    const resolutionNotes: string[] = [];
     
     // Process pathToApp mappings
     if (args.pathToApp) {
@@ -76,11 +91,55 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
         
         const [path, containerId, port] = parts;
         
-        // Validate container ID format
-        if (!containerId.match(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/) && !containerId.match(/^c-[a-z0-9]{6}$/)) {
+        // Handle container ID - auto-resolve short IDs to UUIDs
+        let resolvedContainerId = containerId;
+        
+        // Check if short ID was provided
+        if (containerId.match(/^c-[a-z0-9]{6}$/)) {
+          // Automatically resolve short ID to full UUID by listing services
+          try {
+            // We need to find the service by short ID
+            // First, we need the project ID
+            if (!args.projectId) {
+              return formatToolResponse(
+                "error",
+                `Cannot resolve container short ID ${containerId} without a project ID. Please provide the projectId parameter.`
+              );
+            }
+            
+            const servicesResponse = await mittwaldClient.container.listServices({
+              projectId: args.projectId
+            });
+            
+            if (servicesResponse.status === 200 && servicesResponse.data) {
+              const service = servicesResponse.data.find(s => s.shortId === containerId);
+              if (service && service.id) {
+                resolvedContainerId = service.id;
+                console.log(`Auto-resolved container short ID ${containerId} to UUID ${resolvedContainerId}`);
+                resolutionNotes.push(`Container ${containerId} resolved to UUID ${resolvedContainerId}`);
+              } else {
+                return formatToolResponse(
+                  "error",
+                  `Container with short ID ${containerId} not found in project ${args.projectId}. Please verify the container ID.`
+                );
+              }
+            } else {
+              return formatToolResponse(
+                "error",
+                `Failed to list container services for project ${args.projectId}`
+              );
+            }
+          } catch (error: unknown) {
+            return formatToolResponse(
+              "error",
+              `Failed to resolve container short ID ${containerId}: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
+          }
+        } else if (!containerId.match(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/)) {
+          // Not a valid UUID or short ID
           return formatToolResponse(
             "error",
-            `Invalid container ID format: ${containerId}. Container IDs should be either a UUID or a short ID starting with 'c-' (e.g., 'c-f6kw84').`
+            `Invalid container ID format: ${containerId}. Must be either a short ID (e.g., 'c-vnxduz') or a full UUID (e.g., 'c440aa00-ece8-496f-bfaa-a3237f589535').`
           );
         }
         
@@ -96,7 +155,7 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
           path,
           target: {
             container: {
-              id: containerId,
+              id: resolvedContainerId,
               portProtocol: port
             }
           }
@@ -112,33 +171,39 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
       );
     }
 
+    // Validate project ID is provided (required by API)
+    if (!args.projectId) {
+      return formatToolResponse(
+        "error",
+        "Project ID is required to create a virtual host"
+      );
+    }
+    
+    // Basic format validation for project ID
+    if (!args.projectId.match(/^p-[a-z0-9]{6}$/)) {
+      const mixupSuggestions = detectIdMixup(args.projectId);
+      return formatToolResponse(
+        "error",
+        `Invalid project ID format: ${args.projectId}`,
+        {
+          providedId: args.projectId,
+          expectedFormat: "p-XXXXXX (e.g., p-cz3ys3)",
+          suggestions: mixupSuggestions,
+          hint: "Project IDs start with 'p-' followed by 6 alphanumeric characters"
+        }
+      );
+    }
+
     // Create the ingress using the correct API method
     const createRequest: any = {
+      projectId: args.projectId,
       hostname: args.hostname,
       paths
     };
-    
-    if (args.projectId) {
-      // Basic format validation for project ID
-      if (!args.projectId.match(/^p-[a-z0-9]{6}$/)) {
-        const mixupSuggestions = detectIdMixup(args.projectId);
-        return formatToolResponse(
-          "error",
-          `Invalid project ID format: ${args.projectId}`,
-          {
-            providedId: args.projectId,
-            expectedFormat: "p-XXXXXX (e.g., p-cz3ys3)",
-            suggestions: mixupSuggestions,
-            hint: "Project IDs start with 'p-' followed by 6 alphanumeric characters"
-          }
-        );
-      }
-
-      createRequest.projectId = args.projectId;
-    }
 
     let response;
     try {
+      console.log('Creating ingress with request:', JSON.stringify(createRequest, null, 2));
       response = await mittwaldClient.domain.ingressCreateIngress({
         data: createRequest,
       });
@@ -146,8 +211,37 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
       // Debug: Log the actual response structure (avoid circular references)
       console.log('API Response Status:', response.status);
       console.log('API Response Data:', response.data);
-    } catch (apiError) {
+    } catch (apiError: any) {
       console.log('API call failed:', apiError instanceof Error ? apiError.message : 'Unknown API error');
+      
+      // Check if it's a 403 error in the catch block
+      if (apiError?.response?.status === 403 || apiError?.status === 403) {
+        const errorData = apiError?.response?.data || apiError?.data || {};
+        
+        // Special handling for subdomain permission errors
+        if (args.hostname?.includes('.project.space')) {
+          return formatToolResponse(
+            "error",
+            `Permission denied when creating subdomain. The subdomain '${args.hostname}' may not be allowed.\n` +
+            `Possible solutions:\n` +
+            `1. Try a custom domain instead of .project.space subdomain\n` +
+            `2. Check if the project allows subdomain creation\n` +
+            `3. Verify your API token has domain management permissions\n` +
+            `Error: ${errorData.message || 'access denied'}`
+          );
+        }
+        
+        return formatToolResponse(
+          "error",
+          `Permission denied (HTTP 403). This usually means:\n` +
+          `1. The domain/subdomain may not be allowed for this project\n` +
+          `2. Your API token may lack domain management permissions\n` +
+          `3. The project may need a custom domain first\n` +
+          `Try using a different hostname or check permissions.\n` +
+          `Error: ${errorData.message || 'access denied'}`
+        );
+      }
+      
       return formatToolResponse(
         "error",
         `API call failed: ${apiError instanceof Error ? apiError.message : 'Unknown API error'}`
@@ -180,7 +274,8 @@ export const handleDomainVirtualhostCreate: MittwaldToolHandler<MittwaldDomainVi
                 'url' in p.target ? `url:${p.target.url}` :
                 'container' in p.target ? `container:${p.target.container.id}:${p.target.container.portProtocol}` :
                 'directory' in p.target ? `dir:${p.target.directory}` : 'unknown'
-      }))
+      })),
+      ...(resolutionNotes.length > 0 && { notes: resolutionNotes })
     };
 
     return formatToolResponse(

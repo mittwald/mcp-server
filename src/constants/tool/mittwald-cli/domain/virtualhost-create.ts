@@ -2,7 +2,7 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export const mittwald_domain_virtualhost_create: Tool = {
   name: "mittwald_domain_virtualhost_create",
-  description: "Create a new ingress (virtual host). IMPORTANT: At least one path mapping (pathToApp, pathToUrl, or pathToContainer) is required. App IDs start with 'a-', Container IDs start with 'c-'. Examples: pathToApp: ['/:a-3c96b5'], pathToContainer: ['/:c-f6kw84:5601/tcp'] for OpenSearch Dashboard, pathToUrl: ['/api:https://api.example.com'].",
+  description: "Create a new ingress (virtual host). CONTAINER IDs: You can use either short IDs (e.g., 'c-ba5s0g') or full UUIDs - the system will automatically resolve short IDs to UUIDs. SUBDOMAINS: You can create subdomains like 'opensearch.p-b95iip.project.space' for any project. PATH FORMAT: Use format ['/:containerId:PORT/tcp']. EXAMPLES: pathToContainer: ['/:c-ba5s0g:5601/tcp'] or ['/:c440aa00-ece8-496f-bfaa-a3237f589535:5601/tcp']. At least one path mapping (pathToApp, pathToUrl, or pathToContainer) is required.",
   inputSchema: {
     type: "object",
     properties: {
@@ -37,7 +37,7 @@ export const mittwald_domain_virtualhost_create: Tool = {
         items: {
           type: "string"
         },
-        description: "Add a path mapping to a container (format: path:containerId:port, e.g. '/:c-f6kw84:5601/tcp' or '/:3f7d4b6a-uuid:8080/tcp'). Container IDs start with 'c-'."
+        description: "Add a path mapping to a container. Format: 'path:containerId:port'. You can use either short IDs (e.g., '/:c-ba5s0g:5601/tcp') or full UUIDs (e.g., '/:c440aa00-ece8-496f-bfaa-a3237f589535:5601/tcp'). The system automatically resolves short IDs to UUIDs."
       }
     },
     required: ["hostname"]
