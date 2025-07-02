@@ -2719,6 +2719,37 @@ export async function handleToolCall(
         result = await handleExtensionUninstall(args, mittwaldExtensionUninstallContext);
         break;
         
+      // Agent 7 cronjob tools
+      case "mittwald_cronjob_create":
+        const mittwaldCronjobCreateContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleCronjobCreate(args, mittwaldCronjobCreateContext);
+        break;
+        
+      case "mittwald_cronjob_delete":
+        const mittwaldCronjobDeleteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleCronjobDelete(args, mittwaldCronjobDeleteContext);
+        break;
+        
+      case "mittwald_cronjob_execute":
+        const mittwaldCronjobExecuteContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleCronjobExecute(args, mittwaldCronjobExecuteContext);
+        break;
+        
       // Agent 7 cronjob execution tools
       case "mittwald_cronjob_execution_abort":
         const mittwaldCronjobExecutionAbortContext: MittwaldToolHandlerContext = {
