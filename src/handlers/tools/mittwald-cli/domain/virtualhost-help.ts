@@ -146,6 +146,70 @@ mittwald_domain_virtualhost_list
 2. Routes to app based on path mapping
 3. App serves content from its configured document root
 
+### Understanding Document Root Paths
+
+**CRITICAL**: Document root paths in Mittwald are relative to the app's base directory, NOT the full filesystem path!
+
+#### File System Structure
+\`\`\`
+/home/p-XXXXXX/                  # Project home directory
+├── html/                        # Web content directory
+│   ├── app-name-XXXXX/         # App installation directory
+│   │   ├── index.html          # Your files
+│   │   └── public/             # Subdirectory example
+│   └── another-app-XXXXX/
+└── files/                       # Other project files
+\`\`\`
+
+#### Document Root Configuration Examples
+
+**Correct Document Root Values:**
+- \`/\` or empty - Serves from app root (e.g., \`/home/p-XXXXXX/html/app-name-XXXXX/\`)
+- \`/public\` - Serves from public subdirectory
+- \`./\` - Also serves from app root
+
+**Common Mistakes:**
+- \`/app-name-XXXXX/app-name-XXXXX\` - WRONG! Creates non-existent path
+- \`/html/app-name-XXXXX\` - WRONG! System already handles the html prefix
+- Full paths like \`/home/p-XXXXXX/html/...\` - WRONG! Use relative paths
+
+### Debugging Document Root Issues
+
+When encountering 404 errors:
+
+1. **SSH into the server** to check actual file structure:
+   \`\`\`bash
+   ssh user@server
+   ls -la html/
+   find html -name 'index.html' -type f
+   \`\`\`
+
+2. **Check Apache error logs**:
+   \`\`\`bash
+   tail -20 /var/log/http/error.log | grep DocumentRoot
+   \`\`\`
+   
+   Look for warnings like:
+   \`\`\`
+   AH00112: Warning: DocumentRoot [/home/p-XXXXXX/html/app-name/app-name] does not exist
+   \`\`\`
+
+3. **Examine virtual host configuration**:
+   \`\`\`bash
+   cat /usr/local/apache2/conf/vhost.d/*/your-domain.vhost
+   \`\`\`
+   
+   Check the DocumentRoot directive - it shows the full path Apache is using.
+
+### Real-World Example
+
+**Problem**: StaticSite app shows 404 error
+- Document Root set to: \`/staticsite-h2jwy/staticsite-h2jwy\`
+- Actual file location: \`/home/p-luln2c/html/staticsite-h2jwy/index.html\`
+- Apache looking for: \`/home/p-luln2c/html/staticsite-h2jwy/staticsite-h2jwy/\` (doesn't exist!)
+
+**Solution**: Change Document Root to \`/\` or leave empty
+
 ### Updating Document Root
 To change an app's document root:
 \`\`\`bash
@@ -153,6 +217,8 @@ mittwald_app_update
   --installationId "a-xxxxx"
   --documentRoot "/new/path"
 \`\`\`
+
+**Note**: Configuration changes may take 1-2 minutes to propagate. Monitor error logs to confirm when changes are applied.
 
 ## Common Issues
 
@@ -174,6 +240,16 @@ mittwald_app_update
 ### 4. Default Virtual Hosts
 - Projects may have default virtual hosts (e.g., \`p-xxxxx.project.space\`)
 - These may show \`target: "unknown"\` in listings
+
+### 5. 404 Errors After Configuration
+- **Document Root Issues**: Most common cause - see "Document Root Handling" section above
+- **Configuration Propagation**: Changes made in mStudio may take 1-2 minutes to apply
+- **Virtual Host Files**: Located in \`/usr/local/apache2/conf/vhost.d/\` (read-only, auto-generated)
+- **Debugging Steps**:
+  1. SSH to server and verify file locations
+  2. Check Apache error logs for DocumentRoot warnings
+  3. Examine generated vhost configuration
+  4. Wait for configuration to propagate after changes
 
 ## Best Practices
 
@@ -207,6 +283,64 @@ mittwald_domain_virtualhost_create
 - \`mittwald_domain_virtualhost_get --ingressId "xxx"\` - Get virtual host details
 - \`mittwald_app_get --installation_id "xxx"\` - Get app configuration
 - \`mittwald_context_detect --id "xxx"\` - Identify ID type
+
+## SSH Troubleshooting Guide
+
+### When to Use SSH
+Use SSH debugging when:
+- Getting persistent 404 errors after configuration changes
+- Need to verify actual file locations
+- Want to check if configuration has propagated
+
+### SSH Commands for Debugging
+
+1. **Check project structure**:
+   \`\`\`bash
+   pwd                          # Shows home directory (e.g., /home/p-XXXXXX)
+   ls -la                       # List all directories
+   ls -la html/                 # List web content directories
+   \`\`\`
+
+2. **Find your app files**:
+   \`\`\`bash
+   find html -name 'index.html' -type f    # Find all index files
+   ls -la html/app-name-*/                 # Check app directory contents
+   \`\`\`
+
+3. **Check Apache configuration**:
+   \`\`\`bash
+   # Find virtual host files
+   ls -la /usr/local/apache2/conf/vhost.d/
+   
+   # Read your domain's vhost config
+   cat /usr/local/apache2/conf/vhost.d/*/your-domain.vhost
+   
+   # Check for DocumentRoot in the config
+   grep DocumentRoot /usr/local/apache2/conf/vhost.d/*/your-domain.vhost
+   \`\`\`
+
+4. **Monitor error logs**:
+   \`\`\`bash
+   # Check recent errors
+   tail -20 /var/log/http/error.log
+   
+   # Watch for DocumentRoot warnings
+   tail -20 /var/log/http/error.log | grep DocumentRoot
+   
+   # Monitor logs in real-time (if staying connected)
+   tail -f /var/log/http/error.log
+   \`\`\`
+
+### Understanding Log Messages
+
+**DocumentRoot Warning**:
+\`\`\`
+AH00112: Warning: DocumentRoot [/home/p-XXXXXX/html/app-name/app-name] does not exist
+\`\`\`
+This means Apache is looking for files in a directory that doesn't exist. The path shown is what you need to fix.
+
+**Successful Request**:
+Look for HTTP 200 status codes in access.log after fixing configuration.
 
 ## ID Hierarchy in Mittwald
 \`\`\`
