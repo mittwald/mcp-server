@@ -147,6 +147,7 @@ import { handleDomainVirtualhost } from './tools/mittwald-cli/domain/virtualhost
 import { handleDomainVirtualhostCreate } from './tools/mittwald-cli/domain/virtualhost-create.js';
 import { handleDomainVirtualhostDelete } from './tools/mittwald-cli/domain/virtualhost-delete.js';
 import { handleDomainVirtualhostGet } from './tools/mittwald-cli/domain/virtualhost-get.js';
+import { handleVirtualHostHelp } from './tools/mittwald-cli/domain/virtualhost-help.js';
 
 // Backup handlers
 import { handleBackupCreate } from './tools/mittwald-cli/backup/create.js';
@@ -1138,6 +1139,7 @@ const ToolSchemas = {
     ingressId: z.string().describe("ID of the ingress to retrieve"),
     output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
   }),
+  mittwald_domain_virtualhost_help: z.object({}),
   
   // Mail tools
   mittwald_mail: z.object({
@@ -3376,6 +3378,16 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleDomainVirtualhostGet(args, mittwaldDomainVirtualhostGetContext);
+        break;
+        
+      case "mittwald_domain_virtualhost_help":
+        const mittwaldDomainVirtualhostHelpContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken
+        };
+        result = await handleVirtualHostHelp(args, mittwaldDomainVirtualhostHelpContext);
         break;
         
       // Agent 15 mail tools

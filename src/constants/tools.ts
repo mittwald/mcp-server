@@ -201,6 +201,7 @@ import {
 import { mittwald_domain_virtualhost_create } from './tool/mittwald-cli/domain/virtualhost-create.js';
 import { mittwald_domain_virtualhost_delete } from './tool/mittwald-cli/domain/virtualhost-delete.js';
 import { mittwald_domain_virtualhost_get } from './tool/mittwald-cli/domain/virtualhost-get.js';
+import { mittwald_domain_virtualhost_help } from './tool/mittwald-cli/domain/virtualhost-help.js';
 import { mittwald_domain_virtualhost } from './tool/mittwald-cli/domain/virtualhost.js';
 import { mittwald_domain_list } from './tool/mittwald-cli/domain/list.js';
 import { mittwald_domain } from './tool/mittwald-cli/domain/domain.js';
@@ -494,6 +495,7 @@ export const TOOLS: Tool[] = [
   mittwald_domain_virtualhost_create,
   mittwald_domain_virtualhost_delete,
   mittwald_domain_virtualhost_get,
+  mittwald_domain_virtualhost_help,
   mittwald_domain_virtualhost,
   mittwald_domain_list,
   mittwald_domain,
