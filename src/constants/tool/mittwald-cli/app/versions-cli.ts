@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleAppVersionsCli } from '../../../../handlers/tools/mittwald-cli/app/versions-cli.js';
 
-export const mittwald_app_versions_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_app_versions_cli',
   description: 'List supported Apps and Versions using CLI',
   inputSchema: {
@@ -13,3 +15,14 @@ export const mittwald_app_versions_cli: Tool = {
     }
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleAppVersionsCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_app_versions_cli = tool;

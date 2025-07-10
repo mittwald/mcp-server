@@ -1,6 +1,8 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleSftpUserListCli } from '../../../../handlers/tools/mittwald-cli/sftp/user-list-cli.js';
 
-export const mittwaldSftpUserListCli: Tool = {
+const tool: Tool = {
   name: "mittwald_sftp_user_list_cli",
   description: "List all SFTP users for a project (CLI wrapper)",
   inputSchema: {
@@ -46,3 +48,11 @@ export const mittwaldSftpUserListCli: Tool = {
     required: []
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleSftpUserListCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

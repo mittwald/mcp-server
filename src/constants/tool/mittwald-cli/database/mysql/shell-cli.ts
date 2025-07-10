@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleDatabaseMysqlShellCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/shell-cli.js';
 
-export const mittwald_database_mysql_shell_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_database_mysql_shell_cli",
   description: "Connect to a MySQL database via the MySQL shell (provides command for interactive execution)",
   inputSchema: {
@@ -34,3 +36,15 @@ export const mittwald_database_mysql_shell_cli: Tool = {
     required: ["databaseId"],
   },
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleDatabaseMysqlShellCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_database_mysql_shell_cli = tool;

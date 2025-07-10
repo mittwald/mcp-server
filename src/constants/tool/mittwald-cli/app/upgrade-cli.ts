@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleAppUpgradeCli } from '../../../../handlers/tools/mittwald-cli/app/upgrade-cli.js';
 
-export const mittwald_app_upgrade_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_app_upgrade_cli',
   description: 'Upgrade app installation to target version using CLI',
   inputSchema: {
@@ -38,3 +40,14 @@ export const mittwald_app_upgrade_cli: Tool = {
     }
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleAppUpgradeCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_app_upgrade_cli = tool;

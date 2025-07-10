@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleDatabaseMysqlVersionsCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/versions-cli.js';
 
-export const mittwald_database_mysql_versions_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_database_mysql_versions_cli",
   description: "List available MySQL versions using CLI wrapper",
   inputSchema: {
@@ -38,3 +40,15 @@ export const mittwald_database_mysql_versions_cli: Tool = {
     required: [],
   },
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleDatabaseMysqlVersionsCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_database_mysql_versions_cli = tool;

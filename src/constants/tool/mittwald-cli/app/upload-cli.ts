@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleAppUploadCli } from '../../../../handlers/tools/mittwald-cli/app/upload-cli.js';
 
-export const mittwald_app_upload_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_app_upload_cli',
   description: 'Upload the filesystem of an app to a project using CLI',
   inputSchema: {
@@ -49,3 +51,14 @@ export const mittwald_app_upload_cli: Tool = {
     required: ['source']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleAppUploadCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_app_upload_cli = tool;

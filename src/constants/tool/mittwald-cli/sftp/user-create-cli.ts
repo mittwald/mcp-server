@@ -1,6 +1,8 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleSftpUserCreateCli } from '../../../../handlers/tools/mittwald-cli/sftp/user-create-cli.js';
 
-export const mittwaldSftpUserCreateCli: Tool = {
+const tool: Tool = {
   name: "mittwald_sftp_user_create_cli",
   description: "Create a new SFTP user (CLI wrapper)",
   inputSchema: {
@@ -49,3 +51,11 @@ export const mittwaldSftpUserCreateCli: Tool = {
     required: ["description", "directories"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleSftpUserCreateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

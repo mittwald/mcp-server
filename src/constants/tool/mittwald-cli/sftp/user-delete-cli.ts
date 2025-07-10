@@ -1,6 +1,8 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleSftpUserDeleteCli } from '../../../../handlers/tools/mittwald-cli/sftp/user-delete-cli.js';
 
-export const mittwaldSftpUserDeleteCli: Tool = {
+const tool: Tool = {
   name: "mittwald_sftp_user_delete_cli",
   description: "Delete an SFTP user (CLI wrapper)",
   inputSchema: {
@@ -25,3 +27,11 @@ export const mittwaldSftpUserDeleteCli: Tool = {
     required: ["sftpUserId"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleSftpUserDeleteCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

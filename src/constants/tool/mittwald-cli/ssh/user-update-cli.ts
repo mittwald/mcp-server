@@ -1,6 +1,8 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleSshUserUpdateCli } from '../../../../handlers/tools/mittwald-cli/ssh/user-update-cli.js';
 
-export const mittwaldSshUserUpdateCli: Tool = {
+const tool: Tool = {
   name: "mittwald_ssh_user_update_cli",
   description: "Update an existing SSH user (CLI wrapper)",
   inputSchema: {
@@ -44,3 +46,11 @@ export const mittwaldSshUserUpdateCli: Tool = {
     required: ["sshUserId"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleSshUserUpdateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
