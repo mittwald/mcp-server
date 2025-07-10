@@ -96,6 +96,24 @@ import {
   mittwald_server
 } from './tool/mittwald-cli/server/index.js';
 
+// Agent 15 server CLI wrapper tools
+import { mittwald_server_list_cli } from './tool/mittwald-cli/server/list-cli.js';
+import { mittwald_server_get_cli } from './tool/mittwald-cli/server/get-cli.js';
+
+// Agent 15 user CLI wrapper tools
+import { mittwald_user_get_cli } from './tool/mittwald-cli/user/get-cli.js';
+import { mittwald_user_api_token_create_cli } from './tool/mittwald-cli/user/api-token/create-cli.js';
+import { mittwald_user_api_token_list_cli } from './tool/mittwald-cli/user/api-token/list-cli.js';
+import { mittwald_user_api_token_get_cli } from './tool/mittwald-cli/user/api-token/get-cli.js';
+import { mittwald_user_api_token_revoke_cli } from './tool/mittwald-cli/user/api-token/revoke-cli.js';
+import { mittwald_user_session_list_cli } from './tool/mittwald-cli/user/session/list-cli.js';
+import { mittwald_user_session_get_cli } from './tool/mittwald-cli/user/session/get-cli.js';
+import { mittwald_user_ssh_key_create_cli } from './tool/mittwald-cli/user/ssh-key/create-cli.js';
+import { mittwald_user_ssh_key_list_cli } from './tool/mittwald-cli/user/ssh-key/list-cli.js';
+import { mittwald_user_ssh_key_get_cli } from './tool/mittwald-cli/user/ssh-key/get-cli.js';
+import { mittwald_user_ssh_key_delete_cli } from './tool/mittwald-cli/user/ssh-key/delete-cli.js';
+import { mittwald_user_ssh_key_import_cli } from './tool/mittwald-cli/user/ssh-key/import-cli.js';
+
 // Agent 14 tools
 import { mittwald_domain_virtualhost_list } from './tool/mittwald-cli/domain/virtualhost-list.js';
 import { 
@@ -105,6 +123,24 @@ import {
   mittwald_extension_list,
   mittwald_extension_uninstall 
 } from './tool/mittwald-cli/extension/index.js';
+
+// Agent 17 extension CLI tools
+import { mittwald_extension_list_cli } from './tool/mittwald-cli/extension/list-cli.js';
+import { mittwald_extension_list_installed_cli } from './tool/mittwald-cli/extension/list-installed-cli.js';
+import { mittwald_extension_install_cli } from './tool/mittwald-cli/extension/install-cli.js';
+import { mittwald_extension_uninstall_cli } from './tool/mittwald-cli/extension/uninstall-cli.js';
+
+// Agent 17 registry CLI tools
+import { mittwald_container_registry_list_cli } from './tool/mittwald-cli/container/registry-list-cli.js';
+import { mittwald_container_registry_create_cli } from './tool/mittwald-cli/container/registry-create-cli.js';
+import { mittwald_container_registry_delete_cli } from './tool/mittwald-cli/container/registry-delete-cli.js';
+import { mittwald_container_registry_update_cli } from './tool/mittwald-cli/container/registry-update-cli.js';
+
+// Agent 17 stack CLI tools
+import { mittwald_container_stack_list_cli } from './tool/mittwald-cli/container/stack-list-cli.js';
+import { mittwald_container_stack_deploy_cli } from './tool/mittwald-cli/container/stack-deploy-cli.js';
+import { mittwald_container_stack_delete_cli } from './tool/mittwald-cli/container/stack-delete-cli.js';
+import { mittwald_container_stack_ps_cli } from './tool/mittwald-cli/container/stack-ps-cli.js';
 
 // Agent 7 cronjob tools
 import { mittwald_cronjob_create } from './tool/mittwald-cli/cronjob/create.js';
@@ -472,6 +508,24 @@ export const TOOLS: Tool[] = [
   mittwald_server_list,
   mittwald_server,
   
+  // Agent 15 server CLI wrapper tools
+  mittwald_server_list_cli,
+  mittwald_server_get_cli,
+  
+  // Agent 15 user CLI wrapper tools
+  mittwald_user_get_cli,
+  mittwald_user_api_token_create_cli,
+  mittwald_user_api_token_list_cli,
+  mittwald_user_api_token_get_cli,
+  mittwald_user_api_token_revoke_cli,
+  mittwald_user_session_list_cli,
+  mittwald_user_session_get_cli,
+  mittwald_user_ssh_key_create_cli,
+  mittwald_user_ssh_key_list_cli,
+  mittwald_user_ssh_key_get_cli,
+  mittwald_user_ssh_key_delete_cli,
+  mittwald_user_ssh_key_import_cli,
+  
   // Agent 14 tools
   mittwald_domain_virtualhost_list,
   mittwald_extension,
@@ -479,6 +533,24 @@ export const TOOLS: Tool[] = [
   mittwald_extension_list_installed,
   mittwald_extension_list,
   mittwald_extension_uninstall,
+  
+  // Agent 17 extension CLI tools
+  mittwald_extension_list_cli,
+  mittwald_extension_list_installed_cli,
+  mittwald_extension_install_cli,
+  mittwald_extension_uninstall_cli,
+  
+  // Agent 17 registry CLI tools
+  mittwald_container_registry_list_cli,
+  mittwald_container_registry_create_cli,
+  mittwald_container_registry_delete_cli,
+  mittwald_container_registry_update_cli,
+  
+  // Agent 17 stack CLI tools
+  mittwald_container_stack_list_cli,
+  mittwald_container_stack_deploy_cli,
+  mittwald_container_stack_delete_cli,
+  mittwald_container_stack_ps_cli,
   
   // Agent 7 cronjob tools
   mittwald_cronjob_create,

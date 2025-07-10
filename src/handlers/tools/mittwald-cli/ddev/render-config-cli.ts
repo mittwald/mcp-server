@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -7,7 +7,7 @@ interface MittwaldDdevRenderConfigArgs {
   force?: boolean;
 }
 
-export const handleDdevRenderConfigCli: MittwaldToolHandler<MittwaldDdevRenderConfigArgs> = async (args) => {
+export const handleDdevRenderConfigCli: MittwaldCliToolHandler<MittwaldDdevRenderConfigArgs> = async (args) => {
   try {
     // Validate required parameters
     if (!args.appInstallationId) {

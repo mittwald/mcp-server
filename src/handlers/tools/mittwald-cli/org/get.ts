@@ -94,3 +94,6 @@ export const handleOrgGetCli: MittwaldToolHandler<MittwaldOrgGetArgs> = async (a
     );
   }
 };
+
+// Export with old name for backward compatibility
+export const handleOrgGet = handleOrgGetCli;

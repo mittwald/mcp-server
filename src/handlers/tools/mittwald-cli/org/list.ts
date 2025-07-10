@@ -99,3 +99,6 @@ export const handleOrgListCli: MittwaldToolHandler<MittwaldOrgListArgs> = async 
     );
   }
 };
+
+// Export with old name for backward compatibility
+export const handleOrgList = handleOrgListCli;

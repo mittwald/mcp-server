@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -7,7 +7,7 @@ interface MittwaldUserApiTokenGetArgs {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleUserApiTokenGetCli: MittwaldToolHandler<MittwaldUserApiTokenGetArgs> = async (args) => {
+export const handleUserApiTokenGetCli: MittwaldCliToolHandler<MittwaldUserApiTokenGetArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['user', 'api-token', 'get'];

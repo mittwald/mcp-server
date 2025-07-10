@@ -11,7 +11,7 @@ export interface MittwaldOrgMembershipListOwnArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleOrgMembershipListOwnCli: MittwaldToolHandler<MittwaldOrgMembershipListOwnArgs> = async (args) => {
+export const handleOrgMembershipListOwnCli: MittwaldToolHandler<MittwaldOrgMembershipListOwnArgs> = async (args, context) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['org', 'membership', 'list-own'];
@@ -99,3 +99,6 @@ export const handleOrgMembershipListOwnCli: MittwaldToolHandler<MittwaldOrgMembe
     );
   }
 };
+
+// Export with old name for backward compatibility
+export const handleOrgMembershipListOwn = handleOrgMembershipListOwnCli;

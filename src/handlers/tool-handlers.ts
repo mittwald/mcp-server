@@ -3162,6 +3162,64 @@ export async function handleToolCall(
         result = await handleServer(args, mittwaldServerContext);
         break;
 
+      // Agent 15 server CLI wrapper tools
+      case "mittwald_server_list_cli":
+        result = await handleServerListCli(args as ToolArgs['mittwald_server_list_cli']);
+        break;
+        
+      case "mittwald_server_get_cli":
+        result = await handleServerGetCli(args as ToolArgs['mittwald_server_get_cli']);
+        break;
+
+      // Agent 15 user CLI wrapper tools
+      case "mittwald_user_get_cli":
+        result = await handleUserGetCli(args as ToolArgs['mittwald_user_get_cli']);
+        break;
+        
+      case "mittwald_user_api_token_create_cli":
+        result = await handleUserApiTokenCreateCli(args as ToolArgs['mittwald_user_api_token_create_cli']);
+        break;
+        
+      case "mittwald_user_api_token_list_cli":
+        result = await handleUserApiTokenListCli(args as ToolArgs['mittwald_user_api_token_list_cli']);
+        break;
+        
+      case "mittwald_user_api_token_get_cli":
+        result = await handleUserApiTokenGetCli(args as ToolArgs['mittwald_user_api_token_get_cli']);
+        break;
+        
+      case "mittwald_user_api_token_revoke_cli":
+        result = await handleUserApiTokenRevokeCli(args as ToolArgs['mittwald_user_api_token_revoke_cli']);
+        break;
+        
+      case "mittwald_user_session_list_cli":
+        result = await handleUserSessionListCli(args as ToolArgs['mittwald_user_session_list_cli']);
+        break;
+        
+      case "mittwald_user_session_get_cli":
+        result = await handleUserSessionGetCli(args as ToolArgs['mittwald_user_session_get_cli']);
+        break;
+        
+      case "mittwald_user_ssh_key_create_cli":
+        result = await handleUserSshKeyCreateCli(args as ToolArgs['mittwald_user_ssh_key_create_cli']);
+        break;
+        
+      case "mittwald_user_ssh_key_list_cli":
+        result = await handleUserSshKeyListCli(args as ToolArgs['mittwald_user_ssh_key_list_cli']);
+        break;
+        
+      case "mittwald_user_ssh_key_get_cli":
+        result = await handleUserSshKeyGetCli(args as ToolArgs['mittwald_user_ssh_key_get_cli']);
+        break;
+        
+      case "mittwald_user_ssh_key_delete_cli":
+        result = await handleUserSshKeyDeleteCli(args as ToolArgs['mittwald_user_ssh_key_delete_cli']);
+        break;
+        
+      case "mittwald_user_ssh_key_import_cli":
+        result = await handleUserSshKeyImportCli(args as ToolArgs['mittwald_user_ssh_key_import_cli']);
+        break;
+
       // Agent 2 app dependency tools
       case "mittwald_app_dependency_update":
         const mittwaldAppDependencyUpdateContext: MittwaldToolHandlerContext = {
@@ -3523,6 +3581,57 @@ export async function handleToolCall(
       
       case "mittwald_extension_uninstall":
         result = await handleExtensionUninstallCli(args);
+        break;
+        
+      // Agent 17 extension CLI tools
+      case "mittwald_extension_list_cli":
+        result = await handleExtensionListCli(args);
+        break;
+        
+      case "mittwald_extension_list_installed_cli":
+        result = await handleExtensionListInstalledCli(args);
+        break;
+        
+      case "mittwald_extension_install_cli":
+        result = await handleExtensionInstallCli(args);
+        break;
+        
+      case "mittwald_extension_uninstall_cli":
+        result = await handleExtensionUninstallCli(args);
+        break;
+        
+      // Agent 17 registry CLI tools
+      case "mittwald_container_registry_list_cli":
+        result = await handleRegistryListCli(args);
+        break;
+        
+      case "mittwald_container_registry_create_cli":
+        result = await handleRegistryCreateCli(args);
+        break;
+        
+      case "mittwald_container_registry_delete_cli":
+        result = await handleRegistryDeleteCli(args);
+        break;
+        
+      case "mittwald_container_registry_update_cli":
+        result = await handleRegistryUpdateCli(args);
+        break;
+        
+      // Agent 17 stack CLI tools
+      case "mittwald_container_stack_list_cli":
+        result = await handleStackListCli(args);
+        break;
+        
+      case "mittwald_container_stack_deploy_cli":
+        result = await handleStackDeployCli(args);
+        break;
+        
+      case "mittwald_container_stack_delete_cli":
+        result = await handleStackDeleteCli(args);
+        break;
+        
+      case "mittwald_container_stack_ps_cli":
+        result = await handleStackPsCli(args);
         break;
         
       // Agent 7 cronjob tools

@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -10,7 +10,7 @@ interface MittwaldUserSshKeyCreateArgs {
   comment?: string;
 }
 
-export const handleUserSshKeyCreateCli: MittwaldToolHandler<MittwaldUserSshKeyCreateArgs> = async (args) => {
+export const handleUserSshKeyCreateCli: MittwaldCliToolHandler<MittwaldUserSshKeyCreateArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['user', 'ssh-key', 'create'];

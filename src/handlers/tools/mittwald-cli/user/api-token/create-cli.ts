@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -9,7 +9,7 @@ interface MittwaldUserApiTokenCreateArgs {
   expires?: string;
 }
 
-export const handleUserApiTokenCreateCli: MittwaldToolHandler<MittwaldUserApiTokenCreateArgs> = async (args) => {
+export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApiTokenCreateArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['user', 'api-token', 'create'];

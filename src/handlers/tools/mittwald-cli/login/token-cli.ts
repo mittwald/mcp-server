@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -6,7 +6,7 @@ interface MittwaldLoginTokenArgs {
   token: string;
 }
 
-export const handleLoginTokenCli: MittwaldToolHandler<MittwaldLoginTokenArgs> = async (args) => {
+export const handleLoginTokenCli: MittwaldCliToolHandler<MittwaldLoginTokenArgs> = async (args) => {
   try {
     // Validate required parameters
     if (!args.token) {

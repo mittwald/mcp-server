@@ -122,3 +122,6 @@ export const handleOrgMembershipListCli: MittwaldToolHandler<MittwaldOrgMembersh
     );
   }
 };
+
+// Export with old name for backward compatibility
+export const handleOrgMembershipList = handleOrgMembershipListCli;

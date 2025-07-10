@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -10,7 +10,7 @@ interface MittwaldContextSetArgs {
   stackId?: string;
 }
 
-export const handleContextSetCli: MittwaldToolHandler<MittwaldContextSetArgs> = async (args) => {
+export const handleContextSetCli: MittwaldCliToolHandler<MittwaldContextSetArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['context', 'set'];

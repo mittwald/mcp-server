@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -8,7 +8,7 @@ interface MittwaldUserApiTokenRevokeArgs {
   quiet?: boolean;
 }
 
-export const handleUserApiTokenRevokeCli: MittwaldToolHandler<MittwaldUserApiTokenRevokeArgs> = async (args) => {
+export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApiTokenRevokeArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['user', 'api-token', 'revoke'];

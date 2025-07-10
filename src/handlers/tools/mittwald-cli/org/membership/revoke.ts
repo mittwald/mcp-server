@@ -7,7 +7,7 @@ export interface MittwaldOrgMembershipRevokeArgs {
   quiet?: boolean;
 }
 
-export const handleOrgMembershipRevokeCli: MittwaldToolHandler<MittwaldOrgMembershipRevokeArgs> = async (args) => {
+export const handleOrgMembershipRevokeCli: MittwaldToolHandler<MittwaldOrgMembershipRevokeArgs> = async (args, context) => {
   try {
     if (!args.membershipId) {
       return formatToolResponse(
@@ -79,3 +79,6 @@ export const handleOrgMembershipRevokeCli: MittwaldToolHandler<MittwaldOrgMember
     );
   }
 };
+
+// Export with old name for backward compatibility
+export const handleOrgMembershipRevoke = handleOrgMembershipRevokeCli;

@@ -91,3 +91,6 @@ export const handleOrgDeleteCli: MittwaldToolHandler<MittwaldOrgDeleteArgs> = as
     );
   }
 };
+
+// Export with old name for backward compatibility
+export const handleOrgDelete = handleOrgDeleteCli;

@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -6,7 +6,7 @@ interface MittwaldLoginResetArgs {
   // No specific parameters needed for reset
 }
 
-export const handleLoginResetCli: MittwaldToolHandler<MittwaldLoginResetArgs> = async (args) => {
+export const handleLoginResetCli: MittwaldCliToolHandler<MittwaldLoginResetArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['login', 'reset'];

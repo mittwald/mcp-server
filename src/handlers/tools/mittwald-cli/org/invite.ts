@@ -123,3 +123,6 @@ export const handleOrgInviteCli: MittwaldToolHandler<MittwaldOrgInviteArgs> = as
     );
   }
 };
+
+// Export with old name for backward compatibility
+export const handleOrgInvite = handleOrgInviteCli;
