@@ -47,12 +47,35 @@ import { mittwald_app_upgrade } from './tool/mittwald-cli/app/upgrade.js';
 import { mittwald_app_upload } from './tool/mittwald-cli/app/upload.js';
 import { mittwald_app_versions } from './tool/mittwald-cli/app/versions.js';
 
+// Agent 1 app management CLI tools
+import { mittwald_app_list_cli } from './tool/mittwald-cli/app/list-cli.js';
+import { mittwald_app_get_cli } from './tool/mittwald-cli/app/get-cli.js';
+import { mittwald_app_copy_cli } from './tool/mittwald-cli/app/copy-cli.js';
+import { mittwald_app_download_cli } from './tool/mittwald-cli/app/download-cli.js';
+import { mittwald_app_open_cli } from './tool/mittwald-cli/app/open-cli.js';
+import { mittwald_app_ssh_cli } from './tool/mittwald-cli/app/ssh-cli.js';
+import { mittwald_app_uninstall_cli } from './tool/mittwald-cli/app/uninstall-cli.js';
+import { mittwald_app_update_cli } from './tool/mittwald-cli/app/update-cli.js';
+import { mittwald_app_upgrade_cli } from './tool/mittwald-cli/app/upgrade-cli.js';
+import { mittwald_app_upload_cli } from './tool/mittwald-cli/app/upload-cli.js';
+import { mittwald_app_versions_cli } from './tool/mittwald-cli/app/versions-cli.js';
+import { mittwald_app_list_upgrade_candidates_cli } from './tool/mittwald-cli/app/list-upgrade-candidates-cli.js';
+
 // Agent-18 project tools
 import { mittwald_project_create } from './tool/mittwald-cli/project/create.js';
 import { mittwald_project_delete } from './tool/mittwald-cli/project/delete.js';
 import { mittwald_project_get } from './tool/mittwald-cli/project/get.js';
 import { mittwald_project_list } from './tool/mittwald-cli/project/list.js';
 import { mittwald_project_filesystem_usage } from './tool/mittwald-cli/project/filesystem-usage.js';
+
+// Agent 7 project CLI tools
+import { mittwald_project_list_cli } from './tool/mittwald-cli/project/list-cli.js';
+import { mittwald_project_get_cli } from './tool/mittwald-cli/project/get-cli.js';
+import { mittwald_project_create_cli } from './tool/mittwald-cli/project/create-cli.js';
+import { mittwald_project_delete_cli } from './tool/mittwald-cli/project/delete-cli.js';
+import { mittwald_project_update_cli } from './tool/mittwald-cli/project/update-cli.js';
+import { mittwald_project_ssh_cli } from './tool/mittwald-cli/project/ssh-cli.js';
+import { mittwald_project_filesystem_usage_cli } from './tool/mittwald-cli/project/filesystem-usage-cli.js';
 import { mittwald_project_filesystem } from './tool/mittwald-cli/project/filesystem.js';
 import { mittwald_project_invite_get } from './tool/mittwald-cli/project/invite-get.js';
 import { mittwald_project_invite_list_own } from './tool/mittwald-cli/project/invite-list-own.js';
@@ -112,6 +135,11 @@ import {
   mittwald_database_mysql_charsets,
   mittwald_database_mysql_create,
   mittwald_database_mysql_delete,
+  mittwald_database_mysql_user_create,
+  mittwald_database_mysql_user_list,
+  mittwald_database_mysql_user_get,
+  mittwald_database_mysql_user_delete,
+  mittwald_database_mysql_user_update,
   mittwald_database_redis_create,
   mittwald_database_redis_get,
   mittwald_database_redis_list,
@@ -343,6 +371,20 @@ export const TOOLS: Tool[] = [
   mittwald_app_upload,
   mittwald_app_versions,
   
+  // Agent 1 app management CLI tools
+  mittwald_app_list_cli,
+  mittwald_app_get_cli,
+  mittwald_app_copy_cli,
+  mittwald_app_download_cli,
+  mittwald_app_open_cli,
+  mittwald_app_ssh_cli,
+  mittwald_app_uninstall_cli,
+  mittwald_app_update_cli,
+  mittwald_app_upgrade_cli,
+  mittwald_app_upload_cli,
+  mittwald_app_versions_cli,
+  mittwald_app_list_upgrade_candidates_cli,
+  
   // Agent-18 project tools
   mittwald_project_create,
   mittwald_project_delete,
@@ -361,6 +403,15 @@ export const TOOLS: Tool[] = [
   mittwald_project_membership_list,
   mittwald_project_membership_list_own,
   mittwald_project_update,
+  
+  // Agent 7 project CLI tools
+  mittwald_project_list_cli,
+  mittwald_project_get_cli,
+  mittwald_project_create_cli,
+  mittwald_project_delete_cli,
+  mittwald_project_update_cli,
+  mittwald_project_ssh_cli,
+  mittwald_project_filesystem_usage_cli,
   
   // Server tools
   mittwald_server_get,
@@ -404,6 +455,15 @@ export const TOOLS: Tool[] = [
   mittwald_database_mysql_charsets,
   mittwald_database_mysql_create,
   mittwald_database_mysql_delete,
+  
+  // Agent 6 MySQL user tools
+  mittwald_database_mysql_user_create,
+  mittwald_database_mysql_user_list,
+  mittwald_database_mysql_user_get,
+  mittwald_database_mysql_user_delete,
+  mittwald_database_mysql_user_update,
+  
+  // Agent 6 Redis tools
   mittwald_database_redis_create,
   mittwald_database_redis_get,
   mittwald_database_redis_list,

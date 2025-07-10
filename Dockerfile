@@ -1,5 +1,9 @@
 FROM node:18-alpine
 WORKDIR /app
+
+# Install Mittwald CLI globally
+RUN npm install -g @mittwald/cli
+
 COPY package*.json ./
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
 COPY . .

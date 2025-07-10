@@ -20,6 +20,13 @@ export { mittwald_database_mysql_port_forward } from './mysql/port-forward.js';
 export { mittwald_database_mysql_shell } from './mysql/shell.js';
 export { mittwald_database_mysql_versions } from './mysql/versions.js';
 
+// MySQL User tools
+export { mittwald_database_mysql_user_create } from './mysql/user/create.js';
+export { mittwald_database_mysql_user_list } from './mysql/user/list.js';
+export { mittwald_database_mysql_user_get } from './mysql/user/get.js';
+export { mittwald_database_mysql_user_delete } from './mysql/user/delete.js';
+export { mittwald_database_mysql_user_update } from './mysql/user/update.js';
+
 // Additional database tools
 export { mittwald_database_list } from './list.js';
 export { mittwald_database_mysql_charsets } from './mysql/charsets.js';

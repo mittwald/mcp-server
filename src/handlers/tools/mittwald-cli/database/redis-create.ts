@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
 
 export const MittwaldDatabaseRedisCreateSchema = z.object({
   description: z.string(),
@@ -29,51 +30,128 @@ export const MittwaldDatabaseRedisCreateSchema = z.object({
 export type MittwaldDatabaseRedisCreateInput = z.infer<typeof MittwaldDatabaseRedisCreateSchema>;
 
 export const handleMittwaldDatabaseRedisCreate: MittwaldToolHandler<MittwaldDatabaseRedisCreateInput> = async (
-  args,
-  { mittwaldClient }
+  args
 ) => {
   try {
-    const {
-      description,
-      version,
-      projectId,
-      quiet,
-      persistent,
-      maxMemory,
-      maxMemoryPolicy,
-    } = args;
-
-    // TODO: Implement actual Redis database creation using Mittwald API
-    // For now, this is a placeholder implementation
-    // In a real implementation, this would call the appropriate Mittwald API endpoint
+    // Build CLI command arguments
+    const cliArgs: string[] = ['database', 'redis', 'create'];
     
-    const databaseId = 'redis-' + Math.random().toString(36).substring(7);
+    // Required arguments
+    cliArgs.push('--description', args.description);
+    cliArgs.push('--version', args.version);
     
-    let response = `Redis database created successfully\nDatabase ID: ${databaseId}`;
-    if (!quiet) {
-      response += `\nDescription: ${description}\nVersion: ${version}`;
-      if (persistent) response += '\nPersistent storage: enabled';
-      if (maxMemory) response += `\nMax memory: ${maxMemory}`;
-      if (maxMemoryPolicy) response += `\nEviction policy: ${maxMemoryPolicy}`;
+    // Optional arguments
+    if (args.projectId) {
+      cliArgs.push('--project-id', args.projectId);
     }
-
+    
+    if (args.quiet) {
+      cliArgs.push('--quiet');
+    }
+    
+    if (args.persistent) {
+      cliArgs.push('--persistent');
+    }
+    
+    if (args.maxMemory) {
+      cliArgs.push('--max-memory', args.maxMemory);
+    }
+    
+    if (args.maxMemoryPolicy) {
+      cliArgs.push('--max-memory-policy', args.maxMemoryPolicy);
+    }
+    
+    // Execute CLI command
+    const result = await executeCli('mw', cliArgs, {
+      env: {
+        // Pass through API token if available
+        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
+      }
+    });
+    
+    if (result.exitCode !== 0) {
+      // Parse error message from stderr or stdout
+      const errorMessage = result.stderr || result.stdout || 'Unknown error';
+      
+      // Check for common error patterns
+      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
+        return formatToolResponse(
+          "error",
+          `Permission denied when creating Redis database. Check if your API token has database management permissions.\nError: ${errorMessage}`
+        );
+      }
+      
+      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
+        return formatToolResponse(
+          "error",
+          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
+        );
+      }
+      
+      if (errorMessage.includes('Invalid') || errorMessage.includes('invalid')) {
+        return formatToolResponse(
+          "error",
+          `Invalid parameter provided. Please check your input values.\nError: ${errorMessage}`
+        );
+      }
+      
+      return formatToolResponse(
+        "error",
+        `Failed to create Redis database: ${errorMessage}`
+      );
+    }
+    
+    // Parse the output
+    let databaseId: string | null = null;
+    
+    if (args.quiet) {
+      // In quiet mode, the CLI outputs just the ID
+      databaseId = parseQuietOutput(result.stdout);
+    } else {
+      // In normal mode, parse the success message
+      // Example: "Redis database 'description' created successfully with ID r-xxxxx"
+      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
+      if (idMatch) {
+        databaseId = idMatch[1];
+      }
+    }
+    
+    if (!databaseId) {
+      // If we can't find the ID but the command succeeded, still report success
+      return formatToolResponse(
+        "success",
+        args.quiet ? result.stdout : `Successfully created Redis database '${args.description}'`,
+        {
+          description: args.description,
+          version: args.version,
+          output: result.stdout
+        }
+      );
+    }
+    
+    // Build result data
+    const resultData = {
+      id: databaseId,
+      description: args.description,
+      version: args.version,
+      ...(args.projectId && { projectId: args.projectId }),
+      ...(args.persistent && { persistent: args.persistent }),
+      ...(args.maxMemory && { maxMemory: args.maxMemory }),
+      ...(args.maxMemoryPolicy && { maxMemoryPolicy: args.maxMemoryPolicy })
+    };
+    
     return formatToolResponse(
       "success",
-      response,
-      {
-        databaseId,
-        description,
-        version,
-        projectId: projectId || 'default',
-        persistent: persistent || false,
-        maxMemory: maxMemory || 'default',
-        maxMemoryPolicy: maxMemoryPolicy || 'noeviction',
-      }
+      args.quiet ? 
+        databaseId :
+        `Successfully created Redis database '${args.description}' with ID ${databaseId}`,
+      resultData
     );
+    
   } catch (error) {
     return formatToolResponse(
       "error",
-      `Failed to create Redis database: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

@@ -6,9 +6,10 @@
 import { z } from 'zod';
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
 export const MittwaldDatabaseRedisVersionsSchema = z.object({
-  output: z.enum(['txt', 'json', 'yaml', 'csv', 'tsv']).optional().default('txt'),
+  output: z.enum(['txt', 'json', 'yaml', 'csv', 'tsv']).optional().default('json'),
   projectId: z.string().optional(),
   extended: z.boolean().optional().default(false),
   csvSeparator: z.enum([',', ';']).optional().default(','),
@@ -20,81 +21,107 @@ export const MittwaldDatabaseRedisVersionsSchema = z.object({
 export type MittwaldDatabaseRedisVersionsInput = z.infer<typeof MittwaldDatabaseRedisVersionsSchema>;
 
 export const handleMittwaldDatabaseRedisVersions: MittwaldToolHandler<MittwaldDatabaseRedisVersionsInput> = async (
-  args,
-  { mittwaldClient }
+  args
 ) => {
   try {
-    const {
-      output,
-      projectId,
-      extended,
-      csvSeparator,
-      noHeader,
-      noRelativeDates,
-      noTruncate,
-    } = args;
-
-    // TODO: Implement actual Redis versions retrieval using Mittwald API
-    // For now, this is a placeholder implementation
+    // Build CLI command arguments
+    const cliArgs: string[] = ['database', 'redis', 'versions'];
     
-    const mockVersions = [
-      {
-        version: '7.0.15',
-        stable: true,
-        recommended: true,
-        releaseDate: '2023-12-01',
-        endOfLife: null,
-      },
-      {
-        version: '6.2.14',
-        stable: true,
-        recommended: false,
-        releaseDate: '2023-09-15',
-        endOfLife: '2024-12-31',
-      },
-      {
-        version: '7.2.4',
-        stable: true,
-        recommended: false,
-        releaseDate: '2024-02-20',
-        endOfLife: null,
-      },
-    ];
-
-    let response = '';
-    if (output === 'json') {
-      response = JSON.stringify(mockVersions, null, 2);
-    } else if (output === 'yaml') {
-      response = mockVersions.map(v => 
-        `- version: ${v.version}\n  stable: ${v.stable}\n  recommended: ${v.recommended}\n  releaseDate: ${v.releaseDate}\n  endOfLife: ${v.endOfLife || 'null'}`
-      ).join('\n');
-    } else if (output === 'csv' || output === 'tsv') {
-      const separator = output === 'tsv' ? '\t' : csvSeparator;
-      if (!noHeader) {
-        response = `VERSION${separator}STABLE${separator}RECOMMENDED${separator}RELEASE_DATE${separator}END_OF_LIFE\n`;
-      }
-      response += mockVersions.map(v => 
-        `${v.version}${separator}${v.stable}${separator}${v.recommended}${separator}${v.releaseDate}${separator}${v.endOfLife || ''}`
-      ).join('\n');
-    } else {
-      // txt format
-      if (!noHeader) {
-        response = 'VERSION    STABLE  RECOMMENDED  RELEASE_DATE  END_OF_LIFE\n';
-      }
-      response += mockVersions.map(v => 
-        `${v.version.padEnd(11)}${String(v.stable).padEnd(8)}${String(v.recommended).padEnd(13)}${v.releaseDate.padEnd(14)}${v.endOfLife || ''}`
-      ).join('\n');
+    // Required arguments
+    cliArgs.push('--output', args.output || 'json');
+    
+    // Optional arguments
+    if (args.projectId) {
+      cliArgs.push('--project-id', args.projectId);
     }
-
+    
+    if (args.extended) {
+      cliArgs.push('--extended');
+    }
+    
+    if (args.noHeader) {
+      cliArgs.push('--no-header');
+    }
+    
+    if (args.noRelativeDates) {
+      cliArgs.push('--no-relative-dates');
+    }
+    
+    if (args.noTruncate) {
+      cliArgs.push('--no-truncate');
+    }
+    
+    if (args.csvSeparator) {
+      cliArgs.push('--csv-separator', args.csvSeparator);
+    }
+    
+    // Execute CLI command
+    const result = await executeCli('mw', cliArgs, {
+      env: {
+        // Pass through API token if available
+        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
+      }
+    });
+    
+    if (result.exitCode !== 0) {
+      // Parse error message from stderr or stdout
+      const errorMessage = result.stderr || result.stdout || 'Unknown error';
+      
+      // Check for common error patterns
+      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
+        return formatToolResponse(
+          "error",
+          `Permission denied when listing Redis versions. Check if your API token has the required permissions.\nError: ${errorMessage}`
+        );
+      }
+      
+      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
+        return formatToolResponse(
+          "error",
+          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
+        );
+      }
+      
+      return formatToolResponse(
+        "error",
+        `Failed to list Redis versions: ${errorMessage}`
+      );
+    }
+    
+    // Parse the output based on format
+    let versions: any = null;
+    let responseMessage: string;
+    
+    if (args.output === 'json' || !args.output) {
+      try {
+        versions = parseJsonOutput(result.stdout);
+        responseMessage = `Found ${Array.isArray(versions) ? versions.length : 'unknown number of'} Redis versions`;
+      } catch (error) {
+        return formatToolResponse(
+          "error",
+          `Failed to parse JSON output: ${error instanceof Error ? error.message : String(error)}\nRaw output: ${result.stdout}`
+        );
+      }
+    } else {
+      // For non-JSON formats, return the raw output
+      versions = result.stdout;
+      responseMessage = `Available Redis versions:`;
+    }
+    
     return formatToolResponse(
       "success",
-      response,
-      { versions: mockVersions, count: mockVersions.length }
+      responseMessage,
+      {
+        versions: versions,
+        output: result.stdout,
+        ...(args.projectId && { projectId: args.projectId })
+      }
     );
+    
   } catch (error) {
     return formatToolResponse(
       "error",
-      `Failed to list Redis versions: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

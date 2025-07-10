@@ -1,6 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { assertStatus } from '@mittwald/api-client';
+import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
 
 interface AppDependencyListArgs {
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
@@ -11,64 +11,92 @@ interface AppDependencyListArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleMittwaldAppDependencyList: MittwaldToolHandler<AppDependencyListArgs> = async (args, { mittwaldClient }) => {
+export const handleMittwaldAppDependencyList: MittwaldToolHandler<AppDependencyListArgs> = async (args, context) => {
   try {
-    // List all available system software
-    const response = await mittwaldClient.app.listSystemsoftwares({});
-    assertStatus(response, 200);
+    // Build CLI command arguments
+    const cliArgs: string[] = ['app', 'dependency', 'list'];
     
-    const systemSoftwares = response.data || [];
-    const output = args.output || 'txt';
+    // Always use JSON output for consistent parsing
+    cliArgs.push('--output', 'json');
     
-    if (output === 'json') {
+    // Optional flags
+    if (args.extended) {
+      cliArgs.push('--extended');
+    }
+    
+    if (args.noHeader) {
+      cliArgs.push('--no-header');
+    }
+    
+    if (args.noTruncate) {
+      cliArgs.push('--no-truncate');
+    }
+    
+    if (args.noRelativeDates) {
+      cliArgs.push('--no-relative-dates');
+    }
+    
+    if (args.csvSeparator) {
+      cliArgs.push('--csv-separator', args.csvSeparator);
+    }
+    
+    // Execute CLI command
+    const result = await executeCli('mw', cliArgs, {
+      env: {
+        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
+      }
+    });
+    
+    if (result.exitCode !== 0) {
+      const errorMessage = result.stderr || result.stdout || 'Unknown error';
       return formatToolResponse(
-        "success",
-        `Found ${systemSoftwares.length} system software packages`,
-        systemSoftwares
+        "error",
+        `Failed to list app dependencies: ${errorMessage}`
       );
     }
     
-    // Format for text/table output
-    const formattedData = systemSoftwares.map((sw: any) => ({
-      ID: args.noTruncate ? sw.id : sw.id.substring(0, 8),
-      Name: sw.name,
-      Description: sw.description || 'N/A',
-      Version: sw.version || 'Multiple'
-    }));
-    
-    if (output === 'yaml') {
-      return formatToolResponse(
-        "success",
-        `Found ${systemSoftwares.length} system software packages`,
-        formattedData
-      );
-    }
-    
-    if (output === 'csv' || output === 'tsv') {
-      const separator = output === 'csv' ? (args.csvSeparator || ',') : '\t';
-      const headers = args.noHeader ? '' : `ID${separator}Name${separator}Description${separator}Version\n`;
-      const rows = formattedData.map(sw => 
-        `${sw.ID}${separator}${sw.Name}${separator}${sw.Description}${separator}${sw.Version}`
-      ).join('\n');
+    // Parse JSON output
+    try {
+      const data = parseJsonOutput(result.stdout);
       
+      if (!Array.isArray(data)) {
+        return formatToolResponse(
+          "error",
+          "Unexpected output format from CLI command"
+        );
+      }
+      
+      if (data.length === 0) {
+        return formatToolResponse(
+          "success",
+          "No dependencies found",
+          []
+        );
+      }
+      
+      // Return the data as received from CLI command
       return formatToolResponse(
         "success",
-        headers + rows,
-        { format: output }
+        `Found ${data.length} available dependencies`,
+        data
+      );
+      
+    } catch (parseError) {
+      // If JSON parsing fails, return the raw output
+      return formatToolResponse(
+        "success",
+        "Dependencies retrieved (raw output)",
+        {
+          rawOutput: result.stdout,
+          parseError: parseError instanceof Error ? parseError.message : String(parseError)
+        }
       );
     }
     
-    // Default text format
-    return formatToolResponse(
-      "success",
-      `Found ${systemSoftwares.length} system software packages`,
-      formattedData
-    );
-
   } catch (error) {
     return formatToolResponse(
       "error",
-      `Failed to get dependency list: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

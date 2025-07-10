@@ -22,7 +22,14 @@ export { handleAppInstallTypo3 } from './mittwald-cli/app/install/typo3.js';
 export { handleAppInstallWordpress } from './mittwald-cli/app/install/wordpress.js';
 
 // Agent 14 domain handlers
-export { handleDomainVirtualhostList } from './mittwald-cli/domain/virtualhost-list.js';
+export {
+  handleDomainVirtualhostList,
+  handleDomainVirtualhostCreate,
+  handleDomainVirtualhostDelete,
+  handleDomainVirtualhostGet,
+  handleDomainVirtualhost,
+  handleVirtualHostHelp
+} from './mittwald-cli/domain/index.js';
 
 // Agent 14 extension handlers
 export { handleExtension } from './mittwald-cli/extension/extension.js';

@@ -23,6 +23,11 @@ export type MittwaldToolHandler<T = any> = (
   context: MittwaldToolHandlerContext,
 ) => Promise<CallToolResult>;
 
+// CLI wrapper handler that doesn't need context
+export type MittwaldCliToolHandler<T = any> = (
+  args: T,
+) => Promise<CallToolResult>;
+
 // Conversation API Types
 export interface ConversationListArgs {
   sort?: Array<"createdAt" | "lastMessage.createdAt" | "title" | "priority" | "shortId" | "conversationId">;
