@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppOpenCli } from '../../../../handlers/tools/mittwald-cli/app/open-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_open_cli',
+  name: 'mittwald_app_open',
   description: 'Open an app installation in the browser using CLI',
   inputSchema: {
     type: 'object',

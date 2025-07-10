@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppCopyCli } from '../../../../handlers/tools/mittwald-cli/app/copy-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_copy_cli',
+  name: 'mittwald_app_copy',
   description: 'Copy an app within a project using CLI',
   inputSchema: {
     type: 'object',

@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleProjectUpdateCli } from '../../../../handlers/tools/mittwald-cli/project/update-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_project_update_cli",
+  name: "mittwald_project_update",
   description: "Update an existing project using Mittwald CLI",
   inputSchema: {
     type: "object",

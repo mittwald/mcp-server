@@ -3,7 +3,7 @@ import type { ToolRegistration, ToolHandler } from '../../../../types/tool-regis
 import { handleOrgDeleteCli } from '../../../../handlers/tools/mittwald-cli/org/delete.js';
 
 const tool: Tool = {
-  name: "mittwald_org_delete_cli",
+  name: "mittwald_org_delete",
   description: "Delete an organization using CLI wrapper",
   inputSchema: {
     type: "object",

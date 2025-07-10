@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleProjectCreateCli } from '../../../../handlers/tools/mittwald-cli/project/create-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_project_create_cli",
+  name: "mittwald_project_create",
   description: "Create a new project using Mittwald CLI",
   inputSchema: {
     type: "object",

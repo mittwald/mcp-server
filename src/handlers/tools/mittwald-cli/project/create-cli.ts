@@ -50,6 +50,17 @@ export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateAr
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || 'Unknown error';
       
+      // Check for missing server context
+      if (errorMessage.includes('No server context') || errorMessage.includes('server context required')) {
+        return formatToolResponse(
+          "error",
+          `No server context available. You need to:\n` +
+          `1. Provide a --server-id parameter, OR\n` +
+          `2. Set the server context using 'mw context set --server-id <SERVER_ID>'\n` +
+          `Use 'mittwald_server_list_cli' to see available servers.\nError: ${errorMessage}`
+        );
+      }
+      
       if (errorMessage.includes('server') && errorMessage.includes('not found')) {
         return formatToolResponse(
           "error",

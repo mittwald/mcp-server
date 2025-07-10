@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleUserSshKeyGetCli } from '../../../../../handlers/tools/mittwald-cli/user/ssh-key/get-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_user_ssh_key_get_cli',
+  name: 'mittwald_user_ssh_key_get',
   description: 'Get a specific SSH key using CLI wrapper. Retrieves information about a specific SSH key.',
   inputSchema: {
     type: 'object',

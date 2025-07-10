@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleContainerLogsCli } from '../../../../handlers/tools/mittwald-cli/container/logs-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_logs_cli',
+  name: 'mittwald_container_logs',
   description: 'Display logs of a specific container (CLI wrapper)',
   inputSchema: {
     type: 'object',

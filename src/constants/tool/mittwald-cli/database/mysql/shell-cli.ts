@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlShellCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/shell-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_shell_cli",
+  name: "mittwald_database_mysql_shell",
   description: "Connect to a MySQL database via the MySQL shell (provides command for interactive execution)",
   inputSchema: {
     type: "object",

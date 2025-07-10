@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppUninstallCli } from '../../../../handlers/tools/mittwald-cli/app/uninstall-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_uninstall_cli',
+  name: 'mittwald_app_uninstall',
   description: 'Uninstall an app using CLI',
   inputSchema: {
     type: 'object',

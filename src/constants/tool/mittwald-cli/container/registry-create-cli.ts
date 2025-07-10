@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleRegistryCreateCli } from '../../../../handlers/tools/mittwald-cli/container/registry-create-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_registry_create_cli',
+  name: 'mittwald_container_registry_create',
   description: 'Create a new container registry using CLI wrapper',
   inputSchema: {
     type: 'object',

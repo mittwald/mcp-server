@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleSshUserCreateCli } from '../../../../handlers/tools/mittwald-cli/ssh/user-create-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_ssh_user_create_cli",
+  name: "mittwald_ssh_user_create",
   description: "Create a new SSH user (CLI wrapper)",
   inputSchema: {
     type: "object",

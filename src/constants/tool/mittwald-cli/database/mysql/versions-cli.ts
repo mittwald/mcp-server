@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlVersionsCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/versions-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_versions_cli",
+  name: "mittwald_database_mysql_versions",
   description: "List available MySQL versions using CLI wrapper",
   inputSchema: {
     type: "object",

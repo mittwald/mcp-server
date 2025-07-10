@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleExtensionUninstallCli } from '../../../../handlers/tools/mittwald-cli/extension/uninstall-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_extension_uninstall_cli',
+  name: 'mittwald_extension_uninstall',
   description: 'Remove an extension from an organization using CLI wrapper',
   inputSchema: {
     type: 'object',

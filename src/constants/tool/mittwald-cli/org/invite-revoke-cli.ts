@@ -3,7 +3,7 @@ import type { ToolRegistration, ToolHandler } from '../../../../types/tool-regis
 import { handleOrgInviteRevokeCli } from '../../../../handlers/tools/mittwald-cli/org/invite-revoke-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_org_invite_revoke_cli",
+  name: "mittwald_org_invite_revoke",
   description: "Revoke an invite to an organization using CLI wrapper",
   inputSchema: {
     type: "object",

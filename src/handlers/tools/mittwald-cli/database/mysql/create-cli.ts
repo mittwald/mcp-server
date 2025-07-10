@@ -64,6 +64,16 @@ export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseM
       }
     });
     
+    // Check for interactive prompt before checking exit code
+    const output = result.stdout + ' ' + result.stderr;
+    if (output.includes('interactive input required') || output.includes('enter password')) {
+      return formatToolResponse(
+        "error",
+        `Command requires interactive input, but running in non-interactive mode. ` +
+        `Please provide the --user-password parameter or use a different authentication method.\nOutput: ${output}`
+      );
+    }
+
     if (result.exitCode !== 0) {
       // Parse error message from stderr or stdout
       const errorMessage = result.stderr || result.stdout || 'Unknown error';

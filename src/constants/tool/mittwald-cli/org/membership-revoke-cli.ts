@@ -3,7 +3,7 @@ import type { ToolRegistration, ToolHandler } from '../../../../types/tool-regis
 import { handleOrgMembershipRevokeCli } from '../../../../handlers/tools/mittwald-cli/org/membership/revoke.js';
 
 const tool: Tool = {
-  name: "mittwald_org_membership_revoke_cli",
+  name: "mittwald_org_membership_revoke",
   description: "Revoke a user's membership to an organization using CLI wrapper",
   inputSchema: {
     type: "object",

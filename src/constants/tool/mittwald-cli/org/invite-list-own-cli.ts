@@ -3,7 +3,7 @@ import type { ToolRegistration, ToolHandler } from '../../../../types/tool-regis
 import { handleOrgInviteListOwnCli } from '../../../../handlers/tools/mittwald-cli/org/invite-list-own-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_org_invite_list_own_cli",
+  name: "mittwald_org_invite_list_own",
   description: "List all organization invites for the executing user using CLI wrapper",
   inputSchema: {
     type: "object",

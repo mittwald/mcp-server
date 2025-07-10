@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleProjectGetCli } from '../../../../handlers/tools/mittwald-cli/project/get-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_project_get_cli",
+  name: "mittwald_project_get",
   description: "Get details of a project using Mittwald CLI",
   inputSchema: {
     type: "object",

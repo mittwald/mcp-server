@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlGetCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/get-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_get_cli",
+  name: "mittwald_database_mysql_get",
   description: "Get a MySQL database using CLI wrapper",
   inputSchema: {
     type: "object",

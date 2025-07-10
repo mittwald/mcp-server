@@ -8,7 +8,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleMittwaldMailAddressDeleteCli } from '../../../../../handlers/tools/mittwald-cli/mail/address/delete-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_mail_address_delete_cli',
+  name: 'mittwald_mail_address_delete',
   description: 'Delete a mail address using Mittwald CLI',
   inputSchema: {
     type: 'object',

@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleContainerStopCli } from '../../../../handlers/tools/mittwald-cli/container/stop-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_stop_cli',
+  name: 'mittwald_container_stop',
   description: 'Stop a running container (CLI wrapper)',
   inputSchema: {
     type: 'object',

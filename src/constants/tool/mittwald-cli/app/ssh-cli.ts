@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppSshCli } from '../../../../handlers/tools/mittwald-cli/app/ssh-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_ssh_cli',
+  name: 'mittwald_app_ssh',
   description: 'Connect to an app via SSH using CLI',
   inputSchema: {
     type: 'object',

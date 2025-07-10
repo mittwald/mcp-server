@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleContainerRunCli } from '../../../../handlers/tools/mittwald-cli/container/run-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_run_cli',
+  name: 'mittwald_container_run',
   description: 'Create and start a new container (CLI wrapper)',
   inputSchema: {
     type: 'object',

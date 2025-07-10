@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleSshUserListCli } from '../../../../handlers/tools/mittwald-cli/ssh/user-list-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_ssh_user_list_cli",
+  name: "mittwald_ssh_user_list",
   description: "List all SSH users for a project (CLI wrapper)",
   inputSchema: {
     type: "object",

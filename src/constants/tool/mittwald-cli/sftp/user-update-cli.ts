@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleSftpUserUpdateCli } from '../../../../handlers/tools/mittwald-cli/sftp/user-update-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_sftp_user_update_cli",
+  name: "mittwald_sftp_user_update",
   description: "Update an existing SFTP user (CLI wrapper)",
   inputSchema: {
     type: "object",

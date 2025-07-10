@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleUserGetCli } from '../../../../handlers/tools/mittwald-cli/user/get-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_user_get_cli',
+  name: 'mittwald_user_get',
   description: 'Get profile information for a user using CLI wrapper. Defaults to the currently authenticated user if no user ID is provided.',
   inputSchema: {
     type: 'object',

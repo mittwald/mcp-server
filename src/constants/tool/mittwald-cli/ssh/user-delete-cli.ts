@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleSshUserDeleteCli } from '../../../../handlers/tools/mittwald-cli/ssh/user-delete-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_ssh_user_delete_cli",
+  name: "mittwald_ssh_user_delete",
   description: "Delete an SSH user (CLI wrapper)",
   inputSchema: {
     type: "object",

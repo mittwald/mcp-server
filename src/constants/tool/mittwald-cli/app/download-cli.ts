@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppDownloadCli } from '../../../../handlers/tools/mittwald-cli/app/download-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_download_cli',
+  name: 'mittwald_app_download',
   description: 'Download the filesystem of an app within a project to your local machine using CLI',
   inputSchema: {
     type: 'object',

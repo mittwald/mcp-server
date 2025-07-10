@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleUserSessionGetCli } from '../../../../../handlers/tools/mittwald-cli/user/session/get-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_user_session_get_cli',
+  name: 'mittwald_user_session_get',
   description: 'Get a specific session using CLI wrapper. Retrieves information about a specific user session.',
   inputSchema: {
     type: 'object',

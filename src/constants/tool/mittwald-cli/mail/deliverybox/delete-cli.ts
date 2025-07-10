@@ -8,7 +8,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleMittwaldMailDeliveryboxDeleteCli } from '../../../../../handlers/tools/mittwald-cli/mail/deliverybox/delete-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_mail_deliverybox_delete_cli',
+  name: 'mittwald_mail_deliverybox_delete',
   description: 'Delete a delivery box using Mittwald CLI',
   inputSchema: {
     type: 'object',

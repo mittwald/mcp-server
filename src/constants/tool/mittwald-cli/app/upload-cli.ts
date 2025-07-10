@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppUploadCli } from '../../../../handlers/tools/mittwald-cli/app/upload-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_upload_cli',
+  name: 'mittwald_app_upload',
   description: 'Upload the filesystem of an app to a project using CLI',
   inputSchema: {
     type: 'object',

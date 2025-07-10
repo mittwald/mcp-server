@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleProjectFilesystemUsageCli } from '../../../../handlers/tools/mittwald-cli/project/filesystem-usage-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_project_filesystem_usage_cli",
+  name: "mittwald_project_filesystem_usage",
   description: "Get a project directory filesystem usage using Mittwald CLI",
   inputSchema: {
     type: "object",

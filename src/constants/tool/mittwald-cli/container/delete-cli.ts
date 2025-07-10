@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleContainerDeleteCli } from '../../../../handlers/tools/mittwald-cli/container/delete-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_delete_cli',
+  name: 'mittwald_container_delete',
   description: 'Delete a container (CLI wrapper)',
   inputSchema: {
     type: 'object',

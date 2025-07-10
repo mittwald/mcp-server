@@ -3,7 +3,7 @@ import type { ToolRegistration, ToolHandler } from '../../../../types/tool-regis
 import { handleOrgMembershipListCli } from '../../../../handlers/tools/mittwald-cli/org/membership/list.js';
 
 const tool: Tool = {
-  name: "mittwald_org_membership_list_cli",
+  name: "mittwald_org_membership_list",
   description: "List all memberships belonging to an organization using CLI wrapper",
   inputSchema: {
     type: "object",

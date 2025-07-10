@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlDumpCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/dump-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_dump_cli",
+  name: "mittwald_database_mysql_dump",
   description: "Create a dump of a MySQL database using CLI wrapper",
   inputSchema: {
     type: "object",

@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleContainerRecreateCli } from '../../../../handlers/tools/mittwald-cli/container/recreate-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_recreate_cli',
+  name: 'mittwald_container_recreate',
   description: 'Recreate a container (CLI wrapper)',
   inputSchema: {
     type: 'object',

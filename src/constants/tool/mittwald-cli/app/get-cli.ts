@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppGetCli } from '../../../../handlers/tools/mittwald-cli/app/get-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_get_cli',
+  name: 'mittwald_app_get',
   description: 'Get details about an app installation using CLI',
   inputSchema: {
     type: 'object',

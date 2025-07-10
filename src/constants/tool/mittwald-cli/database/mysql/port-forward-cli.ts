@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlPortForwardCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/port-forward-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_port_forward_cli",
+  name: "mittwald_database_mysql_port_forward",
   description: "Forward the TCP port of a MySQL database to a local port (provides command for long-running execution)",
   inputSchema: {
     type: "object",

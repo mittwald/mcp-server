@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleUserApiTokenCreateCli } from '../../../../../handlers/tools/mittwald-cli/user/api-token/create-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_user_api_token_create_cli',
+  name: 'mittwald_user_api_token_create',
   description: 'Create a new API token using CLI wrapper. API tokens can be used to authenticate API requests.',
   inputSchema: {
     type: 'object',

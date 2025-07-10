@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleExtensionInstallCli } from '../../../../handlers/tools/mittwald-cli/extension/install-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_extension_install_cli',
+  name: 'mittwald_extension_install',
   description: 'Install an extension in a project or organization using CLI wrapper',
   inputSchema: {
     type: 'object',

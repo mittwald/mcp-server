@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleServerGetCli } from '../../../../handlers/tools/mittwald-cli/server/get-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_server_get_cli',
+  name: 'mittwald_server_get',
   description: 'Get server details using CLI wrapper. Retrieves information about a specific server.',
   inputSchema: {
     type: 'object',

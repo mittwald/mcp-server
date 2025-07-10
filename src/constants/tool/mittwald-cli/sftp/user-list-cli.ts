@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleSftpUserListCli } from '../../../../handlers/tools/mittwald-cli/sftp/user-list-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_sftp_user_list_cli",
+  name: "mittwald_sftp_user_list",
   description: "List all SFTP users for a project (CLI wrapper)",
   inputSchema: {
     type: "object",

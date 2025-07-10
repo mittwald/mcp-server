@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlCharsetsCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/charsets-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_charsets_cli",
+  name: "mittwald_database_mysql_charsets",
   description: "List available MySQL character sets and collations using CLI wrapper",
   inputSchema: {
     type: "object",

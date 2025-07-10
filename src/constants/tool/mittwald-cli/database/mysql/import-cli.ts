@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlImportCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/import-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_import_cli",
+  name: "mittwald_database_mysql_import",
   description: "Import a dump into a MySQL database using CLI wrapper",
   inputSchema: {
     type: "object",

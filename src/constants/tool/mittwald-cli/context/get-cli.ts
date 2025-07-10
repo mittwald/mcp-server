@@ -7,7 +7,7 @@ export interface ContextGetCliParameters {
 }
 
 const tool: Tool = {
-  name: 'mittwald_context_get_cli',
+  name: 'mittwald_context_get',
   description: 'Print an overview of currently set context parameters using CLI wrapper',
   inputSchema: {
     type: "object",

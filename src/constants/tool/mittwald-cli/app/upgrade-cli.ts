@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppUpgradeCli } from '../../../../handlers/tools/mittwald-cli/app/upgrade-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_upgrade_cli',
+  name: 'mittwald_app_upgrade',
   description: 'Upgrade app installation to target version using CLI',
   inputSchema: {
     type: 'object',

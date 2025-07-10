@@ -8,7 +8,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleMittwaldMailDeliveryboxCreateCli } from '../../../../../handlers/tools/mittwald-cli/mail/deliverybox/create-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_mail_deliverybox_create_cli',
+  name: 'mittwald_mail_deliverybox_create',
   description: 'Create a new delivery box using Mittwald CLI',
   inputSchema: {
     type: 'object',

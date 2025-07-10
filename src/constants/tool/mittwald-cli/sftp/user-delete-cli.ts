@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleSftpUserDeleteCli } from '../../../../handlers/tools/mittwald-cli/sftp/user-delete-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_sftp_user_delete_cli",
+  name: "mittwald_sftp_user_delete",
   description: "Delete an SFTP user (CLI wrapper)",
   inputSchema: {
     type: "object",

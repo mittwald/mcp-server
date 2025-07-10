@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleSshUserUpdateCli } from '../../../../handlers/tools/mittwald-cli/ssh/user-update-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_ssh_user_update_cli",
+  name: "mittwald_ssh_user_update",
   description: "Update an existing SSH user (CLI wrapper)",
   inputSchema: {
     type: "object",

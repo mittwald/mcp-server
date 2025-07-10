@@ -3,7 +3,7 @@ import type { ToolRegistration, ToolHandler } from '../../../../types/tool-regis
 import { handleOrgGetCli } from '../../../../handlers/tools/mittwald-cli/org/get.js';
 
 const tool: Tool = {
-  name: "mittwald_org_get_cli",
+  name: "mittwald_org_get",
   description: "Get an organization profile using CLI wrapper",
   inputSchema: {
     type: "object",

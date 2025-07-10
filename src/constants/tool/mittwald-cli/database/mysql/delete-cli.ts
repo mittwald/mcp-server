@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlDeleteCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/delete-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_delete_cli",
+  name: "mittwald_database_mysql_delete",
   description: "Delete a MySQL database using CLI wrapper",
   inputSchema: {
     type: "object",

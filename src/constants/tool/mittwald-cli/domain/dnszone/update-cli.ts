@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDomainDnszoneUpdateCli } from '../../../../../handlers/tools/mittwald-cli/domain/dnszone/update-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_domain_dnszone_update_cli",
+  name: "mittwald_domain_dnszone_update",
   description: "Update DNS zone records using CLI wrapper.",
   inputSchema: {
     type: "object",

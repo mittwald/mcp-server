@@ -7,7 +7,7 @@ export interface ContextResetCliParameters {
 }
 
 const tool: Tool = {
-  name: 'mittwald_context_reset_cli',
+  name: 'mittwald_context_reset',
   description: 'Reset context parameters using CLI wrapper',
   inputSchema: {
     type: "object",

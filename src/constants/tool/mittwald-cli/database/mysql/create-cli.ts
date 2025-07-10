@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlCreateCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/create-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_create_cli",
+  name: "mittwald_database_mysql_create",
   description: "Create a new MySQL database using CLI wrapper",
   inputSchema: {
     type: "object",

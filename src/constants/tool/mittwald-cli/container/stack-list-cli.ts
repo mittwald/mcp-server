@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleStackListCli } from '../../../../handlers/tools/mittwald-cli/container/stack-list-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_stack_list_cli',
+  name: 'mittwald_container_stack_list',
   description: 'List container stacks for a given project using CLI wrapper',
   inputSchema: {
     type: 'object',

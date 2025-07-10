@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleDomainGetCli } from '../../../../handlers/tools/mittwald-cli/domain/get-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_domain_get_cli",
+  name: "mittwald_domain_get",
   description: "Get domain information using CLI wrapper.",
   inputSchema: {
     type: "object",

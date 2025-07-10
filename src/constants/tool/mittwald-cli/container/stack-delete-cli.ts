@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleStackDeleteCli } from '../../../../handlers/tools/mittwald-cli/container/stack-delete-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_stack_delete_cli',
+  name: 'mittwald_container_stack_delete',
   description: 'Delete a container stack using CLI wrapper',
   inputSchema: {
     type: 'object',

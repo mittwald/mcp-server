@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleAppVersionsCli } from '../../../../handlers/tools/mittwald-cli/app/versions-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_app_versions_cli',
+  name: 'mittwald_app_versions',
   description: 'List supported Apps and Versions using CLI',
   inputSchema: {
     type: 'object',

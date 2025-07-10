@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleStackPsCli } from '../../../../handlers/tools/mittwald-cli/container/stack-ps-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_stack_ps_cli',
+  name: 'mittwald_container_stack_ps',
   description: 'List all services within a given container stack using CLI wrapper',
   inputSchema: {
     type: 'object',

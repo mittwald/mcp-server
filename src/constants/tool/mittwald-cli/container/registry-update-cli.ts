@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleRegistryUpdateCli } from '../../../../handlers/tools/mittwald-cli/container/registry-update-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_registry_update_cli',
+  name: 'mittwald_container_registry_update',
   description: 'Update an existing container registry using CLI wrapper',
   inputSchema: {
     type: 'object',

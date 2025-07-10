@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleDatabaseMysqlPhpmyadminCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/phpmyadmin-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_database_mysql_phpmyadmin_cli",
+  name: "mittwald_database_mysql_phpmyadmin",
   description: "Open phpMyAdmin for a MySQL database (provides command for browser execution)",
   inputSchema: {
     type: "object",

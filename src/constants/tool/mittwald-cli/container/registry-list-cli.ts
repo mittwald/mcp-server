@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleRegistryListCli } from '../../../../handlers/tools/mittwald-cli/container/registry-list-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_registry_list_cli',
+  name: 'mittwald_container_registry_list',
   description: 'List container registries using CLI wrapper',
   inputSchema: {
     type: 'object',

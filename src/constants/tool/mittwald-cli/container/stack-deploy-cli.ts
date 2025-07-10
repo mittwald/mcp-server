@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleStackDeployCli } from '../../../../handlers/tools/mittwald-cli/container/stack-deploy-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_stack_deploy_cli',
+  name: 'mittwald_container_stack_deploy',
   description: 'Deploy a docker-compose compatible file to a mittwald container stack using CLI wrapper',
   inputSchema: {
     type: 'object',

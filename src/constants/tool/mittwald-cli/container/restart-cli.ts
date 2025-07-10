@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleContainerRestartCli } from '../../../../handlers/tools/mittwald-cli/container/restart-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_restart_cli',
+  name: 'mittwald_container_restart',
   description: 'Restart a container (CLI wrapper)',
   inputSchema: {
     type: 'object',

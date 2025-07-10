@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../types/tool-registry.js';
 import { handleSftpUserCreateCli } from '../../../../handlers/tools/mittwald-cli/sftp/user-create-cli.js';
 
 const tool: Tool = {
-  name: "mittwald_sftp_user_create_cli",
+  name: "mittwald_sftp_user_create",
   description: "Create a new SFTP user (CLI wrapper)",
   inputSchema: {
     type: "object",

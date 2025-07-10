@@ -26,11 +26,13 @@ export async function executeCli(
     env = {}
   } = options;
 
-  // Escape arguments to prevent shell injection
+  // Escape arguments to prevent shell injection and handle Unicode
   const escapedArgs = args.map(arg => {
-    // If arg contains spaces or special characters, wrap in quotes
-    if (/[\s"'\\$`]/.test(arg)) {
-      return `"${arg.replace(/["\\$`]/g, '\\$&')}"`;
+    // Always quote arguments that contain spaces, special chars, or non-ASCII characters
+    if (/[\s"'\\$`!@#%&*(){}[\]|;:<>?~`]/.test(arg) || /[^\x00-\x7F]/.test(arg)) {
+      // Escape quotes, backslashes, and dollar signs within quoted strings
+      const escaped = arg.replace(/["\\$`]/g, '\\$&');
+      return `"${escaped}"`;
     }
     return arg;
   });
@@ -57,9 +59,26 @@ export async function executeCli(
     };
   } catch (error: any) {
     // exec throws an error if the command exits with non-zero
+    let stderr = error.stderr?.trim() || '';
+    
+    // If stderr is empty but we have an error message, use that
+    if (!stderr && error.message) {
+      stderr = error.message;
+    }
+    
+    // If we have a signal (like timeout), include that information
+    if (error.signal) {
+      stderr = `Command killed with signal ${error.signal}. ${stderr}`.trim();
+    }
+    
+    // Include the full command in error output for debugging
+    if (!stderr.includes(fullCommand)) {
+      stderr = `Command: ${fullCommand}\nError: ${stderr}`.trim();
+    }
+    
     return {
       stdout: error.stdout?.trim() || '',
-      stderr: error.stderr?.trim() || error.message,
+      stderr,
       exitCode: error.code || 1
     };
   }

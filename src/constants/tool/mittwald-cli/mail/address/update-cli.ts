@@ -8,7 +8,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleMittwaldMailAddressUpdateCli } from '../../../../../handlers/tools/mittwald-cli/mail/address/update-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_mail_address_update_cli',
+  name: 'mittwald_mail_address_update',
   description: 'Update a mail address using Mittwald CLI',
   inputSchema: {
     type: 'object',

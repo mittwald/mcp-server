@@ -8,7 +8,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleMittwaldMailAddressCreateCli } from '../../../../../handlers/tools/mittwald-cli/mail/address/create-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_mail_address_create_cli',
+  name: 'mittwald_mail_address_create',
   description: 'Create a new mail address using Mittwald CLI',
   inputSchema: {
     type: 'object',

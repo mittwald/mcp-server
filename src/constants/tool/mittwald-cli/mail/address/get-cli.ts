@@ -8,7 +8,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleMittwaldMailAddressGetCli } from '../../../../../handlers/tools/mittwald-cli/mail/address/get-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_mail_address_get_cli',
+  name: 'mittwald_mail_address_get',
   description: 'Get a specific mail address using Mittwald CLI',
   inputSchema: {
     type: 'object',

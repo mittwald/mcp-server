@@ -3,7 +3,7 @@ import type { ToolRegistration } from '../../../../../types/tool-registry.js';
 import { handleUserApiTokenRevokeCli } from '../../../../../handlers/tools/mittwald-cli/user/api-token/revoke-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_user_api_token_revoke_cli',
+  name: 'mittwald_user_api_token_revoke',
   description: 'Revoke an API token using CLI wrapper. Permanently disables the specified API token.',
   inputSchema: {
     type: 'object',
