@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleAppSshCli } from '../../../../handlers/tools/mittwald-cli/app/ssh-cli.js';
 
-export const mittwald_app_ssh_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_app_ssh_cli',
   description: 'Connect to an app via SSH using CLI',
   inputSchema: {
@@ -33,3 +35,14 @@ export const mittwald_app_ssh_cli: Tool = {
     }
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleAppSshCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_app_ssh_cli = tool;

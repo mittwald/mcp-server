@@ -1,6 +1,8 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleSshUserCreateCli } from '../../../../handlers/tools/mittwald-cli/ssh/user-create-cli.js';
 
-export const mittwaldSshUserCreateCli: Tool = {
+const tool: Tool = {
   name: "mittwald_ssh_user_create_cli",
   description: "Create a new SSH user (CLI wrapper)",
   inputSchema: {
@@ -36,3 +38,11 @@ export const mittwaldSshUserCreateCli: Tool = {
     required: ["description"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleSshUserCreateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

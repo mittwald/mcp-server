@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleRegistryUpdateCli } from '../../../../handlers/tools/mittwald-cli/container/registry-update-cli.js';
 
-export const mittwald_container_registry_update_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_container_registry_update_cli',
   description: 'Update an existing container registry using CLI wrapper',
   inputSchema: {
@@ -34,3 +36,14 @@ export const mittwald_container_registry_update_cli: Tool = {
     required: ['registryId']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleRegistryUpdateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_container_registry_update_cli = tool;

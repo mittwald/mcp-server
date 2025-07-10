@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleDatabaseMysqlImportCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/import-cli.js';
 
-export const mittwald_database_mysql_import_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_database_mysql_import_cli",
   description: "Import a dump into a MySQL database using CLI wrapper",
   inputSchema: {
@@ -46,3 +48,15 @@ export const mittwald_database_mysql_import_cli: Tool = {
     required: ["databaseId", "input"],
   },
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleDatabaseMysqlImportCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_database_mysql_import_cli = tool;

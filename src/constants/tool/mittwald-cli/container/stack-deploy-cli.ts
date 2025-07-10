@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleStackDeployCli } from '../../../../handlers/tools/mittwald-cli/container/stack-deploy-cli.js';
 
-export const mittwald_container_stack_deploy_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_container_stack_deploy_cli',
   description: 'Deploy a docker-compose compatible file to a mittwald container stack using CLI wrapper',
   inputSchema: {
@@ -26,3 +28,14 @@ export const mittwald_container_stack_deploy_cli: Tool = {
     required: []
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleStackDeployCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_container_stack_deploy_cli = tool;
