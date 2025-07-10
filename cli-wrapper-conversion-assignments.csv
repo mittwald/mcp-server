@@ -1,0 +1,172 @@
+Command Group,Command,Status,Agent Assignment,Priority,Notes
+app,app list,Needs Conversion,Agent-1,High,Core functionality
+app,app get,Needs Conversion,Agent-1,High,Core functionality
+app,app copy,Needs Conversion,Agent-1,Medium,
+app,app download,Needs Conversion,Agent-1,Medium,
+app,app open,Needs Conversion,Agent-1,Low,
+app,app ssh,Needs Conversion,Agent-1,Medium,
+app,app uninstall,Needs Conversion,Agent-1,Medium,
+app,app update,Needs Conversion,Agent-1,Medium,
+app,app upgrade,Needs Conversion,Agent-1,Medium,
+app,app upload,Needs Conversion,Agent-1,Medium,
+app,app versions,Needs Conversion,Agent-1,Low,
+app,app list-upgrade-candidates,Needs Conversion,Agent-1,Low,
+app,app create node,Needs Conversion,Agent-2,High,Multiple create variants
+app,app create php,Needs Conversion,Agent-2,High,Multiple create variants
+app,app create php-worker,Needs Conversion,Agent-2,High,Multiple create variants
+app,app create python,Needs Conversion,Agent-2,High,Multiple create variants
+app,app create static,Needs Conversion,Agent-2,High,Multiple create variants
+app,app install wordpress,Needs Conversion,Agent-3,High,Popular CMS
+app,app install typo3,Needs Conversion,Agent-3,High,Popular CMS
+app,app install nextcloud,Needs Conversion,Agent-3,Medium,
+app,app install contao,Needs Conversion,Agent-3,Medium,
+app,app install joomla,Needs Conversion,Agent-3,Medium,
+app,app install matomo,Needs Conversion,Agent-3,Medium,
+app,app install shopware5,Needs Conversion,Agent-3,Medium,
+app,app install shopware6,Needs Conversion,Agent-3,Medium,
+app,app dependency list,Needs Conversion,Agent-4,Medium,
+app,app dependency update,Needs Conversion,Agent-4,Medium,
+app,app dependency versions,Needs Conversion,Agent-4,Low,
+database,database list,Needs Conversion,Agent-5,High,Core functionality
+database,database mysql list,Needs Conversion,Agent-5,High,Core functionality
+database,database mysql get,Needs Conversion,Agent-5,High,Core functionality
+database,database mysql create,Needs Conversion,Agent-5,High,Core functionality
+database,database mysql delete,Needs Conversion,Agent-5,High,Core functionality
+database,database mysql dump,Needs Conversion,Agent-5,Medium,
+database,database mysql import,Needs Conversion,Agent-5,Medium,
+database,database mysql shell,Needs Conversion,Agent-5,Low,Interactive command
+database,database mysql phpmyadmin,Needs Conversion,Agent-5,Low,
+database,database mysql port-forward,Needs Conversion,Agent-5,Low,
+database,database mysql charsets,Needs Conversion,Agent-5,Low,
+database,database mysql versions,Needs Conversion,Agent-5,Low,
+database,database mysql user create,Needs Conversion,Agent-6,Medium,
+database,database mysql user list,Needs Conversion,Agent-6,Medium,
+database,database mysql user get,Needs Conversion,Agent-6,Medium,
+database,database mysql user delete,Needs Conversion,Agent-6,Medium,
+database,database mysql user update,Needs Conversion,Agent-6,Medium,
+database,database redis create,Needs Conversion,Agent-6,Medium,
+database,database redis list,Needs Conversion,Agent-6,Medium,
+database,database redis get,Needs Conversion,Agent-6,Medium,
+database,database redis shell,Needs Conversion,Agent-6,Low,Interactive command
+database,database redis versions,Needs Conversion,Agent-6,Low,
+project,project list,Needs Conversion,Agent-7,High,Core functionality
+project,project get,Needs Conversion,Agent-7,High,Core functionality
+project,project create,Needs Conversion,Agent-7,High,Core functionality
+project,project delete,Needs Conversion,Agent-7,High,Core functionality
+project,project update,Needs Conversion,Agent-7,Medium,
+project,project ssh,Needs Conversion,Agent-7,Medium,
+project,project filesystem usage,Needs Conversion,Agent-7,Low,
+project,project invite list,Needs Conversion,Agent-8,Medium,
+project,project invite list-own,Needs Conversion,Agent-8,Medium,
+project,project invite get,Needs Conversion,Agent-8,Medium,
+project,project membership list,Needs Conversion,Agent-8,Medium,
+project,project membership list-own,Needs Conversion,Agent-8,Medium,
+project,project membership get,Needs Conversion,Agent-8,Medium,
+project,project membership get-own,Needs Conversion,Agent-8,Medium,
+backup,backup list,Needs Conversion,Agent-9,High,Core functionality
+backup,backup get,Needs Conversion,Agent-9,High,Core functionality
+backup,backup create,Needs Conversion,Agent-9,High,Core functionality
+backup,backup delete,Needs Conversion,Agent-9,High,Core functionality
+backup,backup download,Needs Conversion,Agent-9,Medium,
+backup,backup schedule list,Needs Conversion,Agent-9,Medium,
+backup,backup schedule create,Needs Conversion,Agent-9,Medium,
+backup,backup schedule delete,Needs Conversion,Agent-9,Medium,
+backup,backup schedule update,Needs Conversion,Agent-9,Medium,
+cronjob,cronjob list,Needs Conversion,Agent-10,High,Core functionality
+cronjob,cronjob get,Needs Conversion,Agent-10,High,Core functionality
+cronjob,cronjob create,Needs Conversion,Agent-10,High,Core functionality
+cronjob,cronjob delete,Needs Conversion,Agent-10,High,Core functionality
+cronjob,cronjob update,Needs Conversion,Agent-10,Medium,
+cronjob,cronjob execute,Needs Conversion,Agent-10,Medium,
+cronjob,cronjob execution list,Needs Conversion,Agent-10,Low,
+cronjob,cronjob execution get,Needs Conversion,Agent-10,Low,
+cronjob,cronjob execution logs,Needs Conversion,Agent-10,Low,
+cronjob,cronjob execution abort,Needs Conversion,Agent-10,Low,
+mail,mail address list,Needs Conversion,Agent-11,High,Core functionality
+mail,mail address get,Needs Conversion,Agent-11,High,Core functionality
+mail,mail address create,Needs Conversion,Agent-11,High,Core functionality
+mail,mail address delete,Needs Conversion,Agent-11,High,Core functionality
+mail,mail address update,Needs Conversion,Agent-11,Medium,
+mail,mail deliverybox list,Needs Conversion,Agent-11,Medium,
+mail,mail deliverybox get,Needs Conversion,Agent-11,Medium,
+mail,mail deliverybox create,Needs Conversion,Agent-11,Medium,
+mail,mail deliverybox delete,Needs Conversion,Agent-11,Medium,
+mail,mail deliverybox update,Needs Conversion,Agent-11,Medium,
+container,container list,Needs Conversion,Agent-12,High,Core functionality
+container,container logs,Needs Conversion,Agent-12,High,Debugging tool
+container,container delete,Needs Conversion,Agent-12,Medium,
+container,container recreate,Needs Conversion,Agent-12,Medium,
+container,container restart,Needs Conversion,Agent-12,Medium,
+container,container start,Needs Conversion,Agent-12,Medium,
+container,container stop,Needs Conversion,Agent-12,Medium,
+container,container run,Needs Conversion,Agent-12,Low,Complex command
+ssh-user,ssh-user list,Needs Conversion,Agent-13,High,Security critical
+ssh-user,ssh-user create,Needs Conversion,Agent-13,High,Security critical
+ssh-user,ssh-user delete,Needs Conversion,Agent-13,High,Security critical
+ssh-user,ssh-user update,Needs Conversion,Agent-13,Medium,
+sftp-user,sftp-user list,Needs Conversion,Agent-13,High,Security critical
+sftp-user,sftp-user create,Needs Conversion,Agent-13,High,Security critical
+sftp-user,sftp-user delete,Needs Conversion,Agent-13,High,Security critical
+sftp-user,sftp-user update,Needs Conversion,Agent-13,Medium,
+org,org list,Needs Conversion,Agent-14,Medium,
+org,org get,Needs Conversion,Agent-14,Medium,
+org,org delete,Needs Conversion,Agent-14,Low,Rare operation
+org,org invite,Needs Conversion,Agent-14,Medium,
+org,org invite list,Needs Conversion,Agent-14,Low,
+org,org invite list-own,Needs Conversion,Agent-14,Low,
+org,org invite revoke,Needs Conversion,Agent-14,Low,
+org,org membership list,Needs Conversion,Agent-14,Low,
+org,org membership list-own,Needs Conversion,Agent-14,Low,
+org,org membership revoke,Needs Conversion,Agent-14,Low,
+server,server list,Needs Conversion,Agent-15,Medium,
+server,server get,Needs Conversion,Agent-15,Medium,
+user,user get,Needs Conversion,Agent-15,Low,
+user,user api-token create,Needs Conversion,Agent-15,Medium,
+user,user api-token list,Needs Conversion,Agent-15,Medium,
+user,user api-token get,Needs Conversion,Agent-15,Low,
+user,user api-token revoke,Needs Conversion,Agent-15,Medium,
+user,user session list,Needs Conversion,Agent-15,Low,
+user,user session get,Needs Conversion,Agent-15,Low,
+user,user ssh-key create,Needs Conversion,Agent-15,Medium,
+user,user ssh-key list,Needs Conversion,Agent-15,Medium,
+user,user ssh-key get,Needs Conversion,Agent-15,Low,
+user,user ssh-key delete,Needs Conversion,Agent-15,Medium,
+user,user ssh-key import,Needs Conversion,Agent-15,Low,
+conversation,conversation list,Needs Conversion,Agent-16,Low,Support feature
+conversation,conversation create,Needs Conversion,Agent-16,Low,Support feature
+conversation,conversation show,Needs Conversion,Agent-16,Low,Support feature
+conversation,conversation reply,Needs Conversion,Agent-16,Low,Support feature
+conversation,conversation close,Needs Conversion,Agent-16,Low,Support feature
+conversation,conversation categories,Needs Conversion,Agent-16,Low,Support feature
+extension,extension list,Needs Conversion,Agent-17,Low,
+extension,extension list-installed,Needs Conversion,Agent-17,Low,
+extension,extension install,Needs Conversion,Agent-17,Low,
+extension,extension uninstall,Needs Conversion,Agent-17,Low,
+registry,registry list,Needs Conversion,Agent-17,Low,
+registry,registry create,Needs Conversion,Agent-17,Low,
+registry,registry delete,Needs Conversion,Agent-17,Low,
+registry,registry update,Needs Conversion,Agent-17,Low,
+stack,stack list,Needs Conversion,Agent-17,Low,
+stack,stack deploy,Needs Conversion,Agent-17,Low,
+stack,stack delete,Needs Conversion,Agent-17,Low,
+stack,stack ps,Needs Conversion,Agent-17,Low,
+domain,domain list,Needs Conversion,Agent-18,High,Already started
+domain,domain get,Needs Conversion,Agent-18,High,
+domain,domain virtualhost list,Completed,Agent-18,High,Already converted
+domain,domain virtualhost get,Completed,Agent-18,High,Already converted
+domain,domain virtualhost create,Completed,Agent-18,High,Already converted
+domain,domain virtualhost delete,Completed,Agent-18,High,Already converted
+domain,domain dnszone list,Needs Conversion,Agent-18,Medium,
+domain,domain dnszone get,Needs Conversion,Agent-18,Medium,
+domain,domain dnszone update,Needs Conversion,Agent-18,Medium,Complex operation
+context,context get,Needs Conversion,Agent-19,Low,CLI utility
+context,context set,Needs Conversion,Agent-19,Low,CLI utility
+context,context reset,Needs Conversion,Agent-19,Low,CLI utility
+login,login status,Needs Conversion,Agent-19,Low,Auth utility
+login,login reset,Needs Conversion,Agent-19,Low,Auth utility
+login,login token,Needs Conversion,Agent-19,Low,Auth utility
+ddev,ddev init,Needs Conversion,Agent-19,Low,Developer tool
+ddev,ddev render-config,Needs Conversion,Agent-19,Low,Developer tool
+autocomplete,autocomplete,Skip,N/A,N/A,Shell-specific
+help,help,Skip,N/A,N/A,Built-in command
+update,update,Skip,N/A,N/A,CLI maintenance
