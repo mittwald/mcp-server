@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
@@ -8,7 +8,7 @@ interface MittwaldMailAddressDeleteArgs {
   force?: boolean;
 }
 
-export const handleMittwaldMailAddressDeleteCli: MittwaldToolHandler<MittwaldMailAddressDeleteArgs> = async (args) => {
+export const handleMittwaldMailAddressDeleteCli: MittwaldCliToolHandler<MittwaldMailAddressDeleteArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['mail', 'address', 'delete'];

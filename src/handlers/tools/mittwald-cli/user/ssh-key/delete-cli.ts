@@ -2,24 +2,25 @@ import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
-export interface MittwaldOrgMembershipRevokeArgs {
-  membershipId: string;
+interface MittwaldUserSshKeyDeleteArgs {
+  keyId: string;
+  force?: boolean;
   quiet?: boolean;
 }
 
-export const handleOrgMembershipRevokeCli: MittwaldToolHandler<MittwaldOrgMembershipRevokeArgs> = async (args) => {
+export const handleUserSshKeyDeleteCli: MittwaldToolHandler<MittwaldUserSshKeyDeleteArgs> = async (args) => {
   try {
-    if (!args.membershipId) {
-      return formatToolResponse(
-        "error",
-        "Membership ID is required for revoking organization membership."
-      );
-    }
-
     // Build CLI command arguments
-    const cliArgs: string[] = ['org', 'membership', 'revoke', args.membershipId];
+    const cliArgs: string[] = ['user', 'ssh-key', 'delete'];
     
-    // Add quiet flag
+    // Add key ID
+    cliArgs.push(args.keyId);
+    
+    // Optional flags
+    if (args.force) {
+      cliArgs.push('--force');
+    }
+    
     if (args.quiet) {
       cliArgs.push('--quiet');
     }
@@ -34,41 +35,43 @@ export const handleOrgMembershipRevokeCli: MittwaldToolHandler<MittwaldOrgMember
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || 'Unknown error';
       
-      if (errorMessage.includes('not found')) {
+      if (errorMessage.includes('not found') || errorMessage.includes('No SSH key found')) {
         return formatToolResponse(
           "error",
-          `Organization membership not found: ${args.membershipId}.\nError: ${errorMessage}`
+          `SSH key not found: ${args.keyId}.\nError: ${errorMessage}`
         );
       }
       
       return formatToolResponse(
         "error",
-        `Failed to revoke organization membership: ${errorMessage}`
+        `Failed to delete SSH key: ${errorMessage}`
       );
     }
     
-    // Handle quiet output
+    // Handle quiet mode output
     if (args.quiet) {
-      const quietResult = parseQuietOutput(result.stdout);
+      const output = parseQuietOutput(result.stdout);
+      
       return formatToolResponse(
         "success",
-        `Organization membership ${args.membershipId} revoked successfully`,
+        output || "SSH key deleted successfully",
         { 
-          membershipId: args.membershipId,
-          revoked: true,
-          result: quietResult
+          keyId: args.keyId,
+          deleted: true
         }
       );
     }
     
-    // Regular output
+    // For non-quiet mode, return success with the output
+    const output = result.stdout.trim();
+    
     return formatToolResponse(
       "success",
-      `Organization membership ${args.membershipId} has been revoked successfully`,
+      output || `SSH key ${args.keyId} deleted successfully`,
       {
-        membershipId: args.membershipId,
-        revoked: true,
-        output: result.stdout
+        keyId: args.keyId,
+        deleted: true,
+        rawOutput: output
       }
     );
     

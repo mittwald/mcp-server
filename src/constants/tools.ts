@@ -189,7 +189,16 @@ import {
   mittwald_container_recreate_service,
   mittwald_container_start_service,
   mittwald_container_stop_service,
-  mittwald_container_pull_image
+  mittwald_container_pull_image,
+  // Agent 12 Container CLI wrapper tools
+  mittwald_container_list_cli,
+  mittwald_container_logs_cli,
+  mittwald_container_delete_cli,
+  mittwald_container_recreate_cli,
+  mittwald_container_restart_cli,
+  mittwald_container_start_cli,
+  mittwald_container_stop_cli,
+  mittwald_container_run_cli
 } from './tool/mittwald-cli/container/index.js';
 
 // App create tools
@@ -260,7 +269,12 @@ import {
   mittwaldSftpUser,
   mittwaldSftpUserDelete,
   mittwaldSftpUserList,
-  mittwaldSftpUserUpdate
+  mittwaldSftpUserUpdate,
+  // CLI wrapper imports
+  mittwaldSftpUserCreateCli,
+  mittwaldSftpUserDeleteCli,
+  mittwaldSftpUserListCli,
+  mittwaldSftpUserUpdateCli
 } from './tool/mittwald-cli/sftp/index.js';
 import { mittwald_sftp_user_create } from './tool/mittwald-cli/sftp/user/index.js';
 
@@ -270,7 +284,12 @@ import {
   mittwaldSshUserCreate,
   mittwaldSshUserDelete,
   mittwaldSshUserList,
-  mittwaldSshUserUpdateTool
+  mittwaldSshUserUpdateTool,
+  // CLI wrapper imports
+  mittwaldSshUserCreateCli,
+  mittwaldSshUserDeleteCli,
+  mittwaldSshUserListCli,
+  mittwaldSshUserUpdateCli
 } from './tool/mittwald-cli/ssh/index.js';
 
 // User/API token tools
@@ -526,6 +545,16 @@ export const TOOLS: Tool[] = [
   mittwald_container_start_service,
   mittwald_container_stop_service,
   mittwald_container_pull_image,
+
+  // Agent 12 Container CLI wrapper tools
+  mittwald_container_list_cli,
+  mittwald_container_logs_cli,
+  mittwald_container_delete_cli,
+  mittwald_container_recreate_cli,
+  mittwald_container_restart_cli,
+  mittwald_container_start_cli,
+  mittwald_container_stop_cli,
+  mittwald_container_run_cli,
   
   // App create tools
   mittwald_app_create_node,
@@ -593,12 +622,24 @@ export const TOOLS: Tool[] = [
   mittwaldSftpUserList,
   mittwaldSftpUserUpdate,
   
+  // SFTP CLI tools
+  mittwaldSftpUserCreateCli,
+  mittwaldSftpUserDeleteCli,
+  mittwaldSftpUserListCli,
+  mittwaldSftpUserUpdateCli,
+  
   // SSH tools
   mittwaldSshUserTool,
   mittwaldSshUserCreate,
   mittwaldSshUserDelete,
   mittwaldSshUserList,
   mittwaldSshUserUpdateTool,
+  
+  // SSH CLI tools
+  mittwaldSshUserCreateCli,
+  mittwaldSshUserDeleteCli,
+  mittwaldSshUserListCli,
+  mittwaldSshUserUpdateCli,
   
   // User/API token tools
   mittwaldUserTool,

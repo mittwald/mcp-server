@@ -252,12 +252,24 @@ import { handleSshUserList } from './tools/mittwald-cli/ssh/user-list.js';
 import { handleSshUserUpdate } from './tools/mittwald-cli/ssh/user-update.js';
 import { handleSshUser } from './tools/mittwald-cli/ssh/user.js';
 
+// SSH user CLI handlers
+import { handleSshUserCreateCli } from './tools/mittwald-cli/ssh/user-create-cli.js';
+import { handleSshUserDeleteCli } from './tools/mittwald-cli/ssh/user-delete-cli.js';
+import { handleSshUserListCli } from './tools/mittwald-cli/ssh/user-list-cli.js';
+import { handleSshUserUpdateCli } from './tools/mittwald-cli/ssh/user-update-cli.js';
+
 // SFTP user handlers
 import { handleSftpUserCreate } from './tools/mittwald-cli/sftp/user/create.js';
 import { handleSftpUserDelete } from './tools/mittwald-cli/sftp/user-delete.js';
 import { handleSftpUserList } from './tools/mittwald-cli/sftp/user-list.js';
 import { handleSftpUserUpdate } from './tools/mittwald-cli/sftp/user-update.js';
 import { handleSftpUser } from './tools/mittwald-cli/sftp/user.js';
+
+// SFTP user CLI handlers
+import { handleSftpUserCreateCli } from './tools/mittwald-cli/sftp/user-create-cli.js';
+import { handleSftpUserDeleteCli } from './tools/mittwald-cli/sftp/user-delete-cli.js';
+import { handleSftpUserListCli } from './tools/mittwald-cli/sftp/user-list-cli.js';
+import { handleSftpUserUpdateCli } from './tools/mittwald-cli/sftp/user-update-cli.js';
 
 // Mail handlers
 import { handleMailDeliverybox } from './tools/mittwald-cli/mail/deliverybox.js';
@@ -3432,65 +3444,29 @@ export async function handleToolCall(
         result = await handleBackupSchedule(args, mittwaldBackupScheduleContext);
         break;
         
-      // Conversation tools
+      // Conversation tools (using CLI wrappers)
       case "mittwald_conversation_create":
-        const mittwaldConversationCreateContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleConversationCreate(args, mittwaldConversationCreateContext);
+        result = await handleConversationCreateCli(args);
         break;
         
       case "mittwald_conversation_close":
-        const mittwaldConversationCloseContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleConversationClose(args, mittwaldConversationCloseContext);
+        result = await handleConversationCloseCli(args);
         break;
         
       case "mittwald_conversation_list":
-        const mittwaldConversationListContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleConversationList(args, mittwaldConversationListContext);
+        result = await handleConversationListCli(args);
         break;
         
       case "mittwald_conversation_reply":
-        const mittwaldConversationReplyContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleConversationReply(args, mittwaldConversationReplyContext);
+        result = await handleConversationReplyCli(args);
         break;
         
       case "mittwald_conversation_show":
-        const mittwaldConversationShowContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleConversationShow(args, mittwaldConversationShowContext);
+        result = await handleConversationShowCli(args);
         break;
         
       case "mittwald_conversation_categories":
-        const mittwaldConversationCategoriesContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleConversationCategories(args, mittwaldConversationCategoriesContext);
+        result = await handleConversationCategoriesCli(args);
         break;
         
       case "mittwald_conversation":
@@ -4205,6 +4181,39 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleContainerPullImage(args as ToolArgs['mittwald_container_pull_image'], mittwaldContainerPullImageContext);
+        break;
+
+      // Agent 12 Container CLI wrapper cases
+      case "mittwald_container_list_cli":
+        result = await handleContainerListCli(args as ToolArgs['mittwald_container_list_cli']);
+        break;
+
+      case "mittwald_container_logs_cli":
+        result = await handleContainerLogsCli(args as ToolArgs['mittwald_container_logs_cli']);
+        break;
+
+      case "mittwald_container_delete_cli":
+        result = await handleContainerDeleteCli(args as ToolArgs['mittwald_container_delete_cli']);
+        break;
+
+      case "mittwald_container_recreate_cli":
+        result = await handleContainerRecreateCli(args as ToolArgs['mittwald_container_recreate_cli']);
+        break;
+
+      case "mittwald_container_restart_cli":
+        result = await handleContainerRestartCli(args as ToolArgs['mittwald_container_restart_cli']);
+        break;
+
+      case "mittwald_container_start_cli":
+        result = await handleContainerStartCli(args as ToolArgs['mittwald_container_start_cli']);
+        break;
+
+      case "mittwald_container_stop_cli":
+        result = await handleContainerStopCli(args as ToolArgs['mittwald_container_stop_cli']);
+        break;
+
+      case "mittwald_container_run_cli":
+        result = await handleContainerRunCli(args as ToolArgs['mittwald_container_run_cli']);
         break;
         
       case "mittwald_contributor":

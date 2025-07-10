@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -7,7 +7,7 @@ interface MittwaldMailDeliveryboxGetArgs {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleMittwaldMailDeliveryboxGetCli: MittwaldToolHandler<MittwaldMailDeliveryboxGetArgs> = async (args) => {
+export const handleMittwaldMailDeliveryboxGetCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxGetArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['mail', 'deliverybox', 'get'];

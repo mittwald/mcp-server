@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
@@ -10,7 +10,7 @@ interface MittwaldConversationCreateArgs {
   category?: string;
 }
 
-export const handleConversationCreateCli: MittwaldToolHandler<MittwaldConversationCreateArgs> = async (args) => {
+export const handleConversationCreateCli: MittwaldCliToolHandler<MittwaldConversationCreateArgs> = async (args) => {
   try {
     const { title, message, messageFrom, editor, category } = args;
     

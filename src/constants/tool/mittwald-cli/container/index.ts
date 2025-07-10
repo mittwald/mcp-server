@@ -17,3 +17,13 @@ export { mittwald_container_recreate_service } from './recreate-service.js';
 export { mittwald_container_start_service } from './start-service.js';
 export { mittwald_container_stop_service } from './stop-service.js';
 export { mittwald_container_pull_image } from './pull-image.js';
+
+// Agent 12 Container CLI wrapper tools
+export { mittwald_container_list_cli } from './list-services-cli.js';
+export { mittwald_container_logs_cli } from './logs-cli.js';
+export { mittwald_container_delete_cli } from './delete-cli.js';
+export { mittwald_container_recreate_cli } from './recreate-cli.js';
+export { mittwald_container_restart_cli } from './restart-cli.js';
+export { mittwald_container_start_cli } from './start-cli.js';
+export { mittwald_container_stop_cli } from './stop-cli.js';
+export { mittwald_container_run_cli } from './run-cli.js';

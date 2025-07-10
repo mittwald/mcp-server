@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
@@ -10,7 +10,7 @@ interface MittwaldMailDeliveryboxUpdateArgs {
   randomPassword?: boolean;
 }
 
-export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldToolHandler<MittwaldMailDeliveryboxUpdateArgs> = async (args) => {
+export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxUpdateArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['mail', 'deliverybox', 'update'];

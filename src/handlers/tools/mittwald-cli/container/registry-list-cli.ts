@@ -1,8 +1,9 @@
-import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
-interface MittwaldConversationCategoriesArgs {
+interface MittwaldRegistryListCliArgs {
+  projectId?: string;
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
   extended?: boolean;
   noHeader?: boolean;
@@ -11,15 +12,19 @@ interface MittwaldConversationCategoriesArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleConversationCategoriesCli: MittwaldCliToolHandler<MittwaldConversationCategoriesArgs> = async (args) => {
+export const handleRegistryListCli: MittwaldToolHandler<MittwaldRegistryListCliArgs> = async (args) => {
   try {
     // Build CLI command arguments
-    const cliArgs: string[] = ['conversation', 'categories'];
+    const cliArgs: string[] = ['registry', 'list'];
     
     // Always use JSON output for consistent parsing
     cliArgs.push('--output', 'json');
     
     // Optional flags
+    if (args.projectId) {
+      cliArgs.push('--project-id', args.projectId);
+    }
+    
     if (args.extended) {
       cliArgs.push('--extended');
     }
@@ -50,9 +55,16 @@ export const handleConversationCategoriesCli: MittwaldCliToolHandler<MittwaldCon
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || 'Unknown error';
       
+      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
+        return formatToolResponse(
+          "error",
+          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
+        );
+      }
+      
       return formatToolResponse(
         "error",
-        `Failed to list conversation categories: ${errorMessage}`
+        `Failed to list registries: ${errorMessage}`
       );
     }
     
@@ -70,23 +82,22 @@ export const handleConversationCategoriesCli: MittwaldCliToolHandler<MittwaldCon
       if (data.length === 0) {
         return formatToolResponse(
           "success",
-          "No conversation categories found",
+          "No container registries found",
           []
         );
       }
       
       // Format the data to match our expected structure
       const formattedData = data.map(item => ({
-        id: item.id || item.categoryId,
-        name: item.name,
+        id: item.id,
+        uri: item.uri,
         description: item.description,
-        isActive: item.isActive,
-        sortOrder: item.sortOrder
+        projectId: item.projectId,
       }));
       
       return formatToolResponse(
         "success",
-        `Found ${data.length} conversation category(ies)`,
+        `Found ${data.length} container registr${data.length === 1 ? 'y' : 'ies'}`,
         formattedData
       );
       
@@ -94,7 +105,7 @@ export const handleConversationCategoriesCli: MittwaldCliToolHandler<MittwaldCon
       // If JSON parsing fails, return the raw output
       return formatToolResponse(
         "success",
-        "Conversation categories retrieved (raw output)",
+        "Container registries retrieved (raw output)",
         {
           rawOutput: result.stdout,
           parseError: parseError instanceof Error ? parseError.message : String(parseError)
