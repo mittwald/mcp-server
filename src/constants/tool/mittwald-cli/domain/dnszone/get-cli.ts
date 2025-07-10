@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleDomainDnszoneGetCli } from '../../../../../handlers/tools/mittwald-cli/domain/dnszone/get-cli.js';
 
-export const mittwald_domain_dnszone_get_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_domain_dnszone_get_cli",
   description: "Get DNS zone information using CLI wrapper.",
   inputSchema: {
@@ -19,3 +21,14 @@ export const mittwald_domain_dnszone_get_cli: Tool = {
     required: ["dnszoneId"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleDomainDnszoneGetCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_domain_dnszone_get_cli = tool;

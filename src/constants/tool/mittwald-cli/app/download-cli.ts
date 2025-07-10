@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleAppDownloadCli } from '../../../../handlers/tools/mittwald-cli/app/download-cli.js';
 
-export const mittwald_app_download_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_app_download_cli',
   description: 'Download the filesystem of an app within a project to your local machine using CLI',
   inputSchema: {
@@ -49,3 +51,14 @@ export const mittwald_app_download_cli: Tool = {
     required: ['target']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleAppDownloadCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_app_download_cli = tool;

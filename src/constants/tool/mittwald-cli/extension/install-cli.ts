@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleExtensionInstallCli } from '../../../../handlers/tools/mittwald-cli/extension/install-cli.js';
 
-export const mittwald_extension_install_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_extension_install_cli',
   description: 'Install an extension in a project or organization using CLI wrapper',
   inputSchema: {
@@ -30,3 +32,15 @@ export const mittwald_extension_install_cli: Tool = {
     required: ['extensionId']
   }
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleExtensionInstallCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_extension_install_cli = tool;

@@ -4,8 +4,10 @@
  */
 
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleMittwaldMailDeliveryboxUpdateCli } from '../../../../../handlers/tools/mittwald-cli/mail/deliverybox/update-cli.js';
 
-export const mittwald_mail_deliverybox_update_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_mail_deliverybox_update_cli',
   description: 'Update a delivery box using Mittwald CLI',
   inputSchema: {
@@ -35,3 +37,14 @@ export const mittwald_mail_deliverybox_update_cli: Tool = {
     required: ['id']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleMittwaldMailDeliveryboxUpdateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_mail_deliverybox_update_cli = tool;

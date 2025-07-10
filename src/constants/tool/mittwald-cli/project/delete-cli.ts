@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleProjectDeleteCli } from '../../../../handlers/tools/mittwald-cli/project/delete-cli.js';
 
-export const mittwald_project_delete_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_project_delete_cli",
   description: "Delete a project using Mittwald CLI",
   inputSchema: {
@@ -22,3 +24,11 @@ export const mittwald_project_delete_cli: Tool = {
     required: ["projectId"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleProjectDeleteCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleContainerRecreateCli } from '../../../../handlers/tools/mittwald-cli/container/recreate-cli.js';
 
-export const mittwald_container_recreate_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_container_recreate_cli',
   description: 'Recreate a container (CLI wrapper)',
   inputSchema: {
@@ -30,3 +32,14 @@ export const mittwald_container_recreate_cli: Tool = {
     required: ['containerId']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleContainerRecreateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_container_recreate_cli = tool;

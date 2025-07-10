@@ -1,4 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleContextSetCli } from '../../../../handlers/tools/mittwald-cli/context/set-cli.js';
 
 export interface ContextSetCliParameters {
   projectId?: string;
@@ -8,7 +10,7 @@ export interface ContextSetCliParameters {
   stackId?: string;
 }
 
-export const mittwald_context_set_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_context_set_cli',
   description: 'Set context parameters using CLI wrapper',
   inputSchema: {
@@ -45,3 +47,11 @@ export const mittwald_context_set_cli: Tool = {
     ]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleContextSetCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

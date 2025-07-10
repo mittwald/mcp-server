@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleServerGetCli } from '../../../../handlers/tools/mittwald-cli/server/get-cli.js';
 
-export const mittwald_server_get_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_server_get_cli',
   description: 'Get server details using CLI wrapper. Retrieves information about a specific server.',
   inputSchema: {
@@ -19,3 +21,15 @@ export const mittwald_server_get_cli: Tool = {
     additionalProperties: false
   }
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleServerGetCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_server_get_cli = tool;

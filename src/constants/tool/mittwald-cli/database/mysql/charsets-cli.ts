@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleDatabaseMysqlCharsetsCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/charsets-cli.js';
 
-export const mittwald_database_mysql_charsets_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_database_mysql_charsets_cli",
   description: "List available MySQL character sets and collations using CLI wrapper",
   inputSchema: {
@@ -38,3 +40,15 @@ export const mittwald_database_mysql_charsets_cli: Tool = {
     required: [],
   },
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleDatabaseMysqlCharsetsCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_database_mysql_charsets_cli = tool;

@@ -4,8 +4,10 @@
  */
 
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleMittwaldMailAddressCreateCli } from '../../../../../handlers/tools/mittwald-cli/mail/address/create-cli.js';
 
-export const mittwald_mail_address_create_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_mail_address_create_cli',
   description: 'Create a new mail address using Mittwald CLI',
   inputSchema: {
@@ -54,3 +56,14 @@ export const mittwald_mail_address_create_cli: Tool = {
     required: ['address']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleMittwaldMailAddressCreateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_mail_address_create_cli = tool;

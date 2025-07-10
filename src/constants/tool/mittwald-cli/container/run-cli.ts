@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleContainerRunCli } from '../../../../handlers/tools/mittwald-cli/container/run-cli.js';
 
-export const mittwald_container_run_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_container_run_cli',
   description: 'Create and start a new container (CLI wrapper)',
   inputSchema: {
@@ -67,3 +69,14 @@ export const mittwald_container_run_cli: Tool = {
     required: ['image']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleContainerRunCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_container_run_cli = tool;

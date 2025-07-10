@@ -4,8 +4,10 @@
  */
 
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleMittwaldMailAddressDeleteCli } from '../../../../../handlers/tools/mittwald-cli/mail/address/delete-cli.js';
 
-export const mittwald_mail_address_delete_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_mail_address_delete_cli',
   description: 'Delete a mail address using Mittwald CLI',
   inputSchema: {
@@ -27,3 +29,14 @@ export const mittwald_mail_address_delete_cli: Tool = {
     required: ['id']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleMittwaldMailAddressDeleteCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_mail_address_delete_cli = tool;

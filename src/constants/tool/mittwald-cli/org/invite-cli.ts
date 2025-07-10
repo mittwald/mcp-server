@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleOrgInviteCli } from '../../../../handlers/tools/mittwald-cli/org/invite.js';
 
-export const mittwald_org_invite_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_org_invite_cli",
   description: "Invite a user to an organization using CLI wrapper",
   inputSchema: {
@@ -37,3 +39,14 @@ export const mittwald_org_invite_cli: Tool = {
     required: ["email"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleOrgInviteCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_org_invite_cli = tool;

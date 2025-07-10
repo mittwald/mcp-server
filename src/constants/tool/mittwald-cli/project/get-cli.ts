@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleProjectGetCli } from '../../../../handlers/tools/mittwald-cli/project/get-cli.js';
 
-export const mittwald_project_get_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_project_get_cli",
   description: "Get details of a project using Mittwald CLI",
   inputSchema: {
@@ -20,3 +22,11 @@ export const mittwald_project_get_cli: Tool = {
     required: ["projectId"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleProjectGetCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

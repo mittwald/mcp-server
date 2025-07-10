@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleContainerStartCli } from '../../../../handlers/tools/mittwald-cli/container/start-cli.js';
 
-export const mittwald_container_start_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_container_start_cli',
   description: 'Start a stopped container (CLI wrapper)',
   inputSchema: {
@@ -22,3 +24,14 @@ export const mittwald_container_start_cli: Tool = {
     required: ['containerId']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleContainerStartCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_container_start_cli = tool;

@@ -1,10 +1,12 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleLoginStatusCli } from '../../../../handlers/tools/mittwald-cli/login/status-cli.js';
 
 export interface LoginStatusCliParameters {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const mittwald_login_status_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_login_status_cli',
   description: 'Check login status using CLI wrapper',
   inputSchema: {
@@ -20,3 +22,11 @@ export const mittwald_login_status_cli: Tool = {
     required: []
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleLoginStatusCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

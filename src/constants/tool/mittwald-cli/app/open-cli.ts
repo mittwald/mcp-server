@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleAppOpenCli } from '../../../../handlers/tools/mittwald-cli/app/open-cli.js';
 
-export const mittwald_app_open_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_app_open_cli',
   description: 'Open an app installation in the browser using CLI',
   inputSchema: {
@@ -13,3 +15,14 @@ export const mittwald_app_open_cli: Tool = {
     }
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleAppOpenCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_app_open_cli = tool;

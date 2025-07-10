@@ -4,8 +4,10 @@
  */
 
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleMittwaldMailAddressGetCli } from '../../../../../handlers/tools/mittwald-cli/mail/address/get-cli.js';
 
-export const mittwald_mail_address_get_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_mail_address_get_cli',
   description: 'Get a specific mail address using Mittwald CLI',
   inputSchema: {
@@ -25,3 +27,14 @@ export const mittwald_mail_address_get_cli: Tool = {
     required: ['id']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleMittwaldMailAddressGetCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_mail_address_get_cli = tool;

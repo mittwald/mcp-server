@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleDomainDnszoneUpdateCli } from '../../../../../handlers/tools/mittwald-cli/domain/dnszone/update-cli.js';
 
-export const mittwald_domain_dnszone_update_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_domain_dnszone_update_cli",
   description: "Update DNS zone records using CLI wrapper.",
   inputSchema: {
@@ -60,3 +62,14 @@ export const mittwald_domain_dnszone_update_cli: Tool = {
     required: ["dnszoneId", "recordSet"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleDomainDnszoneUpdateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_domain_dnszone_update_cli = tool;

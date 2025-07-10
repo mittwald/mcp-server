@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleDatabaseMysqlCreateCli } from '../../../../../handlers/tools/mittwald-cli/database/mysql/create-cli.js';
 
-export const mittwald_database_mysql_create_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_database_mysql_create_cli",
   description: "Create a new MySQL database using CLI wrapper",
   inputSchema: {
@@ -50,3 +52,15 @@ export const mittwald_database_mysql_create_cli: Tool = {
     required: ["description", "version"],
   },
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleDatabaseMysqlCreateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_database_mysql_create_cli = tool;

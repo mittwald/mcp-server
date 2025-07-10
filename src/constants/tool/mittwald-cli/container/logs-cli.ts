@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleContainerLogsCli } from '../../../../handlers/tools/mittwald-cli/container/logs-cli.js';
 
-export const mittwald_container_logs_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_container_logs_cli',
   description: 'Display logs of a specific container (CLI wrapper)',
   inputSchema: {
@@ -27,3 +29,14 @@ export const mittwald_container_logs_cli: Tool = {
     required: ['containerId']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleContainerLogsCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_container_logs_cli = tool;

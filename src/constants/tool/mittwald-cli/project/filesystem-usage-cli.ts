@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleProjectFilesystemUsageCli } from '../../../../handlers/tools/mittwald-cli/project/filesystem-usage-cli.js';
 
-export const mittwald_project_filesystem_usage_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_project_filesystem_usage_cli",
   description: "Get a project directory filesystem usage using Mittwald CLI",
   inputSchema: {
@@ -24,3 +26,11 @@ export const mittwald_project_filesystem_usage_cli: Tool = {
     required: ["projectId"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleProjectFilesystemUsageCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

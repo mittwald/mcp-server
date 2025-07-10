@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleAppCopyCli } from '../../../../handlers/tools/mittwald-cli/app/copy-cli.js';
 
-export const mittwald_app_copy_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_app_copy_cli',
   description: 'Copy an app within a project using CLI',
   inputSchema: {
@@ -22,3 +24,14 @@ export const mittwald_app_copy_cli: Tool = {
     required: ['description']
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleAppCopyCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_app_copy_cli = tool;

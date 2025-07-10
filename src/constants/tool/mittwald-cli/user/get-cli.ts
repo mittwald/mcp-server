@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleUserGetCli } from '../../../../handlers/tools/mittwald-cli/user/get-cli.js';
 
-export const mittwald_user_get_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_user_get_cli',
   description: 'Get profile information for a user using CLI wrapper. Defaults to the currently authenticated user if no user ID is provided.',
   inputSchema: {
@@ -19,3 +21,15 @@ export const mittwald_user_get_cli: Tool = {
     additionalProperties: false
   }
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleUserGetCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_user_get_cli = tool;
