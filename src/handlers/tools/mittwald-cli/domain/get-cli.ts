@@ -7,7 +7,7 @@ interface MittwaldDomainGetArgs {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleDomainGetCli: MittwaldToolHandler<MittwaldDomainGetArgs> = async (args) => {
+export const handleDomainGetCli: MittwaldToolHandler<MittwaldDomainGetArgs> = async (args, context) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['domain', 'get', args.domainId];

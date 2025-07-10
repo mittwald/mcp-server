@@ -157,6 +157,13 @@ import { domain_dnszone_list } from './tool/mittwald-cli/domain/dnszone/list.js'
 import { domain_dnszone_update } from './tool/mittwald-cli/domain/dnszone/update.js';
 import { domain_dnszone_main } from './tool/mittwald-cli/domain/dnszone/main.js';
 
+// Agent 18 domain CLI tools
+import { mittwald_domain_list_cli } from './tool/mittwald-cli/domain/list-cli.js';
+import { mittwald_domain_get_cli } from './tool/mittwald-cli/domain/get-cli.js';
+import { mittwald_domain_dnszone_list_cli } from './tool/mittwald-cli/domain/dnszone/list-cli.js';
+import { mittwald_domain_dnszone_get_cli } from './tool/mittwald-cli/domain/dnszone/get-cli.js';
+import { mittwald_domain_dnszone_update_cli } from './tool/mittwald-cli/domain/dnszone/update-cli.js';
+
 // Agent 15 mail tools
 import { mittwald_mail_deliverybox } from './tool/mittwald-cli/mail/deliverybox.js';
 import { mittwald_mail } from './tool/mittwald-cli/mail/mail.js';
@@ -173,6 +180,18 @@ import {
   mittwald_org_list,
   mittwald_org_membership_list_own
 } from './tool/mittwald-cli/org/index.js';
+
+// Agent 14 org CLI tools
+import { mittwald_org_list_cli } from './tool/mittwald-cli/org/list-cli.js';
+import { mittwald_org_get_cli } from './tool/mittwald-cli/org/get-cli.js';
+import { mittwald_org_delete_cli } from './tool/mittwald-cli/org/delete-cli.js';
+import { mittwald_org_invite_cli } from './tool/mittwald-cli/org/invite-cli.js';
+import { mittwald_org_invite_list_cli } from './tool/mittwald-cli/org/invite-list-cli.js';
+import { mittwald_org_invite_list_own_cli } from './tool/mittwald-cli/org/invite-list-own-cli.js';
+import { mittwald_org_invite_revoke_cli } from './tool/mittwald-cli/org/invite-revoke-cli.js';
+import { mittwald_org_membership_list_cli } from './tool/mittwald-cli/org/membership-list-cli.js';
+import { mittwald_org_membership_list_own_cli } from './tool/mittwald-cli/org/membership-list-own-cli.js';
+import { mittwald_org_membership_revoke_cli } from './tool/mittwald-cli/org/membership-revoke-cli.js';
 
 // Container tools
 import {
@@ -319,6 +338,16 @@ import {
   mittwald_context_set,
   mittwald_context_detect
 } from './tool/mittwald-cli/context/index.js';
+
+// CLI wrapper tools
+import { mittwald_context_get_cli } from './tool/mittwald-cli/context/get-cli.js';
+import { mittwald_context_set_cli } from './tool/mittwald-cli/context/set-cli.js';
+import { mittwald_context_reset_cli } from './tool/mittwald-cli/context/reset-cli.js';
+import { mittwald_login_status_cli } from './tool/mittwald-cli/login/status-cli.js';
+import { mittwald_login_reset_cli } from './tool/mittwald-cli/login/reset-cli.js';
+import { mittwald_login_token_cli } from './tool/mittwald-cli/login/token-cli.js';
+import { mittwald_ddev_init_cli } from './tool/mittwald-cli/ddev/init-cli.js';
+import { mittwald_ddev_render_config_cli } from './tool/mittwald-cli/ddev/render-config-cli.js';
 
 /**
  * Standard error messages for tool operations.
@@ -520,6 +549,18 @@ export const TOOLS: Tool[] = [
   mittwald_org_list,
   mittwald_org_membership_list_own,
   
+  // Agent 14 org CLI tools
+  mittwald_org_list_cli,
+  mittwald_org_get_cli,
+  mittwald_org_delete_cli,
+  mittwald_org_invite_cli,
+  mittwald_org_invite_list_cli,
+  mittwald_org_invite_list_own_cli,
+  mittwald_org_invite_revoke_cli,
+  mittwald_org_membership_list_cli,
+  mittwald_org_membership_list_own_cli,
+  mittwald_org_membership_revoke_cli,
+  
   // Contributor tool
   mittwald_contributor,
   
@@ -529,6 +570,16 @@ export const TOOLS: Tool[] = [
   mittwald_context_reset,
   mittwald_context_set,
   mittwald_context_detect,
+  
+  // CLI wrapper tools
+  mittwald_context_get_cli,
+  mittwald_context_set_cli,
+  mittwald_context_reset_cli,
+  mittwald_login_status_cli,
+  mittwald_login_reset_cli,
+  mittwald_login_token_cli,
+  mittwald_ddev_init_cli,
+  mittwald_ddev_render_config_cli,
   
   // Container tools
   mittwald_container_list_stacks,
@@ -592,6 +643,13 @@ export const TOOLS: Tool[] = [
   mittwald_domain_virtualhost_help,
   mittwald_domain_virtualhost,
   mittwald_domain_list,
+  
+  // Agent 18 domain CLI tools
+  mittwald_domain_list_cli,
+  mittwald_domain_get_cli,
+  mittwald_domain_dnszone_list_cli,
+  mittwald_domain_dnszone_get_cli,
+  mittwald_domain_dnszone_update_cli,
   
   // Agent 11 mail address CLI tools
   mittwald_mail_address_list_cli,

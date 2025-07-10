@@ -74,27 +74,27 @@ export const handleLoginStatusCli: MittwaldToolHandler<MittwaldLoginStatusArgs> 
         const lines = result.stdout.split('\n');
         for (const line of lines) {
           if (line.includes('logged in')) {
-            loginData['authenticated'] = true;
+            (loginData as any)['authenticated'] = true;
           }
           if (line.includes('User:')) {
             const userMatch = line.match(/User:\s*(.+)/);
             if (userMatch) {
-              loginData['user'] = userMatch[1].trim();
+              (loginData as any)['user'] = userMatch[1].trim();
             }
           }
           if (line.includes('Email:')) {
             const emailMatch = line.match(/Email:\s*(.+)/);
             if (emailMatch) {
-              loginData['email'] = emailMatch[1].trim();
+              (loginData as any)['email'] = emailMatch[1].trim();
             }
           }
         }
       }
     }
     
-    const isAuthenticated = loginData['authenticated'] || 
-                          loginData['user'] || 
-                          loginData['email'] || 
+    const isAuthenticated = (loginData as any)['authenticated'] || 
+                          (loginData as any)['user'] || 
+                          (loginData as any)['email'] || 
                           result.stdout.includes('logged in');
     
     const message = isAuthenticated ? 'Logged in' : 'Not logged in';

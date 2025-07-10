@@ -7,7 +7,7 @@ export interface MittwaldOrgInviteRevokeArgs {
   quiet?: boolean;
 }
 
-export const handleOrgInviteRevokeCli: MittwaldToolHandler<MittwaldOrgInviteRevokeArgs> = async (args) => {
+export const handleOrgInviteRevokeCli: MittwaldToolHandler<MittwaldOrgInviteRevokeArgs> = async (args, context) => {
   try {
     if (!args.inviteId) {
       return formatToolResponse(

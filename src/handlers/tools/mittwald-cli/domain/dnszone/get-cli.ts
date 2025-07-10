@@ -7,7 +7,7 @@ interface MittwaldDomainDnszoneGetArgs {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleDomainDnszoneGetCli: MittwaldToolHandler<MittwaldDomainDnszoneGetArgs> = async (args) => {
+export const handleDomainDnszoneGetCli: MittwaldToolHandler<MittwaldDomainDnszoneGetArgs> = async (args, context) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['domain', 'dnszone', 'get', args.dnszoneId];

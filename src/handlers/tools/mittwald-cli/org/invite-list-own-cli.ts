@@ -11,7 +11,7 @@ export interface MittwaldOrgInviteListOwnArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleOrgInviteListOwnCli: MittwaldToolHandler<MittwaldOrgInviteListOwnArgs> = async (args) => {
+export const handleOrgInviteListOwnCli: MittwaldToolHandler<MittwaldOrgInviteListOwnArgs> = async (args, context) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['org', 'invite', 'list-own'];

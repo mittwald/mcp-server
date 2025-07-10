@@ -15,7 +15,7 @@ interface MittwaldDomainDnszoneUpdateArgs {
   ttl?: number;
 }
 
-export const handleDomainDnszoneUpdateCli: MittwaldToolHandler<MittwaldDomainDnszoneUpdateArgs> = async (args) => {
+export const handleDomainDnszoneUpdateCli: MittwaldToolHandler<MittwaldDomainDnszoneUpdateArgs> = async (args, context) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['domain', 'dnszone', 'update', args.dnszoneId, args.recordSet];
