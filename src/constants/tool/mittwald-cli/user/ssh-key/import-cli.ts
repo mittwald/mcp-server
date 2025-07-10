@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleUserSshKeyImportCli } from '../../../../../handlers/tools/mittwald-cli/user/ssh-key/import-cli.js';
 
-export const mittwald_user_ssh_key_import_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_user_ssh_key_import_cli',
   description: 'Import an existing (local) SSH key using CLI wrapper. Imports an existing SSH public key from the local filesystem.',
   inputSchema: {
@@ -22,3 +24,15 @@ export const mittwald_user_ssh_key_import_cli: Tool = {
     additionalProperties: false
   }
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleUserSshKeyImportCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_user_ssh_key_import_cli = tool;

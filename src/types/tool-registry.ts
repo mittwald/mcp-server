@@ -13,8 +13,11 @@ import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 /**
  * Function type for tool handlers
+ * 
+ * @remarks
+ * This type supports both CLI handlers (1 argument) and API handlers (2 arguments)
  */
-export type ToolHandler = (args: any) => Promise<CallToolResult>;
+export type ToolHandler = (args: any, context?: any) => Promise<CallToolResult>;
 
 /**
  * Interface for tool registration

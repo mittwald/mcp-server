@@ -1,5 +1,5 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
-import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import type { ToolRegistration, ToolHandler } from '../../../../types/tool-registry.js';
 import { handleOrgMembershipListCli } from '../../../../handlers/tools/mittwald-cli/org/membership/list.js';
 
 const tool: Tool = {
@@ -49,9 +49,14 @@ const tool: Tool = {
   }
 };
 
+// Wrapper to adapt MittwaldToolHandler to ToolHandler
+const handler: ToolHandler = async (args) => {
+  return handleOrgMembershipListCli(args, {} as any);
+};
+
 const registration: ToolRegistration = {
   tool,
-  handler: handleOrgMembershipListCli,
+  handler,
   schema: tool.inputSchema
 };
 

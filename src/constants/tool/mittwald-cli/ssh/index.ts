@@ -4,8 +4,5 @@ export { mittwaldSshUserList } from './user-list.js';
 export { mittwaldSshUserUpdateTool } from './user-update.js';
 export { mittwaldSshUserTool } from './user.js';
 
-// CLI wrapper exports
-export { mittwaldSshUserCreateCli } from './user-create-cli.js';
-export { mittwaldSshUserDeleteCli } from './user-delete-cli.js';
-export { mittwaldSshUserListCli } from './user-list-cli.js';
-export { mittwaldSshUserUpdateCli } from './user-update-cli.js';
+// CLI tools are now auto-discovered by the dynamic tool scanner
+// No manual exports needed
