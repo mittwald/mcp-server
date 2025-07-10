@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -14,7 +14,7 @@ interface MittwaldMailAddressCreateArgs {
   forwardTo?: string[];
 }
 
-export const handleMittwaldMailAddressCreateCli: MittwaldToolHandler<MittwaldMailAddressCreateArgs> = async (args) => {
+export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<MittwaldMailAddressCreateArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['mail', 'address', 'create'];

@@ -11,7 +11,7 @@ export interface MittwaldAppCreateNodeArgs {
   waitTimeout?: number;
 }
 
-export const handleAppCreateNodeCli: MittwaldCliToolHandler<MittwaldAppCreateNodeArgs> = async (args, context) => {
+export const handleAppCreateNodeCli: MittwaldCliToolHandler<MittwaldAppCreateNodeArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'create', 'node'];

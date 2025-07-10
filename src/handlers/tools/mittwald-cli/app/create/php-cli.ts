@@ -11,7 +11,7 @@ export interface MittwaldAppCreatePhpArgs {
   waitTimeout?: number;
 }
 
-export const handleAppCreatePhpCli: MittwaldCliToolHandler<MittwaldAppCreatePhpArgs> = async (args, context) => {
+export const handleAppCreatePhpCli: MittwaldCliToolHandler<MittwaldAppCreatePhpArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'create', 'php'];

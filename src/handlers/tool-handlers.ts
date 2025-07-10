@@ -222,7 +222,14 @@ import { handleBackupScheduleUpdateCli } from './tools/mittwald-cli/backup/sched
 import { handleBackup } from './tools/mittwald-cli/backup/backup.js';
 import { handleBackupSchedule } from './tools/mittwald-cli/backup/backup-schedule.js';
 
-// Conversation handlers
+// Conversation CLI handlers
+import { handleConversationCreateCli } from './tools/mittwald-cli/conversation/create-cli.js';
+import { handleConversationCloseCli } from './tools/mittwald-cli/conversation/close-cli.js';
+import { handleConversationListCli } from './tools/mittwald-cli/conversation/list-cli.js';
+import { handleConversationReplyCli } from './tools/mittwald-cli/conversation/reply-cli.js';
+import { handleConversationShowCli } from './tools/mittwald-cli/conversation/show-cli.js';
+import { handleConversationCategoriesCli } from './tools/mittwald-cli/conversation/categories-cli.js';
+// Keep legacy handlers for backward compatibility
 import { handleConversationCreate } from './tools/mittwald-cli/conversation/create.js';
 import { handleConversationClose } from './tools/mittwald-cli/conversation/close.js';
 import { handleConversationList } from './tools/mittwald-cli/conversation/list.js';
@@ -300,6 +307,16 @@ import { handleContainerRecreateService } from './tools/mittwald-cli/container/r
 import { handleContainerStartService } from './tools/mittwald-cli/container/start-service.js';
 import { handleContainerStopService } from './tools/mittwald-cli/container/stop-service.js';
 import { handleContainerPullImage } from './tools/mittwald-cli/container/pull-image.js';
+
+// Agent 12 Container CLI handlers
+import { handleContainerListCli } from './tools/mittwald-cli/container/list-services-cli.js';
+import { handleContainerLogsCli } from './tools/mittwald-cli/container/logs-cli.js';
+import { handleContainerDeleteCli } from './tools/mittwald-cli/container/delete-cli.js';
+import { handleContainerRecreateCli } from './tools/mittwald-cli/container/recreate-cli.js';
+import { handleContainerRestartCli } from './tools/mittwald-cli/container/restart-cli.js';
+import { handleContainerStartCli } from './tools/mittwald-cli/container/start-cli.js';
+import { handleContainerStopCli } from './tools/mittwald-cli/container/stop-cli.js';
+import { handleContainerRunCli } from './tools/mittwald-cli/container/run-cli.js';
 
 // Contributor handler
 import { handleContributor } from './tools/mittwald-cli/contributor/contributor.js';
@@ -941,7 +958,50 @@ const ToolSchemas = {
   mittwald_database_mysql_shell: MittwaldDatabaseMysqlShellSchema,
   mittwald_database_mysql_versions: MittwaldDatabaseMysqlVersionsSchema,
   
-  // Redis database tools
+  // Agent 6 MySQL user tools
+  mittwald_database_mysql_user_create: z.object({
+    databaseId: z.string().describe("MySQL database ID to create a user for"),
+    accessLevel: z.enum(['readonly', 'full']).describe("Set the access level permissions for the MySQL user"),
+    description: z.string().describe("Set the description for the MySQL user"),
+    password: z.string().describe("Password used for authentication"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    accessIpMask: z.string().optional().describe("IP to restrict external access to"),
+    enableExternalAccess: z.boolean().optional().describe("Enable external access for this MySQL user")
+  }),
+  
+  mittwald_database_mysql_user_list: z.object({
+    databaseId: z.string().describe("ID of the MySQL database to list users for"),
+    output: z.enum(['txt', 'json', 'yaml', 'csv', 'tsv']).optional().describe("Output format for the user list"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format"),
+    csvSeparator: z.enum([',', ';']).optional().describe("Separator for CSV output")
+  }),
+  
+  mittwald_database_mysql_user_get: z.object({
+    userId: z.string().describe("ID of the MySQL user to be retrieved"),
+    output: z.enum(['txt', 'json', 'yaml']).optional().describe("Output format for the user details")
+  }),
+  
+  mittwald_database_mysql_user_delete: z.object({
+    userId: z.string().describe("ID of the MySQL user to delete"),
+    quiet: z.boolean().optional().describe("Suppress process output"),
+    force: z.boolean().optional().describe("Do not ask for confirmation")
+  }),
+  
+  mittwald_database_mysql_user_update: z.object({
+    userId: z.string().describe("ID of the MySQL user to update"),
+    quiet: z.boolean().optional().describe("Suppress process output"),
+    accessLevel: z.enum(['readonly', 'full']).optional().describe("Set the access level permissions"),
+    description: z.string().optional().describe("Set the description for the MySQL user"),
+    password: z.string().optional().describe("Password used for authentication"),
+    accessIpMask: z.string().optional().describe("IP to restrict external access to"),
+    enableExternalAccess: z.boolean().optional().describe("Enable external access"),
+    disableExternalAccess: z.boolean().optional().describe("Disable external access")
+  }),
+  
+  // Agent 6 Redis database tools
   mittwald_database_redis_create: MittwaldDatabaseRedisCreateSchema,
   mittwald_database_redis_get: MittwaldDatabaseRedisGetSchema,
   mittwald_database_redis_list: MittwaldDatabaseRedisListSchema,
@@ -1510,6 +1570,156 @@ const ToolSchemas = {
   mittwald_container_pull_image: z.object({
     stackId: z.string().describe("ID of the stack the service belongs to"),
     serviceId: z.string().describe("ID of the service to pull the image for")
+  }),
+
+  // Agent 12 Container CLI wrapper tools
+  mittwald_container_list_cli: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project (optional if default project is set in context)"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format (default: txt)"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header (only relevant for table output)"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for table output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_container_logs_cli: z.object({
+    containerId: z.string().describe("ID of the container for which to get logs"),
+    projectId: z.string().optional().describe("ID or short ID of a project (optional if default project is set in context)"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format (default: txt)"),
+    noPager: z.boolean().optional().describe("Disable pager for output (always true in CLI context)")
+  }),
+
+  mittwald_container_delete_cli: z.object({
+    containerId: z.string().describe("ID or short ID of the container to delete"),
+    projectId: z.string().optional().describe("ID or short ID of a project (optional if default project is set in context)"),
+    force: z.boolean().optional().describe("Do not ask for confirmation"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+
+  mittwald_container_recreate_cli: z.object({
+    containerId: z.string().describe("ID or short ID of the container to recreate"),
+    projectId: z.string().optional().describe("ID or short ID of a project (optional if default project is set in context)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    pull: z.boolean().optional().describe("Pull the container image before recreating the container"),
+    force: z.boolean().optional().describe("Also recreate the container when it is already up to date")
+  }),
+
+  mittwald_container_restart_cli: z.object({
+    containerId: z.string().describe("ID or short ID of the container to restart"),
+    projectId: z.string().optional().describe("ID or short ID of a project (optional if default project is set in context)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+
+  mittwald_container_start_cli: z.object({
+    containerId: z.string().describe("ID or short ID of the container to start"),
+    projectId: z.string().optional().describe("ID or short ID of a project (optional if default project is set in context)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+
+  mittwald_container_stop_cli: z.object({
+    containerId: z.string().describe("ID or short ID of the container to stop"),
+    projectId: z.string().optional().describe("ID or short ID of a project (optional if default project is set in context)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary")
+  }),
+
+  mittwald_container_run_cli: z.object({
+    image: z.string().describe("Container image (e.g., ubuntu:20.04 or alpine@sha256:abc123...)"),
+    command: z.string().optional().describe("Override the default command specified in the container image"),
+    args: z.array(z.string()).optional().describe("Runtime arguments passed to the command"),
+    projectId: z.string().optional().describe("ID or short ID of a project (optional if default project is set in context)"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    env: z.array(z.string()).optional().describe("Set environment variables in the container (format: KEY=VALUE)"),
+    envFile: z.array(z.string()).optional().describe("Read environment variables from files"),
+    description: z.string().optional().describe("Add a descriptive label to the container"),
+    entrypoint: z.string().optional().describe("Override the default entrypoint of the container image"),
+    name: z.string().optional().describe("Assign a custom name to the container"),
+    publish: z.array(z.string()).optional().describe("Publish container ports to the host (format: host-port:container-port)"),
+    publishAll: z.boolean().optional().describe("Publish all ports that are defined in the image"),
+    volume: z.array(z.string()).optional().describe("Bind mount volumes to the container (format: host-path:container-path)")
+  }),
+
+  // Agent 11 mail address CLI tools
+  mittwald_mail_address_list_cli: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_mail_address_get_cli: z.object({
+    id: z.string().describe("ID of the mail address to retrieve"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+
+  mittwald_mail_address_create_cli: z.object({
+    address: z.string().describe("Mail address to create"),
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    catchAll: z.boolean().optional().describe("Make this a catch-all mail address"),
+    enableSpamProtection: z.boolean().optional().describe("Enable spam protection for this mailbox"),
+    quota: z.string().optional().describe("Mailbox quota (default: 1GiB)"),
+    password: z.string().optional().describe("Mailbox password"),
+    randomPassword: z.boolean().optional().describe("Generate a random password"),
+    forwardTo: z.array(z.string()).optional().describe("Forward mail to other addresses")
+  }),
+
+  mittwald_mail_address_delete_cli: z.object({
+    id: z.string().describe("ID of the mail address to delete"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    force: z.boolean().optional().describe("Do not ask for confirmation")
+  }),
+
+  mittwald_mail_address_update_cli: z.object({
+    id: z.string().describe("ID of the mail address to update"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    catchAll: z.boolean().optional().describe("Make this a catch-all mail address"),
+    enableSpamProtection: z.boolean().optional().describe("Enable spam protection for this mailbox"),
+    quota: z.string().optional().describe("Mailbox quota"),
+    password: z.string().optional().describe("Mailbox password"),
+    randomPassword: z.boolean().optional().describe("Generate a random password"),
+    forwardTo: z.array(z.string()).optional().describe("Forward mail to other addresses")
+  }),
+
+  // Agent 11 mail deliverybox CLI tools
+  mittwald_mail_deliverybox_list_cli: z.object({
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    output: z.enum(["txt", "json", "yaml", "csv", "tsv"]).optional().describe("Output format"),
+    extended: z.boolean().optional().describe("Show extended information"),
+    noHeader: z.boolean().optional().describe("Hide table header"),
+    noTruncate: z.boolean().optional().describe("Do not truncate output (only relevant for txt output)"),
+    noRelativeDates: z.boolean().optional().describe("Show dates in absolute format, not relative (only relevant for txt output)"),
+    csvSeparator: z.enum([",", ";"]).optional().describe("Separator for CSV output (only relevant for CSV output)")
+  }),
+
+  mittwald_mail_deliverybox_get_cli: z.object({
+    id: z.string().describe("ID of the delivery box to retrieve"),
+    output: z.enum(["txt", "json", "yaml"]).optional().describe("Output format")
+  }),
+
+  mittwald_mail_deliverybox_create_cli: z.object({
+    description: z.string().describe("Description for the delivery box"),
+    projectId: z.string().optional().describe("ID or short ID of a project; this flag is optional if a default project is set in the context"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    password: z.string().optional().describe("Delivery box password"),
+    randomPassword: z.boolean().optional().describe("Generate a random password")
+  }),
+
+  mittwald_mail_deliverybox_delete_cli: z.object({
+    id: z.string().describe("ID of the delivery box to delete"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    force: z.boolean().optional().describe("Do not ask for confirmation")
+  }),
+
+  mittwald_mail_deliverybox_update_cli: z.object({
+    id: z.string().describe("ID of the delivery box to update"),
+    description: z.string().optional().describe("New description for the delivery box"),
+    quiet: z.boolean().optional().describe("Suppress process output and only display a machine-readable summary"),
+    password: z.string().optional().describe("Delivery box password"),
+    randomPassword: z.boolean().optional().describe("Generate a random password")
   })
 };
 
@@ -2140,6 +2350,30 @@ type ToolArgs = {
   mittwald_container_start_service: z.infer<typeof ToolSchemas.mittwald_container_start_service>;
   mittwald_container_stop_service: z.infer<typeof ToolSchemas.mittwald_container_stop_service>;
   mittwald_container_pull_image: z.infer<typeof ToolSchemas.mittwald_container_pull_image>;
+
+  // Agent 12 Container CLI wrapper tools
+  mittwald_container_list_cli: z.infer<typeof ToolSchemas.mittwald_container_list_cli>;
+  mittwald_container_logs_cli: z.infer<typeof ToolSchemas.mittwald_container_logs_cli>;
+  mittwald_container_delete_cli: z.infer<typeof ToolSchemas.mittwald_container_delete_cli>;
+  mittwald_container_recreate_cli: z.infer<typeof ToolSchemas.mittwald_container_recreate_cli>;
+  mittwald_container_restart_cli: z.infer<typeof ToolSchemas.mittwald_container_restart_cli>;
+  mittwald_container_start_cli: z.infer<typeof ToolSchemas.mittwald_container_start_cli>;
+  mittwald_container_stop_cli: z.infer<typeof ToolSchemas.mittwald_container_stop_cli>;
+  mittwald_container_run_cli: z.infer<typeof ToolSchemas.mittwald_container_run_cli>;
+
+  // Agent 11 mail address CLI tools
+  mittwald_mail_address_list_cli: z.infer<typeof ToolSchemas.mittwald_mail_address_list_cli>;
+  mittwald_mail_address_get_cli: z.infer<typeof ToolSchemas.mittwald_mail_address_get_cli>;
+  mittwald_mail_address_create_cli: z.infer<typeof ToolSchemas.mittwald_mail_address_create_cli>;
+  mittwald_mail_address_delete_cli: z.infer<typeof ToolSchemas.mittwald_mail_address_delete_cli>;
+  mittwald_mail_address_update_cli: z.infer<typeof ToolSchemas.mittwald_mail_address_update_cli>;
+
+  // Agent 11 mail deliverybox CLI tools
+  mittwald_mail_deliverybox_list_cli: z.infer<typeof ToolSchemas.mittwald_mail_deliverybox_list_cli>;
+  mittwald_mail_deliverybox_get_cli: z.infer<typeof ToolSchemas.mittwald_mail_deliverybox_get_cli>;
+  mittwald_mail_deliverybox_create_cli: z.infer<typeof ToolSchemas.mittwald_mail_deliverybox_create_cli>;
+  mittwald_mail_deliverybox_delete_cli: z.infer<typeof ToolSchemas.mittwald_mail_deliverybox_delete_cli>;
+  mittwald_mail_deliverybox_update_cli: z.infer<typeof ToolSchemas.mittwald_mail_deliverybox_update_cli>;
 };
 
 /**
@@ -3021,7 +3255,7 @@ export async function handleToolCall(
         break;
         
       case "mittwald_cronjob_update":
-        result = await handleCronjobUpdateCli(args);
+        result = await handleMittwaldCronjobUpdate(args);
         break;
         
       case "mittwald_cronjob":
@@ -3538,6 +3772,48 @@ export async function handleToolCall(
           progressToken: handlerContext.progressToken
         };
         result = await handleVirtualHostHelp(args, mittwaldDomainVirtualhostHelpContext);
+        break;
+
+      // Agent 11 mail address CLI tools
+      case "mittwald_mail_address_list_cli":
+        result = await handleMittwaldMailAddressListCli(args as ToolArgs['mittwald_mail_address_list_cli']);
+        break;
+
+      case "mittwald_mail_address_get_cli":
+        result = await handleMittwaldMailAddressGetCli(args as ToolArgs['mittwald_mail_address_get_cli']);
+        break;
+
+      case "mittwald_mail_address_create_cli":
+        result = await handleMittwaldMailAddressCreateCli(args as ToolArgs['mittwald_mail_address_create_cli']);
+        break;
+
+      case "mittwald_mail_address_delete_cli":
+        result = await handleMittwaldMailAddressDeleteCli(args as ToolArgs['mittwald_mail_address_delete_cli']);
+        break;
+
+      case "mittwald_mail_address_update_cli":
+        result = await handleMittwaldMailAddressUpdateCli(args as ToolArgs['mittwald_mail_address_update_cli']);
+        break;
+
+      // Agent 11 mail deliverybox CLI tools
+      case "mittwald_mail_deliverybox_list_cli":
+        result = await handleMittwaldMailDeliveryboxListCli(args as ToolArgs['mittwald_mail_deliverybox_list_cli']);
+        break;
+
+      case "mittwald_mail_deliverybox_get_cli":
+        result = await handleMittwaldMailDeliveryboxGetCli(args as ToolArgs['mittwald_mail_deliverybox_get_cli']);
+        break;
+
+      case "mittwald_mail_deliverybox_create_cli":
+        result = await handleMittwaldMailDeliveryboxCreateCli(args as ToolArgs['mittwald_mail_deliverybox_create_cli']);
+        break;
+
+      case "mittwald_mail_deliverybox_delete_cli":
+        result = await handleMittwaldMailDeliveryboxDeleteCli(args as ToolArgs['mittwald_mail_deliverybox_delete_cli']);
+        break;
+
+      case "mittwald_mail_deliverybox_update_cli":
+        result = await handleMittwaldMailDeliveryboxUpdateCli(args as ToolArgs['mittwald_mail_deliverybox_update_cli']);
         break;
         
       // Agent 15 mail tools

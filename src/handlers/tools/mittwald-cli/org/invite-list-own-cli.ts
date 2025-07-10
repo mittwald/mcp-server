@@ -2,7 +2,7 @@ import type { MittwaldToolHandler } from '../../../../types/mittwald/conversatio
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
-export interface MittwaldOrgListArgs {
+export interface MittwaldOrgInviteListOwnArgs {
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
   extended?: boolean;
   noHeader?: boolean;
@@ -11,10 +11,10 @@ export interface MittwaldOrgListArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleOrgListCli: MittwaldToolHandler<MittwaldOrgListArgs> = async (args) => {
+export const handleOrgInviteListOwnCli: MittwaldToolHandler<MittwaldOrgInviteListOwnArgs> = async (args) => {
   try {
     // Build CLI command arguments
-    const cliArgs: string[] = ['org', 'list'];
+    const cliArgs: string[] = ['org', 'invite', 'list-own'];
     
     // Add output format
     if (args.output) {
@@ -57,7 +57,7 @@ export const handleOrgListCli: MittwaldToolHandler<MittwaldOrgListArgs> = async 
       const errorMessage = result.stderr || result.stdout || 'Unknown error';
       return formatToolResponse(
         "error",
-        `Failed to list organizations: ${errorMessage}`
+        `Failed to list user's organization invites: ${errorMessage}`
       );
     }
     
@@ -67,13 +67,13 @@ export const handleOrgListCli: MittwaldToolHandler<MittwaldOrgListArgs> = async 
         const data = parseJsonOutput(result.stdout);
         return formatToolResponse(
           "success",
-          `Found ${Array.isArray(data) ? data.length : 0} organization(s)`,
+          `Found ${Array.isArray(data) ? data.length : 0} organization invite(s) for the user`,
           data
         );
       } catch (parseError) {
         return formatToolResponse(
           "success",
-          "Organizations retrieved (raw output)",
+          "User's organization invites retrieved (raw output)",
           {
             rawOutput: result.stdout,
             parseError: parseError instanceof Error ? parseError.message : String(parseError)
@@ -85,7 +85,7 @@ export const handleOrgListCli: MittwaldToolHandler<MittwaldOrgListArgs> = async 
     // For other output formats, return raw output
     return formatToolResponse(
       "success",
-      "Organizations retrieved",
+      "User's organization invites retrieved",
       {
         output: result.stdout,
         format: args.output || 'txt'

@@ -11,7 +11,7 @@ export interface MittwaldAppCreateStaticArgs {
   waitTimeout?: number;
 }
 
-export const handleAppCreateStaticCli: MittwaldCliToolHandler<MittwaldAppCreateStaticArgs> = async (args, context) => {
+export const handleAppCreateStaticCli: MittwaldCliToolHandler<MittwaldAppCreateStaticArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'create', 'static'];

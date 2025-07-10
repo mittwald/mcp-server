@@ -11,7 +11,7 @@ export interface MittwaldAppCreatePythonArgs {
   waitTimeout?: number;
 }
 
-export const handleAppCreatePythonCli: MittwaldCliToolHandler<MittwaldAppCreatePythonArgs> = async (args, context) => {
+export const handleAppCreatePythonCli: MittwaldCliToolHandler<MittwaldAppCreatePythonArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'create', 'python'];

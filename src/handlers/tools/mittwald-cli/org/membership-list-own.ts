@@ -1,6 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { assertStatus } from '@mittwald/api-client';
+import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
 export interface MittwaldOrgMembershipListOwnArgs {
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
@@ -11,101 +11,91 @@ export interface MittwaldOrgMembershipListOwnArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleOrgMembershipListOwn: MittwaldToolHandler<MittwaldOrgMembershipListOwnArgs> = async (args, { mittwaldClient }) => {
+export const handleOrgMembershipListOwnCli: MittwaldToolHandler<MittwaldOrgMembershipListOwnArgs> = async (args) => {
   try {
-    // List user's own organization memberships
-    const response = await mittwaldClient.customer.listCustomerMemberships({});
-    assertStatus(response, 200);
-
-    const memberships = response.data || [];
-    const output = args.output || 'txt';
-
-    if (output === 'json') {
+    // Build CLI command arguments
+    const cliArgs: string[] = ['org', 'membership', 'list-own'];
+    
+    // Add output format
+    if (args.output) {
+      cliArgs.push('--output', args.output);
+    }
+    
+    // Add extended flag
+    if (args.extended) {
+      cliArgs.push('--extended');
+    }
+    
+    // Add no-header flag
+    if (args.noHeader) {
+      cliArgs.push('--no-header');
+    }
+    
+    // Add no-truncate flag
+    if (args.noTruncate) {
+      cliArgs.push('--no-truncate');
+    }
+    
+    // Add no-relative-dates flag
+    if (args.noRelativeDates) {
+      cliArgs.push('--no-relative-dates');
+    }
+    
+    // Add CSV separator
+    if (args.csvSeparator && (args.output === 'csv' || args.output === 'tsv')) {
+      cliArgs.push('--csv-separator', args.csvSeparator);
+    }
+    
+    // Execute CLI command
+    const result = await executeCli('mw', cliArgs, {
+      env: {
+        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
+      }
+    });
+    
+    if (result.exitCode !== 0) {
+      const errorMessage = result.stderr || result.stdout || 'Unknown error';
       return formatToolResponse(
-        "success",
-        `Found ${memberships.length} membership(s)`,
-        memberships
+        "error",
+        `Failed to list user's organization memberships: ${errorMessage}`
       );
     }
-
-    if (output === 'yaml') {
-      return formatToolResponse(
-        "success",
-        `Found ${memberships.length} membership(s)`,
-        memberships
-      );
+    
+    // If output is JSON, parse and return structured data
+    if (args.output === 'json') {
+      try {
+        const data = parseJsonOutput(result.stdout);
+        return formatToolResponse(
+          "success",
+          `Found ${Array.isArray(data) ? data.length : 0} membership(s)`,
+          data
+        );
+      } catch (parseError) {
+        return formatToolResponse(
+          "success",
+          "User's organization memberships retrieved (raw output)",
+          {
+            rawOutput: result.stdout,
+            parseError: parseError instanceof Error ? parseError.message : String(parseError)
+          }
+        );
+      }
     }
-
-    if (output === 'csv' || output === 'tsv') {
-      const separator = output === 'csv' ? (args.csvSeparator || ',') : '\t';
-      const headers = args.noHeader ? '' : `ID${separator}Organization${separator}Role${separator}Status${separator}Created\n`;
-      const rows = memberships.map((membership: any) => 
-        `${membership.id}${separator}${membership.organization?.name || membership.organizationId}${separator}${membership.role}${separator}${membership.status}${separator}${membership.createdAt || ''}`
-      ).join('\n');
-      
-      return formatToolResponse(
-        "success",
-        headers + rows,
-        { format: output }
-      );
-    }
-
-    // Default text format
-    if (memberships.length === 0) {
-      return formatToolResponse(
-        "success",
-        "No organization memberships found",
-        []
-      );
-    }
-
-    const formattedMemberships = memberships.map((membership: any) => ({
-      "ID": args.noTruncate ? membership.id : membership.id.substring(0, 8),
-      "Organization": membership.organization?.name || membership.organizationId,
-      "Role": membership.role,
-      "Status": membership.status,
-      "Created": args.noRelativeDates ? membership.createdAt : formatRelativeDate(membership.createdAt)
-    }));
-
+    
+    // For other output formats, return raw output
     return formatToolResponse(
       "success",
-      `Found ${memberships.length} membership(s)`,
-      formattedMemberships
+      "User's organization memberships retrieved",
+      {
+        output: result.stdout,
+        format: args.output || 'txt'
+      }
     );
-
+    
   } catch (error) {
     return formatToolResponse(
       "error",
-      error instanceof Error ? error.message : 'Unknown error occurred'
+      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };
-
-// Helper function to format relative dates
-function formatRelativeDate(dateString: string): string {
-  if (!dateString) return 'Unknown';
-  
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  
-  if (diffDays === 0) {
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    if (diffHours === 0) {
-      const diffMinutes = Math.floor(diffMs / (1000 * 60));
-      return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
-    }
-    return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-  } else if (diffDays === 1) {
-    return 'yesterday';
-  } else if (diffDays < 30) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 365) {
-    const diffMonths = Math.floor(diffDays / 30);
-    return `${diffMonths} month${diffMonths !== 1 ? 's' : ''} ago`;
-  } else {
-    const diffYears = Math.floor(diffDays / 365);
-    return `${diffYears} year${diffYears !== 1 ? 's' : ''} ago`;
-  }
-}
