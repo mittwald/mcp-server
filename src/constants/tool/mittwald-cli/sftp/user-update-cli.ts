@@ -1,6 +1,8 @@
-import { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleSftpUserUpdateCli } from '../../../../handlers/tools/mittwald-cli/sftp/user-update-cli.js';
 
-export const mittwaldSftpUserUpdateCli: Tool = {
+const tool: Tool = {
   name: "mittwald_sftp_user_update_cli",
   description: "Update an existing SFTP user (CLI wrapper)",
   inputSchema: {
@@ -56,3 +58,11 @@ export const mittwaldSftpUserUpdateCli: Tool = {
     required: ["sftpUserId"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleSftpUserUpdateCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

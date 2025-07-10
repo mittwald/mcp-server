@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../../types/tool-registry.js';
+import { handleUserSshKeyDeleteCli } from '../../../../../handlers/tools/mittwald-cli/user/ssh-key/delete-cli.js';
 
-export const mittwald_user_ssh_key_delete_cli: Tool = {
+const tool: Tool = {
   name: 'mittwald_user_ssh_key_delete_cli',
   description: 'Delete an SSH key using CLI wrapper. Permanently removes the specified SSH key.',
   inputSchema: {
@@ -23,3 +25,15 @@ export const mittwald_user_ssh_key_delete_cli: Tool = {
     additionalProperties: false
   }
 };
+
+// Export the tool registration
+const registration: ToolRegistration = {
+  tool,
+  handler: handleUserSshKeyDeleteCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_user_ssh_key_delete_cli = tool;

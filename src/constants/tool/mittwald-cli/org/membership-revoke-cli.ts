@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleOrgMembershipRevokeCli } from '../../../../handlers/tools/mittwald-cli/org/membership/revoke.js';
 
-export const mittwald_org_membership_revoke_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_org_membership_revoke_cli",
   description: "Revoke a user's membership to an organization using CLI wrapper",
   inputSchema: {
@@ -19,3 +21,14 @@ export const mittwald_org_membership_revoke_cli: Tool = {
     required: ["membershipId"]
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleOrgMembershipRevokeCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_org_membership_revoke_cli = tool;

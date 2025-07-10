@@ -1,6 +1,8 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleOrgMembershipListOwnCli } from '../../../../handlers/tools/mittwald-cli/org/membership-list-own.js';
 
-export const mittwald_org_membership_list_own_cli: Tool = {
+const tool: Tool = {
   name: "mittwald_org_membership_list_own_cli",
   description: "List all organization memberships for the executing user using CLI wrapper",
   inputSchema: {
@@ -42,3 +44,14 @@ export const mittwald_org_membership_list_own_cli: Tool = {
     required: []
   }
 };
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleOrgMembershipListOwnCli,
+  schema: tool.inputSchema
+};
+
+export default registration;
+
+// Legacy export for backwards compatibility
+export const mittwald_org_membership_list_own_cli = tool;
