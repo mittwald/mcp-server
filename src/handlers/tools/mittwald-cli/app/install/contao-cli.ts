@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -17,7 +17,7 @@ interface MittwaldAppInstallContaoArgs {
   waitTimeout?: number;
 }
 
-export const handleAppInstallContaoCli: MittwaldToolHandler<MittwaldAppInstallContaoArgs> = async (args) => {
+export const handleAppInstallContaoCli: MittwaldCliToolHandler<MittwaldAppInstallContaoArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'install', 'contao'];

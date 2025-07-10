@@ -233,15 +233,21 @@ import { mittwald_domain_virtualhost_help } from './tool/mittwald-cli/domain/vir
 import { mittwald_domain_virtualhost } from './tool/mittwald-cli/domain/virtualhost.js';
 import { mittwald_domain_list } from './tool/mittwald-cli/domain/list.js';
 
-// Mail address tools (commented out due to readonly TypeScript issues)
-// import {
-//   mittwald_mail_address_create,
-//   mittwald_mail_address_delete,
-//   mittwald_mail_address_get,
-//   mittwald_mail_address_list
-// } from './tool/mittwald-cli/mail/address/index.js';
+// Mail address CLI tools
+import { mittwald_mail_address_list_cli } from './tool/mittwald-cli/mail/address/list-cli.js';
+import { mittwald_mail_address_get_cli } from './tool/mittwald-cli/mail/address/get-cli.js';
+import { mittwald_mail_address_create_cli } from './tool/mittwald-cli/mail/address/create-cli.js';
+import { mittwald_mail_address_delete_cli } from './tool/mittwald-cli/mail/address/delete-cli.js';
+import { mittwald_mail_address_update_cli } from './tool/mittwald-cli/mail/address/update-cli.js';
 
-// Additional mail tools
+// Mail deliverybox CLI tools
+import { mittwald_mail_deliverybox_list_cli } from './tool/mittwald-cli/mail/deliverybox/list-cli.js';
+import { mittwald_mail_deliverybox_get_cli } from './tool/mittwald-cli/mail/deliverybox/get-cli.js';
+import { mittwald_mail_deliverybox_create_cli } from './tool/mittwald-cli/mail/deliverybox/create-cli.js';
+import { mittwald_mail_deliverybox_delete_cli } from './tool/mittwald-cli/mail/deliverybox/delete-cli.js';
+import { mittwald_mail_deliverybox_update_cli } from './tool/mittwald-cli/mail/deliverybox/update-cli.js';
+
+// Additional mail tools (legacy)
 import { mittwaldMailDeliveryboxCreate } from './tool/mittwald-cli/mail/deliverybox-create.js';
 import { mittwaldMailDeliveryboxDelete } from './tool/mittwald-cli/mail/deliverybox-delete.js';
 import { mittwaldMailDeliveryboxGet } from './tool/mittwald-cli/mail/deliverybox-get.js';
@@ -558,13 +564,21 @@ export const TOOLS: Tool[] = [
   mittwald_domain_virtualhost,
   mittwald_domain_list,
   
-  // Mail address tools (commented out due to readonly TypeScript issues)
-  // mittwald_mail_address_create,
-  // mittwald_mail_address_delete,
-  // mittwald_mail_address_get,
-  // mittwald_mail_address_list,
+  // Agent 11 mail address CLI tools
+  mittwald_mail_address_list_cli,
+  mittwald_mail_address_get_cli,
+  mittwald_mail_address_create_cli,
+  mittwald_mail_address_delete_cli,
+  mittwald_mail_address_update_cli,
   
-  // Additional mail tools
+  // Agent 11 mail deliverybox CLI tools
+  mittwald_mail_deliverybox_list_cli,
+  mittwald_mail_deliverybox_get_cli,
+  mittwald_mail_deliverybox_create_cli,
+  mittwald_mail_deliverybox_delete_cli,
+  mittwald_mail_deliverybox_update_cli,
+  
+  // Additional mail tools (legacy)
   mittwaldMailDeliveryboxCreate,
   mittwaldMailDeliveryboxDelete,
   mittwaldMailDeliveryboxGet,

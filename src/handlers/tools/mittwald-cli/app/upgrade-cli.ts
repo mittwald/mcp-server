@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -12,7 +12,7 @@ interface MittwaldAppUpgradeArgs {
   waitTimeout?: string;
 }
 
-export const handleAppUpgradeCli: MittwaldToolHandler<MittwaldAppUpgradeArgs> = async (args) => {
+export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs> = async (args) => {
   try {
     if (!args.installationId) {
       return formatToolResponse(

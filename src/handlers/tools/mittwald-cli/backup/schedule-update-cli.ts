@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -10,7 +10,7 @@ interface MittwaldBackupScheduleUpdateCliArgs {
   quiet?: boolean;
 }
 
-export const handleBackupScheduleUpdateCli: MittwaldToolHandler<MittwaldBackupScheduleUpdateCliArgs> = async (args) => {
+export const handleBackupScheduleUpdateCli: MittwaldCliToolHandler<MittwaldBackupScheduleUpdateCliArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['backup', 'schedule', 'update', args.backupScheduleId];

@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -8,7 +8,7 @@ interface MittwaldAppUninstallArgs {
   force?: boolean;
 }
 
-export const handleAppUninstallCli: MittwaldToolHandler<MittwaldAppUninstallArgs> = async (args) => {
+export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallArgs> = async (args) => {
   try {
     if (!args.installationId) {
       return formatToolResponse(

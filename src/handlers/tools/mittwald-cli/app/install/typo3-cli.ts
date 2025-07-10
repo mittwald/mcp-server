@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -16,7 +16,7 @@ interface MittwaldAppInstallTypo3Args {
   waitTimeout?: number;
 }
 
-export const handleAppInstallTypo3Cli: MittwaldToolHandler<MittwaldAppInstallTypo3Args> = async (args) => {
+export const handleAppInstallTypo3Cli: MittwaldCliToolHandler<MittwaldAppInstallTypo3Args> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'install', 'typo3'];

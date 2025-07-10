@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -15,7 +15,7 @@ interface MittwaldAppInstallMatomoArgs {
   waitTimeout?: number;
 }
 
-export const handleAppInstallMatomoCli: MittwaldToolHandler<MittwaldAppInstallMatomoArgs> = async (args) => {
+export const handleAppInstallMatomoCli: MittwaldCliToolHandler<MittwaldAppInstallMatomoArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'install', 'matomo'];

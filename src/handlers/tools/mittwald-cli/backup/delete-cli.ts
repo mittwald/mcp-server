@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -8,7 +8,7 @@ interface MittwaldBackupDeleteCliArgs {
   quiet?: boolean;
 }
 
-export const handleBackupDeleteCli: MittwaldToolHandler<MittwaldBackupDeleteCliArgs> = async (args) => {
+export const handleBackupDeleteCli: MittwaldCliToolHandler<MittwaldBackupDeleteCliArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['backup', 'delete', args.backupId];

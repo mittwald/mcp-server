@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
@@ -7,7 +7,7 @@ interface MittwaldAppGetArgs {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleAppGetCli: MittwaldToolHandler<MittwaldAppGetArgs> = async (args) => {
+export const handleAppGetCli: MittwaldCliToolHandler<MittwaldAppGetArgs> = async (args) => {
   try {
     if (!args.installationId) {
       return formatToolResponse(

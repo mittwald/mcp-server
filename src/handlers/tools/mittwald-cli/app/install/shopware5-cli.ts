@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -20,7 +20,7 @@ interface MittwaldAppInstallShopware5Args {
   waitTimeout?: number;
 }
 
-export const handleAppInstallShopware5Cli: MittwaldToolHandler<MittwaldAppInstallShopware5Args> = async (args) => {
+export const handleAppInstallShopware5Cli: MittwaldCliToolHandler<MittwaldAppInstallShopware5Args> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'install', 'shopware5'];

@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
 
@@ -8,7 +8,7 @@ interface MittwaldAppCopyArgs {
   quiet?: boolean;
 }
 
-export const handleAppCopyCli: MittwaldToolHandler<MittwaldAppCopyArgs> = async (args) => {
+export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = async (args) => {
   try {
     if (!args.installationId) {
       return formatToolResponse(

@@ -7,7 +7,7 @@ export interface MittwaldProjectMembershipGetOwnArgs {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleProjectMembershipGetOwnCli: MittwaldToolHandler<MittwaldProjectMembershipGetOwnArgs> = async (args) => {
+export const handleProjectMembershipGetOwnCli: MittwaldToolHandler<MittwaldProjectMembershipGetOwnArgs> = async (args, context) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['project', 'membership', 'get-own'];

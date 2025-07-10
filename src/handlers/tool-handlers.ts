@@ -141,33 +141,21 @@ import { handleAppUploadCli } from './tools/mittwald-cli/app/upload-cli.js';
 import { handleAppVersionsCli } from './tools/mittwald-cli/app/versions-cli.js';
 import { handleAppListUpgradeCandidatesCli } from './tools/mittwald-cli/app/list-upgrade-candidates-cli.js';
 
-// Agent 7 cronjob handlers
-import { handleCronjobCreate } from './tools/mittwald-cli/cronjob/create.js';
-import { handleCronjobDelete } from './tools/mittwald-cli/cronjob/delete.js';
-import { handleCronjobExecute } from './tools/mittwald-cli/cronjob/execute.js';
-import { handleCronjobExecutionAbort } from './tools/mittwald-cli/cronjob/execution-abort.js';
-import { handleCronjobExecutionGet } from './tools/mittwald-cli/cronjob/execution-get.js';
-import { handleCronjobExecutionList } from './tools/mittwald-cli/cronjob/execution-list.js';
-import { handleCronjobExecutionLogs } from './tools/mittwald-cli/cronjob/execution-logs.js';
-import { handleCronjobExecution } from './tools/mittwald-cli/cronjob/execution.js';
-
-// Agent 8 cronjob handlers
-import { handleMittwaldCronjobGet } from './tools/mittwald-cli/cronjob/get.js';
-import { handleMittwaldCronjobList } from './tools/mittwald-cli/cronjob/list.js';
-import { handleMittwaldCronjobUpdate } from './tools/mittwald-cli/cronjob/update.js';
-import { handleMittwaldCronjob } from './tools/mittwald-cli/cronjob/cronjob.js';
-
-// Agent 10 cronjob CLI handlers
-import { handleCronjobListCli } from './tools/mittwald-cli/cronjob/list-cli.js';
-import { handleCronjobGetCli } from './tools/mittwald-cli/cronjob/get-cli.js';
-import { handleCronjobCreateCli } from './tools/mittwald-cli/cronjob/create-cli.js';
-import { handleCronjobDeleteCli } from './tools/mittwald-cli/cronjob/delete-cli.js';
-import { handleCronjobUpdateCli } from './tools/mittwald-cli/cronjob/update-cli.js';
-import { handleCronjobExecuteCli } from './tools/mittwald-cli/cronjob/execute-cli.js';
-import { handleCronjobExecutionGetCli } from './tools/mittwald-cli/cronjob/execution-get-cli.js';
-import { handleCronjobExecutionListCli } from './tools/mittwald-cli/cronjob/execution-list-cli.js';
-import { handleCronjobExecutionLogsCli } from './tools/mittwald-cli/cronjob/execution-logs-cli.js';
-import { handleCronjobExecutionAbortCli } from './tools/mittwald-cli/cronjob/execution-abort-cli.js';
+// Agent 7 & 8 cronjob handlers (now using CLI implementations)
+import {
+  handleCronjobCreate,
+  handleCronjobDelete,
+  handleCronjobExecute,
+  handleCronjobExecutionAbort,
+  handleCronjobExecutionGet,
+  handleCronjobExecutionList,
+  handleCronjobExecutionLogs,
+  handleCronjobExecution,
+  handleMittwaldCronjobGet,
+  handleMittwaldCronjobList,
+  handleMittwaldCronjobUpdate,
+  handleMittwaldCronjob
+} from './tools/mittwald-cli/cronjob/index.js';
 
 // Agent 9 database handlers
 import { handleDatabaseMysqlDump, MittwaldDatabaseMysqlDumpSchema } from './tools/mittwald-cli/database/mysql/dump.js';
@@ -196,6 +184,18 @@ import { handleMittwaldDatabaseRedisGet, MittwaldDatabaseRedisGetSchema } from '
 import { handleMittwaldDatabaseRedisList, MittwaldDatabaseRedisListSchema } from './tools/mittwald-cli/database/redis-list.js';
 import { handleMittwaldDatabaseRedisShell, MittwaldDatabaseRedisShellSchema } from './tools/mittwald-cli/database/redis-shell.js';
 import { handleMittwaldDatabaseRedisVersions, MittwaldDatabaseRedisVersionsSchema } from './tools/mittwald-cli/database/redis-versions.js';
+
+// Agent 11 mail CLI handlers
+import { handleMittwaldMailAddressListCli } from './tools/mittwald-cli/mail/address/list-cli.js';
+import { handleMittwaldMailAddressGetCli } from './tools/mittwald-cli/mail/address/get-cli.js';
+import { handleMittwaldMailAddressCreateCli } from './tools/mittwald-cli/mail/address/create-cli.js';
+import { handleMittwaldMailAddressDeleteCli } from './tools/mittwald-cli/mail/address/delete-cli.js';
+import { handleMittwaldMailAddressUpdateCli } from './tools/mittwald-cli/mail/address/update-cli.js';
+import { handleMittwaldMailDeliveryboxListCli } from './tools/mittwald-cli/mail/deliverybox/list-cli.js';
+import { handleMittwaldMailDeliveryboxGetCli } from './tools/mittwald-cli/mail/deliverybox/get-cli.js';
+import { handleMittwaldMailDeliveryboxCreateCli } from './tools/mittwald-cli/mail/deliverybox/create-cli.js';
+import { handleMittwaldMailDeliveryboxDeleteCli } from './tools/mittwald-cli/mail/deliverybox/delete-cli.js';
+import { handleMittwaldMailDeliveryboxUpdateCli } from './tools/mittwald-cli/mail/deliverybox/update-cli.js';
 
 // Agent 11 handlers
 import { handleDdevInit, ddevInitSchema } from './tools/mittwald-cli/ddev/init.js';
@@ -2365,13 +2365,31 @@ export async function handleToolCall(
         result = await handleProjectFilesystemUsage(args as ToolArgs['mittwald_project_filesystem_usage'], mittwaldProjectFilesystemUsageContext);
         break;
       case "mittwald_project_invite_get":
-        result = await handleProjectInviteGetCli(args as ToolArgs['mittwald_project_invite_get']);
+        const mittwaldProjectInviteGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectInviteGetCli(args as ToolArgs['mittwald_project_invite_get'], mittwaldProjectInviteGetContext);
         break;
       case "mittwald_project_invite_list":
-        result = await handleProjectInviteListCli(args as ToolArgs['mittwald_project_invite_list']);
+        const mittwaldProjectInviteListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectInviteListCli(args as ToolArgs['mittwald_project_invite_list'], mittwaldProjectInviteListContext);
         break;
       case "mittwald_project_invite_list_own":
-        result = await handleProjectInviteListOwnCli(args as ToolArgs['mittwald_project_invite_list_own']);
+        const mittwaldProjectInviteListOwnContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectInviteListOwnCli(args as ToolArgs['mittwald_project_invite_list_own'], mittwaldProjectInviteListOwnContext);
         break;
       case "mittwald_project_list":
         // Create context with mittwaldClient for Mittwald CLI tools
@@ -2415,19 +2433,43 @@ export async function handleToolCall(
         break;
         
       case "mittwald_project_membership_get":
-        result = await handleProjectMembershipGetCli(args as ToolArgs['mittwald_project_membership_get']);
+        const mittwaldProjectMembershipGetContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectMembershipGetCli(args as ToolArgs['mittwald_project_membership_get'], mittwaldProjectMembershipGetContext);
         break;
         
       case "mittwald_project_membership_get_own":
-        result = await handleProjectMembershipGetOwnCli(args as ToolArgs['mittwald_project_membership_get_own']);
+        const mittwaldProjectMembershipGetOwnContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectMembershipGetOwnCli(args as ToolArgs['mittwald_project_membership_get_own'], mittwaldProjectMembershipGetOwnContext);
         break;
         
       case "mittwald_project_membership_list":
-        result = await handleProjectMembershipListCli(args as ToolArgs['mittwald_project_membership_list']);
+        const mittwaldProjectMembershipListContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectMembershipListCli(args as ToolArgs['mittwald_project_membership_list'], mittwaldProjectMembershipListContext);
         break;
         
       case "mittwald_project_membership_list_own":
-        result = await handleProjectMembershipListOwnCli(args as ToolArgs['mittwald_project_membership_list_own']);
+        const mittwaldProjectMembershipListOwnContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectMembershipListOwnCli(args as ToolArgs['mittwald_project_membership_list_own'], mittwaldProjectMembershipListOwnContext);
         break;
         
       case "mittwald_project_update":
@@ -2442,31 +2484,73 @@ export async function handleToolCall(
 
       // Project CLI tools
       case "mittwald_project_list_cli":
-        result = await handleMittwaldProjectListCli(args as ToolArgs['mittwald_project_list_cli']);
+        const mittwaldProjectListCliContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleMittwaldProjectListCli(args as ToolArgs['mittwald_project_list_cli'], mittwaldProjectListCliContext);
         break;
         
       case "mittwald_project_get_cli":
-        result = await handleProjectGetCli(args as ToolArgs['mittwald_project_get_cli']);
+        const mittwaldProjectGetCliContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectGetCli(args as ToolArgs['mittwald_project_get_cli'], mittwaldProjectGetCliContext);
         break;
         
       case "mittwald_project_create_cli":
-        result = await handleProjectCreateCli(args as ToolArgs['mittwald_project_create_cli']);
+        const mittwaldProjectCreateCliContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectCreateCli(args as ToolArgs['mittwald_project_create_cli'], mittwaldProjectCreateCliContext);
         break;
         
       case "mittwald_project_delete_cli":
-        result = await handleProjectDeleteCli(args as ToolArgs['mittwald_project_delete_cli']);
+        const mittwaldProjectDeleteCliContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectDeleteCli(args as ToolArgs['mittwald_project_delete_cli'], mittwaldProjectDeleteCliContext);
         break;
         
       case "mittwald_project_update_cli":
-        result = await handleProjectUpdateCli(args as ToolArgs['mittwald_project_update_cli']);
+        const mittwaldProjectUpdateCliContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectUpdateCli(args as ToolArgs['mittwald_project_update_cli'], mittwaldProjectUpdateCliContext);
         break;
         
       case "mittwald_project_ssh_cli":
-        result = await handleProjectSshCli(args as ToolArgs['mittwald_project_ssh_cli']);
+        const mittwaldProjectSshCliContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectSshCli(args as ToolArgs['mittwald_project_ssh_cli'], mittwaldProjectSshCliContext);
         break;
         
       case "mittwald_project_filesystem_usage_cli":
-        result = await handleProjectFilesystemUsageCli(args as ToolArgs['mittwald_project_filesystem_usage_cli']);
+        const mittwaldProjectFilesystemUsageCliContext: MittwaldToolHandlerContext = {
+          mittwaldClient: getMittwaldClient(),
+          userId: handlerContext.userId,
+          sessionId: handlerContext.sessionId,
+          progressToken: handlerContext.progressToken,
+        };
+        result = await handleProjectFilesystemUsageCli(args as ToolArgs['mittwald_project_filesystem_usage_cli'], mittwaldProjectFilesystemUsageCliContext);
         break;
         
       case "mittwald_server_list":
@@ -2889,32 +2973,32 @@ export async function handleToolCall(
         
       // Agent 7 cronjob tools
       case "mittwald_cronjob_create":
-        result = await handleCronjobCreateCli(args);
+        result = await handleCronjobCreate(args);
         break;
         
       case "mittwald_cronjob_delete":
-        result = await handleCronjobDeleteCli(args);
+        result = await handleCronjobDelete(args);
         break;
         
       case "mittwald_cronjob_execute":
-        result = await handleCronjobExecuteCli(args);
+        result = await handleCronjobExecute(args);
         break;
         
       // Agent 7 cronjob execution tools
       case "mittwald_cronjob_execution_abort":
-        result = await handleCronjobExecutionAbortCli(args);
+        result = await handleCronjobExecutionAbort(args);
         break;
         
       case "mittwald_cronjob_execution_get":
-        result = await handleCronjobExecutionGetCli(args);
+        result = await handleCronjobExecutionGet(args);
         break;
         
       case "mittwald_cronjob_execution_list":
-        result = await handleCronjobExecutionListCli(args);
+        result = await handleCronjobExecutionList(args);
         break;
         
       case "mittwald_cronjob_execution_logs":
-        result = await handleCronjobExecutionLogsCli(args);
+        result = await handleCronjobExecutionLogs(args);
         break;
         
       case "mittwald_cronjob_execution":
@@ -2929,11 +3013,11 @@ export async function handleToolCall(
         
       // Agent 8 cronjob tools
       case "mittwald_cronjob_get":
-        result = await handleCronjobGetCli(args);
+        result = await handleMittwaldCronjobGet(args);
         break;
         
       case "mittwald_cronjob_list":
-        result = await handleCronjobListCli(args);
+        result = await handleMittwaldCronjobList(args);
         break;
         
       case "mittwald_cronjob_update":
@@ -3034,6 +3118,27 @@ export async function handleToolCall(
           args.force,
           args.quiet
         );
+        break;
+        
+      // Agent 6 MySQL user tools
+      case "mittwald_database_mysql_user_create":
+        result = await handleDatabaseMysqlUserCreate(args);
+        break;
+        
+      case "mittwald_database_mysql_user_list":
+        result = await handleDatabaseMysqlUserList(args);
+        break;
+        
+      case "mittwald_database_mysql_user_get":
+        result = await handleDatabaseMysqlUserGet(args);
+        break;
+        
+      case "mittwald_database_mysql_user_delete":
+        result = await handleDatabaseMysqlUserDelete(args);
+        break;
+        
+      case "mittwald_database_mysql_user_update":
+        result = await handleDatabaseMysqlUserUpdate(args);
         break;
         
       // Backup tools
@@ -3273,55 +3378,25 @@ export async function handleToolCall(
         result = await handleSftpUser(args, getMittwaldClient().api);
         break;
         
-      // Redis database tools
+      // Agent 6 Redis database tools
       case "mittwald_database_redis_create":
-        const mittwaldDatabaseRedisCreateContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleMittwaldDatabaseRedisCreate(args, mittwaldDatabaseRedisCreateContext);
+        result = await handleMittwaldDatabaseRedisCreate(args);
         break;
         
       case "mittwald_database_redis_get":
-        const mittwaldDatabaseRedisGetContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleMittwaldDatabaseRedisGet(args, mittwaldDatabaseRedisGetContext);
+        result = await handleMittwaldDatabaseRedisGet(args);
         break;
         
       case "mittwald_database_redis_list":
-        const mittwaldDatabaseRedisListContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleMittwaldDatabaseRedisList(args, mittwaldDatabaseRedisListContext);
+        result = await handleMittwaldDatabaseRedisList(args);
         break;
         
       case "mittwald_database_redis_shell":
-        const mittwaldDatabaseRedisShellContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleMittwaldDatabaseRedisShell(args, mittwaldDatabaseRedisShellContext);
+        result = await handleMittwaldDatabaseRedisShell(args);
         break;
         
       case "mittwald_database_redis_versions":
-        const mittwaldDatabaseRedisVersionsContext: MittwaldToolHandlerContext = {
-          mittwaldClient: getMittwaldClient(),
-          userId: handlerContext.userId,
-          sessionId: handlerContext.sessionId,
-          progressToken: handlerContext.progressToken
-        };
-        result = await handleMittwaldDatabaseRedisVersions(args, mittwaldDatabaseRedisVersionsContext);
+        result = await handleMittwaldDatabaseRedisVersions(args);
         break;
         
       // Agent 11 tools

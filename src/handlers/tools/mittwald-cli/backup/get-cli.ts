@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
@@ -7,7 +7,7 @@ interface MittwaldBackupGetCliArgs {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleBackupGetCli: MittwaldToolHandler<MittwaldBackupGetCliArgs> = async (args) => {
+export const handleBackupGetCli: MittwaldCliToolHandler<MittwaldBackupGetCliArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['backup', 'get', args.backupId];

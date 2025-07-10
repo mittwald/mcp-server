@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli } from '../../../../utils/cli-wrapper.js';
 
@@ -13,7 +13,7 @@ interface MittwaldBackupDownloadCliArgs {
   quiet?: boolean;
 }
 
-export const handleBackupDownloadCli: MittwaldToolHandler<MittwaldBackupDownloadCliArgs> = async (args) => {
+export const handleBackupDownloadCli: MittwaldCliToolHandler<MittwaldBackupDownloadCliArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['backup', 'download', args.backupId];

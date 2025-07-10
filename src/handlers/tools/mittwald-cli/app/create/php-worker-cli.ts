@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -11,7 +11,7 @@ export interface MittwaldAppCreatePhpWorkerArgs {
   waitTimeout?: number;
 }
 
-export const handleAppCreatePhpWorkerCli: MittwaldToolHandler<MittwaldAppCreatePhpWorkerArgs> = async (args, context) => {
+export const handleAppCreatePhpWorkerCli: MittwaldCliToolHandler<MittwaldAppCreatePhpWorkerArgs> = async (args, context) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'create', 'php-worker'];

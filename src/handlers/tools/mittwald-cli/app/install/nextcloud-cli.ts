@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -15,7 +15,7 @@ interface MittwaldAppInstallNextcloudArgs {
   waitTimeout?: number;
 }
 
-export const handleAppInstallNextcloudCli: MittwaldToolHandler<MittwaldAppInstallNextcloudArgs> = async (args) => {
+export const handleAppInstallNextcloudCli: MittwaldCliToolHandler<MittwaldAppInstallNextcloudArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'install', 'nextcloud'];

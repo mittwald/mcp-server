@@ -2,18 +2,48 @@ import type { MittwaldToolHandler } from '../../../../types/mittwald/conversatio
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
-export interface MittwaldProjectInviteGetArgs {
-  inviteId: string;
-  output?: 'json' | 'table' | 'yaml';
+interface MittwaldSshUserListArgs {
+  projectId?: string;
+  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
+  extended?: boolean;
+  noHeader?: boolean;
+  noTruncate?: boolean;
+  noRelativeDates?: boolean;
+  csvSeparator?: ',' | ';';
 }
 
-export const handleProjectInviteGetCli: MittwaldToolHandler<MittwaldProjectInviteGetArgs> = async (args, context) => {
+export const handleSshUserListCli: MittwaldToolHandler<MittwaldSshUserListArgs> = async (args) => {
   try {
     // Build CLI command arguments
-    const cliArgs: string[] = ['project', 'invite', 'get', args.inviteId];
+    const cliArgs: string[] = ['ssh-user', 'list'];
     
     // Always use JSON output for consistent parsing
     cliArgs.push('--output', 'json');
+    
+    // Optional flags
+    if (args.projectId) {
+      cliArgs.push('--project-id', args.projectId);
+    }
+    
+    if (args.extended) {
+      cliArgs.push('--extended');
+    }
+    
+    if (args.noHeader) {
+      cliArgs.push('--no-header');
+    }
+    
+    if (args.noTruncate) {
+      cliArgs.push('--no-truncate');
+    }
+    
+    if (args.noRelativeDates) {
+      cliArgs.push('--no-relative-dates');
+    }
+    
+    if (args.csvSeparator) {
+      cliArgs.push('--csv-separator', args.csvSeparator);
+    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -25,30 +55,16 @@ export const handleProjectInviteGetCli: MittwaldToolHandler<MittwaldProjectInvit
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || 'Unknown error';
       
-      if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
         return formatToolResponse(
           "error",
-          `Project invite not found. Please verify the invite ID: ${args.inviteId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not authenticated') || errorMessage.includes('401')) {
-        return formatToolResponse(
-          "error",
-          `Authentication failed. Please ensure your API token is valid.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('forbidden') || errorMessage.includes('403')) {
-        return formatToolResponse(
-          "error",
-          `Access denied. You don't have permission to view this project invite.\nError: ${errorMessage}`
+          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
         );
       }
       
       return formatToolResponse(
         "error",
-        `Failed to get project invite: ${errorMessage}`
+        `Failed to list SSH users: ${errorMessage}`
       );
     }
     
@@ -56,30 +72,34 @@ export const handleProjectInviteGetCli: MittwaldToolHandler<MittwaldProjectInvit
     try {
       const data = parseJsonOutput(result.stdout);
       
-      if (!data || typeof data !== 'object') {
+      if (!Array.isArray(data)) {
         return formatToolResponse(
           "error",
           "Unexpected output format from CLI command"
         );
       }
       
+      if (data.length === 0) {
+        return formatToolResponse(
+          "success",
+          "No SSH users found",
+          []
+        );
+      }
+      
       // Format the data to match our expected structure
-      const formattedData = {
-        id: data.id,
-        email: data.mailAddress || data.email,
-        role: data.projectRole || data.role,
-        status: data.expired ? 'expired' : 'active',
-        createdAt: data.createdAt,
-        expiresAt: data.membershipExpiresAt || data.expiresAt || 'Never',
-        projectId: data.projectId,
-        userId: data.userId,
-        invitedBy: data.invitedBy || data.inviter,
-        message: data.message
-      };
+      const formattedData = data.map(item => ({
+        id: item.id,
+        description: item.description,
+        active: item.active,
+        projectId: item.projectId,
+        authentication: item.authentication,
+        expiresAt: item.expiresAt
+      }));
       
       return formatToolResponse(
         "success",
-        `Project invite retrieved successfully`,
+        `Found ${data.length} SSH user(s)`,
         formattedData
       );
       
@@ -87,7 +107,7 @@ export const handleProjectInviteGetCli: MittwaldToolHandler<MittwaldProjectInvit
       // If JSON parsing fails, return the raw output
       return formatToolResponse(
         "success",
-        "Project invite retrieved (raw output)",
+        "SSH users retrieved (raw output)",
         {
           rawOutput: result.stdout,
           parseError: parseError instanceof Error ? parseError.message : String(parseError)

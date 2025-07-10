@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
@@ -17,7 +17,7 @@ interface MittwaldAppInstallJoomlaArgs {
   waitTimeout?: number;
 }
 
-export const handleAppInstallJoomlaCli: MittwaldToolHandler<MittwaldAppInstallJoomlaArgs> = async (args) => {
+export const handleAppInstallJoomlaCli: MittwaldCliToolHandler<MittwaldAppInstallJoomlaArgs> = async (args) => {
   try {
     // Build CLI command arguments
     const cliArgs: string[] = ['app', 'install', 'joomla'];
