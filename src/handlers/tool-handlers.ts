@@ -156,9 +156,43 @@ export async function handleToolCall(
 
     // Get and validate schema if available
     const schema = await getToolSchema(request.params.name);
-    if (schema) {
+    if (schema && schema.properties) {
       try {
-        const zodSchema = z.object(schema.properties || {});
+        // Convert JSON Schema properties to Zod schema
+        const zodSchemaProperties: { [key: string]: z.ZodType } = {};
+        
+        for (const [propName, propSchema] of Object.entries(schema.properties)) {
+          const prop = propSchema as any;
+          
+          // Create appropriate Zod type based on JSON schema type
+          switch (prop.type) {
+            case 'string':
+              if (prop.enum) {
+                zodSchemaProperties[propName] = z.enum(prop.enum);
+              } else {
+                zodSchemaProperties[propName] = z.string();
+              }
+              break;
+            case 'boolean':
+              zodSchemaProperties[propName] = z.boolean();
+              break;
+            case 'number':
+              zodSchemaProperties[propName] = z.number();
+              break;
+            case 'array':
+              zodSchemaProperties[propName] = z.array(z.string());
+              break;
+            default:
+              zodSchemaProperties[propName] = z.any();
+          }
+          
+          // Make optional if not required
+          if (!schema.required || !schema.required.includes(propName)) {
+            zodSchemaProperties[propName] = zodSchemaProperties[propName].optional();
+          }
+        }
+        
+        const zodSchema = z.object(zodSchemaProperties);
         zodSchema.parse(request.params.arguments);
       } catch (validationError) {
         logger.error("Tool arguments validation failed", { 
