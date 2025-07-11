@@ -4,15 +4,13 @@
  */
 
 import type { Request } from 'express';
+import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 
 /**
  * Authenticated request interface
  */
 export interface AuthenticatedRequest extends Request {
-  auth?: {
-    userId: string;
-    mittwaldApiToken?: string;
-  };
+  auth?: AuthInfo;
 }
 
 /**

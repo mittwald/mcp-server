@@ -64,13 +64,9 @@ export async function createApp(): Promise<express.Application> {
     authMiddleware = bypassAuthMiddleware();
     console.log('🔓 OAuth disabled - running without authentication');
   } else {
-    // Initialize OAuth provider for MCP authentication
-    const oauthProvider = new OAuthProvider({
-      ...CONFIG,
-      validRedirectUris: VALID_REDIRECT_URIS,
-    });
-    oauthProvider.setupRoutes(app);
-    authMiddleware = oauthProvider.authMiddleware();
+    // OAuth not implemented for Mittwald - use bypass auth
+    authMiddleware = bypassAuthMiddleware();
+    console.log('🔓 OAuth not implemented - running without authentication');
   }
   
   // Initialize tools before setting up MCP handler

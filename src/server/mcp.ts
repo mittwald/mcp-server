@@ -203,11 +203,11 @@ export class MCPHandler implements IMCPHandler {
 
         // Extract auth info if available
         const sessionAuth =
-          req.auth && req.auth.extra?.redditAccessToken
+          req.auth && req.auth.token
             ? {
-                accessToken: String(req.auth.extra.redditAccessToken || ""),
-                refreshToken: String(req.auth.extra.redditRefreshToken || ""),
-                username: String(req.auth.extra.userId || "unknown"),
+                accessToken: String(req.auth.token || ""),
+                refreshToken: "",
+                username: String(req.auth.clientId || "unknown"),
               }
             : undefined;
         const server = this.createServer(sessionId, sessionAuth);
@@ -258,11 +258,11 @@ export class MCPHandler implements IMCPHandler {
         sessionInfo.lastAccessed = new Date();
 
         // Update auth if provided
-        if (req.auth && req.auth.extra?.redditAccessToken && !sessionInfo.auth) {
+        if (req.auth && req.auth.token && !sessionInfo.auth) {
           sessionInfo.auth = {
-            accessToken: String(req.auth.extra.redditAccessToken || ""),
-            refreshToken: String(req.auth.extra.redditRefreshToken || ""),
-            username: String(req.auth.extra.userId || "unknown"),
+            accessToken: String(req.auth.token || ""),
+            refreshToken: "",
+            username: String(req.auth.clientId || "unknown"),
           };
 
           // Recreate server with auth
