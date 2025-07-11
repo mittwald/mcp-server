@@ -35,6 +35,7 @@ import { setMCPHandlerInstance } from './server/mcp.js';
 import { bypassAuthMiddleware } from './server/bypass-auth.js';
 import { getMittwaldClient } from './services/mittwald/index.js';
 import { responseLoggerMiddleware } from './server/response-logger.js';
+import { initializeToolHandlers } from './handlers/tool-handlers.js';
 
 // Polyfill for jose library
 if (typeof globalThis.crypto === 'undefined') {
@@ -71,6 +72,9 @@ export async function createApp(): Promise<express.Application> {
     oauthProvider.setupRoutes(app);
     authMiddleware = oauthProvider.authMiddleware();
   }
+  
+  // Initialize tools before setting up MCP handler
+  await initializeToolHandlers();
   
   // Initialize MCP handler for protocol implementation with proper session support
   const mcpHandler = new MCPHandler();

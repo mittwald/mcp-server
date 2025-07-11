@@ -1,5 +1,12 @@
 FROM node:18-alpine
 WORKDIR /app
+
+# Install required system dependencies including SSH client
+RUN apk add --no-cache openssh-client
+
+# Install Mittwald CLI globally (version 1.5.1)
+RUN npm install -g @mittwald/cli@1.5.1
+
 COPY package*.json ./
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
 COPY . .
