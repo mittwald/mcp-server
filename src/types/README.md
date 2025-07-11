@@ -20,13 +20,6 @@ Central export point for all types:
 - Provides single import point
 - Maintains backward compatibility
 
-#### `config.ts`
-Configuration-related types:
-- Server configuration options
-- Environment variable types
-- OAuth configuration
-- Runtime settings
-
 #### `request-context.ts`
 Request context types:
 - Authentication information
@@ -35,13 +28,6 @@ Request context types:
 - MCP-specific contexts
 
 ### Domain-Specific Types
-
-#### `reddit.ts`
-Reddit API type definitions:
-- Post, Comment, Subreddit interfaces
-- API response structures
-- Reddit-specific enums
-- Submission types
 
 #### `systemprompt.ts`
 SystemPrompt.io integration types:
@@ -69,11 +55,10 @@ JSON Schema definitions:
 ### Entity Types
 Core data structures:
 ```typescript
-interface RedditPost {
+interface ServerConfig {
   id: string;
-  title: string;
-  author: string;
-  subreddit: string;
+  name: string;
+  type: string;
   // ... other properties
 }
 ```
@@ -81,16 +66,16 @@ interface RedditPost {
 ### Request/Response Types
 API communication:
 ```typescript
-interface CreatePostRequest {
-  subreddit: string;
-  title: string;
-  content?: string;
-  url?: string;
+interface CreateServerRequest {
+  name: string;
+  type: string;
+  region?: string;
+  resources?: ServerResources;
 }
 
-interface CreatePostResponse {
+interface CreateServerResponse {
   success: boolean;
-  post?: RedditPost;
+  server?: ServerConfig;
   error?: string;
 }
 ```
@@ -100,7 +85,7 @@ Handler contexts:
 ```typescript
 interface MCPToolContext {
   sessionId: string;
-  authInfo: RedditAuthInfo;
+  authInfo: MittwaldAuthInfo;
 }
 ```
 
@@ -119,28 +104,28 @@ interface ServerConfig {
 ### Discriminated Unions
 For type-safe variants:
 ```typescript
-type RedditContent = 
-  | { type: 'post'; data: RedditPost }
-  | { type: 'comment'; data: RedditComment }
-  | { type: 'message'; data: RedditMessage };
+type MittwaldResource = 
+  | { type: 'server'; data: ServerConfig }
+  | { type: 'database'; data: DatabaseConfig }
+  | { type: 'domain'; data: DomainConfig };
 ```
 
 ### Type Guards
 For runtime type checking:
 ```typescript
-function isRedditPost(content: unknown): content is RedditPost {
+function isServerConfig(content: unknown): content is ServerConfig {
   return typeof content === 'object' && 
          content !== null && 
-         'title' in content;
+         'name' in content;
 }
 ```
 
 ### Utility Types
 For type transformations:
 ```typescript
-type PartialPost = Partial<RedditPost>;
-type RequiredFields = Required<Pick<RedditPost, 'id' | 'title'>>;
-type PostWithoutMeta = Omit<RedditPost, 'metadata'>;
+type PartialServer = Partial<ServerConfig>;
+type RequiredFields = Required<Pick<ServerConfig, 'id' | 'name'>>;
+type ServerWithoutMeta = Omit<ServerConfig, 'metadata'>;
 ```
 
 ## Best Practices
@@ -152,8 +137,8 @@ type PostWithoutMeta = Omit<RedditPost, 'metadata'>;
 - Make optional fields explicit
 
 ### Naming Conventions
-- Interfaces: `PascalCase` (e.g., `RedditPost`)
-- Type aliases: `PascalCase` (e.g., `PostType`)
+- Interfaces: `PascalCase` (e.g., `ServerConfig`)
+- Type aliases: `PascalCase` (e.g., `ServerType`)
 - Enums: `PascalCase` (e.g., `SortOrder`)
 - Properties: `camelCase` (e.g., `createdAt`)
 
@@ -200,7 +185,7 @@ To add new type definitions:
 When adapting for a new API:
 
 1. **Replace Domain Types**
-   - Remove Reddit-specific types
+   - Remove old API-specific types
    - Add your API's types
    - Update entity interfaces
 
@@ -229,9 +214,9 @@ Type benefits for testing:
 
 Example:
 ```typescript
-const mockPost: RedditPost = {
+const mockServer: ServerConfig = {
   id: 'test123',
-  title: 'Test Post',
+  name: 'Test Server',
   // TypeScript ensures all required fields
 };
 ```

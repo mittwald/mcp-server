@@ -23,13 +23,13 @@ import type { PromptMessage, Prompt } from "@modelcontextprotocol/sdk/types.js";
  * @example
  * ```typescript
  * const samplingPrompt: SamplingPrompt = {
- *   name: "create_reddit_post",
+ *   name: "create_server_config",
  *   messages: [
- *     { role: "system", content: "You are a helpful Reddit post creator." },
- *     { role: "user", content: "Create a post about TypeScript best practices" }
+ *     { role: "system", content: "You are a helpful Mittwald server configuration assistant." },
+ *     { role: "user", content: "Create a server configuration for a TypeScript application" }
  *   ],
  *   _meta: {
- *     callback: "handleCreateRedditPostCallback"
+ *     callback: "handleCreateServerConfigCallback"
  *   }
  * };
  * ```
@@ -53,7 +53,7 @@ export interface SamplingPrompt extends Prompt {
      * The name of the callback function to invoke after sampling is complete.
      * This function will receive the sampling result and handle any post-processing.
      *
-     * @example "handleCreateRedditPostCallback"
+     * @example "handleCreateServerConfigCallback"
      */
     callback: string;
   };
