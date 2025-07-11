@@ -81,7 +81,7 @@ Add to your Claude Desktop MCP configuration:
   "mcpServers": {
     "mittwald": {
       "command": "docker",
-      "args": ["exec", "mittwald-mcp-container", "node", "build/stdio-server.js"],
+      "args": ["exec", "-i", "mittwald-mcp-container", "node", "build/stdio-server.js"],
       "env": {
         "MITTWALD_API_TOKEN": "your_api_token_here"
       }
