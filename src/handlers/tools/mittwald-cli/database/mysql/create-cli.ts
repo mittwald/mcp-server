@@ -16,6 +16,14 @@ interface MittwaldDatabaseMysqlCreateArgs {
 
 export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseMysqlCreateArgs> = async (args) => {
   try {
+    // Check if project ID is provided or set in context
+    if (!args.projectId) {
+      return formatToolResponse(
+        "error",
+        "Project ID is required for database creation. Please provide a --project-id parameter or set a default project context using 'mw context set --project-id=<PROJECT_ID>'"
+      );
+    }
+    
     // Build CLI command arguments
     const cliArgs: string[] = ['database', 'mysql', 'create'];
     
@@ -83,6 +91,28 @@ export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseM
         return formatToolResponse(
           "error",
           `Permission denied when creating MySQL database. Check if your API token has database creation permissions.\nError: ${errorMessage}`
+        );
+      }
+      
+      if (errorMessage.includes('404') || errorMessage.includes('Request failed with status code 404')) {
+        return formatToolResponse(
+          "error",
+          `Database creation failed - resource not found. This might be due to:\n` +
+          `• Project ${args.projectId || 'default'} doesn't exist or lacks database support\n` +
+          `• Account limitations preventing database creation\n` +
+          `• MySQL version '${args.version}' not available in this project\n` +
+          `\nError: ${errorMessage}`
+        );
+      }
+      
+      if (errorMessage.includes('400') || errorMessage.includes('Request failed with status code 400')) {
+        return formatToolResponse(
+          "error",
+          `Invalid request parameters for database creation. Please check:\n` +
+          `• Project ID is correct: ${args.projectId || 'not specified'}\n` +
+          `• Password meets requirements: ${args.userPassword ? 'provided' : 'not provided'}\n` +
+          `• MySQL version is valid: ${args.version}\n` +
+          `\nError: ${errorMessage}`
         );
       }
       
