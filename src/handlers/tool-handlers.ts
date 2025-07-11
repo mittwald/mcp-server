@@ -59,8 +59,8 @@ export async function handleListTools(_request: ListToolsRequest): Promise<ListT
     logger.info(`🔧 handleListTools called, TOOLS.length: ${TOOLS.length}`);
     
     // Check if tool filtering is enabled
-    if (CONFIG.TOOL_FILTER_ENABLED === 'true') {
-      const maxTools = CONFIG.MAX_TOOLS_PER_RESPONSE ? parseInt(CONFIG.MAX_TOOLS_PER_RESPONSE, 10) : 50;
+    if (CONFIG.TOOL_FILTER_ENABLED === true) {
+      const maxTools = CONFIG.MAX_TOOLS_PER_RESPONSE || 50;
       const allowedCategories = CONFIG.ALLOWED_TOOL_CATEGORIES?.split(',').map(c => c.trim()).filter(Boolean);
       
       const filterOptions = {

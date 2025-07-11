@@ -29,7 +29,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
 import { CONFIG, VALID_REDIRECT_URIS, OAUTH_DISABLED } from './server/config.js';
-import { OAuthProvider } from './server/oauth.js';
+// OAuth is disabled for Mittwald integration
 import { MCPHandler } from './server/mcp.js';
 import { setMCPHandlerInstance } from './server/mcp.js';
 import { bypassAuthMiddleware } from './server/bypass-auth.js';

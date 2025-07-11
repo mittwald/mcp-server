@@ -4,20 +4,18 @@
  *
  * @remarks
  * This module manages all server configuration including environment variables,
- * OAuth settings, and validation. It provides a centralized configuration
+ * API settings, and validation. It provides a centralized configuration
  * object that is used throughout the application.
  *
  * Required environment variables:
- * - REDDIT_CLIENT_ID: OAuth2 client ID from Reddit app
- * - REDDIT_CLIENT_SECRET: OAuth2 client secret
- * - JWT_SECRET: Secret key for signing JWT tokens
+ * - MITTWALD_API_TOKEN: API token for Mittwald API access
+ * - JWT_SECRET: Secret key for signing JWT tokens (if OAuth enabled)
  *
  * Optional environment variables:
  * - OAUTH_ISSUER: Base URL for OAuth endpoints
  * - REDIRECT_URL: OAuth callback URL
  * - PORT: Server port (default: 3000)
- * - REDDIT_USER_AGENT: User agent for Reddit API
- * - REDDIT_USERNAME: Default Reddit username
+ * - DISABLE_OAUTH: Set to "true" to disable OAuth (default: false)
  */
 
 import dotenv from "dotenv";
@@ -31,127 +29,104 @@ dotenv.config();
  * These values are typically loaded from environment variables.
  */
 export interface ServerConfig {
-  /** Reddit OAuth2 client ID */
-  REDDIT_CLIENT_ID: string;
-  /** Reddit OAuth2 client secret */
-  REDDIT_CLIENT_SECRET: string;
-  /** Secret key for JWT token signing */
-  JWT_SECRET: string;
+  /** Mittwald API token for API access */
+  MITTWALD_API_TOKEN: string;
+  /** Secret key for JWT token signing (optional if OAuth disabled) */
+  JWT_SECRET?: string;
   /** Base URL for OAuth issuer (production or localhost) */
   OAUTH_ISSUER: string;
   /** OAuth callback redirect URL */
   REDIRECT_URL: string;
   /** Server port number */
   PORT: string;
-  /** User agent string for Reddit API requests */
-  REDDIT_USER_AGENT: string;
-  /** Default Reddit username */
-  REDDIT_USERNAME: string;
-  /** Mittwald API token (optional) */
-  MITTWALD_API_TOKEN?: string;
-  /** Tool filtering configuration */
-  TOOL_FILTER_ENABLED?: string;
-  /** Maximum tools per response */
-  MAX_TOOLS_PER_RESPONSE?: string;
-  /** Allowed tool categories (comma-separated) */
+  /** Whether to disable OAuth authentication */
+  DISABLE_OAUTH: boolean;
+  /** Test server ID for running tests */
+  TEST_SERVER_ID?: string;
+  /** Test admin email for running tests */
+  TEST_ADMIN_EMAIL?: string;
+  /** Whether to skip test cleanup */
+  SKIP_TEST_CLEANUP?: boolean;
+  /** Whether to run tests in parallel */
+  TEST_PARALLEL?: boolean;
+  /** Whether to enable tool filtering */
+  TOOL_FILTER_ENABLED?: boolean;
+  /** Maximum number of tools per response */
+  MAX_TOOLS_PER_RESPONSE?: number;
+  /** Allowed tool categories */
   ALLOWED_TOOL_CATEGORIES?: string;
-  /** Mittwald SSH password (optional) */
-  MITTWALD_SSH_PASSWORD?: string;
-  /** Mittwald admin email (optional) */
-  MITTWALD_ADMIN_EMAIL?: string;
 }
 
 /**
  * Server configuration object
  *
  * @remarks
- * This object is populated from environment variables with sensible defaults.
- * In production, OAUTH_ISSUER defaults to the Smithery server URL.
- * In development, it defaults to localhost:3000.
+ * Centralized configuration loaded from environment variables.
+ * Used throughout the application for consistent settings.
  */
 export const CONFIG: ServerConfig = {
-  REDDIT_CLIENT_ID: process.env.REDDIT_CLIENT_ID!,
-  REDDIT_CLIENT_SECRET: process.env.REDDIT_CLIENT_SECRET!,
-  JWT_SECRET: process.env.JWT_SECRET!,
-  OAUTH_ISSUER:
-    process.env.OAUTH_ISSUER ||
-    (process.env.NODE_ENV === "production"
-      ? "https://systemprompt-mcp-reddit.example.com"
+  MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || "",
+  JWT_SECRET: process.env.JWT_SECRET,
+  OAUTH_ISSUER: process.env.OAUTH_ISSUER || 
+    (process.env.NODE_ENV === "production" 
+      ? "https://mittwald-mcp.example.com"
       : `http://localhost:${process.env.PORT || "3000"}`),
-  REDIRECT_URL:
-    process.env.REDIRECT_URL ||
-    `${process.env.OAUTH_ISSUER || `http://localhost:${process.env.PORT || "3000"}`}/oauth/reddit/callback`,
+  REDIRECT_URL: process.env.REDIRECT_URL || 
+    `${process.env.OAUTH_ISSUER || `http://localhost:${process.env.PORT || "3000"}`}/oauth/callback`,
   PORT: process.env.PORT || "3000",
-  /**
-   * Reddit API User-Agent string identifying your application
-   * @remarks
-   * Reddit requires a specific format: <platform>:<app_id>:<version> (by /u/<developer_username>)
-   * This identifies your APPLICATION to Reddit's servers for rate limiting and compliance.
-   * The username should be the developer's Reddit account, not end users.
-   * @example 'linux:my-reddit-app:v1.0.0 (by /u/my_developer_account)'
-   * @see {@link https://github.com/reddit-archive/reddit/wiki/API} Reddit API Rules
-   */
-  REDDIT_USER_AGENT: process.env.REDDIT_USER_AGENT || "linux:systemprompt-mcp-reddit:v2.0.0",
-  /**
-   * Reddit username of the developer who registered the OAuth app
-   * @remarks
-   * This is YOUR (the developer's) Reddit username, used to construct the User-Agent.
-   * It should match the account that created the Reddit OAuth app.
-   * Do NOT use end user usernames here - those come from OAuth tokens.
-   * @example 'my_developer_account' (without the /u/ prefix)
-   */
-  REDDIT_USERNAME: process.env.REDDIT_USERNAME || "reddit-user",
-  // Mittwald configuration (optional, for API key based services)
-  MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN,
-  MITTWALD_SSH_PASSWORD: process.env.MITTWALD_SSH_PASSWORD,
-  MITTWALD_ADMIN_EMAIL: process.env.MITTWALD_ADMIN_EMAIL,
-  // Tool filtering configuration
-  TOOL_FILTER_ENABLED: process.env.TOOL_FILTER_ENABLED,
-  MAX_TOOLS_PER_RESPONSE: process.env.MAX_TOOLS_PER_RESPONSE,
+  DISABLE_OAUTH: process.env.DISABLE_OAUTH === "true",
+  TEST_SERVER_ID: process.env.TEST_SERVER_ID,
+  TEST_ADMIN_EMAIL: process.env.TEST_ADMIN_EMAIL,
+  SKIP_TEST_CLEANUP: process.env.SKIP_TEST_CLEANUP === "true",
+  TEST_PARALLEL: process.env.TEST_PARALLEL !== "false",
+  TOOL_FILTER_ENABLED: process.env.TOOL_FILTER_ENABLED === "true",
+  MAX_TOOLS_PER_RESPONSE: process.env.MAX_TOOLS_PER_RESPONSE ? parseInt(process.env.MAX_TOOLS_PER_RESPONSE) : 50,
   ALLOWED_TOOL_CATEGORIES: process.env.ALLOWED_TOOL_CATEGORIES,
-} as const;
+};
 
 /**
- * Check if OAuth is disabled
+ * Validates required configuration values
+ *
+ * @remarks
+ * Checks that all required environment variables are set.
+ * Throws an error if any required values are missing.
  */
-export const OAUTH_DISABLED = process.env.DISABLE_OAUTH === 'true';
-
-/**
- * Validates that all required environment variables are present
- * @throws {Error} Thrown if any required environment variable is missing
- * @internal
- */
-if (!OAUTH_DISABLED) {
-  const requiredEnvVars: (keyof ServerConfig)[] = [
-    "REDDIT_CLIENT_ID",
-    "REDDIT_CLIENT_SECRET",
-    "JWT_SECRET",
+export function validateConfig(): void {
+  const requiredVars = [
+    "MITTWALD_API_TOKEN",
   ];
-  for (const envVar of requiredEnvVars) {
-    if (!CONFIG[envVar]) {
-      throw new Error(`Missing required environment variable: ${envVar}`);
-    }
+
+  // JWT_SECRET is only required if OAuth is enabled
+  if (!CONFIG.DISABLE_OAUTH && !CONFIG.JWT_SECRET) {
+    requiredVars.push("JWT_SECRET");
+  }
+
+  const missingVars = requiredVars.filter(
+    (varName) => !process.env[varName]
+  );
+
+  if (missingVars.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(", ")}`
+    );
   }
 }
 
 /**
- * List of valid OAuth redirect URIs
+ * OAuth callback URLs for development and production
  *
  * @remarks
- * These URIs are whitelisted for OAuth callbacks to prevent redirect attacks.
- * The list includes:
- * - SystemPrompt protocol handler for desktop apps
- * - Production SystemPrompt.io callback
- * - Smithery server callback
- * - Local development callbacks
- * - Configured redirect URL from environment
- *
- * Any OAuth callback must match one of these URIs exactly.
+ * Predefined callback URLs for different environments.
+ * Used for OAuth redirect URI validation.
  */
-export const VALID_REDIRECT_URIS = [
-  `http://localhost:${CONFIG.PORT}/oauth/reddit/callback`,
-  "http://localhost:5173/oauth/reddit/callback",
-  "http://localhost:6274/oauth/callback/debug",
-  `${CONFIG.OAUTH_ISSUER}/oauth/reddit/callback`,
-  CONFIG.REDIRECT_URL,
+export const OAUTH_CALLBACK_URLS = [
+  `http://localhost:${CONFIG.PORT}/oauth/callback`,
+  "http://localhost:5173/oauth/callback",
+  `${CONFIG.OAUTH_ISSUER}/oauth/callback`,
 ];
+
+// Legacy exports for backwards compatibility
+export const VALID_REDIRECT_URIS = OAUTH_CALLBACK_URLS;
+export const OAUTH_DISABLED = CONFIG.DISABLE_OAUTH;
+
+export default CONFIG;

@@ -1,7 +1,7 @@
 {
   "name": "@systemprompt/systemprompt-mcp-server",
   "version": "1.0.1",
-  "description": "Complete example MCP server implementation with full specification support, type safety, and production-ready architecture. Demonstrates OAuth 2.1, tools, prompts, sampling, and notifications using Reddit as a real-world integration.",
+  "description": "Mittwald MCP server implementation providing tools for managing hosting infrastructure through the Model Context Protocol. Supports apps, projects, databases, containers, and domains via Mittwald API.",
   "type": "module",
   "exports": {
     ".": {
@@ -79,18 +79,18 @@
     "vitest": "^3.2.4"
   },
   "keywords": [
-    "systemprompt",
+    "mittwald",
     "mcp",
     "model-context-protocol",
     "mcp-server",
-    "mcp-example",
+    "hosting",
+    "infrastructure",
     "typescript",
     "type-safe",
-    "oauth2",
-    "reddit",
-    "example",
-    "template",
-    "boilerplate"
+    "api-client",
+    "domains",
+    "containers",
+    "projects"
   ],
   "author": "SystemPrompt",
   "license": "MIT",

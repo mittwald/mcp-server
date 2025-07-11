@@ -1,5 +1,5 @@
 import express from "express";
-import type { AuthenticatedRequest } from "./oauth.js";
+import type { AuthenticatedRequest } from "./auth-types.js";
 
 /**
  * Bypass authentication middleware for development/non-OAuth environments

@@ -30,7 +30,7 @@ import { handleListResources, handleResourceCall } from "../handlers/resource-ha
 import { logger } from "../utils/logger.js";
 import { rateLimitMiddleware, validateProtocolVersion, requestSizeLimit } from "./middleware.js";
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
-import type { AuthenticatedRequest } from "./oauth.js";
+import type { AuthenticatedRequest } from "./auth-types.js";
 import { OAUTH_DISABLED, CONFIG } from "./config.js";
 
 // Per-session auth context storage
