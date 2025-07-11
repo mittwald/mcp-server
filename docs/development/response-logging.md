@@ -2,7 +2,7 @@
 
 ## Overview
 
-We've implemented response size logging in the MCP server to help diagnose issues where large responses might be causing Claude Code to crash. This logging system tracks the size of all HTTP responses and provides detailed information about potentially problematic large responses.
+The MCP server implements response size logging to help diagnose issues where large responses might cause client crashes. This logging system tracks the size of all HTTP responses and provides detailed information about potentially problematic large responses.
 
 ## Features
 
@@ -52,9 +52,9 @@ Response logging is automatically enabled. To see DEBUG level logs, set:
 DEBUG=true
 ```
 
-## Monitoring for Claude Code Crashes
+## Monitoring for Client Crashes
 
-When Claude Code crashes, check the Docker logs for large responses:
+When clients crash, check the Docker logs for large responses:
 
 ```bash
 # Check for large responses
