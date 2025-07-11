@@ -1,17 +1,14 @@
 # Mittwald MCP Server
 
-[![npm version](https://img.shields.io/npm/v/@systemprompt/systemprompt-mcp-server.svg)](https://www.npmjs.com/package/@systemprompt/systemprompt-mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A production-ready Model Context Protocol (MCP) server that provides comprehensive access to the **Mittwald mStudio v2 API** - the complete hosting platform API for managing projects, applications, databases, domains, and more.
-
-Built on the [systemprompt-mcp-server](https://github.com/systempromptio/systemprompt-mcp-server) foundation, this implementation provides **full TypeScript support** and covers the **entire Mittwald API surface** with 200+ tools.
+A production-ready Model Context Protocol (MCP) server that provides comprehensive access to the **Mittwald hosting platform** through the official Mittwald CLI. This server acts as a bridge between MCP clients (like Claude) and the Mittwald infrastructure management platform.
 
 ## 🌟 Key Features
 
-### Complete Mittwald API Coverage
+### Complete Mittwald CLI Integration
 - **🚀 Applications**: Install, manage, and deploy WordPress, Shopware, TYPO3, and more
-- **🗄️ Databases**: MySQL and Redis database management 
+- **🗄️ Databases**: MySQL and Redis database creation and management
 - **🌐 Domains**: DNS zone management and virtual host configuration
 - **📧 Mail**: Email address and delivery box management
 - **👥 Projects**: Project creation, membership, and resource management
@@ -19,251 +16,191 @@ Built on the [systemprompt-mcp-server](https://github.com/systempromptio/systemp
 - **⚙️ Cron Jobs**: Schedule and manage automated tasks
 - **💾 Backups**: Automated backup scheduling and management
 - **🔧 SSH/SFTP**: User management for secure access
+- **🐳 Containers**: Container stack management and deployment
 
-### Developer Experience
+### Production-Ready Architecture
+- **CLI Wrapper**: Executes official Mittwald CLI commands for maximum compatibility
+- **145 Tools**: Comprehensive coverage of Mittwald CLI functionality
 - **TypeScript**: Full type safety with comprehensive interfaces
-- **Modular Architecture**: Clean separation of concerns, easy to extend
-- **Error Handling**: Robust error management with detailed messages
-- **API-First**: Direct API client usage, no CLI dependencies
-- **Documentation**: Extensive inline documentation and examples
+- **Docker Support**: Containerized deployment with health checks
+- **Error Handling**: Robust error management with detailed diagnostics
+- **Session Management**: Proper MCP session handling for multiple concurrent clients
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
+- Docker and Docker Compose
 - Mittwald API token ([Get one here](https://studio.mittwald.de/app/profile/api-tokens))
 
-### Installation
+### Installation & Setup
 
+1. **Clone the repository**
 ```bash
-# Install globally
-npm install -g mittwald-mcp-server
-
-# Or use directly with npx
-npx mittwald-mcp-server
-
-# Clone for development
-git clone https://github.com/mittwald/mittwald-mcp-server.git
-cd mittwald-mcp-server
-npm install
-npm run build
+git clone https://github.com/robertDouglass/mittwald-mcp.git
+cd mittwald-mcp
 ```
 
-### Configuration
-
-Create a `.env` file or set environment variables:
-
+2. **Configure environment variables**
 ```bash
-# Required
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env with your Mittwald API token
 MITTWALD_API_TOKEN=your_api_token_here
-
-# Optional
-PORT=3000                        # Server port (default: 3000)
-LOG_LEVEL=info                   # Logging level (debug, info, warn, error)
+DISABLE_OAUTH=true
+PORT=3000
 ```
 
-### Running the Server
-
+3. **Build and run with Docker**
 ```bash
-# Build and run
-npm run build
-node build/index.js
+# Build the Docker image
+docker build -t mittwald-mcp .
 
-# Development with watch mode
-npm run watch
-# In another terminal:
-node build/index.js
+# Run the container
+docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-container mittwald-mcp
 ```
 
-### Using with MCP Inspector
-
-Test all features with the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector):
-
+4. **Verify the server is running**
 ```bash
-# Build the server first
-npm run build
+# Check health endpoint
+curl http://localhost:3000/health
 
-# Launch inspector
-npx @modelcontextprotocol/inspector build/index.js
+# Check MCP endpoint
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test-client","version":"1.0.0"}}}'
 ```
 
-## 🛠️ Tool Reference
+### Using with MCP Clients
 
-### Application Management
-
-#### `mittwald_app_install_wordpress`
-Install WordPress on a project
-```typescript
+#### Claude Desktop
+Add to your Claude Desktop MCP configuration:
+```json
 {
-  "projectId": "project-id",
-  "version": "6.4",              // Optional, latest if not specified
-  "host": "example.com",         // Optional, auto-detected from project
-  "adminUser": "admin",          // Optional, defaults to 'admin'
-  "adminEmail": "admin@example.com", // Optional, uses user email
-  "adminPass": "secure-password", // Optional, auto-generated
-  "siteTitle": "My WordPress Site", // Optional
-  "wait": true                   // Wait for installation to complete
-}
-```
-
-#### `mittwald_app_list`
-List all applications in a project
-```typescript
-{
-  "projectId": "project-id",
-  "output": "json"               // "json", "txt", "yaml", "csv", "tsv"
-}
-```
-
-### Database Management
-
-#### `mittwald_database_mysql_create`
-Create a new MySQL database
-```typescript
-{
-  "projectId": "project-id",
-  "description": "Main database",
-  "characterSettings": {
-    "characterSet": "utf8mb4",
-    "collation": "utf8mb4_unicode_ci"
-  },
-  "version": "8.0"
-}
-```
-
-#### `mittwald_database_mysql_list`
-List MySQL databases
-```typescript
-{
-  "projectId": "project-id",     // Optional filter
-  "output": "json",
-  "extended": true               // Include storage usage info
-}
-```
-
-### Project Management
-
-#### `mittwald_project_create`
-Create a new project
-```typescript
-{
-  "description": "My Project",
-  "serverId": "server-id"
-}
-```
-
-#### `mittwald_project_list`
-List projects
-```typescript
-{
-  "output": "json",
-  "extended": false
-}
-```
-
-### Domain & DNS Management
-
-#### `mittwald_domain_dnszone_update`
-Update DNS zone records
-```typescript
-{
-  "dnszoneId": "zone-id",
-  "recordSet": "a",              // "a", "cname", "mx", "txt", "srv"
-  "name": "www",
-  "value": "192.168.1.1",
-  "ttl": 3600,
-  "managed": true
-}
-```
-
-### Backup Management
-
-#### `mittwald_backup_create`
-Create a project backup
-```typescript
-{
-  "projectId": "project-id",
-  "description": "Pre-deployment backup",
-  "expirationTime": "2024-12-31T23:59:59Z"
-}
-```
-
-#### `mittwald_backup_schedule_create`
-Schedule automatic backups
-```typescript
-{
-  "projectId": "project-id",
-  "description": "Daily backups",
-  "schedule": "0 2 * * *",       // Cron expression
-  "ttl": "P30D"                  // Keep for 30 days
-}
-```
-
-### Mail Management
-
-#### `mittwald_mail_address_create`
-Create a mail address
-```typescript
-{
-  "projectId": "project-id",
-  "address": "info@example.com",
-  "password": "secure-password",
-  "quota": "1000MB",
-  "autoresponder": {
-    "enabled": true,
-    "message": "Thank you for your email"
+  "mcpServers": {
+    "mittwald": {
+      "command": "docker",
+      "args": ["exec", "mittwald-mcp-container", "node", "build/stdio-server.js"],
+      "env": {
+        "MITTWALD_API_TOKEN": "your_api_token_here"
+      }
+    }
   }
 }
 ```
 
-### Cron Job Management
-
-#### `mittwald_cronjob_create`
-Create a scheduled task
-```typescript
-{
-  "projectId": "project-id",
-  "description": "Daily cleanup",
-  "schedule": "0 3 * * *",       // Cron expression
-  "command": "/usr/bin/php /path/to/script.php",
-  "email": "admin@example.com"   // Notification email
-}
+#### HTTP MCP Client
+Connect to the HTTP endpoint:
 ```
+http://localhost:3000/mcp
+```
+
+## 🛠️ Available Tools
+
+The server provides 145 tools covering all major Mittwald CLI functionality:
+
+### Application Management (24 tools)
+- `mittwald_app_install_wordpress` - Install WordPress
+- `mittwald_app_install_shopware6` - Install Shopware 6
+- `mittwald_app_install_typo3` - Install TYPO3
+- `mittwald_app_list` - List applications
+- `mittwald_app_get` - Get application details
+- `mittwald_app_update` - Update application
+- `mittwald_app_versions` - List available versions
+- And 17 more app management tools...
+
+### Database Management (11 tools)
+- `mittwald_database_mysql_create` - Create MySQL database
+- `mittwald_database_mysql_list` - List MySQL databases
+- `mittwald_database_mysql_get` - Get database details
+- `mittwald_database_mysql_delete` - Delete database
+- `mittwald_database_redis_create` - Create Redis database
+- And 6 more database tools...
+
+### Project Management (12 tools)
+- `mittwald_project_create` - Create new project
+- `mittwald_project_list` - List projects
+- `mittwald_project_get` - Get project details
+- `mittwald_project_delete` - Delete project
+- `mittwald_project_update` - Update project
+- And 7 more project tools...
+
+### Domain & DNS Management (7 tools)
+- `mittwald_domain_virtualhost_create` - Create virtual host
+- `mittwald_domain_dnszone_update` - Update DNS records
+- `mittwald_domain_list` - List domains
+- And 4 more domain tools...
+
+### Container Management (17 tools)
+- `mittwald_container_stack_deploy` - Deploy container stack
+- `mittwald_container_list_services` - List container services
+- `mittwald_container_logs` - View container logs
+- `mittwald_container_restart` - Restart containers
+- And 13 more container tools...
+
+### Additional Categories
+- **Backup Management**: 8 tools for backup operations
+- **Cron Jobs**: 8 tools for scheduled task management
+- **Mail Management**: 10 tools for email configuration
+- **User Management**: 13 tools for SSH/SFTP users
+- **Organization Management**: 3 tools for org operations
+- **And more**: Extension, context, and server management tools
 
 ## 🏗️ Architecture
 
-This implementation follows clean architecture principles:
+This server uses a **CLI Wrapper Architecture** for maximum compatibility:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    MCP Client                           │
 │              (Claude, VS Code, etc.)                   │
 └────────────────────────┬────────────────────────────────┘
-                         │ MCP Protocol
+                         │ MCP Protocol (HTTP/STDIO)
 ┌────────────────────────┴────────────────────────────────┐
 │                 Mittwald MCP Server                     │
 │  ┌─────────────┐  ┌─────────────┐  ┌────────────────┐  │
-│  │    Tool     │  │   Request   │  │   Response     │  │
-│  │  Handlers   │  │  Validation │  │  Formatting    │  │
+│  │    Tool     │  │   Session   │  │   Response     │  │
+│  │  Handlers   │  │  Management │  │  Formatting    │  │
 │  └─────────────┘  └─────────────┘  └────────────────┘  │
 └────────────────────────┬────────────────────────────────┘
-                         │
+                         │ CLI Execution
 ┌────────────────────────┴────────────────────────────────┐
-│                Mittwald API Client                      │
+│               Official Mittwald CLI                     │
 │  ┌─────────────┐  ┌─────────────┐  ┌────────────────┐  │
 │  │    App      │  │  Database   │  │    Project     │  │
-│  │  Namespace  │  │  Namespace  │  │   Namespace    │  │
+│  │  Commands   │  │  Commands   │  │   Commands     │  │
 │  └─────────────┘  └─────────────┘  └────────────────┘  │
+└────────────────────────┬────────────────────────────────┘
+                         │ Mittwald API
+┌────────────────────────┴────────────────────────────────┐
+│                  Mittwald Platform                      │
+│     (Projects, Apps, Databases, Domains, etc.)         │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ### Key Components
 
-- **`src/handlers/tool-handlers.ts`**: Main tool routing and validation
-- **`src/handlers/tools/mittwald-cli/`**: Tool implementations organized by API category
-- **`src/services/mittwald/`**: Mittwald API client and authentication
-- **`src/constants/tool/mittwald-cli/`**: Tool definitions and schemas
-- **`src/types/mittwald/`**: TypeScript type definitions
+- **CLI Wrapper**: Executes `mw` CLI commands via `src/utils/cli-wrapper.ts`
+- **Tool Handlers**: Process MCP requests and format CLI commands
+- **Session Management**: Handles multiple concurrent MCP client sessions
+- **Error Handling**: Comprehensive error processing and user-friendly messages
+- **Docker Container**: Includes pre-installed Mittwald CLI
+
+## 🎯 Why CLI Wrapper Approach?
+
+### Advantages
+✅ **Maximum Compatibility**: Uses official Mittwald CLI for 100% API compatibility  
+✅ **Automatic Updates**: Benefits from CLI updates without code changes  
+✅ **Proven Stability**: Leverages battle-tested CLI implementation  
+✅ **Comprehensive Coverage**: Access to all CLI features immediately  
+✅ **Error Messages**: Users get CLI's polished, user-tested error messages  
+
+### Design Philosophy
+- **Reliability**: CLI is Mittwald's primary interface, ensuring long-term stability
+- **Maintainability**: Less code to maintain compared to direct API implementation
+- **User Experience**: Consistent behavior with what users expect from CLI
+- **Future-Proof**: Automatically supports new CLI features and API changes
 
 ## 📁 Project Structure
 
@@ -272,54 +209,66 @@ mittwald-mcp-server/
 ├── src/
 │   ├── handlers/
 │   │   ├── tool-handlers.ts                    # Main tool router
-│   │   └── tools/mittwald-cli/                 # Tool implementations
+│   │   └── tools/mittwald-cli/                 # CLI tool handlers
 │   │       ├── app/                            # Application management
-│   │       │   ├── install/                    # App installations
-│   │       │   │   ├── wordpress.ts
-│   │       │   │   ├── shopware6.ts
-│   │       │   │   └── ...
-│   │       │   ├── create.ts
-│   │       │   ├── list.ts
-│   │       │   └── ...
 │   │       ├── database/                       # Database management
-│   │       │   ├── mysql/
-│   │       │   └── redis/
 │   │       ├── project/                        # Project management
 │   │       ├── domain/                         # Domain & DNS
-│   │       ├── mail/                           # Email management
-│   │       ├── backup/                         # Backup management
-│   │       ├── cronjob/                        # Cron job management
-│   │       ├── user/                           # User management
-│   │       └── org/                            # Organization management
-│   ├── services/mittwald/
-│   │   ├── mittwald-client.ts                  # API client wrapper
-│   │   └── index.ts
+│   │       ├── container/                      # Container management
+│   │       └── ...                             # Other categories
 │   ├── constants/tool/mittwald-cli/            # Tool definitions
+│   ├── utils/
+│   │   ├── cli-wrapper.ts                      # CLI execution wrapper
+│   │   └── format-tool-response.ts             # Response formatting
+│   ├── server/
+│   │   ├── mcp.ts                              # MCP protocol handler
+│   │   └── config.ts                           # Server configuration
 │   ├── types/mittwald/                         # TypeScript types
-│   └── utils/
-│       ├── format-tool-response.ts             # Response formatting
-│       └── executeCommand.ts                   # Command utilities
+│   └── index.ts                                # Main entry point
 ├── docs/
 │   ├── cli-reference/                          # Complete CLI documentation
-│   └── development/                            # Development guides
-├── e2e-test/                                   # End-to-end tests
-└── package.json
+│   ├── development/                            # Development guides
+│   └── architecture/                           # Architecture documentation
+├── tests/                                      # Test suites
+├── Dockerfile                                  # Container configuration
+├── docker-compose.yml                          # Docker Compose setup
+└── .env.example                                # Environment configuration
 ```
 
 ## 🔧 Development
 
 ### Prerequisites
 - Node.js 18+
-- npm or yarn
+- Docker and Docker Compose
 - Mittwald account with API access
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/robertDouglass/mittwald-mcp.git
+cd mittwald-mcp
+
+# Install dependencies
+npm install
+
+# Set up environment
+cp .env.example .env
+# Edit .env with your API token
+
+# Build TypeScript
+npm run build
+
+# Run in development mode
+npm run watch
+# In another terminal:
+node build/index.js
+```
 
 ### Development Commands
 
 ```bash
-# Install dependencies
-npm install
-
-# Build TypeScript
+# Build the project
 npm run build
 
 # Watch mode for development
@@ -328,53 +277,133 @@ npm run watch
 # Run tests
 npm run test
 
-# Run end-to-end tests
-npm run e2e
+# Run functional tests
+npm run test:functional
 
-# Check TypeScript without building
-npx tsc --noEmit
+# Build and run Docker container
+docker-compose up --build
+
+# Run MCP Inspector for testing
+npm run inspector
 ```
 
 ### Adding New Tools
 
-1. **Define the tool** in `src/constants/tool/mittwald-cli/[category]/[tool].ts`
-2. **Implement the handler** in `src/handlers/tools/mittwald-cli/[category]/[tool].ts`
-3. **Register the tool** in `src/handlers/tool-handlers.ts`
-4. **Add Zod schema** for validation
-5. **Update exports** in relevant index files
+1. **Create tool definition** in `src/constants/tool/mittwald-cli/[category]/[tool]-cli.ts`
+2. **Implement handler** in `src/handlers/tools/mittwald-cli/[category]/[tool]-cli.ts`
+3. **Use CLI wrapper pattern**:
+   ```typescript
+   export const handleMyTool: MittwaldToolHandler<MyArgs> = async (args) => {
+     const cliArgs = ['my', 'command', '--flag', args.value];
+     const result = await executeCli('mw', cliArgs, {
+       env: { MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN }
+     });
+     
+     if (result.exitCode !== 0) {
+       return formatToolResponse("error", result.stderr);
+     }
+     
+     return formatToolResponse("success", "Operation completed", result.stdout);
+   };
+   ```
 
-### Code Quality
+## 📊 Testing
 
-This project maintains high code quality standards:
+### Test Categories
+- **Unit Tests**: Individual tool handler validation
+- **Integration Tests**: CLI execution and response parsing
+- **Functional Tests**: End-to-end workflow testing
+- **Container Tests**: Docker deployment verification
 
-- **Zero TypeScript errors**: All code compiles cleanly
-- **Comprehensive types**: Full type coverage for API interactions
-- **Error handling**: Robust error management throughout
-- **Testing**: E2E tests cover critical workflows
-- **Documentation**: JSDoc comments for all public APIs
+### Running Tests
+```bash
+# Run all tests
+npm run test
+
+# Run specific test suites
+npm run test:unit
+npm run test:integration
+npm run test:functional
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+## 🚀 Deployment
+
+### Docker Deployment (Recommended)
+```bash
+# Build and run
+docker-compose up -d
+
+# Scale for multiple instances
+docker-compose up -d --scale mittwald-mcp=3
+
+# Check logs
+docker-compose logs -f
+```
+
+### Manual Deployment
+```bash
+# Build the project
+npm run build
+
+# Run with PM2 (production)
+pm2 start build/index.js --name mittwald-mcp
+
+# Or run directly
+node build/index.js
+```
+
+### Environment Variables
+```bash
+# Required
+MITTWALD_API_TOKEN=your_api_token_here
+
+# Optional
+PORT=3000                        # Server port
+DISABLE_OAUTH=true               # Disable OAuth (recommended)
+LOG_LEVEL=info                   # Logging level
+DEBUG=false                      # Debug mode
+
+# Tool filtering (optional)
+TOOL_FILTER_ENABLED=false        # Enable tool filtering
+MAX_TOOLS_PER_RESPONSE=50        # Max tools per response
+ALLOWED_TOOL_CATEGORIES=app,project,database  # Allowed categories
+```
 
 ## 📖 Documentation
 
 - **[CLI Reference](docs/cli-reference/)**: Complete Mittwald CLI command documentation
 - **[Development Guide](docs/development/)**: Development best practices and lessons learned
-- **[TypeScript Error Resolution](docs/development/TYPESCRIPT_ERROR_RESOLUTION_PLAN.md)**: Systematic approach to TypeScript issues
-- **[Learnings](docs/development/LEARNINGS.md)**: Key insights from development
+- **[Architecture Guide](docs/architecture/)**: CLI wrapper architecture details
+- **[Container Guide](docs/CONTAINERS.md)**: Container stack management
+- **[Testing Guide](tests/README.md)**: Testing strategies and examples
 
-## 🚫 Important Constraints
+## 🔍 Troubleshooting
 
-### No CLI Dependencies
-This MCP server uses **ONLY** the official Mittwald API client. It does **NOT** execute CLI commands, ensuring:
+### Common Issues
 
-- **Portability**: Works in any environment
-- **Security**: No shell command injection risks  
-- **Reliability**: Direct API calls are more stable
-- **Performance**: Faster than CLI subprocess execution
+1. **"Project ID is required"**
+   - Solution: Provide `projectId` parameter or set context with `mw context set --project-id=<ID>`
 
-### API-First Approach
-All functionality is implemented using:
-- `@mittwald/api-client` for API interactions
-- Direct HTTP calls where needed
-- No `mw` CLI command execution
+2. **"Request failed with status code 404"**
+   - Solution: Check account permissions and resource availability
+
+3. **"Command failed"**
+   - Solution: Verify API token and check container logs for detailed errors
+
+4. **CLI command not found**
+   - Solution: Ensure Mittwald CLI is installed in container (check Dockerfile)
+
+### Debug Mode
+```bash
+# Enable debug logging
+DEBUG=true docker-compose up
+
+# View detailed logs
+docker logs mittwald-mcp-container -f
+```
 
 ## 🤝 Contributing
 
@@ -382,18 +411,17 @@ We welcome contributions! Please:
 
 1. Fork the repository
 2. Create a feature branch
-3. Follow TypeScript best practices
-4. Add tests for new features
+3. Follow the CLI wrapper pattern
+4. Add tests for new functionality
 5. Update documentation
 6. Submit a pull request
 
-### Development Process
-
-1. **Study existing patterns** in the codebase
-2. **Use API client directly** - never CLI commands
-3. **Follow the handler pattern** established in other tools
-4. **Add comprehensive error handling**
-5. **Include TypeScript types** for all interfaces
+### Development Guidelines
+- Use the established CLI wrapper pattern
+- Follow TypeScript best practices
+- Add comprehensive error handling
+- Include JSDoc documentation
+- Write tests for new features
 
 ## 📄 License
 
@@ -401,12 +429,23 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [Mittwald](https://mittwald.de) for their comprehensive hosting platform API
-- [systemprompt.io](https://systemprompt.io) for the foundational MCP server implementation
+- [Mittwald](https://mittwald.de) for their comprehensive hosting platform and CLI
 - [Anthropic](https://anthropic.com) for the Model Context Protocol specification
+- [Model Context Protocol](https://modelcontextprotocol.io) for the protocol standards
 
 ---
 
-Built for the Mittwald hosting platform with ❤️
+## 🚀 Ready for Production
 
-For questions or support, please open an issue on GitHub.
+This Mittwald MCP Server is production-ready and provides:
+- ✅ **145 CLI tools** covering all major Mittwald functionality
+- ✅ **Docker containerization** for easy deployment
+- ✅ **Comprehensive error handling** with detailed diagnostics
+- ✅ **Session management** for multiple concurrent clients
+- ✅ **TypeScript type safety** throughout the codebase
+- ✅ **Extensive documentation** and examples
+- ✅ **Test coverage** for critical functionality
+
+**Questions or Issues?** Please open an issue on GitHub or contact the development team.
+
+Built with ❤️ for the Mittwald hosting platform.
