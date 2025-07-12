@@ -1,7 +1,5 @@
 # Mittwald MCP Server
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 A production-ready Model Context Protocol (MCP) server that provides comprehensive access to the **Mittwald hosting platform** through the official Mittwald CLI. This server acts as a bridge between MCP clients (like Claude) and the Mittwald infrastructure management platform.
 
 ## 🌟 Key Features
