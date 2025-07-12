@@ -71,6 +71,5 @@ docker-compose.override.yml
 test-*.ts
 check-*.ts
 parse-*.ts
-list-*.ts
 monitor-*.sh
 run-*.sh
