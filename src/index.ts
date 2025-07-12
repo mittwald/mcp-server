@@ -30,7 +30,7 @@ import { CONFIG, validateConfig } from './server/config.js';
 try {
   validateConfig();
 } catch (error) {
-  console.warn('⚠️  Configuration Warning:', error.message);
+  console.warn('⚠️  Configuration Warning:', error instanceof Error ? error.message : String(error));
   console.warn('📝 Make sure you have a .env file with required environment variables:');
   console.warn('   - MITTWALD_API_TOKEN=your_mittwald_api_token');
   if (!CONFIG.DISABLE_OAUTH) {
