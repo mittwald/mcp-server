@@ -421,10 +421,6 @@ We welcome contributions! Please:
 - Include JSDoc documentation
 - Write tests for new features
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - [Mittwald](https://mittwald.de) for their comprehensive hosting platform and CLI
