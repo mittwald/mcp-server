@@ -24,7 +24,21 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { startServer } from './server.js';
-import { CONFIG } from './server/config.js';
+import { CONFIG, validateConfig } from './server/config.js';
+
+// Validate configuration and warn about missing .env
+try {
+  validateConfig();
+} catch (error) {
+  console.warn('⚠️  Configuration Warning:', error.message);
+  console.warn('📝 Make sure you have a .env file with required environment variables:');
+  console.warn('   - MITTWALD_API_TOKEN=your_mittwald_api_token');
+  if (!CONFIG.DISABLE_OAUTH) {
+    console.warn('   - JWT_SECRET=your_jwt_secret');
+  }
+  console.warn('📋 See .env.example for a template');
+  console.warn('🚀 Server will start but API calls may fail without proper configuration\n');
+}
 
 // Start the server
 const port = parseInt(CONFIG.PORT, 10);
