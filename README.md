@@ -72,7 +72,11 @@ curl -X POST http://localhost:3000/mcp \
 
 ### Using with MCP Clients
 
-#### Claude Desktop
+The Mittwald MCP Server supports **two communication modes**:
+
+#### Mode 1: STDIO (for Claude Desktop)
+**Best for:** Claude Desktop integration, direct MCP client connections
+
 Add to your Claude Desktop MCP configuration:
 ```json
 {
@@ -88,10 +92,52 @@ Add to your Claude Desktop MCP configuration:
 }
 ```
 
-#### HTTP MCP Client
+**Requirements:**
+- The `-i` (interactive) flag is **required** for STDIN/STDOUT communication
+- Uses `stdio-server.js` entry point
+- Environment variables passed directly to Docker exec
+
+#### Mode 2: HTTP (for API integrations)
+**Best for:** Web applications, API integrations, development/testing
+
 Connect to the HTTP endpoint:
+```bash
+# Start container with HTTP server (already running from Quick Start)
+docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-container mittwald/mcp
+
+# Test connection
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test-client","version":"1.0.0"}}}'
 ```
-http://localhost:3000/mcp
+
+**Features:**
+- RESTful HTTP endpoint at `http://localhost:3000/mcp`
+- Uses `index.js` entry point  
+- Environment variables from `.env` file or `--env-file`
+- Health check endpoint: `http://localhost:3000/health`
+
+**Entry Points Comparison:**
+- **`build/stdio-server.js`** - STDIO mode for Claude Desktop
+- **`build/index.js`** - HTTP mode for web/API integrations
+
+#### Testing Both Modes
+
+**Test STDIO mode:**
+```bash
+# Test STDIO server responds to MCP protocol
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test","version":"1.0"}}}' | docker exec -i mittwald-mcp-container node build/stdio-server.js
+```
+
+**Test HTTP mode:**
+```bash
+# Test HTTP server health
+curl http://localhost:3000/health
+
+# Test HTTP MCP endpoint  
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test","version":"1.0"}}}'
 ```
 
 ## 🛠️ Available Tools
@@ -393,6 +439,17 @@ ALLOWED_TOOL_CATEGORIES=app,project,database  # Allowed categories
 
 4. **CLI command not found**
    - Solution: Ensure Mittwald CLI is installed in container (check Dockerfile)
+
+5. **Claude Desktop connection fails (STDIO mode)**
+   - **Missing `-i` flag**: Ensure `docker exec -i` includes the interactive flag
+   - **Wrong entry point**: Use `build/stdio-server.js` not `build/index.js`
+   - **Container not running**: Start container first with `docker run -d --name mittwald-mcp-container mittwald/mcp`
+   - **Environment variables**: Ensure `MITTWALD_API_TOKEN` is set in Claude Desktop config
+
+6. **HTTP mode not responding**
+   - **Wrong port**: Ensure container is mapped to port 3000: `-p 3000:3000`
+   - **Missing .env file**: Use `--env-file .env` or set environment variables
+   - **Wrong endpoint**: Use `http://localhost:3000/mcp` not just `/`
 
 ### Debug Mode
 ```bash
