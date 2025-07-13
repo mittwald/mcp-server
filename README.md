@@ -18,7 +18,7 @@ A production-ready Model Context Protocol (MCP) server that provides comprehensi
 
 ### Production-Ready Architecture
 - **CLI Wrapper**: Executes official Mittwald CLI commands for maximum compatibility
-- **145 Tools**: Comprehensive coverage of Mittwald CLI functionality
+- **143 Tools**: Comprehensive coverage of Mittwald CLI functionality
 - **TypeScript**: Full type safety with comprehensive interfaces
 - **Docker Support**: Containerized deployment with health checks
 - **Error Handling**: Robust error management with detailed diagnostics
@@ -142,7 +142,7 @@ curl -X POST http://localhost:3000/mcp \
 
 ## 🛠️ Available Tools
 
-The server provides 145 tools covering all major Mittwald CLI functionality:
+The server provides 143 tools covering all major Mittwald CLI functionality:
 
 ### Application Management (24 tools)
 - `mittwald_app_install_wordpress` - Install WordPress
@@ -489,7 +489,7 @@ We welcome contributions! Please:
 ## 🚀 Ready for Production
 
 This Mittwald MCP Server is production-ready and provides:
-- ✅ **145 CLI tools** covering all major Mittwald functionality
+- ✅ **143 CLI tools** covering all major Mittwald functionality
 - ✅ **Docker containerization** for easy deployment
 - ✅ **Comprehensive error handling** with detailed diagnostics
 - ✅ **Session management** for multiple concurrent clients

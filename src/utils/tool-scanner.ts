@@ -20,6 +20,15 @@ import type {
 } from '../types/tool-registry.js';
 
 /**
+ * Tools that should be excluded from the tool registry
+ * These tools are deactivated for security and multi-tenancy reasons
+ */
+const EXCLUDED_TOOLS = new Set([
+  'mittwald_login_reset',
+  'mittwald_login_token'
+]);
+
+/**
  * Default options for tool scanning
  */
 const DEFAULT_SCAN_OPTIONS: ToolScanOptions = {
@@ -162,6 +171,12 @@ export async function loadTools(options: Partial<ToolScanOptions> = {}): Promise
       if (registration) {
         const toolName = registration.tool.name;
         
+        // Check if tool is excluded
+        if (EXCLUDED_TOOLS.has(toolName)) {
+          logger.info(`Tool '${toolName}' is excluded from registry (deactivated for multi-tenancy)`);
+          continue;
+        }
+        
         // Check for duplicate tool names
         if (registry.tools.has(toolName)) {
           logger.warn(`Duplicate tool name '${toolName}' found in ${filePath}, skipping`);
@@ -214,8 +229,16 @@ export async function scanTools(options: Partial<ToolScanOptions> = {}): Promise
       const registration = await loadToolFromFile(filePath);
       
       if (registration) {
+        const toolName = registration.tool.name;
+        
+        // Check if tool is excluded
+        if (EXCLUDED_TOOLS.has(toolName)) {
+          // Don't count excluded tools as failed, but don't add them to results
+          continue;
+        }
+        
         result.loaded++;
-        result.toolNames.push(registration.tool.name);
+        result.toolNames.push(toolName);
       } else {
         result.failed++;
         result.failures.push({

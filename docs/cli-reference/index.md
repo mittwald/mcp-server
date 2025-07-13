@@ -182,9 +182,7 @@ This directory contains documentation for all `mw` CLI commands and their subcom
 
 - [mw login](mw-login.md) - Manage your client authentication
 
-  - [mw login reset](mw-login-reset.md)
   - [mw login status](mw-login-status.md)
-  - [mw login token](mw-login-token.md)
 
 ## mail
 
