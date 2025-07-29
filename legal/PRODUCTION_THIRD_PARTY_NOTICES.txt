@@ -1,0 +1,792 @@
+├─ @mittwald/api-client-commons@4.168.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/mittwald/api-client-js
+│  ├─ publisher: Mittwald CM Service GmbH & Co. KG
+│  ├─ email: opensource@mittwald.de
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/@mittwald/api-client-commons
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/@mittwald/api-client-commons/LICENSE
+├─ @mittwald/api-client@4.169.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/mittwald/api-client-js
+│  ├─ publisher: Mittwald CM Service GmbH & Co. KG
+│  ├─ email: opensource@mittwald.de
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/@mittwald/api-client
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/@mittwald/api-client/LICENSE
+├─ @modelcontextprotocol/sdk@1.13.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/modelcontextprotocol/typescript-sdk
+│  ├─ publisher: Anthropic, PBC
+│  ├─ url: https://anthropic.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/LICENSE
+├─ @robertdouglass/mcp-tester@1.0.5
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/robertDouglass/mcp-tester
+│  ├─ publisher: Robert Douglass
+│  ├─ email: robert@robertdouglass.ch
+│  ├─ url: https://github.com/robertDouglass
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/@robertdouglass/mcp-tester
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/@robertdouglass/mcp-tester/LICENSE
+├─ @systemprompt/systemprompt-mcp-server@1.0.1
+│  ├─ licenses: Custom: https://studio.mittwald.de/app/profile/api-tokens
+│  ├─ repository: https://github.com/systempromptio/systemprompt-mcp-server
+│  ├─ publisher: SystemPrompt
+│  ├─ path: /Users/robert/Code/mittwald-mcp
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/LICENSE
+├─ @types/parse-path@7.0.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/DefinitelyTyped/DefinitelyTyped
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/@types/parse-path
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/@types/parse-path/LICENSE
+├─ accepts@2.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/accepts
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/accepts
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/accepts/LICENSE
+├─ ajv-formats@3.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ajv-validator/ajv-formats
+│  ├─ publisher: Evgeny Poberezkin
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/ajv-formats
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/ajv-formats/LICENSE
+├─ ajv@6.12.6
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ajv-validator/ajv
+│  ├─ publisher: Evgeny Poberezkin
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/node_modules/ajv
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/node_modules/ajv/LICENSE
+├─ ajv@8.17.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ajv-validator/ajv
+│  ├─ publisher: Evgeny Poberezkin
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/ajv
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/ajv/LICENSE
+├─ asynckit@0.4.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/alexindigo/asynckit
+│  ├─ publisher: Alex Indigo
+│  ├─ email: iam@alexindigo.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/asynckit
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/asynckit/LICENSE
+├─ axios@1.10.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/axios/axios
+│  ├─ publisher: Matt Zabriskie
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/axios
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/axios/LICENSE
+├─ body-parser@2.2.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/expressjs/body-parser
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/body-parser
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/body-parser/LICENSE
+├─ browser-or-node@3.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/flexdinesh/browser-or-node
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/browser-or-node
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/browser-or-node/LICENSE
+├─ bytes@3.1.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/visionmedia/bytes.js
+│  ├─ publisher: TJ Holowaychuk
+│  ├─ email: tj@vision-media.ca
+│  ├─ url: http://tjholowaychuk.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/bytes
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/bytes/LICENSE
+├─ call-bind-apply-helpers@1.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/call-bind-apply-helpers
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/call-bind-apply-helpers
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/call-bind-apply-helpers/LICENSE
+├─ call-bound@1.0.4
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/call-bound
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/call-bound
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/call-bound/LICENSE
+├─ combined-stream@1.0.8
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/felixge/node-combined-stream
+│  ├─ publisher: Felix Geisendörfer
+│  ├─ email: felix@debuggable.com
+│  ├─ url: http://debuggable.com/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/combined-stream
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/combined-stream/License
+├─ content-disposition@1.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/content-disposition
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/content-disposition
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/content-disposition/LICENSE
+├─ content-type@1.0.5
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/content-type
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/content-type
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/content-type/LICENSE
+├─ cookie-parser@1.4.7
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/expressjs/cookie-parser
+│  ├─ publisher: TJ Holowaychuk
+│  ├─ email: tj@vision-media.ca
+│  ├─ url: http://tjholowaychuk.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/cookie-parser
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/cookie-parser/LICENSE
+├─ cookie-signature@1.0.6
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/visionmedia/node-cookie-signature
+│  ├─ publisher: TJ Holowaychuk
+│  ├─ email: tj@learnboost.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/cookie-signature
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/cookie-signature/Readme.md
+├─ cookie-signature@1.2.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/visionmedia/node-cookie-signature
+│  ├─ publisher: TJ Holowaychuk
+│  ├─ email: tj@learnboost.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/express/node_modules/cookie-signature
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/express/node_modules/cookie-signature/LICENSE
+├─ cookie@0.7.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/cookie
+│  ├─ publisher: Roman Shtylman
+│  ├─ email: shtylman@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/cookie
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/cookie/LICENSE
+├─ cors@2.8.5
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/expressjs/cors
+│  ├─ publisher: Troy Goode
+│  ├─ email: troygoode@gmail.com
+│  ├─ url: https://github.com/troygoode/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/cors
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/cors/LICENSE
+├─ cross-spawn@7.0.6
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/moxystudio/node-cross-spawn
+│  ├─ publisher: André Cruz
+│  ├─ email: andre@moxy.studio
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/cross-spawn
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/cross-spawn/LICENSE
+├─ debug@4.4.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/debug-js/debug
+│  ├─ publisher: Josh Junon
+│  ├─ url: https://github.com/qix-
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/debug
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/debug/LICENSE
+├─ delayed-stream@1.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/felixge/node-delayed-stream
+│  ├─ publisher: Felix Geisendörfer
+│  ├─ email: felix@debuggable.com
+│  ├─ url: http://debuggable.com/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/delayed-stream
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/delayed-stream/License
+├─ depd@2.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/dougwilson/nodejs-depd
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/depd
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/depd/LICENSE
+├─ dotenv@16.5.0
+│  ├─ licenses: BSD-2-Clause
+│  ├─ repository: https://github.com/motdotla/dotenv
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/dotenv
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/dotenv/LICENSE
+├─ dunder-proto@1.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/es-shims/dunder-proto
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/dunder-proto
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/dunder-proto/LICENSE
+├─ ee-first@1.1.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jonathanong/ee-first
+│  ├─ publisher: Jonathan Ong
+│  ├─ email: me@jongleberry.com
+│  ├─ url: http://jongleberry.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/ee-first
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/ee-first/LICENSE
+├─ encodeurl@2.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/pillarjs/encodeurl
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/encodeurl
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/encodeurl/LICENSE
+├─ es-define-property@1.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/es-define-property
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/es-define-property
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/es-define-property/LICENSE
+├─ es-errors@1.3.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/es-errors
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/es-errors
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/es-errors/LICENSE
+├─ es-object-atoms@1.1.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/es-object-atoms
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/es-object-atoms
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/es-object-atoms/LICENSE
+├─ es-set-tostringtag@2.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/es-shims/es-set-tostringtag
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/es-set-tostringtag
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/es-set-tostringtag/LICENSE
+├─ escape-html@1.0.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/component/escape-html
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/escape-html
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/escape-html/LICENSE
+├─ etag@1.8.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/etag
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/etag
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/etag/LICENSE
+├─ eventsource-parser@3.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/rexxars/eventsource-parser
+│  ├─ publisher: Espen Hovlandsdal
+│  ├─ email: espen@hovlandsdal.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/eventsource-parser
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/eventsource-parser/LICENSE
+├─ eventsource@3.0.7
+│  ├─ licenses: MIT
+│  ├─ repository: git://git@github.com/EventSource/eventsource
+│  ├─ publisher: Espen Hovlandsdal
+│  ├─ email: espen@hovlandsdal.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/eventsource
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/eventsource/LICENSE
+├─ express-rate-limit@7.5.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/express-rate-limit/express-rate-limit
+│  ├─ publisher: Nathan Friedly
+│  ├─ url: http://nfriedly.com/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/express-rate-limit
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/express-rate-limit/license.md
+├─ express@5.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/expressjs/express
+│  ├─ publisher: TJ Holowaychuk
+│  ├─ email: tj@vision-media.ca
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/express
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/express/LICENSE
+├─ fast-deep-equal@3.1.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/epoberezkin/fast-deep-equal
+│  ├─ publisher: Evgeny Poberezkin
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/fast-deep-equal
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/fast-deep-equal/LICENSE
+├─ fast-json-stable-stringify@2.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/epoberezkin/fast-json-stable-stringify
+│  ├─ publisher: James Halliday
+│  ├─ email: mail@substack.net
+│  ├─ url: http://substack.net
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/fast-json-stable-stringify
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/fast-json-stable-stringify/LICENSE
+├─ fast-uri@3.0.6
+│  ├─ licenses: BSD-3-Clause
+│  ├─ repository: https://github.com/fastify/fast-uri
+│  ├─ publisher: Vincent Le Goff
+│  ├─ email: vince.legoff@gmail.com
+│  ├─ url: https://github.com/zekth
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/fast-uri
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/fast-uri/LICENSE
+├─ finalhandler@2.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/pillarjs/finalhandler
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/finalhandler
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/finalhandler/LICENSE
+├─ follow-redirects@1.15.9
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/follow-redirects/follow-redirects
+│  ├─ publisher: Ruben Verborgh
+│  ├─ email: ruben@verborgh.org
+│  ├─ url: https://ruben.verborgh.org/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/follow-redirects
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/follow-redirects/LICENSE
+├─ form-data@4.0.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/form-data/form-data
+│  ├─ publisher: Felix Geisendörfer
+│  ├─ email: felix@debuggable.com
+│  ├─ url: http://debuggable.com/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/form-data
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/form-data/License
+├─ forwarded@0.2.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/forwarded
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/forwarded
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/forwarded/LICENSE
+├─ fresh@2.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/fresh
+│  ├─ publisher: TJ Holowaychuk
+│  ├─ email: tj@vision-media.ca
+│  ├─ url: http://tjholowaychuk.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/fresh
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/fresh/LICENSE
+├─ function-bind@1.1.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/Raynos/function-bind
+│  ├─ publisher: Raynos
+│  ├─ email: raynos2@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/function-bind
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/function-bind/LICENSE
+├─ get-intrinsic@1.3.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/get-intrinsic
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/get-intrinsic
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/get-intrinsic/LICENSE
+├─ get-proto@1.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/get-proto
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/get-proto
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/get-proto/LICENSE
+├─ gopd@1.2.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/gopd
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/gopd
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/gopd/LICENSE
+├─ has-symbols@1.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/inspect-js/has-symbols
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ url: http://ljharb.codes
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/has-symbols
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/has-symbols/LICENSE
+├─ has-tostringtag@1.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/inspect-js/has-tostringtag
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ url: http://ljharb.codes
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/has-tostringtag
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/has-tostringtag/LICENSE
+├─ hasown@2.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/inspect-js/hasOwn
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/hasown
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/hasown/LICENSE
+├─ http-errors@2.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/http-errors
+│  ├─ publisher: Jonathan Ong
+│  ├─ email: me@jongleberry.com
+│  ├─ url: http://jongleberry.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/http-errors
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/http-errors/LICENSE
+├─ iconv-lite@0.6.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ashtuchkin/iconv-lite
+│  ├─ publisher: Alexander Shtuchkin
+│  ├─ email: ashtuchkin@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/iconv-lite
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/iconv-lite/LICENSE
+├─ inherits@2.0.4
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/inherits
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/inherits
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/inherits/LICENSE
+├─ ipaddr.js@1.9.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/whitequark/ipaddr.js
+│  ├─ publisher: whitequark
+│  ├─ email: whitequark@whitequark.org
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/ipaddr.js
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/ipaddr.js/LICENSE
+├─ is-promise@4.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/then/is-promise
+│  ├─ publisher: ForbesLindesay
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/is-promise
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/is-promise/LICENSE
+├─ isexe@2.0.0
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/isexe
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/isexe
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/isexe/LICENSE
+├─ jose@6.0.11
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/panva/jose
+│  ├─ publisher: Filip Skokan
+│  ├─ email: panva.ip@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/jose
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/jose/LICENSE.md
+├─ json-schema-traverse@0.4.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/epoberezkin/json-schema-traverse
+│  ├─ publisher: Evgeny Poberezkin
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/node_modules/json-schema-traverse
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/node_modules/json-schema-traverse/LICENSE
+├─ json-schema-traverse@1.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/epoberezkin/json-schema-traverse
+│  ├─ publisher: Evgeny Poberezkin
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/json-schema-traverse
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/json-schema-traverse/LICENSE
+├─ math-intrinsics@1.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/es-shims/math-intrinsics
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/math-intrinsics
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/math-intrinsics/LICENSE
+├─ media-typer@1.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/media-typer
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/media-typer
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/media-typer/LICENSE
+├─ merge-descriptors@2.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/sindresorhus/merge-descriptors
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/merge-descriptors
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/merge-descriptors/license
+├─ mime-db@1.52.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/mime-db
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/form-data/node_modules/mime-db
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/form-data/node_modules/mime-db/LICENSE
+├─ mime-db@1.54.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/mime-db
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/mime-db
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/mime-db/LICENSE
+├─ mime-types@2.1.35
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/mime-types
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/form-data/node_modules/mime-types
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/form-data/node_modules/mime-types/LICENSE
+├─ mime-types@3.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/mime-types
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/mime-types
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/mime-types/LICENSE
+├─ ms@2.1.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/vercel/ms
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/ms
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/ms/license.md
+├─ negotiator@1.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/negotiator
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/negotiator
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/negotiator/LICENSE
+├─ object-assign@4.1.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/sindresorhus/object-assign
+│  ├─ publisher: Sindre Sorhus
+│  ├─ email: sindresorhus@gmail.com
+│  ├─ url: sindresorhus.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/object-assign
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/object-assign/license
+├─ object-inspect@1.13.4
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/inspect-js/object-inspect
+│  ├─ publisher: James Halliday
+│  ├─ email: mail@substack.net
+│  ├─ url: http://substack.net
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/object-inspect
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/object-inspect/LICENSE
+├─ on-finished@2.4.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/on-finished
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/on-finished
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/on-finished/LICENSE
+├─ once@1.4.0
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/once
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/once
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/once/LICENSE
+├─ parse-path@7.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/IonicaBizau/parse-path
+│  ├─ publisher: Ionică Bizău
+│  ├─ email: bizauionica@gmail.com
+│  ├─ url: https://ionicabizau.net
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/parse-path
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/parse-path/LICENSE
+├─ parseurl@1.3.3
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/pillarjs/parseurl
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/parseurl
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/parseurl/LICENSE
+├─ path-key@3.1.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/sindresorhus/path-key
+│  ├─ publisher: Sindre Sorhus
+│  ├─ email: sindresorhus@gmail.com
+│  ├─ url: sindresorhus.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/path-key
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/path-key/license
+├─ path-to-regexp@8.2.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/pillarjs/path-to-regexp
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/path-to-regexp
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/path-to-regexp/LICENSE
+├─ pkce-challenge@5.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/crouchcd/pkce-challenge
+│  ├─ publisher: crouchcd
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/pkce-challenge
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/pkce-challenge/LICENSE
+├─ protocols@2.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/IonicaBizau/protocols
+│  ├─ publisher: Ionică Bizău
+│  ├─ email: bizauionica@gmail.com
+│  ├─ url: https://ionicabizau.net
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/protocols
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/protocols/LICENSE
+├─ proxy-addr@2.0.7
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/proxy-addr
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/proxy-addr
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/proxy-addr/LICENSE
+├─ proxy-from-env@1.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/Rob--W/proxy-from-env
+│  ├─ publisher: Rob Wu
+│  ├─ email: rob@robwu.nl
+│  ├─ url: https://robwu.nl/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/proxy-from-env
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/proxy-from-env/LICENSE
+├─ punycode@2.3.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/mathiasbynens/punycode.js
+│  ├─ publisher: Mathias Bynens
+│  ├─ url: https://mathiasbynens.be/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/punycode
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/punycode/LICENSE-MIT.txt
+├─ qs@6.14.0
+│  ├─ licenses: BSD-3-Clause
+│  ├─ repository: https://github.com/ljharb/qs
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/qs
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/qs/LICENSE.md
+├─ range-parser@1.2.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/range-parser
+│  ├─ publisher: TJ Holowaychuk
+│  ├─ email: tj@vision-media.ca
+│  ├─ url: http://tjholowaychuk.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/range-parser
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/range-parser/LICENSE
+├─ raw-body@3.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/stream-utils/raw-body
+│  ├─ publisher: Jonathan Ong
+│  ├─ email: me@jongleberry.com
+│  ├─ url: http://jongleberry.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/raw-body
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/raw-body/LICENSE
+├─ require-from-string@2.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/floatdrop/require-from-string
+│  ├─ publisher: Vsevolod Strukchinsky
+│  ├─ email: floatdrop@gmail.com
+│  ├─ url: github.com/floatdrop
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/require-from-string
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/require-from-string/license
+├─ router@2.2.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/pillarjs/router
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/router
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/router/LICENSE
+├─ safe-buffer@5.2.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/feross/safe-buffer
+│  ├─ publisher: Feross Aboukhadijeh
+│  ├─ email: feross@feross.org
+│  ├─ url: https://feross.org
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/safe-buffer
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/safe-buffer/LICENSE
+├─ safer-buffer@2.1.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ChALkeR/safer-buffer
+│  ├─ publisher: Nikita Skovoroda
+│  ├─ email: chalkerx@gmail.com
+│  ├─ url: https://github.com/ChALkeR
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/safer-buffer
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/safer-buffer/LICENSE
+├─ send@1.2.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/pillarjs/send
+│  ├─ publisher: TJ Holowaychuk
+│  ├─ email: tj@vision-media.ca
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/send
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/send/LICENSE
+├─ serve-static@2.2.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/expressjs/serve-static
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/serve-static
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/serve-static/LICENSE
+├─ setprototypeof@1.2.0
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/wesleytodd/setprototypeof
+│  ├─ publisher: Wes Todd
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/setprototypeof
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/setprototypeof/LICENSE
+├─ shebang-command@2.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/kevva/shebang-command
+│  ├─ publisher: Kevin Mårtensson
+│  ├─ email: kevinmartensson@gmail.com
+│  ├─ url: github.com/kevva
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/shebang-command
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/shebang-command/license
+├─ shebang-regex@3.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/sindresorhus/shebang-regex
+│  ├─ publisher: Sindre Sorhus
+│  ├─ email: sindresorhus@gmail.com
+│  ├─ url: sindresorhus.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/shebang-regex
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/shebang-regex/license
+├─ side-channel-list@1.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/side-channel-list
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/side-channel-list
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/side-channel-list/LICENSE
+├─ side-channel-map@1.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/side-channel-map
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/side-channel-map
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/side-channel-map/LICENSE
+├─ side-channel-weakmap@1.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/side-channel-weakmap
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/side-channel-weakmap
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/side-channel-weakmap/LICENSE
+├─ side-channel@1.1.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/ljharb/side-channel
+│  ├─ publisher: Jordan Harband
+│  ├─ email: ljharb@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/side-channel
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/side-channel/LICENSE
+├─ statuses@2.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/statuses
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/http-errors/node_modules/statuses
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/http-errors/node_modules/statuses/LICENSE
+├─ statuses@2.0.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/statuses
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/statuses
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/statuses/LICENSE
+├─ toidentifier@1.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/component/toidentifier
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/toidentifier
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/toidentifier/LICENSE
+├─ type-fest@4.41.0
+│  ├─ licenses: (MIT OR CC0-1.0)
+│  ├─ repository: https://github.com/sindresorhus/type-fest
+│  ├─ publisher: Sindre Sorhus
+│  ├─ email: sindresorhus@gmail.com
+│  ├─ url: https://sindresorhus.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/type-fest
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/type-fest/license-cc0
+├─ type-is@2.0.1
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/type-is
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/type-is
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/type-is/LICENSE
+├─ unpipe@1.0.0
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/stream-utils/unpipe
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/unpipe
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/unpipe/LICENSE
+├─ uri-js@4.4.1
+│  ├─ licenses: BSD-2-Clause
+│  ├─ repository: https://github.com/garycourt/uri-js
+│  ├─ publisher: Gary Court
+│  ├─ email: gary.court@gmail.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/uri-js
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/uri-js/LICENSE
+├─ vary@1.1.2
+│  ├─ licenses: MIT
+│  ├─ repository: https://github.com/jshttp/vary
+│  ├─ publisher: Douglas Christopher Wilson
+│  ├─ email: doug@somethingdoug.com
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/vary
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/vary/LICENSE
+├─ which@2.0.2
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/isaacs/node-which
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/which
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/which/LICENSE
+├─ wrappy@1.0.2
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/npm/wrappy
+│  ├─ publisher: Isaac Z. Schlueter
+│  ├─ email: i@izs.me
+│  ├─ url: http://blog.izs.me/
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/wrappy
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/wrappy/LICENSE
+├─ zod-to-json-schema@3.24.5
+│  ├─ licenses: ISC
+│  ├─ repository: https://github.com/StefanTerdell/zod-to-json-schema
+│  ├─ publisher: Stefan Terdell
+│  ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/zod-to-json-schema
+│  └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/zod-to-json-schema/LICENSE
+└─ zod@3.25.67
+   ├─ licenses: MIT
+   ├─ repository: https://github.com/colinhacks/zod
+   ├─ publisher: Colin McDonnell
+   ├─ email: zod@colinhacks.com
+   ├─ path: /Users/robert/Code/mittwald-mcp/node_modules/zod
+   └─ licenseFile: /Users/robert/Code/mittwald-mcp/node_modules/zod/LICENSE

@@ -1,0 +1,2768 @@
+{
+  "@bcoe/v8-coverage@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/bcoe/v8-coverage",
+    "publisher": "Charles Samborski",
+    "email": "demurgos@demurgos.net",
+    "url": "https://demurgos.net",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@bcoe/v8-coverage",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@bcoe/v8-coverage/LICENSE.md"
+  },
+  "@esbuild/darwin-arm64@0.25.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/evanw/esbuild",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@esbuild/darwin-arm64",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@esbuild/darwin-arm64/README.md"
+  },
+  "@eslint-community/eslint-utils@4.7.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/eslint-community/eslint-utils",
+    "publisher": "Toru Nagashima",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint-community/eslint-utils",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint-community/eslint-utils/LICENSE"
+  },
+  "@eslint-community/regexpp@4.12.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/eslint-community/regexpp",
+    "publisher": "Toru Nagashima",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint-community/regexpp",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint-community/regexpp/LICENSE"
+  },
+  "@eslint/config-array@0.20.1": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "publisher": "Nicholas C. Zakas",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/config-array",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/config-array/LICENSE"
+  },
+  "@eslint/config-helpers@0.2.3": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/config-helpers",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/config-helpers/LICENSE"
+  },
+  "@eslint/core@0.14.0": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "publisher": "Nicholas C. Zakas",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/core",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/core/LICENSE"
+  },
+  "@eslint/core@0.15.0": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "publisher": "Nicholas C. Zakas",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/plugin-kit/node_modules/@eslint/core",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/plugin-kit/node_modules/@eslint/core/LICENSE"
+  },
+  "@eslint/eslintrc@3.3.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/eslint/eslintrc",
+    "publisher": "Nicholas C. Zakas",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/eslintrc",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/eslintrc/LICENSE"
+  },
+  "@eslint/js@9.29.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/eslint/eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/js",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/js/LICENSE"
+  },
+  "@eslint/object-schema@2.1.6": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "publisher": "Nicholas C. Zakas",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/object-schema",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/object-schema/LICENSE"
+  },
+  "@eslint/plugin-kit@0.3.2": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "publisher": "Nicholas C. Zakas",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/plugin-kit",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/plugin-kit/LICENSE"
+  },
+  "@humanfs/core@0.19.1": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/humanfs",
+    "publisher": "Nicholas C. Zakas",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@humanfs/core",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@humanfs/core/LICENSE"
+  },
+  "@humanfs/node@0.16.6": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/humanfs",
+    "publisher": "Nicholas C. Zakas",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@humanfs/node",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@humanfs/node/LICENSE"
+  },
+  "@humanwhocodes/module-importer@1.0.1": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/module-importer",
+    "publisher": "Nicholas C. Zaks",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@humanwhocodes/module-importer",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@humanwhocodes/module-importer/LICENSE"
+  },
+  "@humanwhocodes/retry@0.3.1": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/retry",
+    "publisher": "Nicholas C. Zaks",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@humanfs/node/node_modules/@humanwhocodes/retry",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@humanfs/node/node_modules/@humanwhocodes/retry/LICENSE"
+  },
+  "@humanwhocodes/retry@0.4.3": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/retry",
+    "publisher": "Nicholas C. Zaks",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@humanwhocodes/retry",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@humanwhocodes/retry/LICENSE"
+  },
+  "@isaacs/cliui@8.0.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/yargs/cliui",
+    "publisher": "Ben Coe",
+    "email": "ben@npmjs.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@isaacs/cliui",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@isaacs/cliui/LICENSE.txt"
+  },
+  "@istanbuljs/schema@0.1.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/istanbuljs/schema",
+    "publisher": "Corey Farrell",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@istanbuljs/schema",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@istanbuljs/schema/LICENSE"
+  },
+  "@jridgewell/resolve-uri@3.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/resolve-uri",
+    "publisher": "Justin Ridgewell",
+    "email": "justin@ridgewell.name",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@jridgewell/resolve-uri",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@jridgewell/resolve-uri/LICENSE"
+  },
+  "@jridgewell/sourcemap-codec@1.5.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/sourcemaps",
+    "publisher": "Justin Ridgewell",
+    "email": "justin@ridgewell.name",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@jridgewell/sourcemap-codec",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@jridgewell/sourcemap-codec/LICENSE"
+  },
+  "@jridgewell/trace-mapping@0.3.26": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/sourcemaps",
+    "publisher": "Justin Ridgewell",
+    "email": "justin@ridgewell.name",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@jridgewell/trace-mapping",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@jridgewell/trace-mapping/LICENSE"
+  },
+  "@mittwald/api-client-commons@4.168.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mittwald/api-client-js",
+    "publisher": "Mittwald CM Service GmbH & Co. KG",
+    "email": "opensource@mittwald.de",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@mittwald/api-client-commons",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@mittwald/api-client-commons/LICENSE"
+  },
+  "@mittwald/api-client@4.169.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mittwald/api-client-js",
+    "publisher": "Mittwald CM Service GmbH & Co. KG",
+    "email": "opensource@mittwald.de",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@mittwald/api-client",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@mittwald/api-client/LICENSE"
+  },
+  "@modelcontextprotocol/sdk@1.13.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/modelcontextprotocol/typescript-sdk",
+    "publisher": "Anthropic, PBC",
+    "url": "https://anthropic.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/LICENSE"
+  },
+  "@nodelib/fs.scandir@2.1.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@nodelib/fs.scandir",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@nodelib/fs.scandir/LICENSE"
+  },
+  "@nodelib/fs.stat@2.0.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@nodelib/fs.stat",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@nodelib/fs.stat/LICENSE"
+  },
+  "@nodelib/fs.walk@1.2.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@nodelib/fs.walk",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@nodelib/fs.walk/LICENSE"
+  },
+  "@pkgjs/parseargs@0.11.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pkgjs/parseargs",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@pkgjs/parseargs",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@pkgjs/parseargs/LICENSE"
+  },
+  "@pkgr/core@0.2.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/un-ts/pkgr",
+    "publisher": "JounQin",
+    "email": "admin@1stg.me",
+    "url": "https://www.1stG.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@pkgr/core"
+  },
+  "@polka/url@1.0.0-next.29": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/polka",
+    "publisher": "Luke Edwards",
+    "email": "luke@lukeed.com",
+    "url": "https://lukeed.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@polka/url",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@polka/url/readme.md"
+  },
+  "@robertdouglass/mcp-tester@1.0.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/robertDouglass/mcp-tester",
+    "publisher": "Robert Douglass",
+    "email": "robert@robertdouglass.ch",
+    "url": "https://github.com/robertDouglass",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@robertdouglass/mcp-tester",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@robertdouglass/mcp-tester/LICENSE"
+  },
+  "@rollup/rollup-darwin-arm64@4.44.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rollup/rollup",
+    "publisher": "Lukas Taegert-Atkinson",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@rollup/rollup-darwin-arm64",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@rollup/rollup-darwin-arm64/README.md"
+  },
+  "@systemprompt/systemprompt-mcp-server@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/systempromptio/systemprompt-mcp-server",
+    "publisher": "SystemPrompt",
+    "path": "/Users/robert/Code/mittwald-mcp",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/LICENSE"
+  },
+  "@types/body-parser@1.19.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/body-parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/body-parser/LICENSE"
+  },
+  "@types/chai@5.2.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/chai",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/chai/LICENSE"
+  },
+  "@types/connect@3.4.38": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/connect",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/connect/LICENSE"
+  },
+  "@types/cookie-parser@1.4.9": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/cookie-parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/cookie-parser/LICENSE"
+  },
+  "@types/cors@2.8.19": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/cors",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/cors/LICENSE"
+  },
+  "@types/deep-eql@4.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/deep-eql",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/deep-eql/LICENSE"
+  },
+  "@types/estree@1.0.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/estree",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/estree/LICENSE"
+  },
+  "@types/express-serve-static-core@5.0.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/express-serve-static-core",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/express-serve-static-core/LICENSE"
+  },
+  "@types/express@5.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/express",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/express/LICENSE"
+  },
+  "@types/http-errors@2.0.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/http-errors",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/http-errors/LICENSE"
+  },
+  "@types/istanbul-lib-coverage@2.0.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/istanbul-lib-coverage",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/istanbul-lib-coverage/LICENSE"
+  },
+  "@types/json-schema@7.0.15": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/json-schema",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/json-schema/LICENSE"
+  },
+  "@types/mime@1.3.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/mime",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/mime/LICENSE"
+  },
+  "@types/node@22.15.33": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/node",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/node/LICENSE"
+  },
+  "@types/parse-path@7.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/parse-path",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/parse-path/LICENSE"
+  },
+  "@types/qs@6.14.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/qs",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/qs/LICENSE"
+  },
+  "@types/range-parser@1.2.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/range-parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/range-parser/LICENSE"
+  },
+  "@types/send@0.17.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/send",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/send/LICENSE"
+  },
+  "@types/serve-static@1.15.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@types/serve-static",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@types/serve-static/LICENSE"
+  },
+  "@typescript-eslint/eslint-plugin@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/eslint-plugin",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/eslint-plugin/LICENSE"
+  },
+  "@typescript-eslint/parser@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/parser/LICENSE"
+  },
+  "@typescript-eslint/project-service@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/project-service",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/project-service/LICENSE"
+  },
+  "@typescript-eslint/scope-manager@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/scope-manager",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/scope-manager/LICENSE"
+  },
+  "@typescript-eslint/tsconfig-utils@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/tsconfig-utils",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/tsconfig-utils/LICENSE"
+  },
+  "@typescript-eslint/type-utils@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/type-utils",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/type-utils/LICENSE"
+  },
+  "@typescript-eslint/types@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/types",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/types/LICENSE"
+  },
+  "@typescript-eslint/typescript-estree@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/typescript-estree",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/typescript-estree/LICENSE"
+  },
+  "@typescript-eslint/utils@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/utils",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/utils/LICENSE"
+  },
+  "@typescript-eslint/visitor-keys@8.34.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/visitor-keys",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/visitor-keys/LICENSE"
+  },
+  "@vitest/expect@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/expect",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/expect/LICENSE"
+  },
+  "@vitest/mocker@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/mocker",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/mocker/LICENSE"
+  },
+  "@vitest/pretty-format@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/pretty-format",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/pretty-format/LICENSE"
+  },
+  "@vitest/runner@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/runner",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/runner/LICENSE"
+  },
+  "@vitest/snapshot@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/snapshot",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/snapshot/LICENSE"
+  },
+  "@vitest/spy@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/spy",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/spy/LICENSE"
+  },
+  "@vitest/ui@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/ui",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/ui/LICENSE"
+  },
+  "@vitest/utils@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/utils",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@vitest/utils/LICENSE"
+  },
+  "accepts@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/accepts",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/accepts",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/accepts/LICENSE"
+  },
+  "acorn-jsx@5.3.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/acornjs/acorn-jsx",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/acorn-jsx",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/acorn-jsx/LICENSE"
+  },
+  "acorn@8.15.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/acornjs/acorn",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/acorn",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/acorn/LICENSE"
+  },
+  "ajv-formats@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ajv-validator/ajv-formats",
+    "publisher": "Evgeny Poberezkin",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ajv-formats",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ajv-formats/LICENSE"
+  },
+  "ajv@6.12.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ajv-validator/ajv",
+    "publisher": "Evgeny Poberezkin",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/node_modules/ajv",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/node_modules/ajv/LICENSE"
+  },
+  "ajv@8.17.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ajv-validator/ajv",
+    "publisher": "Evgeny Poberezkin",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ajv",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ajv/LICENSE"
+  },
+  "ansi-regex@5.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/ansi-regex",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/string-width-cjs/node_modules/ansi-regex",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/string-width-cjs/node_modules/ansi-regex/license"
+  },
+  "ansi-regex@6.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/ansi-regex",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ansi-regex",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ansi-regex/license"
+  },
+  "ansi-styles@4.3.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/ansi-styles",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ansi-styles",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ansi-styles/license"
+  },
+  "ansi-styles@6.2.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/ansi-styles",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/wrap-ansi/node_modules/ansi-styles",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/wrap-ansi/node_modules/ansi-styles/license"
+  },
+  "anymatch@3.1.3": {
+    "licenses": "ISC",
+    "repository": "https://github.com/micromatch/anymatch",
+    "publisher": "Elan Shanker",
+    "url": "https://github.com/es128",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/anymatch",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/anymatch/LICENSE"
+  },
+  "argparse@2.0.1": {
+    "licenses": "Python-2.0",
+    "repository": "https://github.com/nodeca/argparse",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/argparse",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/argparse/LICENSE"
+  },
+  "array-union@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/array-union",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/array-union",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/array-union/license"
+  },
+  "assertion-error@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chaijs/assertion-error",
+    "publisher": "Jake Luer",
+    "email": "jake@qualiancy.com",
+    "url": "http://qualiancy.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/assertion-error",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/assertion-error/LICENSE"
+  },
+  "asynckit@0.4.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/alexindigo/asynckit",
+    "publisher": "Alex Indigo",
+    "email": "iam@alexindigo.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/asynckit",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/asynckit/LICENSE"
+  },
+  "axios@1.10.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/axios/axios",
+    "publisher": "Matt Zabriskie",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/axios",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/axios/LICENSE"
+  },
+  "balanced-match@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/juliangruber/balanced-match",
+    "publisher": "Julian Gruber",
+    "email": "mail@juliangruber.com",
+    "url": "http://juliangruber.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/balanced-match",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/balanced-match/LICENSE.md"
+  },
+  "binary-extensions@2.3.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/binary-extensions",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/binary-extensions",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/binary-extensions/license"
+  },
+  "body-parser@2.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/expressjs/body-parser",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/body-parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/body-parser/LICENSE"
+  },
+  "brace-expansion@1.1.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/juliangruber/brace-expansion",
+    "publisher": "Julian Gruber",
+    "email": "mail@juliangruber.com",
+    "url": "http://juliangruber.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/config-array/node_modules/brace-expansion",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/config-array/node_modules/brace-expansion/LICENSE"
+  },
+  "brace-expansion@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/juliangruber/brace-expansion",
+    "publisher": "Julian Gruber",
+    "email": "mail@juliangruber.com",
+    "url": "http://juliangruber.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/brace-expansion",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/brace-expansion/LICENSE"
+  },
+  "braces@3.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/braces",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/braces",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/braces/LICENSE"
+  },
+  "browser-or-node@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/flexdinesh/browser-or-node",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/browser-or-node",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/browser-or-node/LICENSE"
+  },
+  "bytes@3.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/visionmedia/bytes.js",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "url": "http://tjholowaychuk.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/bytes",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/bytes/LICENSE"
+  },
+  "c8@10.1.3": {
+    "licenses": "ISC",
+    "repository": "https://github.com/bcoe/c8",
+    "publisher": "Ben Coe",
+    "email": "ben@npmjs.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/c8",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/c8/LICENSE.txt"
+  },
+  "cac@6.7.14": {
+    "licenses": "MIT",
+    "repository": "https://github.com/egoist/cac",
+    "publisher": "egoist",
+    "email": "0x142857@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/cac",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/cac/LICENSE"
+  },
+  "call-bind-apply-helpers@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/call-bind-apply-helpers",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/call-bind-apply-helpers",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/call-bind-apply-helpers/LICENSE"
+  },
+  "call-bound@1.0.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/call-bound",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/call-bound",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/call-bound/LICENSE"
+  },
+  "callsites@3.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/callsites",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/callsites",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/callsites/license"
+  },
+  "chai@5.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chaijs/chai",
+    "publisher": "Jake Luer",
+    "email": "jake@alogicalparadox.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/chai",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/chai/LICENSE"
+  },
+  "chalk@4.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/chalk",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/chalk",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/chalk/license"
+  },
+  "check-error@2.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chaijs/check-error",
+    "publisher": "Jake Luer",
+    "email": "jake@alogicalparadox.com",
+    "url": "http://alogicalparadox.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/check-error",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/check-error/LICENSE"
+  },
+  "chokidar@3.6.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/paulmillr/chokidar",
+    "publisher": "Paul Miller",
+    "url": "https://paulmillr.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/chokidar",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/chokidar/LICENSE"
+  },
+  "cliui@8.0.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/yargs/cliui",
+    "publisher": "Ben Coe",
+    "email": "ben@npmjs.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/cliui",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/cliui/LICENSE.txt"
+  },
+  "color-convert@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Qix-/color-convert",
+    "publisher": "Heather Arthur",
+    "email": "fayearthur@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/color-convert",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/color-convert/LICENSE"
+  },
+  "color-name@1.1.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/colorjs/color-name",
+    "publisher": "DY",
+    "email": "dfcreative@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/color-name",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/color-name/LICENSE"
+  },
+  "combined-stream@1.0.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/felixge/node-combined-stream",
+    "publisher": "Felix Geisendörfer",
+    "email": "felix@debuggable.com",
+    "url": "http://debuggable.com/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/combined-stream",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/combined-stream/License"
+  },
+  "commander@9.5.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tj/commander.js",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/commander",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/commander/LICENSE"
+  },
+  "concat-map@0.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/substack/node-concat-map",
+    "publisher": "James Halliday",
+    "email": "mail@substack.net",
+    "url": "http://substack.net",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/concat-map",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/concat-map/LICENSE"
+  },
+  "content-disposition@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/content-disposition",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/content-disposition",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/content-disposition/LICENSE"
+  },
+  "content-type@1.0.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/content-type",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/content-type",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/content-type/LICENSE"
+  },
+  "convert-source-map@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thlorenz/convert-source-map",
+    "publisher": "Thorsten Lorenz",
+    "email": "thlorenz@gmx.de",
+    "url": "http://thlorenz.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/convert-source-map",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/convert-source-map/LICENSE"
+  },
+  "cookie-parser@1.4.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/expressjs/cookie-parser",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "url": "http://tjholowaychuk.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/cookie-parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/cookie-parser/LICENSE"
+  },
+  "cookie-signature@1.0.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/visionmedia/node-cookie-signature",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@learnboost.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/cookie-signature",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/cookie-signature/Readme.md"
+  },
+  "cookie-signature@1.2.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/visionmedia/node-cookie-signature",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@learnboost.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/express/node_modules/cookie-signature",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/express/node_modules/cookie-signature/LICENSE"
+  },
+  "cookie@0.7.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/cookie",
+    "publisher": "Roman Shtylman",
+    "email": "shtylman@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/cookie",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/cookie/LICENSE"
+  },
+  "cors@2.8.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/expressjs/cors",
+    "publisher": "Troy Goode",
+    "email": "troygoode@gmail.com",
+    "url": "https://github.com/troygoode/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/cors",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/cors/LICENSE"
+  },
+  "cross-spawn@7.0.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/moxystudio/node-cross-spawn",
+    "publisher": "André Cruz",
+    "email": "andre@moxy.studio",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/cross-spawn",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/cross-spawn/LICENSE"
+  },
+  "debug@4.4.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/debug-js/debug",
+    "publisher": "Josh Junon",
+    "url": "https://github.com/qix-",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/debug",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/debug/LICENSE"
+  },
+  "deep-eql@5.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chaijs/deep-eql",
+    "publisher": "Jake Luer",
+    "email": "jake@alogicalparadox.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/deep-eql",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/deep-eql/LICENSE"
+  },
+  "deep-is@0.1.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thlorenz/deep-is",
+    "publisher": "Thorsten Lorenz",
+    "email": "thlorenz@gmx.de",
+    "url": "http://thlorenz.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/deep-is",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/deep-is/LICENSE"
+  },
+  "delayed-stream@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/felixge/node-delayed-stream",
+    "publisher": "Felix Geisendörfer",
+    "email": "felix@debuggable.com",
+    "url": "http://debuggable.com/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/delayed-stream",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/delayed-stream/License"
+  },
+  "depd@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/dougwilson/nodejs-depd",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/depd",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/depd/LICENSE"
+  },
+  "dir-glob@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/dir-glob",
+    "publisher": "Kevin Mårtensson",
+    "email": "kevinmartensson@gmail.com",
+    "url": "github.com/kevva",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/dir-glob",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/dir-glob/license"
+  },
+  "dotenv@16.5.0": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/motdotla/dotenv",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/dotenv",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/dotenv/LICENSE"
+  },
+  "dunder-proto@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/es-shims/dunder-proto",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/dunder-proto",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/dunder-proto/LICENSE"
+  },
+  "eastasianwidth@0.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/komagata/eastasianwidth",
+    "publisher": "Masaki Komagata",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/eastasianwidth",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/eastasianwidth/README.md"
+  },
+  "ee-first@1.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonathanong/ee-first",
+    "publisher": "Jonathan Ong",
+    "email": "me@jongleberry.com",
+    "url": "http://jongleberry.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ee-first",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ee-first/LICENSE"
+  },
+  "emoji-regex@8.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mathiasbynens/emoji-regex",
+    "publisher": "Mathias Bynens",
+    "url": "https://mathiasbynens.be/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/string-width-cjs/node_modules/emoji-regex",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/string-width-cjs/node_modules/emoji-regex/LICENSE-MIT.txt"
+  },
+  "emoji-regex@9.2.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mathiasbynens/emoji-regex",
+    "publisher": "Mathias Bynens",
+    "url": "https://mathiasbynens.be/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/emoji-regex",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/emoji-regex/LICENSE-MIT.txt"
+  },
+  "encodeurl@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pillarjs/encodeurl",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/encodeurl",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/encodeurl/LICENSE"
+  },
+  "es-define-property@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/es-define-property",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/es-define-property",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/es-define-property/LICENSE"
+  },
+  "es-errors@1.3.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/es-errors",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/es-errors",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/es-errors/LICENSE"
+  },
+  "es-module-lexer@1.7.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/guybedford/es-module-lexer",
+    "publisher": "Guy Bedford",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/es-module-lexer",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/es-module-lexer/LICENSE"
+  },
+  "es-object-atoms@1.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/es-object-atoms",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/es-object-atoms",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/es-object-atoms/LICENSE"
+  },
+  "es-set-tostringtag@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/es-shims/es-set-tostringtag",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/es-set-tostringtag",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/es-set-tostringtag/LICENSE"
+  },
+  "esbuild@0.25.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/evanw/esbuild",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/esbuild",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/esbuild/LICENSE.md"
+  },
+  "escalade@3.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/escalade",
+    "publisher": "Luke Edwards",
+    "email": "luke.edwards05@gmail.com",
+    "url": "https://lukeed.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/escalade",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/escalade/license"
+  },
+  "escape-html@1.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/component/escape-html",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/escape-html",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/escape-html/LICENSE"
+  },
+  "escape-string-regexp@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/escape-string-regexp",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/escape-string-regexp",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/escape-string-regexp/license"
+  },
+  "eslint-config-prettier@10.1.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/prettier/eslint-config-prettier",
+    "publisher": "Simon Lydell",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/eslint-config-prettier",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/eslint-config-prettier/LICENSE"
+  },
+  "eslint-plugin-prettier@5.5.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/prettier/eslint-plugin-prettier",
+    "publisher": "Teddy Katz",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/eslint-plugin-prettier",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/eslint-plugin-prettier/LICENSE.md"
+  },
+  "eslint-scope@8.4.0": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/eslint/js",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/eslint-scope",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/eslint-scope/LICENSE"
+  },
+  "eslint-visitor-keys@3.4.3": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/eslint-visitor-keys",
+    "publisher": "Toru Nagashima",
+    "url": "https://github.com/mysticatea",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/eslint-visitor-keys",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/eslint-visitor-keys/LICENSE"
+  },
+  "eslint-visitor-keys@4.2.1": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/js",
+    "publisher": "Toru Nagashima",
+    "url": "https://github.com/mysticatea",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/visitor-keys/node_modules/eslint-visitor-keys",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@typescript-eslint/visitor-keys/node_modules/eslint-visitor-keys/LICENSE"
+  },
+  "eslint@9.29.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/eslint/eslint",
+    "publisher": "Nicholas C. Zakas",
+    "email": "nicholas+npm@nczconsulting.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/eslint",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/eslint/LICENSE"
+  },
+  "espree@10.4.0": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/eslint/js",
+    "publisher": "Nicholas C. Zakas",
+    "email": "nicholas+npm@nczconsulting.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/espree",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/espree/LICENSE"
+  },
+  "esquery@1.6.0": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/estools/esquery",
+    "publisher": "Joel Feenstra",
+    "email": "jrfeenst+esquery@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/esquery",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/esquery/license.txt"
+  },
+  "esrecurse@4.3.0": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/estools/esrecurse",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/esrecurse",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/esrecurse/README.md"
+  },
+  "estraverse@5.3.0": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/estools/estraverse",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/estraverse",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/estraverse/LICENSE.BSD"
+  },
+  "estree-walker@3.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Rich-Harris/estree-walker",
+    "publisher": "Rich Harris",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/estree-walker",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/estree-walker/LICENSE"
+  },
+  "esutils@2.0.3": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/estools/esutils",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/esutils",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/esutils/LICENSE.BSD"
+  },
+  "etag@1.8.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/etag",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/etag",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/etag/LICENSE"
+  },
+  "eventsource-parser@3.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rexxars/eventsource-parser",
+    "publisher": "Espen Hovlandsdal",
+    "email": "espen@hovlandsdal.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/eventsource-parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/eventsource-parser/LICENSE"
+  },
+  "eventsource@3.0.7": {
+    "licenses": "MIT",
+    "repository": "git://git@github.com/EventSource/eventsource",
+    "publisher": "Espen Hovlandsdal",
+    "email": "espen@hovlandsdal.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/eventsource",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/eventsource/LICENSE"
+  },
+  "expect-type@1.2.1": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/mmkal/expect-type",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/expect-type",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/expect-type/LICENSE"
+  },
+  "express-rate-limit@7.5.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/express-rate-limit/express-rate-limit",
+    "publisher": "Nathan Friedly",
+    "url": "http://nfriedly.com/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/express-rate-limit",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/express-rate-limit/license.md"
+  },
+  "express@5.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/expressjs/express",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/express",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/express/LICENSE"
+  },
+  "fast-deep-equal@3.1.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/fast-deep-equal",
+    "publisher": "Evgeny Poberezkin",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fast-deep-equal",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fast-deep-equal/LICENSE"
+  },
+  "fast-diff@1.3.0": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/jhchen/fast-diff",
+    "publisher": "Jason Chen",
+    "email": "jhchen7@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fast-diff",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fast-diff/LICENSE"
+  },
+  "fast-glob@3.3.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mrmlnc/fast-glob",
+    "publisher": "Denis Malinochkin",
+    "url": "https://mrmlnc.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fast-glob",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fast-glob/LICENSE"
+  },
+  "fast-json-stable-stringify@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/fast-json-stable-stringify",
+    "publisher": "James Halliday",
+    "email": "mail@substack.net",
+    "url": "http://substack.net",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fast-json-stable-stringify",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fast-json-stable-stringify/LICENSE"
+  },
+  "fast-levenshtein@2.0.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/hiddentao/fast-levenshtein",
+    "publisher": "Ramesh Nair",
+    "email": "ram@hiddentao.com",
+    "url": "http://www.hiddentao.com/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fast-levenshtein",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fast-levenshtein/LICENSE.md"
+  },
+  "fast-uri@3.0.6": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/fastify/fast-uri",
+    "publisher": "Vincent Le Goff",
+    "email": "vince.legoff@gmail.com",
+    "url": "https://github.com/zekth",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fast-uri",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fast-uri/LICENSE"
+  },
+  "fastq@1.19.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/mcollina/fastq",
+    "publisher": "Matteo Collina",
+    "email": "hello@matteocollina.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fastq",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fastq/LICENSE"
+  },
+  "fdir@6.4.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thecodrr/fdir",
+    "publisher": "thecodrr",
+    "email": "thecodrr@protonmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tinyglobby/node_modules/fdir",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tinyglobby/node_modules/fdir/LICENSE"
+  },
+  "fflate@0.8.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/101arrowz/fflate",
+    "publisher": "Arjun Barrett",
+    "email": "arjunbarrett@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fflate",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fflate/LICENSE"
+  },
+  "file-entry-cache@8.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jaredwray/file-entry-cache",
+    "publisher": "Jared Wray",
+    "url": "https://jaredwray.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/file-entry-cache",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/file-entry-cache/LICENSE"
+  },
+  "fill-range@7.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/fill-range",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fill-range",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fill-range/LICENSE"
+  },
+  "finalhandler@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pillarjs/finalhandler",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/finalhandler",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/finalhandler/LICENSE"
+  },
+  "find-up@5.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/find-up",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/find-up",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/find-up/license"
+  },
+  "flat-cache@4.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jaredwray/flat-cache",
+    "publisher": "Jared Wray",
+    "url": "https://jaredwray.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/flat-cache",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/flat-cache/LICENSE"
+  },
+  "flatted@3.3.3": {
+    "licenses": "ISC",
+    "repository": "https://github.com/WebReflection/flatted",
+    "publisher": "Andrea Giammarchi",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/flatted",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/flatted/LICENSE"
+  },
+  "follow-redirects@1.15.9": {
+    "licenses": "MIT",
+    "repository": "https://github.com/follow-redirects/follow-redirects",
+    "publisher": "Ruben Verborgh",
+    "email": "ruben@verborgh.org",
+    "url": "https://ruben.verborgh.org/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/follow-redirects",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/follow-redirects/LICENSE"
+  },
+  "foreground-child@3.3.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/tapjs/foreground-child",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/foreground-child",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/foreground-child/LICENSE"
+  },
+  "form-data@4.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/form-data/form-data",
+    "publisher": "Felix Geisendörfer",
+    "email": "felix@debuggable.com",
+    "url": "http://debuggable.com/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/form-data",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/form-data/License"
+  },
+  "forwarded@0.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/forwarded",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/forwarded",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/forwarded/LICENSE"
+  },
+  "fresh@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/fresh",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "url": "http://tjholowaychuk.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fresh",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fresh/LICENSE"
+  },
+  "fsevents@2.3.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/fsevents/fsevents",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fsevents",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fsevents/LICENSE"
+  },
+  "function-bind@1.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Raynos/function-bind",
+    "publisher": "Raynos",
+    "email": "raynos2@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/function-bind",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/function-bind/LICENSE"
+  },
+  "get-caller-file@2.0.5": {
+    "licenses": "ISC",
+    "repository": "https://github.com/stefanpenner/get-caller-file",
+    "publisher": "Stefan Penner",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/get-caller-file",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/get-caller-file/LICENSE.md"
+  },
+  "get-intrinsic@1.3.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/get-intrinsic",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/get-intrinsic",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/get-intrinsic/LICENSE"
+  },
+  "get-proto@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/get-proto",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/get-proto",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/get-proto/LICENSE"
+  },
+  "get-tsconfig@4.10.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/privatenumber/get-tsconfig",
+    "publisher": "Hiroki Osame",
+    "email": "hiroki.osame@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/get-tsconfig",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/get-tsconfig/LICENSE"
+  },
+  "glob-parent@5.1.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/gulpjs/glob-parent",
+    "publisher": "Gulp Team",
+    "email": "team@gulpjs.com",
+    "url": "https://gulpjs.com/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/fast-glob/node_modules/glob-parent",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/fast-glob/node_modules/glob-parent/LICENSE"
+  },
+  "glob-parent@6.0.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/gulpjs/glob-parent",
+    "publisher": "Gulp Team",
+    "email": "team@gulpjs.com",
+    "url": "https://gulpjs.com/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/glob-parent",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/glob-parent/LICENSE"
+  },
+  "glob@10.4.5": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-glob",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "https://blog.izs.me/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/glob",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/glob/LICENSE"
+  },
+  "globals@14.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/globals",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/eslintrc/node_modules/globals",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/eslintrc/node_modules/globals/license"
+  },
+  "globby@11.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/globby",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/globby",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/globby/license"
+  },
+  "gopd@1.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/gopd",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/gopd",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/gopd/LICENSE"
+  },
+  "graphemer@1.4.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/flmnt/graphemer",
+    "publisher": "Matt Davies",
+    "email": "matt@filament.so",
+    "url": "https://github.com/mattpauldavies",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/graphemer",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/graphemer/LICENSE"
+  },
+  "has-flag@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/has-flag",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/has-flag",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/has-flag/license"
+  },
+  "has-symbols@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/has-symbols",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "url": "http://ljharb.codes",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/has-symbols",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/has-symbols/LICENSE"
+  },
+  "has-tostringtag@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/has-tostringtag",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "url": "http://ljharb.codes",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/has-tostringtag",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/has-tostringtag/LICENSE"
+  },
+  "hasown@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/hasOwn",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/hasown",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/hasown/LICENSE"
+  },
+  "html-escaper@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/WebReflection/html-escaper",
+    "publisher": "Andrea Giammarchi",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/html-escaper",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/html-escaper/LICENSE.txt"
+  },
+  "http-errors@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/http-errors",
+    "publisher": "Jonathan Ong",
+    "email": "me@jongleberry.com",
+    "url": "http://jongleberry.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/http-errors",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/http-errors/LICENSE"
+  },
+  "iconv-lite@0.6.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ashtuchkin/iconv-lite",
+    "publisher": "Alexander Shtuchkin",
+    "email": "ashtuchkin@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/iconv-lite",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/iconv-lite/LICENSE"
+  },
+  "ignore@5.3.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kaelzhang/node-ignore",
+    "publisher": "kael",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/globby/node_modules/ignore",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/globby/node_modules/ignore/LICENSE-MIT"
+  },
+  "ignore@7.0.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kaelzhang/node-ignore",
+    "publisher": "kael",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ignore",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ignore/LICENSE-MIT"
+  },
+  "import-fresh@3.3.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/import-fresh",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/import-fresh",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/import-fresh/license"
+  },
+  "imurmurhash@0.1.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jensyt/imurmurhash-js",
+    "publisher": "Jens Taylor",
+    "email": "jensyt@gmail.com",
+    "url": "https://github.com/homebrewing",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/imurmurhash",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/imurmurhash/README.md"
+  },
+  "inherits@2.0.4": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/inherits",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/inherits",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/inherits/LICENSE"
+  },
+  "ipaddr.js@1.9.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/whitequark/ipaddr.js",
+    "publisher": "whitequark",
+    "email": "whitequark@whitequark.org",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ipaddr.js",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ipaddr.js/LICENSE"
+  },
+  "is-binary-path@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/is-binary-path",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/is-binary-path",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/is-binary-path/license"
+  },
+  "is-extglob@2.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/is-extglob",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/is-extglob",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/is-extglob/LICENSE"
+  },
+  "is-fullwidth-code-point@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/is-fullwidth-code-point",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/is-fullwidth-code-point",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/is-fullwidth-code-point/license"
+  },
+  "is-glob@4.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/is-glob",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/is-glob",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/is-glob/LICENSE"
+  },
+  "is-number@7.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/is-number",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/is-number",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/is-number/LICENSE"
+  },
+  "is-promise@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/then/is-promise",
+    "publisher": "ForbesLindesay",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/is-promise",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/is-promise/LICENSE"
+  },
+  "isexe@2.0.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/isexe",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/isexe",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/isexe/LICENSE"
+  },
+  "istanbul-lib-coverage@3.2.2": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/istanbuljs/istanbuljs",
+    "publisher": "Krishnan Anantheswaran",
+    "email": "kananthmail-github@yahoo.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/istanbul-lib-coverage",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/istanbul-lib-coverage/LICENSE"
+  },
+  "istanbul-lib-report@3.0.1": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/istanbuljs/istanbuljs",
+    "publisher": "Krishnan Anantheswaran",
+    "email": "kananthmail-github@yahoo.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/istanbul-lib-report",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/istanbul-lib-report/LICENSE"
+  },
+  "istanbul-reports@3.1.7": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/istanbuljs/istanbuljs",
+    "publisher": "Krishnan Anantheswaran",
+    "email": "kananthmail-github@yahoo.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/istanbul-reports",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/istanbul-reports/LICENSE"
+  },
+  "jackspeak@3.4.3": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/jackspeak",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/jackspeak",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/jackspeak/LICENSE.md"
+  },
+  "jose@6.0.11": {
+    "licenses": "MIT",
+    "repository": "https://github.com/panva/jose",
+    "publisher": "Filip Skokan",
+    "email": "panva.ip@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/jose",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/jose/LICENSE.md"
+  },
+  "js-tokens@9.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lydell/js-tokens",
+    "publisher": "Simon Lydell",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/js-tokens",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/js-tokens/LICENSE"
+  },
+  "js-yaml@4.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodeca/js-yaml",
+    "publisher": "Vladimir Zapparov",
+    "email": "dervus.grim@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/js-yaml",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/js-yaml/LICENSE"
+  },
+  "json-buffer@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/dominictarr/json-buffer",
+    "publisher": "Dominic Tarr",
+    "email": "dominic.tarr@gmail.com",
+    "url": "http://dominictarr.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/json-buffer",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/json-buffer/LICENSE"
+  },
+  "json-schema-traverse@0.4.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/json-schema-traverse",
+    "publisher": "Evgeny Poberezkin",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/node_modules/json-schema-traverse",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@modelcontextprotocol/sdk/node_modules/json-schema-traverse/LICENSE"
+  },
+  "json-schema-traverse@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/json-schema-traverse",
+    "publisher": "Evgeny Poberezkin",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/json-schema-traverse",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/json-schema-traverse/LICENSE"
+  },
+  "json-stable-stringify-without-jsonify@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/samn/json-stable-stringify",
+    "publisher": "James Halliday",
+    "email": "mail@substack.net",
+    "url": "http://substack.net",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/json-stable-stringify-without-jsonify",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/json-stable-stringify-without-jsonify/LICENSE"
+  },
+  "keyv@4.5.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jaredwray/keyv",
+    "publisher": "Jared Wray",
+    "email": "me@jaredwray.com",
+    "url": "http://jaredwray.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/keyv",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/keyv/README.md"
+  },
+  "levn@0.4.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gkz/levn",
+    "publisher": "George Zahariev",
+    "email": "z@georgezahariev.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/levn",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/levn/LICENSE"
+  },
+  "locate-path@6.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/locate-path",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/locate-path",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/locate-path/license"
+  },
+  "lodash.merge@4.6.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lodash/lodash",
+    "publisher": "John-David Dalton",
+    "email": "john.david.dalton@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/lodash.merge",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/lodash.merge/LICENSE"
+  },
+  "loupe@3.1.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chaijs/loupe",
+    "publisher": "Veselin Todorov",
+    "email": "hi@vesln.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/loupe",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/loupe/LICENSE"
+  },
+  "lru-cache@10.4.3": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-lru-cache",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/lru-cache",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/lru-cache/LICENSE"
+  },
+  "magic-string@0.30.17": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rich-harris/magic-string",
+    "publisher": "Rich Harris",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/magic-string",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/magic-string/LICENSE"
+  },
+  "make-dir@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/make-dir",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/make-dir",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/make-dir/license"
+  },
+  "math-intrinsics@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/es-shims/math-intrinsics",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/math-intrinsics",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/math-intrinsics/LICENSE"
+  },
+  "media-typer@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/media-typer",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/media-typer",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/media-typer/LICENSE"
+  },
+  "merge-descriptors@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/merge-descriptors",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/merge-descriptors",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/merge-descriptors/license"
+  },
+  "merge2@1.4.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/teambition/merge2",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/merge2",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/merge2/LICENSE"
+  },
+  "micromatch@4.0.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/micromatch",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/micromatch",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/micromatch/LICENSE"
+  },
+  "mime-db@1.52.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/mime-db",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/form-data/node_modules/mime-db",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/form-data/node_modules/mime-db/LICENSE"
+  },
+  "mime-db@1.54.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/mime-db",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/mime-db",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/mime-db/LICENSE"
+  },
+  "mime-types@2.1.35": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/mime-types",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/form-data/node_modules/mime-types",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/form-data/node_modules/mime-types/LICENSE"
+  },
+  "mime-types@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/mime-types",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/mime-types",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/mime-types/LICENSE"
+  },
+  "minimatch@3.1.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/minimatch",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/config-array/node_modules/minimatch",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/@eslint/config-array/node_modules/minimatch/LICENSE"
+  },
+  "minimatch@9.0.5": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/minimatch",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/minimatch",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/minimatch/LICENSE"
+  },
+  "minipass@7.1.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/minipass",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/minipass",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/minipass/LICENSE"
+  },
+  "mrmime@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/mrmime",
+    "publisher": "Luke Edwards",
+    "email": "luke.edwards05@gmail.com",
+    "url": "https://lukeed.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/mrmime",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/mrmime/license"
+  },
+  "ms@2.1.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vercel/ms",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ms",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ms/license.md"
+  },
+  "mylas@2.1.13": {
+    "licenses": "MIT",
+    "repository": "https://github.com/raouldeheer/Mylas",
+    "publisher": "Raoul de Heer",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/mylas",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/mylas/LICENSE"
+  },
+  "nanoid@3.3.11": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ai/nanoid",
+    "publisher": "Andrey Sitnik",
+    "email": "andrey@sitnik.ru",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/nanoid",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/nanoid/LICENSE"
+  },
+  "natural-compare@1.4.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/litejs/natural-compare-lite",
+    "publisher": "Lauri Rooden",
+    "url": "https://github.com/litejs/natural-compare-lite",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/natural-compare",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/natural-compare/README.md"
+  },
+  "negotiator@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/negotiator",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/negotiator",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/negotiator/LICENSE"
+  },
+  "normalize-path@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/normalize-path",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/normalize-path",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/normalize-path/LICENSE"
+  },
+  "object-assign@4.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/object-assign",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/object-assign",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/object-assign/license"
+  },
+  "object-inspect@1.13.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/object-inspect",
+    "publisher": "James Halliday",
+    "email": "mail@substack.net",
+    "url": "http://substack.net",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/object-inspect",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/object-inspect/LICENSE"
+  },
+  "on-finished@2.4.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/on-finished",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/on-finished",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/on-finished/LICENSE"
+  },
+  "once@1.4.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/once",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/once",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/once/LICENSE"
+  },
+  "optionator@0.9.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gkz/optionator",
+    "publisher": "George Zahariev",
+    "email": "z@georgezahariev.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/optionator",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/optionator/LICENSE"
+  },
+  "p-limit@3.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-limit",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/p-limit",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/p-limit/license"
+  },
+  "p-locate@5.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-locate",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/p-locate",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/p-locate/license"
+  },
+  "package-json-from-dist@1.0.1": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/package-json-from-dist",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "https://izs.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/package-json-from-dist",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/package-json-from-dist/LICENSE.md"
+  },
+  "parent-module@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/parent-module",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/parent-module",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/parent-module/license"
+  },
+  "parse-path@7.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/IonicaBizau/parse-path",
+    "publisher": "Ionică Bizău",
+    "email": "bizauionica@gmail.com",
+    "url": "https://ionicabizau.net",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/parse-path",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/parse-path/LICENSE"
+  },
+  "parseurl@1.3.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pillarjs/parseurl",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/parseurl",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/parseurl/LICENSE"
+  },
+  "path-exists@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/path-exists",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/path-exists",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/path-exists/license"
+  },
+  "path-key@3.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/path-key",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/path-key",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/path-key/license"
+  },
+  "path-scurry@1.11.1": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/path-scurry",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "https://blog.izs.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/path-scurry",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/path-scurry/LICENSE.md"
+  },
+  "path-to-regexp@8.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pillarjs/path-to-regexp",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/path-to-regexp",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/path-to-regexp/LICENSE"
+  },
+  "path-type@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/path-type",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/path-type",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/path-type/license"
+  },
+  "pathe@2.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/unjs/pathe",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/pathe",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/pathe/LICENSE"
+  },
+  "pathval@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chaijs/pathval",
+    "publisher": "Veselin Todorov",
+    "email": "hi@vesln.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/pathval",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/pathval/LICENSE"
+  },
+  "picocolors@1.1.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/alexeyraspopov/picocolors",
+    "publisher": "Alexey Raspopov",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/picocolors",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/picocolors/LICENSE"
+  },
+  "picomatch@2.3.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/picomatch",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/picomatch",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/picomatch/LICENSE"
+  },
+  "picomatch@4.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/picomatch",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tinyglobby/node_modules/picomatch",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tinyglobby/node_modules/picomatch/LICENSE"
+  },
+  "pkce-challenge@5.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/crouchcd/pkce-challenge",
+    "publisher": "crouchcd",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/pkce-challenge",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/pkce-challenge/LICENSE"
+  },
+  "plimit-lit@1.6.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/joelvoss/plimit-lit",
+    "publisher": "Joel Voß",
+    "email": "mail@joelvoss.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/plimit-lit",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/plimit-lit/LICENSE"
+  },
+  "postcss@8.5.6": {
+    "licenses": "MIT",
+    "repository": "https://github.com/postcss/postcss",
+    "publisher": "Andrey Sitnik",
+    "email": "andrey@sitnik.ru",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/postcss",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/postcss/LICENSE"
+  },
+  "prelude-ls@1.2.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gkz/prelude-ls",
+    "publisher": "George Zahariev",
+    "email": "z@georgezahariev.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/prelude-ls",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/prelude-ls/LICENSE"
+  },
+  "prettier-linter-helpers@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/prettier/prettier-linter-helpers",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/prettier-linter-helpers",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/prettier-linter-helpers/LICENSE.md"
+  },
+  "prettier@3.5.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/prettier/prettier",
+    "publisher": "James Long",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/prettier",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/prettier/LICENSE"
+  },
+  "protocols@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/IonicaBizau/protocols",
+    "publisher": "Ionică Bizău",
+    "email": "bizauionica@gmail.com",
+    "url": "https://ionicabizau.net",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/protocols",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/protocols/LICENSE"
+  },
+  "proxy-addr@2.0.7": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/proxy-addr",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/proxy-addr",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/proxy-addr/LICENSE"
+  },
+  "proxy-from-env@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Rob--W/proxy-from-env",
+    "publisher": "Rob Wu",
+    "email": "rob@robwu.nl",
+    "url": "https://robwu.nl/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/proxy-from-env",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/proxy-from-env/LICENSE"
+  },
+  "punycode@2.3.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mathiasbynens/punycode.js",
+    "publisher": "Mathias Bynens",
+    "url": "https://mathiasbynens.be/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/punycode",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/punycode/LICENSE-MIT.txt"
+  },
+  "qs@6.14.0": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/ljharb/qs",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/qs",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/qs/LICENSE.md"
+  },
+  "queue-lit@1.5.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/joelvoss/queue-lit",
+    "publisher": "Joel Voß",
+    "email": "mail@joelvoss.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/queue-lit",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/queue-lit/LICENSE"
+  },
+  "queue-microtask@1.2.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/queue-microtask",
+    "publisher": "Feross Aboukhadijeh",
+    "email": "feross@feross.org",
+    "url": "https://feross.org",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/queue-microtask",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/queue-microtask/LICENSE"
+  },
+  "range-parser@1.2.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/range-parser",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "url": "http://tjholowaychuk.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/range-parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/range-parser/LICENSE"
+  },
+  "raw-body@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/stream-utils/raw-body",
+    "publisher": "Jonathan Ong",
+    "email": "me@jongleberry.com",
+    "url": "http://jongleberry.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/raw-body",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/raw-body/LICENSE"
+  },
+  "readdirp@3.6.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/paulmillr/readdirp",
+    "publisher": "Thorsten Lorenz",
+    "email": "thlorenz@gmx.de",
+    "url": "thlorenz.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/readdirp",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/readdirp/LICENSE"
+  },
+  "require-directory@2.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/troygoode/node-require-directory",
+    "publisher": "Troy Goode",
+    "email": "troygoode@gmail.com",
+    "url": "http://github.com/troygoode/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/require-directory",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/require-directory/LICENSE"
+  },
+  "require-from-string@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floatdrop/require-from-string",
+    "publisher": "Vsevolod Strukchinsky",
+    "email": "floatdrop@gmail.com",
+    "url": "github.com/floatdrop",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/require-from-string",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/require-from-string/license"
+  },
+  "resolve-from@4.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/resolve-from",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/resolve-from",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/resolve-from/license"
+  },
+  "resolve-pkg-maps@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/privatenumber/resolve-pkg-maps",
+    "publisher": "Hiroki Osame",
+    "email": "hiroki.osame@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/resolve-pkg-maps",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/resolve-pkg-maps/LICENSE"
+  },
+  "reusify@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mcollina/reusify",
+    "publisher": "Matteo Collina",
+    "email": "hello@matteocollina.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/reusify",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/reusify/LICENSE"
+  },
+  "rollup@4.44.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rollup/rollup",
+    "publisher": "Rich Harris",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/rollup",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/rollup/LICENSE.md"
+  },
+  "router@2.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pillarjs/router",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/router",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/router/LICENSE"
+  },
+  "run-parallel@1.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/run-parallel",
+    "publisher": "Feross Aboukhadijeh",
+    "email": "feross@feross.org",
+    "url": "https://feross.org",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/run-parallel",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/run-parallel/LICENSE"
+  },
+  "safe-buffer@5.2.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/safe-buffer",
+    "publisher": "Feross Aboukhadijeh",
+    "email": "feross@feross.org",
+    "url": "https://feross.org",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/safe-buffer",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/safe-buffer/LICENSE"
+  },
+  "safer-buffer@2.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ChALkeR/safer-buffer",
+    "publisher": "Nikita Skovoroda",
+    "email": "chalkerx@gmail.com",
+    "url": "https://github.com/ChALkeR",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/safer-buffer",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/safer-buffer/LICENSE"
+  },
+  "semver@7.7.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/node-semver",
+    "publisher": "GitHub Inc.",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/semver",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/semver/LICENSE"
+  },
+  "send@1.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pillarjs/send",
+    "publisher": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/send",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/send/LICENSE"
+  },
+  "serve-static@2.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/expressjs/serve-static",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/serve-static",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/serve-static/LICENSE"
+  },
+  "setprototypeof@1.2.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/wesleytodd/setprototypeof",
+    "publisher": "Wes Todd",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/setprototypeof",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/setprototypeof/LICENSE"
+  },
+  "shebang-command@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/shebang-command",
+    "publisher": "Kevin Mårtensson",
+    "email": "kevinmartensson@gmail.com",
+    "url": "github.com/kevva",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/shebang-command",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/shebang-command/license"
+  },
+  "shebang-regex@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/shebang-regex",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/shebang-regex",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/shebang-regex/license"
+  },
+  "side-channel-list@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/side-channel-list",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/side-channel-list",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/side-channel-list/LICENSE"
+  },
+  "side-channel-map@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/side-channel-map",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/side-channel-map",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/side-channel-map/LICENSE"
+  },
+  "side-channel-weakmap@1.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/side-channel-weakmap",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/side-channel-weakmap",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/side-channel-weakmap/LICENSE"
+  },
+  "side-channel@1.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/side-channel",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/side-channel",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/side-channel/LICENSE"
+  },
+  "siginfo@2.0.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/emilbayes/siginfo",
+    "publisher": "Emil Bay",
+    "email": "github@tixz.dk",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/siginfo",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/siginfo/LICENSE"
+  },
+  "signal-exit@4.1.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/tapjs/signal-exit",
+    "publisher": "Ben Coe",
+    "email": "ben@npmjs.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/signal-exit",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/signal-exit/LICENSE.txt"
+  },
+  "sirv@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/sirv",
+    "publisher": "Luke Edwards",
+    "email": "luke@lukeed.com",
+    "url": "https://lukeed.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/sirv",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/sirv/readme.md"
+  },
+  "slash@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/slash",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/slash",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/slash/license"
+  },
+  "source-map-js@1.2.1": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/7rulnik/source-map-js",
+    "publisher": "Valentin 7rulnik Semirulnik",
+    "email": "v7rulnik@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/source-map-js",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/source-map-js/LICENSE"
+  },
+  "stackback@0.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/shtylman/node-stackback",
+    "publisher": "Roman Shtylman",
+    "email": "shtylman@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/stackback",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/stackback/README.md"
+  },
+  "statuses@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/statuses",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/http-errors/node_modules/statuses",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/http-errors/node_modules/statuses/LICENSE"
+  },
+  "statuses@2.0.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/statuses",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/statuses",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/statuses/LICENSE"
+  },
+  "std-env@3.9.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/unjs/std-env",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/std-env",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/std-env/LICENCE"
+  },
+  "string-width@4.2.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/string-width",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/string-width-cjs",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/string-width-cjs/license"
+  },
+  "string-width@5.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/string-width",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/string-width",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/string-width/license"
+  },
+  "strip-ansi@6.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/strip-ansi",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/string-width-cjs/node_modules/strip-ansi",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/string-width-cjs/node_modules/strip-ansi/license"
+  },
+  "strip-ansi@7.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/strip-ansi",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/strip-ansi",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/strip-ansi/license"
+  },
+  "strip-json-comments@3.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/strip-json-comments",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/strip-json-comments",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/strip-json-comments/license"
+  },
+  "strip-literal@3.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/antfu/strip-literal",
+    "publisher": "Anthony Fu",
+    "email": "anthonyfu117@hotmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/strip-literal",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/strip-literal/LICENSE"
+  },
+  "supports-color@7.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/supports-color",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/supports-color",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/supports-color/license"
+  },
+  "synckit@0.11.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/un-ts/synckit",
+    "publisher": "JounQin",
+    "email": "admin@1stg.me",
+    "url": "https://www.1stG.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/synckit",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/synckit/LICENSE"
+  },
+  "test-exclude@7.0.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/istanbuljs/test-exclude",
+    "publisher": "Ben Coe",
+    "email": "ben@npmjs.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/test-exclude",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/test-exclude/LICENSE.txt"
+  },
+  "tinybench@2.9.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tinylibs/tinybench",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tinybench",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tinybench/LICENSE"
+  },
+  "tinyexec@0.3.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tinylibs/tinyexec",
+    "publisher": "James Garbutt",
+    "url": "https://github.com/43081j",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tinyexec",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tinyexec/LICENSE"
+  },
+  "tinyglobby@0.2.14": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SuperchupuDev/tinyglobby",
+    "publisher": "Superchupu",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tinyglobby",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tinyglobby/LICENSE"
+  },
+  "tinypool@1.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tinylibs/tinypool",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tinypool",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tinypool/LICENSE"
+  },
+  "tinyrainbow@2.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tinylibs/tinyrainbow",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tinyrainbow",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tinyrainbow/LICENCE"
+  },
+  "tinyspy@4.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tinylibs/tinyspy",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tinyspy",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tinyspy/LICENCE"
+  },
+  "to-regex-range@5.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/to-regex-range",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/to-regex-range",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/to-regex-range/LICENSE"
+  },
+  "toidentifier@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/component/toidentifier",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/toidentifier",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/toidentifier/LICENSE"
+  },
+  "totalist@3.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/totalist",
+    "publisher": "Luke Edwards",
+    "email": "luke.edwards05@gmail.com",
+    "url": "https://lukeed.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/totalist",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/totalist/license"
+  },
+  "ts-api-utils@2.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/JoshuaKGoldberg/ts-api-utils",
+    "publisher": "JoshuaKGoldberg",
+    "email": "npm@joshuakgoldberg.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/ts-api-utils",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/ts-api-utils/LICENSE.md"
+  },
+  "tsc-alias@1.8.16": {
+    "licenses": "MIT",
+    "repository": "https://github.com/justkey007/tsc-alias",
+    "publisher": "Juskey B.",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tsc-alias",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tsc-alias/LICENSE"
+  },
+  "tsx@4.20.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/privatenumber/tsx",
+    "publisher": "Hiroki Osame",
+    "email": "hiroki.osame@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/tsx",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/tsx/LICENSE"
+  },
+  "type-check@0.4.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gkz/type-check",
+    "publisher": "George Zahariev",
+    "email": "z@georgezahariev.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/type-check",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/type-check/LICENSE"
+  },
+  "type-fest@4.41.0": {
+    "licenses": "(MIT OR CC0-1.0)",
+    "repository": "https://github.com/sindresorhus/type-fest",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/type-fest",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/type-fest/license-cc0"
+  },
+  "type-is@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/type-is",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/type-is",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/type-is/LICENSE"
+  },
+  "typescript@5.8.3": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/microsoft/TypeScript",
+    "publisher": "Microsoft Corp.",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/typescript",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/typescript/LICENSE.txt"
+  },
+  "undici-types@6.21.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodejs/undici",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/undici-types",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/undici-types/LICENSE"
+  },
+  "unpipe@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/stream-utils/unpipe",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/unpipe",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/unpipe/LICENSE"
+  },
+  "uri-js@4.4.1": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/garycourt/uri-js",
+    "publisher": "Gary Court",
+    "email": "gary.court@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/uri-js",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/uri-js/LICENSE"
+  },
+  "v8-to-istanbul@9.3.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/istanbuljs/v8-to-istanbul",
+    "publisher": "Ben Coe",
+    "email": "ben@npmjs.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/v8-to-istanbul",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/v8-to-istanbul/LICENSE.txt"
+  },
+  "vary@1.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/vary",
+    "publisher": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/vary",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/vary/LICENSE"
+  },
+  "vite-node@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "publisher": "Anthony Fu",
+    "email": "anthonyfu117@hotmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/vite-node",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/vite-node/LICENSE"
+  },
+  "vite@7.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitejs/vite",
+    "publisher": "Evan You",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/vite",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/vite/LICENSE.md"
+  },
+  "vitest@3.2.4": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vitest-dev/vitest",
+    "publisher": "Anthony Fu",
+    "email": "anthonyfu117@hotmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/vitest",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/vitest/LICENSE.md"
+  },
+  "which@2.0.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-which",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/which",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/which/LICENSE"
+  },
+  "why-is-node-running@2.3.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mafintosh/why-is-node-running",
+    "publisher": "Mathias Buus",
+    "url": "@mafintosh",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/why-is-node-running",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/why-is-node-running/LICENSE"
+  },
+  "word-wrap@1.2.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/word-wrap",
+    "publisher": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/word-wrap",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/word-wrap/LICENSE"
+  },
+  "wrap-ansi@7.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/wrap-ansi",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/wrap-ansi-cjs",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/wrap-ansi-cjs/license"
+  },
+  "wrap-ansi@8.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/wrap-ansi",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/wrap-ansi",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/wrap-ansi/license"
+  },
+  "wrappy@1.0.2": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/wrappy",
+    "publisher": "Isaac Z. Schlueter",
+    "email": "i@izs.me",
+    "url": "http://blog.izs.me/",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/wrappy",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/wrappy/LICENSE"
+  },
+  "y18n@5.0.8": {
+    "licenses": "ISC",
+    "repository": "https://github.com/yargs/y18n",
+    "publisher": "Ben Coe",
+    "email": "bencoe@gmail.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/y18n",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/y18n/LICENSE"
+  },
+  "yargs-parser@21.1.1": {
+    "licenses": "ISC",
+    "repository": "https://github.com/yargs/yargs-parser",
+    "publisher": "Ben Coe",
+    "email": "ben@npmjs.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/yargs-parser",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/yargs-parser/LICENSE.txt"
+  },
+  "yargs@17.7.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/yargs/yargs",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/yargs",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/yargs/LICENSE"
+  },
+  "yocto-queue@0.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/yocto-queue",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "https://sindresorhus.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/yocto-queue",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/yocto-queue/license"
+  },
+  "zod-to-json-schema@3.24.5": {
+    "licenses": "ISC",
+    "repository": "https://github.com/StefanTerdell/zod-to-json-schema",
+    "publisher": "Stefan Terdell",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/zod-to-json-schema",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/zod-to-json-schema/LICENSE"
+  },
+  "zod@3.25.67": {
+    "licenses": "MIT",
+    "repository": "https://github.com/colinhacks/zod",
+    "publisher": "Colin McDonnell",
+    "email": "zod@colinhacks.com",
+    "path": "/Users/robert/Code/mittwald-mcp/node_modules/zod",
+    "licenseFile": "/Users/robert/Code/mittwald-mcp/node_modules/zod/LICENSE"
+  }
+}
+
