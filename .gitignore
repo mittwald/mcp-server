@@ -73,3 +73,5 @@ check-*.ts
 parse-*.ts
 monitor-*.sh
 run-*.sh
+
+.swarm
