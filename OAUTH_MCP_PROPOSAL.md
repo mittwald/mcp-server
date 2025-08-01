@@ -427,34 +427,47 @@ SESSION_TTL=28800  # 8 hours
 **Immediate Clarification Needed:**
 1. **OAuth Capability Confirmation**
    - Does Mittwald Studio currently support OAuth 2.0/OIDC for third-party applications?
+       - OAuth2 is supported, OIDC not (https://developer.mittwald.de/docs/v2/contribution/how-to/manage-oauth-clients/, https://developer.mittwald.de/docs/v2/contribution/reference/oauth2/) (@martin-helmich)
    - What OAuth flows are currently supported?
+       - Currently, mStudio supports the authorization code flow with PKCE (https://developer.mittwald.de/docs/v2/contribution/reference/api/#oauth2) (@martin-helmich)
    - **CRITICAL**: Can users provide their API tokens during the OAuth flow in Studio?
 
 2. **API Token Integration Strategy**
    - **✅ SELECTED**: Studio auto-creates API tokens for OAuth users via existing `user.createApiToken` API
    - **Required Implementation**: Studio calls `user.createApiToken` during OAuth callback
+       - IIRC, the OAuth 2 Access Token can already be used as an mStudio API token; creating a separate API token should not be necessary (@martin-helmich) 
    - **Token Parameters**: Description: "MCP Server Access", Roles: ["api_read", "api_write"]
    - **Token Lifecycle**: How are auto-created tokens managed, renewed, or revoked?
 
 3. **CLI Token Flag Validation**
    - **CONFIRMED**: All CLI commands support the `--token` flag (verified in CLI code)
    - Are there any security restrictions on using `--token` flag vs `MITTWALD_API_TOKEN` env var?
+       - In this use case, no. Generally, I'd advise against passing secrets as flag values (when run in a shell, these may get logged in the user's shell history; this is not applicable in this case, however) (@martin-helmich)
    - Any rate limiting or usage differences between the two approaches?
+       - No. On an API level, these two approaches are identical. (@martin-helmich)
 
 4. **Multi-tenancy Support**
    - How does the current Mittwald API handle multi-tenant scenarios?
    - What built-in tenant isolation exists?
+       - The mStudio API does not have strict tenant isolation, but implements RBAC for all relevant endpoints (compare e.g. to Github with its org/repository access model) (@martin-helmich)
    - Are there existing audit logging mechanisms?
+       - None that are accessible for an end user (@martin-helmich)
 
 5. **Development Timeline**
    - What's the realistic timeline for OAuth application registration?
+       - IIRC, users can even register their own OAuth applications. Even if not, this should easily be possible within a day. (@martin-helmich) 
    - How long does security review typically take?
+       - The central security mechanism in this architecture is the RBAC enforcement in the mStudio API (which is already thoroughly reviewed and audited). The CLI (and by extension, the MCP server) do not require any policy enforcement mechanisms on their own, because they can rely on the API to enforce RBAC. For this reason, I don't see any big hurdles regarding a security review. (@martin-helmich)
    - What's the process for production deployment approval?
+       - Needs to be discussed. (@martin-helmich)
 
 6. **Resource Allocation**
    - Which Mittwald team members will be assigned to support this project?
+       - Apart from myself, I'd recommend @freisenhauer (@martin-helmich)
    - What level of ongoing support can be expected post-deployment?
+       - General support for extension and integration developers is available at https://github.com/mittwald/contributor-support (@martin-helmich)
    - Are there any internal resource constraints we should be aware of?
+       - @freisenhauer is generally quite busy; use the support discussion board for non-time-critical issues (@martin-helmich) 
 
 ---
 
