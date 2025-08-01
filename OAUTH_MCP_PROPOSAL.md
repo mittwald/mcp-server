@@ -2,7 +2,13 @@
 
 ## Executive Summary
 
-Transform the current single-tenant Mittwald MCP server into a secure multitenant platform using OAuth/OIDC authentication integrated with Mittwald Studio. This simplified proposal focuses on core functionality using Docker Compose deployment without complex scaling infrastructure.
+Transform the current single-tenant Mittwald MCP server into a secure multitenant platform using OAuth authentication integrated with Mittwald's self-service OAuth client system. This revised proposal focuses on core functionality using Docker Compose deployment without complex scaling infrastructure.
+
+**Key Research Findings:**
+- ✅ Mittwald API supports self-service OAuth client creation
+- ✅ OAuth access tokens function directly as API tokens (no separate token creation needed)
+- ⚠️ OIDC is not currently supported - mStudio uses OAuth 2.0 with authorization code + PKCE flow only
+- ⚠️ CLI --token flag availability needs verification with Mittwald team
 
 ---
 
@@ -21,7 +27,7 @@ CURRENT STATE (Single Tenant)
 TARGET STATE (Multitenant OAuth)
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │   MCP Client    │◄──►│   OAuth Layer    │◄──►│ Mittwald Studio │
-│   (Claude)      │    │  Session Mgmt    │    │    OIDC         │
+│   (Claude)      │    │  Session Mgmt    │    │   OAuth 2.0     │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
                                 │
                                 ▼
@@ -39,10 +45,10 @@ TARGET STATE (Multitenant OAuth)
 
 ### Key Architectural Components
 
-1. **OAuth Authentication Layer**: Mittwald Studio OIDC integration
+1. **OAuth Authentication Layer**: Mittwald Studio OAuth 2.0 integration (authorization code + PKCE flow)
 2. **Session Management**: Redis-based per-user sessions and context
 3. **Context Isolation**: Per-user CLI context (project-id, server-id, etc.)
-4. **Token Injection**: Per-user API token injection via existing CLI `--token` flag
+4. **Token Injection**: Per-user OAuth token injection (CLI integration method TBD - requires verification of --token flag support)
 5. **MCP Protocol Handler**: Request routing with tenant isolation
 
 ---
@@ -75,6 +81,7 @@ interface UserSession {
     serverId?: string;       // User-specific server
     orgId?: string;          // User-specific organization
   };
+  // WHAT IS THIS FOR? Might cause cache problem
   accessibleProjects: string[];  // Projects user has access to
   lastAccessed: Date;
 }
@@ -100,7 +107,6 @@ interface UserSession {
 
 3. **Context Validation**
    - Validate user has access to specified resources
-   - Block access to unauthorized projects/servers
    - Audit all context changes
 
 ### How Users Get API Tokens
@@ -113,18 +119,18 @@ mw user api-token create --description "My MCP Token" --roles api_read api_write
 # Or manage them in Mittwald Studio dashboard
 ```
 
-**Selected Approach: Auto-Creation via Existing API**
+**REVISED APPROACH: Direct OAuth Token Usage**
 
-**Studio Auto-Creates API Tokens**:
-- Mittwald Studio automatically creates API tokens during OAuth using existing `user.createApiToken` API
-- No user interaction required for token management
-- Seamless authentication experience
-- Tokens created with appropriate scopes (`api_read`, `api_write`)
-- Automatic token lifecycle management
+**Based on Research Findings from Mittwald Team (@martin-helmich):**
+- OAuth 2.0 Access Tokens can be used directly as mStudio API tokens
+- **No separate API token creation required** - eliminates need for `user.createApiToken` API calls
+- Simplified authentication flow with fewer moving parts
+- OAuth tokens work directly with Mittwald API endpoints
+- Standard OAuth token lifecycle management (refresh tokens, expiration)
 
 ---
 
-## 3. OAuth/OIDC Information Flow Diagram
+## 3. OAuth 2.0 Information Flow Diagram
 
 ### Complete End-to-End Flow
 
@@ -132,34 +138,32 @@ mw user api-token create --description "My MCP Token" --roles api_read api_write
 sequenceDiagram
     participant Claude as Claude Desktop
     participant MCP as MCP Server
-    participant Studio as Mittwald Studio OIDC
+    participant Studio as Mittwald Studio OAuth 2.0
     participant Redis as Redis Session Store
     participant CLI as Mittwald CLI
     participant API as Mittwald API
 
-    Note over Claude,API: 1. OAuth Authentication + Auto Token Creation
+    Note over Claude,API: 1. OAuth 2.0 Authentication (Simplified)
     Claude->>MCP: Initialize MCP connection
     MCP->>Claude: 401 - Authentication required
     Claude->>MCP: GET /auth/login
-    MCP->>Studio: Redirect to OIDC authorization
-    Studio->>Claude: Present login form (no token field needed)
+    MCP->>Studio: Redirect to OAuth authorization (PKCE flow)
+    Studio->>Claude: Present login form
     Claude->>Studio: User credentials
-    Studio->>API: Create API token via user.createApiToken
-    API->>Studio: New API token created
     Studio->>MCP: Authorization code callback
-    MCP->>Studio: Exchange code for OAuth tokens
-    Studio->>MCP: ID token + Access token + Auto-created API token
-    MCP->>Redis: Store user session & API token
+    MCP->>Studio: Exchange code for OAuth tokens (authorization code + PKCE)
+    Studio->>MCP: Access token + Refresh token (no separate API token needed)
+    MCP->>Redis: Store user session & OAuth access token
     MCP->>Claude: Authentication success + session cookie
 
-    Note over Claude,API: 2. MCP Request Processing (Token Injection)
+    Note over Claude,API: 2. MCP Request Processing (OAuth Token Usage)
     Claude->>MCP: MCP tool call (with session)
     MCP->>Redis: Validate session & get user context
-    Redis->>MCP: User session + API token + context
+    Redis->>MCP: User session + OAuth access token + context
     MCP->>MCP: Validate user access to requested resource
-    MCP->>CLI: Execute with --token flag injection
-    Note over CLI: mw project list --token=USER_API_TOKEN --project-id=USER_PROJECT
-    CLI->>API: HTTP request with user's personal API token
+    MCP->>CLI: Execute with OAuth token (method TBD: --token flag or env var)
+    Note over CLI: Authentication method needs verification with Mittwald team
+    CLI->>API: HTTP request with user's OAuth access token
     API->>CLI: JSON response (user's data only)
     CLI->>MCP: CLI output
     MCP->>Redis: Update session last accessed
@@ -169,19 +173,19 @@ sequenceDiagram
     Claude->>MCP: Set context (e.g., select project)
     MCP->>Redis: Get user session
     MCP->>CLI: Validate access via CLI
-    Note over CLI: mw project get PROJECT_ID --token=USER_API_TOKEN
+    Note over CLI: mw project get PROJECT_ID (with OAuth token)
     CLI->>API: Verify project access
     API->>CLI: Access confirmed
     CLI->>MCP: Project details
     MCP->>Redis: Update user context in session
     MCP->>Claude: Context updated successfully
 
-    Note over Claude,API: 4. Session Refresh (OAuth Only)
+    Note over Claude,API: 4. Session Refresh (OAuth Token Refresh)
     MCP->>Redis: Check OAuth token expiry (background)
-    MCP->>Studio: Refresh OAuth token request
+    MCP->>Studio: Refresh OAuth token request using refresh token
     Studio->>MCP: New OAuth access token
     MCP->>Redis: Update session with new OAuth tokens
-    Note over MCP: API token remains unchanged
+    Note over MCP: Standard OAuth token refresh flow
 ```
 
 ---
@@ -196,9 +200,9 @@ sequenceDiagram
 - Add user context extraction from session
 
 **File: `src/server/auth-store.ts`** (New)
-- Implement OIDC client integration
+- Implement OAuth 2.0 client integration (authorization code + PKCE flow)
 - Handle authorization code exchange
-- Manage token refresh logic
+- Manage OAuth token refresh logic
 
 **File: `src/server/session-manager.ts`** (New)
 - Redis session storage and retrieval
@@ -208,22 +212,22 @@ sequenceDiagram
 ### 4.2 CLI Wrapper Modifications
 
 **File: `src/utils/cli-wrapper.ts`**
-- Modify to use existing `--token` flag instead of `MITTWALD_API_TOKEN` environment variable
-- Add per-user token injection via `--token` flag (leveraging existing CLI support)
+- **NEEDS VERIFICATION**: Modify to use CLI token injection (method TBD)
+- Add per-user OAuth token injection (via --token flag or environment variable)
 - Add context parameter injection (`--project-id`, `--server-id`, etc.)
 - Implement user permission validation
 
-**Key Changes**:
+**Proposed Changes (Pending CLI Team Verification)**:
 ```typescript
-// NEW: Per-user token injection function
+// OPTION 1: If --token flag is supported globally
 export async function executeCliWithUserToken(
   command: string,
   args: string[],
   userSession: UserSession,
   options: CliExecuteOptions = {}
 ): Promise<CliExecuteResult> {
-  // Inject user's API token via existing --token flag
-  const tokenArgs = [...args, '--token', userSession.mittwaldApiToken];
+  // Inject user's OAuth token via --token flag (if supported)
+  const tokenArgs = [...args, '--token', userSession.oauthAccessToken];
   
   // Inject context if available
   if (userSession.currentContext.projectId) {
@@ -234,8 +238,25 @@ export async function executeCliWithUserToken(
     ...options,
     env: {
       ...options.env,
-      // CRITICAL: Remove global token to prevent conflicts
-      MITTWALD_API_TOKEN: undefined,
+      MITTWALD_API_TOKEN: undefined, // Clear global token
+      MITTWALD_NONINTERACTIVE: '1',
+      CI: '1'
+    }
+  });
+}
+
+// OPTION 2: If environment variable is the only option
+export async function executeCliWithUserToken(
+  command: string,
+  args: string[],
+  userSession: UserSession,
+  options: CliExecuteOptions = {}
+): Promise<CliExecuteResult> {
+  return executeCli(command, args, {
+    ...options,
+    env: {
+      ...options.env,
+      MITTWALD_API_TOKEN: userSession.oauthAccessToken, // Use OAuth token as API token
       MITTWALD_NONINTERACTIVE: '1',
       CI: '1'
     }
@@ -250,13 +271,13 @@ export async function executeCliWithUserToken(
 
 ### 4.3 New Authentication Components
 
-**File: `src/auth/oidc-client.ts`** (New)
+**File: `src/auth/oauth-client.ts`** (New)
 ```typescript
-class MittwaldOIDCClient {
-  async exchangeCodeForTokens(code: string): Promise<TokenSet>;
+class MittwaldOAuthClient {
+  async exchangeCodeForTokens(code: string, codeVerifier: string): Promise<TokenSet>;
   async refreshTokens(refreshToken: string): Promise<TokenSet>;
   async validateToken(token: string): Promise<UserClaims>;
-  async extractApiTokenFromClaims(idToken: string): Promise<string>;
+  // Note: No need for separate API token extraction - OAuth tokens work directly
 }
 ```
 
@@ -293,11 +314,12 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - REDIS_URL=redis://redis:6379
-      - OIDC_ISSUER=https://studio.mittwald.de/auth/realms/mittwald
-      - OIDC_CLIENT_ID=${MITTWALD_OIDC_CLIENT_ID}
-      - OIDC_CLIENT_SECRET=${MITTWALD_OIDC_CLIENT_SECRET}
-      - OIDC_REDIRECT_URI=https://your-mcp-server.com/auth/callback
+      - REDIS_URL=redis://redis:6379 
+      - OAUTH_AUTHORIZATION_URL=https://studio.mittwald.de/oauth2/authorize
+      - OAUTH_TOKEN_URL=https://studio.mittwald.de/oauth2/token
+      - OAUTH_CLIENT_ID=${MITTWALD_OAUTH_CLIENT_ID}
+      - OAUTH_CLIENT_SECRET=${MITTWALD_OAUTH_CLIENT_SECRET}
+      - OAUTH_REDIRECT_URI=https://your-mcp-server.com/auth/callback
     depends_on:
       - redis
 
@@ -315,11 +337,12 @@ volumes:
 
 **File: `.env.example`** (New)
 ```bash
-# OAuth Configuration
-MITTWALD_OIDC_CLIENT_ID=your_client_id
-MITTWALD_OIDC_CLIENT_SECRET=your_client_secret
-OIDC_ISSUER=https://studio.mittwald.de/auth/realms/mittwald
-OIDC_REDIRECT_URI=https://your-mcp-server.com/auth/callback
+# OAuth 2.0 Configuration
+MITTWALD_OAUTH_CLIENT_ID=your_client_id
+MITTWALD_OAUTH_CLIENT_SECRET=your_client_secret
+OAUTH_AUTHORIZATION_URL=https://studio.mittwald.de/oauth2/authorize
+OAUTH_TOKEN_URL=https://studio.mittwald.de/oauth2/token
+OAUTH_REDIRECT_URI=https://your-mcp-server.com/auth/callback
 
 # Redis Configuration
 REDIS_URL=redis://localhost:6379
@@ -333,32 +356,33 @@ SESSION_TTL=28800  # 8 hours
 
 ## 5. Mittwald Systems Access and Enablement Requirements
 
-### 5.1 Critical OAuth/OIDC Requirements 
+### 5.1 Critical OAuth 2.0 Requirements 
 
 **Immediate Access Needed:**
-1. **Mittwald Studio OIDC Configuration**
-   - Client ID and Secret for MCP server application
+1. **Mittwald Studio OAuth 2.0 Configuration**
+   - ✅ **CONFIRMED**: Self-service OAuth client creation is supported
+   - Client ID and Secret for MCP server application (via self-service registration)
    - Authorized redirect URIs configuration
    - Scope definitions for API access
-   - **CRITICAL**: Integration with `user.createApiToken` API during OAuth flow
+   - ✅ **SIMPLIFIED**: OAuth access tokens work directly as API tokens (no separate token creation needed)
 
-2. **Studio Auto-Token Creation Implementation**
-   - Studio must call `user.createApiToken` API during OAuth callback processing
-   - **Token Configuration**: 
+2. **OAuth Client Registration Process**
+   - Use existing self-service OAuth client creation via contributor dashboard
+   - **Client Configuration**: 
      ```json
      {
-       "description": "MCP Server Access Token",
-       "roles": ["api_read", "api_write"],
-       "expiresAt": null // or appropriate expiration
+       "name": "MCP Server Integration",
+       "client_id": "mcp-server-{unique-id}",
+       "redirect_uris": ["https://your-mcp-server.com/auth/callback"],
+       "scopes": ["api_read", "api_write"]
      }
      ```
-   - **Token Delivery**: Include created API token in OAuth response/claims
-   - **Error Handling**: What happens if token creation fails during OAuth?
+   - **Authentication Flow**: Authorization code + PKCE (already supported)
 
-3. **OAuth Flow Documentation**
-   - Supported OAuth 2.0 flows (authorization code, PKCE)
-   - Token refresh process and timing
-   - **CRITICAL**: Auto-token creation integration points and error scenarios
+3. **OAuth Flow Capabilities**
+   - ✅ **CONFIRMED**: Authorization code flow with PKCE is supported
+   - ✅ **CONFIRMED**: OAuth access tokens function directly as API tokens
+   - Token refresh process using refresh tokens (standard OAuth flow)
 
 ### 5.2 API Integration Requirements
 
@@ -422,190 +446,215 @@ SESSION_TTL=28800  # 8 hours
    - Security implementation validation
    - User experience feedback
 
-### 5.6 Key Questions for Mittwald
+### 5.6 Key Questions for Mittwald - ANSWERED
 
-**Immediate Clarification Needed:**
-1. **OAuth Capability Confirmation**
-   - Does Mittwald Studio currently support OAuth 2.0/OIDC for third-party applications?
-       - OAuth2 is supported, OIDC not (https://developer.mittwald.de/docs/v2/contribution/how-to/manage-oauth-clients/, https://developer.mittwald.de/docs/v2/contribution/reference/oauth2/) (@martin-helmich)
-   - What OAuth flows are currently supported?
-       - Currently, mStudio supports the authorization code flow with PKCE (https://developer.mittwald.de/docs/v2/contribution/reference/api/#oauth2) (@martin-helmich)
-   - **CRITICAL**: Can users provide their API tokens during the OAuth flow in Studio?
+**Research Findings Based on Documentation and Team Input:**
 
-2. **API Token Integration Strategy**
-   - **✅ SELECTED**: Studio auto-creates API tokens for OAuth users via existing `user.createApiToken` API
-   - **Required Implementation**: Studio calls `user.createApiToken` during OAuth callback
-       - IIRC, the OAuth 2 Access Token can already be used as an mStudio API token; creating a separate API token should not be necessary (@martin-helmich) 
-   - **Token Parameters**: Description: "MCP Server Access", Roles: ["api_read", "api_write"]
-   - **Token Lifecycle**: How are auto-created tokens managed, renewed, or revoked?
+1. **OAuth Capability Confirmation** ✅
+   - ✅ **CONFIRMED**: Mittwald Studio supports OAuth 2.0 for self-service third-party applications
+   - ❌ **NOT SUPPORTED**: OIDC is not currently supported - only OAuth 2.0
+   - ✅ **CONFIRMED**: Authorization code flow with PKCE is supported
 
-3. **CLI Token Flag Validation**
-   - **CONFIRMED**: All CLI commands support the `--token` flag (verified in CLI code)
-   - Are there any security restrictions on using `--token` flag vs `MITTWALD_API_TOKEN` env var?
-       - In this use case, no. Generally, I'd advise against passing secrets as flag values (when run in a shell, these may get logged in the user's shell history; this is not applicable in this case, however) (@martin-helmich)
-   - Any rate limiting or usage differences between the two approaches?
-       - No. On an API level, these two approaches are identical. (@martin-helmich)
+2. **API Token Integration Strategy** ✅ 
+   - ✅ **SIMPLIFIED APPROACH**: OAuth 2.0 Access Tokens can be used directly as mStudio API tokens
+   - ❌ **NO LONGER NEEDED**: Separate API token creation via `user.createApiToken` is unnecessary
+   - ✅ **DIRECT USAGE**: OAuth access tokens work directly with Mittwald API endpoints
+   - ✅ **STANDARD LIFECYCLE**: Standard OAuth token refresh using refresh tokens
 
-4. **Multi-tenancy Support**
-   - How does the current Mittwald API handle multi-tenant scenarios?
-   - What built-in tenant isolation exists?
-       - The mStudio API does not have strict tenant isolation, but implements RBAC for all relevant endpoints (compare e.g. to Github with its org/repository access model) (@martin-helmich)
-   - Are there existing audit logging mechanisms?
-       - None that are accessible for an end user (@martin-helmich)
+3. **CLI Token Usage** ⚠️ **NEEDS VERIFICATION**
+   - ⚠️ **UNCERTAIN**: Global `--token` flag support needs verification with Mittwald CLI team
+   - ✅ **ALTERNATIVE CONFIRMED**: `MITTWALD_API_TOKEN` environment variable definitely works
+   - ✅ **API EQUIVALENCE**: Both methods work identically at the API level (per @martin-helmich)
+   - ⚠️ **SECURITY NOTE**: `--token` flag may expose tokens in shell history (not applicable in MCP context)
 
-5. **Development Timeline**
-   - What's the realistic timeline for OAuth application registration?
-       - IIRC, users can even register their own OAuth applications. Even if not, this should easily be possible within a day. (@martin-helmich) 
-   - How long does security review typically take?
-       - The central security mechanism in this architecture is the RBAC enforcement in the mStudio API (which is already thoroughly reviewed and audited). The CLI (and by extension, the MCP server) do not require any policy enforcement mechanisms on their own, because they can rely on the API to enforce RBAC. For this reason, I don't see any big hurdles regarding a security review. (@martin-helmich)
-   - What's the process for production deployment approval?
-       - Needs to be discussed. (@martin-helmich)
+4. **Multi-tenancy Support** ✅
+   - ✅ **RBAC MODEL**: mStudio API implements RBAC for all relevant endpoints (similar to GitHub's org/repository access model)
+   - ❌ **NO STRICT ISOLATION**: No strict tenant isolation, but RBAC provides adequate security
+   - ❌ **NO USER AUDIT LOGS**: No audit logging mechanisms accessible to end users
 
-6. **Resource Allocation**
-   - Which Mittwald team members will be assigned to support this project?
-       - Apart from myself, I'd recommend @freisenhauer (@martin-helmich)
-   - What level of ongoing support can be expected post-deployment?
-       - General support for extension and integration developers is available at https://github.com/mittwald/contributor-support (@martin-helmich)
-   - Are there any internal resource constraints we should be aware of?
-       - @freisenhauer is generally quite busy; use the support discussion board for non-time-critical issues (@martin-helmich) 
+5. **Development Timeline** ✅
+   - ✅ **FAST REGISTRATION**: Self-service OAuth application registration available (within a day)
+   - ✅ **MINIMAL SECURITY REVIEW**: No major security hurdles expected (RBAC enforcement via API)
+   - ⚠️ **PRODUCTION DEPLOYMENT**: Process needs discussion with Mittwald team
+
+6. **Resource Allocation** ✅
+   - ✅ **TEAM CONTACTS**: @martin-helmich and @freisenhauer recommended as primary contacts
+   - ✅ **SUPPORT AVAILABLE**: General integration developer support via https://github.com/mittwald/contributor-support
+   - ⚠️ **RESOURCE CONSTRAINTS**: @freisenhauer has limited availability - use support discussion board
+
+### 5.7 Critical Outstanding Questions
+
+**MUST RESOLVE BEFORE IMPLEMENTATION:**
+
+1. **CLI Authentication Method** ⚠️
+   - **QUESTION**: Does the Mittwald CLI support a global `--token` flag for all commands?
+   - **IMPACT**: Determines authentication architecture (flag vs environment variable)
+   - **ACTION**: Direct verification with Mittwald CLI team required
+
+2. **OIDC References Cleanup** ❌
+   - **FINDING**: mStudio does NOT support OIDC - only OAuth 2.0
+   - **ACTION**: Remove all OIDC references from proposal and implementation plans
+   - **STATUS**: ✅ Completed in this revision
+
+3. **OAuth Token/API Token Compatibility** 🚨 **CRITICAL ASSUMPTION UNVERIFIED**
+   - **ASSUMPTION**: OAuth access tokens can be used directly as API tokens
+   - **SOURCE**: Informal comment from @martin-helmich: "IIRC, the OAuth 2 Access Token can already be used as an mStudio API token"
+   - **PROBLEM**: "IIRC" suggests uncertainty - no definitive technical documentation found
+   - **IMPACT**: If incorrect, entire simplified approach fails and complex token creation flow is required
+   - **ACTION**: Direct technical verification required before implementation
+
+### 5.8 Research References and Documentation Gaps
+
+**TODO: VERIFY OAUTH/API TOKEN COMPATIBILITY**
+
+#### **Documentation Found:**
+
+1. **API Authentication Methods** (https://api.mittwald.de/v2/openapi.json):
+   ```
+   "You can authenticate by passing your API token in the X-Access-Token header or as a bearer token"
+   "You can obtain [an API token] by logging into the mStudio and navigating to the 'API Tokens' section"
+   ```
+
+2. **OAuth 2.0 Support** (https://developer.mittwald.de/docs/v2/contribution/overview/concepts/authentication/):
+   ```
+   "OAuth2 is supported for mittwald's public API"
+   "Access tokens can be obtained through OAuth2 flows: Authorization Code Grant and Authorization Code Grant with PKCE"
+   ```
+
+3. **Access Token Usage** (https://developer.mittwald.de/docs/v2/reference/user/user-authenticate-with-access-token-retrieval-key/):
+   ```
+   Example: curl -H "Authorization: Bearer $MITTWALD_API_TOKEN"
+   "Public token to identify yourself against the public api"
+   ```
+
+#### **Critical Gap:**
+- ❌ **NO DOCUMENTATION** explicitly states OAuth access tokens work as API tokens
+- ❌ **NO EXAMPLES** show OAuth tokens used in `X-Access-Token` header
+- ❌ **NO CONFIRMATION** of token type interchangeability
+
+#### **Required Verification:**
+1. **Technical Test**: Create OAuth client, obtain access token, test with API endpoints
+2. **Team Confirmation**: Direct verification from Mittwald engineering team
+3. **Documentation Request**: Official clarification on token compatibility
+
+#### **Fallback Plan:**
+If OAuth tokens ≠ API tokens, revert to original complex approach:
+- OAuth flow for authentication
+- Separate API token creation via `user.createApiToken`
+- Token extraction and management logic 
 
 ---
 
 ## 6. Implementation Details
 
-### 6.1 Studio Auto-Token Creation Flow
+### 6.1 Simplified OAuth 2.0 Integration Flow
 
-**Technical Implementation Required by Mittwald:**
+**REVISED: Direct OAuth Token Usage (No Separate API Token Creation)**
 
-```javascript
-// During OAuth callback processing in Mittwald Studio
-async function handleOAuthCallback(user, clientId) {
-  try {
-    // 1. Validate OAuth authorization
-    const oauthTokens = await createOAuthTokens(user, clientId);
-    
-    // 2. Auto-create API token for MCP access
-    const apiTokenRequest = {
-      description: `MCP Server Access - ${new Date().toISOString()}`,
-      roles: ["api_read", "api_write"],
-      expiresAt: null // Long-lived token or set appropriate expiration
-    };
-    
-    const apiToken = await userApiService.createToken(user.id, apiTokenRequest);
-    
-    // 3. Include API token in OAuth response
-    const idTokenClaims = {
-      ...standardClaims,
-      mittwald_api_token: apiToken.token,
-      mcp_token_id: apiToken.id,
-      mcp_token_created: apiToken.createdAt
-    };
-    
-    return {
-      access_token: oauthTokens.accessToken,
-      id_token: createJWT(idTokenClaims),
-      refresh_token: oauthTokens.refreshToken
-    };
-    
-  } catch (error) {
-    // Handle token creation failure
-    throw new OAuthError('Failed to create MCP access token', error);
-  }
-}
-```
-
-### 6.2 MCP Server Token Extraction
-
-**Implementation in MCP Server:**
+Based on research findings, the implementation is significantly simplified:
 
 ```typescript
-// src/auth/token-extractor.ts
-class ApiTokenExtractor {
-  async extractFromOAuthCallback(idToken: string): Promise<string> {
-    // 1. Validate and decode JWT
-    const claims = await this.validateJWT(idToken);
-    
-    // 2. Extract API token from claims
-    if (!claims.mittwald_api_token) {
-      throw new Error('No API token found in OAuth response');
+// MCP Server OAuth Integration
+class MittwaldOAuthIntegration {
+  async handleOAuthCallback(code: string, codeVerifier: string): Promise<UserSession> {
+    try {
+      // 1. Exchange authorization code for OAuth tokens using PKCE
+      const tokenResponse = await this.oauthClient.exchangeCodeForTokens(code, codeVerifier);
+      
+      // 2. OAuth access token IS the API token - no conversion needed
+      const userSession: UserSession = {
+        sessionId: generateSessionId(),
+        oauthAccessToken: tokenResponse.access_token,  // Use directly as API token
+        refreshToken: tokenResponse.refresh_token,
+        expiresAt: new Date(Date.now() + tokenResponse.expires_in * 1000),
+        currentContext: {},
+        lastAccessed: new Date()
+      };
+      
+      // 3. Validate token works with Mittwald API
+      await this.validateOAuthToken(userSession.oauthAccessToken);
+      
+      return userSession;
+      
+    } catch (error) {
+      throw new OAuthError('OAuth integration failed', error);
     }
-    
-    // 3. Validate token works with Mittwald API
-    await this.validateApiToken(claims.mittwald_api_token);
-    
-    return claims.mittwald_api_token;
   }
   
-  private async validateApiToken(token: string): Promise<void> {
-    // Test token by making a simple API call
+  private async validateOAuthToken(token: string): Promise<void> {
     try {
-      const result = await executeCliWithUserToken(
+      // Test OAuth token directly against Mittwald API
+      const result = await executeCliWithOAuthToken(
         'mw',
         ['user', 'get', 'me', '-o', 'json'],
-        { mittwaldApiToken: token } as UserSession
+        token
       );
       
       if (result.exitCode !== 0) {
-        throw new Error('Invalid API token received');
+        throw new Error('OAuth token validation failed');
       }
     } catch (error) {
-      throw new Error(`API token validation failed: ${error.message}`);
+      throw new Error(`OAuth token validation failed: ${error.message}`);
     }
   }
 }
 ```
 
-### 6.3 Token Lifecycle Management
+### 6.2 Simplified Token Lifecycle Management
 
-**Considerations:**
+**REVISED: Standard OAuth Token Management**
+
+With OAuth tokens functioning directly as API tokens, lifecycle management is greatly simplified:
 
 1. **Token Ownership**
-   - API tokens are created automatically by mStudio
-   - Users may not be aware these tokens exist
-   - Need clear documentation about auto-created tokens
+   - OAuth tokens are managed by standard OAuth 2.0 flows
+   - Users control access via OAuth consent/authorization
+   - No hidden or auto-created tokens
 
 2. **Token Management**
    ```typescript
-   interface AutoCreatedTokenInfo {
-     tokenId: string;          // Token ID from Mittwald API
-     description: string;      // "MCP Server Access - 2025-01-30"
-     createdAt: Date;         // When token was created
-     lastUsed?: Date;         // Track usage
-     mcpSessionCount: number; // How many MCP sessions use this token
+   interface OAuthSession {
+     sessionId: string;
+     oauthAccessToken: string;    // Functions directly as API token
+     refreshToken: string;        // For refreshing expired access tokens
+     expiresAt: Date;            // Standard OAuth expiration
+     lastUsed: Date;             // Track session usage
+     scopes: string[];           // OAuth scopes granted
    }
    ```
 
-3. **Token Cleanup**
-   - What happens when user revokes OAuth access?
-   - Should auto-created API tokens be automatically deleted?
-   - How to handle orphaned tokens?
+3. **Token Refresh**
+   - Standard OAuth refresh token flow
+   - Automatic token refresh before expiration
+   - No manual token rotation needed
 
-4. **Token Rotation**
-   - Should tokens be rotated periodically?
-   - How to handle token rotation without breaking active MCP sessions?
+4. **Token Cleanup**
+   - OAuth token revocation handled by standard OAuth flows
+   - When user revokes OAuth access, tokens become invalid
+   - No orphaned token cleanup required
 
-### 6.4 Error Handling Scenarios
+### 6.3 Simplified Error Handling Scenarios
 
-**Critical Error Cases:**
+**Critical Error Cases (Revised):**
 
-1. **Token Creation Fails During OAuth**
+1. **OAuth Flow Fails**
    ```typescript
-   // Studio should handle gracefully
-   if (apiTokenCreationFails) {
-     return oauth_error({
-       error: 'token_creation_failed',
-       error_description: 'Unable to create MCP access token'
-     });
+   // Standard OAuth error handling
+   if (oauthExchangeFails) {
+     return {
+       error: 'oauth_exchange_failed',
+       error_description: 'Failed to exchange authorization code for tokens'
+     };
    }
    ```
 
-2. **Token Validation Fails in MCP**
+2. **OAuth Token Validation Fails**
    ```typescript
    // MCP should retry OAuth or show clear error
    if (tokenValidationFails) {
      return {
-       error: 'INVALID_AUTO_TOKEN',
-       message: 'Auto-created API token is invalid. Please re-authenticate.',
+       error: 'INVALID_OAUTH_TOKEN',
+       message: 'OAuth token is invalid or expired. Please re-authenticate.',
        retry_oauth: true
      };
    }
@@ -613,33 +662,32 @@ class ApiTokenExtractor {
 
 3. **Token Permissions Insufficient**
    ```typescript
-   // Check if token has required roles
-   const requiredRoles = ['api_read', 'api_write'];
-   if (!tokenHasRoles(apiToken, requiredRoles)) {
-     throw new Error('Auto-created token lacks required permissions');
+   // Check if OAuth token has required scopes
+   const requiredScopes = ['api_read', 'api_write'];
+   if (!tokenHasScopes(oauthToken, requiredScopes)) {
+     throw new Error('OAuth token lacks required API scopes');
    }
    ```
 
-### 6.5 Security Considerations
+### 6.4 Security Considerations
 
-**Security Requirements:**
+**Revised Security Requirements:**
 
-1. **Token Transmission Security**
-   - API tokens included in JWT claims (encrypted in transit)
-   - JWT signed by Mittwald Studio private key
-   - MCP server validates JWT signature before extracting token
+1. **OAuth Token Transmission Security**
+   - OAuth tokens transmitted via secure HTTPS
+   - Authorization code exchange protected by PKCE
+   - No sensitive tokens in URL parameters or logs
 
 2. **Token Storage Security**
-   - API tokens stored in Redis with encryption at rest
+   - OAuth tokens stored in Redis with encryption at rest
    - Session data encrypted using AES-256
    - Regular cleanup of expired sessions and tokens
 
 3. **Audit Trail**
    ```typescript
-   interface TokenAuditEvent {
-     eventType: 'auto_token_created' | 'token_extracted' | 'token_validated';
+   interface OAuthAuditEvent {
+     eventType: 'oauth_login' | 'token_refresh' | 'token_validation' | 'session_expired';
      userId: string;
-     tokenId: string;
      sessionId: string;
      timestamp: Date;
      success: boolean;
@@ -647,47 +695,45 @@ class ApiTokenExtractor {
    }
    ```
 
-### 6.6 Advantages
+### 6.5 Advantages of Revised Approach
 
-1. **Seamless User Experience**
-   - No manual token management required
-   - Single OAuth flow handles everything
-   - Users don't need to understand API tokens
+1. **Simplified Architecture**
+   - No complex token creation/extraction logic
+   - Standard OAuth 2.0 flows throughout
+   - Reduced implementation complexity
 
-2. **Automatic Token Lifecycle**
-   - Tokens created with appropriate permissions
-   - Consistent token naming and metadata
-   - Can implement automatic cleanup
+2. **Standard Token Lifecycle**
+   - OAuth tokens managed by established patterns
+   - Built-in expiration and refresh mechanisms
+   - Industry-standard security practices
 
-3. **Reduced Security Risk**
-   - No user handling of sensitive tokens
-   - No risk of users providing wrong/invalid tokens
-   - Controlled token creation process
+3. **Reduced Security Surface**
+   - No custom token creation logic
+   - No additional API endpoints for token management
+   - Standard OAuth security model
 
-4. **Better Integration**
-   - Studio has full control over token creation
-   - Can implement token rotation automatically
-   - Better audit trail and monitoring
+4. **Better User Experience**
+   - Single OAuth authorization flow
+   - No confusion about different token types
+   - Clear revocation/consent management
 
 ---
 
 ## 7. Implementation Timeline
 
-### Phase 1: OAuth Foundation (Weeks 1-3)
-- **Week 1**: Mittwald OAuth access setup and auto-token creation verification
-- **Week 2**: OIDC client implementation with API token extraction from claims
-- **Week 3**: Redis session store and user context management with auto-created tokens
+### Phase 1: OAuth Foundation (Weeks 1-2) - SIMPLIFIED
+- **Week 1**: Mittwald OAuth client registration and verification of OAuth token/API token compatibility
+- **Week 2**: OAuth 2.0 client implementation with PKCE flow (no token extraction needed)
 
-### Phase 2: CLI Integration (Weeks 4-6)
-- **Week 4**: CLI wrapper modifications to use `--token` flag instead of environment variables
-- **Week 5**: Context isolation and user permission validation using existing CLI infrastructure
-- **Week 6**: Integration testing and security validation
+### Phase 2: CLI Integration (Weeks 3-4) - PENDING VERIFICATION
+- **Week 3**: CLI authentication method verification and implementation (--token flag vs environment variable)
+- **Week 4**: Context isolation and user permission validation using chosen CLI method
 
-### Phase 3: Production Readiness (Weeks 7-8)
-- **Week 7**: Docker Compose deployment setup and testing
-- **Week 8**: Security review, documentation, and production deployment
+### Phase 3: Production Readiness (Weeks 5-6)
+- **Week 5**: Redis session store, integration testing, and security validation
+- **Week 6**: Docker Compose deployment, documentation, and production deployment
 
-**Total Timeline: 8 weeks**
+**Total Timeline: 6 weeks** (reduced from 8 weeks due to simplified OAuth approach)
 
 ---
 
@@ -715,19 +761,19 @@ class ApiTokenExtractor {
 
 ## Conclusion
 
-This simplified proposal provides a focused approach to implementing OAuth/OIDC multitenancy for the Mittwald MCP server. By using Docker Compose and focusing on core functionality, we can deliver a secure, scalable solution without complex infrastructure overhead.
+This revised proposal provides a focused approach to implementing OAuth 2.0 multitenancy for the Mittwald MCP server. Based on thorough research of Mittwald's API capabilities, the approach has been significantly simplified by leveraging direct OAuth token usage instead of complex token creation flows.
 
-**Key Success Factors:**
-1. **Mittwald OAuth/OIDC support** - Critical foundation requirement  
-2. **Studio API token auto-creation** - Via existing `user.createApiToken` API during OAuth
-3. **Leveraging existing CLI `--token` flag** - No new CLI infrastructure needed
-4. **Per-user context isolation** - Core security mechanism
-5. **Redis session management** - Scalable session storage
+**Key Success Factors (Revised):**
+1. ✅ **Mittwald OAuth 2.0 support** - CONFIRMED: Self-service OAuth client creation available
+2. ✅ **Simplified token approach** - OAuth tokens function directly as API tokens (no separate creation needed)
+3. ⚠️ **CLI integration method** - Requires verification of --token flag availability
+4. ✅ **Per-user context isolation** - Core security mechanism via RBAC
+5. ✅ **Redis session management** - Scalable session storage
 
-**Key Advantages of Approach:**
-- **Seamless User Experience** - No manual token management required from users
-- **Leverages existing CLI infrastructure** - All commands already support `--token` flag  
-- **Uses existing API endpoints** - Studio calls existing `user.createApiToken` API
-- **Automatic token lifecycle** - Studio controls token creation, naming, and cleanup
-- **Enhanced security** - No user handling of sensitive tokens
-- **Clear integration path** - Well-defined Studio implementation requirements
+**Key Advantages of Revised Approach:**
+- ✅ **Simplified Architecture** - Standard OAuth 2.0 flows throughout
+- ✅ **Reduced Implementation Complexity** - No custom token creation/extraction
+- ✅ **Industry Standard Security** - Established OAuth security patterns
+- ✅ **Self-Service Registration** - OAuth clients can be registered immediately
+- ✅ **Standard Token Lifecycle** - Built-in OAuth expiration and refresh
+- ⚠️ **CLI Integration** - Pending verification of optimal authentication method
