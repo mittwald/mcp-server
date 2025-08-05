@@ -23,9 +23,10 @@ export type MittwaldToolHandler<T = any> = (
   context: MittwaldToolHandlerContext,
 ) => Promise<CallToolResult>;
 
-// CLI wrapper handler that doesn't need context
+// CLI wrapper handler that doesn't need full context but supports sessionId for session-aware execution
 export type MittwaldCliToolHandler<T = any> = (
   args: T,
+  sessionId?: string,
 ) => Promise<CallToolResult>;
 
 // Conversation API Types

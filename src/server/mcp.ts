@@ -70,12 +70,14 @@ export class MCPHandler implements IMCPHandler {
   private readonly SESSION_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
 
   constructor() {
+    logger.info('🎯 MCP Handler initializing with session management');
     this.cleanupInterval = setInterval(
       () => {
         this.cleanupOldSessions();
       },
       5 * 60 * 1000,
     );
+    logger.debug('⏰ Session cleanup interval set to 5 minutes');
   }
 
   /**
@@ -190,16 +192,32 @@ export class MCPHandler implements IMCPHandler {
    */
   private async handleRequest(req: AuthenticatedRequest, res: express.Response): Promise<void> {
     const startTime = Date.now();
+    const clientAddr = req.ip || req.connection.remoteAddress || 'unknown';
+    const userAgent = req.get('User-Agent') || 'unknown';
+    
+    // Enhanced request logging
+    logger.info(`💬 [${clientAddr}] MCP request: ${req.method} ${req.path}`, {
+      userAgent,
+      contentType: req.get('Content-Type'),
+      contentLength: req.get('Content-Length'),
+      headers: {
+        'mcp-session-id': req.headers['mcp-session-id'],
+        'x-session-id': req.headers['x-session-id'],
+        'authorization': req.headers.authorization ? '[PRESENT]' : '[MISSING]'
+      }
+    });
 
+    let sessionId: string | undefined;
     try {
       res.header("Access-Control-Expose-Headers", "mcp-session-id, x-session-id");
-      let sessionId =
+      sessionId =
         (req.headers["mcp-session-id"] as string) || (req.headers["x-session-id"] as string);
       const isInitRequest = !sessionId;
       let sessionInfo: SessionInfo | undefined;
       if (isInitRequest) {
         // Create new session for initialization
         sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+        logger.info(`🆕 [${clientAddr}] Creating new session: ${sessionId}`);
 
         // Extract auth info if available
         const sessionAuth =
@@ -210,14 +228,29 @@ export class MCPHandler implements IMCPHandler {
                 username: String(req.auth.clientId || "unknown"),
               }
             : undefined;
+            
+        if (sessionAuth) {
+          logger.info(`🔐 [${sessionId}] Session authenticated as: ${sessionAuth.username}`);
+        } else {
+          logger.info(`🔓 [${sessionId}] Session created without authentication`);
+        }
+        
         const server = this.createServer(sessionId, sessionAuth);
         const transport = new StreamableHTTPServerTransport({
           sessionIdGenerator: () => sessionId!,
           onsessioninitialized: (sid) => {
-            logger.info(`🔗 New session initialized: ${sid}`);
+            logger.info(`🔗 [${clientAddr}] Session initialized: ${sid}`);
           },
         });
-        await server.connect(transport);
+        
+        try {
+          await server.connect(transport);
+          logger.debug(`✅ [${sessionId}] Server connected to transport`);
+        } catch (error) {
+          logger.error(`❌ [${sessionId}] Failed to connect server to transport:`, error);
+          throw error;
+        }
+        
         sessionInfo = {
           server,
           transport,
@@ -226,11 +259,13 @@ export class MCPHandler implements IMCPHandler {
           lastAccessed: new Date(),
         };
         this.sessions.set(sessionId, sessionInfo);
-        logger.debug(`📝 Created new session with dedicated server: ${sessionId}`);
+        logger.info(`📝 [${clientAddr}] Session ${sessionId} created successfully (Total: ${this.sessions.size})`);
+        
         await transport.handleRequest(req, res);
       } else {
         // Find existing session
         if (!sessionId) {
+          logger.warn(`⚠️ [${clientAddr}] Request missing session ID`);
           res.status(400).json({
             jsonrpc: "2.0",
             error: {
@@ -244,6 +279,7 @@ export class MCPHandler implements IMCPHandler {
 
         sessionInfo = this.sessions.get(sessionId);
         if (!sessionInfo) {
+          logger.warn(`❌ [${clientAddr}] Session not found: ${sessionId} (Available: ${Array.from(this.sessions.keys()).join(', ')})`);
           res.status(404).json({
             jsonrpc: "2.0",
             error: {
@@ -255,10 +291,12 @@ export class MCPHandler implements IMCPHandler {
           return;
         }
 
+        logger.debug(`🔄 [${clientAddr}] Using existing session: ${sessionId}`);
         sessionInfo.lastAccessed = new Date();
 
         // Update auth if provided
         if (req.auth && req.auth.token && !sessionInfo.auth) {
+          logger.info(`🔐 [${sessionId}] Adding authentication to existing session`);
           sessionInfo.auth = {
             accessToken: String(req.auth.token || ""),
             refreshToken: "",
@@ -266,21 +304,27 @@ export class MCPHandler implements IMCPHandler {
           };
 
           // Recreate server with auth
+          logger.debug(`🔄 [${sessionId}] Recreating server with authentication`);
           const newServer = this.createServer(sessionId, sessionInfo.auth);
           await newServer.connect(sessionInfo.transport);
           sessionInfo.server = newServer;
+          logger.debug(`✅ [${sessionId}] Server recreated with auth successfully`);
         }
 
         // Let the session's transport handle the request
         await sessionInfo.transport.handleRequest(req, res);
       }
 
-      logger.debug(`MCP request completed in ${Date.now() - startTime}ms for session ${sessionId}`);
+      const duration = Date.now() - startTime;
+      logger.info(`✅ [${clientAddr}] MCP request completed in ${duration}ms for session ${sessionId}`);
     } catch (error) {
-      logger.error("MCP request failed", {
+      const duration = Date.now() - startTime;
+      const errorSessionId = sessionId || 'unknown';
+      logger.error(`❌ [${clientAddr}] MCP request failed after ${duration}ms`, {
+        sessionId: errorSessionId,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
-        duration: Date.now() - startTime,
+        userAgent,
       });
 
       if (!res.headersSent) {
@@ -302,20 +346,30 @@ export class MCPHandler implements IMCPHandler {
   private cleanupOldSessions(): void {
     const now = Date.now();
     let cleaned = 0;
+    const sessionSummary: string[] = [];
 
     for (const [sessionId, sessionInfo] of this.sessions.entries()) {
       const age = now - sessionInfo.lastAccessed.getTime();
+      const ageMinutes = Math.floor(age / (60 * 1000));
+      
       if (age > this.SESSION_TIMEOUT_MS) {
         // Close server and transport
-        sessionInfo.server.close();
-        sessionInfo.transport.close();
-        this.sessions.delete(sessionId);
-        cleaned++;
+        try {
+          sessionInfo.server.close();
+          sessionInfo.transport.close();
+          this.sessions.delete(sessionId);
+          cleaned++;
+          logger.debug(`🧹 Cleaned up expired session: ${sessionId} (age: ${ageMinutes}min)`);
+        } catch (error) {
+          logger.error(`❌ Failed to cleanup session ${sessionId}:`, error);
+        }
+      } else {
+        sessionSummary.push(`${sessionId}:${ageMinutes}min`);
       }
     }
 
     if (cleaned > 0) {
-      logger.info(`🧹 Cleaned up ${cleaned} old sessions`);
+      logger.info(`🧹 Cleaned up ${cleaned} old sessions. Active: ${this.sessions.size} (${sessionSummary.join(', ')})`);
     }
   }
 
@@ -381,7 +435,7 @@ export class MCPHandler implements IMCPHandler {
     }
     this.sessions.clear();
 
-    logger.info("🛑 MCP Handler shut down");
+    logger.info(`🛑 MCP Handler shut down - closed ${this.sessions.size} sessions`);
   }
 }
 

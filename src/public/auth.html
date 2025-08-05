@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mittwald MCP Server - Authentication</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 500px; 
+            margin: 80px auto; 
+            padding: 20px;
+            background: #f5f5f7;
+            line-height: 1.6;
+        }
+        .auth-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .logo { 
+            font-size: 28px; 
+            font-weight: bold; 
+            margin-bottom: 30px; 
+            color: #1d1d1f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn { 
+            background: #007AFF; 
+            color: white; 
+            padding: 14px 28px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0;
+            transition: background-color 0.2s;
+        }
+        .btn:hover { background: #0051D5; }
+        .btn.secondary { 
+            background: #f1f1f1; 
+            color: #1d1d1f;
+            border: 1px solid #d1d1d6;
+        }
+        .btn.secondary:hover { background: #e5e5e7; }
+        .btn.danger { background: #FF3B30; }
+        .btn.danger:hover { background: #D70015; }
+        
+        .status { 
+            margin: 20px 0; 
+            padding: 16px; 
+            border-radius: 8px; 
+            font-weight: 500;
+        }
+        .status.success { 
+            background: #d1e7dd; 
+            color: #0a3622; 
+            border: 1px solid #a3cfbb;
+        }
+        .status.error { 
+            background: #f8d7da; 
+            color: #58151c; 
+            border: 1px solid #f1aeb5;
+        }
+        .status.info { 
+            background: #cff4fc; 
+            color: #055160; 
+            border: 1px solid #9eeaf9;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007AFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .user-info { 
+            text-align: left; 
+            margin-top: 20px; 
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .user-info h3 { 
+            margin-top: 0; 
+            margin-bottom: 15px; 
+            color: #1d1d1f;
+            font-size: 18px;
+        }
+        .user-info .info-row { 
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e5e7;
+        }
+        .user-info .info-row:last-child { border-bottom: none; }
+        .user-info .label { 
+            font-weight: 500; 
+            color: #6c757d; 
+        }
+        .user-info .value { 
+            color: #1d1d1f;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .context-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        .context-list li {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 6px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .context-list li.empty {
+            background: #f5f5f5;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        
+        .debug-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e5e7;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            🔐 Mittwald MCP Server
+        </div>
+        
+        <div id="loading-section" class="section active">
+            <div class="status info">
+                <div class="loading"></div>
+                <span style="margin-left: 10px;">Checking authentication status...</span>
+            </div>
+        </div>
+
+        <div id="login-section" class="section">
+            <h2>Authentication Required</h2>
+            <p>Please sign in with your Mittwald Studio account to access the MCP server.</p>
+            <div class="status info">
+                <strong>Note:</strong> This is a development environment using MockOAuth2Server for testing.
+            </div>
+            <a href="/auth/login" class="btn">Sign in with Mittwald Studio</a>
+            <div class="debug-info">
+                OAuth Provider: <code id="oauth-provider">Loading...</code><br>
+                Client ID: <code id="client-id">Loading...</code>
+            </div>
+        </div>
+
+        <div id="authenticated-section" class="section">
+            <div class="status success">
+                ✅ <strong>Authentication Successful</strong>
+            </div>
+            
+            <div class="user-info">
+                <h3>Session Information</h3>
+                <div class="info-row">
+                    <span class="label">User ID:</span>
+                    <span class="value" id="user-id">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Session ID:</span>
+                    <span class="value" id="session-id">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Expires:</span>
+                    <span class="value" id="expires-at">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Last Accessed:</span>
+                    <span class="value" id="last-accessed">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Scopes:</span>
+                    <span class="value" id="scopes">-</span>
+                </div>
+            </div>
+            
+            <div class="user-info">
+                <h3>Current Context</h3>
+                <ul class="context-list" id="context-list">
+                    <li class="empty">Loading...</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <button onclick="refreshStatus()" class="btn secondary">Refresh Status</button>
+                <button onclick="logout()" class="btn danger">Sign Out</button>
+            </div>
+        </div>
+
+        <div id="error-section" class="section">
+            <div class="status error">
+                <strong>Error:</strong> <span id="error-message">Unknown error occurred</span>
+            </div>
+            <button onclick="checkAuthStatus()" class="btn secondary">Try Again</button>
+            <a href="/auth/login" class="btn">Sign In</a>
+        </div>
+    </div>
+
+    <script>
+        let authCheckTimeout;
+
+        async function checkAuthStatus() {
+            showSection('loading-section');
+            
+            try {
+                const response = await fetch('/auth/status', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    showAuthenticated(data.user);
+                } else {
+                    showLogin(data.message);
+                }
+            } catch (error) {
+                console.error('Auth status check failed:', error);
+                showError('Failed to check authentication status. Please try again.');
+            }
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function showLogin(message) {
+            showSection('login-section');
+            
+            // Update debug info
+            document.getElementById('oauth-provider').textContent = 
+                'http://localhost:8080/default';
+            document.getElementById('client-id').textContent = 
+                'mittwald-mcp-server';
+                
+            if (message) {
+                const infoDiv = document.querySelector('#login-section .status.info');
+                infoDiv.innerHTML = `<strong>Note:</strong> ${message}`;
+            }
+        }
+
+        function showAuthenticated(user) {
+            showSection('authenticated-section');
+            
+            document.getElementById('user-id').textContent = user.id || 'N/A';
+            document.getElementById('session-id').textContent = user.sessionId || 'N/A';
+            document.getElementById('expires-at').textContent = user.expiresAt 
+                ? new Date(user.expiresAt).toLocaleString() 
+                : 'N/A';
+            document.getElementById('last-accessed').textContent = user.lastAccessed
+                ? new Date(user.lastAccessed).toLocaleString()
+                : 'N/A';
+            document.getElementById('scopes').textContent = user.scopes
+                ? user.scopes.join(', ')
+                : 'None';
+            
+            // Update context list
+            const contextList = document.getElementById('context-list');
+            contextList.innerHTML = '';
+            
+            let hasContext = false;
+            if (user.context) {
+                if (user.context.projectId) {
+                    const li = document.createElement('li');
+                    li.textContent = `Project: ${user.context.projectId}`;
+                    contextList.appendChild(li);
+                    hasContext = true;
+                }
+                
+                if (user.context.serverId) {
+                    const li = document.createElement('li');
+                    li.textContent = `Server: ${user.context.serverId}`;
+                    contextList.appendChild(li);
+                    hasContext = true;
+                }
+                
+                if (user.context.orgId) {
+                    const li = document.createElement('li');
+                    li.textContent = `Organization: ${user.context.orgId}`;
+                    contextList.appendChild(li);
+                    hasContext = true;
+                }
+            }
+            
+            if (!hasContext) {
+                const li = document.createElement('li');
+                li.className = 'empty';
+                li.textContent = 'No active context set';
+                contextList.appendChild(li);
+            }
+        }
+
+        function showError(message) {
+            showSection('error-section');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        async function logout() {
+            try {
+                showSection('loading-section');
+                
+                const response = await fetch('/auth/logout', { 
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    showLogin('Logged out successfully. You can sign in again below.');
+                } else {
+                    const error = await response.json();
+                    showError(error.message || 'Logout failed');
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+                showError('Failed to logout. Please try again.');
+            }
+        }
+
+        function refreshStatus() {
+            checkAuthStatus();
+        }
+
+        // Auto-refresh status every 30 seconds if authenticated
+        function startAutoRefresh() {
+            if (authCheckTimeout) {
+                clearTimeout(authCheckTimeout);
+            }
+            
+            authCheckTimeout = setTimeout(() => {
+                if (document.getElementById('authenticated-section').classList.contains('active')) {
+                    checkAuthStatus();
+                }
+                startAutoRefresh();
+            }, 30000);
+        }
+
+        // Check auth status on page load
+        checkAuthStatus();
+        startAutoRefresh();
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                checkAuthStatus();
+            }
+        });
+    </script>
+</body>
+</html>

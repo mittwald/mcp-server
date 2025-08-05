@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mcp-server-full:
+    build:
+      context: .
+      args:
+        PORT: ${PORT:-3000}
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DEBUG=false
+      - REDIS_URL=redis://redis:6379
+      - ENABLE_HTTPS=true  # MANDATORY for production
+      - DISABLE_OAUTH=false
+      - OAUTH_ISSUER=https://studio.mittwald.de/default
+      - OAUTH_REDIRECT_URI=https://your-mcp-server.com/auth/callback
+      - JWT_SECRET=${JWT_SECRET}  # Use strong secret from environment
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "https://127.0.0.1:${PORT:-3000}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    depends_on:
+      - redis
+    volumes:
+      # SSL certificates REQUIRED for production
+      - ./ssl:/app/ssl:ro
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+
+volumes:
+  redis-data:

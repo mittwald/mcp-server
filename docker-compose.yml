@@ -8,18 +8,56 @@ services:
         PORT: ${PORT:-3000}
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
+      - "3001:3001"
     env_file:
       - .env
     environment:
       - NODE_ENV=development
       - DEBUG=true
+      - REDIS_URL=redis://redis:6379
+      - ENABLE_HTTPS=true  # Set to true in production
+      - DISABLE_OAUTH=false
+      - OAUTH_ISSUER=http://mock-oauth:8080/default
+      - OAUTH_REDIRECT_URI=https://localhost:3000/auth/callback  # Use https:// in production
+      - JWT_SECRET=development-jwt-secret-key-for-testing
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:${PORT:-3000}/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "--no-check-certificate", "https://127.0.0.1:${PORT:-3000}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    depends_on:
+      - redis
+      - mock-oauth
     volumes:
       # Optional: mount logs directory for debugging
       - ./logs:/app/logs
+      # Mount SSL certificates
+      - ./ssl:/app/ssl:ro
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+
+  mock-oauth:
+    image: ghcr.io/navikt/mock-oauth2-server:2.1.8
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8080/default/.well-known/openid_configuration"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  redis-data:

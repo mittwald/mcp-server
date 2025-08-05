@@ -1,0 +1,3 @@
+- Library/Application Support/Claude/claude_desktop_config.json is a generated file don't edit it
+- Claude Code LLM client can't accept http urls for remote MCP servers, so  http://localhost:3001/mcp is NOT AN OPTION
+- Your approach must be OAuth 2.0 compliant

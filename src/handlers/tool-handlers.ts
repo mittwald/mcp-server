@@ -206,7 +206,19 @@ export async function handleToolCall(
 
     // Execute the tool handler
     logger.info(`🚀 Executing tool handler for ${request.params.name}`);
-    const result = await handler(request.params.arguments);
+    
+    // Check if this is a session-aware CLI tool (has session in the name)
+    const isSessionAware = request.params.name.includes('_session') || 
+                          request.params.name.includes('accessible_projects');
+    
+    let result: CallToolResult;
+    if (isSessionAware && context.sessionId) {
+      // Pass sessionId to session-aware CLI tools
+      result = await handler(request.params.arguments, context.sessionId);
+    } else {
+      // Standard tool execution
+      result = await handler(request.params.arguments);
+    }
     
     logger.info(`✅ Tool ${request.params.name} executed successfully`);
     return result;

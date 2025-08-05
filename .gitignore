@@ -44,6 +44,7 @@ coverage/
 *.temp
 output/
 agent/
+cookies.txt
 
 # npm/yarn
 .npm
