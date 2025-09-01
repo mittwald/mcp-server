@@ -13,4 +13,4 @@ COPY . .
 RUN npm run build
 ARG PORT=3000
 EXPOSE ${PORT}
-CMD ["node", "build/index.js"]
+CMD ["node", "build/stdio-server.js"]

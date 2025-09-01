@@ -11,6 +11,13 @@ COPY package*.json ./
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
 COPY . .
 RUN npm run build
-ARG PORT=3000
-EXPOSE ${PORT}
-CMD ["node", "build/index.js"]
+
+RUN apk add --no-cache python3 py3-uv
+
+COPY docker/openapi-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENV PORT=3000
+EXPOSE $PORT
+
+ENTRYPOINT ["/entrypoint.sh"]

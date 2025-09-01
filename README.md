@@ -50,12 +50,21 @@ PORT=3000
 ```
 
 3. **Build and run with Docker**
-```bash
-# Build the Docker image
-docker build -t mittwald-mcp .
 
-# Run the container
-docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-container mittwald-mcp
+The project provides three different Dockerfiles for different use cases:
+
+```bash
+# For HTTP-based MCP server (default)
+docker build -t mittwald/mcp-http -f Dockerfile .
+docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-container mittwald/mcp-http
+
+# For STDIO-based MCP server (Claude Desktop integration)
+docker build -t mittwald/mcp -f stdio.Dockerfile .
+docker run -d --env-file .env --name mittwald-mcp-container mittwald/mcp
+
+# For OpenAPI wrapper server
+docker build -t mittwald/mcp-openapi -f openapi.Dockerfile .
+docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-container mittwald/mcp-openapi
 ```
 
 4. **Verify the server is running**
@@ -70,9 +79,34 @@ curl -X POST http://localhost:3000/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test-client","version":"1.0.0"}}}'
 ```
 
+## 🐳 Docker Deployment Options
+
+The project provides **three different Dockerfiles** for different deployment scenarios:
+
+### Dockerfile Types
+
+| Dockerfile           | Purpose                 | Entry Point                       | Best For                                   |
+|----------------------|-------------------------|-----------------------------------|--------------------------------------------|
+| `Dockerfile`         | HTTP-based MCP server   | `build/index.js`                  | API integrations, web clients, development |
+| `stdio.Dockerfile`   | STDIO-based MCP server  | `build/stdio-server.js`           | Claude Desktop, direct MCP clients         |
+| `openapi.Dockerfile` | OpenAPI wrapper server  | `build/index.js`, wrapped by mcpo | Open WebUI, REST API compatibility         |
+
+### Building Different Variants
+
+```bash
+# HTTP MCP Server (default)
+docker build -t mittwald/mcp-http -f Dockerfile .
+
+# STDIO MCP Server (for Claude Desktop)
+docker build -t mittwald/mcp -f stdio.Dockerfile .
+
+# OpenAPI Wrapper Server (REST API layer)
+docker build -t mittwald/mcp-openapi -f openapi.Dockerfile .
+```
+
 ### Using with MCP Clients
 
-The Mittwald MCP Server supports **two communication modes**:
+The Mittwald MCP Server supports **multiple communication modes**:
 
 #### Mode 1: STDIO (for Claude Desktop)
 **Best for:** Claude Desktop integration, direct MCP client connections
@@ -102,8 +136,8 @@ Add to your Claude Desktop MCP configuration:
 
 Connect to the HTTP endpoint:
 ```bash
-# Start container with HTTP server (already running from Quick Start)
-docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-container mittwald/mcp
+# Start container with HTTP server
+docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-container mittwald/mcp-http
 
 # Test connection
 curl -X POST http://localhost:3000/mcp \
@@ -112,21 +146,36 @@ curl -X POST http://localhost:3000/mcp \
 ```
 
 **Features:**
-- RESTful HTTP endpoint at `http://localhost:3000/mcp`
+- MCP-over-HTTP endpoint at `http://localhost:3000/mcp`
 - Uses `index.js` entry point  
 - Environment variables from `.env` file or `--env-file`
 - Health check endpoint: `http://localhost:3000/health`
 
+#### Mode 3: OpenAPI (wrapper server)
+**Best for:** Open WebUI and other OpenAPI-compatible clients
+
+Start the OpenAPI wrapper server:
+```bash
+# Start container with OpenAPI server
+docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-container mittwald/mcp-openapi
+```
+
+**Features:**
+- OpenAPI compatibility wrapper over MCP functionality
+- Compatible with Open WebUI and similar clients
+- Custom entrypoint with Python/uv dependencies
+
 **Entry Points Comparison:**
 - **`build/stdio-server.js`** - STDIO mode for Claude Desktop
-- **`build/index.js`** - HTTP mode for web/API integrations
+- **`build/index.js`** - HTTP mode for web/API integrations  
+- **Custom entrypoint** - OpenAPI wrapper for REST compatibility
 
-#### Testing Both Modes
+#### Testing All Modes
 
 **Test STDIO mode:**
 ```bash
 # Test STDIO server responds to MCP protocol
-echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test","version":"1.0"}}}' | docker exec -i mittwald-mcp-container node build/stdio-server.js
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test","version":"1.0"}}}' | docker run --rm -i mittwald/mcp
 ```
 
 **Test HTTP mode:**
@@ -138,6 +187,12 @@ curl http://localhost:3000/health
 curl -X POST http://localhost:3000/mcp \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test","version":"1.0"}}}'
+```
+
+**Test OpenAPI mode:**
+```bash
+# Test that the OpenAPI container starts successfully
+curl -X GET http://localhost:3000/openapi.json
 ```
 
 ## 🛠️ Available Tools
