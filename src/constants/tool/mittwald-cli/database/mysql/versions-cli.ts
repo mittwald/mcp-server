@@ -4,7 +4,8 @@ import { handleDatabaseMysqlVersionsCli } from '../../../../../handlers/tools/mi
 
 const tool: Tool = {
   name: "mittwald_database_mysql_versions",
-  description: "List available MySQL versions using CLI wrapper",
+  title: "List MySQL Versions",
+  description: "List available MySQL versions.",
   inputSchema: {
     type: "object",
     properties: {

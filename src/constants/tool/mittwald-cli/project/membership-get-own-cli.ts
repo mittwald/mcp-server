@@ -4,7 +4,8 @@ import { handleProjectMembershipGetOwnCli } from '../../../../handlers/tools/mit
 
 const tool: Tool = {
   name: 'mittwald_project_membership_get_own',
-  description: 'Get details of own project membership using CLI',
+  title: 'Get My Project Membership',
+  description: 'Get details of own project membership.',
   inputSchema: {
     type: 'object',
     properties: {

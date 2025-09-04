@@ -4,7 +4,8 @@ import { handleRegistryCreateCli } from '../../../../handlers/tools/mittwald-cli
 
 const tool: Tool = {
   name: 'mittwald_container_registry_create',
-  description: 'Create a new container registry using CLI wrapper',
+  title: 'Create Container Registry',
+  description: 'Create a new container registry.',
   inputSchema: {
     type: 'object',
     properties: {

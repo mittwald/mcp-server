@@ -4,7 +4,8 @@ import { handleAppInstallTypo3Cli } from '../../../../../handlers/tools/mittwald
 
 const tool: Tool = {
   name: "mittwald_app_install_typo3",
-  description: "Install TYPO3 application using Mittwald CLI",
+  title: "Install TYPO3",
+  description: "Install TYPO3 application.",
   inputSchema: {
     type: "object",
     properties: {

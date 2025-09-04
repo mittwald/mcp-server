@@ -4,7 +4,8 @@ import { handleStackListCli } from '../../../../handlers/tools/mittwald-cli/cont
 
 const tool: Tool = {
   name: 'mittwald_container_stack_list',
-  description: 'List container stacks for a given project using CLI wrapper',
+  title: 'List Container Stacks',
+  description: 'List container stacks for a given project.',
   inputSchema: {
     type: 'object',
     properties: {

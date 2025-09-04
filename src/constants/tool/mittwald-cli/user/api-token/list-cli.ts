@@ -4,7 +4,8 @@ import { handleUserApiTokenListCli } from '../../../../../handlers/tools/mittwal
 
 const tool: Tool = {
   name: 'mittwald_user_api_token_list',
-  description: 'List all API tokens of the user using CLI wrapper. Shows all API tokens belonging to the current user.',
+  title: 'List My API Tokens',
+  description: 'List all API tokens of the user.. Shows all API tokens belonging to the current user.',
   inputSchema: {
     type: 'object',
     properties: {

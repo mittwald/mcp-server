@@ -4,7 +4,8 @@ import { handleAppListUpgradeCandidatesCli } from '../../../../handlers/tools/mi
 
 const tool: Tool = {
   name: 'mittwald_app_list_upgrade_candidates',
-  description: 'List upgrade candidates for an app installation using CLI',
+  title: 'List App Upgrade Candidates',
+  description: 'List upgrade candidates for an app installation.',
   inputSchema: {
     type: 'object',
     properties: {

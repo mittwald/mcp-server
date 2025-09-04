@@ -4,7 +4,8 @@ import { handleUserSshKeyCreateCli } from '../../../../../handlers/tools/mittwal
 
 const tool: Tool = {
   name: 'mittwald_user_ssh_key_create',
-  description: 'Create and import a new SSH key using CLI wrapper. Generates a new SSH key pair and imports the public key.',
+  title: 'Create SSH Key',
+  description: 'Create and import a new SSH key.. Generates a new SSH key pair and imports the public key.',
   inputSchema: {
     type: 'object',
     properties: {

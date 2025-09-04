@@ -4,7 +4,8 @@ import { handleAppCopyCli } from '../../../../handlers/tools/mittwald-cli/app/co
 
 const tool: Tool = {
   name: 'mittwald_app_copy',
-  description: 'Copy an app within a project using CLI',
+  title: 'Copy App',
+  description: 'Copy an app within a project.',
   inputSchema: {
     type: 'object',
     properties: {

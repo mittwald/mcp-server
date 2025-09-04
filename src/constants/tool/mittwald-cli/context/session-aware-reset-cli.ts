@@ -4,6 +4,7 @@ import { handleSessionAwareContextReset } from '../../../../handlers/tools/mittw
 
 const tool: Tool = {
   name: 'mittwald_context_reset_session',
+  title: 'Reset Session Context',
   description: 'Reset (clear) all user context parameters in Redis session (session-aware, multi-tenant safe)',
   inputSchema: {
     type: "object",

@@ -8,7 +8,8 @@ export interface ContextGetCliParameters {
 
 const tool: Tool = {
   name: 'mittwald_context_get',
-  description: 'Print an overview of currently set context parameters using CLI wrapper',
+  title: 'Get Context Info',
+  description: 'Print an overview of currently set context parameters.',
   inputSchema: {
     type: "object",
     properties: {

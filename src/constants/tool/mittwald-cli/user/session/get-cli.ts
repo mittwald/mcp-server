@@ -4,7 +4,8 @@ import { handleUserSessionGetCli } from '../../../../../handlers/tools/mittwald-
 
 const tool: Tool = {
   name: 'mittwald_user_session_get',
-  description: 'Get a specific session using CLI wrapper. Retrieves information about a specific user session.',
+  title: 'Get Session Details',
+  description: 'Get a specific session.. Retrieves information about a specific user session.',
   inputSchema: {
     type: 'object',
     properties: {

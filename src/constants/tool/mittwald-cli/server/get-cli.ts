@@ -4,7 +4,8 @@ import { handleServerGetCli } from '../../../../handlers/tools/mittwald-cli/serv
 
 const tool: Tool = {
   name: 'mittwald_server_get',
-  description: 'Get server details using CLI wrapper. Retrieves information about a specific server.',
+  title: 'Get Server Details',
+  description: 'Get server details.. Retrieves information about a specific server.',
   inputSchema: {
     type: 'object',
     properties: {

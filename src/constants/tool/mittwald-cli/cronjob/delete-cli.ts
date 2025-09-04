@@ -4,7 +4,8 @@ import { handleCronjobDeleteCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: 'mittwald_cronjob_delete',
-  description: 'Delete a cronjob using CLI',
+  title: 'Delete Cron Job',
+  description: 'Delete a cronjob.',
   inputSchema: {
     type: 'object',
     properties: {

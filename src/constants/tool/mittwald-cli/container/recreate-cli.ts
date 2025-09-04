@@ -4,7 +4,8 @@ import { handleContainerRecreateCli } from '../../../../handlers/tools/mittwald-
 
 const tool: Tool = {
   name: 'mittwald_container_recreate',
-  description: 'Recreate a container (CLI wrapper)',
+  title: 'Recreate Container',
+  description: 'Recreate a container.',
   inputSchema: {
     type: 'object',
     properties: {

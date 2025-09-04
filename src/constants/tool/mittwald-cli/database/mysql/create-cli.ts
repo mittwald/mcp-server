@@ -4,7 +4,8 @@ import { handleDatabaseMysqlCreateCli } from '../../../../../handlers/tools/mitt
 
 const tool: Tool = {
   name: "mittwald_database_mysql_create",
-  description: "Create a new MySQL database using CLI wrapper",
+  title: "Create MySQL Database",
+  description: "Create a new MySQL database.",
   inputSchema: {
     type: "object",
     properties: {

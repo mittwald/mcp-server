@@ -4,7 +4,8 @@ import { handleDomainDnszoneGetCli } from '../../../../../handlers/tools/mittwal
 
 const tool: Tool = {
   name: "mittwald_domain_dnszone_get",
-  description: "Get DNS zone information using CLI wrapper.",
+  title: "Get DNS Zone Details",
+  description: "Get DNS zone information..",
   inputSchema: {
     type: "object",
     properties: {

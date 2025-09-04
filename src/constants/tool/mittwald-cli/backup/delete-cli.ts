@@ -4,7 +4,8 @@ import { handleBackupDeleteCli } from '../../../../handlers/tools/mittwald-cli/b
 
 const tool: Tool = {
   name: 'mittwald_backup_delete',
-  description: 'Delete a backup using CLI',
+  title: 'Delete Backup',
+  description: 'Delete a backup',
   inputSchema: {
     type: 'object',
     properties: {

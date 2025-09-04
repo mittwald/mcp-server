@@ -4,7 +4,8 @@ import { handleSshUserListCli } from '../../../../handlers/tools/mittwald-cli/ss
 
 const tool: Tool = {
   name: "mittwald_ssh_user_list",
-  description: "List all SSH users for a project (CLI wrapper)",
+  title: "List SSH Users",
+  description: "List all SSH users for a project.",
   inputSchema: {
     type: "object",
     properties: {

@@ -4,7 +4,8 @@ import { handleAppOpenCli } from '../../../../handlers/tools/mittwald-cli/app/op
 
 const tool: Tool = {
   name: 'mittwald_app_open',
-  description: 'Open an app installation in the browser using CLI',
+  title: 'Open App in Browser',
+  description: 'Open an app installation in the browser.',
   inputSchema: {
     type: 'object',
     properties: {

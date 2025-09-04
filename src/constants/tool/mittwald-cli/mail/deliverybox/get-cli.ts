@@ -9,7 +9,8 @@ import { handleMittwaldMailDeliveryboxGetCli } from '../../../../../handlers/too
 
 const tool: Tool = {
   name: 'mittwald_mail_deliverybox_get',
-  description: 'Get a specific delivery box using Mittwald CLI',
+  title: 'Get Delivery Box Details',
+  description: 'Get a specific delivery box.',
   inputSchema: {
     type: 'object',
     properties: {

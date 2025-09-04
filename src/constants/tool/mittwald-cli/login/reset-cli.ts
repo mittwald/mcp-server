@@ -8,7 +8,8 @@ export interface LoginResetCliParameters {
 
 const tool: Tool = {
   name: 'mittwald_login_reset',
-  description: 'Reset login session using CLI wrapper',
+  title: 'Reset Login Session',
+  description: 'Reset login session.',
   inputSchema: {
     type: "object",
     properties: {},

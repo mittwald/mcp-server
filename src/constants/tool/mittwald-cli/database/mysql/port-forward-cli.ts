@@ -4,6 +4,7 @@ import { handleDatabaseMysqlPortForwardCli } from '../../../../../handlers/tools
 
 const tool: Tool = {
   name: "mittwald_database_mysql_port_forward",
+  title: "Forward MySQL Port",
   description: "Forward the TCP port of a MySQL database to a local port (provides command for long-running execution)",
   inputSchema: {
     type: "object",

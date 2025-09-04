@@ -4,7 +4,8 @@ import { handleStackPsCli } from '../../../../handlers/tools/mittwald-cli/contai
 
 const tool: Tool = {
   name: 'mittwald_container_stack_ps',
-  description: 'List all services within a given container stack using CLI wrapper',
+  title: 'List Stack Services',
+  description: 'List all services within a given container stack.',
   inputSchema: {
     type: 'object',
     properties: {

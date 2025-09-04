@@ -9,7 +9,8 @@ import { handleMittwaldMailDeliveryboxCreateCli } from '../../../../../handlers/
 
 const tool: Tool = {
   name: 'mittwald_mail_deliverybox_create',
-  description: 'Create a new delivery box using Mittwald CLI',
+  title: 'Create Delivery Box',
+  description: 'Create a new delivery box.',
   inputSchema: {
     type: 'object',
     properties: {

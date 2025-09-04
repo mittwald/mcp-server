@@ -4,7 +4,8 @@ import { handleProjectUpdateCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: "mittwald_project_update",
-  description: "Update an existing project using Mittwald CLI",
+  title: "Update Project",
+  description: "Update an existing project.",
   inputSchema: {
     type: "object",
     properties: {

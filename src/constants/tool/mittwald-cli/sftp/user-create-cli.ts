@@ -4,7 +4,8 @@ import { handleSftpUserCreateCli } from '../../../../handlers/tools/mittwald-cli
 
 const tool: Tool = {
   name: "mittwald_sftp_user_create",
-  description: "Create a new SFTP user (CLI wrapper)",
+  title: "Create SFTP User",
+  description: "Create a new SFTP user.",
   inputSchema: {
     type: "object",
     properties: {

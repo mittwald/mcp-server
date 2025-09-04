@@ -4,7 +4,8 @@ import { handleExtensionListCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: 'mittwald_extension_list',
-  description: 'List all available extensions using CLI wrapper',
+  title: 'List Available Extensions',
+  description: 'List all available extensions.',
   inputSchema: {
     type: 'object',
     properties: {

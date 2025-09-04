@@ -4,7 +4,8 @@ import { handleDomainGetCli } from '../../../../handlers/tools/mittwald-cli/doma
 
 const tool: Tool = {
   name: "mittwald_domain_get",
-  description: "Get domain information using CLI wrapper.",
+  title: "Get Domain Info",
+  description: "Get domain information..",
   inputSchema: {
     type: "object",
     properties: {

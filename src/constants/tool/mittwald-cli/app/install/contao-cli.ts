@@ -4,7 +4,8 @@ import { handleAppInstallContaoCli } from '../../../../../handlers/tools/mittwal
 
 const tool: Tool = {
   name: "mittwald_app_install_contao",
-  description: "Install Contao application using Mittwald CLI",
+  title: "Install Contao",
+  description: "Install Contao application.",
   inputSchema: {
     type: "object",
     properties: {

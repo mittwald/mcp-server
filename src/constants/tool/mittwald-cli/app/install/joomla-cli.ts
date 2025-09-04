@@ -4,7 +4,8 @@ import { handleAppInstallJoomlaCli } from '../../../../../handlers/tools/mittwal
 
 const tool: Tool = {
   name: "mittwald_app_install_joomla",
-  description: "Install Joomla application using Mittwald CLI",
+  title: "Install Joomla",
+  description: "Install Joomla application.",
   inputSchema: {
     type: "object",
     properties: {

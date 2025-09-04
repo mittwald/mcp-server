@@ -4,7 +4,8 @@ import { handleContainerDeleteCli } from '../../../../handlers/tools/mittwald-cl
 
 const tool: Tool = {
   name: 'mittwald_container_delete',
-  description: 'Delete a container (CLI wrapper)',
+  title: 'Delete Container',
+  description: 'Delete a container.',
   inputSchema: {
     type: 'object',
     properties: {

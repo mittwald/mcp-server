@@ -4,7 +4,8 @@ import { handleAppCreatePythonCli } from '../../../../../handlers/tools/mittwald
 
 const tool: Tool = {
   name: 'mittwald_app_create_python',
-  description: 'Create a Python app using CLI',
+  title: 'Create Python App',
+  description: 'Create a Python app.',
   inputSchema: {
     type: 'object',
     properties: {

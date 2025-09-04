@@ -4,7 +4,8 @@ import { handleMittwaldProjectListCli } from '../../../../handlers/tools/mittwal
 
 const tool: Tool = {
   name: "mittwald_project_list",
-  description: "List all projects that you have access to using Mittwald CLI",
+  title: "List Projects",
+  description: "List all projects that you have access to.",
   inputSchema: {
     type: "object",
     properties: {

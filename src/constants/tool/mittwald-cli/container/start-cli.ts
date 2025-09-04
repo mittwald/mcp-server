@@ -4,7 +4,8 @@ import { handleContainerStartCli } from '../../../../handlers/tools/mittwald-cli
 
 const tool: Tool = {
   name: 'mittwald_container_start',
-  description: 'Start a stopped container (CLI wrapper)',
+  title: 'Start Container',
+  description: 'Start a stopped container.',
   inputSchema: {
     type: 'object',
     properties: {

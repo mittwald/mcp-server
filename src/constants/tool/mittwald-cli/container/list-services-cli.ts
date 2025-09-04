@@ -4,7 +4,8 @@ import { handleContainerListCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: 'mittwald_container_list',
-  description: 'List containers belonging to a project (CLI wrapper)',
+  title: 'List Containers',
+  description: 'List containers belonging to a project.',
   inputSchema: {
     type: 'object',
     properties: {

@@ -4,7 +4,8 @@ import { handleExtensionInstallCli } from '../../../../handlers/tools/mittwald-c
 
 const tool: Tool = {
   name: 'mittwald_extension_install',
-  description: 'Install an extension in a project or organization using CLI wrapper',
+  title: 'Install Extension',
+  description: 'Install an extension in a project or organization.',
   inputSchema: {
     type: 'object',
     properties: {

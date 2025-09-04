@@ -4,7 +4,8 @@ import { handleProjectMembershipGetCli } from '../../../../handlers/tools/mittwa
 
 const tool: Tool = {
   name: 'mittwald_project_membership_get',
-  description: 'Get details of a project membership using CLI',
+  title: 'Get Project Membership Details',
+  description: 'Get details of a project membership.',
   inputSchema: {
     type: 'object',
     properties: {

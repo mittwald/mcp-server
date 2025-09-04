@@ -4,7 +4,8 @@ import { handleDomainVirtualhostDeleteCli } from '../../../../handlers/tools/mit
 
 const tool: Tool = {
   name: 'mittwald_domain_virtualhost_delete',
-  description: 'Delete a domain virtualhost using CLI',
+  title: 'Delete Virtual Host',
+  description: 'Delete a domain virtualhost.',
   inputSchema: {
     type: 'object',
     properties: {

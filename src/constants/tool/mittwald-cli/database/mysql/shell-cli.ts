@@ -4,6 +4,7 @@ import { handleDatabaseMysqlShellCli } from '../../../../../handlers/tools/mittw
 
 const tool: Tool = {
   name: "mittwald_database_mysql_shell",
+  title: "Open MySQL Shell",
   description: "Connect to a MySQL database via the MySQL shell (provides command for interactive execution)",
   inputSchema: {
     type: "object",

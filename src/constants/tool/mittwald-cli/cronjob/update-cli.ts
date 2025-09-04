@@ -4,7 +4,8 @@ import { handleCronjobUpdateCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: 'mittwald_cronjob_update',
-  description: 'Update a cronjob using CLI',
+  title: 'Update Cron Job',
+  description: 'Update a cronjob.',
   inputSchema: {
     type: 'object',
     properties: {

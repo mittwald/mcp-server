@@ -4,7 +4,8 @@ import { handleAppInstallShopware6Cli } from '../../../../../handlers/tools/mitt
 
 const tool: Tool = {
   name: "mittwald_app_install_shopware6",
-  description: "Install Shopware 6 application using Mittwald CLI",
+  title: "Install Shopware 6",
+  description: "Install Shopware 6 application.",
   inputSchema: {
     type: "object",
     properties: {

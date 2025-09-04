@@ -4,7 +4,8 @@ import { handleDatabaseListCli } from '../../../../handlers/tools/mittwald-cli/d
 
 const tool: Tool = {
   name: "mittwald_database_list",
-  description: "List all databases using CLI wrapper",
+  title: "List Databases",
+  description: "List all databases.",
   inputSchema: {
     type: "object",
     properties: {

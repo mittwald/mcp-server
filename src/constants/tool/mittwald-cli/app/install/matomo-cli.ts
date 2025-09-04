@@ -4,7 +4,8 @@ import { handleAppInstallMatomoCli } from '../../../../../handlers/tools/mittwal
 
 const tool: Tool = {
   name: "mittwald_app_install_matomo",
-  description: "Install Matomo application using Mittwald CLI",
+  title: "Install Matomo",
+  description: "Install Matomo application.",
   inputSchema: {
     type: "object",
     properties: {

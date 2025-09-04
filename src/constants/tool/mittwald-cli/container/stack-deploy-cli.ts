@@ -4,7 +4,8 @@ import { handleStackDeployCli } from '../../../../handlers/tools/mittwald-cli/co
 
 const tool: Tool = {
   name: 'mittwald_container_stack_deploy',
-  description: 'Deploy a docker-compose compatible file to a mittwald container stack using CLI wrapper',
+  title: 'Deploy Container Stack',
+  description: 'Deploy a docker-compose compatible file to a mittwald container stack.',
   inputSchema: {
     type: 'object',
     properties: {

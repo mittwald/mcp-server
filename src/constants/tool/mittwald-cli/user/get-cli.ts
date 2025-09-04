@@ -4,7 +4,8 @@ import { handleUserGetCli } from '../../../../handlers/tools/mittwald-cli/user/g
 
 const tool: Tool = {
   name: 'mittwald_user_get',
-  description: 'Get profile information for a user using CLI wrapper. Defaults to the currently authenticated user if no user ID is provided.',
+  title: 'Get User Profile',
+  description: 'Get profile information for a user.. Defaults to the currently authenticated user if no user ID is provided.',
   inputSchema: {
     type: 'object',
     properties: {

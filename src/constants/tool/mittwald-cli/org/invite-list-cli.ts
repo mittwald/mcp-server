@@ -4,7 +4,8 @@ import { handleOrgInviteListCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: "mittwald_org_invite_list",
-  description: "List all invites for an organization using CLI wrapper",
+  title: "List Organization Invites",
+  description: "List all invites for an organization.",
   inputSchema: {
     type: "object",
     properties: {

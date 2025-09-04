@@ -4,7 +4,8 @@ import { handleProjectSshCli } from '../../../../handlers/tools/mittwald-cli/pro
 
 const tool: Tool = {
   name: "mittwald_project_ssh",
-  description: "Connect to a project via SSH using Mittwald CLI (provides command for interactive terminal)",
+  title: "Connect to Project via SSH",
+  description: "Connect to a project via SSH. (provides command for interactive terminal)",
   inputSchema: {
     type: "object",
     properties: {

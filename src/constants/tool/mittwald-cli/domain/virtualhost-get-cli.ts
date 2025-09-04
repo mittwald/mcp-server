@@ -4,7 +4,8 @@ import { handleDomainVirtualhostGetCli } from '../../../../handlers/tools/mittwa
 
 const tool: Tool = {
   name: 'mittwald_domain_virtualhost_get',
-  description: 'Get details of a domain virtualhost using CLI',
+  title: 'Get Virtual Host Details',
+  description: 'Get details of a domain virtualhost.',
   inputSchema: {
     type: 'object',
     properties: {

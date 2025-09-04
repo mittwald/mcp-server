@@ -9,7 +9,8 @@ import { handleMittwaldMailAddressUpdateCli } from '../../../../../handlers/tool
 
 const tool: Tool = {
   name: 'mittwald_mail_address_update',
-  description: 'Update a mail address using Mittwald CLI',
+  title: 'Update Mail Address',
+  description: 'Update a mail address.',
   inputSchema: {
     type: 'object',
     properties: {

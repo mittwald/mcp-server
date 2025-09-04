@@ -4,7 +4,8 @@ import { handleBackupScheduleUpdateCli } from '../../../../handlers/tools/mittwa
 
 const tool: Tool = {
   name: 'mittwald_backup_schedule_update',
-  description: 'Update a backup schedule using CLI',
+  title: 'Update Backup Schedule',
+  description: 'Update a backup schedule.',
   inputSchema: {
     type: 'object',
     properties: {

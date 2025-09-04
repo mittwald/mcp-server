@@ -9,7 +9,8 @@ import { handleMittwaldMailDeliveryboxDeleteCli } from '../../../../../handlers/
 
 const tool: Tool = {
   name: 'mittwald_mail_deliverybox_delete',
-  description: 'Delete a delivery box using Mittwald CLI',
+  title: 'Delete Delivery Box',
+  description: 'Delete a delivery box.',
   inputSchema: {
     type: 'object',
     properties: {

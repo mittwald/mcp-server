@@ -4,7 +4,8 @@ import { handleCronjobExecutionLogsCli } from '../../../../handlers/tools/mittwa
 
 const tool: Tool = {
   name: 'mittwald_cronjob_execution_logs',
-  description: 'Get logs of a cronjob execution using CLI',
+  title: 'Get Cron Job Execution Logs',
+  description: 'Get logs of a cronjob execution.',
   inputSchema: {
     type: 'object',
     properties: {

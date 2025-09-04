@@ -4,7 +4,8 @@ import { handleAppInstallWordpressCli } from '../../../../../handlers/tools/mitt
 
 const tool: Tool = {
   name: "mittwald_app_install_wordpress",
-  description: "Install WordPress application using Mittwald CLI",
+  title: "Install WordPress",
+  description: "Install WordPress application.",
   inputSchema: {
     type: "object",
     properties: {

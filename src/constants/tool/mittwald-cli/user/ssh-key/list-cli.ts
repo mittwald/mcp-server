@@ -4,7 +4,8 @@ import { handleUserSshKeyListCli } from '../../../../../handlers/tools/mittwald-
 
 const tool: Tool = {
   name: 'mittwald_user_ssh_key_list',
-  description: 'Get your stored SSH keys using CLI wrapper. Lists all SSH keys for the current user.',
+  title: 'List My SSH Keys',
+  description: 'Get your stored SSH keys.. Lists all SSH keys for the current user.',
   inputSchema: {
     type: 'object',
     properties: {

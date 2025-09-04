@@ -4,7 +4,8 @@ import { handleAppInstallNextcloudCli } from '../../../../../handlers/tools/mitt
 
 const tool: Tool = {
   name: "mittwald_app_install_nextcloud",
-  description: "Install Nextcloud application using Mittwald CLI",
+  title: "Install Nextcloud",
+  description: "Install Nextcloud application.",
   inputSchema: {
     type: "object",
     properties: {

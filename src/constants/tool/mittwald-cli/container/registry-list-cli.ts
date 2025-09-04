@@ -4,7 +4,8 @@ import { handleRegistryListCli } from '../../../../handlers/tools/mittwald-cli/c
 
 const tool: Tool = {
   name: 'mittwald_container_registry_list',
-  description: 'List container registries using CLI wrapper',
+  title: 'List Container Registries',
+  description: 'List container registries.',
   inputSchema: {
     type: 'object',
     properties: {

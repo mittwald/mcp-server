@@ -4,7 +4,8 @@ import { handleProjectInviteListCli } from '../../../../handlers/tools/mittwald-
 
 const tool: Tool = {
   name: 'mittwald_project_invite_list',
-  description: 'List project invites using CLI',
+  title: 'List Project Invites',
+  description: 'List project invites.',
   inputSchema: {
     type: 'object',
     properties: {

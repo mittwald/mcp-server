@@ -4,7 +4,8 @@ import { handleDatabaseMysqlImportCli } from '../../../../../handlers/tools/mitt
 
 const tool: Tool = {
   name: "mittwald_database_mysql_import",
-  description: "Import a dump into a MySQL database using CLI wrapper",
+  title: "Import MySQL Database",
+  description: "Import a dump into a MySQL database.",
   inputSchema: {
     type: "object",
     properties: {

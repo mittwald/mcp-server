@@ -4,7 +4,8 @@ import { handleAppVersionsCli } from '../../../../handlers/tools/mittwald-cli/ap
 
 const tool: Tool = {
   name: 'mittwald_app_versions',
-  description: 'List supported Apps and Versions using CLI',
+  title: 'List App Versions',
+  description: 'List supported Apps and Versions.',
   inputSchema: {
     type: 'object',
     properties: {

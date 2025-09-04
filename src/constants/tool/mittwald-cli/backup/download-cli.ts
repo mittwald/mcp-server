@@ -4,7 +4,8 @@ import { handleBackupDownloadCli } from '../../../../handlers/tools/mittwald-cli
 
 const tool: Tool = {
   name: 'mittwald_backup_download',
-  description: 'Download a backup using CLI',
+  title: 'Download Backup',
+  description: 'Download a backup',
   inputSchema: {
     type: 'object',
     properties: {

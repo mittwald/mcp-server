@@ -4,7 +4,8 @@ import { handleDatabaseMysqlDumpCli } from '../../../../../handlers/tools/mittwa
 
 const tool: Tool = {
   name: "mittwald_database_mysql_dump",
-  description: "Create a dump of a MySQL database using CLI wrapper",
+  title: "Export MySQL Database",
+  description: "Create a dump of a MySQL database.",
   inputSchema: {
     type: "object",
     properties: {

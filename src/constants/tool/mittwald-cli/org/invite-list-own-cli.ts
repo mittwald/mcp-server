@@ -4,7 +4,8 @@ import { handleOrgInviteListOwnCli } from '../../../../handlers/tools/mittwald-c
 
 const tool: Tool = {
   name: "mittwald_org_invite_list_own",
-  description: "List all organization invites for the executing user using CLI wrapper",
+  title: "List My Organization Invites",
+  description: "List all organization invites for the executing user.",
   inputSchema: {
     type: "object",
     properties: {

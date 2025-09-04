@@ -4,7 +4,8 @@ import { handleServerListCli } from '../../../../handlers/tools/mittwald-cli/ser
 
 const tool: Tool = {
   name: 'mittwald_server_list',
-  description: 'List servers for an organization or user using CLI wrapper. Shows all servers accessible to the current user.',
+  title: 'List Servers',
+  description: 'List servers for an organization or user.. Shows all servers accessible to the current user.',
   inputSchema: {
     type: 'object',
     properties: {

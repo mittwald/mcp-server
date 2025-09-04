@@ -4,7 +4,8 @@ import { handleBackupListCli } from '../../../../handlers/tools/mittwald-cli/bac
 
 const tool: Tool = {
   name: 'mittwald_backup_list',
-  description: 'List backups using CLI',
+  title: 'List Backups',
+  description: 'List backups',
   inputSchema: {
     type: 'object',
     properties: {

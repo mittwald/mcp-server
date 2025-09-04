@@ -4,7 +4,8 @@ import { handleAppCreateStaticCli } from '../../../../../handlers/tools/mittwald
 
 const tool: Tool = {
   name: 'mittwald_app_create_static',
-  description: 'Create a static app using CLI',
+  title: 'Create Static App',
+  description: 'Create a static app.',
   inputSchema: {
     type: 'object',
     properties: {

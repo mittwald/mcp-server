@@ -9,7 +9,8 @@ import { handleMittwaldMailAddressListCli } from '../../../../../handlers/tools/
 
 const tool: Tool = {
   name: 'mittwald_mail_address_list',
-  description: 'List all mail addresses for a project using Mittwald CLI',
+  title: 'List Mail Addresses',
+  description: 'List all mail addresses for a project.',
   inputSchema: {
     type: 'object',
     properties: {

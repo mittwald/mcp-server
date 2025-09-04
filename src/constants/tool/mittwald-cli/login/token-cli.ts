@@ -8,7 +8,8 @@ export interface LoginTokenCliParameters {
 
 const tool: Tool = {
   name: 'mittwald_login_token',
-  description: 'Login using API token with CLI wrapper',
+  title: 'Login with Token',
+  description: 'Login using API token.',
   inputSchema: {
     type: "object",
     properties: {

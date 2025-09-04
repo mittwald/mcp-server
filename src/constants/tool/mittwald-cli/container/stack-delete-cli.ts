@@ -4,7 +4,8 @@ import { handleStackDeleteCli } from '../../../../handlers/tools/mittwald-cli/co
 
 const tool: Tool = {
   name: 'mittwald_container_stack_delete',
-  description: 'Delete a container stack using CLI wrapper',
+  title: 'Delete Container Stack',
+  description: 'Delete a container stack.',
   inputSchema: {
     type: 'object',
     properties: {

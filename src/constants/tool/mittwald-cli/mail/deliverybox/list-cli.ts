@@ -9,7 +9,8 @@ import { handleMittwaldMailDeliveryboxListCli } from '../../../../../handlers/to
 
 const tool: Tool = {
   name: 'mittwald_mail_deliverybox_list',
-  description: 'List all delivery boxes for a project using Mittwald CLI',
+  title: 'List Delivery Boxes',
+  description: 'List all delivery boxes for a project.',
   inputSchema: {
     type: 'object',
     properties: {

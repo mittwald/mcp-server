@@ -4,7 +4,8 @@ import { handleAppDownloadCli } from '../../../../handlers/tools/mittwald-cli/ap
 
 const tool: Tool = {
   name: 'mittwald_app_download',
-  description: 'Download the filesystem of an app within a project to your local machine using CLI',
+  title: 'Download App Files',
+  description: 'Download the filesystem of an app within a project to your local machine.',
   inputSchema: {
     type: 'object',
     properties: {

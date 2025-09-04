@@ -4,7 +4,8 @@ import { handleAppCreateNodeCli } from '../../../../../handlers/tools/mittwald-c
 
 const tool: Tool = {
   name: 'mittwald_app_create_node',
-  description: 'Create a Node.js app using CLI',
+  title: 'Create Node.js App',
+  description: 'Create a Node.js app.',
   inputSchema: {
     type: 'object',
     properties: {

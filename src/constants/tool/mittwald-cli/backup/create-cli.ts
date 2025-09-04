@@ -4,7 +4,8 @@ import { handleBackupCreateCli } from '../../../../handlers/tools/mittwald-cli/b
 
 const tool: Tool = {
   name: 'mittwald_backup_create',
-  description: 'Create a new backup using CLI',
+  title: 'Create Backup',
+  description: 'Create a new backup',
   inputSchema: {
     type: 'object',
     properties: {

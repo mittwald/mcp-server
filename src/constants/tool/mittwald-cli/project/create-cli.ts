@@ -4,7 +4,8 @@ import { handleProjectCreateCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: "mittwald_project_create",
-  description: "Create a new project using Mittwald CLI",
+  title: "Create Project",
+  description: "Create a new project.",
   inputSchema: {
     type: "object",
     properties: {

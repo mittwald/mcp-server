@@ -4,7 +4,8 @@ import { handleBackupScheduleListCli } from '../../../../handlers/tools/mittwald
 
 const tool: Tool = {
   name: 'mittwald_backup_schedule_list',
-  description: 'List backup schedules using CLI',
+  title: 'List Backup Schedules',
+  description: 'List backup schedules.',
   inputSchema: {
     type: 'object',
     properties: {

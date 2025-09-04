@@ -4,7 +4,8 @@ import { handleConversationListCli } from '../../../../handlers/tools/mittwald-c
 
 const tool: Tool = {
   name: 'mittwald_conversation_list',
-  description: 'List conversations using CLI',
+  title: 'List Conversations',
+  description: 'List conversations.',
   inputSchema: {
     type: 'object',
     properties: {

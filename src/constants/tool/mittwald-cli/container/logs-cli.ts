@@ -4,7 +4,8 @@ import { handleContainerLogsCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: 'mittwald_container_logs',
-  description: 'Display logs of a specific container (CLI wrapper)',
+  title: 'View Container Logs',
+  description: 'Display logs of a specific container.',
   inputSchema: {
     type: 'object',
     properties: {

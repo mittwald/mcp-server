@@ -4,7 +4,8 @@ import { handleProjectMembershipListCli } from '../../../../handlers/tools/mittw
 
 const tool: Tool = {
   name: 'mittwald_project_membership_list',
-  description: 'List project memberships using CLI',
+  title: 'List Project Members',
+  description: 'List project memberships.',
   inputSchema: {
     type: 'object',
     properties: {

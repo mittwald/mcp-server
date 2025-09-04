@@ -4,7 +4,8 @@ import { handleDomainVirtualhostCreateCli } from '../../../../handlers/tools/mit
 
 const tool: Tool = {
   name: 'mittwald_domain_virtualhost_create',
-  description: 'Create a domain virtualhost using CLI',
+  title: 'Create Virtual Host',
+  description: 'Create a domain virtualhost.',
   inputSchema: {
     type: 'object',
     properties: {

@@ -4,7 +4,8 @@ import { handleSshUserCreateCli } from '../../../../handlers/tools/mittwald-cli/
 
 const tool: Tool = {
   name: "mittwald_ssh_user_create",
-  description: "Create a new SSH user (CLI wrapper)",
+  title: "Create SSH User",
+  description: "Create a new SSH user.",
   inputSchema: {
     type: "object",
     properties: {

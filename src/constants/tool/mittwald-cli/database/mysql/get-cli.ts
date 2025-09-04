@@ -4,7 +4,8 @@ import { handleDatabaseMysqlGetCli } from '../../../../../handlers/tools/mittwal
 
 const tool: Tool = {
   name: "mittwald_database_mysql_get",
-  description: "Get a MySQL database using CLI wrapper",
+  title: "Get MySQL Database Details",
+  description: "Get a MySQL database.",
   inputSchema: {
     type: "object",
     properties: {

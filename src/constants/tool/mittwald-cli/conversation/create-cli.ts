@@ -4,7 +4,8 @@ import { handleConversationCreateCli } from '../../../../handlers/tools/mittwald
 
 const tool: Tool = {
   name: 'mittwald_conversation_create',
-  description: 'Create a new conversation using CLI',
+  title: 'Create Conversation',
+  description: 'Create a new conversation.',
   inputSchema: {
     type: 'object',
     properties: {

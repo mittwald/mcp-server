@@ -4,7 +4,8 @@ import { handleConversationShowCli } from '../../../../handlers/tools/mittwald-c
 
 const tool: Tool = {
   name: 'mittwald_conversation_show',
-  description: 'Show details of a conversation using CLI',
+  title: 'Show Conversation Details',
+  description: 'Show details of a conversation.',
   inputSchema: {
     type: 'object',
     properties: {

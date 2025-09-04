@@ -4,7 +4,8 @@ import { handleUserApiTokenGetCli } from '../../../../../handlers/tools/mittwald
 
 const tool: Tool = {
   name: 'mittwald_user_api_token_get',
-  description: 'Get a specific API token using CLI wrapper. Retrieves information about a specific API token.',
+  title: 'Get API Token Details',
+  description: 'Get a specific API token.. Retrieves information about a specific API token.',
   inputSchema: {
     type: 'object',
     properties: {

@@ -4,7 +4,8 @@ import { handleAppGetCli } from '../../../../handlers/tools/mittwald-cli/app/get
 
 const tool: Tool = {
   name: 'mittwald_app_get',
-  description: 'Get details about an app installation using CLI',
+  title: 'Get App Details',
+  description: 'Get details about an app installation.',
   inputSchema: {
     type: 'object',
     properties: {

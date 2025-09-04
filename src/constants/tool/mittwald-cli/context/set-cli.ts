@@ -12,7 +12,8 @@ export interface ContextSetCliParameters {
 
 const tool: Tool = {
   name: 'mittwald_context_set',
-  description: 'Set context parameters using CLI wrapper',
+  title: 'Set Context',
+  description: 'Set context parameters.',
   inputSchema: {
     type: "object",
     properties: {

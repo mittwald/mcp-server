@@ -4,7 +4,8 @@ import { handleConversationCategoriesCli } from '../../../../handlers/tools/mitt
 
 const tool: Tool = {
   name: 'mittwald_conversation_categories',
-  description: 'List conversation categories using CLI',
+  title: 'List Conversation Categories',
+  description: 'List conversation categories.',
   inputSchema: {
     type: 'object',
     properties: {

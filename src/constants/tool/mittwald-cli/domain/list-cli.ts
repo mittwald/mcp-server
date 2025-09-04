@@ -4,7 +4,8 @@ import { handleDomainListCli } from '../../../../handlers/tools/mittwald-cli/dom
 
 const tool: Tool = {
   name: "mittwald_domain_list",
-  description: "List domains belonging to a project using CLI wrapper.",
+  title: "List Domains",
+  description: "List domains belonging to a project..",
   inputSchema: {
     type: "object",
     properties: {

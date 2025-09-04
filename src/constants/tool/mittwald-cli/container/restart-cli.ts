@@ -4,7 +4,8 @@ import { handleContainerRestartCli } from '../../../../handlers/tools/mittwald-c
 
 const tool: Tool = {
   name: 'mittwald_container_restart',
-  description: 'Restart a container (CLI wrapper)',
+  title: 'Restart Container',
+  description: 'Restart a container.',
   inputSchema: {
     type: 'object',
     properties: {

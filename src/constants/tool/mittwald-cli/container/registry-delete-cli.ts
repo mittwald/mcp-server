@@ -4,7 +4,8 @@ import { handleRegistryDeleteCli } from '../../../../handlers/tools/mittwald-cli
 
 const tool: Tool = {
   name: 'mittwald_container_registry_delete',
-  description: 'Delete a container registry using CLI wrapper',
+  title: 'Delete Container Registry',
+  description: 'Delete a container registry.',
   inputSchema: {
     type: 'object',
     properties: {

@@ -4,7 +4,8 @@ import { handleSftpUserUpdateCli } from '../../../../handlers/tools/mittwald-cli
 
 const tool: Tool = {
   name: "mittwald_sftp_user_update",
-  description: "Update an existing SFTP user (CLI wrapper)",
+  title: "Update SFTP User",
+  description: "Update an existing SFTP user.",
   inputSchema: {
     type: "object",
     properties: {

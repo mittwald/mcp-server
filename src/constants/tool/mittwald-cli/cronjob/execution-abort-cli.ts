@@ -4,7 +4,8 @@ import { handleCronjobExecutionAbortCli } from '../../../../handlers/tools/mittw
 
 const tool: Tool = {
   name: 'mittwald_cronjob_execution_abort',
-  description: 'Abort a cronjob execution using CLI',
+  title: 'Abort Cron Job Execution',
+  description: 'Abort a cronjob execution.',
   inputSchema: {
     type: 'object',
     properties: {

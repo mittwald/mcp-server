@@ -4,7 +4,8 @@ import { handleDomainDnszoneUpdateCli } from '../../../../../handlers/tools/mitt
 
 const tool: Tool = {
   name: "mittwald_domain_dnszone_update",
-  description: "Update DNS zone records using CLI wrapper.",
+  title: "Update DNS Zone Records",
+  description: "Update DNS zone records..",
   inputSchema: {
     type: "object",
     properties: {
