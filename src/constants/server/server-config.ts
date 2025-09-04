@@ -30,43 +30,9 @@ import type { Implementation, ServerCapabilities } from "@modelcontextprotocol/s
  * - Real-world API integration (Reddit)
  */
 export const serverConfig: Implementation = {
-  name: "systemprompt-mcp-server-full",
+  name: "mittwald-mstudio-mcp",
   version: "1.0.0",
-  metadata: {
-    name: "SystemPrompt MCP Server Full Example",
-    description:
-      "Complete example MCP server implementation demonstrating full specification support with type safety. " +
-      "Shows OAuth 2.1, tools, prompts, resources, sampling, and notifications using Reddit as a real-world integration. " +
-      "Perfect template for building your own type-safe MCP servers.",
-    icon: "logos:reddit-icon",
-    color: "orange",
-    serverStartTime: Date.now(),
-    environment: process.env.NODE_ENV || "production",
-    customData: {
-      serverType: "example-implementation",
-      implementationFeatures: [
-        "full-mcp-spec",
-        "type-safe",
-        "oauth-2.1",
-        "sampling",
-        "elicitation", 
-        "structured-data",
-        "notifications",
-        "session-management"
-      ],
-      exampleIntegration: "reddit-api",
-      templateUsage: "Fork this repository as a starting point for your own MCP server",
-      redditScopes: [
-        "identity",
-        "read",
-        "submit",
-        "edit",
-        "privatemessages",
-        "history",
-        "mysubreddits",
-      ],
-    },
-  },
+  title: "mittwald mStudio MCP server",
 };
 
 /**
