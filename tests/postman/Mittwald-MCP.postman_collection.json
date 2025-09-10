@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "Mittwald MCP + OAuth Server",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "0c3e2e3d-6b7a-4c0c-9a2a-aaaa0000mcp-col"
+  },
+  "item": [
+    {
+      "name": "MCP Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{mcp_base}}/health", "host": ["{{mcp_base}}"], "path": ["health"] }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('status 200', () => pm.response.code === 200);",
+          "const json = pm.response.json();",
+          "pm.test('has ok status', () => json.status === 'ok');"
+        ]}
+      }]
+    },
+    {
+      "name": "MCP Protected Resource Metadata",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Accept", "value": "application/json"}],
+        "url": { "raw": "{{mcp_base}}/.well-known/oauth-protected-resource", "host": ["{{mcp_base}}"], "path": [".well-known","oauth-protected-resource"] }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('200', () => pm.response.code === 200);",
+          "const json = pm.response.json();",
+          "pm.test('resource matches MCP /mcp', () => json.resource === pm.environment.get('mcp_base') + '/mcp');",
+          "pm.test('authorization_servers includes AS', () => Array.isArray(json.authorization_servers) && json.authorization_servers.includes(pm.environment.get('as_base')));"
+        ]}
+      }]
+    },
+    {
+      "name": "MCP Metadata Redirect (compat)",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Accept", "value": "application/json"}],
+        "url": { "raw": "{{mcp_base}}/.well-known/oauth-authorization-server/mcp", "host": ["{{mcp_base}}"], "path": [".well-known","oauth-authorization-server","mcp"] },
+        "redirect": {"follow": false}
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('301/302 redirect to AS metadata', () => pm.response.code === 301 || pm.response.code === 302);",
+          "const loc = pm.response.headers.get('Location');",
+          "pm.test('Location points to AS metadata', () => loc && loc.indexOf(pm.environment.get('as_base') + '/.well-known/oauth-authorization-server') === 0);"
+        ]}
+      }]
+    },
+    {
+      "name": "MCP Preflight (OPTIONS /mcp)",
+      "request": {
+        "method": "OPTIONS",
+        "header": [
+          {"key": "Origin", "value": "https://example.com"},
+          {"key": "Access-Control-Request-Method", "value": "POST"},
+          {"key": "Access-Control-Request-Headers", "value": "content-type"}
+        ],
+        "url": { "raw": "{{mcp_base}}{{resource_path}}", "host": ["{{mcp_base}}"], "path": ["mcp"] }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('204 preflight', () => pm.response.code === 204);",
+          "pm.test('CORS exposes WWW-Authenticate', () => pm.response.headers.has('Access-Control-Expose-Headers'));"
+        ]}
+      }]
+    },
+    {
+      "name": "MCP Unauthenticated (401 Challenge)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"ping\"\n}"},
+        "url": { "raw": "{{mcp_base}}{{resource_path}}", "host": ["{{mcp_base}}"], "path": ["mcp"] }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('401', () => pm.response.code === 401);",
+          "const www = pm.response.headers.get('WWW-Authenticate');",
+          "pm.test('WWW-Authenticate has authorization_uri', () => www && www.includes('{{as_base}}/auth'));",
+          "const json = pm.response.json();",
+          "pm.test('oauth.authorization_url is AS /auth', () => json.oauth && json.oauth.authorization_url === pm.environment.get('as_base') + '/auth');",
+          "pm.test('resource equals MCP /mcp', () => json.resource === pm.environment.get('mcp_base') + '/mcp');"
+        ]}
+      }]
+    },
+    {
+      "name": "AS Discovery",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Accept", "value": "application/json"}],
+        "url": { "raw": "{{as_base}}/.well-known/oauth-authorization-server", "host": ["{{as_base}}"], "path": [".well-known","oauth-authorization-server"] }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('200', () => pm.response.code === 200);",
+          "const json = pm.response.json();",
+          "pm.test('issuer is AS', () => json.issuer && json.issuer.indexOf(pm.environment.get('as_base')) === 0);",
+          "pm.test('token_endpoint is AS /token', () => json.token_endpoint === pm.environment.get('as_base') + '/token');",
+          "pm.test('authorization_endpoint is AS /auth', () => json.authorization_endpoint === pm.environment.get('as_base') + '/auth');"
+        ]}
+      }]
+    },
+    {
+      "name": "AS JWKS",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Accept", "value": "application/json"}],
+        "url": { "raw": "{{as_base}}/jwks", "host": ["{{as_base}}"], "path": ["jwks"] }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('200', () => pm.response.code === 200);",
+          "const json = pm.response.json();",
+          "pm.test('keys present', () => Array.isArray(json.keys) && json.keys.length > 0);"
+        ]}
+      }]
+    },
+    {
+      "name": "AS /auth without params (expect 400)",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Accept", "value": "application/json"}],
+        "url": { "raw": "{{as_base}}/auth", "host": ["{{as_base}}"], "path": ["auth"] }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {"type": "text/javascript", "exec": [
+          "pm.test('400 invalid_request', () => pm.response.code === 400 || pm.response.code === 422);",
+          "try { const json = pm.response.json(); pm.test('error/description present', () => json.error && json.error_description); } catch(e) { pm.test('body is JSON', () => false); }"
+        ]}
+      }]
+    }
+  ],
+  "variable": []
+}

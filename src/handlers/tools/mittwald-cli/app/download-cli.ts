@@ -74,7 +74,6 @@ export const handleAppDownloadCli: MittwaldCliToolHandler<MittwaldAppDownloadArg
     const result = await executeCli('mw', cliArgs, {
       timeout: 300000, // 5 minutes for download operations
       env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
         MITTWALD_NONINTERACTIVE: '1'
       }
     });

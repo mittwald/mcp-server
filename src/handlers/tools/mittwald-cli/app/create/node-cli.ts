@@ -47,12 +47,7 @@ export const handleAppCreateNodeCli: MittwaldCliToolHandler<MittwaldAppCreateNod
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        // Pass through API token if available
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       // Parse error message from stderr or stdout
@@ -62,7 +57,7 @@ export const handleAppCreateNodeCli: MittwaldCliToolHandler<MittwaldAppCreateNod
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when creating Node.js app. Check if your API token has app management permissions.\nError: ${errorMessage}`
+          `Permission denied when creating Node.js app. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

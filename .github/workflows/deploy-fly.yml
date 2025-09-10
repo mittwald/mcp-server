@@ -1,0 +1,112 @@
+name: Deploy to Fly.io (Immutable, Verified)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'packages/**'
+      - 'src/**'
+      - '.github/workflows/deploy-fly.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: mittwald-oauth-server
+            context: packages/oauth-server
+            dockerfile: packages/oauth-server/Dockerfile
+            fly_config: packages/oauth-server/fly.toml
+            hostname: mittwald-oauth-server.fly.dev
+          - app: mittwald-mcp-fly2
+            context: packages/mcp-server
+            dockerfile: packages/mcp-server/Dockerfile
+            fly_config: packages/mcp-server/fly.toml
+            hostname: mittwald-mcp-fly2.fly.dev
+
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Fly auth
+        run: |
+          flyctl auth token || true
+          flyctl auth docker
+
+      - name: Docker login to Fly registry
+        run: echo "$FLY_API_TOKEN" | docker login registry.fly.io -u x --password-stdin
+
+      - name: Compute build metadata
+        id: meta
+        run: |
+          echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "build_time=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+
+      - name: Build and push image (by SHA tag)
+        id: build
+        run: |
+          IMAGE=registry.fly.io/${{ matrix.app }}:${{ steps.meta.outputs.sha }}
+          docker buildx build \
+            --platform linux/amd64 \
+            --build-arg GIT_SHA=${{ steps.meta.outputs.sha }} \
+            -t "$IMAGE" \
+            -f "${{ matrix.dockerfile }}" "${{ matrix.context }}" \
+            --push \
+            --provenance=false \
+            --iidfile imageid
+          DIGEST=$(cat imageid | sed 's/sha256://')
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Set version secrets (sha, digest, build time)
+        run: |
+          flyctl secrets set \
+            GIT_SHA=${{ steps.meta.outputs.sha }} \
+            IMAGE_DIGEST=sha256:${{ steps.build.outputs.digest }} \
+            BUILD_TIME=${{ steps.meta.outputs.build_time }} \
+            -a ${{ matrix.app }} --stage
+
+      - name: Deploy by immutable digest (immediate strategy)
+        run: |
+          IMAGE_REF="registry.fly.io/${{ matrix.app }}@sha256:${{ steps.build.outputs.digest }}"
+          flyctl deploy --config "${{ matrix.fly_config }}" --image "$IMAGE_REF" --strategy immediate --detach --verbose
+
+      - name: Verify machines image digest
+        run: |
+          set -e
+          EXPECT="sha256:${{ steps.build.outputs.digest }}"
+          flyctl status -a ${{ matrix.app }} --json > status.json
+          jq -e --arg exp "$EXPECT" '([.machines[] | select(.state=="started") | .image_ref] | all(. == $exp))' status.json
+
+      - name: Verify /version endpoint
+        run: |
+          set -e
+          sleep 5
+          URL="https://${{ matrix.hostname }}/version"
+          echo "GET $URL"
+          body=$(curl -fsSL "$URL")
+          echo "$body"
+          echo "$body" | jq -e --arg sha "${{ steps.meta.outputs.sha }}" '.gitSha == $sha'
+          echo "$body" | jq -e --arg dig "sha256:${{ steps.build.outputs.digest }}" '.imageDigest == $dig'
+
+      - name: Cleanup stopped/stale machines
+        run: |
+          # destroy any non-started machines to avoid future auto-start staleness
+          ids=$(flyctl status -a ${{ matrix.app }} --json | jq -r '.machines[] | select(.state != "started") | .id')
+          if [ -n "$ids" ]; then
+            echo "$ids" | xargs -r -n1 flyctl machine destroy -a ${{ matrix.app }} --force
+          fi
+

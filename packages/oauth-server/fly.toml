@@ -1,0 +1,63 @@
+# fly.toml app configuration file
+app = "mittwald-oauth-server"
+kill_signal = "SIGINT"
+kill_timeout = 5
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+  ISSUER = "https://mittwald-oauth-server.fly.dev"
+  COOKIES_SECURE = "true"
+  STORAGE_ADAPTER = "redis"
+  JWKS_KEYSTORE_PATH = "/app/jwks/jwks.json"
+  # Open but safe DCR: allow any https redirect, plus curated custom schemes for IDE/CLI/native clients
+  # Include loopback hosts for native flows (Claude Desktop random localhost ports)
+  ALLOWED_REDIRECT_URI_PATTERNS = "https://*/*,http://localhost:*/*,http://127.0.0.1:*/*,http://[::1]:*/*,claude://*,vscode://*,vscodium://*,cursor://*,windsurf://*,zed://*,jetbrains://*,lmstudio://*,postman://*,warp://*,amazonq://*"
+
+[mounts]
+  source = "jwks_storage"
+  destination = "/app/jwks"
+
+[[services]]
+  internal_port = 3000
+  protocol = "tcp"
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  
+  [services.concurrency]
+    hard_limit = 100
+    soft_limit = 80
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+    force_https = true
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/health"
+    protocol = "http"
+    timeout = "5s"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

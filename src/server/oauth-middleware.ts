@@ -70,28 +70,31 @@ export function createOAuthMiddleware() {
  */
 function sendOAuthChallenge(res: express.Response): void {
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://your-mcp-server.com' 
+    ? (process.env.MCP_PUBLIC_BASE || 'https://mcp.mittwald-mcp-fly.fly.dev')
     : 'https://localhost:3000';
-    
-  const oauthIssuer = CONFIG.OAUTH_ISSUER || 'http://localhost:8080/default';
+  
+  // Authorization Server base (our oauth-server)
+  const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
   
   // Set WWW-Authenticate header as per MCP OAuth spec
-  res.set('WWW-Authenticate', `Bearer realm="MCP Server", authorization_uri="${oauthIssuer}/authorize"`);
+  res.set('WWW-Authenticate', `Bearer realm="MCP Server", authorization_uri="${asBase}/auth"`);
   
   res.status(401).json({
     error: 'authentication_required',
     message: 'OAuth authentication required',
     oauth: {
-      authorization_url: `${oauthIssuer}/authorize`,
-      token_url: `${oauthIssuer}/token`,
-      client_id: process.env.MITTWALD_OAUTH_CLIENT_ID || 'mittwald-mcp-server',
-      redirect_uri: process.env.OAUTH_REDIRECT_URI || `${baseUrl}/auth/callback`,
+      authorization_url: `${asBase}/auth`,
+      token_url: `${asBase}/token`,
+      // Do not suggest a static client_id or redirect_uri.
+      // MCP clients (e.g., MCPJam Inspector) should perform Dynamic Client Registration (DCR)
+      // and use their own loopback/custom redirect URIs.
       scopes: ['openid', 'profile', 'user:read', 'customer:read', 'project:read']
     },
     endpoints: {
-      authorize: `${baseUrl}/oauth/authorize`,
-      token: `${baseUrl}/oauth/token`,
-      metadata: `${baseUrl}/.well-known/oauth-authorization-server`
-    }
+      authorize: `${asBase}/auth`,
+      token: `${asBase}/token`,
+      metadata: `${asBase}/.well-known/oauth-authorization-server`
+    },
+    resource: `${process.env.MCP_PUBLIC_BASE || baseUrl}/mcp`
   });
 }

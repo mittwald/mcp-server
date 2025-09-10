@@ -16,11 +16,7 @@ export const handleCronjobGetCli: MittwaldToolHandler<MittwaldCronjobGetCliArgs>
     cliArgs.push('--output', 'json');
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || 'Unknown error';

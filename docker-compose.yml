@@ -16,7 +16,6 @@ services:
       - DEBUG=true
       - REDIS_URL=redis://redis:6379
       - ENABLE_HTTPS=true  # Set to true in production
-      - DISABLE_OAUTH=false
       - OAUTH_ISSUER=http://mock-oauth:8080/default
       - OAUTH_REDIRECT_URI=https://localhost:3000/auth/callback  # Use https:// in production
       - JWT_SECRET=development-jwt-secret-key-for-testing

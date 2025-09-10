@@ -1,20 +1,10 @@
-# Mittwald MCP Server
+# Mittwald MCP Server (CLI‑centric)
 
-A production-ready Model Context Protocol (MCP) server that provides comprehensive access to the **Mittwald hosting platform** through the official Mittwald CLI. This server acts as a bridge between MCP clients (like Claude) and the Mittwald infrastructure management platform.
+✅ Design principle: The server wraps the official `mw` CLI and passes `--token <access_token>` on every command. OAuth 2.1 with PKCE is used to obtain per‑user tokens. There is no `MITTWALD_API_TOKEN` fallback and no `DISABLE_OAUTH` bypass.
 
-## 🌟 Key Features
+A production-ready Model Context Protocol (MCP) server with OAuth 2.1 authentication that provides secure access to the **Mittwald hosting platform**. The server invokes the official Mittwald CLI for all operations and authenticates each invocation via `--token`.
 
-### Complete Mittwald CLI Integration
-- **🚀 Applications**: Install, manage, and deploy WordPress, Shopware, TYPO3, and more
-- **🗄️ Databases**: MySQL and Redis database creation and management
-- **🌐 Domains**: DNS zone management and virtual host configuration
-- **📧 Mail**: Email address and delivery box management
-- **👥 Projects**: Project creation, membership, and resource management
-- **🔐 Users & Organizations**: User management and organizational structures
-- **⚙️ Cron Jobs**: Schedule and manage automated tasks
-- **💾 Backups**: Automated backup scheduling and management
-- **🔧 SSH/SFTP**: User management for secure access
-- **🐳 Containers**: Container stack management and deployment
+## 🏗️ Architecture Overview
 
 ### Production-Ready Architecture
 - **CLI Wrapper**: Executes official Mittwald CLI commands for maximum compatibility
@@ -249,162 +239,349 @@ The server provides 143 tools covering all major Mittwald CLI functionality:
 ## 🏗️ Architecture
 
 This server uses a **CLI Wrapper Architecture** for maximum compatibility:
+>>>>>>> origin/main
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    MCP Client                           │
+│                   MCP Client                            │
 │              (Claude, VS Code, etc.)                   │
 └────────────────────────┬────────────────────────────────┘
-                         │ MCP Protocol (HTTP/STDIO)
+                         │ MCP Protocol + JWT Auth
 ┌────────────────────────┴────────────────────────────────┐
-│                 Mittwald MCP Server                     │
+│                 MCP Server                              │
+│                https://mcp.domain.com                  │
 │  ┌─────────────┐  ┌─────────────┐  ┌────────────────┐  │
-│  │    Tool     │  │   Session   │  │   Response     │  │
-│  │  Handlers   │  │  Management │  │  Formatting    │  │
+│  │    JWT      │  │   Mittwald  │  │     MCP        │  │
+│  │ Validation  │  │ API Client  │  │   Protocol     │  │
 │  └─────────────┘  └─────────────┘  └────────────────┘  │
 └────────────────────────┬────────────────────────────────┘
-                         │ CLI Execution
+                         │ User Management
 ┌────────────────────────┴────────────────────────────────┐
-│               Official Mittwald CLI                     │
+│               OAuth Server                              │
+│              https://auth.domain.com                   │
 │  ┌─────────────┐  ┌─────────────┐  ┌────────────────┐  │
-│  │    App      │  │  Database   │  │    Project     │  │
-│  │  Commands   │  │  Commands   │  │   Commands     │  │
+│  │  OAuth 2.1  │  │    PKCE     │  │      JWT       │  │
+│  │   + PKCE    │  │   Flows     │  │    Issuing     │  │
 │  └─────────────┘  └─────────────┘  └────────────────┘  │
 └────────────────────────┬────────────────────────────────┘
-                         │ Mittwald API
+                         │ User Authentication
 ┌────────────────────────┴────────────────────────────────┐
-│                  Mittwald Platform                      │
-│     (Projects, Apps, Databases, Domains, etc.)         │
+│                Mittwald Studio                          │
+│            (External OAuth Provider)                    │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ### Key Components
 
-- **CLI Wrapper**: Executes `mw` CLI commands via `src/utils/cli-wrapper.ts`
-- **Tool Handlers**: Process MCP requests and format CLI commands
-- **Session Management**: Handles multiple concurrent MCP client sessions
-- **Error Handling**: Comprehensive error processing and user-friendly messages
-- **Docker Container**: Includes pre-installed Mittwald CLI
+- **🔐 OAuth**: OAuth 2.1 with PKCE to obtain user tokens
+- **🛠️ CLI Integration**: All tools call `mw ... --token <access_token>`
+- **🤖 MCP Server**: HTTPS/SSE transport, tool routing, output parsing
+- **🔒 Security**: HTTPS mandatory; no privileged server tokens
 
-## 🎯 Why CLI Wrapper Approach?
+## 📋 Development Status
 
-### Advantages
-✅ **Maximum Compatibility**: Uses official Mittwald CLI for 100% API compatibility  
-✅ **Automatic Updates**: Benefits from CLI updates without code changes  
-✅ **Proven Stability**: Leverages battle-tested CLI implementation  
-✅ **Comprehensive Coverage**: Access to all CLI features immediately  
-✅ **Error Messages**: Users get CLI's polished, user-tested error messages  
+**Current Branch:** `oauth-server-v2` (active development)  
+**Status:** Consolidating CLI‑centric architecture  
+**Target:** Production-ready OAuth 2.1 + CLI wrapper
 
-### Design Philosophy
-- **Reliability**: CLI is Mittwald's primary interface, ensuring long-term stability
-- **Maintainability**: Less code to maintain compared to direct API implementation
-- **User Experience**: Consistent behavior with what users expect from CLI
-- **Future-Proof**: Automatically supports new CLI features and API changes
+### 🏗️ Implementation Roadmap (CLI‑centric)
 
-## 📁 Project Structure
+**Phase 1: OAuth + CLI**  
+- [x] Architecture analysis and planning
+- [ ] OAuth discovery/authorize/callback (PKCE)
+- [ ] Centralized CLI invoker appending `--token`
+- [ ] Secure token storage/refresh; single retry on auth errors
 
+**Phase 2: Tooling**  
+- [ ] Confirm all handlers call through the centralized invoker
+- [ ] Strengthen output parsing and error mapping
+- [ ] Concurrency/timeout limits
+
+**Phase 3: Ops**  
+- [ ] Containerization and deployment
+- [ ] Observability (durations, exit codes)
+- [ ] Documentation and migration guide
+
+### 🔧 Quick Development Setup
+
+## 🚀 How to Connect (Production)
+
+Use these canonical endpoints:
+
+- MCP (Resource Server)
+  - Base: https://mittwald-mcp-fly2.fly.dev
+  - Endpoint: https://mittwald-mcp-fly2.fly.dev/mcp
+  - Protected Resource Metadata: https://mittwald-mcp-fly2.fly.dev/.well-known/oauth-protected-resource
+
+- OAuth Authorization Server (AS)
+  - Base: https://mittwald-oauth-server.fly.dev
+  - AS Metadata: https://mittwald-oauth-server.fly.dev/.well-known/oauth-authorization-server
+  - Endpoints: /auth, /token, /jwks, /reg, /token/revocation, /me
+
+MCP clients connect to the MCP endpoint and receive a 401 with a WWW-Authenticate challenge that points to the oauth-server /auth. The browser completes the authorization code + PKCE flow with the oauth-server, and the MCP client exchanges the code for tokens as per the MCP spec.
+
+Notes:
+- The MCP server does not host OAuth endpoints; it publishes protected resource metadata at /.well-known/oauth-protected-resource and issues the 401 challenge.
+- A compatibility route exists at /.well-known/oauth-authorization-server/mcp to 302-redirect to the AS metadata for clients that probe that path.
+
+## 🔬 Postman Test Suite
+
+We include a Postman collection and environment to validate the full flow:
+
+- Collection: `tests/postman/Mittwald-MCP.postman_collection.json`
+- Environment: `tests/postman/Mittwald-MCP.postman_environment.json`
+
+Environment defaults:
+- `mcp_base = https://mittwald-mcp-fly2.fly.dev`
+- `as_base  = https://mittwald-oauth-server.fly.dev`
+- `resource_path = /mcp`
+
+What’s covered:
+- MCP health (GET /health)
+- MCP protected resource metadata (GET /.well-known/oauth-protected-resource)
+- MCP preflight (OPTIONS /mcp) and CORS header exposure
+- MCP unauthenticated challenge (POST /mcp → 401)
+- OAuth server discovery (AS metadata), JWKS, and /auth without params → 400
+- Optional compatibility: Redirect at `/.well-known/oauth-authorization-server/mcp`
+
+Run with newman:
+```bash
+npx newman run tests/postman/Mittwald-MCP.postman_collection.json \
+  -e tests/postman/Mittwald-MCP.postman_environment.json \
+  --timeout-request 10000
 ```
-mittwald-mcp-server/
-├── src/
-│   ├── handlers/
-│   │   ├── tool-handlers.ts                    # Main tool router
-│   │   └── tools/mittwald-cli/                 # CLI tool handlers
-│   │       ├── app/                            # Application management
-│   │       ├── database/                       # Database management
-│   │       ├── project/                        # Project management
-│   │       ├── domain/                         # Domain & DNS
-│   │       ├── container/                      # Container management
-│   │       └── ...                             # Other categories
-│   ├── constants/tool/mittwald-cli/            # Tool definitions
-│   ├── utils/
-│   │   ├── cli-wrapper.ts                      # CLI execution wrapper
-│   │   └── format-tool-response.ts             # Response formatting
-│   ├── server/
-│   │   ├── mcp.ts                              # MCP protocol handler
-│   │   └── config.ts                           # Server configuration
-│   ├── types/mittwald/                         # TypeScript types
-│   └── index.ts                                # Main entry point
-├── docs/
-│   ├── cli-reference/                          # Complete CLI documentation
-│   ├── development/                            # Development guides
-│   └── architecture/                           # Architecture documentation
-├── tests/                                      # Test suites
-├── Dockerfile                                  # Container configuration
-├── docker-compose.yml                          # Docker Compose setup
-└── .env.example                                # Environment configuration
-```
 
-## 🔧 Development
-
-### Prerequisites
-- Node.js 18+
-- Docker and Docker Compose
-- Mittwald account with API access
-
-### Development Setup
+> **Note:** This project intentionally remains CLI‑centric; the `--token` parameter in the `mw` CLI was implemented specifically to support this architecture.
 
 ```bash
 # Clone the repository
 git clone https://github.com/robertDouglass/mittwald-mcp.git
 cd mittwald-mcp
 
+# Switch to stable version (optional)
+git checkout fly  # Working OAuth proxy implementation
+
+# Or stay on v2 development branch
+git checkout oauth-server-v2  # New microservices architecture
+
 # Install dependencies
 npm install
 
-# Set up environment
+# Configure environment
 cp .env.example .env
-# Edit .env with your API token
+# Configure OAuth issuer and client; no PATs used
+```
 
-# Build TypeScript
-npm run build
+### 🎯 New Architecture Benefits
 
-# Run in development mode
-npm run watch
-# In another terminal:
-node build/index.js
+**Problems Solved:**
+- ❌ Eliminates recursive OAuth flows
+- ❌ Removes complex proxy state management
+- ❌ Fixes mcp-remote connection instability
+- ❌ Resolves PKCE conflict resolution issues
+
+**New Capabilities:**
+- ✅ Stateless JWT validation
+- ✅ Clean microservices separation
+- ✅ Standards-compliant OAuth 2.1
+- ✅ Scalable deployment architecture
+- ✅ Multi-tenant user isolation
+
+## 🛠️ Planned Features
+
+**Target: 140+ Tools** covering all major Mittwald functionality:
+
+### Core Categories
+- **🚀 Applications**: WordPress, Shopware, TYPO3 management
+- **🗄️ Databases**: MySQL and Redis operations
+- **🌐 Domains**: DNS and virtual host configuration
+- **📧 Mail**: Email management and delivery
+- **👥 Projects**: Project creation and management
+- **🔐 Users**: SSH/SFTP and organization management
+- **⚙️ Automation**: Cron jobs and backups
+- **🐳 Containers**: Stack deployment and management
+
+### Implementation Approach
+**v1 (fly branch)**: CLI wrapper pattern  
+**v2 (this branch)**: CLI wrapper pattern with OAuth 2.1 + PKCE (per‑command `--token`)
+
+> **Note:** Tool implementations will be migrated from the working `fly` branch during Phase 2.
+
+## 🏗️ New Architecture (v2)
+
+**Microservices OAuth 2.1 Architecture** - Clean separation of concerns:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    MCP Client                           │
+│              (Claude, VS Code, etc.)                   │
+└────────────────────────┬────────────────────────────────┘
+                         │ OAuth 2.1 + JWT
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│                  OAuth Server                           │
+│              (auth.domain.com)                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌────────────────┐  │
+│  │   OAuth 2.1 │  │    PKCE     │  │      JWT       │  │
+│  │     Flow    │  │   Security  │  │    Tokens      │  │
+│  └─────────────┘  └─────────────┘  └────────────────┘  │
+└────────────────────────┬────────────────────────────────┘
+                         │ JWT Validation
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│                   MCP Server                            │
+│               (mcp.domain.com)                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌────────────────┐  │
+│  │     JWT     │  │  Mittwald   │  │      MCP       │  │
+│  │ Validation  │  │ API Client  │  │   Protocol     │  │
+│  └─────────────┘  └─────────────┘  └────────────────┘  │
+└────────────────────────┬────────────────────────────────┘
+                         │ Direct API Calls
+┌────────────────────────┴────────────────────────────────┐
+│                  Mittwald Platform                      │
+│     (Projects, Apps, Databases, Domains, etc.)         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Key Improvements
+
+**🔄 From Proxy → Microservices**
+- Eliminates complex OAuth proxy logic
+- Clean separation between auth and MCP concerns
+- Stateless JWT validation
+
+**🛡️ Enhanced Security**
+- Standards-compliant OAuth 2.1 with PKCE
+- JWT tokens with proper validation
+- Multi-tenant user isolation
+
+**⚡ Performance & Reliability**
+- No recursive OAuth flows
+- Simplified connection management
+- Scalable microservices deployment
+
+**🔧 Implementation**
+- **OAuth**: Mittwald Studio OAuth 2.1 + PKCE (no client secret)
+- **MCP**: Single service orchestrating CLI calls with `--token`
+- **Deployment**: Standard container with pinned CLI version
+
+## 📁 Project Structure (v2)
+
+```
+mittwald-mcp-v2/
+├── packages/
+│   ├── oauth-server/                          # Standalone OAuth server
+│   │   ├── src/
+│   │   │   ├── server.ts                      # OAuth 2.1 server setup
+│   │   │   ├── config/                        # OAuth configuration
+│   │   │   ├── handlers/                      # OAuth flow handlers
+│   │   │   └── middleware/                    # PKCE, JWT middleware
+│   │   ├── Dockerfile
+│   │   └── package.json
+│   │
+│   └── mcp-server/                           # MCP protocol server
+│       ├── src/
+│       │   ├── server.ts                     # MCP server setup
+│       │   ├── middleware/
+│       │   │   └── jwt-auth.ts               # JWT validation
+│       │   ├── handlers/
+│       │   │   └── tools/mittwald/           # Direct API tools
+│       │   ├── services/
+│       │   │   └── mittwald-client.ts        # API client
+│       │   └── types/mittwald/               # TypeScript types
+│       ├── Dockerfile
+│       └── package.json
+│
+├── docs/
+│   ├── ARCHITECTURE.md                       # New architecture guide
+│   ├── DEPLOYMENT.md                         # Deployment instructions
+│   └── MIGRATION.md                          # v1 → v2 migration guide
+│
+├── docker-compose.yml                        # Multi-service deployment
+├── fly.toml                                  # Fly.io deployment config
+└── .env.example                              # Environment configuration
+```
+
+### Service Separation
+
+**OAuth Server (`packages/oauth-server/`)**
+- OAuth 2.1 authorization flows
+- PKCE implementation
+- JWT token issuance
+- User session management
+
+**MCP Server (`packages/mcp-server/`)**
+- MCP protocol handling
+- JWT token validation
+- Mittwald API integration
+- Tool implementations
+
+## 🔧 Development (v2)
+
+### Prerequisites
+- Node.js 18+
+- Docker and Docker Compose  
+- Mittwald account with API access
+- Understanding of OAuth 2.1 and JWT
+
+### Development Setup
+
+```bash
+# Clone and switch to v2 branch
+git clone https://github.com/robertDouglass/mittwald-mcp.git
+cd mittwald-mcp
+git checkout oauth-server-v2
+
+# Install dependencies (workspace setup)
+npm install
+
+# Set up environment for both services
+cp .env.example .env
+# Configure OAuth and MCP environment variables
+
+# Development mode (both services)
+npm run dev:oauth    # Terminal 1: OAuth server
+npm run dev:mcp      # Terminal 2: MCP server
 ```
 
 ### Development Commands
 
 ```bash
-# Build the project
-npm run build
+# Workspace commands
+npm run build         # Build both services
+npm run dev           # Run both services in development
+npm run test          # Run all tests
+npm run lint          # Lint all packages
 
-# Watch mode for development
-npm run watch
-
-# Run tests
-npm run test
-
-# Run functional tests
-npm run test:functional
-
-# Build and run Docker container
-docker-compose up --build
-
-# Run MCP Inspector for testing
-npm run inspector
+# Service-specific commands
+npm run oauth:build   # Build OAuth server
+npm run mcp:build     # Build MCP server
+npm run oauth:dev     # OAuth server development
+npm run mcp:dev       # MCP server development
 ```
 
-### Adding New Tools
+### Adding New Tools (v2 Pattern)
 
-1. **Create tool definition** in `src/constants/tool/mittwald-cli/[category]/[tool]-cli.ts`
-2. **Implement handler** in `src/handlers/tools/mittwald-cli/[category]/[tool]-cli.ts`
-3. **Use CLI wrapper pattern**:
+1. **Create tool definition** in `packages/mcp-server/src/tools/[tool].ts`
+2. **Implement with direct API**:
    ```typescript
-   export const handleMyTool: MittwaldToolHandler<MyArgs> = async (args) => {
-     const cliArgs = ['my', 'command', '--flag', args.value];
-     const result = await executeCli('mw', cliArgs, {
-       env: { MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN }
+   export const handleProjectList: ToolHandler = async (args, context) => {
+     // Validate JWT token (automatic via middleware)
+     const { mittwaldToken } = context.auth;
+     
+     // Direct API call
+     const response = await mittwaldClient.get('/v2/projects', {
+       headers: { Authorization: `Bearer ${mittwaldToken}` }
      });
      
-     if (result.exitCode !== 0) {
-       return formatToolResponse("error", result.stderr);
-     }
-     
-     return formatToolResponse("success", "Operation completed", result.stdout);
+     return {
+       success: true,
+       data: response.data.projects
+     };
    };
    ```
+3. **Register tool** in tool registry
+4. **Add tests** with JWT mocking
 
 ## 📊 Testing
 
@@ -428,47 +605,50 @@ npm run test:functional
 npm run test:coverage
 ```
 
-## 🚀 Deployment
+## 🚀 Deployment (v2 - Planned)
 
-### Docker Deployment (Recommended)
+### Microservices Deployment
 ```bash
-# Build and run
-docker-compose up -d
+# Build both services
+docker-compose build
 
-# Scale for multiple instances
-docker-compose up -d --scale mittwald-mcp=3
+# Deploy to production
+docker-compose -f docker-compose.prod.yml up -d
 
-# Check logs
-docker-compose logs -f
+# Scale independently
+docker-compose up -d --scale oauth-server=2 --scale mcp-server=3
 ```
 
-### Manual Deployment
+### Fly.io Deployment (Target)
 ```bash
-# Build the project
-npm run build
+# Deploy OAuth server
+fly deploy --config packages/oauth-server/fly.toml
 
-# Run with PM2 (production)
-pm2 start build/index.js --name mittwald-mcp
+# Deploy MCP server  
+fly deploy --config packages/mcp-server/fly.toml
 
-# Or run directly
-node build/index.js
+# Configure custom domains
+fly certs create auth.your-domain.com
+fly certs create mcp.your-domain.com
 ```
 
-### Environment Variables
+### Environment Variables (v2)
 ```bash
-# Required
-MITTWALD_API_TOKEN=your_api_token_here
+# OAuth / Mittwald Studio
+OAUTH_ISSUER=https://api.mittwald.de
+MITTWALD_CLIENT_ID=mittwald-mcp-server
 
-# Optional
-PORT=3000                        # Server port
-DISABLE_OAUTH=true               # Disable OAuth (recommended)
-LOG_LEVEL=info                   # Logging level
-DEBUG=false                      # Debug mode
+# Server
+NODE_ENV=production
+PORT=3000
+LOG_LEVEL=info
+```
 
-# Tool filtering (optional)
-TOOL_FILTER_ENABLED=false        # Enable tool filtering
-MAX_TOOLS_PER_RESPONSE=50        # Max tools per response
-ALLOWED_TOOL_CATEGORIES=app,project,database  # Allowed categories
+### Service URLs (Production)
+```
+OAuth Server:  https://auth.your-domain.com
+MCP Server:    https://mcp.your-domain.com
+MCP Endpoint:  https://mcp.your-domain.com/mcp
 ```
 
 ## 📖 Documentation
@@ -490,21 +670,20 @@ ALLOWED_TOOL_CATEGORIES=app,project,database  # Allowed categories
    - Solution: Check account permissions and resource availability
 
 3. **"Command failed"**
-   - Solution: Verify API token and check container logs for detailed errors
+   - Solution: Complete OAuth sign-in and check container logs for detailed errors
 
 4. **CLI command not found**
    - Solution: Ensure Mittwald CLI is installed in container (check Dockerfile)
 
-5. **Claude Desktop connection fails (STDIO mode)**
-   - **Missing `-i` flag**: Ensure `docker exec -i` includes the interactive flag
-   - **Wrong entry point**: Use `build/stdio-server.js` not `build/index.js`
+5. **Claude Desktop connection fails**
    - **Container not running**: Start container first with `docker run -d --name mittwald-mcp-container mittwald/mcp`
-   - **Environment variables**: Ensure `MITTWALD_API_TOKEN` is set in Claude Desktop config
+   - **Access token**: Complete OAuth sign‑in so the server can pass `--token` to the CLI
 
 6. **HTTP mode not responding**
    - **Wrong port**: Ensure container is mapped to port 3000: `-p 3000:3000`
    - **Missing .env file**: Use `--env-file .env` or set environment variables
    - **Wrong endpoint**: Use `http://localhost:3000/mcp` not just `/`
+   - **No access token**: Complete OAuth sign‑in so the server can pass `--token` to the CLI
 
 ### Debug Mode
 ```bash
@@ -515,23 +694,32 @@ DEBUG=true docker-compose up
 docker logs mittwald-mcp-container -f
 ```
 
-## 🤝 Contributing
+## 🤝 Contributing (v2)
 
-We welcome contributions! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Follow the CLI wrapper pattern
-4. Add tests for new functionality
-5. Update documentation
-6. Submit a pull request
+Contributions welcome! Please note the architectural changes:
 
 ### Development Guidelines
-- Use the established CLI wrapper pattern
-- Follow TypeScript best practices
-- Add comprehensive error handling
-- Include JSDoc documentation
-- Write tests for new features
+1. **Microservices Pattern**: Separate OAuth and MCP concerns
+2. **Direct API Integration**: No CLI wrapper in v2
+3. **OAuth 2.1 Compliance**: Follow RFC standards
+4. **JWT Security**: Proper token validation
+5. **TypeScript**: Full type safety
+6. **Testing**: Unit and integration tests
+
+### Contribution Workflow
+1. Fork repository
+2. Create feature branch from `oauth-server-v2`
+3. Follow new architecture patterns
+4. Add comprehensive tests
+5. Update documentation
+6. Submit pull request
+
+### Code Patterns (v2)
+- **OAuth Flows**: Use `ts-oauth2-server` patterns
+- **API Clients**: Direct HTTP calls with proper error handling  
+- **JWT Middleware**: Stateless validation
+- **Tool Handlers**: Async/await with proper typing
+- **Error Handling**: Structured error responses
 
 ## 🙏 Acknowledgments
 

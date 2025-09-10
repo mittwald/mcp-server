@@ -93,7 +93,7 @@ Tests are configured through `vitest.config.ts` (if present) or `package.json` t
 ### Environment Variables
 
 Tests may require environment variables:
-- `MITTWALD_API_TOKEN`: For integration tests with real API
+Note: Tests should use the mock OAuth server and session tokens; do not rely on `MITTWALD_API_TOKEN`.
 - `TEST_SERVER_ID`: For functional tests requiring server context
 
 ### Docker Testing

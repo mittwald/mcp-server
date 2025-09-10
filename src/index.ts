@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * @file Main entry point for the Reddit MCP server
+ * @file Main entry point for the MCP server
  * @module index
  * 
  * @remarks
- * This is the executable entry point for the Reddit MCP server when run directly.
+ * This is the executable entry point for the MCP server when run directly.
  * It loads environment variables and starts the HTTP server on the configured port.
  * 
  * The server can be started using:
@@ -13,8 +13,7 @@
  * - `node dist/index.js` - Direct execution
  * 
  * Required environment variables:
- * - REDDIT_CLIENT_ID: OAuth2 client ID from Reddit app
- * - REDDIT_CLIENT_SECRET: OAuth2 client secret
+ * (No legacy Reddit environment variables are used.)
  * - JWT_SECRET: Secret for signing JWT tokens
  * 
  * @see {@link https://modelcontextprotocol.io} Model Context Protocol Documentation
@@ -32,10 +31,7 @@ try {
 } catch (error) {
   console.warn('⚠️  Configuration Warning:', error instanceof Error ? error.message : String(error));
   console.warn('📝 Make sure you have a .env file with required environment variables:');
-  console.warn('   - MITTWALD_API_TOKEN=your_mittwald_api_token');
-  if (!CONFIG.DISABLE_OAUTH) {
-    console.warn('   - JWT_SECRET=your_jwt_secret');
-  }
+  console.warn('   - JWT_SECRET=your_jwt_secret');
   console.warn('📋 See .env.example for a template');
   console.warn('🚀 Server will start but API calls may fail without proper configuration\n');
 }

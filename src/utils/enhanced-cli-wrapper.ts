@@ -27,20 +27,11 @@ export class EnhancedCliWrapper {
         logger.debug(`Executing CLI command with session context: ${sessionId}`);
         return await sessionAwareCli.executeWithSession(command, args, sessionId, options);
       } else {
-        // Use standard execution (backward compatibility)
+        // Standard execution requires explicit token option; no env fallback
         logger.debug('Executing CLI command without session context');
-        
-        // Ensure we have the global API token for non-session commands
-        const enhancedOptions = {
+        return await executeCli(command, args, {
           ...options,
-          env: {
-            ...options.env,
-            MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
-            MITTWALD_NONINTERACTIVE: '1'
-          }
-        };
-        
-        return await executeCli(command, args, enhancedOptions);
+        });
       }
     } catch (error) {
       logger.error('Enhanced CLI wrapper execution failed:', error);

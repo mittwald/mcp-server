@@ -47,11 +47,7 @@ export const handleDatabaseListCli: MittwaldToolHandler<MittwaldDatabaseListArgs
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       // Parse error message from stderr or stdout
@@ -61,7 +57,7 @@ export const handleDatabaseListCli: MittwaldToolHandler<MittwaldDatabaseListArgs
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when accessing databases. Check if your API token has database read permissions.\nError: ${errorMessage}`
+          `Permission denied when accessing databases. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

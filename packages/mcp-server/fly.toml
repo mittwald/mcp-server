@@ -1,0 +1,56 @@
+# fly.toml for MCP server
+app = "mittwald-mcp-fly2"
+primary_region = "fra"
+kill_signal = "SIGINT"
+kill_timeout = 5
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8080"
+  # Public base URL where clients reach the MCP server
+  MCP_PUBLIC_BASE = "https://mittwald-mcp-fly2.fly.dev"
+  # Authorization Server base (oauth-server)
+  OAUTH_AS_BASE = "https://mittwald-oauth-server.fly.dev"
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [services.concurrency]
+    soft_limit = 80
+    hard_limit = 100
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+    force_https = true
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_start_machines = true
+  auto_stop_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/health"
+    protocol = "http"
+    timeout = "5s"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

@@ -16,7 +16,6 @@ describe('OAuth Flow Integration Tests', () => {
   beforeAll(async () => {
     // Set test environment
     process.env.NODE_ENV = 'test';
-    process.env.DISABLE_OAUTH = 'false';
     process.env.JWT_SECRET = 'test-jwt-secret-for-integration-tests';
     process.env.REDIS_URL = 'redis://localhost:6379';
     process.env.OAUTH_ISSUER = 'http://localhost:8080/default';

@@ -60,7 +60,6 @@ export const handleDatabaseMysqlImportCli: MittwaldToolHandler<MittwaldDatabaseM
     const result = await executeCli('mw', cliArgs, {
       timeout: 300000, // 5 minutes timeout for large imports
       env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
         // Pass MySQL password via environment variable if provided
         ...(args.mysqlPassword && { MYSQL_PWD: args.mysqlPassword }),
         // Pass SSH settings via environment variables if provided
@@ -77,7 +76,7 @@ export const handleDatabaseMysqlImportCli: MittwaldToolHandler<MittwaldDatabaseM
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when importing to MySQL database. Check if your API token has database write permissions.\nError: ${errorMessage}`
+          `Permission denied when importing to MySQL database. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

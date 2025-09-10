@@ -11,14 +11,11 @@ import { CONFIG } from '../../server/config.js';
 export class MittwaldClient {
   private client: MittwaldAPIV2Client;
 
-  constructor(apiToken?: string) {
-    const token = apiToken || CONFIG.MITTWALD_API_TOKEN;
-    
-    if (!token) {
-      throw new Error('Mittwald API token is required');
+  constructor(apiToken: string) {
+    if (!apiToken) {
+      throw new Error('Mittwald access token is required');
     }
-    
-    this.client = MittwaldAPIV2Client.newWithToken(token);
+    this.client = MittwaldAPIV2Client.newWithToken(apiToken);
   }
 
   /**
@@ -93,7 +90,7 @@ let clientInstance: MittwaldClient | null = null;
  * Get or create a singleton Mittwald client instance
  * @param apiToken Optional API token to override the default from config
  */
-export function getMittwaldClient(apiToken?: string): MittwaldClient {
+export function getMittwaldClient(apiToken: string): MittwaldClient {
   if (!clientInstance || apiToken) {
     clientInstance = new MittwaldClient(apiToken);
   }

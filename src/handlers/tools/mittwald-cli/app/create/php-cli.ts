@@ -45,12 +45,7 @@ export const handleAppCreatePhpCli: MittwaldCliToolHandler<MittwaldAppCreatePhpA
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        // Pass through API token if available
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       // Parse error message from stderr or stdout
@@ -60,7 +55,7 @@ export const handleAppCreatePhpCli: MittwaldCliToolHandler<MittwaldAppCreatePhpA
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when creating PHP app. Check if your API token has app management permissions.\nError: ${errorMessage}`
+          `Permission denied when creating PHP app. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       
