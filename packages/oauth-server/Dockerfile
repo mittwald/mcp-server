@@ -7,12 +7,12 @@ WORKDIR /app
 RUN apk add --no-cache curl
 
 # Install dependencies
-COPY packages/oauth-server/package*.json ./
+COPY package*.json ./
 # Install full deps for build, then prune if desired
 RUN npm ci
 
 # Copy application code
-COPY packages/oauth-server/. .
+COPY . .
 
 # Create JWKS storage directory
 RUN mkdir -p /app/jwks
