@@ -41,10 +41,10 @@ const tool: Tool = {
         description: 'Separator for CSV output (only relevant for CSV output)',
         default: ','
       }
-    }
+    },
+    required: ["projectId"]
   }
-    required: ["projectId"],
-  };
+};
 
 // Export the tool registration
 const registration: ToolRegistration = {

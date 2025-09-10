@@ -38,10 +38,10 @@ const tool: Tool = {
         description: 'The duration to wait for the resource to be ready (common units like ms, s, m are accepted)',
         default: '600s'
       }
-    }
+    },
+    required: ["projectId", "installationId"]
   }
-    required: ["projectId", "installationId"],
-  };
+};
 
 const registration: ToolRegistration = {
   tool,
