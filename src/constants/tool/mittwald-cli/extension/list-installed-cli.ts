@@ -44,7 +44,7 @@ const tool: Tool = {
         description: 'Separator for CSV output'
       }
     },
-    required: []
+    required: ["projectId"]
   }
 };
 

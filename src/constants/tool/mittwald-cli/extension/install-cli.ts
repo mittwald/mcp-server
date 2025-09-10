@@ -30,7 +30,7 @@ const tool: Tool = {
         description: 'Consent to the extension having access to the requested scopes'
       }
     },
-    required: ['extensionId']
+    required: ["extensionId", "projectId"]
   }
 };
 

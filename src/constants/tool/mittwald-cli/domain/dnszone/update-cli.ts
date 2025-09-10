@@ -60,7 +60,7 @@ const tool: Tool = {
         description: "Time to live for the record"
       }
     },
-    required: ["dnszoneId", "recordSet"]
+    required: ["dnszoneId", "recordSet", "projectId"]
   }
 };
 

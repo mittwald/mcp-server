@@ -67,7 +67,7 @@ const tool: Tool = {
         description: 'Bind mount volumes to the container (format: host-path:container-path)'
       }
     },
-    required: ['image']
+    required: ["image", "projectId"]
   }
 };
 

@@ -50,7 +50,7 @@ const tool: Tool = {
         default: "full",
       },
     },
-    required: ["description", "version"],
+    required: ["description", "version", "projectId"],
   },
 };
 

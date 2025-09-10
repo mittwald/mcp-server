@@ -43,7 +43,8 @@ const tool: Tool = {
       }
     }
   }
-};
+    required: ["projectId"],
+  };
 
 // Export the tool registration
 const registration: ToolRegistration = {

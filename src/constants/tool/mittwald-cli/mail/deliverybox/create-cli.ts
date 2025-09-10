@@ -35,7 +35,7 @@ const tool: Tool = {
         description: 'Generate a random password'
       }
     },
-    required: ['description']
+    required: ["description", "projectId"]
   }
 };
 

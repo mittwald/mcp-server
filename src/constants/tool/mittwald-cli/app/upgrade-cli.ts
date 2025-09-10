@@ -40,7 +40,8 @@ const tool: Tool = {
       }
     }
   }
-};
+    required: ["projectId"],
+  };
 
 const registration: ToolRegistration = {
   tool,

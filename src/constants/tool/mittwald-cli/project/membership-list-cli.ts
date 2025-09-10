@@ -40,7 +40,7 @@ const tool: Tool = {
         description: 'CSV separator character'
       }
     },
-    required: ['projectId']
+    required: ["projectId"]
   }
 };
 

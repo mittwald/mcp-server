@@ -19,7 +19,7 @@ const tool: Tool = {
         description: 'Output format (txt, json, yaml)'
       }
     },
-    required: ['projectId']
+    required: ["projectId"]
   }
 };
 

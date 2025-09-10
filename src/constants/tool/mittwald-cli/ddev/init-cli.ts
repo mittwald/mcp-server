@@ -56,6 +56,6 @@ export const mittwald_ddev_init_cli: Tool = {
         description: 'Whether to create a working copy'
       }
     },
-    required: []
+    required: ["projectId"]
   }
 };

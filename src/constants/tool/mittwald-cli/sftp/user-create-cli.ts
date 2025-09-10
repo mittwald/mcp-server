@@ -49,7 +49,7 @@ const tool: Tool = {
         description: "Set access level permissions for the SFTP user"
       }
     },
-    required: ["description", "directories"]
+    required: ["description", "directories", "projectId"]
   }
 };
 

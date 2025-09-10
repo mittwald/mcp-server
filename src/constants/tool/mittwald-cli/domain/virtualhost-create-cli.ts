@@ -43,7 +43,7 @@ const tool: Tool = {
         description: 'Path mappings to containers'
       }
     },
-    required: ['hostname']
+    required: ["hostname", "projectId"]
   }
 };
 

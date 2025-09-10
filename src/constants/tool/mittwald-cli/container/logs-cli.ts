@@ -27,7 +27,7 @@ const tool: Tool = {
         description: 'Disable pager for output (always true in CLI context)'
       }
     },
-    required: ['containerId']
+    required: ["containerId", "projectId"]
   }
 };
 

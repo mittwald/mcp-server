@@ -30,7 +30,7 @@ const tool: Tool = {
         description: 'Suppress process output and only display a machine-readable summary'
       }
     },
-    required: ['schedule', 'ttl']
+    required: ["schedule", "ttl", "projectId"]
   }
 };
 

@@ -34,7 +34,7 @@ const tool: Tool = {
         description: 'Timeout for the wait operation (default: 15m)'
       }
     },
-    required: ['expires']
+    required: ["expires", "projectId"]
   }
 };
 

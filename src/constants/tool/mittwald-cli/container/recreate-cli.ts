@@ -30,7 +30,7 @@ const tool: Tool = {
         description: 'Also recreate the container when it is already up to date'
       }
     },
-    required: ['containerId']
+    required: ["containerId", "projectId"]
   }
 };
 

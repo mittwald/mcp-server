@@ -34,7 +34,7 @@ const tool: Tool = {
         description: 'Password for registry authentication'
       }
     },
-    required: ['uri', 'description']
+    required: ["uri", "description", "projectId"]
   }
 };
 

@@ -36,7 +36,7 @@ const tool: Tool = {
         description: "Password used for authentication"
       }
     },
-    required: ["description"]
+    required: ["description", "projectId"]
   }
 };
 

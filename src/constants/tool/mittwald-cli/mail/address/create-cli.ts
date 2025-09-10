@@ -54,7 +54,7 @@ const tool: Tool = {
         description: 'Forward mail to other addresses'
       }
     },
-    required: ['address']
+    required: ["address", "projectId"]
   }
 };
 

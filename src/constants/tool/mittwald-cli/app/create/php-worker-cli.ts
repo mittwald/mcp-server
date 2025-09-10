@@ -34,7 +34,7 @@ const tool: Tool = {
         description: 'Timeout for the wait operation in seconds'
       }
     },
-    required: []
+    required: ["projectId"]
   }
 };
 
