@@ -23,8 +23,8 @@ jobs:
             fly_config: packages/oauth-server/fly.toml
             hostname: mittwald-oauth-server.fly.dev
           - app: mittwald-mcp-fly2
-            context: packages/mcp-server
-            dockerfile: packages/mcp-server/Dockerfile
+            context: .
+            dockerfile: Dockerfile
             fly_config: packages/mcp-server/fly.toml
             hostname: mittwald-mcp-fly2.fly.dev
 
@@ -109,4 +109,3 @@ jobs:
           if [ -n "$ids" ]; then
             echo "$ids" | xargs -r -n1 flyctl machine destroy -a ${{ matrix.app }} --force
           fi
-
