@@ -19,6 +19,7 @@ const tool: Tool = {
         description: 'Output format (default: txt)'
       }
     },
+    required: ['serverId'],
     additionalProperties: false
   }
 };

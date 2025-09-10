@@ -35,7 +35,7 @@ const tool: Tool = {
         description: "Update the CLI context to use the newly created project"
       }
     },
-    required: ["description"]
+    required: ["description", "serverId"]
   }
 };
 
