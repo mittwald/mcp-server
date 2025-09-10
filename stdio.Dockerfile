@@ -4,8 +4,8 @@ WORKDIR /app
 # Install required system dependencies including SSH client
 RUN apk add --no-cache openssh-client
 
-# Install Mittwald CLI globally (version 1.9.1)
-RUN npm install -g @mittwald/cli@1.9.1
+# Install Mittwald CLI globally (version 1.11.0)
+RUN npm install -g @mittwald/cli@1.11.0
 
 COPY package*.json ./
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
