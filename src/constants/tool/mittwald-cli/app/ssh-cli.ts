@@ -33,7 +33,8 @@ const tool: Tool = {
         type: 'boolean',
         description: 'Test connection and exit'
       }
-    }
+    },
+    required: ['installationId']
   }
 };
 

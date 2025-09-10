@@ -29,7 +29,8 @@ const tool: Tool = {
         type: 'string',
         description: 'Update the document root of the app installation'
       }
-    }
+    },
+    required: ['installationId']
   }
 };
 

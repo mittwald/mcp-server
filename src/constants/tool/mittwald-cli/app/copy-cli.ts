@@ -22,7 +22,7 @@ const tool: Tool = {
         description: 'Suppress process output and only display a machine-readable summary'
       }
     },
-    required: ['description']
+    required: ['description', 'installationId']
   }
 };
 

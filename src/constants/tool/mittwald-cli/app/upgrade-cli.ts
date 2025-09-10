@@ -40,7 +40,7 @@ const tool: Tool = {
       }
     }
   }
-    required: ["projectId"],
+    required: ["projectId", "installationId"],
   };
 
 const registration: ToolRegistration = {

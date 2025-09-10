@@ -21,7 +21,8 @@ const tool: Tool = {
         type: 'boolean',
         description: 'Do not ask for confirmation'
       }
-    }
+    },
+    required: ['installationId']
   }
 };
 

@@ -49,7 +49,7 @@ const tool: Tool = {
         description: 'Specify a sub-directory within the app installation to upload'
       }
     },
-    required: ['source']
+    required: ['source', 'installationId']
   }
 };
 

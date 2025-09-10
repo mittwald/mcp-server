@@ -13,7 +13,8 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of an app installation; this argument is optional if a default app installation is set in the context'
       }
-    }
+    },
+    required: ['installationId']
   }
 };
 

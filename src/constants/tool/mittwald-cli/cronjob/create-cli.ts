@@ -51,7 +51,7 @@ const tool: Tool = {
         description: 'Timeout for the cronjob execution'
       }
     },
-    required: ['description', 'interval']
+    required: ['description', 'interval', 'installationId']
   }
 };
 

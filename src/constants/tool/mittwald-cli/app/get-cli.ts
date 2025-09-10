@@ -19,7 +19,8 @@ const tool: Tool = {
         description: 'Output format',
         default: 'txt'
       }
-    }
+    },
+    required: ['installationId']
   }
 };
 
