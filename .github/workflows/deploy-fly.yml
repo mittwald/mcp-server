@@ -55,6 +55,20 @@ jobs:
           echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
           echo "build_time=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
 
+      - name: Pre-compile TypeScript (fail-fast)
+        run: |
+          set -e
+          CTX="${{ matrix.context }}"
+          if [ -f "$CTX/package.json" ]; then
+            echo "Pre-building in $CTX";
+            pushd "$CTX" >/dev/null
+            npm ci --no-audit --no-fund
+            npm run build
+            popd >/dev/null
+          else
+            echo "No package.json in $CTX; skipping pre-compile"
+          fi
+
       - name: Build and push image (by SHA tag)
         id: build
         run: |
