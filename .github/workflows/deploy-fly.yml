@@ -72,11 +72,10 @@ jobs:
       # Skip manual docker push. Fly remote builder will build + publish in deploy step.
       # This avoids registry permission pitfalls and simplifies digest handling.
 
-      - name: Set version secrets (sha, digest, build time)
+      - name: Set version secrets (sha, build time)
         run: |
           flyctl secrets set \
             GIT_SHA=${{ steps.meta.outputs.sha }} \
-            IMAGE_DIGEST=sha256:${{ steps.build.outputs.digest }} \
             BUILD_TIME=${{ steps.meta.outputs.build_time }} \
             -a ${{ matrix.app }} --stage
 
@@ -86,14 +85,19 @@ jobs:
           # Secrets staged earlier (GIT_SHA, IMAGE_DIGEST, BUILD_TIME) become visible to the app.
           flyctl deploy --config "${{ matrix.fly_config }}" --strategy immediate --detach --verbose
 
-      - name: Verify /version endpoint reflects commit SHA
+      - name: Wait for app health then verify /version (commit SHA)
         run: |
           set -e
-          # Allow some time for rollout and health checks
-          sleep 5
           HOST=${{ matrix.hostname }}
+          # wait up to ~3 minutes for health
+          for i in $(seq 1 36); do
+            if curl -fsS "https://$HOST/health" >/dev/null; then
+              break
+            fi
+            sleep 5
+          done
+          echo "Health passed; checking /version"
           body=$(curl -fsSL "https://$HOST/version")
-          echo "$body"
           echo "$body" | jq -e --arg sha "${{ steps.meta.outputs.sha }}" '.gitSha == $sha'
 
       - name: Verify /version endpoint (digest optional)
