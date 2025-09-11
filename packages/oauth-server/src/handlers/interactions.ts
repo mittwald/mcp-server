@@ -10,12 +10,63 @@ const INTERACTION_TTL = parseInt(process.env.INTERACTION_TTL_SECONDS || '900'); 
 export function registerInteractionRoutes(router: Router, provider: Provider, redisClient?: any) {
   const store = createInteractionStore(redisClient);
 
-  // Start interaction: redirect to Mittwald authorize
+  // Start interaction: attempt Mittwald auth; fallback to dev auto-login/consent
   router.get('/interaction/:uid', async (ctx) => {
     const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
     const { clientId } = details.params;
-    logger.info('Interaction details', { uid: details.uid, prompt: details.prompt?.name, clientId });
+    const prompt = details.prompt?.name;
+    logger.info('Interaction details', { uid: details.uid, prompt, clientId });
 
+    // If Mittwald OAuth config is unavailable, provide a dev-friendly fallback
+    const canUseMittwald = !!(
+      process.env.MITTWALD_AUTHORIZATION_URL &&
+      process.env.MITTWALD_TOKEN_URL &&
+      process.env.MITTWALD_CLIENT_ID &&
+      process.env.MITTWALD_REDIRECT_URI
+    );
+
+    if (!canUseMittwald) {
+      // Minimal interaction: auto-complete login/consent for testing
+      try {
+        if (prompt === 'login') {
+          const accountId = process.env.DEV_ACCOUNT_ID || `dev-${details.uid}`;
+          await (provider as any).interactionFinished(
+            ctx.req,
+            ctx.res,
+            { login: { accountId } },
+            { mergeWithLastSubmission: true },
+          );
+          ctx.respond = false;
+          return;
+        }
+        if (prompt === 'consent') {
+          await (provider as any).interactionFinished(
+            ctx.req,
+            ctx.res,
+            { consent: {} },
+            { mergeWithLastSubmission: true },
+          );
+          ctx.respond = false;
+          return;
+        }
+        // Default: finish interaction with consent
+        await (provider as any).interactionFinished(
+          ctx.req,
+          ctx.res,
+          { consent: {} },
+          { mergeWithLastSubmission: true },
+        );
+        ctx.respond = false;
+        return;
+      } catch (e) {
+        logger.error('Dev interaction fallback failed', { error: (e as Error).message });
+        ctx.status = 500;
+        ctx.body = { error: 'server_error', error_description: 'Interaction failed' };
+        return;
+      }
+    }
+
+    // Mittwald external flow
     const { client, config } = await getMittwaldClient();
 
     const state = nanoid(24);
