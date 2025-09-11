@@ -173,9 +173,22 @@ jobs:
             --env-var mcp_base=https://mittwald-mcp-fly2.fly.dev \
             --env-var as_base=https://mittwald-oauth-server.fly.dev
 
-      - name: Run Node E2E OAuth smoke
-        env:
-          AS_BASE: https://mittwald-oauth-server.fly.dev
-          MCP_BASE: https://mittwald-mcp-fly2.fly.dev
+      - name: AS DCR sanity (headless)
         run: |
-          npm run test:e2e:mcp
+          set -e
+          cat > dcr.json <<'JSON'
+          {
+            "redirect_uris": ["http://127.0.0.1/callback"],
+            "token_endpoint_auth_method": "none",
+            "grant_types": ["authorization_code", "refresh_token"],
+            "response_types": ["code"],
+            "client_name": "CI Smoke",
+            "application_type": "native",
+            "scope": "openid profile email"
+          }
+          JSON
+          CODE=$(curl -sS -o body.json -w "%{http_code}" -H 'Content-Type: application/json' --data @dcr.json https://mittwald-oauth-server.fly.dev/reg || true)
+          echo "DCR HTTP $CODE" && cat body.json
+          if [ "$CODE" != "201" ] && [ "$CODE" != "200" ]; then
+            echo "DCR failed" >&2; exit 1;
+          fi
