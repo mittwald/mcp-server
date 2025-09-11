@@ -72,6 +72,7 @@ jobs:
       - name: Build and push image (by SHA tag)
         id: build
         run: |
+          set -euo pipefail
           IMAGE=registry.fly.io/${{ matrix.app }}:${{ steps.meta.outputs.sha }}
           docker buildx build \
             --platform linux/amd64 \
@@ -79,9 +80,9 @@ jobs:
             -t "$IMAGE" \
             -f "${{ matrix.dockerfile }}" "${{ matrix.context }}" \
             --push \
-            --provenance=false \
-            --iidfile imageid
-          DIGEST=$(cat imageid | sed 's/sha256://')
+            --provenance=false
+          # Resolve the remote manifest digest for the pushed tag
+          DIGEST=$(docker buildx imagetools inspect "$IMAGE" --format '{{.Manifest.Digest}}')
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
