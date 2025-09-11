@@ -79,6 +79,36 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       
       // Enable userinfo endpoint
       userinfo: { enabled: true },
+      // Enable Resource Indicators (RFC 8707) so Inspector can send `resource`.
+      resourceIndicators: {
+        enabled: true,
+        // Validate requested resource and define resource server info
+        // Accept the MCP resource URL and map scopes/audience accordingly.
+        async getResourceServerInfo(ctx: any, resourceIndicator: string, client: any) {
+          try {
+            const allowed = process.env.ALLOWED_RESOURCE || 'https://mittwald-mcp-fly2.fly.dev/mcp';
+            const u = new URL(resourceIndicator);
+            const allowUrl = new URL(allowed);
+            const matches = u.host === allowUrl.host && u.pathname === allowUrl.pathname;
+            if (!matches) {
+              // Reject other resources with invalid_target
+              // eslint-disable-next-line @typescript-eslint/no-var-requires
+              const { errors } = require('oidc-provider');
+              throw new errors.InvalidTarget();
+            }
+            // Return resource server definition
+            return {
+              scope: 'openid profile email user:read customer:read project:read',
+              audience: resourceIndicator,
+              accessTokenFormat: 'jwt',
+            } as any;
+          } catch {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { errors } = require('oidc-provider');
+            throw new errors.InvalidTarget();
+          }
+        },
+      },
     },
     
     // JWT configuration
