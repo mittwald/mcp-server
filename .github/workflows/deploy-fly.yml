@@ -105,6 +105,15 @@ jobs:
           body=$(curl -fsSL "https://$HOST/version")
           echo "$body" | jq -e --arg sha "${{ steps.meta.outputs.sha }}" '.gitSha == $sha'
 
+      - name: Diagnostics on failure (status + recent logs)
+        if: failure()
+        run: |
+          set +e
+          echo "Fly status for ${{ matrix.app }}:";
+          flyctl status -a ${{ matrix.app }} || true
+          echo "\nLast 200 lines of logs:";
+          flyctl logs -a ${{ matrix.app }} --since 20m | tail -n 200 || true
+
       - name: Verify /version endpoint (digest optional)
         run: |
           set -e
