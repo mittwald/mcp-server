@@ -113,11 +113,11 @@ jobs:
           curl -fsSL "$URL" | jq '.'
 
       - name: Cleanup stopped/stale machines (best-effort)
+        continue-on-error: true
         run: |
-          set -e
-          # destroy any non-started machines to avoid future auto-start staleness
-          json=$(flyctl status -a ${{ matrix.app }} --json || echo '{}')
-          ids=$(echo "$json" | jq -r '(.machines // [])[] | select(.state != "started") | .id' || echo '')
+          set +e
+          json=$(flyctl status -a ${{ matrix.app }} --json 2>/dev/null || echo '{}')
+          ids=$(echo "$json" | jq -r 'if (.machines | type) == "array" then (.machines[] | select(.state != "started") | .id) else empty end')
           if [ -n "$ids" ]; then
-            echo "$ids" | xargs -r -n1 flyctl machine destroy -a ${{ matrix.app }} --force || true
+            echo "$ids" | xargs -r -n1 flyctl machine destroy -a ${{ matrix.app }} --force
           fi
