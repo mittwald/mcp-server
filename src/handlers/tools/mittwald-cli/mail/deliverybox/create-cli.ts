@@ -1,11 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldMailDeliveryboxCreateArgs {
   projectId?: string;
   description: string;
-  quiet?: boolean;
   password?: string;
   randomPassword?: boolean;
 }
@@ -23,10 +22,6 @@ export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<Mitt
       cliArgs.push('--project-id', args.projectId);
     }
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Password options
     if (args.password) {
@@ -81,33 +76,18 @@ export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<Mitt
     let deliveryBoxId: string | null = null;
     let generatedPassword: string | null = null;
     
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs the ID and optionally the password
-      const output = parseQuietOutput(result.stdout);
-      if (output) {
-        if (args.randomPassword) {
-          // Output format: ID<tab>password
-          const parts = output.split('\t');
-          deliveryBoxId = parts[0];
-          generatedPassword = parts[1] || null;
-        } else {
-          deliveryBoxId = output;
-        }
-      }
-    } else {
-      // In normal mode, parse the success message
-      // Example: "Delivery box 'My Box' created successfully with ID db-xxxxx"
-      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        deliveryBoxId = idMatch[1];
-      }
-      
-      if (args.randomPassword) {
-        // Look for generated password in the output
-        const passwordMatch = result.stdout.match(/password:\s*(.+)/i);
-        if (passwordMatch) {
-          generatedPassword = passwordMatch[1].trim();
-        }
+    // Parse the success message
+    // Example: "Delivery box 'My Box' created successfully with ID db-xxxxx"
+    const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
+    if (idMatch) {
+      deliveryBoxId = idMatch[1];
+    }
+    
+    if (args.randomPassword) {
+      // Look for generated password in the output
+      const passwordMatch = result.stdout.match(/password:\s*(.+)/i);
+      if (passwordMatch) {
+        generatedPassword = passwordMatch[1].trim();
       }
     }
     
@@ -115,7 +95,7 @@ export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<Mitt
       // If we can't find the ID but the command succeeded, still report success
       return formatToolResponse(
         "success",
-        args.quiet ? result.stdout : `Successfully created delivery box '${args.description}'`,
+        `Successfully created delivery box '${args.description}'`,
         {
           description: args.description,
           output: result.stdout,
@@ -133,9 +113,7 @@ export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<Mitt
     
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        (generatedPassword ? `${deliveryBoxId}\t${generatedPassword}` : deliveryBoxId) :
-        `Successfully created delivery box '${args.description}' with ID ${deliveryBoxId}${generatedPassword ? ` and generated password` : ''}`,
+      `Successfully created delivery box '${args.description}' with ID ${deliveryBoxId}${generatedPassword ? ` and generated password` : ''}`,
       resultData
     );
     

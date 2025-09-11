@@ -22,10 +22,6 @@ const tool: Tool = {
         description: 'Roles of the API token',
         minItems: 1
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       expires: {
         type: 'string',
         description: 'An interval after which the API token expires (examples: 30m, 30d, 1y)'

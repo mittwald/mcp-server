@@ -18,11 +18,6 @@ const tool: Tool = {
         type: "boolean",
         description: "Do not ask for confirmation",
         default: false
-      },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
-        default: false
       }
     },
     required: ["sftpUserId"]

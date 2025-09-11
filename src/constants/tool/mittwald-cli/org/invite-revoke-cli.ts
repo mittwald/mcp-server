@@ -12,11 +12,6 @@ const tool: Tool = {
       inviteId: {
         type: "string",
         description: "The ID of the invite to revoke"
-      },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
-        default: false
       }
     },
     required: ["inviteId"]

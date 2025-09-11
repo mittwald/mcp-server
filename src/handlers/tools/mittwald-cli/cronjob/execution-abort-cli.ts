@@ -5,7 +5,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 interface MittwaldCronjobExecutionAbortCliArgs {
   cronjobId: string;
   executionId: string;
-  quiet?: boolean;
 }
 
 export const handleCronjobExecutionAbortCli: MittwaldToolHandler<MittwaldCronjobExecutionAbortCliArgs> = async (args, context) => {
@@ -14,9 +13,6 @@ export const handleCronjobExecutionAbortCli: MittwaldToolHandler<MittwaldCronjob
     const cliArgs: string[] = ['cronjob', 'execution', 'abort', args.cronjobId, args.executionId];
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {

@@ -1,10 +1,9 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldRegistryDeleteCliArgs {
   registryId: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
@@ -14,10 +13,6 @@ export const handleRegistryDeleteCli: MittwaldToolHandler<MittwaldRegistryDelete
     const cliArgs: string[] = ['registry', 'delete', args.registryId];
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
     if (args.force) {
       cliArgs.push('--force');
     }
@@ -45,21 +40,7 @@ export const handleRegistryDeleteCli: MittwaldToolHandler<MittwaldRegistryDelete
       );
     }
     
-    // Handle quiet output
-    if (args.quiet) {
-      const result_id = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Registry deleted successfully`,
-        {
-          registryId: args.registryId,
-          status: 'deleted',
-          resultId: result_id
-        }
-      );
-    }
-    
-    // Handle regular output
+    // Handle output
     const successMessage = result.stdout || 'Registry deleted successfully';
     
     return formatToolResponse(

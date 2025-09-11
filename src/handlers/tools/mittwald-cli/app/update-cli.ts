@@ -4,7 +4,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldAppUpdateArgs {
   installationId?: string;
-  quiet?: boolean;
   description?: string;
   entrypoint?: string;
   documentRoot?: string;
@@ -34,9 +33,6 @@ export const handleAppUpdateCli: MittwaldCliToolHandler<MittwaldAppUpdateArgs> =
     cliArgs.push(args.installationId);
     
     // Add optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.description) {
       cliArgs.push('--description', args.description);

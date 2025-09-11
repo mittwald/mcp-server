@@ -14,11 +14,6 @@ const tool: Tool = {
         description: "The ID of the SFTP user to update",
         required: true
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
-        default: false
-      },
       expires: {
         type: "string",
         description: "An interval after which the SFTP user expires (examples: 30m, 30d, 1y)"

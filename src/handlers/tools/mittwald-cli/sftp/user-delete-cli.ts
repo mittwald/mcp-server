@@ -1,11 +1,10 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldSftpUserDeleteArgs {
   sftpUserId: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 export const handleSftpUserDeleteCli: MittwaldToolHandler<MittwaldSftpUserDeleteArgs> = async (args) => {
@@ -27,10 +26,6 @@ export const handleSftpUserDeleteCli: MittwaldToolHandler<MittwaldSftpUserDelete
     // Optional flags
     if (args.force) {
       cliArgs.push('--force');
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
     }
     
     // Execute CLI command
@@ -72,30 +67,15 @@ export const handleSftpUserDeleteCli: MittwaldToolHandler<MittwaldSftpUserDelete
     }
     
     // Parse the output
-    if (args.quiet) {
-      // In quiet mode, the CLI might output just success status
-      const quietOutput = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        quietOutput || "SFTP user deleted successfully",
-        {
-          sftpUserId: args.sftpUserId,
-          action: "deleted",
-          status: "success"
-        }
-      );
-    } else {
-      // In normal mode, parse the success message
-      return formatToolResponse(
-        "success",
-        `SFTP user ${args.sftpUserId} has been successfully deleted`,
-        {
-          sftpUserId: args.sftpUserId,
-          action: "deleted",
-          output: result.stdout
-        }
-      );
-    }
+    return formatToolResponse(
+      "success",
+      `SFTP user ${args.sftpUserId} has been successfully deleted`,
+      {
+        sftpUserId: args.sftpUserId,
+        action: "deleted",
+        output: result.stdout
+      }
+    );
     
   } catch (error) {
     return formatToolResponse(

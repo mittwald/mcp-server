@@ -24,10 +24,6 @@ const tool: Tool = {
       description: {
         type: 'string',
         description: 'Description for the backup schedule'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
       }
     },
     required: ["schedule", "ttl", "projectId"]

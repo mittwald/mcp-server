@@ -7,7 +7,6 @@ interface MittwaldBackupScheduleUpdateCliArgs {
   description?: string;
   schedule?: string;
   ttl?: string;
-  quiet?: boolean;
 }
 
 export const handleBackupScheduleUpdateCli: MittwaldCliToolHandler<MittwaldBackupScheduleUpdateCliArgs> = async (args) => {
@@ -28,9 +27,6 @@ export const handleBackupScheduleUpdateCli: MittwaldCliToolHandler<MittwaldBacku
       cliArgs.push('--ttl', args.ttl);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {

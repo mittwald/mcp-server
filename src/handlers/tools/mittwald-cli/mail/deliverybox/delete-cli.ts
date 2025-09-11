@@ -4,7 +4,6 @@ import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldMailDeliveryboxDeleteArgs {
   id: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
@@ -17,9 +16,6 @@ export const handleMittwaldMailDeliveryboxDeleteCli: MittwaldCliToolHandler<Mitt
     cliArgs.push(args.id);
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.force) {
       cliArgs.push('--force');
@@ -68,9 +64,7 @@ export const handleMittwaldMailDeliveryboxDeleteCli: MittwaldCliToolHandler<Mitt
     // Success response
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        result.stdout || 'Delivery box deleted' :
-        `Successfully deleted delivery box: ${args.id}`,
+      `Successfully deleted delivery box: ${args.id}`,
       {
         id: args.id,
         deleted: true,

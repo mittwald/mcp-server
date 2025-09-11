@@ -5,7 +5,6 @@ import { executeCli } from '../../../../../utils/cli-wrapper.js';
 interface MittwaldDatabaseMysqlDumpArgs {
   databaseId: string;
   output: string;
-  quiet?: boolean;
   mysqlPassword?: string;
   mysqlCharset?: string;
   temporaryUser?: boolean;
@@ -23,10 +22,6 @@ export const handleDatabaseMysqlDumpCli: MittwaldToolHandler<MittwaldDatabaseMys
     cliArgs.push(args.databaseId);
     cliArgs.push('--output', args.output);
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // MySQL options
     if (args.mysqlPassword) {
@@ -136,9 +131,7 @@ export const handleDatabaseMysqlDumpCli: MittwaldToolHandler<MittwaldDatabaseMys
     
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        result.stdout || `Dump completed` :
-        `Successfully created MySQL dump of database '${args.databaseId}' to ${outputLocation}`,
+      `Successfully created MySQL dump of database '${args.databaseId}' to ${outputLocation}`,
       resultData
     );
     

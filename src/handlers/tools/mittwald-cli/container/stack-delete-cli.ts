@@ -1,10 +1,9 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldStackDeleteCliArgs {
   stackId?: string;
-  quiet?: boolean;
   force?: boolean;
   withVolumes?: boolean;
 }
@@ -20,10 +19,6 @@ export const handleStackDeleteCli: MittwaldToolHandler<MittwaldStackDeleteCliArg
     }
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
     if (args.force) {
       cliArgs.push('--force');
     }
@@ -55,22 +50,7 @@ export const handleStackDeleteCli: MittwaldToolHandler<MittwaldStackDeleteCliArg
       );
     }
     
-    // Handle quiet output
-    if (args.quiet) {
-      const result_id = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Stack deleted successfully`,
-        {
-          stackId: args.stackId,
-          status: 'deleted',
-          resultId: result_id,
-          withVolumes: args.withVolumes
-        }
-      );
-    }
-    
-    // Handle regular output
+    // Handle output
     const successMessage = result.stdout || 'Stack deleted successfully';
     
     return formatToolResponse(

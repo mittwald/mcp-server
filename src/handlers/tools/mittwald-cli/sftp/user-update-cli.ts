@@ -1,10 +1,9 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldSftpUserUpdateArgs {
   sftpUserId: string;
-  quiet?: boolean;
   expires?: string;
   description?: string;
   publicKey?: string;
@@ -47,10 +46,6 @@ export const handleSftpUserUpdateCli: MittwaldToolHandler<MittwaldSftpUserUpdate
     cliArgs.push(args.sftpUserId);
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
     if (args.expires) {
       cliArgs.push('--expires', args.expires);
     }
@@ -125,41 +120,27 @@ export const handleSftpUserUpdateCli: MittwaldToolHandler<MittwaldSftpUserUpdate
     }
     
     // Parse the output
-    if (args.quiet) {
-      // In quiet mode, the CLI might output just the ID or success status
-      const quietOutput = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        quietOutput || args.sftpUserId,
-        {
-          sftpUserId: args.sftpUserId,
-          action: "updated"
-        }
-      );
-    } else {
-      // In normal mode, parse the success message
-      // Build list of updated fields for better feedback
-      const updatedFields = [];
-      if (args.description) updatedFields.push('description');
-      if (args.expires) updatedFields.push('expires');
-      if (args.publicKey) updatedFields.push('public key');
-      if (args.password) updatedFields.push('password');
-      if (args.accessLevel) updatedFields.push('access level');
-      if (args.directories) updatedFields.push('directories');
-      if (args.enable) updatedFields.push('enabled');
-      if (args.disable) updatedFields.push('disabled');
-      
-      return formatToolResponse(
-        "success",
-        `SFTP user ${args.sftpUserId} updated successfully`,
-        {
-          sftpUserId: args.sftpUserId,
-          action: "updated",
-          updatedFields: updatedFields,
-          output: result.stdout
-        }
-      );
-    }
+    // Build list of updated fields for better feedback
+    const updatedFields = [];
+    if (args.description) updatedFields.push('description');
+    if (args.expires) updatedFields.push('expires');
+    if (args.publicKey) updatedFields.push('public key');
+    if (args.password) updatedFields.push('password');
+    if (args.accessLevel) updatedFields.push('access level');
+    if (args.directories) updatedFields.push('directories');
+    if (args.enable) updatedFields.push('enabled');
+    if (args.disable) updatedFields.push('disabled');
+    
+    return formatToolResponse(
+      "success",
+      `SFTP user ${args.sftpUserId} updated successfully`,
+      {
+        sftpUserId: args.sftpUserId,
+        action: "updated",
+        updatedFields: updatedFields,
+        output: result.stdout
+      }
+    );
     
   } catch (error) {
     return formatToolResponse(

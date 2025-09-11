@@ -1,11 +1,10 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldContainerRestartArgs {
   containerId: string;
   projectId?: string;
-  quiet?: boolean;
 }
 
 export const handleContainerRestartCli: MittwaldToolHandler<MittwaldContainerRestartArgs> = async (args) => {
@@ -23,10 +22,6 @@ export const handleContainerRestartCli: MittwaldToolHandler<MittwaldContainerRes
     // Optional flags
     if (args.projectId) {
       cliArgs.push('--project-id', args.projectId);
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
     }
     
     // Execute CLI command
@@ -59,21 +54,7 @@ export const handleContainerRestartCli: MittwaldToolHandler<MittwaldContainerRes
       );
     }
     
-    // Handle quiet mode output
-    if (args.quiet) {
-      const containerId = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Container ${args.containerId} has been restarted successfully`,
-        {
-          containerId: containerId || args.containerId,
-          action: "restart",
-          projectId: args.projectId
-        }
-      );
-    }
-    
-    // Handle normal output
+    // Handle output
     return formatToolResponse(
       "success",
       `Container ${args.containerId} has been restarted successfully`,

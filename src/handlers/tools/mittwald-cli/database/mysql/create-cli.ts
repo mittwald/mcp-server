@@ -1,12 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldDatabaseMysqlCreateArgs {
   description: string;
   version: string;
   projectId?: string;
-  quiet?: boolean;
   collation?: string;
   characterSet?: string;
   userPassword?: string;
@@ -36,10 +35,6 @@ export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseM
       cliArgs.push('--project-id', args.projectId);
     }
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Character settings
     if (args.collation) {
@@ -146,23 +141,18 @@ export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseM
     // Parse the output
     let databaseId: string | null = null;
     
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      databaseId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
-      // Example: "MySQL database created successfully with ID mysql-xxxxx"
-      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        databaseId = idMatch[1];
-      }
+    // Parse the success message
+    // Example: "MySQL database created successfully with ID mysql-xxxxx"
+    const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
+    if (idMatch) {
+      databaseId = idMatch[1];
     }
     
     if (!databaseId) {
       // If we can't find the ID but the command succeeded, still report success
       return formatToolResponse(
         "success",
-        args.quiet ? result.stdout : `Successfully created MySQL database '${args.description}'`,
+        `Successfully created MySQL database '${args.description}'`,
         {
           description: args.description,
           version: args.version,
@@ -185,9 +175,7 @@ export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseM
     
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        databaseId :
-        `Successfully created MySQL database '${args.description}' with ID ${databaseId}`,
+      `Successfully created MySQL database '${args.description}' with ID ${databaseId}`,
       resultData
     );
     

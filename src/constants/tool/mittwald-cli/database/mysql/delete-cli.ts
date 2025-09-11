@@ -13,10 +13,6 @@ const tool: Tool = {
         type: "string",
         description: "The ID or name of the database",
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
-      },
       force: {
         type: "boolean",
         description: "Do not ask for confirmation",

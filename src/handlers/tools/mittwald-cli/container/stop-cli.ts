@@ -1,11 +1,10 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldContainerStopArgs {
   containerId: string;
   projectId?: string;
-  quiet?: boolean;
 }
 
 export const handleContainerStopCli: MittwaldToolHandler<MittwaldContainerStopArgs> = async (args) => {
@@ -25,9 +24,6 @@ export const handleContainerStopCli: MittwaldToolHandler<MittwaldContainerStopAr
       cliArgs.push('--project-id', args.projectId);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -69,20 +65,6 @@ export const handleContainerStopCli: MittwaldToolHandler<MittwaldContainerStopAr
       return formatToolResponse(
         "error",
         `Failed to stop container: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet mode output
-    if (args.quiet) {
-      const containerId = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Container ${args.containerId} has been stopped successfully`,
-        {
-          containerId: containerId || args.containerId,
-          action: "stop",
-          projectId: args.projectId
-        }
       );
     }
     

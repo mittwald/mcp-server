@@ -16,10 +16,6 @@ const tool: Tool = {
       force: {
         type: 'boolean',
         description: 'Skip confirmation prompt'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
       }
     },
     required: ['backupScheduleId']

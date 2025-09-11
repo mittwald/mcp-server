@@ -1,10 +1,9 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldCronjobExecuteCliArgs {
   cronjobId: string;
-  quiet?: boolean;
 }
 
 export const handleCronjobExecuteCli: MittwaldToolHandler<MittwaldCronjobExecuteCliArgs> = async (args, context) => {
@@ -12,10 +11,6 @@ export const handleCronjobExecuteCli: MittwaldToolHandler<MittwaldCronjobExecute
     // Build CLI command arguments
     const cliArgs: string[] = ['cronjob', 'execute', args.cronjobId];
     
-    // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -38,21 +33,6 @@ export const handleCronjobExecuteCli: MittwaldToolHandler<MittwaldCronjobExecute
         "error",
         `Failed to execute cronjob: ${errorMessage}`
       );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const executionId = parseQuietOutput(result.stdout);
-      if (executionId) {
-        return formatToolResponse(
-          "success",
-          `Cronjob execution started`,
-          { 
-            cronjobId: args.cronjobId,
-            executionId: executionId 
-          }
-        );
-      }
     }
     
     // Return success

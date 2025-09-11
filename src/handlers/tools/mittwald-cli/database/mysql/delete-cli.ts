@@ -4,7 +4,6 @@ import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldDatabaseMysqlDeleteArgs {
   databaseId: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
@@ -16,10 +15,6 @@ export const handleDatabaseMysqlDeleteCli: MittwaldToolHandler<MittwaldDatabaseM
     // Required database ID
     cliArgs.push(args.databaseId);
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Force mode (do not ask for confirmation)
     if (args.force) {
@@ -81,9 +76,7 @@ export const handleDatabaseMysqlDeleteCli: MittwaldToolHandler<MittwaldDatabaseM
     
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        result.stdout || `Database ${args.databaseId} deleted` :
-        `Successfully deleted MySQL database '${args.databaseId}'`,
+      `Successfully deleted MySQL database '${args.databaseId}'`,
       resultData
     );
     

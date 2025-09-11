@@ -1,11 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldUserApiTokenRevokeArgs {
   tokenId: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApiTokenRevokeArgs> = async (args) => {
@@ -19,10 +18,6 @@ export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApi
     // Optional flags
     if (args.force) {
       cliArgs.push('--force');
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
     }
     
     // Execute CLI command
@@ -48,21 +43,7 @@ export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApi
       );
     }
     
-    // Handle quiet mode output
-    if (args.quiet) {
-      const output = parseQuietOutput(result.stdout);
-      
-      return formatToolResponse(
-        "success",
-        output || "API token revoked successfully",
-        { 
-          tokenId: args.tokenId,
-          revoked: true
-        }
-      );
-    }
-    
-    // For non-quiet mode, return success with the output
+    // Handle output
     const output = result.stdout.trim();
     
     return formatToolResponse(

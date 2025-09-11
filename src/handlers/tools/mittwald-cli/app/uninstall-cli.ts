@@ -4,7 +4,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldAppUninstallArgs {
   installationId?: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
@@ -24,9 +23,6 @@ export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallA
     cliArgs.push(args.installationId);
     
     // Add optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.force) {
       cliArgs.push('--force');

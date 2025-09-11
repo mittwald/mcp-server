@@ -1,11 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldUserApiTokenCreateArgs {
   description: string;
   roles: ("api_read" | "api_write")[];
-  quiet?: boolean;
   expires?: string;
 }
 
@@ -27,9 +26,6 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
       cliArgs.push('--expires', args.expires);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -47,27 +43,7 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
       );
     }
     
-    // Handle quiet mode output
-    if (args.quiet) {
-      const token = parseQuietOutput(result.stdout);
-      
-      if (!token) {
-        return formatToolResponse(
-          "error",
-          "Failed to create API token - no token returned"
-        );
-      }
-      
-      return formatToolResponse(
-        "success",
-        token,
-        { 
-          token: token
-        }
-      );
-    }
-    
-    // For non-quiet mode, parse the output
+    // Parse the output
     // The CLI might return structured output or just the token
     const output = result.stdout.trim();
     

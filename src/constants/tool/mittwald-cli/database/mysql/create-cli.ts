@@ -21,10 +21,6 @@ const tool: Tool = {
         type: "string",
         description: "ID or short ID of a project; optional if a default project is set in the context",
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
-      },
       collation: {
         type: "string",
         description: "The collation to use (default: utf8mb4_unicode_ci)",

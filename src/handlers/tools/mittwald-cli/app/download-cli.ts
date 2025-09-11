@@ -5,7 +5,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 interface MittwaldAppDownloadArgs {
   installationId?: string;
   target: string;
-  quiet?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
   exclude?: string[];
@@ -40,9 +39,6 @@ export const handleAppDownloadCli: MittwaldCliToolHandler<MittwaldAppDownloadArg
     cliArgs.push('--target', args.target);
     
     // Add optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.sshUser) {
       cliArgs.push('--ssh-user', args.sshUser);

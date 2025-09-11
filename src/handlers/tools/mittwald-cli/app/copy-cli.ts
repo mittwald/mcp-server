@@ -1,11 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldAppCopyArgs {
   installationId?: string;
   description: string;
-  quiet?: boolean;
 }
 
 export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = async (args) => {
@@ -33,10 +32,6 @@ export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = asy
     // Add description flag
     cliArgs.push('--description', args.description);
     
-    // Add quiet flag if requested
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -60,26 +55,6 @@ export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = asy
         "error",
         `Failed to copy app: ${errorMessage}`
       );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      try {
-        const newInstallationId = parseQuietOutput(result.stdout);
-        if (newInstallationId) {
-          return formatToolResponse(
-            "success",
-            `App copied successfully`,
-            {
-              originalInstallationId: args.installationId,
-              newInstallationId: newInstallationId,
-              description: args.description
-            }
-          );
-        }
-      } catch (parseError) {
-        // Continue to regular output handling
-      }
     }
     
     // Regular output handling

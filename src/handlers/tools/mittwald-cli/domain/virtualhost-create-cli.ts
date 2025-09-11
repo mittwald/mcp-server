@@ -1,11 +1,10 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldDomainVirtualhostCreateArgs {
   hostname: string;
   projectId?: string;
-  quiet?: boolean;
   pathToApp?: string[];
   pathToUrl?: string[];
   pathToContainer?: string[];
@@ -24,10 +23,6 @@ export const handleDomainVirtualhostCreateCli: MittwaldToolHandler<MittwaldDomai
       cliArgs.push('--project-id', args.projectId);
     }
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Path mappings
     if (args.pathToApp) {
@@ -95,23 +90,18 @@ export const handleDomainVirtualhostCreateCli: MittwaldToolHandler<MittwaldDomai
     // Parse the output
     let ingressId: string | null = null;
     
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      ingressId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
-      // Example: "Virtual host 'example.com' created successfully with ID i-xxxxx"
-      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        ingressId = idMatch[1];
-      }
+    // Parse the success message
+    // Example: "Virtual host 'example.com' created successfully with ID i-xxxxx"
+    const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
+    if (idMatch) {
+      ingressId = idMatch[1];
     }
     
     if (!ingressId) {
       // If we can't find the ID but the command succeeded, still report success
       return formatToolResponse(
         "success",
-        args.quiet ? result.stdout : `Successfully created virtual host '${args.hostname}'`,
+        `Successfully created virtual host '${args.hostname}'`,
         {
           hostname: args.hostname,
           output: result.stdout
@@ -130,9 +120,7 @@ export const handleDomainVirtualhostCreateCli: MittwaldToolHandler<MittwaldDomai
     
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        ingressId :
-        `Successfully created virtual host '${args.hostname}' with ID ${ingressId}`,
+      `Successfully created virtual host '${args.hostname}' with ID ${ingressId}`,
       resultData
     );
     

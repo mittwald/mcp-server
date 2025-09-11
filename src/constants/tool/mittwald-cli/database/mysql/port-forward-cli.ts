@@ -13,10 +13,6 @@ const tool: Tool = {
         type: "string",
         description: "The ID or name of the database",
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
-      },
       sshUser: {
         type: "string",
         description: "Override the SSH user to connect with",

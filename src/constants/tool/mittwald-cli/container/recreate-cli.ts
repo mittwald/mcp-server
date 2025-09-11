@@ -17,10 +17,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of a project (optional if default project is set in context)'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       pull: {
         type: 'boolean',
         description: 'Pull the container image before recreating the container'

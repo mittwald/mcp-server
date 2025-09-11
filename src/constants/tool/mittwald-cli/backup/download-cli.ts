@@ -37,10 +37,6 @@ const tool: Tool = {
       resume: {
         type: 'boolean',
         description: 'Resume a previously interrupted download'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
       }
     },
     required: ['backupId']

@@ -4,7 +4,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldCronjobDeleteCliArgs {
   cronjobId: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
@@ -14,9 +13,6 @@ export const handleCronjobDeleteCli: MittwaldToolHandler<MittwaldCronjobDeleteCl
     const cliArgs: string[] = ['cronjob', 'delete', args.cronjobId];
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.force) {
       cliArgs.push('--force');

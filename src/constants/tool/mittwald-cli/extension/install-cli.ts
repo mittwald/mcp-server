@@ -21,10 +21,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID of the organization to install the extension in'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       consent: {
         type: 'boolean',
         description: 'Consent to the extension having access to the requested scopes'

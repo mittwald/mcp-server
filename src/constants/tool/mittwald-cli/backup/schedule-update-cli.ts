@@ -24,10 +24,6 @@ const tool: Tool = {
       ttl: {
         type: 'string',
         description: 'Time-to-live for backups (7d - 400d)'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
       }
     },
     required: ['backupScheduleId']

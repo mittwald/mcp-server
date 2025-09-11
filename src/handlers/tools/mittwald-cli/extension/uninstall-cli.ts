@@ -1,10 +1,9 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldExtensionUninstallCliArgs {
   extensionInstanceId: string;
-  quiet?: boolean;
 }
 
 export const handleExtensionUninstallCli: MittwaldToolHandler<MittwaldExtensionUninstallCliArgs> = async (args) => {
@@ -12,10 +11,6 @@ export const handleExtensionUninstallCli: MittwaldToolHandler<MittwaldExtensionU
     // Build CLI command arguments
     const cliArgs: string[] = ['extension', 'uninstall', args.extensionInstanceId];
     
-    // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -40,21 +35,7 @@ export const handleExtensionUninstallCli: MittwaldToolHandler<MittwaldExtensionU
       );
     }
     
-    // Handle quiet output
-    if (args.quiet) {
-      const result_id = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Extension uninstalled successfully`,
-        {
-          extensionInstanceId: args.extensionInstanceId,
-          status: 'uninstalled',
-          resultId: result_id
-        }
-      );
-    }
-    
-    // Handle regular output
+    // Handle output
     const successMessage = result.stdout || 'Extension uninstallation completed successfully';
     
     return formatToolResponse(

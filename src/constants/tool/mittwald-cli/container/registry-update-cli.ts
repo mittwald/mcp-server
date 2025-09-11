@@ -13,10 +13,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID of the registry to update'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       description: {
         type: 'string',
         description: 'New description for the registry'

@@ -21,10 +21,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of a project'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       username: {
         type: 'string',
         description: 'Username for registry authentication'

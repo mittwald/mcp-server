@@ -4,7 +4,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldProjectDeleteArgs {
   projectId: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
@@ -14,10 +13,6 @@ export const handleProjectDeleteCli: MittwaldToolHandler<MittwaldProjectDeleteAr
     const cliArgs: string[] = ['project', 'delete', args.projectId];
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
     if (args.force) {
       cliArgs.push('--force');
     }

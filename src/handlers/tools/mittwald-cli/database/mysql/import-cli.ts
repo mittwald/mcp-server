@@ -5,7 +5,6 @@ import { executeCli } from '../../../../../utils/cli-wrapper.js';
 interface MittwaldDatabaseMysqlImportArgs {
   databaseId: string;
   input: string;
-  quiet?: boolean;
   mysqlPassword?: string;
   mysqlCharset?: string;
   temporaryUser?: boolean;
@@ -23,10 +22,6 @@ export const handleDatabaseMysqlImportCli: MittwaldToolHandler<MittwaldDatabaseM
     cliArgs.push(args.databaseId);
     cliArgs.push('--input', args.input);
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // MySQL options
     if (args.mysqlPassword) {
@@ -157,9 +152,7 @@ export const handleDatabaseMysqlImportCli: MittwaldToolHandler<MittwaldDatabaseM
     
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        result.stdout || `Import completed` :
-        `Successfully imported MySQL dump from ${inputSource} to database '${args.databaseId}'`,
+      `Successfully imported MySQL dump from ${inputSource} to database '${args.databaseId}'`,
       resultData
     );
     

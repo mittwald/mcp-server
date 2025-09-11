@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldAppInstallWordpressArgs {
   projectId: string;
@@ -10,7 +10,6 @@ interface MittwaldAppInstallWordpressArgs {
   adminEmail?: string;
   adminPass?: string;
   siteTitle?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: number;
 }
@@ -54,10 +53,6 @@ export const handleAppInstallWordpressCli: MittwaldCliToolHandler<MittwaldAppIns
       cliArgs.push('--site-title', args.siteTitle);
     }
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Wait for completion
     if (args.wait) {
@@ -118,23 +113,18 @@ export const handleAppInstallWordpressCli: MittwaldCliToolHandler<MittwaldAppIns
     // Parse the output
     let appInstallationId: string | null = null;
     
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      appInstallationId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
-      // Example: "WordPress installation started with ID app-xxxxx"
-      const idMatch = result.stdout.match(/(?:ID|id)\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        appInstallationId = idMatch[1];
-      }
+    // Parse the success message
+    // Example: "WordPress installation started with ID app-xxxxx"
+    const idMatch = result.stdout.match(/(?:ID|id)\s+([a-f0-9-]+)/i);
+    if (idMatch) {
+      appInstallationId = idMatch[1];
     }
     
     if (!appInstallationId) {
       // If we can't find the ID but the command succeeded, still report success
       return formatToolResponse(
         "success",
-        args.quiet ? result.stdout : `WordPress installation started successfully`,
+        `WordPress installation started successfully`,
         {
           projectId: args.projectId,
           version: args.version || 'latest',
@@ -156,9 +146,7 @@ export const handleAppInstallWordpressCli: MittwaldCliToolHandler<MittwaldAppIns
       status: args.wait ? 'completed' : 'installing'
     };
     
-    const successMessage = args.quiet ? 
-      appInstallationId :
-      args.wait ? 
+    const successMessage = args.wait ? 
         `WordPress installation completed successfully with ID ${appInstallationId}` :
         `WordPress installation started with ID ${appInstallationId}`;
     

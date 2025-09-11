@@ -5,7 +5,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 interface MittwaldAppUploadArgs {
   installationId?: string;
   source: string;
-  quiet?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
   exclude?: string[];
@@ -40,9 +39,6 @@ export const handleAppUploadCli: MittwaldCliToolHandler<MittwaldAppUploadArgs> =
     cliArgs.push('--source', args.source);
     
     // Add optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.sshUser) {
       cliArgs.push('--ssh-user', args.sshUser);

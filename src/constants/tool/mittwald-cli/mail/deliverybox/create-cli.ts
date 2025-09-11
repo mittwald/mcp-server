@@ -22,10 +22,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of a project; this flag is optional if a default project is set in the context'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       password: {
         type: 'string',
         description: 'Delivery box password (CAUTION: providing this flag may log your password in shell history)'

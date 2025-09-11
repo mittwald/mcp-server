@@ -13,10 +13,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID of a stack'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       composeFile: {
         type: 'string',
         description: 'Path to a compose file, or "-" to read from stdin'

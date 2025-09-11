@@ -4,7 +4,6 @@ import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldMailAddressUpdateArgs {
   id: string;
-  quiet?: boolean;
   catchAll?: boolean;
   enableSpamProtection?: boolean;
   quota?: string;
@@ -21,10 +20,6 @@ export const handleMittwaldMailAddressUpdateCli: MittwaldCliToolHandler<Mittwald
     // Required ID
     cliArgs.push(args.id);
     
-    // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Mailbox options
     if (args.catchAll !== undefined) {
@@ -117,9 +112,7 @@ export const handleMittwaldMailAddressUpdateCli: MittwaldCliToolHandler<Mittwald
     // Success response
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        (generatedPassword ? `${args.id}\t${generatedPassword}` : result.stdout || 'Mail address updated') :
-        `Successfully updated mail address: ${args.id}${generatedPassword ? ` with new generated password` : ''}`,
+      `Successfully updated mail address: ${args.id}${generatedPassword ? ` with new generated password` : ''}`,
       resultData
     );
     

@@ -40,10 +40,6 @@ const tool: Tool = {
         },
         description: "Unset record values"
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress output except for errors"
-      },
       managed: {
         type: "boolean",
         description: "Update managed records"

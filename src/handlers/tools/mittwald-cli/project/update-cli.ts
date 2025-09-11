@@ -5,7 +5,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 interface MittwaldProjectUpdateArgs {
   projectId: string;
   description?: string;
-  quiet?: boolean;
 }
 
 export const handleProjectUpdateCli: MittwaldToolHandler<MittwaldProjectUpdateArgs> = async (args, context) => {
@@ -16,10 +15,6 @@ export const handleProjectUpdateCli: MittwaldToolHandler<MittwaldProjectUpdateAr
     // Optional flags
     if (args.description) {
       cliArgs.push('--description', args.description);
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
     }
     
     // Check if we have any update flags

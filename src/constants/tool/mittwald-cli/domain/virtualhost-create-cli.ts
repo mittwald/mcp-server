@@ -17,10 +17,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of a project; this argument is optional if a default project is set in the context'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       pathToApp: {
         type: 'array',
         items: {

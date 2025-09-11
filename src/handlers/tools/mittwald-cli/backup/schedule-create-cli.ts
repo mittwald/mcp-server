@@ -1,13 +1,12 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldBackupScheduleCreateCliArgs {
   projectId?: string;
   schedule: string;
   ttl: string;
   description?: string;
-  quiet?: boolean;
 }
 
 export const handleBackupScheduleCreateCli: MittwaldCliToolHandler<MittwaldBackupScheduleCreateCliArgs> = async (args) => {
@@ -28,9 +27,6 @@ export const handleBackupScheduleCreateCli: MittwaldCliToolHandler<MittwaldBacku
       cliArgs.push('--description', args.description);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -69,29 +65,7 @@ export const handleBackupScheduleCreateCli: MittwaldCliToolHandler<MittwaldBacku
       );
     }
     
-    // Handle quiet output (returns just the ID)
-    if (args.quiet) {
-      try {
-        const scheduleId = parseQuietOutput(result.stdout);
-        if (scheduleId) {
-          return formatToolResponse(
-            "success",
-            `Backup schedule created successfully with ID: ${scheduleId}`,
-            {
-              id: scheduleId,
-              projectId: args.projectId,
-              schedule: args.schedule,
-              ttl: args.ttl,
-              description: args.description
-            }
-          );
-        }
-      } catch (parseError) {
-        // Fall through to regular parsing
-      }
-    }
-    
-    // For non-quiet output, return the full output
+    // Return the output
     return formatToolResponse(
       "success",
       "Backup schedule created successfully",

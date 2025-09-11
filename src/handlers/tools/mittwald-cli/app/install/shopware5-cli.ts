@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldAppInstallShopware5Args {
   projectId: string;
@@ -15,7 +15,6 @@ interface MittwaldAppInstallShopware5Args {
   shopEmail?: string;
   shopLang?: string;
   shopCurrency?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: number;
 }
@@ -79,10 +78,6 @@ export const handleAppInstallShopware5Cli: MittwaldCliToolHandler<MittwaldAppIns
       cliArgs.push('--shop-currency', args.shopCurrency);
     }
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Wait for completion
     if (args.wait) {
@@ -143,23 +138,18 @@ export const handleAppInstallShopware5Cli: MittwaldCliToolHandler<MittwaldAppIns
     // Parse the output
     let appInstallationId: string | null = null;
     
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      appInstallationId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
+    // Parse the success message
       // Example: "Shopware 5 installation started with ID app-xxxxx"
       const idMatch = result.stdout.match(/(?:ID|id)\s+([a-f0-9-]+)/i);
       if (idMatch) {
         appInstallationId = idMatch[1];
-      }
     }
     
     if (!appInstallationId) {
       // If we can't find the ID but the command succeeded, still report success
       return formatToolResponse(
         "success",
-        args.quiet ? result.stdout : `Shopware 5 installation started successfully`,
+        `Shopware 5 installation started successfully`,
         {
           projectId: args.projectId,
           version: args.version || 'latest',
@@ -186,9 +176,7 @@ export const handleAppInstallShopware5Cli: MittwaldCliToolHandler<MittwaldAppIns
       status: args.wait ? 'completed' : 'installing'
     };
     
-    const successMessage = args.quiet ? 
-      appInstallationId :
-      args.wait ? 
+    const successMessage = args.wait ? 
         `Shopware 5 installation completed successfully with ID ${appInstallationId}` :
         `Shopware 5 installation started with ID ${appInstallationId}`;
     

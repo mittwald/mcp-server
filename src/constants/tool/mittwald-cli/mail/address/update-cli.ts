@@ -18,10 +18,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID of the mail address to update'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       catchAll: {
         type: 'boolean',
         description: 'Make this a catch-all mail address'

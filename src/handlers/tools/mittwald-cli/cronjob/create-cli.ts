@@ -1,12 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldCronjobCreateCliArgs {
   description: string;
   interval: string;
   installationId?: string;
-  quiet?: boolean;
   email?: string;
   url?: string;
   command?: string;
@@ -29,9 +28,6 @@ export const handleCronjobCreateCli: MittwaldToolHandler<MittwaldCronjobCreateCl
       cliArgs.push('--installation-id', args.installationId);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.email) {
       cliArgs.push('--email', args.email);
@@ -85,18 +81,6 @@ export const handleCronjobCreateCli: MittwaldToolHandler<MittwaldCronjobCreateCl
         "error",
         `Failed to create cronjob: ${errorMessage}`
       );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const cronjobId = parseQuietOutput(result.stdout);
-      if (cronjobId) {
-        return formatToolResponse(
-          "success",
-          `Cronjob created successfully`,
-          { id: cronjobId }
-        );
-      }
     }
     
     // Return success with output

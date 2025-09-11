@@ -20,10 +20,6 @@ const tool: Tool = {
       force: {
         type: 'boolean',
         description: 'Do not ask for confirmation'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
       }
     },
     required: ["containerId", "projectId"]

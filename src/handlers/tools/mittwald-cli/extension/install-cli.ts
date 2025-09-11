@@ -1,12 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldExtensionInstallCliArgs {
   extensionId: string;
   projectId?: string;
   orgId?: string;
-  quiet?: boolean;
   consent?: boolean;
 }
 
@@ -40,10 +39,6 @@ export const handleExtensionInstallCli: MittwaldToolHandler<MittwaldExtensionIns
     }
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
     if (args.consent) {
       cliArgs.push('--consent');
     }
@@ -85,23 +80,7 @@ export const handleExtensionInstallCli: MittwaldToolHandler<MittwaldExtensionIns
       );
     }
     
-    // Handle quiet output
-    if (args.quiet) {
-      const extensionInstanceId = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Extension installed successfully`,
-        {
-          extensionInstanceId,
-          extensionId: args.extensionId,
-          projectId: args.projectId,
-          orgId: args.orgId,
-          status: 'installed'
-        }
-      );
-    }
-    
-    // Handle regular output
+    // Handle output
     const successMessage = result.stdout || 'Extension installation completed successfully';
     
     return formatToolResponse(

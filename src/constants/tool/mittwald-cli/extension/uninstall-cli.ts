@@ -12,10 +12,6 @@ const tool: Tool = {
       extensionInstanceId: {
         type: 'string',
         description: 'ID of the extension instance to uninstall'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
       }
     },
     required: ['extensionInstanceId']

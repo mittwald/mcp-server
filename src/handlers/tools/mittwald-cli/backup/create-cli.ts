@@ -1,12 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldBackupCreateCliArgs {
   projectId?: string;
   expires: string;
   description?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: string;
 }
@@ -28,9 +27,6 @@ export const handleBackupCreateCli: MittwaldCliToolHandler<MittwaldBackupCreateC
       cliArgs.push('--description', args.description);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.wait) {
       cliArgs.push('--wait');
@@ -70,28 +66,7 @@ export const handleBackupCreateCli: MittwaldCliToolHandler<MittwaldBackupCreateC
       );
     }
     
-    // Handle quiet output (returns just the ID)
-    if (args.quiet) {
-      try {
-        const backupId = parseQuietOutput(result.stdout);
-        if (backupId) {
-          return formatToolResponse(
-            "success",
-            `Backup created successfully with ID: ${backupId}`,
-            {
-              id: backupId,
-              projectId: args.projectId,
-              expires: args.expires,
-              description: args.description
-            }
-          );
-        }
-      } catch (parseError) {
-        // Fall through to regular parsing
-      }
-    }
-    
-    // For non-quiet output, return the full output
+    // Return the full output
     return formatToolResponse(
       "success",
       "Backup creation initiated",

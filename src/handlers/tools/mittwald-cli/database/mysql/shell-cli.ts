@@ -3,7 +3,6 @@ import { formatToolResponse } from '../../../../../utils/format-tool-response.js
 
 interface MittwaldDatabaseMysqlShellArgs {
   databaseId: string;
-  quiet?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
   mysqlPassword?: string;
@@ -19,10 +18,6 @@ export const handleDatabaseMysqlShellCli: MittwaldToolHandler<MittwaldDatabaseMy
     cliArgs.push(args.databaseId);
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
     if (args.sshUser) {
       cliArgs.push('--ssh-user', `"${args.sshUser}"`);
     }

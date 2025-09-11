@@ -1,11 +1,10 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldProjectCreateArgs {
   description: string;
   serverId?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: string;
   updateContext?: boolean;
@@ -22,10 +21,6 @@ export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateAr
     // Optional flags
     if (args.serverId) {
       cliArgs.push('--server-id', args.serverId);
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
     }
     
     if (args.wait) {
@@ -88,41 +83,7 @@ export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateAr
       );
     }
     
-    // Handle quiet mode output
-    if (args.quiet) {
-      try {
-        const projectId = parseQuietOutput(result.stdout);
-        
-        if (!projectId) {
-          return formatToolResponse(
-            "error",
-            "Project creation succeeded but no project ID was returned"
-          );
-        }
-        
-        return formatToolResponse(
-          "success",
-          `Project created successfully`,
-          {
-            projectId: projectId,
-            description: args.description,
-            serverId: args.serverId,
-            rawOutput: result.stdout
-          }
-        );
-      } catch (parseError) {
-        return formatToolResponse(
-          "success",
-          "Project created (could not parse project ID)",
-          {
-            rawOutput: result.stdout,
-            parseError: parseError instanceof Error ? parseError.message : String(parseError)
-          }
-        );
-      }
-    }
-    
-    // Handle normal output
+    // Handle output
     return formatToolResponse(
       "success",
       "Project created successfully",

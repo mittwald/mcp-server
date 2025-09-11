@@ -7,7 +7,6 @@ interface MittwaldAppUpgradeArgs {
   targetVersion?: string;
   force?: boolean;
   projectId?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: string;
 }
@@ -40,9 +39,6 @@ export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs>
       cliArgs.push('--project-id', args.projectId);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.wait) {
       cliArgs.push('--wait');

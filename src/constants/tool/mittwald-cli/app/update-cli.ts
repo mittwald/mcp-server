@@ -13,10 +13,6 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of an app installation; this argument is optional if a default app installation is set in the context'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       description: {
         type: 'string',
         description: 'Update the description of the app installation'

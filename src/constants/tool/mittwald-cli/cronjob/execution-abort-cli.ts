@@ -16,10 +16,6 @@ const tool: Tool = {
       executionId: {
         type: 'string',
         description: 'ID of the execution to abort'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
       }
     },
     required: ['cronjobId', 'executionId']

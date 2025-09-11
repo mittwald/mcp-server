@@ -17,10 +17,6 @@ const tool: Tool = {
         type: "string",
         description: "Set the project description"
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary"
-      }
     },
     required: ["projectId"]
   }

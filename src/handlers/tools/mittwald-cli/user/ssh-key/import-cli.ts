@@ -1,9 +1,8 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldUserSshKeyImportArgs {
-  quiet?: boolean;
   expires?: string;
   input?: string;
 }
@@ -22,9 +21,6 @@ export const handleUserSshKeyImportCli: MittwaldToolHandler<MittwaldUserSshKeyIm
       cliArgs.push('--input', args.input);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -42,27 +38,7 @@ export const handleUserSshKeyImportCli: MittwaldToolHandler<MittwaldUserSshKeyIm
       );
     }
     
-    // Handle quiet mode output
-    if (args.quiet) {
-      const keyId = parseQuietOutput(result.stdout);
-      
-      if (!keyId) {
-        return formatToolResponse(
-          "error",
-          "Failed to import SSH key - no key ID returned"
-        );
-      }
-      
-      return formatToolResponse(
-        "success",
-        keyId,
-        { 
-          keyId: keyId
-        }
-      );
-    }
-    
-    // For non-quiet mode, return success with the output
+    // Return success with the output
     const output = result.stdout.trim();
     
     return formatToolResponse(

@@ -17,10 +17,6 @@ const tool: Tool = {
         type: "string",
         description: "ID or short ID of a server; this flag is optional if a default server is set in the context"
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary"
-      },
       wait: {
         type: "boolean",
         description: "Wait for the resource to be ready"

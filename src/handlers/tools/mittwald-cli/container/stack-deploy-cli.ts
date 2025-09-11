@@ -1,10 +1,9 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldStackDeployCliArgs {
   stackId?: string;
-  quiet?: boolean;
   composeFile?: string;
   envFile?: string;
 }
@@ -19,9 +18,6 @@ export const handleStackDeployCli: MittwaldToolHandler<MittwaldStackDeployCliArg
       cliArgs.push('--stack-id', args.stackId);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.composeFile) {
       cliArgs.push('--compose-file', args.composeFile);
@@ -58,22 +54,6 @@ export const handleStackDeployCli: MittwaldToolHandler<MittwaldStackDeployCliArg
       return formatToolResponse(
         "error",
         `Failed to deploy stack: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const result_id = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Stack deployed successfully`,
-        {
-          stackId: args.stackId,
-          status: 'deployed',
-          resultId: result_id,
-          composeFile: args.composeFile,
-          envFile: args.envFile
-        }
       );
     }
     

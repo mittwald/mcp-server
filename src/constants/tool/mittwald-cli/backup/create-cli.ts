@@ -21,10 +21,6 @@ const tool: Tool = {
         type: 'string',
         description: 'Set a description for the backup'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       wait: {
         type: 'boolean',
         description: 'Wait for the backup to be completed'

@@ -21,10 +21,6 @@ const tool: Tool = {
         type: 'string',
         description: 'Document root directory for the PHP application'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       wait: {
         type: 'boolean',
         description: 'Wait for the app to be ready'

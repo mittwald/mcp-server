@@ -1,10 +1,9 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldRegistryUpdateCliArgs {
   registryId: string;
-  quiet?: boolean;
   description?: string;
   uri?: string;
   username?: string;
@@ -17,9 +16,6 @@ export const handleRegistryUpdateCli: MittwaldToolHandler<MittwaldRegistryUpdate
     const cliArgs: string[] = ['registry', 'update', args.registryId];
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.description) {
       cliArgs.push('--description', args.description);
@@ -57,25 +53,6 @@ export const handleRegistryUpdateCli: MittwaldToolHandler<MittwaldRegistryUpdate
       return formatToolResponse(
         "error",
         `Failed to update registry: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const result_id = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Registry updated successfully`,
-        {
-          registryId: args.registryId,
-          status: 'updated',
-          resultId: result_id,
-          updates: {
-            description: args.description,
-            uri: args.uri,
-            username: args.username
-          }
-        }
       );
     }
     

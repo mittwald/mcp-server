@@ -1,11 +1,10 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldSshUserCreateArgs {
   projectId?: string;
   description: string;
-  quiet?: boolean;
   expires?: string;
   publicKey?: string;
   password?: string;
@@ -47,10 +46,6 @@ export const handleSshUserCreateCli: MittwaldToolHandler<MittwaldSshUserCreateAr
       cliArgs.push('--project-id', args.projectId);
     }
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Optional expiration
     if (args.expires) {
@@ -107,23 +102,18 @@ export const handleSshUserCreateCli: MittwaldToolHandler<MittwaldSshUserCreateAr
     // Parse the output
     let sshUserId: string | null = null;
     
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      sshUserId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
-      // Example: "SSH user created successfully with ID ssh-user-xxxxx"
-      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        sshUserId = idMatch[1];
-      }
+    // Parse the success message
+    // Example: "SSH user created successfully with ID ssh-user-xxxxx"
+    const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
+    if (idMatch) {
+      sshUserId = idMatch[1];
     }
     
     if (!sshUserId) {
       // If we can't find the ID but the command succeeded, still report success
       return formatToolResponse(
         "success",
-        args.quiet ? result.stdout : `Successfully created SSH user '${args.description}'`,
+        `Successfully created SSH user '${args.description}'`,
         {
           description: args.description,
           output: result.stdout
@@ -142,9 +132,7 @@ export const handleSshUserCreateCli: MittwaldToolHandler<MittwaldSshUserCreateAr
     
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        sshUserId :
-        `Successfully created SSH user '${args.description}' with ID ${sshUserId}`,
+      `Successfully created SSH user '${args.description}' with ID ${sshUserId}`,
       resultData
     );
     

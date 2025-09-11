@@ -1,6 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldDomainDnszoneUpdateArgs {
   dnszoneId: string;
@@ -9,7 +9,6 @@ interface MittwaldDomainDnszoneUpdateArgs {
   set?: string[];
   recordId?: string;
   unset?: string[];
-  quiet?: boolean;
   managed?: boolean;
   record?: string[];
   ttl?: number;
@@ -23,10 +22,6 @@ export const handleDomainDnszoneUpdateCli: MittwaldToolHandler<MittwaldDomainDns
     // Optional flags
     if (args.projectId) {
       cliArgs.push('--project-id', args.projectId);
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
     }
     
     if (args.managed) {
@@ -70,17 +65,11 @@ export const handleDomainDnszoneUpdateCli: MittwaldToolHandler<MittwaldDomainDns
       );
     }
     
-    // Parse output based on whether quiet mode is enabled
+    // Parse output
     try {
       let parsedData = null;
       
-      if (args.quiet) {
-        // In quiet mode, try to parse the output as a simple ID or JSON
-        const quietResult = parseQuietOutput(result.stdout);
-        if (quietResult) {
-          parsedData = { id: quietResult };
-        }
-      } else if (result.stdout.trim()) {
+      if (result.stdout.trim()) {
         // Try to parse as JSON if there's output
         try {
           parsedData = parseJsonOutput(result.stdout);

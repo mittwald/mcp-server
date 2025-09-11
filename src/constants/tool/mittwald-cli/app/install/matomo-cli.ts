@@ -37,10 +37,6 @@ const tool: Tool = {
         type: "string",
         description: "Title for the Matomo installation"
       },
-      quiet: {
-        type: "boolean",
-        description: "Only output the installation ID"
-      },
       wait: {
         type: "boolean",
         description: "Wait for installation to complete"

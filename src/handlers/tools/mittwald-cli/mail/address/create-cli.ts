@@ -1,11 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldMailAddressCreateArgs {
   address: string;
   projectId?: string;
-  quiet?: boolean;
   catchAll?: boolean;
   enableSpamProtection?: boolean;
   quota?: string;
@@ -27,10 +26,6 @@ export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<Mittwald
       cliArgs.push('--project-id', args.projectId);
     }
     
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Mailbox options
     if (args.catchAll) {
@@ -119,33 +114,18 @@ export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<Mittwald
     let addressId: string | null = null;
     let generatedPassword: string | null = null;
     
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs the ID and optionally the password
-      const output = parseQuietOutput(result.stdout);
-      if (output) {
-        if (args.randomPassword) {
-          // Output format: ID<tab>password
-          const parts = output.split('\t');
-          addressId = parts[0];
-          generatedPassword = parts[1] || null;
-        } else {
-          addressId = output;
-        }
-      }
-    } else {
-      // In normal mode, parse the success message
-      // Example: "Mail address 'test@example.com' created successfully with ID ma-xxxxx"
-      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        addressId = idMatch[1];
-      }
-      
-      if (args.randomPassword) {
-        // Look for generated password in the output
-        const passwordMatch = result.stdout.match(/password:\s*(.+)/i);
-        if (passwordMatch) {
-          generatedPassword = passwordMatch[1].trim();
-        }
+    // Parse the success message
+    // Example: "Mail address 'test@example.com' created successfully with ID ma-xxxxx"
+    const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
+    if (idMatch) {
+      addressId = idMatch[1];
+    }
+    
+    if (args.randomPassword) {
+      // Look for generated password in the output
+      const passwordMatch = result.stdout.match(/password:\s*(.+)/i);
+      if (passwordMatch) {
+        generatedPassword = passwordMatch[1].trim();
       }
     }
     
@@ -153,7 +133,7 @@ export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<Mittwald
       // If we can't find the ID but the command succeeded, still report success
       return formatToolResponse(
         "success",
-        args.quiet ? result.stdout : `Successfully created mail address '${args.address}'`,
+        `Successfully created mail address '${args.address}'`,
         {
           address: args.address,
           output: result.stdout,
@@ -174,9 +154,7 @@ export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<Mittwald
     
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        (generatedPassword ? `${addressId}\t${generatedPassword}` : addressId) :
-        `Successfully created mail address '${args.address}' with ID ${addressId}${generatedPassword ? ` and generated password` : ''}`,
+      `Successfully created mail address '${args.address}' with ID ${addressId}${generatedPassword ? ` and generated password` : ''}`,
       resultData
     );
     

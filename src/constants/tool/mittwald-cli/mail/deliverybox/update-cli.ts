@@ -22,10 +22,6 @@ const tool: Tool = {
         type: 'string',
         description: 'New description for the delivery box'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       password: {
         type: 'string',
         description: 'Delivery box password (CAUTION: providing this flag may log your password in shell history)'

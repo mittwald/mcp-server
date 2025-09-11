@@ -4,7 +4,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldCronjobUpdateCliArgs {
   cronjobId: string;
-  quiet?: boolean;
   description?: string;
   interval?: string;
   email?: string;
@@ -22,9 +21,6 @@ export const handleCronjobUpdateCli: MittwaldToolHandler<MittwaldCronjobUpdateCl
     const cliArgs: string[] = ['cronjob', 'update', args.cronjobId];
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.description) {
       cliArgs.push('--description', args.description);

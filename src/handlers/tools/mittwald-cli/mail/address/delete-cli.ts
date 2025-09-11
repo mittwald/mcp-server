@@ -4,7 +4,6 @@ import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldMailAddressDeleteArgs {
   id: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
@@ -17,10 +16,6 @@ export const handleMittwaldMailAddressDeleteCli: MittwaldCliToolHandler<Mittwald
     cliArgs.push(args.id);
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
     if (args.force) {
       cliArgs.push('--force');
     }
@@ -68,9 +63,7 @@ export const handleMittwaldMailAddressDeleteCli: MittwaldCliToolHandler<Mittwald
     // Success response
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        result.stdout || 'Mail address deleted' :
-        `Successfully deleted mail address: ${args.id}`,
+      `Successfully deleted mail address: ${args.id}`,
       {
         id: args.id,
         deleted: true,

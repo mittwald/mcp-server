@@ -10,7 +10,6 @@ interface MittwaldBackupDownloadCliArgs {
   generatePassword?: boolean;
   promptPassword?: boolean;
   resume?: boolean;
-  quiet?: boolean;
 }
 
 export const handleBackupDownloadCli: MittwaldCliToolHandler<MittwaldBackupDownloadCliArgs> = async (args) => {
@@ -43,9 +42,6 @@ export const handleBackupDownloadCli: MittwaldCliToolHandler<MittwaldBackupDownl
       cliArgs.push('--resume');
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {

@@ -3,7 +3,6 @@ import { formatToolResponse } from '../../../../../utils/format-tool-response.js
 
 interface MittwaldDatabaseMysqlPortForwardArgs {
   databaseId: string;
-  quiet?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
   port?: number;
@@ -18,9 +17,6 @@ export const handleDatabaseMysqlPortForwardCli: MittwaldToolHandler<MittwaldData
     cliArgs.push(args.databaseId);
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.sshUser) {
       cliArgs.push('--ssh-user', `"${args.sshUser}"`);

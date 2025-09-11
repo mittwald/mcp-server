@@ -1,12 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldRegistryCreateCliArgs {
   uri: string;
   description: string;
   projectId?: string;
-  quiet?: boolean;
   username?: string;
   password?: string;
 }
@@ -23,10 +22,6 @@ export const handleRegistryCreateCli: MittwaldToolHandler<MittwaldRegistryCreate
     // Optional flags
     if (args.projectId) {
       cliArgs.push('--project-id', args.projectId);
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
     }
     
     if (args.username) {
@@ -67,23 +62,7 @@ export const handleRegistryCreateCli: MittwaldToolHandler<MittwaldRegistryCreate
       );
     }
     
-    // Handle quiet output
-    if (args.quiet) {
-      const registryId = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Registry created successfully`,
-        {
-          registryId,
-          uri: args.uri,
-          description: args.description,
-          projectId: args.projectId,
-          status: 'created'
-        }
-      );
-    }
-    
-    // Handle regular output
+    // Handle output
     const successMessage = result.stdout || 'Registry created successfully';
     
     return formatToolResponse(

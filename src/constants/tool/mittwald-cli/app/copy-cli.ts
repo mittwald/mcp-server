@@ -16,10 +16,6 @@ const tool: Tool = {
       description: {
         type: 'string',
         description: 'Set a description for the new app installation'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
       }
     },
     required: ['description', 'installationId']

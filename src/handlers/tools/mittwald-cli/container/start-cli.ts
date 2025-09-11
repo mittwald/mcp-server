@@ -1,11 +1,10 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldContainerStartArgs {
   containerId: string;
   projectId?: string;
-  quiet?: boolean;
 }
 
 export const handleContainerStartCli: MittwaldToolHandler<MittwaldContainerStartArgs> = async (args) => {
@@ -25,9 +24,6 @@ export const handleContainerStartCli: MittwaldToolHandler<MittwaldContainerStart
       cliArgs.push('--project-id', args.projectId);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -69,20 +65,6 @@ export const handleContainerStartCli: MittwaldToolHandler<MittwaldContainerStart
       return formatToolResponse(
         "error",
         `Failed to start container: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet mode output
-    if (args.quiet) {
-      const containerId = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Container ${args.containerId} has been started successfully`,
-        {
-          containerId: containerId || args.containerId,
-          action: "start",
-          projectId: args.projectId
-        }
       );
     }
     

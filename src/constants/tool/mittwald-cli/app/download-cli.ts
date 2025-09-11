@@ -17,10 +17,6 @@ const tool: Tool = {
         type: 'string',
         description: 'Target directory to download the app installation to'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
       sshUser: {
         type: 'string',
         description: 'Override the SSH user to connect with; if omitted, your own user will be used'

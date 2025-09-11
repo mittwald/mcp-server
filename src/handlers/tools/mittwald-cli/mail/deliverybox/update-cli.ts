@@ -5,7 +5,6 @@ import { executeCli } from '../../../../../utils/cli-wrapper.js';
 interface MittwaldMailDeliveryboxUpdateArgs {
   id: string;
   description?: string;
-  quiet?: boolean;
   password?: string;
   randomPassword?: boolean;
 }
@@ -19,9 +18,6 @@ export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldCliToolHandler<Mitt
     cliArgs.push(args.id);
     
     // Optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.description) {
       cliArgs.push('--description', args.description);
@@ -96,9 +92,7 @@ export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldCliToolHandler<Mitt
     // Success response
     return formatToolResponse(
       "success",
-      args.quiet ? 
-        (generatedPassword ? `${args.id}\t${generatedPassword}` : result.stdout || 'Delivery box updated') :
-        `Successfully updated delivery box: ${args.id}${generatedPassword ? ` with new generated password` : ''}`,
+      `Successfully updated delivery box: ${args.id}${generatedPassword ? ` with new generated password` : ''}`,
       resultData
     );
     

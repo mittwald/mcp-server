@@ -17,10 +17,6 @@ const tool: Tool = {
         type: "string",
         description: "The output file to write the dump to ('-' for stdout)",
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
-      },
       mysqlPassword: {
         type: "string",
         description: "The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD)",

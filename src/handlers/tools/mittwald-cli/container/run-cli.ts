@@ -1,13 +1,12 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldContainerRunArgs {
   image: string;
   command?: string;
   args?: string[];
   projectId?: string;
-  quiet?: boolean;
   env?: string[];
   envFile?: string[];
   description?: string;
@@ -45,9 +44,6 @@ export const handleContainerRunCli: MittwaldToolHandler<MittwaldContainerRunArgs
       cliArgs.push('--project-id', args.projectId);
     }
     
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     if (args.name) {
       cliArgs.push('--name', args.name);
@@ -131,24 +127,6 @@ export const handleContainerRunCli: MittwaldToolHandler<MittwaldContainerRunArgs
       return formatToolResponse(
         "error",
         `Failed to run container: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet mode output
-    if (args.quiet) {
-      const containerId = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Container created and started successfully from image ${args.image}`,
-        {
-          containerId: containerId,
-          image: args.image,
-          name: args.name,
-          action: "run",
-          projectId: args.projectId,
-          command: args.command,
-          args: args.args
-        }
       );
     }
     

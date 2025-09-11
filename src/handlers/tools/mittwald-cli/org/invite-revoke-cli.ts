@@ -1,10 +1,9 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 export interface MittwaldOrgInviteRevokeArgs {
   inviteId: string;
-  quiet?: boolean;
 }
 
 export const handleOrgInviteRevokeCli: MittwaldToolHandler<MittwaldOrgInviteRevokeArgs> = async (args, context) => {
@@ -19,10 +18,6 @@ export const handleOrgInviteRevokeCli: MittwaldToolHandler<MittwaldOrgInviteRevo
     // Build CLI command arguments
     const cliArgs: string[] = ['org', 'invite', 'revoke', args.inviteId];
     
-    // Add quiet flag
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
     
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
@@ -47,21 +42,7 @@ export const handleOrgInviteRevokeCli: MittwaldToolHandler<MittwaldOrgInviteRevo
       );
     }
     
-    // Handle quiet output
-    if (args.quiet) {
-      const quietResult = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Organization invite ${args.inviteId} revoked successfully`,
-        { 
-          inviteId: args.inviteId,
-          revoked: true,
-          result: quietResult
-        }
-      );
-    }
-    
-    // Regular output
+    // Return success with output
     return formatToolResponse(
       "success",
       `Organization invite ${args.inviteId} has been revoked successfully`,

@@ -5,7 +5,6 @@ import { executeCli } from '../../../../utils/cli-wrapper.js';
 interface MittwaldBackupScheduleDeleteCliArgs {
   backupScheduleId: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 export const handleBackupScheduleDeleteCli: MittwaldCliToolHandler<MittwaldBackupScheduleDeleteCliArgs> = async (args) => {
@@ -16,10 +15,6 @@ export const handleBackupScheduleDeleteCli: MittwaldCliToolHandler<MittwaldBacku
     // Optional flags
     if (args.force) {
       cliArgs.push('--force');
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
     }
     
     // Execute CLI command
