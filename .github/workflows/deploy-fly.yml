@@ -89,13 +89,18 @@ jobs:
         run: |
           set -e
           HOST=${{ matrix.hostname }}
-          # wait up to ~3 minutes for health
-          for i in $(seq 1 36); do
-            if curl -fsS "https://$HOST/health" >/dev/null; then
-              break
+          # wait up to ~5 minutes for health with retries
+          ok=0
+          for i in $(seq 1 60); do
+            if curl -fsS --max-time 6 "https://$HOST/health" >/dev/null; then
+              ok=1; break
             fi
             sleep 5
           done
+          if [ "$ok" != "1" ]; then
+            echo "Health check did not pass in time for $HOST" >&2
+            exit 22
+          fi
           echo "Health passed; checking /version"
           body=$(curl -fsSL "https://$HOST/version")
           echo "$body" | jq -e --arg sha "${{ steps.meta.outputs.sha }}" '.gitSha == $sha'
@@ -107,10 +112,12 @@ jobs:
           echo "GET $URL"
           curl -fsSL "$URL" | jq '.'
 
-      - name: Cleanup stopped/stale machines
+      - name: Cleanup stopped/stale machines (best-effort)
         run: |
+          set -e
           # destroy any non-started machines to avoid future auto-start staleness
-          ids=$(flyctl status -a ${{ matrix.app }} --json | jq -r '.machines[] | select(.state != "started") | .id')
+          json=$(flyctl status -a ${{ matrix.app }} --json || echo '{}')
+          ids=$(echo "$json" | jq -r '(.machines // [])[] | select(.state != "started") | .id' || echo '')
           if [ -n "$ids" ]; then
-            echo "$ids" | xargs -r -n1 flyctl machine destroy -a ${{ matrix.app }} --force
+            echo "$ids" | xargs -r -n1 flyctl machine destroy -a ${{ matrix.app }} --force || true
           fi
