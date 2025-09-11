@@ -130,3 +130,52 @@ jobs:
           if [ -n "$ids" ]; then
             echo "$ids" | xargs -r -n1 flyctl machine destroy -a ${{ matrix.app }} --force
           fi
+
+  smoke:
+    name: Post-Deploy Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps (repo)
+        run: |
+          npm ci --no-audit --no-fund
+
+      - name: Install Newman
+        run: |
+          npm i -g newman
+
+      - name: Wait for apps to be healthy
+        run: |
+          set -e
+          for host in mittwald-oauth-server.fly.dev mittwald-mcp-fly2.fly.dev; do
+            echo "Waiting for https://$host/health";
+            ok=0
+            for i in $(seq 1 60); do
+              if curl -fsS --max-time 6 "https://$host/health" >/dev/null; then ok=1; break; fi
+              sleep 5
+            done
+            if [ "$ok" != "1" ]; then echo "Health failed for $host" >&2; exit 22; fi
+          done
+
+      - name: Run Postman (Newman) smoke
+        run: |
+          newman run tests/postman/Mittwald-MCP.postman_collection.json \
+            -e tests/postman/Mittwald-MCP.postman_environment.json \
+            --env-var mcp_base=https://mittwald-mcp-fly2.fly.dev \
+            --env-var as_base=https://mittwald-oauth-server.fly.dev
+
+      - name: Run Node E2E OAuth smoke
+        env:
+          AS_BASE: https://mittwald-oauth-server.fly.dev
+          MCP_BASE: https://mittwald-mcp-fly2.fly.dev
+        run: |
+          npm run test:e2e:mcp
