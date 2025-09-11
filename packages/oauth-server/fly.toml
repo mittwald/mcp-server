@@ -16,6 +16,8 @@ primary_region = "fra"
   JWKS_KEYSTORE_PATH = "/app/jwks/jwks.json"
   # Accept resource indicators for the MCP server
   ALLOWED_RESOURCE = "https://mittwald-mcp-fly2.fly.dev/mcp"
+  # Koa cookie signing keys (comma-separated). Optional; the app will generate a random key if unset.
+  # COOKIE_SIGNING_KEYS = "change-me-super-secret"
   # Open but safe DCR: allow any https redirect, plus curated custom schemes for IDE/CLI/native clients
   # Include loopback hosts for native flows (Claude Desktop random localhost ports)
   ALLOWED_REDIRECT_URI_PATTERNS = "https://*/*,http://localhost:*/*,http://127.0.0.1:*/*,http://[::1]:*/*,claude://*,vscode://*,vscodium://*,cursor://*,windsurf://*,zed://*,jetbrains://*,lmstudio://*,postman://*,warp://*,amazonq://*"

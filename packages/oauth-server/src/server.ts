@@ -33,6 +33,19 @@ const config: ProviderConfig = {
 
 async function createServer() {
   const app = new Koa();
+  // Koa requires signing keys to use signed cookies. oidc-provider sets cookies with `signed: true`.
+  // If not provided, Koa will throw `.keys required for signed cookies`.
+  // Use env COOKIE_SIGNING_KEYS (comma-separated) or generate a random fallback.
+  try {
+    const keysEnv = process.env.COOKIE_SIGNING_KEYS;
+    const keys = keysEnv ? keysEnv.split(',').map((k) => k.trim()).filter(Boolean) : [nanoid(64)];
+    // @ts-ignore - Koa expects `app.keys` to be an array of strings
+    app.keys = keys;
+  } catch {
+    // Fallback to a single random key if anything goes wrong
+    // @ts-ignore
+    app.keys = [nanoid(64)];
+  }
   const router = new Router();
   // Trust proxy headers (X-Forwarded-*) when running behind Fly.io / proxies
   app.proxy = true;
