@@ -88,7 +88,7 @@ export async function createApp(): Promise<express.Application> {
     cors({
       origin: true,
       credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Accept'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Accept', 'mcp-protocol-version'],
       exposedHeaders: ['mcp-session-id', 'x-session-id', 'WWW-Authenticate'],
       optionsSuccessStatus: 204,
     })
