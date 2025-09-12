@@ -186,7 +186,7 @@ async function createServer() {
     origin: '*',
     credentials: false,
     allowMethods: ['GET', 'POST', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'Accept']
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'mcp-protocol-version']
   }));
 
   // Router-level CORS/body parsing for our own endpoints (e.g., /health)
@@ -199,7 +199,7 @@ async function createServer() {
     },
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'User-Agent'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'User-Agent', 'mcp-protocol-version'],
   }));
   // Add body parsing only for router-handled endpoints (none currently require it but kept for future use)
   router.use(bodyParser({
