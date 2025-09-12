@@ -141,6 +141,9 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       'openid',
       'profile',
       'email',
+      'user:read',
+      'customer:read',
+      'project:read',
       // Custom scopes can be added dynamically
     ]),
     
