@@ -11,6 +11,9 @@ on:
 
 jobs:
   deploy:
+    concurrency:
+      group: deploy-${{ matrix.app }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:

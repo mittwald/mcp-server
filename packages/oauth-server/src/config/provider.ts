@@ -157,12 +157,15 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
         signed: true,
         secure: config.cookiesSecure,
         httpOnly: true,
+        // Allow cookies in third‑party contexts (Electron/WebView redirects)
+        sameSite: 'none',
         maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days
       },
       short: {
         signed: true,
         secure: config.cookiesSecure,
         httpOnly: true,
+        sameSite: 'none',
         maxAge: 10 * 60 * 1000, // 10 minutes
       },
       names: {

@@ -161,8 +161,8 @@ allowedRedirectURIs:
 
 ### Mittwald Studio OAuth Endpoints
 ```
-Authorization URL: https://api.mittwald.de/v2/oauth2/authorize
-Token URL:         https://api.mittwald.de/v2/oauth2/token
+Authorization URL: https://login.mittwald.de/oauth2/authorize
+Token URL:         https://login.mittwald.de/oauth2/token
 ```
 
 ### OAuth Discovery (if supported)

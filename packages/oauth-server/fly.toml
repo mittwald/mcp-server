@@ -28,7 +28,7 @@ primary_region = "fra"
   MITTWALD_AUTHORIZATION_URL = "https://login.mittwald.de/oauth2/authorize"
   MITTWALD_TOKEN_URL = "https://login.mittwald.de/oauth2/token"
   # MITTWALD_USERINFO_URL = "https://login.mittwald.de/oauth2/userinfo"
-  # Default redirect to our AS callback route
+  # Default redirect to our AS callback route (whitelisted)
   MITTWALD_REDIRECT_URI = "https://mittwald-oauth-server.fly.dev/mittwald/callback"
   # Open but safe DCR: allow any https redirect, plus curated custom schemes for IDE/CLI/native clients
   # Include loopback hosts for native flows (Claude Desktop random localhost ports)

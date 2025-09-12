@@ -316,6 +316,7 @@ Use these canonical endpoints:
 - OAuth Authorization Server (AS)
   - Base: https://mittwald-oauth-server.fly.dev
   - AS Metadata: https://mittwald-oauth-server.fly.dev/.well-known/oauth-authorization-server
+  - AS Callback (Mittwald IdP redirect): https://mittwald-oauth-server.fly.dev/mittwald/callback
   - Endpoints: /auth, /token, /jwks, /reg, /token/revocation, /me
 
 MCP clients connect to the MCP endpoint and receive a 401 with a WWW-Authenticate challenge that points to the oauth-server /auth. The browser completes the authorization code + PKCE flow with the oauth-server, and the MCP client exchanges the code for tokens as per the MCP spec.

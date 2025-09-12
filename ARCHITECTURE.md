@@ -197,12 +197,11 @@ allowedScopes:
   - "user:write"
 
 allowedRedirectURIs:
-  # Development/Staging URLs
-  - "https://mittwald-mcp-fly2.fly.dev/auth/callback"
-  - "https://mittwald-mcp-fly2.fly.dev/oauth/callback"
-  # Production URLs
-  - "https://mcp.mittwald.de/auth/callback"
+  # Authorization Server callback (current)
+  - "https://mittwald-oauth-server.fly.dev/mittwald/callback"
+  # Production URLs (future move to .mittwald.de)
   - "https://mcp.mittwald.de/oauth/callback"
+  - "https://mcp.mittwald.de/auth/callback"
 ```
 
 **Key Configuration Details:**
