@@ -55,7 +55,6 @@ export const handleDatabaseMysqlDumpCli: MittwaldToolHandler<MittwaldDatabaseMys
     const result = await executeCli('mw', cliArgs, {
       timeout: 300000, // 5 minutes timeout for large dumps
       env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
         // Pass MySQL password via environment variable if provided
         ...(args.mysqlPassword && { MYSQL_PWD: args.mysqlPassword }),
         // Pass SSH settings via environment variables if provided
@@ -72,7 +71,7 @@ export const handleDatabaseMysqlDumpCli: MittwaldToolHandler<MittwaldDatabaseMys
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when creating MySQL dump. Check if your API token has database access permissions.\nError: ${errorMessage}`
+          `Permission denied when creating MySQL dump. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

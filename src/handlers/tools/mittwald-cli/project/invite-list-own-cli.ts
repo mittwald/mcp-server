@@ -41,11 +41,7 @@ export const handleProjectInviteListOwnCli: MittwaldToolHandler<MittwaldProjectI
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || 'Unknown error';
@@ -53,7 +49,7 @@ export const handleProjectInviteListOwnCli: MittwaldToolHandler<MittwaldProjectI
       if (errorMessage.includes('not authenticated') || errorMessage.includes('401')) {
         return formatToolResponse(
           "error",
-          `Authentication failed. Please ensure your API token is valid.\nError: ${errorMessage}`
+          `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

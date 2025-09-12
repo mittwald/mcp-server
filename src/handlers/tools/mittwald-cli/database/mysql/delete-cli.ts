@@ -22,11 +22,7 @@ export const handleDatabaseMysqlDeleteCli: MittwaldToolHandler<MittwaldDatabaseM
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       // Parse error message from stderr or stdout
@@ -36,7 +32,7 @@ export const handleDatabaseMysqlDeleteCli: MittwaldToolHandler<MittwaldDatabaseM
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when deleting MySQL database. Check if your API token has database deletion permissions.\nError: ${errorMessage}`
+          `Permission denied when deleting MySQL database. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

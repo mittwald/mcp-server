@@ -70,7 +70,6 @@ export const handleAppUploadCli: MittwaldCliToolHandler<MittwaldAppUploadArgs> =
     const result = await executeCli('mw', cliArgs, {
       timeout: 600000, // 10 minutes for upload operations
       env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
         MITTWALD_NONINTERACTIVE: '1'
       }
     });

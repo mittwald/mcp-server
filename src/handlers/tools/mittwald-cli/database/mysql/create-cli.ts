@@ -61,7 +61,6 @@ export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseM
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
       env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
         // Pass user password via environment variable if provided
         ...(args.userPassword && { MYSQL_PWD: args.userPassword })
       }
@@ -85,7 +84,7 @@ export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseM
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when creating MySQL database. Check if your API token has database creation permissions.\nError: ${errorMessage}`
+          `Permission denied when creating MySQL database. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

@@ -82,11 +82,7 @@ export const handleSftpUserUpdateCli: MittwaldToolHandler<MittwaldSftpUserUpdate
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+  const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || 'Unknown error';
@@ -95,7 +91,7 @@ export const handleSftpUserUpdateCli: MittwaldToolHandler<MittwaldSftpUserUpdate
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when updating SFTP user. Check if your API token has SFTP user management permissions.\nError: ${errorMessage}`
+          `Permission denied when updating SFTP user. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

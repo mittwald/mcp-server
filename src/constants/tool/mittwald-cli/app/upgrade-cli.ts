@@ -35,7 +35,7 @@ const tool: Tool = {
         default: '600s'
       }
     },
-    required: ["projectId", "installationId"]
+    required: ['projectId', 'installationId']
   }
 };
 

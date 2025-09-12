@@ -45,8 +45,8 @@ export const DEFAULT_ITEM_LIMIT = 25;
 export const MITTWALD_ERROR_MESSAGES = {
   /** Configuration is missing required fields or has invalid values */
   MISSING_CONFIG: "Mittwald configuration is missing or invalid",
-  /** API token is invalid or expired */
-  INVALID_AUTH: "Invalid Mittwald API token",
+  /** Authentication failed or session invalid */
+  INVALID_AUTH: "Authentication failed. Please complete OAuth sign-in.",
   /** Mittwald API rate limit has been exceeded */
   RATE_LIMIT: "Mittwald API rate limit exceeded",
   /** General Mittwald API request failure */

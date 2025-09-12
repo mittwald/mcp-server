@@ -7,28 +7,37 @@ export class OAuthMetadataRoutes {
 
   constructor(baseUrl?: string) {
     this.router = Router();
-    this.baseUrl = baseUrl || process.env.BASE_URL || (process.env.ENABLE_HTTPS === 'true' ? 'https://localhost:3000' : 'http://localhost:3000');
+    // Prefer explicit public base for MCP, then BASE_URL, then localhost fallback
+    this.baseUrl = baseUrl || process.env.MCP_PUBLIC_BASE || process.env.BASE_URL || (process.env.ENABLE_HTTPS === 'true' ? 'https://localhost:3000' : 'http://localhost:3000');
     this.setupRoutes();
   }
 
   private setupRoutes(): void {
     // OAuth 2.0 Authorization Server Metadata (RFC 8414)
     this.router.get('/.well-known/oauth-authorization-server', this.handleAuthorizationServerMetadata.bind(this));
+    // Compatibility path used by some MCP clients (suffix /mcp). Redirect to AS metadata
+    this.router.get('/.well-known/oauth-authorization-server/mcp', (req, res) => {
+      const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+      return res.redirect(302, `${asBase}/.well-known/oauth-authorization-server`);
+    });
     
     // OAuth 2.0 Protected Resource Metadata (for MCP)
     this.router.get('/.well-known/oauth-protected-resource', this.handleProtectedResourceMetadata.bind(this));
+    // Alias endpoint with /mcp suffix that Inspector tries to access
+    this.router.get('/.well-known/oauth-protected-resource/mcp', this.handleProtectedResourceMetadata.bind(this));
   }
 
   private async handleAuthorizationServerMetadata(req: Request, res: Response): Promise<void> {
     try {
+      const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
       const metadata = {
-        issuer: this.baseUrl,
-        authorization_endpoint: `${this.baseUrl}/oauth/authorize`,
-        token_endpoint: `${this.baseUrl}/oauth/token`,
-        userinfo_endpoint: `${this.baseUrl}/auth/user-info`,
-        revocation_endpoint: `${this.baseUrl}/oauth/revoke`,
-        registration_endpoint: `${this.baseUrl}/oauth/register`,
-        jwks_uri: `${this.baseUrl}/.well-known/jwks.json`,
+        issuer: asBase,
+        authorization_endpoint: `${asBase}/auth`,
+        token_endpoint: `${asBase}/token`,
+        userinfo_endpoint: `${asBase}/me`,
+        revocation_endpoint: `${asBase}/token/revocation`,
+        registration_endpoint: `${asBase}/reg`,
+        jwks_uri: `${asBase}/jwks`,
         scopes_supported: [
           'openid',
           'profile',
@@ -89,9 +98,11 @@ export class OAuthMetadataRoutes {
 
   private async handleProtectedResourceMetadata(req: Request, res: Response): Promise<void> {
     try {
+      const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+      const resourceUrl = `${this.baseUrl}/mcp`;
       const metadata = {
-        resource: this.baseUrl,
-        authorization_servers: [this.baseUrl],
+        resource: resourceUrl,
+        authorization_servers: [asBase],
         scopes_supported: [
           'openid',
           'profile',

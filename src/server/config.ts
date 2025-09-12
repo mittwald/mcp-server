@@ -8,14 +8,12 @@
  * object that is used throughout the application.
  *
  * Required environment variables:
- * - MITTWALD_API_TOKEN: API token for Mittwald API access
- * - JWT_SECRET: Secret key for signing JWT tokens (if OAuth enabled)
+ * - JWT_SECRET: Secret key for signing JWT tokens
  *
  * Optional environment variables:
  * - OAUTH_ISSUER: Base URL for OAuth endpoints
  * - REDIRECT_URL: OAuth callback URL
  * - PORT: Server port (default: 3000)
- * - DISABLE_OAUTH: Set to "true" to disable OAuth (default: false)
  */
 
 import dotenv from "dotenv";
@@ -29,9 +27,7 @@ dotenv.config();
  * These values are typically loaded from environment variables.
  */
 export interface ServerConfig {
-  /** Mittwald API token for API access */
-  MITTWALD_API_TOKEN: string;
-  /** Secret key for JWT token signing (optional if OAuth disabled) */
+  /** Secret key for JWT token signing */
   JWT_SECRET?: string;
   /** Base URL for OAuth issuer (production or localhost) */
   OAUTH_ISSUER: string;
@@ -39,8 +35,8 @@ export interface ServerConfig {
   REDIRECT_URL: string;
   /** Server port number */
   PORT: string;
-  /** Whether to disable OAuth authentication */
-  DISABLE_OAUTH: boolean;
+  /** Reserved for future flags (no OAuth bypass) */
+  // no-op
   /** Test server ID for running tests */
   TEST_SERVER_ID?: string;
   /** Test admin email for running tests */
@@ -65,7 +61,6 @@ export interface ServerConfig {
  * Used throughout the application for consistent settings.
  */
 export const CONFIG: ServerConfig = {
-  MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || "",
   JWT_SECRET: process.env.JWT_SECRET,
   OAUTH_ISSUER: process.env.OAUTH_ISSUER || 
     (process.env.NODE_ENV === "production" 
@@ -74,7 +69,7 @@ export const CONFIG: ServerConfig = {
   REDIRECT_URL: process.env.REDIRECT_URL || 
     `${process.env.OAUTH_ISSUER || `http://localhost:${process.env.PORT || "3000"}`}/oauth/callback`,
   PORT: process.env.PORT || "3000",
-  DISABLE_OAUTH: process.env.DISABLE_OAUTH === "true",
+  // no OAuth bypass
   TEST_SERVER_ID: process.env.TEST_SERVER_ID,
   TEST_ADMIN_EMAIL: process.env.TEST_ADMIN_EMAIL,
   SKIP_TEST_CLEANUP: process.env.SKIP_TEST_CLEANUP === "true",
@@ -92,22 +87,13 @@ export const CONFIG: ServerConfig = {
  * Throws an error if any required values are missing.
  */
 export function validateConfig(): void {
-  const requiredVars = [
-    "MITTWALD_API_TOKEN",
-  ];
-
-  // JWT_SECRET is only required if OAuth is enabled
-  if (!CONFIG.DISABLE_OAUTH && !CONFIG.JWT_SECRET) {
+  const requiredVars: string[] = [];
+  if (!CONFIG.JWT_SECRET) {
     requiredVars.push("JWT_SECRET");
   }
-
-  const missingVars = requiredVars.filter(
-    (varName) => !process.env[varName]
-  );
-
-  if (missingVars.length > 0) {
+  if (requiredVars.length > 0) {
     throw new Error(
-      `Missing required environment variables: ${missingVars.join(", ")}`
+      `Missing required environment variables: ${requiredVars.join(", ")}`
     );
   }
 }
@@ -127,6 +113,6 @@ export const OAUTH_CALLBACK_URLS = [
 
 // Legacy exports for backwards compatibility
 export const VALID_REDIRECT_URIS = OAUTH_CALLBACK_URLS;
-export const OAUTH_DISABLED = CONFIG.DISABLE_OAUTH;
+// No OAuth-disabled mode
 
 export default CONFIG;

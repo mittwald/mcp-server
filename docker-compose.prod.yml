@@ -15,7 +15,6 @@ services:
       - DEBUG=false
       - REDIS_URL=redis://redis:6379
       - ENABLE_HTTPS=true  # MANDATORY for production
-      - DISABLE_OAUTH=false
       - OAUTH_ISSUER=https://studio.mittwald.de/default
       - OAUTH_REDIRECT_URI=https://your-mcp-server.com/auth/callback
       - JWT_SECRET=${JWT_SECRET}  # Use strong secret from environment

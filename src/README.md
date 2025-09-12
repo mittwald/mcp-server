@@ -1,13 +1,13 @@
-# Reddit MCP Server Source Code
+# Mittwald MCP Server Source Code
 
-This directory contains the source code for the Reddit Model Context Protocol (MCP) server. The server enables AI assistants to interact with Reddit through a standardized protocol.
+This directory contains the source code for the Mittwald Model Context Protocol (MCP) server. The server enables AI assistants to interact with the Mittwald platform through a standardized protocol.
 
 ## Directory Structure
 
 ### Entry Points
 
 - **`index.ts`** - Main executable entry point for running the server directly
-- **`reddit-mcp-server.ts`** - HTTP server implementation that handles OAuth and hosts MCP endpoints
+- **`server.ts`** - HTTP server implementation that handles OAuth metadata and hosts MCP endpoints
 - **`smithery-entry.ts`** - Entry point for Smithery platform deployment
 
 ### Core Directories
@@ -34,12 +34,11 @@ HTTP server infrastructure including:
 
 #### `/services`
 External service integrations:
-- Reddit API client with OAuth support
-- SystemPrompt API integration for AI capabilities
+- Mittwald CLI/API integration
 
 #### `/types`
 TypeScript type definitions for:
-- Reddit API data structures
+- Mittwald data structures
 - MCP protocol extensions
 - Internal application types
 

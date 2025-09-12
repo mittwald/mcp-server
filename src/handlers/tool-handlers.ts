@@ -28,6 +28,7 @@ import { logger } from '../utils/logger.js';
 import type { MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
 import { filterTools, getToolCategories, getToolCountByCategory } from '../utils/tool-filter.js';
+import { runWithSessionContext } from '../utils/execution-context.js';
 import { CONFIG } from '../server/config.js';
 
 /**
@@ -212,13 +213,7 @@ export async function handleToolCall(
                           request.params.name.includes('accessible_projects');
     
     let result: CallToolResult;
-    if (isSessionAware && context.sessionId) {
-      // Pass sessionId to session-aware CLI tools
-      result = await handler(request.params.arguments, context.sessionId);
-    } else {
-      // Standard tool execution
-      result = await handler(request.params.arguments);
-    }
+    result = await runWithSessionContext(context.sessionId, () => handler(request.params.arguments as any));
     
     logger.info(`✅ Tool ${request.params.name} executed successfully`);
     return result;

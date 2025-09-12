@@ -1,5 +1,7 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { getCurrentSessionId } from './execution-context.js';
+import { sessionManager } from '../server/session-manager.js';
 
 const execAsync = promisify(exec);
 
@@ -7,6 +9,8 @@ export interface CliExecuteOptions {
   timeout?: number;
   maxBuffer?: number;
   env?: Record<string, string>;
+  /** Per-user Mittwald access token to pass to the CLI via --token */
+  token?: string;
 }
 
 export interface CliExecuteResult {
@@ -23,11 +27,35 @@ export async function executeCli(
   const {
     timeout = 30000,
     maxBuffer = 1024 * 1024 * 10, // 10MB
-    env = {}
+    env = {},
+    token,
   } = options;
 
+  // Compute token to inject if not already present in args
+  let effectiveArgs = [...args];
+  const hasTokenArg = effectiveArgs.includes('--token');
+  let effectiveToken = token;
+  if (!effectiveToken) {
+    // Derive token from current session context, if available
+    const sessionId = getCurrentSessionId();
+    if (sessionId) {
+      try {
+        const session = await sessionManager.getSession(sessionId);
+        effectiveToken = session?.oauthAccessToken;
+      } catch {
+        // ignore; will proceed without token
+      }
+    }
+  }
+
+  if (!hasTokenArg) {
+    if (effectiveToken) {
+      effectiveArgs.push('--token', effectiveToken);
+    }
+  }
+
   // Escape arguments to prevent shell injection and handle Unicode
-  const escapedArgs = args.map(arg => {
+  const escapedArgs = effectiveArgs.map(arg => {
     // Always quote arguments that contain spaces, special chars, or non-ASCII characters
     if (/[\s"'\\$`!@#%&*(){}[\]|;:<>?~`]/.test(arg) || /[^\x00-\x7F]/.test(arg)) {
       // Escape quotes, backslashes, and dollar signs within quoted strings
@@ -45,6 +73,7 @@ export async function executeCli(
       maxBuffer,
       env: {
         ...process.env,
+        // Do not pass token via environment; always via --token
         ...env,
         // Ensure non-interactive mode
         MITTWALD_NONINTERACTIVE: '1',
@@ -71,9 +100,10 @@ export async function executeCli(
       stderr = `Command killed with signal ${error.signal}. ${stderr}`.trim();
     }
     
-    // Include the full command in error output for debugging
-    if (!stderr.includes(fullCommand)) {
-      stderr = `Command: ${fullCommand}\nError: ${stderr}`.trim();
+    // Include the full command in error output for debugging (redact token)
+    const redactedCommand = fullCommand.replace(/--token\s+\S+/g, '--token [REDACTED]');
+    if (!stderr.includes(redactedCommand)) {
+      stderr = `Command: ${redactedCommand}\nError: ${stderr}`.trim();
     }
     
     return {

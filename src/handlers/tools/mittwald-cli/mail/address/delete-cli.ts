@@ -21,12 +21,7 @@ export const handleMittwaldMailAddressDeleteCli: MittwaldCliToolHandler<Mittwald
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        // Pass through API token if available
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       // Parse error message from stderr or stdout

@@ -64,12 +64,7 @@ export const handleAppInstallWordpressCli: MittwaldCliToolHandler<MittwaldAppIns
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        // Pass through API token if available
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       // Parse error message from stderr or stdout
@@ -79,7 +74,7 @@ export const handleAppInstallWordpressCli: MittwaldCliToolHandler<MittwaldAppIns
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when installing WordPress. Check if your API token has project management permissions.\nError: ${errorMessage}`
+          `Permission denied when installing WordPress. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

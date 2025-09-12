@@ -79,7 +79,6 @@ TIPS:
         connectionString: `mysql://username:password@127.0.0.1:${localPort}/database_name`,
         instructions: instructions.trim(),
         environmentVariables: {
-          MITTWALD_API_TOKEN: "Required for authentication",
           ...(args.sshUser && { MITTWALD_SSH_USER: args.sshUser }),
           ...(args.sshIdentityFile && { MITTWALD_SSH_IDENTITY_FILE: args.sshIdentityFile })
         }

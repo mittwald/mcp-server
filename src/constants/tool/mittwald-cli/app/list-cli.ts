@@ -42,7 +42,7 @@ const tool: Tool = {
         default: ','
       }
     },
-    required: ["projectId"]
+    required: ['projectId']
   }
 };
 

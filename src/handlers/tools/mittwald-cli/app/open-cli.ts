@@ -24,7 +24,6 @@ export const handleAppOpenCli: MittwaldCliToolHandler<MittwaldAppOpenArgs> = asy
     // Execute CLI command
     const result = await executeCli('mw', cliArgs, {
       env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
         MITTWALD_NONINTERACTIVE: '1'
       }
     });

@@ -44,12 +44,7 @@ export const handleDomainVirtualhostCreateCli: MittwaldToolHandler<MittwaldDomai
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        // Pass through API token if available
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+    const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       // Parse error message from stderr or stdout
@@ -62,7 +57,7 @@ export const handleDomainVirtualhostCreateCli: MittwaldToolHandler<MittwaldDomai
           `Permission denied when creating virtual host. ${
             args.hostname?.includes('.project.space') 
               ? 'Subdomains on .project.space may not be allowed. Try using a custom domain instead.' 
-              : 'Check if your API token has domain management permissions.'
+              : 'Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.'
           }\nError: ${errorMessage}`
         );
       }

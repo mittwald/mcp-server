@@ -52,7 +52,6 @@ export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs>
     const result = await executeCli('mw', cliArgs, {
       timeout: 900000, // 15 minutes for upgrade operations
       env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || '',
         MITTWALD_NONINTERACTIVE: '1'
       }
     });

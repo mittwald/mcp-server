@@ -1,6 +1,6 @@
 # Server Configuration Constants
 
-This directory contains server-level configuration and constants for the Reddit MCP server.
+This directory contains server-level configuration and constants for the Mittwald MCP server.
 
 ## Overview
 

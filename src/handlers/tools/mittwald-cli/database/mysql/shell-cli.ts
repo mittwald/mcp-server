@@ -52,7 +52,10 @@ This will:
 2. Connect to the MySQL database with ID: ${args.databaseId}
 3. Open an interactive MySQL shell where you can run SQL commands
 
-ENVIRONMENT VARIABLES:
+AUTHENTICATION:
+    - Ensure you are authenticated with the Mittwald CLI (run 'mw login' if needed)
+
+ENVIRONMENT VARIABLES (optional):
 ${args.mysqlPassword ? '- MYSQL_PWD: Password will be passed via environment' : '- MYSQL_PWD: Set this to avoid interactive password prompt'}
 ${args.sshUser ? `- MITTWALD_SSH_USER: ${args.sshUser}` : '- MITTWALD_SSH_USER: Override SSH user if needed'}
 ${args.sshIdentityFile ? `- MITTWALD_SSH_IDENTITY_FILE: ${args.sshIdentityFile}` : '- MITTWALD_SSH_IDENTITY_FILE: Specify SSH private key if needed'}
@@ -61,7 +64,7 @@ TIPS:
 - Use 'exit' or 'quit' to leave the MySQL shell
 - The connection uses your SSH configuration from ~/.ssh/config
 - For security, consider using environment variables instead of command-line flags for passwords
-`;
+    `;
 
     return formatToolResponse(
       "success",
@@ -72,7 +75,6 @@ TIPS:
         interactive: true,
         instructions: instructions.trim(),
         environmentVariables: {
-          MITTWALD_API_TOKEN: "Required for authentication",
           ...(args.mysqlPassword && { MYSQL_PWD: "Password for MySQL user" }),
           ...(args.sshUser && { MITTWALD_SSH_USER: args.sshUser }),
           ...(args.sshIdentityFile && { MITTWALD_SSH_IDENTITY_FILE: args.sshIdentityFile })

@@ -34,17 +34,14 @@ This will:
 
 NOTES:
 - This command requires a web browser to be available
-- You will be automatically logged into phpMyAdmin
-- The session is secure and tied to your Mittwald authentication
+    - Ensure you are authenticated with the Mittwald CLI (run 'mw login' if needed)
+- The session is secure and tied to your authentication
 - You can manage your database through the phpMyAdmin web interface
-
-ENVIRONMENT VARIABLES:
-- MITTWALD_API_TOKEN: Required for authentication
 
 TIP: 
 - Make sure you have a web browser available on your system
 - The phpMyAdmin session will be automatically authenticated
-`;
+    `;
 
     return formatToolResponse(
       "success",
@@ -54,9 +51,7 @@ TIP:
         databaseId: args.databaseId,
         requiresBrowser: true,
         instructions: instructions.trim(),
-        environmentVariables: {
-          MITTWALD_API_TOKEN: "Required for authentication"
-        }
+        environmentVariables: {}
       }
     );
     

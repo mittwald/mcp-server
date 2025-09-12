@@ -27,7 +27,6 @@ describe('OAuth Authorization Flow Integration Tests', () => {
   beforeAll(async () => {
     // Set test environment variables
     process.env.NODE_ENV = 'test';
-    process.env.DISABLE_OAUTH = 'false';
     process.env.OAUTH_ISSUER = testConfig.issuer;
     process.env.MITTWALD_OAUTH_CLIENT_ID = testConfig.clientId;
     process.env.MITTWALD_OAUTH_CLIENT_SECRET = testConfig.clientSecret;

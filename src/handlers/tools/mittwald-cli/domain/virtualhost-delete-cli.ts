@@ -18,11 +18,7 @@ export const handleDomainVirtualhostDeleteCli: MittwaldToolHandler<MittwaldDomai
     }
     
     // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_API_TOKEN: process.env.MITTWALD_API_TOKEN || ''
-      }
-    });
+  const result = await executeCli('mw', cliArgs);
     
     if (result.exitCode !== 0) {
       const errorMessage = result.stderr || result.stdout || 'Unknown error';
@@ -37,7 +33,7 @@ export const handleDomainVirtualhostDeleteCli: MittwaldToolHandler<MittwaldDomai
       if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
         return formatToolResponse(
           "error",
-          `Permission denied when deleting virtual host. Check if your API token has domain management permissions.\nError: ${errorMessage}`
+          `Permission denied when deleting virtual host. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
         );
       }
       

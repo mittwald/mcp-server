@@ -1,0 +1,197 @@
+name: Deploy to Fly.io (Immutable, Verified)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'packages/**'
+      - 'src/**'
+      - '.github/workflows/deploy-fly.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    concurrency:
+      group: deploy-${{ matrix.app }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: mittwald-oauth-server
+            context: packages/oauth-server
+            dockerfile: packages/oauth-server/Dockerfile
+            fly_config: packages/oauth-server/fly.toml
+            hostname: mittwald-oauth-server.fly.dev
+          - app: mittwald-mcp-fly2
+            context: .
+            dockerfile: Dockerfile
+            fly_config: packages/mcp-server/fly.toml
+            hostname: mittwald-mcp-fly2.fly.dev
+
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Fly auth
+        run: |
+          flyctl auth token || true
+          flyctl auth docker
+
+      - name: Docker login to Fly registry
+        run: echo "$FLY_API_TOKEN" | docker login registry.fly.io -u x --password-stdin
+
+      - name: Compute build metadata
+        id: meta
+        run: |
+          echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+          echo "build_time=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+
+      - name: Pre-compile TypeScript (fail-fast)
+        run: |
+          set -e
+          CTX="${{ matrix.context }}"
+          if [ -f "$CTX/package.json" ]; then
+            echo "Pre-building in $CTX";
+            pushd "$CTX" >/dev/null
+            npm ci --no-audit --no-fund
+            npm run build
+            popd >/dev/null
+          else
+            echo "No package.json in $CTX; skipping pre-compile"
+          fi
+
+      # Skip manual docker push. Fly remote builder will build + publish in deploy step.
+      # This avoids registry permission pitfalls and simplifies digest handling.
+
+      - name: Set version secrets (sha, build time)
+        run: |
+          flyctl secrets set \
+            GIT_SHA=${{ steps.meta.outputs.sha }} \
+            BUILD_TIME=${{ steps.meta.outputs.build_time }} \
+            -a ${{ matrix.app }} --stage
+
+      - name: Deploy from source (remote builder)
+        run: |
+          # Use Fly remote builder to build and deploy from source using app credentials.
+          # Secrets staged earlier (GIT_SHA, IMAGE_DIGEST, BUILD_TIME) become visible to the app.
+          flyctl deploy --config "${{ matrix.fly_config }}" --strategy immediate --detach --verbose
+
+      - name: Wait for app health then verify /version (commit SHA)
+        run: |
+          set -e
+          HOST=${{ matrix.hostname }}
+          # wait up to ~5 minutes for health with retries
+          ok=0
+          for i in $(seq 1 60); do
+            if curl -fsS --max-time 6 "https://$HOST/health" >/dev/null; then
+              ok=1; break
+            fi
+            sleep 5
+          done
+          if [ "$ok" != "1" ]; then
+            echo "Health check did not pass in time for $HOST" >&2
+            exit 22
+          fi
+          echo "Health passed; checking /version"
+          body=$(curl -fsSL "https://$HOST/version")
+          echo "$body" | jq -e --arg sha "${{ steps.meta.outputs.sha }}" '.gitSha == $sha'
+
+      - name: Diagnostics on failure (status + recent logs)
+        if: failure()
+        run: |
+          set +e
+          echo "Fly status for ${{ matrix.app }}:";
+          flyctl status -a ${{ matrix.app }} || true
+          echo "\nLast 200 lines of logs:";
+          flyctl logs -a ${{ matrix.app }} --since 20m | tail -n 200 || true
+
+      - name: Verify /version endpoint (digest optional)
+        run: |
+          set -e
+          URL="https://${{ matrix.hostname }}/version"
+          echo "GET $URL"
+          curl -fsSL "$URL" | jq '.'
+
+      - name: Cleanup stopped/stale machines (best-effort)
+        continue-on-error: true
+        run: |
+          set +e
+          json=$(flyctl status -a ${{ matrix.app }} --json 2>/dev/null || echo '{}')
+          ids=$(echo "$json" | jq -r 'if (.machines | type) == "array" then (.machines[] | select(.state != "started") | .id) else empty end')
+          if [ -n "$ids" ]; then
+            echo "$ids" | xargs -r -n1 flyctl machine destroy -a ${{ matrix.app }} --force
+          fi
+
+  smoke:
+    name: Post-Deploy Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps (repo)
+        run: |
+          npm ci --no-audit --no-fund
+
+      - name: Install Newman
+        run: |
+          npm i -g newman
+
+      - name: Wait for apps to be healthy
+        run: |
+          set -e
+          for host in mittwald-oauth-server.fly.dev mittwald-mcp-fly2.fly.dev; do
+            echo "Waiting for https://$host/health";
+            ok=0
+            for i in $(seq 1 60); do
+              if curl -fsS --max-time 6 "https://$host/health" >/dev/null; then ok=1; break; fi
+              sleep 5
+            done
+            if [ "$ok" != "1" ]; then echo "Health failed for $host" >&2; exit 22; fi
+          done
+
+      - name: Run Postman (Newman) smoke
+        run: |
+          newman run tests/postman/Mittwald-MCP.postman_collection.json \
+            -e tests/postman/Mittwald-MCP.postman_environment.json \
+            --env-var mcp_base=https://mittwald-mcp-fly2.fly.dev \
+            --env-var as_base=https://mittwald-oauth-server.fly.dev
+
+      - name: AS DCR sanity (headless)
+        run: |
+          set -e
+          cat > dcr.json <<'JSON'
+          {
+            "redirect_uris": ["http://127.0.0.1/callback"],
+            "token_endpoint_auth_method": "none",
+            "grant_types": ["authorization_code", "refresh_token"],
+            "response_types": ["code"],
+            "client_name": "CI Smoke",
+            "application_type": "native",
+            "scope": "openid profile email"
+          }
+          JSON
+          CODE=$(curl -sS -o body.json -w "%{http_code}" -H 'Content-Type: application/json' --data @dcr.json https://mittwald-oauth-server.fly.dev/reg || true)
+          echo "DCR HTTP $CODE" && cat body.json
+          if [ "$CODE" != "201" ] && [ "$CODE" != "200" ]; then
+            echo "DCR failed" >&2; exit 1;
+          fi

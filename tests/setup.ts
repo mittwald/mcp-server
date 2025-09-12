@@ -9,7 +9,7 @@ process.env.NODE_ENV = 'test';
 process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret-for-oauth-tests';
 process.env.OAUTH_ISSUER = process.env.OAUTH_ISSUER || 'http://localhost:8080/default';
-process.env.DISABLE_OAUTH = 'false';
+// OAuth-only mode
 
 // Global test setup
 beforeAll(async () => {

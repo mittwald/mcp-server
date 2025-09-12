@@ -76,10 +76,9 @@ export class SessionAwareCli {
   ): CliExecuteOptions {
     return {
       ...options,
+      token: session.oauthAccessToken,
       env: {
         ...options.env,
-        // Use OAuth access token directly as API token (as per proposal)
-        MITTWALD_API_TOKEN: session.oauthAccessToken,
         MITTWALD_NONINTERACTIVE: '1',
         CI: '1'
       }

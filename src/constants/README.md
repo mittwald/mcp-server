@@ -1,6 +1,6 @@
 # Constants Directory
 
-This directory contains all static definitions, schemas, and prompts used throughout the Reddit MCP server. It serves as the single source of truth for tool definitions and sampling configurations.
+This directory contains all static definitions, schemas, and prompts used throughout the Mittwald MCP server. It serves as the single source of truth for tool definitions and sampling configurations.
 
 ## Overview
 
@@ -22,8 +22,7 @@ Master list of all available tools:
 
 #### `message-handler.ts`
 Message formatting utilities:
-- Structures Reddit content for display
-- Formats posts, comments, and messages
+- Structures content for display
 - Provides consistent output format
 
 ### Server Configuration (`/server`)
@@ -37,19 +36,10 @@ Server-level configuration and constants:
 
 Each file defines a tool's schema and metadata:
 
-#### Search and Discovery Tools
-- **`search-reddit.ts`** - Search parameters and description
-- **`get-channel.ts`** - Subreddit info retrieval schema
-
-#### Content Retrieval Tools
-- **`get-post.ts`** - Post fetching parameters
-- **`get-comment.ts`** - Comment thread schema
-- **`get-notifications.ts`** - Notification retrieval
-
-#### Content Creation Tools
-- **`create-post.ts`** - Post submission schema
-- **`create-comment.ts`** - Comment creation parameters
-- **`create-message.ts`** - Private message schema
+#### Tool Categories (examples)
+- Resource listing and retrieval
+- Project and environment management
+- CLI orchestration helpers
 
 
 ### Sampling Definitions (`/sampling`)
