@@ -54,7 +54,7 @@ export async function getMittwaldClient(cfg?: Partial<MittwaldConfig>): Promise<
   });
 
   const effectiveConfig: MittwaldConfig = {
-    issuer: envIssuer || issuerMeta.issuer,
+    issuer: (envIssuer ?? issuerMeta.issuer) as string,
     authorizationUrl: (issuerMeta.metadata as any).authorization_endpoint,
     tokenUrl: (issuerMeta.metadata as any).token_endpoint,
     userinfoUrl: (issuerMeta.metadata as any).userinfo_endpoint,
