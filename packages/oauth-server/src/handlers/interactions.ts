@@ -12,83 +12,59 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
 
   // Start interaction: attempt Mittwald auth; fallback to dev auto-login/consent
   router.get('/interaction/:uid', async (ctx) => {
-    const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
-    const { clientId } = details.params;
-    const prompt = details.prompt?.name;
-    logger.info('Interaction details', { uid: details.uid, prompt, clientId });
+    try {
+      const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
+      const { clientId } = details.params;
+      const prompt = details.prompt?.name;
+      logger.info('Interaction details', { uid: details.uid, prompt, clientId });
 
-    // If Mittwald OAuth config is unavailable, provide a dev-friendly fallback
-    const canUseMittwald = !!(
-      process.env.MITTWALD_AUTHORIZATION_URL &&
-      process.env.MITTWALD_TOKEN_URL &&
-      process.env.MITTWALD_CLIENT_ID &&
-      process.env.MITTWALD_REDIRECT_URI
-    );
-
-    if (!canUseMittwald) {
-      // Minimal interaction: auto-complete login/consent for testing
-      try {
-        if (prompt === 'login') {
-          const accountId = process.env.DEV_ACCOUNT_ID || `dev-${details.uid}`;
-          await (provider as any).interactionFinished(
-            ctx.req,
-            ctx.res,
-            { login: { accountId } },
-            { mergeWithLastSubmission: true },
-          );
-          ctx.respond = false;
-          return;
-        }
-        if (prompt === 'consent') {
-          await (provider as any).interactionFinished(
-            ctx.req,
-            ctx.res,
-            { consent: {} },
-            { mergeWithLastSubmission: true },
-          );
-          ctx.respond = false;
-          return;
-        }
-        // Default: finish interaction with consent
-        await (provider as any).interactionFinished(
-          ctx.req,
-          ctx.res,
-          { consent: {} },
-          { mergeWithLastSubmission: true },
-        );
-        ctx.respond = false;
-        return;
-      } catch (e) {
-        logger.error('Dev interaction fallback failed', { error: (e as Error).message });
-        ctx.status = 500;
-        ctx.body = { error: 'server_error', error_description: 'Interaction failed' };
-        return;
-      }
+    // Require Mittwald OAuth configuration to be present; if not, fail explicitly.
+    const missing: string[] = [];
+    if (!process.env.MITTWALD_AUTHORIZATION_URL) missing.push('MITTWALD_AUTHORIZATION_URL');
+    if (!process.env.MITTWALD_TOKEN_URL) missing.push('MITTWALD_TOKEN_URL');
+    if (!process.env.MITTWALD_CLIENT_ID) missing.push('MITTWALD_CLIENT_ID');
+    if (!process.env.MITTWALD_REDIRECT_URI) missing.push('MITTWALD_REDIRECT_URI');
+    if (missing.length) {
+      const msg = `Missing Mittwald OAuth env: ${missing.join(', ')}`;
+      logger.error('Interaction cannot proceed', { uid: details.uid, prompt, missing });
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: msg };
+      return;
     }
 
-    // Mittwald external flow
-    const { client, config } = await getMittwaldClient();
+      // Mittwald external flow
+      const { client, config } = await getMittwaldClient();
 
     const state = nanoid(24);
     const nonce = nanoid(24);
     const { codeVerifier, codeChallenge } = createPkce();
 
-    await store.save({ uid: details.uid, state, nonce, codeVerifier, createdAt: Date.now() }, INTERACTION_TTL);
+      await store.save({ uid: details.uid, state, nonce, codeVerifier, createdAt: Date.now() }, INTERACTION_TTL);
 
-    const authorizationUrl = client.authorizationUrl({
-      scope: config.scope || 'openid profile email',
-      redirect_uri: config.redirectUri,
-      code_challenge: codeChallenge,
-      code_challenge_method: 'S256',
-      state,
-      nonce,
-    } as any);
+      const authorizationUrl = client.authorizationUrl({
+        scope: config.scope || 'openid profile email',
+        redirect_uri: config.redirectUri,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
+        state,
+        nonce,
+      } as any);
 
-    ctx.redirect(authorizationUrl);
+      logger.info('Redirecting to Mittwald authorize', {
+        authorizationUrl: (authorizationUrl || '').toString().split('?')[0],
+        redirectUri: config.redirectUri,
+      });
+      ctx.redirect(authorizationUrl);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      logger.error('Interaction handler error', { error: msg });
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: msg };
+    }
   });
 
-  // Mittwald callback: exchange code and finish login
-  router.get('/mittwald/callback', async (ctx) => {
+  // Mittwald callback: exchange code and finish login (support multiple allowed paths)
+  async function handleMittwaldCallback(ctx: any) {
     const { client, config } = await getMittwaldClient();
     const params = client.callbackParams(ctx.req);
     const { state, code } = params as any;
@@ -129,7 +105,11 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
     await (provider as any).interactionFinished(ctx.req, ctx.res, { login: { accountId } }, { mergeWithLastSubmission: true });
     // oidc-provider will handle the response
     ctx.respond = false;
-  });
+  }
+
+  router.get('/mittwald/callback', handleMittwaldCallback);
+  router.get('/oauth/callback', handleMittwaldCallback);
+  router.get('/auth/callback', handleMittwaldCallback);
 
   // Confirm consent (accept all requested by default)
   router.post('/interaction/:uid/confirm', async (ctx) => {
