@@ -1,11 +1,11 @@
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 
 # System dependencies
 RUN apk add --no-cache openssh-client
 
 # Optional: global Mittwald CLI for any runtime hooks (kept from root Dockerfile)
-RUN npm install -g @mittwald/cli@1.5.1
+RUN npm install -g @mittwald/cli@1.11.0
 
 # Install deps
 COPY package*.json ./
