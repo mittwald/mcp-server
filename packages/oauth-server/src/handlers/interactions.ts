@@ -13,7 +13,22 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
   // Start interaction: attempt Mittwald auth; fallback to dev auto-login/consent
   router.get('/interaction/:uid', async (ctx) => {
     try {
-      const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
+      let details: any;
+      try {
+        details = await (provider as any).interactionDetails(ctx.req, ctx.res);
+      } catch (detailsError) {
+        const errorMsg = detailsError instanceof Error ? detailsError.message : String(detailsError);
+        logger.error('Failed to get interaction details', { 
+          uid: ctx.params.uid, 
+          error: errorMsg,
+          errorType: detailsError?.constructor?.name,
+          cookies: ctx.cookies.get('_interaction') ? 'present' : 'missing'
+        });
+        ctx.status = 500;
+        ctx.body = { error: 'server_error', error_description: errorMsg };
+        return;
+      }
+      
       const { clientId } = details.params;
       const prompt = details.prompt?.name;
       logger.info('Interaction details', { uid: details.uid, prompt, clientId });
@@ -57,7 +72,12 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
       ctx.redirect(authorizationUrl);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      logger.error('Interaction handler error', { error: msg });
+      logger.error('Interaction handler error', { 
+        uid: ctx.params.uid,
+        error: msg,
+        errorType: e?.constructor?.name,
+        stack: e instanceof Error ? e.stack : undefined
+      });
       ctx.status = 500;
       ctx.body = { error: 'server_error', error_description: msg };
     }
