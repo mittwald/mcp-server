@@ -70,8 +70,11 @@ async function createServer() {
     }
   }
 
-  // Create OIDC provider
-  const providerConfig = await createProviderConfiguration(config);
+  // Create OIDC provider with cookie keys
+  const providerConfig = await createProviderConfiguration({
+    ...config,
+    cookieKeys: cookieKeys // Pass the same keys to provider
+  });
   const provider = new Provider(config.issuer, providerConfig);
   // Trust proxy headers inside oidc-provider as well
   // This removes warnings like: "x-forwarded-proto header detected but not trusted"

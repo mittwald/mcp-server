@@ -13,6 +13,7 @@ export interface ProviderConfig {
   initialAccessToken: string;
   jwksKeystorePath: string;
   cookiesSecure: boolean;
+  cookieKeys?: string[]; // Add cookie keys to config
   allowedRedirectUriPatterns: string[];
   tokenTtls: {
     accessToken: number;
@@ -155,7 +156,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
     
     // Cookies configuration
     cookies: {
-      // Keys will be set from app.keys - no need to specify here
+      keys: config.cookieKeys || [nanoid(32)], // Use provided keys or fallback
       long: {
         signed: true,
         secure: config.cookiesSecure,
