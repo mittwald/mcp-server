@@ -15,14 +15,18 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
     try {
       let details: any;
       try {
+        // Use ctx.req and ctx.res which are the native Node.js objects
         details = await (provider as any).interactionDetails(ctx.req, ctx.res);
       } catch (detailsError) {
         const errorMsg = detailsError instanceof Error ? detailsError.message : String(detailsError);
-        logger.error('Failed to get interaction details', { 
-          uid: ctx.params.uid, 
+        logger.error('Failed to get interaction details', {
+          uid: ctx.params.uid,
           error: errorMsg,
           errorType: detailsError?.constructor?.name,
-          cookies: ctx.cookies.get('_interaction') ? 'present' : 'missing'
+          cookies: ctx.cookies.get('_interaction') ? 'present' : 'missing',
+          hasReq: !!ctx.req,
+          hasRes: !!ctx.res,
+          cookieHeader: ctx.req?.headers?.cookie
         });
         ctx.status = 500;
         ctx.body = { error: 'server_error', error_description: errorMsg };

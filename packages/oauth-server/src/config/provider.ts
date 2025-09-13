@@ -155,7 +155,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
     
     // Cookies configuration
     cookies: {
-      keys: [nanoid(32)], // Random signing key
+      // Keys will be set from app.keys - no need to specify here
       long: {
         signed: true,
         secure: config.cookiesSecure,

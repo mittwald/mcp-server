@@ -35,17 +35,22 @@ async function createServer() {
   const app = new Koa();
   // Koa requires signing keys to use signed cookies. oidc-provider sets cookies with `signed: true`.
   // If not provided, Koa will throw `.keys required for signed cookies`.
-  // Use env COOKIE_SIGNING_KEYS (comma-separated) or generate a random fallback.
-  try {
-    const keysEnv = process.env.COOKIE_SIGNING_KEYS;
-    const keys = keysEnv ? keysEnv.split(',').map((k) => k.trim()).filter(Boolean) : [nanoid(64)];
-    // @ts-ignore - Koa expects `app.keys` to be an array of strings
-    app.keys = keys;
-  } catch {
-    // Fallback to a single random key if anything goes wrong
-    // @ts-ignore
-    app.keys = [nanoid(64)];
-  }
+  // Use env COOKIE_SIGNING_KEYS (comma-separated) or COOKIE_SIGNING_KEY or generate a random fallback.
+  const cookieKeys = (() => {
+    const keysEnv = process.env.COOKIE_SIGNING_KEYS || process.env.COOKIE_SIGNING_KEY;
+    if (keysEnv) {
+      // Support comma-separated keys for rotation
+      return keysEnv.includes(',')
+        ? keysEnv.split(',').map((k) => k.trim()).filter(Boolean)
+        : [keysEnv.trim()];
+    } else {
+      const randomKey = nanoid(64);
+      logger.warn('Using random cookie signing key - cookies will be invalid after server restart');
+      return [randomKey];
+    }
+  })();
+  // @ts-ignore - Koa expects `app.keys` to be an array of strings
+  app.keys = cookieKeys;
   const router = new Router();
   // Trust proxy headers (X-Forwarded-*) when running behind Fly.io / proxies
   app.proxy = true;
