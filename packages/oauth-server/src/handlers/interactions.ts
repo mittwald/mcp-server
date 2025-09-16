@@ -4,6 +4,7 @@ import { createInteractionStore } from '../services/interaction-store.js';
 import { getMittwaldClient, createPkce } from '../services/mittwald-oauth-client.js';
 import { nanoid } from 'nanoid';
 import { logger } from '../services/logger.js';
+import { getDefaultScopeString } from '../../../../src/config/oauth-scopes.js';
 
 const INTERACTION_TTL = parseInt(process.env.INTERACTION_TTL_SECONDS || '900'); // 15min
 
@@ -76,7 +77,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
       await store.save(interactionRecord, INTERACTION_TTL);
 
       const authorizationUrl = client.authorizationUrl({
-        scope: config.scope || 'profile user:read customer:read project:read',
+        scope: config.scope || getDefaultScopeString(),
         redirect_uri: config.redirectUri,
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',

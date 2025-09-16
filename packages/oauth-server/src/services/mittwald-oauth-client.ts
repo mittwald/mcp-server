@@ -1,5 +1,6 @@
 import { Issuer, generators, Client } from 'openid-client';
 import { logger } from './logger.js';
+import { getDefaultScopeString } from '../../../../src/config/oauth-scopes.js';
 
 export interface MittwaldConfig {
   issuer: string; // label for issuer (not discovery)
@@ -20,7 +21,7 @@ export async function getMittwaldClient(cfg?: Partial<MittwaldConfig>): Promise<
   const envIssuer = cfg?.issuer || process.env.MITTWALD_ISSUER; // e.g., https://id.mittwald.de
   const clientId = cfg?.clientId || process.env.MITTWALD_CLIENT_ID;
   const redirectUri = cfg?.redirectUri || process.env.MITTWALD_REDIRECT_URI;
-  const scope = cfg?.scope || process.env.MITTWALD_SCOPE || 'profile user:read customer:read project:read';
+  const scope = cfg?.scope || process.env.MITTWALD_SCOPE || getDefaultScopeString();
 
   if (!clientId || !redirectUri) {
     throw new Error('Missing Mittwald OAuth config (MITTWALD_CLIENT_ID, MITTWALD_REDIRECT_URI)');

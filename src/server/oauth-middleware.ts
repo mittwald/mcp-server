@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import type { AuthenticatedRequest } from "./auth-types.js";
 import { CONFIG } from "./config.js";
+import { getSupportedScopes } from "../config/oauth-scopes.js";
 
 /**
  * OAuth authentication middleware for MCP server
@@ -88,7 +89,7 @@ function sendOAuthChallenge(res: express.Response): void {
       // Do not suggest a static client_id or redirect_uri.
       // MCP clients (e.g., MCPJam Inspector) should perform Dynamic Client Registration (DCR)
       // and use their own loopback/custom redirect URIs.
-      scopes: ['profile', 'user:read', 'customer:read', 'project:read']
+      scopes: getSupportedScopes()
     },
     endpoints: {
       authorize: `${asBase}/auth`,

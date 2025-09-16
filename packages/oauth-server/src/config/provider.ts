@@ -4,6 +4,7 @@ import { logger } from '../services/logger.js';
 import { JWKSManager } from '../services/jwks-keystore.js';
 import { nanoid } from 'nanoid';
 import type { ClientMetadata } from '../types/provider.js';
+import { getDefaultScopeString } from '../../../../src/config/oauth-scopes.js';
 
 export interface ProviderConfig {
   issuer: string;
@@ -99,7 +100,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
             }
             // Return resource server definition
             return {
-              scope: 'profile user:read customer:read project:read',
+              scope: getDefaultScopeString(),
               audience: resourceIndicator,
               accessTokenFormat: 'jwt',
             } as any;

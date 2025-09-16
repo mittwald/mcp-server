@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { logger } from '../utils/logger.js';
+import { getSupportedScopes } from '../config/oauth-scopes.js';
 
 export class OAuthMetadataRoutes {
   private router: Router;
@@ -38,12 +39,7 @@ export class OAuthMetadataRoutes {
         revocation_endpoint: `${asBase}/token/revocation`,
         registration_endpoint: `${asBase}/reg`,
         jwks_uri: `${asBase}/jwks`,
-        scopes_supported: [
-          'profile',
-          'user:read',
-          'customer:read',
-          'project:read'
-        ],
+        scopes_supported: getSupportedScopes(),
         response_types_supported: [
           'code'
         ],
@@ -102,12 +98,7 @@ export class OAuthMetadataRoutes {
       const metadata = {
         resource: resourceUrl,
         authorization_servers: [asBase],
-        scopes_supported: [
-          'profile',
-          'user:read',
-          'customer:read',
-          'project:read'
-        ],
+        scopes_supported: getSupportedScopes(),
         bearer_methods_supported: [
           'header',
           'query'
