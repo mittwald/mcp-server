@@ -236,10 +236,27 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
         interactionUid: record.uid
       });
 
-      // Finish OIDC interaction (login)
-      await (provider as any).interactionFinished(ctx.req, ctx.res, { login: { accountId } }, { mergeWithLastSubmission: true });
-      // oidc-provider will handle the response
-      ctx.respond = false;
+      try {
+        // Finish OIDC interaction (login)
+        await (provider as any).interactionFinished(ctx.req, ctx.res, { login: { accountId } }, { mergeWithLastSubmission: true });
+        // oidc-provider will handle the response
+        ctx.respond = false;
+
+        logger.info('OIDC interaction completed successfully', {
+          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
+          interactionUid: record.uid
+        });
+      } catch (interactionError) {
+        const errorMsg = interactionError instanceof Error ? interactionError.message : String(interactionError);
+        logger.error('OIDC interaction completion failed', {
+          error: errorMsg,
+          errorType: interactionError?.constructor?.name,
+          stack: interactionError instanceof Error ? interactionError.stack : undefined,
+          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
+          interactionUid: record.uid
+        });
+        throw interactionError;
+      }
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
