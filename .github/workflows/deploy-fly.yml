@@ -86,7 +86,7 @@ jobs:
         run: |
           # Use Fly remote builder to build and deploy from source using app credentials.
           # Secrets staged earlier (GIT_SHA, IMAGE_DIGEST, BUILD_TIME) become visible to the app.
-          flyctl deploy --config "${{ matrix.fly_config }}" --strategy immediate --detach --verbose
+          flyctl deploy --config "${{ matrix.fly_config }}" --strategy immediate --detach --verbose --no-cache
 
       - name: Wait for app health then verify /version (commit SHA)
         run: |
