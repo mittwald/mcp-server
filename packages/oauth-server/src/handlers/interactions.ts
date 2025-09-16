@@ -242,7 +242,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
 
         // Generate authorization code and redirect to client callback
         const code = nanoid(32);
-        const redirectUri = 'http://localhost:6274/oauth/callback/debug'; // Use client's redirect URI
+        const redirectUri = config.redirectUri; // Use the actual client's registered redirect URI
 
         // Store the authorization code mapping for later token exchange
         // (In a real implementation, you'd store this in a database)
