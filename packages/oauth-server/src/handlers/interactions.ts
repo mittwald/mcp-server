@@ -13,6 +13,10 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
   // Start interaction: attempt Mittwald auth; fallback to dev auto-login/consent
   router.get('/interaction/:uid', async (ctx) => {
     try {
+      logger.info('Interaction handler started', {
+        uid: ctx.params.uid,
+        requestId: ctx.state?.requestId
+      });
       let details: any;
       try {
         // Use ctx.req and ctx.res which are the native Node.js objects
@@ -58,7 +62,18 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
     const nonce = nanoid(24);
     const { codeVerifier, codeChallenge } = createPkce();
 
-      await store.save({ uid: details.uid, state, nonce, codeVerifier, createdAt: Date.now() }, INTERACTION_TTL);
+      const interactionRecord = { uid: details.uid, state, nonce, codeVerifier, createdAt: Date.now() };
+
+      logger.info('Storing interaction record', {
+        uid: details.uid,
+        state: `${state.substring(0, 8)}...`,
+        nonce: `${nonce.substring(0, 8)}...`,
+        hasCodeVerifier: !!codeVerifier,
+        ttlSeconds: INTERACTION_TTL,
+        createdAt: interactionRecord.createdAt
+      });
+
+      await store.save(interactionRecord, INTERACTION_TTL);
 
       const authorizationUrl = client.authorizationUrl({
         scope: config.scope || 'openid profile email',
@@ -89,46 +104,125 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
 
   // Mittwald callback: exchange code and finish login (support multiple allowed paths)
   async function handleMittwaldCallback(ctx: any) {
-    const { client, config } = await getMittwaldClient();
-    const params = client.callbackParams(ctx.req);
-    const { state, code } = params as any;
-    if (!state || !code) {
-      ctx.status = 400;
-      ctx.body = { error: 'invalid_request', error_description: 'missing state or code' };
-      return;
-    }
-
-    const record = await store.consumeByState(state);
-    if (!record) {
-      ctx.status = 400;
-      ctx.body = { error: 'invalid_request', error_description: 'interaction expired or already used' };
-      return;
-    }
-
-    const tokenSet = await client.callback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state, nonce: record.nonce } as any);
-    let accountId: string | undefined;
     try {
-      const claims = tokenSet.claims();
-      accountId = (claims && (claims.sub || claims.email)) as string | undefined;
-    } catch {}
-    if (!accountId && (client.issuer.metadata as any).userinfo_endpoint) {
-      try {
-        const info: any = await client.userinfo(tokenSet);
-        accountId = info.sub || info.email;
-      } catch (e) {
-        logger.warn('userinfo lookup failed', { error: (e as Error).message });
-      }
-    }
-    if (!accountId) {
-      // Fallback: derive a stable-ish id from access_token (not ideal; replace with Mittwald user id once available)
-      const at = tokenSet.access_token || nanoid(16);
-      accountId = `mittwald:${at.substring(0, 16)}`;
-    }
+      logger.info('Mittwald callback handler started', {
+        requestId: ctx.state?.requestId,
+        path: ctx.path,
+        query: ctx.querystring
+      });
 
-    // Finish OIDC interaction (login)
-    await (provider as any).interactionFinished(ctx.req, ctx.res, { login: { accountId } }, { mergeWithLastSubmission: true });
-    // oidc-provider will handle the response
-    ctx.respond = false;
+      const { client, config } = await getMittwaldClient();
+      logger.info('Mittwald client initialized', { requestId: ctx.state?.requestId });
+
+      const params = client.callbackParams(ctx.req);
+      logger.info('Callback params parsed', {
+        requestId: ctx.state?.requestId,
+        paramsKeys: Object.keys(params)
+      });
+      const { state, code } = params as any;
+
+      logger.info('Mittwald callback received', {
+        hasState: !!state,
+        hasCode: !!code,
+        state: state ? `${state.substring(0, 8)}...` : 'missing',
+        code: code ? `${code.substring(0, 8)}...` : 'missing',
+        queryParams: ctx.query,
+        requestId: ctx.state?.requestId
+      });
+
+      if (!state || !code) {
+        logger.error('Missing state or code in callback', { state, code: !!code });
+        ctx.status = 400;
+        ctx.body = { error: 'invalid_request', error_description: 'missing state or code' };
+        return;
+      }
+
+      // Try to get the record first (without consuming) to see if it exists
+      const existingRecord = await store.getByState(state);
+      logger.info('Checking for existing interaction record', {
+        state: `${state.substring(0, 8)}...`,
+        recordExists: !!existingRecord,
+        recordUid: existingRecord?.uid,
+        recordCreatedAt: existingRecord?.createdAt,
+        ageMinutes: existingRecord ? (Date.now() - existingRecord.createdAt) / (1000 * 60) : undefined
+      });
+
+      const record = await store.consumeByState(state);
+      if (!record) {
+        logger.error('Interaction record not found or expired', {
+          state: `${state.substring(0, 8)}...`,
+          existingRecord: !!existingRecord,
+          message: existingRecord ? 'Record existed but could not be consumed' : 'No record found for state'
+        });
+        ctx.status = 400;
+        ctx.body = { error: 'invalid_request', error_description: 'interaction expired or already used' };
+        return;
+      }
+
+      logger.info('Exchanging authorization code for tokens', {
+        state: `${state.substring(0, 8)}...`,
+        code: `${code.substring(0, 8)}...`,
+        redirectUri: config.redirectUri,
+        hasCodeVerifier: !!record.codeVerifier
+      });
+
+      const tokenSet = await client.callback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state, nonce: record.nonce } as any);
+
+      logger.info('Token exchange successful', {
+        hasAccessToken: !!tokenSet.access_token,
+        hasIdToken: !!tokenSet.id_token,
+        hasRefreshToken: !!tokenSet.refresh_token,
+        expiresIn: tokenSet.expires_in
+      });
+
+      let accountId: string | undefined;
+      try {
+        const claims = tokenSet.claims();
+        accountId = (claims && (claims.sub || claims.email)) as string | undefined;
+        logger.info('Claims extracted', { accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none' });
+      } catch (e) {
+        logger.warn('Failed to extract claims from tokens', { error: (e as Error).message });
+      }
+
+      if (!accountId && (client.issuer.metadata as any).userinfo_endpoint) {
+        try {
+          const info: any = await client.userinfo(tokenSet);
+          accountId = info.sub || info.email;
+          logger.info('Account ID from userinfo', { accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none' });
+        } catch (e) {
+          logger.warn('userinfo lookup failed', { error: (e as Error).message });
+        }
+      }
+
+      if (!accountId) {
+        // Fallback: derive a stable-ish id from access_token (not ideal; replace with Mittwald user id once available)
+        const at = tokenSet.access_token || nanoid(16);
+        accountId = `mittwald:${at.substring(0, 16)}`;
+        logger.info('Using fallback account ID', { accountId: `${accountId.substring(0, 8)}...` });
+      }
+
+      logger.info('Finishing OIDC interaction', {
+        accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
+        interactionUid: record.uid
+      });
+
+      // Finish OIDC interaction (login)
+      await (provider as any).interactionFinished(ctx.req, ctx.res, { login: { accountId } }, { mergeWithLastSubmission: true });
+      // oidc-provider will handle the response
+      ctx.respond = false;
+
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.error('Mittwald callback error', {
+        error: errorMsg,
+        errorType: error?.constructor?.name,
+        stack: error instanceof Error ? error.stack : undefined,
+        requestId: ctx.state?.requestId
+      });
+
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Internal server error' };
+    }
   }
 
   router.get('/mittwald/callback', handleMittwaldCallback);
