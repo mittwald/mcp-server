@@ -78,7 +78,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
 
       const authorizationUrl = client.authorizationUrl({
         scope: config.scope || getDefaultScopeString(),
-        redirect_uri: config.redirectUri,
+        redirect_uri: 'https://mittwald-oauth-server.fly.dev/mittwald/callback', // Mittwald should redirect to OUR server
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
         state,
