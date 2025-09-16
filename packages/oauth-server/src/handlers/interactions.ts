@@ -76,7 +76,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
       await store.save(interactionRecord, INTERACTION_TTL);
 
       const authorizationUrl = client.authorizationUrl({
-        scope: config.scope || 'openid profile email',
+        scope: config.scope || 'profile user:read customer:read project:read',
         redirect_uri: config.redirectUri,
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
@@ -170,7 +170,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
 
       let tokenSet;
       try {
-        tokenSet = await client.callback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state, nonce: record.nonce } as any);
+        // Skip nonce validation since we're not using openid scope
+        tokenSet = await client.callback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state } as any);
       } catch (tokenError) {
         const errorMsg = tokenError instanceof Error ? tokenError.message : String(tokenError);
         const errorType = tokenError?.constructor?.name || 'Unknown';

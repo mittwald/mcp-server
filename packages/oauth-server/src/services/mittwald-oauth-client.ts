@@ -20,7 +20,7 @@ export async function getMittwaldClient(cfg?: Partial<MittwaldConfig>): Promise<
   const envIssuer = cfg?.issuer || process.env.MITTWALD_ISSUER; // e.g., https://id.mittwald.de
   const clientId = cfg?.clientId || process.env.MITTWALD_CLIENT_ID;
   const redirectUri = cfg?.redirectUri || process.env.MITTWALD_REDIRECT_URI;
-  const scope = cfg?.scope || process.env.MITTWALD_SCOPE || 'openid profile email';
+  const scope = cfg?.scope || process.env.MITTWALD_SCOPE || 'profile user:read customer:read project:read';
 
   if (!clientId || !redirectUri) {
     throw new Error('Missing Mittwald OAuth config (MITTWALD_CLIENT_ID, MITTWALD_REDIRECT_URI)');
