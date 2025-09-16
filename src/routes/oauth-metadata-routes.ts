@@ -39,7 +39,6 @@ export class OAuthMetadataRoutes {
         registration_endpoint: `${asBase}/reg`,
         jwks_uri: `${asBase}/jwks`,
         scopes_supported: [
-          'openid',
           'profile',
           'user:read',
           'customer:read',
@@ -104,7 +103,6 @@ export class OAuthMetadataRoutes {
         resource: resourceUrl,
         authorization_servers: [asBase],
         scopes_supported: [
-          'openid',
           'profile',
           'user:read',
           'customer:read',
