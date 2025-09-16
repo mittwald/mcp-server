@@ -99,7 +99,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
             }
             // Return resource server definition
             return {
-              scope: 'openid profile email user:read customer:read project:read',
+              scope: 'profile user:read customer:read project:read',
               audience: resourceIndicator,
               accessTokenFormat: 'jwt',
             } as any;

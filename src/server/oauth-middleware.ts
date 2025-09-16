@@ -88,7 +88,7 @@ function sendOAuthChallenge(res: express.Response): void {
       // Do not suggest a static client_id or redirect_uri.
       // MCP clients (e.g., MCPJam Inspector) should perform Dynamic Client Registration (DCR)
       // and use their own loopback/custom redirect URIs.
-      scopes: ['openid', 'profile', 'user:read', 'customer:read', 'project:read']
+      scopes: ['profile', 'user:read', 'customer:read', 'project:read']
     },
     endpoints: {
       authorize: `${asBase}/auth`,
