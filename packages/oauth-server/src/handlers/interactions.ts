@@ -163,10 +163,26 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
         state: `${state.substring(0, 8)}...`,
         code: `${code.substring(0, 8)}...`,
         redirectUri: config.redirectUri,
-        hasCodeVerifier: !!record.codeVerifier
+        hasCodeVerifier: !!record.codeVerifier,
+        recordState: record.state ? `${record.state.substring(0, 8)}...` : 'missing',
+        recordNonce: record.nonce ? `${record.nonce.substring(0, 8)}...` : 'missing'
       });
 
-      const tokenSet = await client.callback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state, nonce: record.nonce } as any);
+      let tokenSet;
+      try {
+        tokenSet = await client.callback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state, nonce: record.nonce } as any);
+      } catch (tokenError) {
+        logger.error('Token exchange failed', {
+          error: tokenError instanceof Error ? tokenError.message : String(tokenError),
+          errorType: tokenError?.constructor?.name,
+          stack: tokenError instanceof Error ? tokenError.stack : undefined,
+          state: `${state.substring(0, 8)}...`,
+          code: `${code.substring(0, 8)}...`,
+          redirectUri: config.redirectUri,
+          tokenEndpoint: (client.issuer.metadata as any).token_endpoint
+        });
+        throw tokenError;
+      }
 
       logger.info('Token exchange successful', {
         hasAccessToken: !!tokenSet.access_token,
