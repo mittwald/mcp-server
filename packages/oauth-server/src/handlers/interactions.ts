@@ -172,15 +172,26 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
       try {
         tokenSet = await client.callback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state, nonce: record.nonce } as any);
       } catch (tokenError) {
-        logger.error('Token exchange failed', {
-          error: tokenError instanceof Error ? tokenError.message : String(tokenError),
-          errorType: tokenError?.constructor?.name,
-          stack: tokenError instanceof Error ? tokenError.stack : undefined,
-          state: `${state.substring(0, 8)}...`,
-          code: `${code.substring(0, 8)}...`,
-          redirectUri: config.redirectUri,
-          tokenEndpoint: (client.issuer.metadata as any).token_endpoint
-        });
+        const errorMsg = tokenError instanceof Error ? tokenError.message : String(tokenError);
+        const errorType = tokenError?.constructor?.name || 'Unknown';
+        const tokenEndpoint = (client.issuer.metadata as any).token_endpoint || 'unknown';
+
+        logger.error(`Token exchange failed: ${errorType} - ${errorMsg}`);
+        logger.error(`Token endpoint: ${tokenEndpoint}`);
+        logger.error(`Redirect URI: ${config.redirectUri}`);
+        logger.error(`State: ${state.substring(0, 8)}... Code: ${code.substring(0, 8)}...`);
+
+        if (tokenError instanceof Error && tokenError.stack) {
+          logger.error(`Stack trace: ${tokenError.stack}`);
+        }
+
+        // Log the full error object as JSON for debugging
+        try {
+          logger.error(`Full error object: ${JSON.stringify(tokenError, Object.getOwnPropertyNames(tokenError), 2)}`);
+        } catch (e) {
+          logger.error(`Could not stringify error object: ${e}`);
+        }
+
         throw tokenError;
       }
 
