@@ -171,8 +171,9 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
 
       let tokenSet;
       try {
-        // Skip nonce validation since we're not using openid scope
-        tokenSet = await client.callback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state } as any);
+        // Use oauthCallback instead of callback to skip OpenID Connect id_token validation
+        // This is appropriate since we're not using openid scope and Mittwald doesn't provide id_token
+        tokenSet = await (client as any).oauthCallback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state } as any);
       } catch (tokenError) {
         const errorMsg = tokenError instanceof Error ? tokenError.message : String(tokenError);
         const errorType = tokenError?.constructor?.name || 'Unknown';
