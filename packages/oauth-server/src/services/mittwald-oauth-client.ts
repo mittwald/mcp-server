@@ -1,6 +1,6 @@
 import { Issuer, generators, Client } from 'openid-client';
 import { logger } from './logger.js';
-import { getDefaultScopeString } from '../../../../src/config/oauth-scopes.js';
+import { getDefaultScopeString } from '../config/oauth-scopes.js';
 
 export interface MittwaldConfig {
   issuer: string; // label for issuer (not discovery)

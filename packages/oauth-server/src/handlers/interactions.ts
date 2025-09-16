@@ -4,7 +4,7 @@ import { createInteractionStore } from '../services/interaction-store.js';
 import { getMittwaldClient, createPkce } from '../services/mittwald-oauth-client.js';
 import { nanoid } from 'nanoid';
 import { logger } from '../services/logger.js';
-import { getDefaultScopeString } from '../../../../src/config/oauth-scopes.js';
+import { getDefaultScopeString } from '../config/oauth-scopes.js';
 
 const INTERACTION_TTL = parseInt(process.env.INTERACTION_TTL_SECONDS || '900'); // 15min
 

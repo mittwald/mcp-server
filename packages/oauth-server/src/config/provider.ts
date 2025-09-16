@@ -4,7 +4,7 @@ import { logger } from '../services/logger.js';
 import { JWKSManager } from '../services/jwks-keystore.js';
 import { nanoid } from 'nanoid';
 import type { ClientMetadata } from '../types/provider.js';
-import { getDefaultScopeString } from '../../../../src/config/oauth-scopes.js';
+import { getDefaultScopeString } from './oauth-scopes.js';
 
 export interface ProviderConfig {
   issuer: string;
