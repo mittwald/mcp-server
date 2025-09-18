@@ -270,31 +270,11 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
 
       ctx.redirect(clientCallbackUrl.toString());
 
-        logger.info('OIDC interaction completed successfully', {
-          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-          interactionUid: record.uid
-        });
-      } catch (interactionError) {
-        const errorMsg = interactionError instanceof Error ? interactionError.message : String(interactionError);
-        const errorType = interactionError?.constructor?.name || 'Unknown';
-
-        logger.error(`OIDC interaction completion failed: ${errorType} - ${errorMsg}`);
-        logger.error(`Account ID: ${accountId ? `${accountId.substring(0, 8)}...` : 'none'}`);
-        logger.error(`Interaction UID: ${record.uid}`);
-
-        if (interactionError instanceof Error && interactionError.stack) {
-          logger.error(`OIDC completion stack trace: ${interactionError.stack}`);
-        }
-
-        // Log the full error object for debugging
-        try {
-          logger.error(`OIDC completion full error: ${JSON.stringify(interactionError, Object.getOwnPropertyNames(interactionError), 2)}`);
-        } catch (e) {
-          logger.error(`Could not stringify OIDC error: ${e}`);
-        }
-
-        throw interactionError;
-      }
+      logger.info('OAuth flow completed successfully', {
+        accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
+        authCode: `${authCode.substring(0, 8)}...`,
+        clientRedirectUri: config.redirectUri
+      });
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
