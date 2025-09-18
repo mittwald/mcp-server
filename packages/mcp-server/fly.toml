@@ -4,6 +4,9 @@ primary_region = "fra"
 kill_signal = "SIGINT"
 kill_timeout = 5
 
+[deploy]
+  release_command = "sh -lc 'if [ \"$CI\" != \"true\" ]; then echo Deployment blocked: use GitHub Actions >&2; exit 1; fi'"
+
 [build]
   dockerfile = "Dockerfile"
 

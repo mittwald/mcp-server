@@ -14,6 +14,11 @@ vi.mock('../../../src/server/config.js', () => ({
 }));
 
 const mockJwt = jwt as any;
+const originalEnv = {
+  NODE_ENV: process.env.NODE_ENV,
+  MCP_PUBLIC_BASE: process.env.MCP_PUBLIC_BASE,
+  OAUTH_AS_BASE: process.env.OAUTH_AS_BASE,
+};
 
 describe('OAuth Middleware', () => {
   let mockRequest: Partial<Request>;
@@ -23,6 +28,9 @@ describe('OAuth Middleware', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.OAUTH_AS_BASE = 'https://mittwald-oauth-server.fly.dev';
+    delete process.env.MCP_PUBLIC_BASE;
+    process.env.NODE_ENV = 'test';
     
     mockRequest = {
       headers: {},
@@ -41,6 +49,9 @@ describe('OAuth Middleware', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    process.env.NODE_ENV = originalEnv.NODE_ENV;
+    process.env.MCP_PUBLIC_BASE = originalEnv.MCP_PUBLIC_BASE;
+    process.env.OAUTH_AS_BASE = originalEnv.OAUTH_AS_BASE;
   });
 
   describe('Authentication Success', () => {
@@ -133,7 +144,7 @@ describe('OAuth Middleware', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockResponse.set).toHaveBeenCalledWith(
         'WWW-Authenticate',
-        'Bearer realm="MCP Server", authorization_uri="http://localhost:8080/default/authorize"'
+        'Bearer realm="MCP Server", authorization_uri="https://mittwald-oauth-server.fly.dev/auth"'
       );
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -197,27 +208,27 @@ describe('OAuth Middleware', () => {
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        error: 'authentication_required',
-        message: 'OAuth authentication required',
-        oauth: {
-          authorization_url: 'http://localhost:8080/default/authorize',
-          token_url: 'http://localhost:8080/default/token',
-          client_id: 'mittwald-mcp-server',
-          redirect_uri: 'http://localhost:3000/auth/callback',
-          scopes: ['openid', 'profile', 'user:read', 'customer:read', 'project:read']
-        },
-        endpoints: {
-          authorize: 'http://localhost:3000/oauth/authorize',
-          token: 'http://localhost:3000/oauth/token',
-          metadata: 'http://localhost:3000/.well-known/oauth-authorization-server'
-        }
-      });
+      expect(mockResponse.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: 'authentication_required',
+          oauth: {
+            authorization_url: 'https://mittwald-oauth-server.fly.dev/auth',
+            token_url: 'https://mittwald-oauth-server.fly.dev/token',
+            scopes: ['profile', 'user:read', 'customer:read', 'project:read']
+          },
+          endpoints: {
+            authorize: 'https://mittwald-oauth-server.fly.dev/auth',
+            token: 'https://mittwald-oauth-server.fly.dev/token',
+            metadata: 'https://mittwald-oauth-server.fly.dev/.well-known/oauth-authorization-server'
+          },
+          resource: 'https://localhost:3000/mcp'
+        })
+      );
     });
 
-    it('should use production URLs in production environment', async () => {
-      const originalEnv = process.env.NODE_ENV;
+    it('should use MCP_PUBLIC_BASE when provided in production', async () => {
       process.env.NODE_ENV = 'production';
+      process.env.MCP_PUBLIC_BASE = 'https://example.com';
 
       mockRequest.headers = {};
 
@@ -225,18 +236,9 @@ describe('OAuth Middleware', () => {
 
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          oauth: expect.objectContaining({
-            redirect_uri: 'https://your-mcp-server.com/auth/callback'
-          }),
-          endpoints: expect.objectContaining({
-            authorize: 'https://your-mcp-server.com/oauth/authorize',
-            token: 'https://your-mcp-server.com/oauth/token',
-            metadata: 'https://your-mcp-server.com/.well-known/oauth-authorization-server'
-          })
+          resource: 'https://example.com/mcp'
         })
       );
-
-      process.env.NODE_ENV = originalEnv;
     });
   });
 

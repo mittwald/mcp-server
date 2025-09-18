@@ -49,8 +49,7 @@ async function createServer() {
       return [randomKey];
     }
   })();
-  // @ts-ignore - Koa expects `app.keys` to be an array of strings
-  app.keys = cookieKeys;
+  app.keys = cookieKeys as unknown as string[];
   const router = new Router();
   // Trust proxy headers (X-Forwarded-*) when running behind Fly.io / proxies
   app.proxy = true;
@@ -76,10 +75,11 @@ async function createServer() {
     cookieKeys: cookieKeys // Pass the same keys to provider
   });
   const provider = new Provider(config.issuer, providerConfig);
+  const providerAny = provider as any;
   // Trust proxy headers inside oidc-provider as well
   // This removes warnings like: "x-forwarded-proto header detected but not trusted"
   // Not in older type definitions, but supported at runtime
-  (provider as any).proxy = true;
+  providerAny.proxy = true;
 
   // OAuth provider created successfully
   logger.info('OAuth provider created successfully', { 
@@ -102,8 +102,7 @@ async function createServer() {
       'registration_create.error',
     ];
     for (const ev of events) {
-      // @ts-ignore: runtime event names may not be in types
-      provider.on(ev, (ctx: any, errOrData?: any) => {
+      providerAny.on(ev, (ctx: any, errOrData?: any) => {
         const clientId = ctx?.oidc?.client?.clientId || ctx?.client?.clientId;
         const requestId = (ctx && ctx.state && ctx.state.requestId) || 'n/a';
         const path = ctx?.req?.url || ctx?.request?.url;
@@ -116,7 +115,11 @@ async function createServer() {
           // Try to include request body shape (sanitized)
           try {
             base.body = ctx?.request?.body ? JSON.parse(JSON.stringify(ctx.request.body)) : undefined;
-          } catch {}
+          } catch (serializationError) {
+            logger.debug('Failed to serialize request body for logging', {
+              error: serializationError instanceof Error ? serializationError.message : String(serializationError),
+            });
+          }
           logger.error(base, `OIDC ${ev} client=${clientId || 'n/a'} path=${path || ''} id=${requestId}`);
         } else {
           logger.info(base, `OIDC ${ev} client=${clientId || 'n/a'} path=${path || ''} id=${requestId}`);
@@ -232,8 +235,10 @@ async function createServer() {
         }
         ctx.request.body = props;
       }
-    } catch (e) {
-      // no-op on failure; let provider handle
+    } catch (error) {
+      logger.debug('Failed to normalize DCR payload', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
     await next();
   });
@@ -269,14 +274,14 @@ async function createServer() {
 
   // Mount OIDC provider app using koa-mount to preserve correct Koa ctx/res semantics
   // and to avoid upstream interference. In v9 the Provider instance is itself a Koa app
-  app.use(mount('/', provider as any));
+  app.use(mount('/', providerAny));
 
   return { app, provider, redisClient };
 }
 
 async function startServer() {
   try {
-    const { app, provider, redisClient } = await createServer();
+    const { app, redisClient } = await createServer();
 
     // Start server
     const server = app.listen(config.port, '0.0.0.0', () => {

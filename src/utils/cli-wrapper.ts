@@ -57,7 +57,7 @@ export async function executeCli(
   // Escape arguments to prevent shell injection and handle Unicode
   const escapedArgs = effectiveArgs.map(arg => {
     // Always quote arguments that contain spaces, special chars, or non-ASCII characters
-    if (/[\s"'\\$`!@#%&*(){}[\]|;:<>?~`]/.test(arg) || /[^\x00-\x7F]/.test(arg)) {
+    if (/[\s"'\\$`!@#%&*(){}[\]|;:<>?~`]/.test(arg) || /[^\p{ASCII}]/u.test(arg)) {
       // Escape quotes, backslashes, and dollar signs within quoted strings
       const escaped = arg.replace(/["\\$`]/g, '\\$&');
       return `"${escaped}"`;

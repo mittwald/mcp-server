@@ -11,7 +11,6 @@
 
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { getToolRegistry } from '../utils/tool-scanner.js';
-import { resolve } from 'path';
 import { logger } from '../utils/logger.js';
 
 /**

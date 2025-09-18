@@ -142,7 +142,9 @@ export class SessionManager {
           await redisClient.getClient().srem(userSessionsKey, sessionId);
         } catch (parseError) {
           // If session data is corrupted, we'll still delete the key
-          logger.warn(`Session data corrupted for ${sessionId}, deleting key anyway`);
+          logger.warn(`Session data corrupted for ${sessionId}, deleting key anyway`, {
+            error: parseError instanceof Error ? parseError.message : String(parseError),
+          });
         }
       }
 
@@ -230,6 +232,10 @@ export class SessionManager {
             }
           } catch (parseError) {
             // Invalid session data, clean it up
+            logger.warn('Removing invalid session entry during cleanup', {
+              key,
+              error: parseError instanceof Error ? parseError.message : String(parseError),
+            });
             await redisClient.del(key);
             cleanedCount++;
           }

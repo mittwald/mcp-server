@@ -8,7 +8,6 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
-import { logger } from '../utils/logger.js';
 
 /**
  * Middleware to log response sizes for MCP endpoints
@@ -120,8 +119,10 @@ export function responseLoggerMiddleware() {
         if (fullResponse && fullResponse.trim().startsWith('{')) {
           responseData = JSON.parse(fullResponse);
         }
-      } catch (e) {
-        // Not JSON or parsing failed
+      } catch (parseError) {
+        console.debug('Response logger failed to parse body as JSON', {
+          error: parseError instanceof Error ? parseError.message : String(parseError),
+        });
       }
 
       logResponse(responseSize, responseData);

@@ -1,9 +1,8 @@
-import Provider, { type Configuration } from 'oidc-provider';
+import type { Configuration } from 'oidc-provider';
 import { createAdapter } from './adapters.js';
 import { logger } from '../services/logger.js';
 import { JWKSManager } from '../services/jwks-keystore.js';
 import { nanoid } from 'nanoid';
-import type { ClientMetadata } from '../types/provider.js';
 import { getDefaultScopeString } from './oauth-scopes.js';
 
 export interface ProviderConfig {
@@ -86,17 +85,14 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
         enabled: true,
         // Validate requested resource and define resource server info
         // Accept the MCP resource URL and map scopes/audience accordingly.
-        async getResourceServerInfo(ctx: any, resourceIndicator: string, client: any) {
+        async getResourceServerInfo(_ctx: any, resourceIndicator: string, _client: any) {
           try {
             const allowed = process.env.ALLOWED_RESOURCE || 'https://mittwald-mcp-fly2.fly.dev/mcp';
             const u = new URL(resourceIndicator);
             const allowUrl = new URL(allowed);
             const matches = u.host === allowUrl.host && u.pathname === allowUrl.pathname;
             if (!matches) {
-              // Reject other resources with invalid_target
-              // eslint-disable-next-line @typescript-eslint/no-var-requires
-              const { errors } = require('oidc-provider');
-              throw new errors.InvalidTarget();
+              await throwInvalidTarget();
             }
             // Return resource server definition
             return {
@@ -105,9 +101,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
               accessTokenFormat: 'jwt',
             } as any;
           } catch {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const { errors } = require('oidc-provider');
-            throw new errors.InvalidTarget();
+            await throwInvalidTarget();
           }
         },
       },
@@ -263,42 +257,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
   };
 }
 
-function isAllowedRedirectUri(uri: string, patterns: string[]): boolean {
-  try {
-    const url = new URL(uri);
-    const isHttpScheme = url.protocol === 'http:' || url.protocol === 'https:';
-    // In production enforce HTTPS only for HTTP(S) schemes; allow loopback hosts for native apps per RFC 8252
-    if (
-      process.env.NODE_ENV === 'production' &&
-      isHttpScheme &&
-      url.protocol !== 'https:' &&
-      !isLoopbackHost(url.hostname)
-    ) {
-      return false;
-    }
-    
-    // Check against allowed patterns
-    for (const pattern of patterns) {
-      if (matchesPattern(uri, pattern)) {
-        return true;
-      }
-    }
-    
-    return false;
-  } catch {
-    return false;
-  }
-}
-
-function matchesPattern(uri: string, pattern: string): boolean {
-  // Simple pattern matching with wildcards
-  const regex = pattern
-    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // Escape regex chars
-    .replace(/\\\*/g, '.*'); // Replace \* with .*
-  
-  return new RegExp(`^${regex}$`).test(uri);
-}
-
-function isLoopbackHost(hostname: string): boolean {
-  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+async function throwInvalidTarget(): Promise<never> {
+  const { errors } = await import('oidc-provider');
+  throw new errors.InvalidTarget();
 }

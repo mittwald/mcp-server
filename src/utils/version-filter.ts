@@ -86,7 +86,7 @@ export function filterLatestVersionsPerMajor(versions: AppVersion[]): FilteredVe
   // For each major version, find the latest version
   const filteredVersions: FilteredVersion[] = [];
   
-  versionsByMajor.forEach((majorVersions, major) => {
+  versionsByMajor.forEach((majorVersions, _major) => {
     // Sort versions within this major version in descending order
     const sorted = majorVersions.sort((a, b) => 
       compareVersions(b.externalVersion, a.externalVersion)

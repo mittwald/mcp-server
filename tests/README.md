@@ -1,129 +1,41 @@
 # Testing
 
-## Current Test Status
+This repository ships with a layered test strategy that covers linting, type safety, unit behaviour, integration with Redis, OAuth server compliance, and full MCP end-to-end flows. The commands below assume you are working from the repository root.
 
-The Mittwald MCP Server currently has minimal test coverage focused on core utilities.
+## Quick Start Commands
+- `npm run lint` — ESLint with the shared config for the entire workspace.
+- `npm run type-check` — Typescript `--noEmit` verification to catch typing regressions early.
+- `npm run test:unit` — Vitest unit suites under `tests/unit`.
+- `npm run test:integration` — Integration suites that interact with Redis and the HTTP server.
+- `npm run test:oauth` — Focused OAuth unit + integration suites (resource server).
+- `npm run test:e2e:mcp` — Scripted MCP + OAuth end-to-end exercise (spawns mock services).
+- `npx vitest --config packages/oauth-server/vitest.config.ts` — Run tests inside the standalone OAuth server package (work in progress).
 
-### Available Tests
+## Suite Overview
+### Unit Tests
+Located in `tests/unit/**` and `src/**/__tests__`. These suites execute without external services and focus on:
+- request authentication helpers (`src/server/oauth-middleware.ts`)
+- session storage (`src/server/session-manager.ts`)
+- CLI wrappers and argument handling (`src/utils/cli-wrapper.ts`, `src/utils/session-aware-cli.ts`)
 
-#### Unit Tests
-- **Version Filter Tests**: `tests/unit/utils/version-filter.test.ts`
-  - Tests for version filtering and sorting functionality
-  - Status: ✅ **11/11 PASSING**
+### Integration Tests
+Located in `tests/integration/**`. They spin up Express handlers and Redis, validate session lifecycle, auth flows, and larger request/response payloads. Redis is expected on `redis://localhost:6379`; you can start it with `docker compose up redis`.
 
-### Running Tests
-
+### OAuth Server Package
+`packages/oauth-server` hosts the standalone oidc-provider service. As tests are added they can be run with:
 ```bash
-# Run all tests (currently only unit tests)
-npm test
-
-# Run unit tests specifically
-npm run test:unit
-
-# Run with coverage
-npm run test:coverage
+npx vitest --config packages/oauth-server/vitest.config.ts
 ```
+This will reuse the shared Vitest configuration while allowing package-specific aliases.
 
-## Test Development
+### End-to-End & Tooling Scripts
+- `npm run test:e2e:mcp` executes the scripted MCP OAuth flow using the mock OAuth server and CLI façade.
+- `npm run test:cleanup` cleans residual functional test data when necessary.
+- Deploy smoke tests should target the Fly.io staging apps (`mittwald-mcp-fly2`, `mittwald-oauth-server`) once credentials are configured.
 
-### Adding New Tests
+## Environment Notes
+- Copy `.env.example` to `.env` and populate secrets before running integration or end-to-end suites.
+- Make SSL certificates available under `./ssl` if you enable HTTPS locally.
+- HAR fixtures referenced in `oauth-debugging-context-2025-09-18.md` live under `~/Downloads` and should be attached manually when replaying flows.
 
-The project uses [Vitest](https://vitest.dev/) for testing. To add new tests:
-
-1. Create test files in appropriate directories:
-   - `tests/unit/` for unit tests
-   - `tests/integration/` for integration tests (when implemented)
-
-2. Follow the naming convention: `*.test.ts`
-
-3. Use Vitest's testing APIs:
-   ```typescript
-   import { describe, it, expect } from 'vitest';
-   
-   describe('My Feature', () => {
-     it('should work correctly', () => {
-       expect(true).toBe(true);
-     });
-   });
-   ```
-
-### Test Categories
-
-#### Unit Tests ✅
-- **Purpose**: Test individual functions and utilities
-- **Current Status**: Working (11/11 passing)
-- **Examples**: Version filtering, utility functions
-
-#### Integration Tests 🚧
-- **Purpose**: Test MCP protocol integration and tool handlers
-- **Current Status**: Not implemented
-- **Future**: CLI wrapper integration tests
-
-#### Functional Tests 🚧
-- **Purpose**: End-to-end testing with real Mittwald API
-- **Current Status**: Not implemented
-- **Future**: Docker container testing, full workflow validation
-
-## Development Notes
-
-### Previous Test Suite
-
-The project previously had extensive integration and functional tests that were built for a different architecture (direct API client usage). These tests were removed as they were:
-
-- Incompatible with the current CLI wrapper architecture
-- Using outdated MCP protocol versions
-- Expecting different response formats
-- Testing non-existent handlers
-
-### Future Test Development
-
-For comprehensive testing of the CLI wrapper architecture, consider:
-
-1. **CLI Execution Tests**: Test `executeCli` wrapper functionality
-2. **Tool Handler Tests**: Test individual tool handlers with mocked CLI responses
-3. **MCP Protocol Tests**: Test MCP server responses and session management
-4. **Docker Integration Tests**: Test the complete Docker deployment
-
-## Test Configuration
-
-### Vitest Configuration
-
-Tests are configured through `vitest.config.ts` (if present) or `package.json` test scripts.
-
-### Environment Variables
-
-Tests may require environment variables:
-Note: Tests should use the mock OAuth server and session tokens; do not rely on `MITTWALD_API_TOKEN`.
-- `TEST_SERVER_ID`: For functional tests requiring server context
-
-### Docker Testing
-
-For testing the full Docker deployment:
-
-```bash
-# Build and run container
-docker build -t mittwald-mcp-test .
-docker run -d -p 3000:3000 --env-file .env --name mittwald-mcp-test mittwald-mcp-test
-
-# Test health endpoint
-curl http://localhost:3000/health
-
-# Test MCP endpoint
-curl -X POST http://localhost:3000/mcp \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json, text/event-stream" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"clientInfo":{"name":"test-client","version":"1.0.0"}}}'
-```
-
-## Contributing
-
-When adding new functionality:
-
-1. **Always add unit tests** for new utility functions
-2. **Consider integration tests** for new tool handlers
-3. **Update this README** with new test information
-4. **Follow existing patterns** in the unit test structure
-
----
-
-**Note**: This is a production-ready MCP server with minimal but focused test coverage. The working unit tests validate core functionality, and manual testing procedures are documented for deployment verification.
+For the detailed project-wide testing roadmap, see the "🧪 Full Project Testing Plan" section in `oauth-debugging-context-2025-09-18.md`.

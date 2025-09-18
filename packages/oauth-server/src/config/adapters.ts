@@ -129,7 +129,7 @@ export class RedisAdapter implements Adapter {
             if (data.grantId === grantId) {
               await this.client.del(key);
             }
-          } catch (error) {
+          } catch {
             // Skip malformed entries
           }
         }

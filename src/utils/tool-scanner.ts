@@ -8,8 +8,8 @@
  * load their tool registrations.
  */
 
-import { readdir, stat } from 'fs/promises';
-import { join, extname, resolve } from 'path';
+import { readdir } from 'fs/promises';
+import { join, resolve } from 'path';
 import { pathToFileURL } from 'url';
 import { logger } from './logger.js';
 import type { 

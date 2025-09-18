@@ -148,15 +148,22 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
         ageMinutes: existingRecord ? (Date.now() - existingRecord.createdAt) / (1000 * 60) : undefined
       });
 
+      if (!existingRecord) {
+        logger.warn('Interaction state already consumed or missing', {
+          state: `${state.substring(0, 8)}...`,
+          reason: 'No record found for state when callback received'
+        });
+        ctx.status = 204;
+        return;
+      }
+
       const record = await store.consumeByState(state);
       if (!record) {
-        logger.error('Interaction record not found or expired', {
+        logger.warn('Interaction record could not be consumed (likely already processed)', {
           state: `${state.substring(0, 8)}...`,
-          existingRecord: !!existingRecord,
-          message: existingRecord ? 'Record existed but could not be consumed' : 'No record found for state'
+          existingUid: existingRecord.uid
         });
-        ctx.status = 400;
-        ctx.body = { error: 'invalid_request', error_description: 'interaction expired or already used' };
+        ctx.status = 204;
         return;
       }
 
@@ -240,7 +247,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
       const authCode = nanoid(32);
 
       // Store the authorization code mapping temporarily (in production, use proper storage)
-      const authCodeData = {
+      const _authCodeData = {
         code: authCode,
         accountId,
         accessToken: tokenSet.access_token,

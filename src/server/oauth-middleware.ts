@@ -51,7 +51,8 @@ export function createOAuthMiddleware() {
         };
         
         next();
-      } catch (jwtError) {
+      } catch (error) {
+        console.warn('JWT verification failed', error);
         // Invalid token - return 401 with OAuth metadata
         return sendOAuthChallenge(res);
       }

@@ -118,6 +118,10 @@ export class OAuthStateManager {
               cleanedCount++;
             }
           } catch (parseError) {
+            logger.warn('Invalid OAuth state encountered during cleanup', {
+              key,
+              error: parseError instanceof Error ? parseError.message : String(parseError),
+            });
             // Invalid state data, clean it up
             await redisClient.del(key);
             cleanedCount++;

@@ -45,7 +45,9 @@ export class JWKSManager {
       return keystore;
       
     } catch (error) {
-      logger.info('JWKS keystore not found or invalid, creating new one');
+      logger.info('JWKS keystore not found or invalid, creating new one', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return await this.generateAndSaveKeystore();
     }
   }
@@ -65,13 +67,12 @@ export class JWKSManager {
     logger.info('Generating new RSA key pair for JWT signing');
     
     // Generate RSA key pair for JWT signing
-    const { publicKey, privateKey } = await generateKeyPair('RS256', {
+    const { privateKey } = await generateKeyPair('RS256', {
       modulusLength: 2048,
       extractable: true,
     });
     
     // Export keys as JWK
-    const publicJWK = await exportJWK(publicKey);
     const privateJWK = await exportJWK(privateKey);
     
     // Generate unique key ID

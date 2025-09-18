@@ -1,4 +1,3 @@
-import { createRedisClient } from '../config/adapters.js';
 import { logger } from './logger.js';
 
 export interface InteractionRecord {
@@ -83,4 +82,3 @@ export function createInteractionStore(redisClient?: any): InteractionStore {
   logger.warn('Using in-memory interaction store (not recommended for production)');
   return new MemoryInteractionStore();
 }
-
