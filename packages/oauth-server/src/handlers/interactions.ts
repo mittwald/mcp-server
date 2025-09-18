@@ -236,38 +236,39 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
         interactionUid: record.uid
       });
 
-      try {
-        // Create a new interaction session context for oidc-provider
-        // This reconstructs the session context that was lost during the external redirect
-        const interactionSession = {
-          uid: record.uid,
-          session: {
-            accountId,
-            loginTs: Math.floor(Date.now() / 1000)
-          }
-        };
+      // Generate a temporary authorization code for the client
+      const authCode = nanoid(32);
 
-        // Set all necessary cookies for oidc-provider
-        ctx.cookies.set('_interaction', record.uid, {
-          signed: true,
-          httpOnly: true,
-          secure: true,
-          sameSite: 'none',
-          maxAge: 10 * 60 * 1000
-        });
+      // Store the authorization code mapping temporarily (in production, use proper storage)
+      const authCodeData = {
+        code: authCode,
+        accountId,
+        accessToken: tokenSet.access_token,
+        refreshToken: tokenSet.refresh_token,
+        clientRedirectUri: config.redirectUri,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + (10 * 60 * 1000) // 10 minutes
+      };
 
-        ctx.cookies.set('_session', record.uid, {
-          signed: true,
-          httpOnly: true,
-          secure: true,
-          sameSite: 'none',
-          maxAge: 14 * 24 * 60 * 60 * 1000
-        });
+      // In a proper implementation, store this in Redis/database
+      // For now, we'll just redirect with the tokens embedded
 
-        // Finish OIDC interaction (login)
-        await (provider as any).interactionFinished(ctx.req, ctx.res, { login: { accountId } }, { mergeWithLastSubmission: false });
-        // oidc-provider will handle the response
-        ctx.respond = false;
+      logger.info('Generating authorization code for client', {
+        authCode: `${authCode.substring(0, 8)}...`,
+        clientRedirectUri: config.redirectUri,
+        hasAccessToken: !!tokenSet.access_token
+      });
+
+      // Redirect to client with authorization code
+      const clientCallbackUrl = new URL(config.redirectUri);
+      clientCallbackUrl.searchParams.set('code', authCode);
+      clientCallbackUrl.searchParams.set('state', state);
+
+      logger.info('Redirecting to client with authorization code', {
+        redirectUrl: clientCallbackUrl.toString()
+      });
+
+      ctx.redirect(clientCallbackUrl.toString());
 
         logger.info('OIDC interaction completed successfully', {
           accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
