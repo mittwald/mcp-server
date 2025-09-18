@@ -258,6 +258,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
 }
 
 async function throwInvalidTarget(): Promise<never> {
-  const { errors } = await import('oidc-provider');
+  const oidcProvider = await import('oidc-provider');
+  const errors = (oidcProvider as any).errors;
   throw new errors.InvalidTarget();
 }
