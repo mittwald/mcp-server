@@ -237,28 +237,36 @@ export function registerInteractionRoutes(router: Router, provider: Provider, re
       });
 
       try {
-        // Skip the problematic interactionFinished and redirect directly to the client
-        // This bypasses the session cookie issue by completing the OAuth flow manually
+        // Create a new interaction session context for oidc-provider
+        // This reconstructs the session context that was lost during the external redirect
+        const interactionSession = {
+          uid: record.uid,
+          session: {
+            accountId,
+            loginTs: Math.floor(Date.now() / 1000)
+          }
+        };
 
-        // Generate authorization code and redirect to client callback
-        const code = nanoid(32);
-        const redirectUri = config.redirectUri; // Use the actual client's registered redirect URI
-
-        // Store the authorization code mapping for later token exchange
-        // (In a real implementation, you'd store this in a database)
-
-        // Redirect back to client with authorization code
-        const callbackUrl = new URL(redirectUri);
-        callbackUrl.searchParams.set('code', code);
-        callbackUrl.searchParams.set('state', state);
-
-        logger.info('Redirecting to client callback', {
-          redirectUri: callbackUrl.toString(),
-          code: `${code.substring(0, 8)}...`,
-          state: `${state.substring(0, 8)}...`
+        // Set all necessary cookies for oidc-provider
+        ctx.cookies.set('_interaction', record.uid, {
+          signed: true,
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 10 * 60 * 1000
         });
 
-        ctx.redirect(callbackUrl.toString());
+        ctx.cookies.set('_session', record.uid, {
+          signed: true,
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 14 * 24 * 60 * 60 * 1000
+        });
+
+        // Finish OIDC interaction (login)
+        await (provider as any).interactionFinished(ctx.req, ctx.res, { login: { accountId } }, { mergeWithLastSubmission: false });
+        // oidc-provider will handle the response
         ctx.respond = false;
 
         logger.info('OIDC interaction completed successfully', {
