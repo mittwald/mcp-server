@@ -43,12 +43,10 @@ export class CustomScopeValidator {
           allowOpenId: false,
         }],
 
-        // Claude.ai - transform excessive scope requests
+        // Claude.ai - remove scope parameter to force defaults (like working MCP Jam)
         ['Claude', {
-          strategy: 'filter-excessive',
+          strategy: 'use-defaults',
           allowOpenId: false, // Convert openid requests to no-scope (use defaults)
-          maxScopes: 10,
-          preferredScopes: ['user:read', 'customer:read', 'project:read', 'project:write', 'app:read', 'app:write', 'database:read', 'database:write', 'domain:read', 'domain:write']
         }],
 
         // ChatGPT - use server defaults like MCP Jam
@@ -114,7 +112,7 @@ export class CustomScopeValidator {
 
         // 1. Update query object
         const newQuery = { ...ctx.query };
-        if (transformedScope) {
+        if (transformedScope !== undefined) {
           newQuery.scope = transformedScope;
         } else {
           delete newQuery.scope;
@@ -123,7 +121,7 @@ export class CustomScopeValidator {
 
         // 2. Update request URL
         const url = new URL(ctx.request.url, `${ctx.protocol}://${ctx.host}`);
-        if (transformedScope) {
+        if (transformedScope !== undefined) {
           url.searchParams.set('scope', transformedScope);
         } else {
           url.searchParams.delete('scope');
@@ -177,8 +175,9 @@ export class CustomScopeValidator {
         return originalScope;
 
       case 'use-defaults':
-        // Ignore whatever client requested, use our known working defaults
-        return this.config.defaultScopes.join(' ');
+        // CRITICAL: Remove scope parameter entirely to match working MCP Jam pattern
+        // MCP Jam works because it sends NO scope parameter, letting oidc-provider use defaults
+        return undefined;
 
       case 'filter-excessive':
         return this.filterExcessiveScopes(requestedScopes, strategy);
