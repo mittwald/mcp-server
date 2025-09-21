@@ -170,6 +170,19 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         return;
       }
 
+      // Retrieve the original interaction details to get client redirect URI
+      let interactionDetails: any;
+      try {
+        interactionDetails = await (provider as any).interactionDetails(ctx.req, ctx.res, record.uid);
+      } catch (detailsError) {
+        logger.error('Failed to retrieve interaction details for callback', {
+          interactionUid: record.uid,
+          error: detailsError instanceof Error ? detailsError.message : String(detailsError)
+        });
+        // Fallback: continue without interaction details (for backward compatibility)
+        interactionDetails = null;
+      }
+
       logger.info('Exchanging authorization code for tokens', {
         state: `${state.substring(0, 8)}...`,
         code: `${code.substring(0, 8)}...`,
@@ -255,7 +268,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         accountId,
         accessToken: tokenSet.access_token,
         refreshToken: tokenSet.refresh_token,
-        clientRedirectUri: config.redirectUri,
+        clientRedirectUri: interactionDetails?.params?.redirect_uri || config.redirectUri,
         createdAt: Date.now(),
         expiresAt: Date.now() + (10 * 60 * 1000) // 10 minutes
       };
@@ -269,10 +282,58 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         hasAccessToken: !!tokenSet.access_token
       });
 
+      // Determine client redirect URI (prefer from interaction details, fallback to config)
+      const clientRedirectUri = interactionDetails?.params?.redirect_uri || config.redirectUri;
+
+      // Validate client redirect URI from original OAuth request
+      if (!clientRedirectUri) {
+        logger.error('Missing client redirect_uri in OAuth request', {
+          interactionUid: record.uid,
+          hasInteractionDetails: !!interactionDetails,
+          clientId: interactionDetails?.params?.client_id
+        });
+        ctx.status = 400;
+        ctx.body = {
+          error: 'invalid_request',
+          error_description: 'Missing redirect_uri parameter'
+        };
+        return;
+      }
+
+      // Validate redirect URI format
+      let clientRedirectUrl: URL;
+      try {
+        clientRedirectUrl = new URL(clientRedirectUri);
+        if (clientRedirectUrl.protocol !== 'https:' && clientRedirectUrl.hostname !== 'localhost') {
+          throw new Error('Invalid redirect URI: HTTPS required for non-localhost');
+        }
+      } catch (redirectError) {
+        logger.error('Invalid client redirect URI', {
+          interactionUid: record.uid,
+          redirectUri: clientRedirectUri,
+          error: redirectError instanceof Error ? redirectError.message : String(redirectError)
+        });
+        ctx.status = 400;
+        ctx.body = {
+          error: 'invalid_request',
+          error_description: 'Invalid redirect_uri format'
+        };
+        return;
+      }
+
       // Redirect to client with authorization code
-      const clientCallbackUrl = new URL(config.redirectUri);
+      const clientCallbackUrl = new URL(clientRedirectUri);
       clientCallbackUrl.searchParams.set('code', authCode);
       clientCallbackUrl.searchParams.set('state', state);
+
+      logger.info('OAuth redirect decision', {
+        mittwaldRedirectUri: config.redirectUri,
+        clientRedirectUri: clientRedirectUri,
+        usingClientUri: clientRedirectUri !== config.redirectUri,
+        authCode: `${authCode.substring(0, 8)}...`,
+        interactionUid: record.uid,
+        hasInteractionDetails: !!interactionDetails
+      });
 
       logger.info('Redirecting to client with authorization code', {
         redirectUrl: clientCallbackUrl.toString()
@@ -283,7 +344,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       logger.info('OAuth flow completed successfully', {
         accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
         authCode: `${authCode.substring(0, 8)}...`,
-        clientRedirectUri: config.redirectUri
+        clientRedirectUri: clientRedirectUri
       });
 
     } catch (error) {
