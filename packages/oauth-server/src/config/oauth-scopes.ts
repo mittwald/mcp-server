@@ -25,17 +25,77 @@ export interface OAuthScopeConfig {
  */
 export const OAUTH_SCOPES: OAuthScopeConfig = {
   SUPPORTED_SCOPES: [
-    'profile',
-    'user:read',
+    // Application Management
+    'app:read',
+    'app:write',
+    'app:delete',
+    // Backup Management
+    'backup:read',
+    'backup:write',
+    'backup:delete',
+    // Contract & Business
+    'contract:read',
+    'contract:write',
+    // Cron Job Management
+    'cronjob:read',
+    'cronjob:write',
+    'cronjob:delete',
+    // Customer Management
     'customer:read',
-    'project:read'
+    'customer:write',
+    // Database Management
+    'database:read',
+    'database:write',
+    'database:delete',
+    // Domain & DNS Management
+    'domain:read',
+    'domain:write',
+    'domain:delete',
+    // Extension Management
+    'extension:read',
+    'extension:write',
+    'extension:delete',
+    // Mail Management
+    'mail:read',
+    'mail:write',
+    'mail:delete',
+    // Order Management
+    'order:domain-create',
+    'order:domain-preview',
+    // Project Management
+    'project:read',
+    'project:write',
+    'project:delete',
+    // Registry Management
+    'registry:read',
+    'registry:write',
+    'registry:delete',
+    // SSH User Management
+    'sshuser:read',
+    'sshuser:write',
+    'sshuser:delete',
+    // Container Stack Management
+    'stack:read',
+    'stack:write',
+    'stack:delete',
+    // User Management
+    'user:read',
+    'user:write'
   ] as const,
 
   DEFAULT_SCOPES: [
-    'profile',
+    // Essential read permissions
     'user:read',
     'customer:read',
-    'project:read'
+    'project:read',
+    'project:write',
+    // Core functionality
+    'app:read',
+    'app:write',
+    'database:read',
+    'database:write',
+    'domain:read',
+    'domain:write'
   ] as const,
 
   get DEFAULT_SCOPE_STRING(): string {

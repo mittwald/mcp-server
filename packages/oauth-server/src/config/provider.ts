@@ -124,33 +124,70 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       Grant: 1209600, // 14 days
     },
     
-    // Claims configuration
+    // Claims configuration (minimal for JWT tokens)
     claims: {
-      openid: ['sub'],
-      profile: ['name', 'given_name', 'family_name', 'preferred_username', 'picture', 'locale', 'updated_at'],
-      email: ['email', 'email_verified'],
+      // No OIDC claims since we're not using openid/profile/email scopes
+      // JWT will contain standard claims: sub, iss, aud, exp, iat, jti
     },
     
-    // Scopes (OIDC + Mittwald custom)
+    // Scopes (Mittwald official client configuration)
     scopes: new Set([
-      // OIDC standard scopes
-      'openid',
-      'profile',
-      'email',
-      'offline_access', // For refresh tokens
-
-      // Mittwald custom scopes
-      'user:read',
-      'customer:read',
-      'project:read',
-      'project:write',
-      'database:read',
-      'database:write',
+      // Application Management
       'app:read',
       'app:write',
+      'app:delete',
+      // Backup Management
+      'backup:read',
+      'backup:write',
+      'backup:delete',
+      // Contract & Business
+      'contract:read',
+      'contract:write',
+      // Cron Job Management
+      'cronjob:read',
+      'cronjob:write',
+      'cronjob:delete',
+      // Customer Management
+      'customer:read',
+      'customer:write',
+      // Database Management
+      'database:read',
+      'database:write',
+      'database:delete',
+      // Domain & DNS Management
       'domain:read',
       'domain:write',
-      // Additional scopes can be added dynamically
+      'domain:delete',
+      // Extension Management
+      'extension:read',
+      'extension:write',
+      'extension:delete',
+      // Mail Management
+      'mail:read',
+      'mail:write',
+      'mail:delete',
+      // Order Management
+      'order:domain-create',
+      'order:domain-preview',
+      // Project Management
+      'project:read',
+      'project:write',
+      'project:delete',
+      // Registry Management
+      'registry:read',
+      'registry:write',
+      'registry:delete',
+      // SSH User Management
+      'sshuser:read',
+      'sshuser:write',
+      'sshuser:delete',
+      // Container Stack Management
+      'stack:read',
+      'stack:write',
+      'stack:delete',
+      // User Management
+      'user:read',
+      'user:write'
     ]),
     
     // Subject types
