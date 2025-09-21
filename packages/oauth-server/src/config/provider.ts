@@ -77,8 +77,8 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       // Device authorization
       deviceFlow: { enabled: false },
       
-      // Enable userinfo endpoint
-      userinfo: { enabled: true },
+      // Disable userinfo endpoint (not needed without OIDC)
+      userinfo: { enabled: false },
       // Enable Resource Indicators (RFC 8707) so Inspector can send `resource`.
       resourceIndicators: {
         enabled: true,
@@ -124,11 +124,8 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       Grant: 1209600, // 14 days
     },
     
-    // Claims configuration (minimal for JWT tokens)
-    claims: {
-      // No OIDC claims since we're not using openid/profile/email scopes
-      // JWT will contain standard claims: sub, iss, aud, exp, iat, jti
-    },
+    // Claims configuration (disabled - no OIDC claims)
+    claims: undefined, // Disable OIDC claims entirely
     
     // Scopes (Mittwald official client configuration)
     scopes: new Set([
@@ -274,16 +271,16 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       require_auth_time: false,
     },
     
-    // Route configuration
+    // Route configuration (OAuth 2.0 only, no OIDC routes)
     routes: {
       authorization: '/auth',
       token: '/token',
-      userinfo: '/me',
+      // userinfo: disabled (OIDC feature)
       revocation: '/token/revocation',
       introspection: '/token/introspection',
       registration: '/reg',
       jwks: '/jwks',
-      end_session: '/session/end',
+      // end_session: disabled (OIDC feature)
     },
     
 
