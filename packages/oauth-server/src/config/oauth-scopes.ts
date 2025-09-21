@@ -25,6 +25,8 @@ export interface OAuthScopeConfig {
  */
 export const OAUTH_SCOPES: OAuthScopeConfig = {
   SUPPORTED_SCOPES: [
+    // OIDC standard scopes (required by MCP Inspector)
+    'profile',
     // Application Management
     'app:read',
     'app:write',
