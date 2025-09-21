@@ -188,7 +188,7 @@ jobs:
             "response_types": ["code"],
             "client_name": "CI Smoke",
             "application_type": "native",
-            "scope": "openid profile email"
+            "scope": "user:read customer:read project:read app:read"
           }
           JSON
           CODE=$(curl -sS -o body.json -w "%{http_code}" -H 'Content-Type: application/json' --data @dcr.json https://mittwald-oauth-server.fly.dev/reg || true)
