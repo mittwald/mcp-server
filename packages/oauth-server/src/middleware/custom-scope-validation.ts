@@ -74,10 +74,23 @@ export class CustomScopeValidator {
    */
   async validateAndTransform(ctx: Context, next: Next): Promise<void> {
     try {
+      logger.info('Scope validation middleware called', {
+        path: ctx.path,
+        method: ctx.method,
+        query: ctx.query
+      });
+
       // Only process OAuth authorization requests
       if (ctx.path !== '/auth' || ctx.method !== 'GET') {
+        logger.info('Skipping non-auth request', { path: ctx.path, method: ctx.method });
         return next();
       }
+
+      logger.info('Processing OAuth /auth request', {
+        clientId: ctx.query.client_id,
+        scope: ctx.query.scope,
+        hasScope: !!ctx.query.scope
+      });
 
       this.logScopeDecision('Processing OAuth authorization request', {
         path: ctx.path,
@@ -284,11 +297,14 @@ export class CustomScopeValidator {
     // Claude.ai typically requests openid + full scope list
     if (ctx?.query?.scope) {
       const queryScope = ctx.query.scope as string;
-      if (queryScope.includes('openid') && queryScope.split('+').length > 30) {
+      const scopes = queryScope.includes('+') ? queryScope.split('+') : queryScope.split(' ');
+
+      if (queryScope.includes('openid') && scopes.length > 30) {
         logger.info('Detected Claude.ai client by scope pattern', {
           clientId,
-          scopeCount: queryScope.split('+').length,
-          hasOpenId: true
+          scopeCount: scopes.length,
+          hasOpenId: true,
+          scopeFormat: queryScope.includes('+') ? 'url-encoded' : 'space-separated'
         });
         return this.config.clientScopeStrategies.get('Claude')!;
       }

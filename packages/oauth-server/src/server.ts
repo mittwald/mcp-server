@@ -363,14 +363,15 @@ async function createServer() {
   // Register custom token routes (Phase 3: Standards compliance)
   registerTokenRoutes(router);
 
-  app.use(router.routes());
-  app.use(router.allowedMethods());
-
   // Custom scope validation middleware (CRITICAL FIX)
   // This addresses oidc-provider's scope validation inconsistency where it
   // advertises scopes but rejects explicit requests for them
+  // MUST BE BEFORE ROUTER TO INTERCEPT /auth REQUESTS
   const customScopeValidator = createCustomScopeValidationMiddleware();
   app.use(customScopeValidator);
+
+  app.use(router.routes());
+  app.use(router.allowedMethods());
 
   logger.info('Custom scope validation middleware enabled', {
     purpose: 'Fix oidc-provider scope validation inconsistency',
