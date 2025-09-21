@@ -1,7 +1,7 @@
 {
   "name": "@mittwald-mcp/oauth-server",
   "version": "1.0.0",
-  "description": "OAuth 2.1 Authorization Server using node-oidc-provider for Mittwald MCP",
+  "description": "OAuth 2.1 Authorization Server using node-oidc-provider for Mittwald MCP (rebuilt 2025-09-21)",
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
