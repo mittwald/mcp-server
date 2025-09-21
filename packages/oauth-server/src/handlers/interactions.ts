@@ -86,8 +86,11 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       } as any);
 
       logger.info('Redirecting to Mittwald authorize', {
-        authorizationUrl: (authorizationUrl || '').toString().split('?')[0],
+        authorizationUrl: authorizationUrl || '',
         redirectUri: config.redirectUri,
+        scope: config.scope,
+        state,
+        codeChallenge: codeChallenge.substring(0, 10) + '...',
       });
       ctx.redirect(authorizationUrl);
     } catch (e) {
