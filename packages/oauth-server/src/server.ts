@@ -268,10 +268,10 @@ async function createServer() {
         if (props.scope) {
           const supportedScopes = new Set([...getSupportedScopes(), 'openid']); // Include openid for compatibility
           const requestedScopes = props.scope.split(' ').filter(Boolean);
-          const filteredScopes = requestedScopes.filter(scope => supportedScopes.has(scope));
+          const filteredScopes = requestedScopes.filter((scope: string) => supportedScopes.has(scope));
 
           if (filteredScopes.length !== requestedScopes.length) {
-            const removedScopes = requestedScopes.filter(scope => !supportedScopes.has(scope));
+            const removedScopes = requestedScopes.filter((scope: string) => !supportedScopes.has(scope));
             logger.info('Filtered unsupported scopes from client registration', {
               clientName: props.client_name,
               originalScopes: requestedScopes,
