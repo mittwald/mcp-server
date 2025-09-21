@@ -237,21 +237,29 @@ async function createServer() {
           props.grant_types = ['authorization_code', 'refresh_token'];
         }
 
-        // Configure authentication method based on client
+        // Configure authentication method and scopes based on client
         if (isClaudeClient) {
           // Claude.ai requires client_secret_post (confidential client)
           props.token_endpoint_auth_method = 'client_secret_post';
           props.application_type = 'web';
+          // CRITICAL: Set allowed scopes for client validation
+          props.scope = 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
           logger.info('Configured Claude.ai client for confidential authentication');
         } else if (isChatGPTClient) {
           // ChatGPT uses public client
           props.token_endpoint_auth_method = 'none';
           props.application_type = 'native';
+          // CRITICAL: Set allowed scopes for client validation
+          props.scope = 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
           logger.info('Configured ChatGPT client for public authentication');
         } else {
           // Default to public client (MCP Jam, etc.)
           props.token_endpoint_auth_method = props.token_endpoint_auth_method || 'none';
           props.application_type = 'native';
+          // CRITICAL: Set allowed scopes for client validation
+          if (!props.scope) {
+            props.scope = 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
+          }
         }
 
         ctx.request.body = props;
@@ -335,23 +343,17 @@ async function createServer() {
   // This addresses oidc-provider's scope validation inconsistency where it
   // advertises scopes but rejects explicit requests for them
   const customScopeValidator = createCustomScopeValidationMiddleware();
-
-  // IMPORTANT: Apply middleware to oidc-provider routes specifically
-  // Mount with scope validation that processes BEFORE oidc-provider
-  app.use(mount('/', async (ctx: any, next: any) => {
-    // Apply custom scope validation first
-    await customScopeValidator(ctx, async () => {
-      // Then pass to oidc-provider
-      await providerAny(ctx, next);
-    });
-  }));
+  app.use(customScopeValidator);
 
   logger.info('Custom scope validation middleware enabled', {
     purpose: 'Fix oidc-provider scope validation inconsistency',
     target: 'Enable Claude.ai and ChatGPT OAuth flows',
-    preserves: 'MCP Jam compatibility and existing infrastructure',
-    integration: 'Direct oidc-provider route interception'
+    preserves: 'MCP Jam compatibility and existing infrastructure'
   });
+
+  // Mount OIDC provider app using koa-mount to preserve correct Koa ctx/res semantics
+  // and to avoid upstream interference. In v9 the Provider instance is itself a Koa app
+  app.use(mount('/', providerAny));
 
   return { app, provider };
 }

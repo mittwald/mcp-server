@@ -79,6 +79,14 @@ export class CustomScopeValidator {
         return next();
       }
 
+      this.logScopeDecision('Processing OAuth authorization request', {
+        path: ctx.path,
+        method: ctx.method,
+        hasScope: !!(ctx.query.scope),
+        hasClientId: !!(ctx.query.client_id),
+        queryKeys: Object.keys(ctx.query)
+      });
+
       const originalScope = ctx.query.scope as string;
       const clientId = ctx.query.client_id as string;
 
