@@ -8,6 +8,7 @@ import { createProviderConfiguration, type ProviderConfig } from './config/provi
 import { logger } from './services/logger.js';
 import { nanoid } from 'nanoid';
 import { registerInteractionRoutes } from './handlers/interactions.js';
+import { registerTokenRoutes } from './handlers/token.js';
 import { getClientSecretStore } from './services/client-secrets.js';
 import { createCustomScopeValidationMiddleware } from './middleware/custom-scope-validation.js';
 import { getSupportedScopes } from './config/oauth-scopes.js';
@@ -358,6 +359,10 @@ async function createServer() {
   // Mount router for our own endpoints such as /health
   // Register interaction routes (login/consent/abort and Mittwald callback)
   registerInteractionRoutes(router, provider);
+
+  // Register custom token routes (Phase 3: Standards compliance)
+  registerTokenRoutes(router);
+
   app.use(router.routes());
   app.use(router.allowedMethods());
 

@@ -5,6 +5,8 @@ export interface AuthCodeData {
   refreshToken?: string;
   clientId: string;
   redirectUri: string;
+  codeChallenge?: string;
+  codeChallengeMethod?: string;
   createdAt: number;
   expiresAt: number;
 }

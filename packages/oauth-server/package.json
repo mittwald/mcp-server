@@ -15,8 +15,10 @@
   "dependencies": {
     "@koa/cors": "^5.0.0",
     "@koa/router": "^14.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "better-sqlite3": "^11.10.0",
     "jose": "^6.1.0",
+    "jsonwebtoken": "^9.0.2",
     "koa": "^3.0.1",
     "koa-bodyparser": "^4.4.1",
     "koa-mount": "^4.0.0",

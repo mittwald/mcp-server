@@ -1,8 +1,10 @@
 # CLI‑Centric MCP Architecture (OAuth 2.1 + per‑command --token)
 
-> Status: Adopted design (planning → consolidation)  
-> Branch: `oauth-server-v2`  
-> Principle: Always wrap the official Mittwald CLI (`mw`) and pass `--token <access_token>` on every command
+> **Status: CRITICAL REDIRECT URI BUG IDENTIFIED (2025-09-21)**
+> **Branch**: `oauth-server-v2`
+> **Issue**: OAuth proxy pattern implementation has redirect URI confusion causing dashboard loops
+> **Solution**: Targeted fix in interactions.ts line 273 (documented in OAuth-Redirect-URI-Fix-Project-Plan.md)
+> **Principle**: Always wrap the official Mittwald CLI (`mw`) and pass `--token <access_token>` on every command
 
 ## 📋 Executive Summary
 
@@ -1234,6 +1236,26 @@ fly deploy
 
 ## 🔬 OAuth Implementation Investigation & Findings (2025-09-21)
 
+### **CRITICAL UPDATE: Root Cause Identified (2025-09-21)**
+
+**Major discovery**: The primary OAuth flow failure is due to **redirect URI confusion** in the OAuth proxy implementation, not oidc-provider limitations. The implementation confuses two different redirect URIs:
+
+1. **Mittwald's redirect URI** (`MITTWALD_REDIRECT_URI`): Where Mittwald sends users after authentication → `https://mittwald-oauth-server.fly.dev/mittwald/callback`
+2. **Client's redirect URI**: Where the OAuth server should send users after completing the full flow → Should come from `details.params.redirect_uri`
+
+**Bug location**: `packages/oauth-server/src/handlers/interactions.ts:273`
+```typescript
+// WRONG (current):
+const clientCallbackUrl = new URL(config.redirectUri); // Uses Mittwald's redirect URI
+
+// CORRECT (should be):
+const clientCallbackUrl = new URL(details.params.redirect_uri); // Uses client's redirect URI
+```
+
+This explains the observed "dashboard loop" where users complete Mittwald authentication but get bounced back to `/mittwald/callback` instead of their client application.
+
+**Architecture Status**: The OAuth proxy pattern is valid and salvageable. The implementation needs targeted fixes rather than complete replacement.
+
 ### **Comprehensive Client Behavior Analysis**
 
 Based on extensive production logs, HAR file analysis, and live testing, we've identified distinct behavioral patterns across major MCP clients:
@@ -1470,12 +1492,13 @@ Pattern: Matches Claude.ai behavior
 
 ---
 
-**Document Version**: 2.0
+**Document Version**: 2.1
 **Last Updated**: 2025-09-21
-**Status**: OAuth Server Technology Evaluation Required
-**Critical Issue**: oidc-provider incompatible with custom scope requirements
-**Next Steps**: Research OAuth 2.0 server alternatives or oidc-provider modification
+**Status**: CRITICAL REDIRECT URI BUG IDENTIFIED - Architecture Salvageable
+**Critical Issue**: Redirect URI confusion in OAuth proxy implementation (interactions.ts:273)
+**Primary Next Steps**: Fix redirect URI logic (see OAuth-Redirect-URI-Fix-Project-Plan.md)
+**Secondary**: Address oidc-provider scope validation for full client compatibility
 
 ---
 
-*This document reflects extensive investigation into OAuth server implementation challenges. The oidc-provider technology choice requires re-evaluation due to fundamental incompatibility with custom OAuth 2.0 scope requirements. Alternative technologies or significant oidc-provider modifications are needed to achieve the desired client compatibility.*
+*This document reflects extensive investigation into OAuth server implementation challenges. MAJOR BREAKTHROUGH: The primary issue is a redirect URI bug in the OAuth proxy implementation, not fundamental oidc-provider incompatibility. The architecture is salvageable with targeted fixes. See OAuth-Redirect-URI-Fix-Project-Plan.md for immediate solution.*

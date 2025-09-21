@@ -271,6 +271,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         refreshToken: tokenSet.refresh_token,
         clientId: interactionDetails?.params?.client_id || 'unknown',
         redirectUri: interactionDetails?.params?.redirect_uri || config.redirectUri,
+        codeChallenge: interactionDetails?.params?.code_challenge,
+        codeChallengeMethod: interactionDetails?.params?.code_challenge_method,
         createdAt: Date.now(),
         expiresAt: Date.now() + (10 * 60 * 1000) // 10 minutes
       };
