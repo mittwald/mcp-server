@@ -46,7 +46,7 @@ export class CustomScopeValidator {
         // Claude.ai - transform excessive scope requests
         ['Claude', {
           strategy: 'filter-excessive',
-          allowOpenId: false, // Convert openid requests to no-scope (use defaults)
+          allowOpenId: true, // Allow openid for Claude.ai
           maxScopes: 10,
           preferredScopes: ['user:read', 'customer:read', 'project:read', 'project:write', 'app:read', 'app:write', 'database:read', 'database:write', 'domain:read', 'domain:write']
         }],
@@ -102,7 +102,7 @@ export class CustomScopeValidator {
 
       // Get client info for strategy determination
       const clientName = await this.getClientName(clientId);
-      const strategy = this.getClientStrategy(clientName, clientId);
+      const strategy = this.getClientStrategy(clientName, clientId, ctx);
 
       if (strategy.strategy === 'pass-through') {
         this.logScopeDecision('Pass-through strategy', {
@@ -261,7 +261,7 @@ export class CustomScopeValidator {
   /**
    * Get client strategy based on name or ID
    */
-  private getClientStrategy(clientName: string | null, clientId: string): ClientScopeStrategy {
+  private getClientStrategy(clientName: string | null, clientId: string, ctx?: any): ClientScopeStrategy {
     // Check by client name first
     if (clientName && this.config.clientScopeStrategies.has(clientName)) {
       return this.config.clientScopeStrategies.get(clientName)!;
@@ -278,6 +278,20 @@ export class CustomScopeValidator {
 
     if (clientName?.includes('MCPJam') || clientName?.includes('MCP-Inspector')) {
       return this.config.clientScopeStrategies.get('MCPJam')!;
+    }
+
+    // Additional pattern detection by request characteristics
+    // Claude.ai typically requests openid + full scope list
+    if (ctx?.query?.scope) {
+      const queryScope = ctx.query.scope as string;
+      if (queryScope.includes('openid') && queryScope.split('+').length > 30) {
+        logger.info('Detected Claude.ai client by scope pattern', {
+          clientId,
+          scopeCount: queryScope.split('+').length,
+          hasOpenId: true
+        });
+        return this.config.clientScopeStrategies.get('Claude')!;
+      }
     }
 
     // Default strategy for unknown clients
