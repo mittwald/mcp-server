@@ -1230,11 +1230,170 @@ fly deploy
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2025-09-05  
-**Status**: Implementation Planning  
-**Next Review**: After Phase 1 Completion
+---
+
+## 🔬 OAuth Implementation Investigation & Findings (2025-09-21)
+
+### **Comprehensive Client Behavior Analysis**
+
+Based on extensive production logs, HAR file analysis, and live testing, we've identified distinct behavioral patterns across major MCP clients:
+
+#### **✅ MCP Jam Inspector - Working Pattern**
+```
+Registration: {
+  "client_name": "MCPJam - Mittwald",
+  "redirect_uris": ["http://localhost:6274/oauth/callback"],
+  "token_endpoint_auth_method": "none"
+}
+
+Authorization Request: NO explicit scope parameter
+Result: Uses server default scopes → Shows OAuth consent screen ✅
+Flow: Complete success with proper Mittwald callback
+```
+
+**Scope Pattern**: Server defaults (10 scopes): `user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write`
+
+#### **❌ Claude.ai - Failing Pattern**
+```
+Registration: {
+  "client_name": "Claude",
+  "redirect_uris": ["https://claude.ai/api/mcp/auth_callback"],
+  "token_endpoint_auth_method": "client_secret_post"
+}
+
+Authorization Request: Explicit scope parameter with ALL scopes
+Scope: "openid app:read app:write ... user:read user:write" (40+ scopes)
+Result: Error "scope must only contain Authorization Server supported scope values"
+```
+
+**Issue**: Requests ALL advertised scopes explicitly, triggers oidc-provider validation failure
+
+#### **❌ ChatGPT - Similar Failing Pattern**
+```
+Registration: Pre-registered client ID
+Authorization Request: Explicit scope requests
+Result: Similar scope validation failures
+Pattern: Matches Claude.ai behavior
+```
+
+### **🚨 Critical oidc-provider Issues Discovered**
+
+#### **1. Scope Validation Inconsistency**
+- **Advertises**: All scopes in `/.well-known/oauth-authorization-server`
+- **Accepts**: Only when no explicit scope parameter provided
+- **Rejects**: Explicit requests for advertised scopes
+- **Error**: "scope must only contain Authorization Server supported scope values"
+
+#### **2. OIDC/OAuth 2.0 Hybrid Confusion**
+- **Designed for**: OpenID Connect (OIDC) with optional OAuth 2.0
+- **Our use case**: Pure OAuth 2.0 with custom Mittwald scopes
+- **Conflict**: OIDC features auto-add `openid` scope, causing validation conflicts
+- **Problem**: Cannot cleanly disable OIDC features without breaking functionality
+
+#### **3. Configuration Complexity**
+- **Multiple attempts** to configure pure OAuth 2.0 mode failed
+- **Scope advertisement** vs **scope validation** logic disconnected
+- **Claims configuration** affects scope validation in unexpected ways
+- **Route configuration** (userinfo, end_session) influences scope behavior
+
+### **Mittwald OAuth Integration Analysis**
+
+#### **✅ What Works Perfectly**
+1. **OAuth client configuration**: `mittwald-mcp-server` correctly configured
+2. **Redirect URI**: `https://mittwald-oauth-server.fly.dev/mittwald/callback` working
+3. **Token exchange**: Successful with `api.mittwald.de/v2/oauth2/*` endpoints
+4. **Duplicate callback handling**: Robust (first succeeds, second ignored)
+5. **Authorization code generation**: Valid codes produced for clients
+
+#### **✅ HAR File Evidence**
+- **Correct URL flow**: `api.mittwald.de` → `studio.mittwald.de/oauth/login`
+- **Scope preservation**: OAuth parameters correctly passed through
+- **Consent screen**: Appears when scope validation passes
+- **Authentication**: Multiple authentication attempts tracked correctly
+
+#### **🔍 Root Cause: Server-Side Scope Validation**
+- **Mittwald's OAuth server works correctly**
+- **Our OAuth server scope validation is inconsistent**
+- **Dashboard redirects**: Result of OAuth request rejection, not Mittwald configuration
+
+### **SQLite Storage Migration Success**
+
+#### **✅ Complete Success Metrics**
+- **Zero Redis dependencies**: Eliminated NOAUTH authentication errors
+- **Persistent storage**: SQLite database at `/app/jwks/oauth-sessions.db`
+- **ACID compliance**: Proper transaction handling for OAuth state
+- **Performance**: Local file access faster than network Redis calls
+- **Operations**: Single file database, easy backup/restore
+
+#### **✅ Production Validation**
+- **Client registration**: SQLite adapters working perfectly
+- **Session management**: Proper cleanup and expiration
+- **Concurrent access**: WAL mode providing good concurrency
+- **Volume integration**: Using existing Fly.io persistent storage
+
+### **Production Deployment Status**
+
+#### **✅ Infrastructure Working**
+- **OAuth Server**: `mittwald-oauth-server.fly.dev` (healthy)
+- **MCP Server**: `mittwald-mcp-fly2.fly.dev` (healthy)
+- **GitHub Actions**: Automated deployment pipeline functional
+- **Health checks**: All services passing health validation
+- **SQLite integration**: Database initialization successful
+
+#### **❌ Client Compatibility Issues**
+- **Scope validation**: Preventing Claude.ai and ChatGPT integration
+- **Inconsistent behavior**: MCP Jam works, others fail
+- **oidc-provider limitations**: Not suitable for pure OAuth 2.0 + custom scopes
 
 ---
 
-*This architecture represents a comprehensive solution to the OAuth stability issues encountered in v1, providing a robust, scalable, and secure foundation for the Mittwald MCP Server ecosystem.*
+## 🎯 OAuth Server Technology Evaluation
+
+### **Current: node-oidc-provider Assessment**
+
+#### **✅ Strengths**
+- **OpenID Certified™**: Industry-standard compliance
+- **Feature-rich**: Comprehensive OIDC/OAuth 2.0 implementation
+- **Production-ready**: Used by major organizations
+- **TypeScript support**: Good integration with our stack
+
+#### **❌ Critical Limitations for Our Use Case**
+- **OIDC-first design**: Cannot cleanly disable OIDC features
+- **Scope validation logic**: Inconsistent between advertising and validation
+- **Custom scope support**: Poor support for non-OIDC custom scopes
+- **Configuration complexity**: Multiple interacting settings affecting behavior
+- **Documentation gaps**: Unclear how to achieve pure OAuth 2.0 mode
+
+#### **🚨 Fundamental Mismatch**
+- **oidc-provider**: Designed for OIDC providers with optional OAuth 2.0
+- **Our requirement**: OAuth 2.0 server with Mittwald custom scopes
+- **Conflict**: OIDC assumptions interfere with custom scope validation
+
+### **Alternative Technology Research Required**
+
+#### **Evaluation Criteria**
+1. **Pure OAuth 2.0 support** without OIDC assumptions
+2. **Custom scope support** for Mittwald's 40+ scopes
+3. **Dynamic Client Registration** (RFC 7591) compliance
+4. **PKCE support** (OAuth 2.1 requirement)
+5. **TypeScript/Node.js compatibility**
+6. **Production readiness** and maintenance status
+
+#### **Research Targets**
+- **oauth2-server** (Node.js OAuth 2.0 server)
+- **panva/oauth4webapi** (OAuth 2.0 client/server utilities)
+- **Custom Express implementation** with oauth2orize
+- **Authelia** (authentication/authorization server)
+- **Hydra** (OAuth 2.0 and OpenID Connect server)
+
+---
+
+**Document Version**: 2.0
+**Last Updated**: 2025-09-21
+**Status**: OAuth Server Technology Evaluation Required
+**Critical Issue**: oidc-provider incompatible with custom scope requirements
+**Next Steps**: Research OAuth 2.0 server alternatives or oidc-provider modification
+
+---
+
+*This document reflects extensive investigation into OAuth server implementation challenges. The oidc-provider technology choice requires re-evaluation due to fundamental incompatibility with custom OAuth 2.0 scope requirements. Alternative technologies or significant oidc-provider modifications are needed to achieve the desired client compatibility.*
