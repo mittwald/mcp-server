@@ -278,24 +278,25 @@ This server uses a **CLI Wrapper Architecture** for maximum compatibility:
 - **🤖 MCP Server**: HTTPS/SSE transport, tool routing, output parsing
 - **🔒 Security**: HTTPS mandatory; no privileged server tokens
 
-## 📋 Development Status
+## 🚨 **CRITICAL STATUS: OAUTH IMPLEMENTATION FAILED (2025-09-21)**
 
-**Current Branch:** `oauth-server-v2` (active development)  
-**Status:** Consolidating CLI‑centric architecture  
-**Target:** Production-ready OAuth 2.1 + CLI wrapper
+**Current Branch:** `main` (OAuth implementation failure)
+**Status:** **ALL OAUTH FLOWS BROKEN** - Users redirected to studio.mittwald.de/app/dashboard
+**Issue:** oidc-provider incompatible with Mittwald OAuth 2.0 requirements
 
-### 🏗️ Implementation Roadmap (CLI‑centric)
+### 🏗️ Implementation Status (FAILED)
 
-**Phase 1: OAuth + CLI**  
+**Phase 1: OAuth + CLI** - FAILED
 - [x] Architecture analysis and planning
-- [ ] OAuth discovery/authorize/callback (PKCE)
-- [ ] Centralized CLI invoker appending `--token`
-- [ ] Secure token storage/refresh; single retry on auth errors
+- [x] OAuth discovery/authorize/callback (PKCE) - **SERVER SIDE WORKING**
+- [x] Centralized CLI invoker appending `--token` - **READY BUT UNUSED**
+- [x] SQLite storage (replaced Redis) - **WORKING**
+- [❌] **OAuth client flows** - **CRITICAL FAILURE: All clients redirect to dashboard**
 
-**Phase 2: Tooling**  
-- [ ] Confirm all handlers call through the centralized invoker
-- [ ] Strengthen output parsing and error mapping
-- [ ] Concurrency/timeout limits
+**Phase 2: Technology Replacement Required**
+- [❌] oidc-provider incompatible with custom OAuth 2.0 scopes
+- [❌] Multiple middleware attempts failed to resolve validation conflicts
+- [❌] Alternative OAuth server technology evaluation required
 
 **Phase 3: Ops**  
 - [ ] Containerization and deployment

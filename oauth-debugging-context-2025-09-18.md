@@ -209,12 +209,20 @@ MCP Endpoint:  https://mittwald-mcp-fly2.fly.dev/mcp
 - ✅ **Redirect URI**: Mittwald correctly configured and deployed
 - ❌ **End-to-end flow**: Client redirect completion needs fixing
 
-The OAuth 2.1 infrastructure is functional - remaining work is client integration completion and production hardening.
-## 🧪 Full Project Testing Plan
+**CRITICAL UPDATE (2025-09-21): OAuth 2.1 infrastructure is NON-FUNCTIONAL**
 
-### Objective
-- Validate the complete OAuth 2.1 + MCP stack (Express resource server, standalone OAuth server, Redis session storage, and CLI token injection) so regressions such as the duplicate Mittwald callbacks cannot recur.
-- Drive confidence through layered automation (unit → integration → end-to-end) plus lightweight Fly.io staging smoke checks before production deploys.
+## 🚨 **COMPLETE OAUTH IMPLEMENTATION FAILURE**
+
+### Current Broken Status
+- **ALL OAuth flows broken**: Users redirected to studio.mittwald.de/app/dashboard
+- **No consent screens**: OAuth validation failures prevent proper flow completion
+- **No successful callbacks**: Zero MCP clients can complete OAuth authentication
+- **oidc-provider fundamental incompatibility**: Cannot achieve required OAuth 2.0 behavior
+
+### Investigation Results (NEGATIVE)
+- **Technology choice**: oidc-provider inappropriate for Mittwald OAuth requirements
+- **Multiple implementation attempts**: All failed to resolve core issues
+- **Architecture research**: Alternative OAuth servers evaluated, replacement needed
 
 ### Testing Foundations
 - Add `npm run lint`, `npm run type-check`, and `npm run test:unit` as a fast pre-push/CI gate to catch TypeScript or ESLint drift introduced by OAuth changes.

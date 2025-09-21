@@ -1,19 +1,20 @@
-# 🎯 Architectural Goal: OAuth 2.1 + CLI‑Centric MCP
+# 🚨 CRITICAL STATUS: OAuth 2.1 Implementation FAILED (2025-09-21)
 
-Mittwald MCP Server v2 – CLI‑centric architecture that wraps the official `mw` CLI and authenticates every command with `--token <access_token>` obtained via OAuth 2.1 + PKCE.
+**ALL OAUTH FLOWS BROKEN** - Users redirected to studio.mittwald.de/app/dashboard instead of completing OAuth consent flow.
 
-## 🏗️ Architecture Overview
+## 🏗️ Architecture Status: NON-FUNCTIONAL
 
-This implementation keeps the working MCP server and relies on these principles:
+This implementation has **FAILED** to achieve working OAuth flows despite extensive development effort:
 
-**OAuth (Mittwald Studio)**
-- OAuth 2.1 compliant authorization flows with PKCE (public client)
-- Per‑user access tokens (no server‑side PAT)
+**OAuth (Mittwald Studio)** - BROKEN
+- OAuth 2.1 flows redirect to dashboard instead of consent screen
+- oidc-provider incompatible with Mittwald OAuth 2.0 requirements
+- Multiple implementation attempts unsuccessful
 
-**MCP Server (Single Service)**
-- Wraps the `mw` CLI; every command passes `--token <access_token>`
-- MCP protocol implementation with robust logging and parsing
-- Multi‑tenant isolation via per‑user tokens
+**MCP Server (Single Service)** - READY
+- ✅ Wraps the `mw` CLI; ready for `--token <access_token>` authentication
+- ✅ MCP protocol implementation functional
+- ❌ Cannot receive OAuth tokens due to broken OAuth flows
 
 ## 🔧 Technical Constraints
 

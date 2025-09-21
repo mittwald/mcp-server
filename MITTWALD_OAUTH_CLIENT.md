@@ -1,8 +1,10 @@
 # Mittwald Studio OAuth Client Configuration
 
-This document specifies the OAuth client configuration registered in Mittwald Studio. The OAuth server (node-oidc-provider) uses this client to authenticate users with Mittwald Studio during OAuth flows. The obtained Mittwald access tokens are stored server-side and used to authenticate `mw` CLI commands with `--token <access_token>`.
+**CURRENT STATUS: CRITICAL FAILURE - ALL OAUTH FLOWS BROKEN (2025-09-21)**
 
-> **Critical Configuration**: This document specifies the exact OAuth client configuration registered in Mittwald Studio for the node-oidc-provider OAuth server integration.
+This document specifies the OAuth client configuration registered in Mittwald Studio. Despite extensive investigation and multiple implementation attempts, **all OAuth flows currently fail** and redirect users to studio.mittwald.de/app/dashboard instead of completing the OAuth consent flow.
+
+> **CRITICAL ISSUE**: OAuth flows do not complete. Server-side processing appears successful (logs show "OAuth flow completed successfully") but browser redirects fail, sending users to Mittwald dashboard instead of MCP client callbacks.
 
 ## 📋 Static Client Registration
 

@@ -245,13 +245,18 @@ Goal: Disable devInteractions in production and serve our own interaction routes
   - New: `packages/oauth-server/README.md`
 - Criteria: Complete setup instructions; troubleshooting guides; API documentation
 
-17) Production Launch
-- Deploy both services to production Fly.io apps
-- Configure custom domains and SSL certificates
-- Validate production OAuth flows
-- Files:
-  - Production deployment configs
-- Criteria: Services running in production; OAuth flows work; monitoring active
+17) CRITICAL FAILURE - Production OAuth Flows Non-Functional (2025-09-21)
+- **Current Status**: ALL OAuth flows broken despite extensive implementation efforts
+- **Issue**: Users authenticate successfully but get redirected to studio.mittwald.de/app/dashboard
+- **Server logs**: Show "OAuth flow completed successfully" but browser redirects fail
+- **Investigation**: Extensive HAR analysis, multiple middleware implementations, scope validation fixes
+- **Result**: No OAuth flow reaches MCP client callback URLs
+
+### FAILED IMPLEMENTATION ATTEMPTS:
+1. **oidc-provider scope configuration** - Multiple attempts, all failed
+2. **Custom scope validation middleware** - Implemented but ineffective
+3. **Client-specific handling** - Failed to resolve core redirect issues
+4. **DCR scope filtering** - Working but doesn't fix main redirect problem
 
 ## Appendix – File Reference Map
 
