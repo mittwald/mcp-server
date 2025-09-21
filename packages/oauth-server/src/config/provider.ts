@@ -131,15 +131,26 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       email: ['email', 'email_verified'],
     },
     
-    // Scopes
+    // Scopes (OIDC + Mittwald custom)
     scopes: new Set([
+      // OIDC standard scopes
       'openid',
       'profile',
       'email',
+      'offline_access', // For refresh tokens
+
+      // Mittwald custom scopes
       'user:read',
       'customer:read',
       'project:read',
-      // Custom scopes can be added dynamically
+      'project:write',
+      'database:read',
+      'database:write',
+      'app:read',
+      'app:write',
+      'domain:read',
+      'domain:write',
+      // Additional scopes can be added dynamically
     ]),
     
     // Subject types
@@ -211,8 +222,8 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       }
     },
 
-    // Client authentication
-    clientAuthMethods: new Set(['none']), // Only public clients
+    // Client authentication (support both public and confidential clients)
+    clientAuthMethods: new Set(['none', 'client_secret_post']),
     
     // Custom client defaults
     clientDefaults: {
@@ -221,7 +232,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       // and token issuance policy.
       grant_types: ['authorization_code', 'refresh_token'],
       response_types: ['code'],
-      token_endpoint_auth_method: 'none',
+      token_endpoint_auth_method: 'none', // Default to public, but allow override
       application_type: 'native',
       require_auth_time: false,
     },

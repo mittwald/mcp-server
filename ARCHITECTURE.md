@@ -377,6 +377,120 @@ The OAuth Authorization Server is implemented using **node-oidc-provider**, a pr
 - **Client JWT** (node-oidc-provider → MCP client): Standard OpenID Connect JWT with `sub`, `iss`, `aud`, `exp`, `jti`, and custom claims
 - **Mittwald tokens**: Stored server-side in MCP server, encrypted; mapped via JWT `sub`; used for `mw --token <mittwald_access_token>`
 
+---
+
+## 🔌 MCP Client Compatibility & Requirements
+
+### **Major MCP Client Analysis (2025)**
+
+Based on production logs and official documentation research, our OAuth server must support diverse client authentication patterns:
+
+#### **Claude.ai Official Client**
+```json
+{
+  "client_name": "Claude",
+  "grant_types": ["authorization_code"],
+  "response_types": ["code"],
+  "token_endpoint_auth_method": "client_secret_post", // Confidential client
+  "scope": "openid profile email user:read customer:read project:read",
+  "redirect_uris": ["https://claude.ai/api/mcp/auth_callback"]
+}
+```
+
+**Requirements:**
+- ✅ **DCR Support**: Dynamic Client Registration (RFC 7591)
+- ❌ **Confidential Client**: Requires `client_secret_post` authentication
+- ❌ **OIDC Scopes**: Expects `openid`, `profile`, `email` scopes
+- ✅ **PKCE**: Supports OAuth 2.1 PKCE flows
+- ✅ **Fixed Callback**: `https://claude.ai/api/mcp/auth_callback`
+- ⚠️ **Future Compatibility**: May use `https://claude.com/api/mcp/auth_callback`
+
+#### **ChatGPT Connector Platform**
+```json
+{
+  "client_id": "pqQ1s95Dj4HeTbFtjmUDKicS82yzzbAyFurwCptqSQZ",
+  "redirect_uri": "https://chatgpt.com/connector_platform_oauth_redirect",
+  "response_type": "code",
+  "code_challenge_method": "S256"
+}
+```
+
+**Requirements:**
+- ✅ **Pre-registered Client**: Uses existing client ID (no DCR)
+- ✅ **Public Client**: Uses `token_endpoint_auth_method: "none"`
+- ✅ **PKCE**: Mandatory S256 code challenge method
+- ✅ **Fixed Callback**: `https://chatgpt.com/connector_platform_oauth_redirect`
+- ✅ **Custom Scopes**: Works with Mittwald-specific scopes
+
+#### **MCP Jam Inspector (Development)**
+```json
+{
+  "client_name": "MCPJam",
+  "token_endpoint_auth_method": "none",
+  "grant_types": ["authorization_code"],
+  "redirect_uris": ["http://localhost:6274/oauth/callback/debug"]
+}
+```
+
+**Requirements:**
+- ✅ **DCR Support**: Dynamic registration working
+- ✅ **Public Client**: Uses `none` authentication
+- ✅ **Localhost Callback**: Development-friendly redirect
+- ✅ **Flexible Scopes**: Adapts to available scopes
+
+### **Compatibility Matrix**
+
+| Feature | Current Support | Claude.ai | ChatGPT | MCP Jam | Required Action |
+|---------|----------------|-----------|---------|---------|-----------------|
+| **DCR** | ✅ Implemented | ✅ Required | ⚠️ Optional | ✅ Used | ✅ **Working** |
+| **Auth Method `none`** | ✅ Only current | ❌ Not used | ✅ Required | ✅ Used | ✅ **Keep** |
+| **Auth Method `client_secret_post`** | ❌ Not supported | ✅ Required | ❌ Not used | ❌ Not used | ❌ **MUST ADD** |
+| **OIDC Scopes** | ❌ Not supported | ✅ Required | ❌ Not used | ❌ Not used | ❌ **MUST ADD** |
+| **Custom Scopes** | ✅ Implemented | ✅ Used | ✅ Used | ✅ Used | ✅ **Working** |
+| **PKCE** | ✅ Mandatory | ✅ Supported | ✅ Mandatory | ✅ Used | ✅ **Working** |
+| **Specific Callbacks** | ⚠️ Pattern only | ✅ Fixed URL | ✅ Fixed URL | ✅ Localhost | ⚠️ **UPDATE PATTERNS** |
+
+### **Critical Issues Identified**
+
+#### **🚨 Claude.ai Registration Failures**
+**Error Log Evidence:**
+```
+"token_endpoint_auth_method must be 'none'"
+Client trying: "client_secret_post"
+Server accepts: "none" only
+```
+
+**Impact**: Claude.ai official client cannot register or authenticate.
+
+#### **⚠️ ChatGPT Authorization Errors**
+**Error Log Evidence:**
+```
+GET /auth → 400 "OAuth error"
+Client: pqQ1s95Dj4HeTbFtjmUDKicS82yzzbAyFurwCptqSQZ
+```
+
+**Likely Cause**: May be related to scope or client configuration issues.
+
+### **Implementation Priority**
+
+#### **Phase 1: Immediate Fixes (High Priority)**
+1. **Add `client_secret_post` support** for Claude.ai
+2. **Add OIDC scopes** (`openid`, `profile`, `email`)
+3. **Update redirect URI patterns** for specific client callbacks
+4. **Enhanced DCR logic** with client-specific defaults
+
+#### **Phase 2: Advanced Features (Medium Priority)**
+1. **Client secret generation and storage** for confidential clients
+2. **Enhanced refresh token policies** based on client type
+3. **Scope validation and mapping** for different client requirements
+4. **Rate limiting and abuse protection** for DCR endpoints
+
+#### **Phase 3: Production Hardening (Lower Priority)**
+1. **Client metadata validation** and sanitization
+2. **Audit logging** for client registrations and authentications
+3. **Monitoring and alerting** for OAuth flow failures
+4. **Documentation and troubleshooting guides** for client integration
+
 ### MCP Endpoint Auth
 - `/mcp` requires valid AS JWT from node-oidc-provider
 - 401 responses include WWW‑Authenticate header with AS discovery URL

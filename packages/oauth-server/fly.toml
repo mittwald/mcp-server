@@ -35,7 +35,7 @@ primary_region = "fra"
   MITTWALD_REDIRECT_URI = "https://mittwald-oauth-server.fly.dev/mittwald/callback"
   # Open but safe DCR: allow any https redirect, plus curated custom schemes for IDE/CLI/native clients
   # Include loopback hosts for native flows (Claude Desktop random localhost ports)
-  ALLOWED_REDIRECT_URI_PATTERNS = "https://*/*,http://localhost:*/*,http://127.0.0.1:*/*,http://[::1]:*/*,claude://*,vscode://*,vscodium://*,cursor://*,windsurf://*,zed://*,jetbrains://*,lmstudio://*,postman://*,warp://*,amazonq://*"
+  ALLOWED_REDIRECT_URI_PATTERNS = "https://*/*,http://localhost:*/*,http://127.0.0.1:*/*,http://[::1]:*/*,claude://*,vscode://*,vscodium://*,cursor://*,windsurf://*,zed://*,jetbrains://*,lmstudio://*,postman://*,warp://*,amazonq://*,https://claude.ai/api/mcp/auth_callback,https://claude.com/api/mcp/auth_callback,https://chatgpt.com/connector_platform_oauth_redirect,https://chatgpt.com/backend-api/aip/connectors/links/oauth/callback"
 
 [mounts]
   source = "jwks_storage"

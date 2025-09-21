@@ -8,6 +8,7 @@ import { createProviderConfiguration, type ProviderConfig } from './config/provi
 import { logger } from './services/logger.js';
 import { nanoid } from 'nanoid';
 import { registerInteractionRoutes } from './handlers/interactions.js';
+import { getClientSecretStore } from './services/client-secrets.js';
 
 // Environment configuration
 const config: ProviderConfig = {
@@ -211,28 +212,93 @@ async function createServer() {
     formLimit: '1mb',
   }));
 
-  // Pre-process DCR to normalize grant_types for Inspector compatibility
+  // Enhanced DCR processing for multi-client compatibility
   router.post('/reg', async (ctx: Context, next) => {
     try {
       if (ctx.is('application/json') && ctx.request.body) {
         const props = ctx.request.body as any;
+
+        // Detect client type and apply appropriate configuration
+        const isClaudeClient = props.client_name === 'Claude' ||
+          props.redirect_uris?.some((uri: string) => uri.includes('claude.ai') || uri.includes('claude.com'));
+
+        const isChatGPTClient = props.redirect_uris?.some((uri: string) => uri.includes('chatgpt.com'));
+
+        // Configure grant types
         if (Array.isArray(props.grant_types)) {
-          // Allow Inspector's payload but keep validation-friendly list
-          // node-oidc-provider may reject refresh_token in grant_types in some configs
-          // Keep authorization_code; drop others to pass validation
           const hasAuthCode = props.grant_types.includes('authorization_code');
-          props.grant_types = hasAuthCode ? ['authorization_code'] : ['authorization_code'];
-        } else {
+          const hasRefresh = props.grant_types.includes('refresh_token');
           props.grant_types = ['authorization_code'];
+          if (hasRefresh || props.scope?.includes('offline_access')) {
+            props.grant_types.push('refresh_token');
+          }
+        } else {
+          props.grant_types = ['authorization_code', 'refresh_token'];
         }
+
+        // Configure authentication method based on client
+        if (isClaudeClient) {
+          // Claude.ai requires client_secret_post (confidential client)
+          props.token_endpoint_auth_method = 'client_secret_post';
+          props.application_type = 'web';
+          logger.info('Configured Claude.ai client for confidential authentication');
+        } else if (isChatGPTClient) {
+          // ChatGPT uses public client
+          props.token_endpoint_auth_method = 'none';
+          props.application_type = 'native';
+          logger.info('Configured ChatGPT client for public authentication');
+        } else {
+          // Default to public client (MCP Jam, etc.)
+          props.token_endpoint_auth_method = props.token_endpoint_auth_method || 'none';
+          props.application_type = 'native';
+        }
+
         ctx.request.body = props;
+
+        logger.info('DCR normalized', {
+          clientName: props.client_name,
+          authMethod: props.token_endpoint_auth_method,
+          grantTypes: props.grant_types,
+          scopes: props.scope,
+          isClaudeClient,
+          isChatGPTClient
+        });
       }
     } catch (error) {
-      logger.debug('Failed to normalize DCR payload', {
+      logger.error('Failed to normalize DCR payload', {
         error: error instanceof Error ? error.message : String(error),
       });
     }
     await next();
+  });
+
+  // Post-DCR processing: Generate client secrets for confidential clients
+  router.post('/reg', async (ctx: Context, next) => {
+    await next(); // Let oidc-provider process the registration first
+
+    // If registration was successful (201), check if we need to add client secret
+    if (ctx.status === 201 && ctx.body) {
+      try {
+        const response = ctx.body as any;
+        const clientId = response.client_id;
+        const authMethod = response.token_endpoint_auth_method;
+
+        if (authMethod === 'client_secret_post' && clientId) {
+          const clientSecretStore = getClientSecretStore();
+          const clientSecret = clientSecretStore.generateClientSecret(clientId);
+
+          // Add client secret to response
+          response.client_secret = clientSecret;
+          ctx.body = response;
+
+          logger.info({ clientId, authMethod }, 'Added client secret to DCR response');
+        }
+      } catch (error) {
+        logger.error('Failed to add client secret to DCR response', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
   });
 
   // Health check endpoint
