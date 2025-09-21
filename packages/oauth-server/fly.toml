@@ -15,7 +15,7 @@ primary_region = "fra"
   PORT = "3000"
   ISSUER = "https://mittwald-oauth-server.fly.dev"
   COOKIES_SECURE = "true"
-  STORAGE_ADAPTER = "redis"
+  STORAGE_ADAPTER = "memory"
   JWKS_KEYSTORE_PATH = "/app/jwks/jwks.json"
   # Accept resource indicators for the MCP server
   ALLOWED_RESOURCE = "https://mittwald-mcp-fly2.fly.dev/mcp"
