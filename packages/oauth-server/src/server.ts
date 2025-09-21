@@ -9,6 +9,7 @@ import { logger } from './services/logger.js';
 import { nanoid } from 'nanoid';
 import { registerInteractionRoutes } from './handlers/interactions.js';
 import { getClientSecretStore } from './services/client-secrets.js';
+import { createCustomScopeValidationMiddleware } from './middleware/custom-scope-validation.js';
 
 // Environment configuration
 const config: ProviderConfig = {
@@ -329,6 +330,18 @@ async function createServer() {
   registerInteractionRoutes(router, provider);
   app.use(router.routes());
   app.use(router.allowedMethods());
+
+  // Custom scope validation middleware (CRITICAL FIX)
+  // This addresses oidc-provider's scope validation inconsistency where it
+  // advertises scopes but rejects explicit requests for them
+  const customScopeValidator = createCustomScopeValidationMiddleware();
+  app.use(customScopeValidator);
+
+  logger.info('Custom scope validation middleware enabled', {
+    purpose: 'Fix oidc-provider scope validation inconsistency',
+    target: 'Enable Claude.ai and ChatGPT OAuth flows',
+    preserves: 'MCP Jam compatibility and existing infrastructure'
+  });
 
   // Mount OIDC provider app using koa-mount to preserve correct Koa ctx/res semantics
   // and to avoid upstream interference. In v9 the Provider instance is itself a Koa app
