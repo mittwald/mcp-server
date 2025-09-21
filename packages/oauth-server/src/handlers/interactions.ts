@@ -2,6 +2,7 @@ import type Provider from 'oidc-provider';
 import Router from '@koa/router';
 import { createInteractionStore } from '../services/interaction-store.js';
 import { getMittwaldClient, createPkce } from '../services/mittwald-oauth-client.js';
+import { authCodeStore, type AuthCodeData } from '../services/auth-code-store.js';
 import { nanoid } from 'nanoid';
 import { logger } from '../services/logger.js';
 import { getDefaultScopeString } from '../config/oauth-scopes.js';
@@ -262,19 +263,27 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       // Generate a temporary authorization code for the client
       const authCode = nanoid(32);
 
-      // Store the authorization code mapping temporarily (in production, use proper storage)
-      const _authCodeData = {
+      // Store the authorization code mapping in persistent storage
+      const authCodeData: AuthCodeData = {
         code: authCode,
         accountId,
         accessToken: tokenSet.access_token,
         refreshToken: tokenSet.refresh_token,
-        clientRedirectUri: interactionDetails?.params?.redirect_uri || config.redirectUri,
+        clientId: interactionDetails?.params?.client_id || 'unknown',
+        redirectUri: interactionDetails?.params?.redirect_uri || config.redirectUri,
         createdAt: Date.now(),
         expiresAt: Date.now() + (10 * 60 * 1000) // 10 minutes
       };
 
-      // In a proper implementation, store this in Redis/database
-      // For now, we'll just redirect with the tokens embedded
+      // Store in authorization code store for later token exchange
+      authCodeStore.store(authCode, authCodeData);
+
+      logger.info('Authorization code stored', {
+        authCode: `${authCode.substring(0, 8)}...`,
+        expiresAt: new Date(authCodeData.expiresAt).toISOString(),
+        clientId: authCodeData.clientId,
+        storeSize: authCodeStore.size()
+      });
 
       logger.info('Generating authorization code for client', {
         authCode: `${authCode.substring(0, 8)}...`,
