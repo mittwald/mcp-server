@@ -20,11 +20,14 @@ export interface OAuthScopeConfig {
  * IMPORTANT: This is the OAuth server copy of the scope configuration.
  * Keep in sync with src/config/oauth-scopes.ts
  *
- * Note: 'openid' scope is intentionally excluded because Mittwald's OAuth
- * implementation doesn't return id_token, which causes validation failures.
+ * Note: 'openid' scope is now supported for client compatibility (Claude.ai)
+ * We accept openid from clients but handle id_token generation ourselves
+ * since Mittwald's OAuth implementation is pure OAuth 2.0, not OIDC.
  */
 export const OAUTH_SCOPES: OAuthScopeConfig = {
   SUPPORTED_SCOPES: [
+    // OpenID Connect scope (for client compatibility)
+    'openid',
     // Application Management
     'app:read',
     'app:write',

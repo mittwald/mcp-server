@@ -244,9 +244,9 @@ async function createServer() {
           // Claude.ai requires client_secret_post (confidential client)
           props.token_endpoint_auth_method = 'client_secret_post';
           props.application_type = 'web';
-          // CRITICAL: Set allowed scopes for client validation
-          props.scope = 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
-          logger.info('Configured Claude.ai client for confidential authentication');
+          // CRITICAL: Set allowed scopes for client validation (include openid for Claude)
+          props.scope = 'openid user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
+          logger.info('Configured Claude.ai client for confidential authentication with openid scope');
         } else if (isChatGPTClient) {
           // ChatGPT uses public client
           props.token_endpoint_auth_method = 'none';
