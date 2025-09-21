@@ -127,14 +127,13 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
     // Claims configuration (enable minimal OIDC claims for openid scope)
     claims: {
       openid: ['sub'],
-      profile: ['name', 'preferred_username'], // Minimal profile claims for MCP Inspector
+      // No profile/email claims since Mittwald doesn't provide them
     },
     
-    // Scopes (Mittwald official client configuration + OIDC scopes for client compatibility)
+    // Scopes (Mittwald official client configuration + openid for OIDC clients)
     scopes: new Set([
-      // OIDC scopes (needed for MCP Inspector and Claude.ai compatibility)
+      // OIDC scope (needed for Claude.ai compatibility)
       'openid',
-      'profile', // Required by MCP Inspector for OAuth testing
       // Application Management
       'app:read',
       'app:write',
