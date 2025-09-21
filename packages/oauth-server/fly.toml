@@ -28,9 +28,9 @@ primary_region = "fra"
   # Alternatively, update the REDIRECT_URI below to one of the IdP's allowedRedirectURIs and adjust the callback route.
   MITTWALD_CLIENT_ID = "mittwald-mcp-server"
   # Mittwald IdP OAuth endpoints (non-secret)
-  MITTWALD_AUTHORIZATION_URL = "https://login.mittwald.de/oauth2/authorize"
-  MITTWALD_TOKEN_URL = "https://login.mittwald.de/oauth2/token"
-  # MITTWALD_USERINFO_URL = "https://login.mittwald.de/oauth2/userinfo"
+  MITTWALD_AUTHORIZATION_URL = "https://studio.mittwald.de/oauth2/authorize"
+  MITTWALD_TOKEN_URL = "https://studio.mittwald.de/oauth2/token"
+  # MITTWALD_USERINFO_URL = "https://studio.mittwald.de/oauth2/userinfo"
   # Default redirect to our AS callback route (whitelisted)
   MITTWALD_REDIRECT_URI = "https://mittwald-oauth-server.fly.dev/mittwald/callback"
   # Open but safe DCR: allow any https redirect, plus curated custom schemes for IDE/CLI/native clients
