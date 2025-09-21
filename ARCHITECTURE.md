@@ -1379,12 +1379,94 @@ Pattern: Matches Claude.ai behavior
 5. **TypeScript/Node.js compatibility**
 6. **Production readiness** and maintenance status
 
-#### **Research Targets**
-- **oauth2-server** (Node.js OAuth 2.0 server)
-- **panva/oauth4webapi** (OAuth 2.0 client/server utilities)
-- **Custom Express implementation** with oauth2orize
-- **Authelia** (authentication/authorization server)
-- **Hydra** (OAuth 2.0 and OpenID Connect server)
+#### **Technology Alternatives Research Results**
+
+##### **1. @node-oauth/node-oauth2-server**
+- **Type**: Pure OAuth 2.0 server library
+- **Strengths**: RFC 6749/6750 compliant, PKCE support, storage-agnostic
+- **Limitations**: No built-in DCR support, requires manual client registration
+- **Custom Scopes**: ✅ Supported but limited documentation
+- **Suitability**: Good for simple OAuth 2.0, poor for dynamic MCP client scenarios
+
+##### **2. oauth4webapi (panva)**
+- **Type**: Low-level OAuth 2.0/OIDC client API utilities
+- **Strengths**: Tree-shakable ESM, FAPI certified, modern implementation
+- **Limitations**: Primarily client-focused, not a complete server solution
+- **Custom Scopes**: ✅ Flexible scope handling
+- **Suitability**: Could be foundation for custom server, requires significant development
+
+##### **3. oauth2orize + Express**
+- **Type**: OAuth 2.0 server toolkit for custom implementations
+- **Strengths**: Maximum flexibility, Express integration, custom control
+- **Limitations**: Requires implementing PKCE and DCR manually
+- **Custom Scopes**: ✅ Complete control over scope validation
+- **Suitability**: High development effort, maximum customization
+
+##### **4. Authelia**
+- **Type**: Authentication/authorization server (Go-based)
+- **Strengths**: OIDC provider, extensive custom scope support
+- **Limitations**: Go-based (not Node.js), complex deployment
+- **Custom Scopes**: ✅ Excellent support with custom claims
+- **Suitability**: Overkill for MCP use case, deployment complexity
+
+##### **5. Ory Hydra**
+- **Type**: Cloud-native OAuth 2.0/OIDC server (Go-based)
+- **Strengths**: Web-scale, OpenID Certified™, used by OpenAI
+- **Limitations**: Go-based, requires separate login/consent apps
+- **Custom Scopes**: ✅ Flexible scope definitions
+- **Suitability**: Production-ready but complex integration
+
+### **Technology Recommendation Matrix**
+
+| Option | Development Effort | Custom Scope Support | DCR Support | Node.js Native | Production Ready |
+|--------|-------------------|---------------------|-------------|----------------|------------------|
+| **Fix oidc-provider** | Medium | ⚠️ Complex | ✅ Native | ✅ Yes | ✅ Yes |
+| **@node-oauth/oauth2-server** | Medium | ✅ Good | ❌ Manual | ✅ Yes | ✅ Yes |
+| **oauth4webapi + Custom** | High | ✅ Excellent | ❌ Manual | ✅ Yes | ⚠️ Custom |
+| **oauth2orize + Express** | High | ✅ Excellent | ❌ Manual | ✅ Yes | ⚠️ Custom |
+| **Authelia** | Low | ✅ Excellent | ✅ Native | ❌ Go | ✅ Yes |
+| **Ory Hydra** | Medium | ✅ Good | ✅ Native | ❌ Go | ✅ Yes |
+
+### **Strategic Decision Points**
+
+#### **Option A: Fix oidc-provider (Recommended)**
+**Approach**: Implement custom scope validation middleware
+**Pros**:
+- Leverage existing infrastructure and SQLite integration
+- Maintain TypeScript/Node.js ecosystem
+- Preserve existing working components (MCP Jam compatibility)
+- OpenID Certified™ base with custom modifications
+
+**Cons**:
+- Fighting against OIDC-first design philosophy
+- May require ongoing maintenance for edge cases
+- Risk of future oidc-provider updates breaking customizations
+
+#### **Option B: Migrate to @node-oauth/oauth2-server**
+**Approach**: Replace oidc-provider with pure OAuth 2.0 library
+**Pros**:
+- Purpose-built for OAuth 2.0 (not OIDC)
+- Better alignment with Mittwald custom scope requirements
+- Simpler scope validation model
+- Maintained and production-ready
+
+**Cons**:
+- Requires implementing DCR endpoints manually
+- Loss of OpenID Connect certification
+- Significant development effort for migration
+
+#### **Option C: Custom oauth2orize Implementation**
+**Approach**: Build minimal OAuth 2.0 server for MCP requirements
+**Pros**:
+- Complete control over scope validation
+- Minimal feature set focused on MCP needs
+- Perfect alignment with Mittwald requirements
+- No OIDC complexity
+
+**Cons**:
+- Highest development effort
+- Need to implement security features carefully
+- Ongoing maintenance responsibility
 
 ---
 
