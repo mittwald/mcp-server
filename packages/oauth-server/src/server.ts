@@ -10,6 +10,7 @@ import { nanoid } from 'nanoid';
 import { registerInteractionRoutes } from './handlers/interactions.js';
 import { getClientSecretStore } from './services/client-secrets.js';
 import { createCustomScopeValidationMiddleware } from './middleware/custom-scope-validation.js';
+import { getSupportedScopes } from './config/oauth-scopes.js';
 
 // Environment configuration
 const config: ProviderConfig = {
@@ -260,6 +261,27 @@ async function createServer() {
           if (!props.scope) {
             props.scope = 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
           }
+        }
+
+        // CRITICAL: Filter out unsupported scopes from client registration
+        // This prevents oidc-provider DCR validation errors for scopes like 'profile'
+        if (props.scope) {
+          const supportedScopes = new Set([...getSupportedScopes(), 'openid']); // Include openid for compatibility
+          const requestedScopes = props.scope.split(' ').filter(Boolean);
+          const filteredScopes = requestedScopes.filter(scope => supportedScopes.has(scope));
+
+          if (filteredScopes.length !== requestedScopes.length) {
+            const removedScopes = requestedScopes.filter(scope => !supportedScopes.has(scope));
+            logger.info('Filtered unsupported scopes from client registration', {
+              clientName: props.client_name,
+              originalScopes: requestedScopes,
+              filteredScopes,
+              removedScopes
+            });
+          }
+
+          // Use filtered scopes or fallback to defaults
+          props.scope = filteredScopes.length > 0 ? filteredScopes.join(' ') : 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
         }
 
         ctx.request.body = props;
