@@ -72,7 +72,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         nonce: `${nonce.substring(0, 8)}...`,
         hasCodeVerifier: !!codeVerifier,
         ttlSeconds: INTERACTION_TTL,
-        createdAt: interactionRecord.createdAt
+        createdAt: interactionRecord.createdAt,
+        storeInstance: store.constructor.name
       });
 
       await store.save(interactionRecord, INTERACTION_TTL);
@@ -149,7 +150,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         recordExists: !!existingRecord,
         recordUid: existingRecord?.uid,
         recordCreatedAt: existingRecord?.createdAt,
-        ageMinutes: existingRecord ? (Date.now() - existingRecord.createdAt) / (1000 * 60) : undefined
+        ageMinutes: existingRecord ? (Date.now() - existingRecord.createdAt) / (1000 * 60) : undefined,
+        storeInstance: store.constructor.name
       });
 
       if (!existingRecord) {

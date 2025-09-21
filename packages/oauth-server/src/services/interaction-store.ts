@@ -75,9 +75,17 @@ class RedisInteractionStore implements InteractionStore {
   }
 }
 
+// Singleton store instance to prevent multiple stores
+let globalStore: InteractionStore | null = null;
+
 export function createInteractionStore(): InteractionStore {
-  // For now, use memory store for interaction data (it's short-lived anyway)
-  // Could be migrated to SQLite later if needed for better persistence
-  logger.info('Using in-memory interaction store (sufficient for short-lived OAuth interactions)');
-  return new MemoryInteractionStore();
+  if (!globalStore) {
+    // For now, use memory store for interaction data (it's short-lived anyway)
+    // Could be migrated to SQLite later if needed for better persistence
+    logger.info('Creating singleton in-memory interaction store (sufficient for short-lived OAuth interactions)');
+    globalStore = new MemoryInteractionStore();
+  } else {
+    logger.info('Reusing existing interaction store instance');
+  }
+  return globalStore;
 }
