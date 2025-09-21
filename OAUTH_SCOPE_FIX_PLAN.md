@@ -7,6 +7,17 @@
 ### **Objective**
 Fix oidc-provider scope validation inconsistency to enable Claude.ai and ChatGPT OAuth flows while maintaining MCP Jam Inspector compatibility and existing infrastructure.
 
+### **Known Working Configuration**
+**Commit Hash**: `bd69f1e` - "fix(oauth-server): correct OAuth scopes to match Mittwald's official client configuration"
+
+**This commit achieved MCP Jam OAuth consent screen success** with the proper scope grid display. The working configuration included:
+- ✅ **Correct Mittwald scopes** (40+ official scopes)
+- ✅ **No invalid OIDC scopes** (profile, openid removed)
+- ✅ **Default scope strategy** (10 essential scopes)
+- ✅ **Working consent screen** showing scope grid with approve/deny options
+
+**Evidence**: Screenshot shows beautiful consent screen with scope permissions grid for mStudio MCP server access.
+
 ### **Core Problem**
 - **oidc-provider advertises**: All Mittwald scopes + `openid` in discovery metadata
 - **oidc-provider rejects**: Explicit requests for those same advertised scopes
