@@ -208,31 +208,6 @@ describe('Custom Scope Validation', () => {
 
 ---
 
-## 🛡️ **Risk Mitigation & Rollback Plan**
-
-### **Risk Assessment**
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| **Scope validation breaks existing flows** | Medium | High | Comprehensive testing, gradual deployment |
-| **Performance degradation** | Low | Medium | Scope validation optimization, caching |
-| **Security vulnerabilities** | Low | High | Security review, principle of least privilege |
-| **Future oidc-provider updates** | Medium | Medium | Version pinning, custom validation isolation |
-
-### **Rollback Triggers**
-- [ ] **Any existing client regression** (MCP Jam stops working)
-- [ ] **Performance degradation** > 100ms per OAuth request
-- [ ] **Error rate increase** > 5% for any client type
-- [ ] **Mittwald integration failures** (token exchange issues)
-
-### **Rollback Procedure**
-1. **Immediate**: Disable custom scope validation middleware
-2. **Revert**: to previous working commit with git deployment
-3. **Verify**: MCP Jam OAuth flow working normally
-4. **Investigate**: Root cause of rollback trigger
-5. **Document**: Lessons learned and alternative approaches
-
----
-
 ## 🔍 **Technical Implementation Details**
 
 ### **Core Middleware Architecture**
