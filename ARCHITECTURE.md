@@ -20,6 +20,7 @@ This document describes the CLI‑first architecture for the Mittwald MCP Server
 - ❌ **PKCE conflict resolution** across multiple simultaneous users
 - ❌ **mcp-remote timeout issues** and connection failures
 - ❌ **Session-based authentication complexity**
+- ❌ **Redis NOAUTH authentication errors** preventing OAuth flows
 
 ### Solution Benefits
 - ✅ **Standards-compliant OAuth 2.1** with mandatory PKCE
@@ -27,6 +28,7 @@ This document describes the CLI‑first architecture for the Mittwald MCP Server
 - ✅ **Microservices architecture** with clean separation of concerns
 - ✅ **Multi-tenant user isolation** by design
 - ✅ **Scalable deployment** with independent service scaling
+- ✅ **SQLite persistence** eliminating external storage dependencies
 
 ---
 
@@ -52,18 +54,45 @@ sequenceDiagram
 
 ### Service Breakdown
 
+#### OAuth Server (`packages/oauth-server/`)
+**Technology Stack:**
+- Koa.js with TypeScript
+- node-oidc-provider v9 (OpenID Certified™)
+- SQLite with better-sqlite3 (persistent storage)
+- Fly.io volume for database persistence
+
+**Responsibilities:**
+- OAuth 2.1 authorization server with PKCE support
+- Dynamic Client Registration (DCR) for MCP clients
+- User authentication via Mittwald Studio
+- JWT token issuance with embedded Mittwald credentials
+- SQLite storage for OAuth sessions and temporary state
+
+**Storage Architecture:**
+```
+/app/jwks/
+├── jwks.json          # JWT signing keys (persistent)
+└── oauth-sessions.db  # SQLite database (persistent)
+```
+
 #### MCP Server (this repository)
 **Technology Stack:**
 - Express.js with TypeScript
 - MCP SDK (tools, prompts, resources, sampling)
-- OAuth 2.1 client (discovery, PKCE, token exchange)
-- Redis (optional) for session/state coordination
+- JWT validation (stateless)
+- CLI wrapper with token injection
 
 **Responsibilities:**
 - Expose MCP endpoints over HTTPS/SSE
-- Complete OAuth 2.1 flows to obtain per‑user access tokens
+- Validate JWT tokens from OAuth server
+- Extract Mittwald tokens from validated JWTs
 - Invoke `mw` CLI for all operations, adding `--token <access_token>`
 - Parse CLI output and map to MCP responses
+
+**Storage Architecture:**
+- **Stateless design**: No persistent storage required
+- **JWT validation**: Uses JWKS from OAuth server
+- **Token extraction**: Mittwald tokens embedded in JWTs
 
 ---
 
@@ -74,29 +103,33 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Client as MCP Client
-    participant OAuth as OAuth Server
+    participant OAuth as OAuth Server<br/>(SQLite)
     participant Studio as Mittwald Studio
-    participant MCP as MCP Server
-    participant API as Mittwald API
+    participant MCP as MCP Server<br/>(Stateless)
+    participant CLI as mw CLI
 
     Client->>OAuth: 1. GET /.well-known/oauth-authorization-server
     OAuth-->>Client: OAuth metadata + endpoints
-    
-    Client->>OAuth: 2. POST /oauth/register (optional)
+
+    Client->>OAuth: 2. POST /reg (DCR)
     OAuth-->>Client: Client registration info
-    
-    Client->>OAuth: 3. GET /oauth/authorize + PKCE
+
+    Client->>OAuth: 3. GET /auth + PKCE
+    Note over OAuth: Store state in SQLite
     OAuth->>Studio: 4. Redirect for user auth
-    Studio-->>OAuth: 5. Authorization code
-    OAuth->>Client: 6. Authorization code
-    
-    Client->>OAuth: 7. POST /oauth/token + code_verifier
-    OAuth->>Studio: 8. Exchange code for Mittwald token
-    Studio-->>OAuth: 9. Mittwald access token
-    OAuth-->>MCP: 10. Mittwald access token (per user)
-    
-    Client->>MCP: 11. MCP tool requests
-    MCP->>CLI: 12. Run mw ... --token <access_token>
+    Studio-->>OAuth: 5. Authorization code + callback
+    Note over OAuth: Retrieve state from SQLite
+
+    Client->>OAuth: 6. POST /token + code_verifier
+    OAuth->>Studio: 7. Exchange code for Mittwald token
+    Studio-->>OAuth: 8. Mittwald access token
+    OAuth-->>Client: 9. JWT token (contains Mittwald token)
+    Note over OAuth: Clean up SQLite state
+
+    Client->>MCP: 10. MCP request + JWT
+    MCP->>OAuth: 11. Validate JWT (JWKS)
+    Note over MCP: Extract Mittwald token from JWT
+    MCP->>CLI: 12. mw ... --token <mittwald_token>
     CLI-->>MCP: 13. CLI response
     MCP-->>Client: 14. MCP response
 ```
@@ -223,6 +256,80 @@ allowedRedirectURIs:
 
 ---
 
+## 💾 Persistence Architecture
+
+### SQLite Storage Design
+
+The OAuth server uses **SQLite** for persistent storage, eliminating external dependencies while providing ACID compliance and better reliability than Redis.
+
+#### **Storage Locations**
+```
+OAuth Server: /app/jwks/
+├── jwks.json              # JWT signing keys (JWKS)
+└── oauth-sessions.db      # SQLite database (OAuth state)
+
+MCP Server: (stateless)
+└── No persistent storage  # JWT validation only
+```
+
+#### **SQLite Schema**
+```sql
+CREATE TABLE oauth_data (
+    id TEXT PRIMARY KEY,
+    model TEXT NOT NULL,           -- oidc-provider model type
+    data TEXT NOT NULL,            -- JSON payload
+    expires_at INTEGER,            -- Unix timestamp
+    consumed_at INTEGER,           -- Unix timestamp for consumed items
+    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+    updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
+CREATE INDEX idx_model ON oauth_data(model);
+CREATE INDEX idx_expires_at ON oauth_data(expires_at);
+CREATE INDEX idx_consumed_at ON oauth_data(consumed_at);
+```
+
+#### **Data Lifecycle Management**
+- **Automatic cleanup**: Expired entries removed every 5 minutes
+- **ACID transactions**: Ensures OAuth state consistency
+- **WAL mode**: Better concurrency than default SQLite
+- **10MB cache**: Optimized for OAuth workload patterns
+
+### **Benefits Over Redis**
+
+| Aspect | SQLite | Redis (Previous) |
+|--------|--------|------------------|
+| **Dependencies** | None (embedded) | External service required |
+| **Authentication** | None needed | NOAUTH errors experienced |
+| **Persistence** | True (survives restarts) | Depends on Redis config |
+| **Costs** | $0 | Hosting fees |
+| **Network** | Local file access | Network calls + latency |
+| **Backup** | Simple file copy | Redis-specific procedures |
+| **Debugging** | Standard SQL tools | Redis CLI required |
+
+### **Service Communication Pattern**
+
+```mermaid
+flowchart LR
+    Client[MCP Client] --> OAuth[OAuth Server]
+    OAuth --> SQLite[(SQLite DB)]
+    OAuth --> JWT[Issues JWT Token]
+    JWT --> MCP[MCP Server]
+    MCP --> Validate[JWT Validation]
+    MCP --> Extract[Extract Mittwald Token]
+    MCP --> CLI[mw CLI]
+
+    style SQLite fill:#e1f5fe
+    style JWT fill:#f3e5f5
+    style CLI fill:#e8f5e8
+```
+
+**Key Insight**: OAuth server and MCP server have **separate storage responsibilities**:
+- **OAuth server**: Temporary OAuth state (minutes) in SQLite
+- **MCP server**: Stateless JWT validation, no persistent storage needed
+
+---
+
 ## MCP Third‑Party Authorization Flow (node-oidc-provider)
 
 The OAuth Authorization Server is implemented using **node-oidc-provider**, a production-ready OpenID Certified™ OAuth 2.0 server. The MCP server acts as a Resource Server validating JWT tokens and as an OAuth Client to Mittwald.
@@ -276,26 +383,28 @@ The OAuth Authorization Server is implemented using **node-oidc-provider**, a pr
 
 ## 🚀 Implementation Roadmap (CLI‑centric)
 
-### Phase 1: node-oidc-provider Setup (Week 1)
+### Phase 1: OAuth Server Setup ✅ COMPLETED
 
-#### 1.1 OAuth Server Package Setup
-- [ ] **Create oauth-server package** with node-oidc-provider dependency
-- [ ] **Configure node-oidc-provider** with PKCE, DCR, and JWT settings
-- [ ] **Set up Docker container** for oauth-server with persistent JWKS storage
-- [ ] **Configure Fly.io deployment** for auth.mittwald-mcp-fly.fly.dev
-- [ ] **Test DCR endpoints** and client registration flows
+#### 1.1 OAuth Server Package Setup ✅
+- ✅ **Create oauth-server package** with node-oidc-provider dependency
+- ✅ **SQLite storage migration** from Redis to better-sqlite3
+- ✅ **Production deployment** on Fly.io with persistent volumes
+- ✅ **Configure node-oidc-provider** with PKCE, DCR, and JWT settings
+- ✅ **Set up Docker container** for oauth-server with persistent JWKS storage
+- ✅ **Configure Fly.io deployment** for auth.mittwald-mcp-fly.fly.dev
+- ✅ **Test DCR endpoints** and client registration flows
 
-#### 1.2 Mittwald Studio Integration
-- [ ] **Configure Mittwald OAuth client** within node-oidc-provider
-- [ ] **Implement user interaction flows** for consent/login
-- [ ] **Add Mittwald token exchange** logic in interactions
-- [ ] **Set up secure token storage** for Mittwald credentials
+#### 1.2 Mittwald Studio Integration ✅
+- ✅ **Configure Mittwald OAuth client** within node-oidc-provider
+- ✅ **Implement user interaction flows** for consent/login
+- ✅ **Add Mittwald token exchange** logic in interactions
+- ✅ **Set up secure token storage** for Mittwald credentials (SQLite)
 
-#### 1.3 Production Deployment
-- [ ] **Deploy to Fly.io** with proper environment configuration
-- [ ] **Set up JWKS persistence** using Fly.io volumes
-- [ ] **Configure Redis** for session storage
-- [ ] **Test OAuth flows** end-to-end
+#### 1.3 Production Deployment ✅
+- ✅ **Deploy to Fly.io** with proper environment configuration
+- ✅ **Set up JWKS persistence** using Fly.io volumes
+- ✅ **Configure SQLite storage** replacing Redis dependency
+- ✅ **Test OAuth flows** end-to-end
 
 #### 1.4 OAuth Server Testing
 - [ ] **Write integration tests** for node-oidc-provider configuration
@@ -304,11 +413,19 @@ The OAuth Authorization Server is implemented using **node-oidc-provider**, a pr
 - [ ] **Write tests** for Mittwald token exchange
 - [ ] **Write tests** for JWKS endpoint and key rotation
 
+#### 1.5 SQLite Migration ✅ NEW
+- ✅ **Implement SQLiteAdapter** for oidc-provider with ACID compliance
+- ✅ **Remove Redis dependencies** and authentication complexities
+- ✅ **Configure WAL mode** for better concurrency
+- ✅ **Automatic cleanup** of expired OAuth sessions
+- ✅ **Volume integration** using existing /app/jwks persistent storage
+
 **Deliverables:**
-- Production-ready node-oidc-provider deployment
-- Working DCR and OAuth 2.1 flows with PKCE
-- Mittwald Studio integration
-- **Comprehensive test suite for OAuth flows**
+- ✅ Production-ready node-oidc-provider deployment
+- ✅ Working DCR and OAuth 2.1 flows with PKCE
+- ✅ Mittwald Studio integration
+- ✅ **SQLite persistent storage** eliminating Redis NOAUTH errors
+- [ ] **Comprehensive test suite for OAuth flows**
 
 ### Phase 2: MCP Integration (Week 3-4)
 
