@@ -127,8 +127,10 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
     // Claims configuration (disabled - no OIDC claims)
     claims: undefined, // Disable OIDC claims entirely
     
-    // Scopes (Mittwald official client configuration)
+    // Scopes (Mittwald official client configuration + openid for OIDC clients)
     scopes: new Set([
+      // OIDC scope (needed for Claude.ai compatibility)
+      'openid',
       // Application Management
       'app:read',
       'app:write',
