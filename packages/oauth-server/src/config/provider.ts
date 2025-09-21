@@ -124,8 +124,11 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       Grant: 1209600, // 14 days
     },
     
-    // Claims configuration (disabled - no OIDC claims)
-    claims: undefined, // Disable OIDC claims entirely
+    // Claims configuration (enable minimal OIDC claims for openid scope)
+    claims: {
+      openid: ['sub'],
+      // No profile/email claims since Mittwald doesn't provide them
+    },
     
     // Scopes (Mittwald official client configuration + openid for OIDC clients)
     scopes: new Set([
