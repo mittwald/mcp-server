@@ -330,9 +330,24 @@ flowchart LR
 
 ---
 
-## MCP Third‑Party Authorization Flow (node-oidc-provider)
+## MCP Third‑Party Authorization Flow (Official Mittwald Guidance)
 
-The OAuth Authorization Server is implemented using **node-oidc-provider**, a production-ready OpenID Certified™ OAuth 2.0 server. The MCP server acts as a Resource Server validating JWT tokens and as an OAuth Client to Mittwald.
+This implementation follows the **MCP Third-Party Authorization Flow** as specified in the MCP specification (https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization#third-party-authorization-flow) and recommended by Mittwald themselves.
+
+### **Official Architecture Pattern (per Mittwald)**
+```
+MCP Client (Claude Desktop) ←→ MCP Server (mcp.mittwald.de)
+                                      ↓
+                              api.mittwald.de (OAuth AS)
+```
+
+**Key Points from Mittwald:**
+- **MCP Server** acts as both OAuth Server (to clients) AND OAuth Client (to api.mittwald.de)
+- **DCR Implementation**: MCP server implements DCR for MCP clients
+- **Static Client**: api.mittwald.de doesn't need DCR (only one MCP server instance)
+- **Dual OAuth Servers**: MCP server + api.mittwald.de in sequence
+
+The OAuth Authorization Server is implemented using **node-oidc-provider**, a production-ready OpenID Certified™ OAuth 2.0 server, following this official Mittwald architectural guidance.
 
 ### OAuth AS (node-oidc-provider) to MCP Clients
 **Hosted at:** `https://mittwald-oauth-server.fly.dev`

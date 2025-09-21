@@ -204,27 +204,27 @@ MCP Client → node-oidc-provider (OAuth AS) → MCP Server (Resource Server)
 
 ## 🚀 Implementation Notes
 
-### Authorization Request Format (node-oidc-provider → Mittwald)
+### Authorization Request Format (MCP Server → api.mittwald.de)
 ```http
-GET /v2/oauth2/authorize?
+GET https://api.mittwald.de/v2/oauth2/authorize?
   response_type=code&
   client_id=mittwald-mcp-server&
-  redirect_uri=https%3A%2F%2Fmittwald-oauth-server.fly.dev%2Fauth%2Fmittwald%2Fcallback&
+  redirect_uri=https%3A%2F%2Fmittwald-oauth-server.fly.dev%2Fmittwald%2Fcallback&
   scope=project%3Aread%20project%3Awrite%20database%3Aread&
   state=oauth-server-generated-state&
   code_challenge=oauth-server-generated-challenge&
   code_challenge_method=S256
 ```
 
-### Token Exchange Format (node-oidc-provider → Mittwald)
+### Token Exchange Format (MCP Server → api.mittwald.de)
 ```http
-POST /v2/oauth2/token
+POST https://api.mittwald.de/v2/oauth2/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code&
 client_id=mittwald-mcp-server&
 code=mittwald-authorization-code&
-redirect_uri=https%3A%2F%2Fmittwald-oauth-server.fly.dev%2Fauth%2Fmittwald%2Fcallback&
+redirect_uri=https%3A%2F%2Fmittwald-oauth-server.fly.dev%2Fmittwald%2Fcallback&
 code_verifier=oauth-server-generated-verifier
 ```
 
