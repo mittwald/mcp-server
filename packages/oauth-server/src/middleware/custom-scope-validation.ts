@@ -110,13 +110,18 @@ export class CustomScopeValidator {
       const transformedScope = this.transformScope(originalScope, strategy, clientName || 'unknown');
 
       if (transformedScope !== originalScope) {
-        // Modify the request parameters for oidc-provider
-        ctx.query = {
-          ...ctx.query,
-          scope: transformedScope
-        };
+        // Modify ALL possible scope references for oidc-provider
 
-        // Also update the URL for consistency
+        // 1. Update query object
+        const newQuery = { ...ctx.query };
+        if (transformedScope) {
+          newQuery.scope = transformedScope;
+        } else {
+          delete newQuery.scope;
+        }
+        ctx.query = newQuery;
+
+        // 2. Update request URL
         const url = new URL(ctx.request.url, `${ctx.protocol}://${ctx.host}`);
         if (transformedScope) {
           url.searchParams.set('scope', transformedScope);
@@ -124,6 +129,15 @@ export class CustomScopeValidator {
           url.searchParams.delete('scope');
         }
         ctx.request.url = url.pathname + url.search;
+        ctx.url = ctx.request.url;
+
+        // 3. Update request object directly (Koa compatibility)
+        if (ctx.request.query) {
+          ctx.request.query = newQuery;
+        }
+
+        // 4. Update search string
+        ctx.search = url.search;
 
         this.logScopeDecision('Scope transformation applied', {
           clientId,
