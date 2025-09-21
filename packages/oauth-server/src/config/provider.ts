@@ -8,8 +8,7 @@ import { getDefaultScopeString } from './oauth-scopes.js';
 export interface ProviderConfig {
   issuer: string;
   port: number;
-  redisUrl?: string;
-  storageAdapter: 'redis' | 'memory';
+  storageAdapter: 'sqlite' | 'memory';
   initialAccessToken: string;
   jwksKeystorePath: string;
   cookiesSecure: boolean;

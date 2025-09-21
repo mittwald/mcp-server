@@ -75,10 +75,9 @@ class RedisInteractionStore implements InteractionStore {
   }
 }
 
-export function createInteractionStore(redisClient?: any): InteractionStore {
-  if (redisClient) {
-    return new RedisInteractionStore(redisClient);
-  }
-  logger.warn('Using in-memory interaction store (not recommended for production)');
+export function createInteractionStore(): InteractionStore {
+  // For now, use memory store for interaction data (it's short-lived anyway)
+  // Could be migrated to SQLite later if needed for better persistence
+  logger.info('Using in-memory interaction store (sufficient for short-lived OAuth interactions)');
   return new MemoryInteractionStore();
 }

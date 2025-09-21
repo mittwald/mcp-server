@@ -8,8 +8,8 @@ import { getDefaultScopeString } from '../config/oauth-scopes.js';
 
 const INTERACTION_TTL = parseInt(process.env.INTERACTION_TTL_SECONDS || '900'); // 15min
 
-export function registerInteractionRoutes(router: Router, provider: Provider, redisClient?: any) {
-  const store = createInteractionStore(redisClient);
+export function registerInteractionRoutes(router: Router, provider: Provider) {
+  const store = createInteractionStore();
 
   // Start interaction: attempt Mittwald auth; fallback to dev auto-login/consent
   router.get('/interaction/:uid', async (ctx) => {

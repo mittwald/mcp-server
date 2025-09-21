@@ -14,7 +14,8 @@ RUN npm ci
 # Copy application code
 COPY packages/oauth-server/. .
 
-# Create JWKS storage directory
+# Create JWKS and SQLite storage directory
+# This will be mounted as a persistent volume in Fly.io
 RUN mkdir -p /app/jwks
 
 # Build TypeScript

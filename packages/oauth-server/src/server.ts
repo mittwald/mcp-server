@@ -5,7 +5,6 @@ import cors from '@koa/cors';
 import bodyParser from 'koa-bodyparser';
 import Provider from 'oidc-provider';
 import { createProviderConfiguration, type ProviderConfig } from './config/provider.js';
-import { createRedisClient } from './config/adapters.js';
 import { logger } from './services/logger.js';
 import { nanoid } from 'nanoid';
 import { registerInteractionRoutes } from './handlers/interactions.js';
@@ -14,8 +13,7 @@ import { registerInteractionRoutes } from './handlers/interactions.js';
 const config: ProviderConfig = {
   issuer: process.env.ISSUER || 'http://localhost:3000',
   port: parseInt(process.env.PORT || '3000'),
-  redisUrl: process.env.REDIS_URL,
-  storageAdapter: (process.env.STORAGE_ADAPTER as 'redis' | 'memory') || 'memory',
+  storageAdapter: (process.env.STORAGE_ADAPTER as 'sqlite' | 'memory') || 'sqlite',
   initialAccessToken: process.env.INITIAL_ACCESS_TOKEN || nanoid(32),
   jwksKeystorePath: process.env.JWKS_KEYSTORE_PATH || '/app/jwks/jwks.json',
   cookiesSecure: process.env.COOKIES_SECURE === 'true',
@@ -54,19 +52,13 @@ async function createServer() {
   // Trust proxy headers (X-Forwarded-*) when running behind Fly.io / proxies
   app.proxy = true;
 
-  // Initialize Redis if using Redis storage
-  let redisClient;
-  if (config.storageAdapter === 'redis' && config.redisUrl) {
-    try {
-      redisClient = await createRedisClient(config.redisUrl);
-      logger.info('Redis client connected', { url: config.redisUrl });
-    } catch (error) {
-      logger.error('Failed to connect to Redis, falling back to memory storage', { 
-        error: error instanceof Error ? error.message : String(error),
-        url: config.redisUrl 
-      });
-      config.storageAdapter = 'memory';
-    }
+  // Log storage adapter configuration
+  if (config.storageAdapter === 'sqlite') {
+    logger.info('Using SQLite storage adapter', {
+      dbPath: '/app/jwks/oauth-sessions.db'
+    });
+  } else {
+    logger.warn('Using in-memory storage adapter (not recommended for production)');
   }
 
   // Create OIDC provider with cookie keys
@@ -268,7 +260,7 @@ async function createServer() {
 
   // Mount router for our own endpoints such as /health
   // Register interaction routes (login/consent/abort and Mittwald callback)
-  registerInteractionRoutes(router, provider, redisClient);
+  registerInteractionRoutes(router, provider);
   app.use(router.routes());
   app.use(router.allowedMethods());
 
@@ -276,12 +268,12 @@ async function createServer() {
   // and to avoid upstream interference. In v9 the Provider instance is itself a Koa app
   app.use(mount('/', providerAny));
 
-  return { app, provider, redisClient };
+  return { app, provider };
 }
 
 async function startServer() {
   try {
-    const { app, redisClient } = await createServer();
+    const { app } = await createServer();
 
     // Start server
     const server = app.listen(config.port, '0.0.0.0', () => {
@@ -296,15 +288,14 @@ async function startServer() {
     // Graceful shutdown
     const shutdown = async (signal: string) => {
       logger.info(`Received ${signal}, shutting down gracefully`);
-      
+
       server.close(() => {
         logger.info('HTTP server closed');
       });
 
-      if (redisClient) {
-        await redisClient.quit();
-        logger.info('Redis connection closed');
-      }
+      // SQLite connections will be closed automatically when the process exits
+      // No explicit cleanup needed like Redis
+      logger.info('SQLite connections closed');
 
       process.exit(0);
     };
