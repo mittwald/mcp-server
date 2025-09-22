@@ -45,6 +45,10 @@ export function registerTokenRoutes(router: Router) {
 
       // Validate grant type
       if (grant_type !== 'authorization_code') {
+        logger.error('TOKEN EXCHANGE: Invalid grant type', {
+          provided: grant_type,
+          expected: 'authorization_code'
+        });
         ctx.status = 400;
         ctx.body = {
           error: 'unsupported_grant_type',
@@ -55,6 +59,10 @@ export function registerTokenRoutes(router: Router) {
 
       // Validate required parameters
       if (!code) {
+        logger.error('TOKEN EXCHANGE: Missing authorization code', {
+          hasCode: !!code,
+          bodyKeys: Object.keys(ctx.request.body || {})
+        });
         ctx.status = 400;
         ctx.body = {
           error: 'invalid_request',
@@ -64,6 +72,10 @@ export function registerTokenRoutes(router: Router) {
       }
 
       if (!client_id) {
+        logger.error('TOKEN EXCHANGE: Missing client_id', {
+          hasClientId: !!client_id,
+          bodyKeys: Object.keys(ctx.request.body || {})
+        });
         ctx.status = 400;
         ctx.body = {
           error: 'invalid_request',
