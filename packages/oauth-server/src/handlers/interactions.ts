@@ -211,34 +211,13 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         return;
       }
 
-      // Retrieve the original interaction details to get client redirect URI
-      let interactionDetails: any;
-      try {
-        logger.info('INTERACTION DETAILS: Attempting to retrieve for callback', {
-          interactionUid: record.uid,
-          method: 'provider.interactionDetails',
-          hasProvider: !!provider
-        });
-
-        interactionDetails = await (provider as any).interactionDetails(ctx.req, ctx.res, record.uid);
-
-        logger.info('INTERACTION DETAILS: Retrieved successfully', {
-          interactionUid: record.uid,
-          hasParams: !!interactionDetails?.params,
-          clientId: interactionDetails?.params?.client_id,
-          redirectUri: interactionDetails?.params?.redirect_uri,
-          scope: interactionDetails?.params?.scope
-        });
-      } catch (detailsError) {
-        logger.error('INTERACTION DETAILS: Failed to retrieve for callback', {
-          interactionUid: record.uid,
-          error: detailsError instanceof Error ? detailsError.message : String(detailsError),
-          errorType: detailsError?.constructor?.name,
-          stack: detailsError instanceof Error ? detailsError.stack : undefined
-        });
-        // Fallback: continue without interaction details (for backward compatibility)
-        interactionDetails = null;
-      }
+      // Use stored interaction record directly (no dependency on provider.interactionDetails)
+      logger.info('USING STORED INTERACTION: Retrieved from interaction store', {
+        interactionUid: record.uid,
+        clientId: record.clientId,
+        clientRedirectUri: record.clientRedirectUri,
+        method: 'stored-record'
+      });
 
       logger.info('Exchanging authorization code for tokens', {
         state: `${state.substring(0, 8)}...`,
@@ -319,16 +298,16 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       // Generate a temporary authorization code for the client
       const authCode = nanoid(32);
 
-      // Store the authorization code mapping in persistent storage
+      // Store the authorization code mapping in persistent storage using stored interaction data
       const authCodeData: AuthCodeData = {
         code: authCode,
         accountId,
         accessToken: tokenSet.access_token,
         refreshToken: tokenSet.refresh_token,
-        clientId: interactionDetails?.params?.client_id || 'unknown',
-        redirectUri: interactionDetails?.params?.redirect_uri || config.redirectUri,
-        codeChallenge: interactionDetails?.params?.code_challenge,
-        codeChallengeMethod: interactionDetails?.params?.code_challenge_method,
+        clientId: record.clientId,
+        redirectUri: record.clientRedirectUri,
+        codeChallenge: undefined, // TODO: Store PKCE challenge in interaction record
+        codeChallengeMethod: undefined,
         createdAt: Date.now(),
         expiresAt: Date.now() + (10 * 60 * 1000) // 10 minutes
       };
@@ -352,12 +331,19 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       // Use client redirect URI from stored interaction record (not oidc-provider details)
       const clientRedirectUri = record.clientRedirectUri;
 
+      logger.info('REDIRECT DECISION: Using stored interaction record', {
+        storedClientId: record.clientId,
+        storedRedirectUri: record.clientRedirectUri,
+        interactionUid: record.uid,
+        method: 'stored-record-direct'
+      });
+
       // Validate client redirect URI from original OAuth request
       if (!clientRedirectUri) {
         logger.error('Missing client redirect_uri in OAuth request', {
           interactionUid: record.uid,
-          hasInteractionDetails: !!interactionDetails,
-          clientId: interactionDetails?.params?.client_id
+          storedClientId: record.clientId,
+          storedRedirectUri: record.clientRedirectUri
         });
         ctx.status = 400;
         ctx.body = {
@@ -399,7 +385,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         usingClientUri: clientRedirectUri !== config.redirectUri,
         authCode: `${authCode.substring(0, 8)}...`,
         interactionUid: record.uid,
-        hasInteractionDetails: !!interactionDetails
+        usingStoredRecord: true
       });
 
       logger.info('Redirecting to client with authorization code', {
