@@ -176,11 +176,27 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       // Retrieve the original interaction details to get client redirect URI
       let interactionDetails: any;
       try {
-        interactionDetails = await (provider as any).interactionDetails(ctx.req, ctx.res, record.uid);
-      } catch (detailsError) {
-        logger.error('Failed to retrieve interaction details for callback', {
+        logger.info('INTERACTION DETAILS: Attempting to retrieve for callback', {
           interactionUid: record.uid,
-          error: detailsError instanceof Error ? detailsError.message : String(detailsError)
+          method: 'provider.interactionDetails',
+          hasProvider: !!provider
+        });
+
+        interactionDetails = await (provider as any).interactionDetails(ctx.req, ctx.res, record.uid);
+
+        logger.info('INTERACTION DETAILS: Retrieved successfully', {
+          interactionUid: record.uid,
+          hasParams: !!interactionDetails?.params,
+          clientId: interactionDetails?.params?.client_id,
+          redirectUri: interactionDetails?.params?.redirect_uri,
+          scope: interactionDetails?.params?.scope
+        });
+      } catch (detailsError) {
+        logger.error('INTERACTION DETAILS: Failed to retrieve for callback', {
+          interactionUid: record.uid,
+          error: detailsError instanceof Error ? detailsError.message : String(detailsError),
+          errorType: detailsError?.constructor?.name,
+          stack: detailsError instanceof Error ? detailsError.stack : undefined
         });
         // Fallback: continue without interaction details (for backward compatibility)
         interactionDetails = null;
@@ -352,12 +368,28 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         redirectUrl: clientCallbackUrl.toString()
       });
 
+      logger.info('FINAL REDIRECT: About to redirect user to client', {
+        from: 'mittwald-callback-handler',
+        to: clientCallbackUrl.toString(),
+        method: 'ctx.redirect',
+        userAgent: ctx.headers['user-agent'],
+        timestamp: new Date().toISOString()
+      });
+
       ctx.redirect(clientCallbackUrl.toString());
+
+      logger.info('FINAL REDIRECT: ctx.redirect() called successfully', {
+        redirectUrl: clientCallbackUrl.toString(),
+        statusCode: ctx.status,
+        responseHeaders: ctx.response.headers,
+        timestamp: new Date().toISOString()
+      });
 
       logger.info('OAuth flow completed successfully', {
         accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
         authCode: `${authCode.substring(0, 8)}...`,
-        clientRedirectUri: clientRedirectUri
+        clientRedirectUri: clientRedirectUri,
+        finalRedirectExecuted: true
       });
 
     } catch (error) {
