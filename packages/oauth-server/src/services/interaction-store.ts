@@ -5,6 +5,8 @@ export interface InteractionRecord {
   state: string;
   nonce: string;
   codeVerifier: string;
+  clientRedirectUri: string;
+  clientId: string;
   createdAt: number;
 }
 
@@ -12,10 +14,11 @@ export interface InteractionStore {
   save(record: InteractionRecord, ttlSeconds: number): Promise<void>;
   getByState(state: string): Promise<InteractionRecord | undefined>;
   consumeByState(state: string): Promise<InteractionRecord | undefined>;
+  getConsumedByState?(state: string): Promise<InteractionRecord | undefined>;
 }
 
 class MemoryInteractionStore implements InteractionStore {
-  private map = new Map<string, { rec: InteractionRecord; exp?: number }>();
+  private map = new Map<string, { rec: InteractionRecord; exp?: number; consumed?: boolean; consumedAt?: number }>();
 
   async save(record: InteractionRecord, ttlSeconds: number): Promise<void> {
     const exp = Date.now() + ttlSeconds * 1000;
@@ -32,8 +35,35 @@ class MemoryInteractionStore implements InteractionStore {
   }
   async consumeByState(state: string): Promise<InteractionRecord | undefined> {
     const rec = await this.getByState(state);
-    if (rec) this.map.delete(`state:${state}`);
+    if (rec) {
+      // Mark as consumed but keep for 30 seconds to handle duplicate callbacks
+      const item = this.map.get(`state:${state}`);
+      if (item && !item.consumed) {
+        item.consumed = true;
+        item.consumedAt = Date.now();
+        // Delete after 30 seconds
+        setTimeout(() => this.map.delete(`state:${state}`), 30000);
+        return rec; // Return record on first consumption
+      }
+      // Already consumed - return undefined for subsequent calls
+      return undefined;
+    }
     return rec;
+  }
+
+  async getConsumedByState(state: string): Promise<InteractionRecord | undefined> {
+    const item = this.map.get(`state:${state}`);
+    if (!item) return undefined;
+    if (item.exp && item.exp < Date.now()) {
+      this.map.delete(`state:${state}`);
+      return undefined;
+    }
+    // Return record even if consumed (for duplicate callback handling)
+    return item.rec;
+  }
+
+  size(): number {
+    return this.map.size;
   }
 }
 

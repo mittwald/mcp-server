@@ -64,7 +64,15 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
     const nonce = nanoid(24);
     const { codeVerifier, codeChallenge } = createPkce();
 
-      const interactionRecord = { uid: details.uid, state, nonce, codeVerifier, createdAt: Date.now() };
+      const interactionRecord = {
+        uid: details.uid,
+        state,
+        nonce,
+        codeVerifier,
+        clientRedirectUri: details.params.redirect_uri,
+        clientId: details.params.client_id,
+        createdAt: Date.now()
+      };
 
       logger.info('Storing interaction record', {
         uid: details.uid,
@@ -165,8 +173,28 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       });
 
       if (!existingRecord) {
+        // Check if this is a duplicate callback (state was already consumed)
+        const consumedRecord = await (store as any).getConsumedByState?.(state);
+        if (consumedRecord) {
+          logger.info('Duplicate callback detected - redirecting to client again', {
+            state: `${state.substring(0, 8)}...`,
+            consumedRecordUid: consumedRecord.uid,
+            reason: 'Handling duplicate Mittwald callback gracefully'
+          });
+
+          // Redirect to client again (duplicate callback handling)
+          const clientRedirectUri = consumedRecord.clientRedirectUri;
+          const clientCallbackUrl = new URL(clientRedirectUri);
+          clientCallbackUrl.searchParams.set('code', code);
+          clientCallbackUrl.searchParams.set('state', state);
+
+          ctx.redirect(clientCallbackUrl.toString());
+          return;
+        }
+
         logger.warn('Interaction state already consumed or missing', {
           state: `${state.substring(0, 8)}...`,
+          fullState: state,
           reason: 'No record found for state when callback received'
         });
         ctx.status = 204;
@@ -321,8 +349,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         hasAccessToken: !!tokenSet.access_token
       });
 
-      // Determine client redirect URI (prefer from interaction details, fallback to config)
-      const clientRedirectUri = interactionDetails?.params?.redirect_uri || config.redirectUri;
+      // Use client redirect URI from stored interaction record (not oidc-provider details)
+      const clientRedirectUri = record.clientRedirectUri;
 
       // Validate client redirect URI from original OAuth request
       if (!clientRedirectUri) {
