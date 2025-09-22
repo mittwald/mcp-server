@@ -1,9 +1,10 @@
 # CLI‑Centric MCP Architecture (OAuth 2.1 + per‑command --token)
 
-> **Status: CRITICAL REDIRECT URI BUG IDENTIFIED (2025-09-21)**
-> **Branch**: `oauth-server-v2`
-> **Issue**: OAuth proxy pattern implementation has redirect URI confusion causing dashboard loops
-> **Solution**: Targeted fix in interactions.ts line 273 (documented in OAuth-Redirect-URI-Fix-Project-Plan.md)
+> **Status: MAJOR BREAKTHROUGH - OAUTH AUTHORIZATION WORKING (2025-09-22)**
+> **Branch**: `main` (Production)
+> **Achievement**: All OAuth clients successfully complete authorization flow to Mittwald IdP
+> **Current Issue**: Token exchange validation in custom endpoint (final step)
+> **Solution**: OAuth proxy pattern functional, custom token endpoint needs authorization code lookup fix
 > **Principle**: Always wrap the official Mittwald CLI (`mw`) and pass `--token <access_token>` on every command
 
 ## 📋 Executive Summary
@@ -1236,25 +1237,25 @@ fly deploy
 
 ## 🔬 OAuth Implementation Investigation & Findings (2025-09-21)
 
-### **CRITICAL UPDATE: Root Cause Identified (2025-09-21)**
+### **MAJOR BREAKTHROUGH: OAuth Authorization Flow Working (2025-09-22)**
 
-**Major discovery**: The primary OAuth flow failure is due to **redirect URI confusion** in the OAuth proxy implementation, not oidc-provider limitations. The implementation confuses two different redirect URIs:
+**Critical discoveries and fixes implemented:**
 
-1. **Mittwald's redirect URI** (`MITTWALD_REDIRECT_URI`): Where Mittwald sends users after authentication → `https://mittwald-oauth-server.fly.dev/mittwald/callback`
-2. **Client's redirect URI**: Where the OAuth server should send users after completing the full flow → Should come from `details.params.redirect_uri`
+**Primary Issues Resolved:**
+1. **Scope Mismatch**: MCP server was advertising only 4 scopes but OAuth server supports 41 → Fixed by updating MCP server scope configuration
+2. **Redirect URI Confusion**: OAuth proxy used wrong redirect URI → Fixed by storing client redirect URI in interaction records
+3. **Interaction State Issues**: Singleton store implementation → Fixed state consumption problems
+4. **Middleware Order**: Scope validation middleware ran after router → Fixed by moving middleware before router
+5. **Client Detection**: Claude.ai not recognized → Fixed by scope pattern detection (openid + 40+ scopes)
+6. **Provider Dependency**: provider.interactionDetails() consistently failed → Fixed by eliminating dependency entirely
 
-**Bug location**: `packages/oauth-server/src/handlers/interactions.ts:273`
-```typescript
-// WRONG (current):
-const clientCallbackUrl = new URL(config.redirectUri); // Uses Mittwald's redirect URI
+**Current Functional Status:**
+- ✅ **Authorization Flow**: All three clients (MCP Jam, Claude.ai, ChatGPT) successfully complete OAuth authorization
+- ✅ **Mittwald IdP Integration**: Users authenticate with Mittwald credentials successfully
+- ✅ **Authorization Code Delivery**: Clients receive authorization codes correctly
+- ⚠️ **Token Exchange**: Custom token endpoint validation logic needs final alignment
 
-// CORRECT (should be):
-const clientCallbackUrl = new URL(details.params.redirect_uri); // Uses client's redirect URI
-```
-
-This explains the observed "dashboard loop" where users complete Mittwald authentication but get bounced back to `/mittwald/callback` instead of their client application.
-
-**Architecture Status**: The OAuth proxy pattern is valid and salvageable. The implementation needs targeted fixes rather than complete replacement.
+**Architecture Status**: The OAuth proxy pattern is **fully functional** for authorization flows. Only token exchange mechanism needs completion.
 
 ### **Comprehensive Client Behavior Analysis**
 

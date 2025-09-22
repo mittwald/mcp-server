@@ -1,20 +1,28 @@
-# 🚨 CRITICAL STATUS: OAuth 2.1 Implementation FAILED (2025-09-21)
+# ✅ MAJOR BREAKTHROUGH: OAuth 2.1 Implementation WORKING (2025-09-22)
 
-**ALL OAUTH FLOWS BROKEN** - Users redirected to studio.mittwald.de/app/dashboard instead of completing OAuth consent flow.
+**OAUTH FLOWS NOW FUNCTIONAL** - All three major OAuth clients successfully complete authorization flow to Mittwald IdP.
 
-## 🏗️ Architecture Status: NON-FUNCTIONAL
+## 🏗️ Architecture Status: AUTHORIZATION WORKING, TOKEN EXCHANGE NEEDS FINAL FIX
 
-This implementation has **FAILED** to achieve working OAuth flows despite extensive development effort:
+This implementation has **SUCCESSFULLY ACHIEVED** working OAuth authorization flows after systematic debugging:
 
-**OAuth (Mittwald Studio)** - BROKEN
-- OAuth 2.1 flows redirect to dashboard instead of consent screen
-- oidc-provider incompatible with Mittwald OAuth 2.0 requirements
-- Multiple implementation attempts unsuccessful
+**OAuth Authorization Flow** - ✅ WORKING
+- ✅ All clients (MCP Jam, Claude.ai, ChatGPT) reach Mittwald IdP authentication
+- ✅ Scope validation fixed for all client types
+- ✅ User authentication completes successfully
+- ✅ Authorization codes generated and sent to clients
+- ✅ No more dashboard redirect loops
 
-**MCP Server (Single Service)** - READY
+**Token Exchange** - ⚠️ FINAL ISSUE
+- ✅ Clients receive authorization codes correctly
+- ❌ Token exchange fails: "Client ID mismatch" or "Invalid authorization code"
+- 🔧 Root cause: Custom token endpoint authorization code validation needs final fix
+
+**MCP Server (Single Service)** - ✅ READY
 - ✅ Wraps the `mw` CLI; ready for `--token <access_token>` authentication
 - ✅ MCP protocol implementation functional
-- ❌ Cannot receive OAuth tokens due to broken OAuth flows
+- ✅ Correct scope advertisement (41 Mittwald scopes)
+- ⚠️ Waiting for OAuth token exchange completion
 
 ## 🔧 Technical Constraints
 
@@ -27,24 +35,27 @@ This implementation has **FAILED** to achieve working OAuth flows despite extens
 
 ## 📋 Implementation Status
 
-**Current Branch:** `oauth-server-v2` (Development)
-**Previous Working Version:** `fly` branch (OAuth proxy pattern)
+**Current Branch:** `main` (Production)
+**Deployment Status:** OAuth Server v28 deployed, MCP Server v79 deployed
 
-**Phase 1: OAuth + CLI** 🔄
-- [x] Architecture planning and analysis
-- [ ] OAuth discovery/authorize/callback (PKCE)
-- [ ] Centralized CLI invoker appending `--token`
-- [ ] Token refresh + single retry on auth failures
+**Phase 1: OAuth Authorization Flow** ✅ COMPLETED
+- [x] OAuth discovery/authorize/callback (PKCE) - All clients working
+- [x] Scope validation fixes for Claude.ai, ChatGPT, MCP Jam
+- [x] Interaction state management with singleton store
+- [x] Redirect URI fix using stored interaction records
+- [x] Middleware order corrections for proper scope processing
 
-**Phase 2: Integration**
-- [ ] Ensure all tools use the centralized invoker
-- [ ] Strengthen parsing + error mapping
-- [ ] Multi‑user testing
+**Phase 2: Token Exchange** ⚠️ IN PROGRESS
+- [x] Custom token endpoint implementation with PKCE validation
+- [x] Authorization code storage with TTL and cleanup
+- [ ] **FINAL FIX NEEDED**: Token endpoint authorization code lookup
+- [ ] Client ID matching in authorization code validation
 
-**Phase 3: Deployment**
-- [ ] Docker containerization
-- [ ] Production testing
-- [ ] Performance validation
+**Phase 3: End-to-End Integration** 🔄 PENDING
+- [x] All three OAuth clients (MCP Jam, Claude.ai, ChatGPT) reach Mittwald IdP
+- [x] Users successfully authenticate with Mittwald credentials
+- [x] Authorization codes delivered to client applications
+- [ ] **FINAL STEP**: Complete token exchange for access tokens
 
 ## 🚨 Problems Solved by v2 Architecture
 
@@ -78,3 +89,46 @@ MCP Endpoint:  https://mittwald-mcp-fly2.fly.dev/mcp
 - **Per‑command token**: `mw ... --token <access_token>`
 - **Token expiration** with refresh capability
 - **Scope-based access control**
+
+## 🧪 Current Testing Status (2025-09-22)
+
+### ✅ **Major Breakthroughs Achieved:**
+
+**All OAuth Clients Now Successfully Complete Authorization:**
+- **MCP Jam Inspector**: ✅ Full OAuth flow to Mittwald IdP → receives auth code
+- **Claude.ai**: ✅ Scope validation fixed → reaches Mittwald IdP → receives auth code
+- **ChatGPT**: ✅ Scope processing working → reaches Mittwald IdP → receives auth code
+
+**Critical Issues Resolved:**
+- ✅ **Scope Mismatch**: MCP server now advertises all 41 Mittwald scopes (was only 4)
+- ✅ **Redirect URI Bug**: Fixed interactions.ts:273 to use client redirect URI, not Mittwald's
+- ✅ **Interaction State**: Singleton store prevents "state already consumed" errors
+- ✅ **Middleware Order**: Scope validation runs before router (was after)
+- ✅ **Client Detection**: Claude.ai detected by scope pattern (40+ scopes + openid)
+- ✅ **Dashboard Loops**: Eliminated by using stored interaction record instead of provider.interactionDetails()
+
+### ⚠️ **Final Issue: Token Exchange Validation**
+
+**Current Status:**
+- ✅ OAuth authorization flows complete successfully (HTTP 302 redirects)
+- ✅ Authorization codes delivered to clients (`code=...` in callback URLs)
+- ❌ Token exchange fails with "Client ID mismatch" or "Invalid authorization code"
+
+**Root Cause**: Custom token endpoint authorization code validation logic needs alignment with stored authorization code data.
+
+**Evidence from Logs:**
+```
+GET /mittwald/callback -> 302 ✅ (successful authorization)
+POST /token -> 400 ❌ (token exchange failure)
+"Client ID mismatch in token exchange"
+"Invalid or expired authorization code"
+```
+
+### 🔧 **Exact Fix Needed:**
+
+The authorization code storage in callback handler vs retrieval in token endpoint has a mismatch. The stored client ID or authorization code format doesn't match what the token endpoint expects.
+
+**Next Steps:**
+1. Add comprehensive debugging to token endpoint to see exact values being compared
+2. Ensure authorization code storage format matches token endpoint lookup logic
+3. Verify client ID consistency between authorization and token exchange
