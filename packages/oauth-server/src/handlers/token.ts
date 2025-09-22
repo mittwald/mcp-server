@@ -33,12 +33,14 @@ export function registerTokenRoutes(router: Router) {
         code_verifier
       } = ctx.request.body as any;
 
-      logger.info('Token exchange request', {
+      logger.info('TOKEN EXCHANGE: Request received', {
         grant_type,
         code: code ? `${code.substring(0, 8)}...` : 'missing',
+        fullCode: code,
         client_id,
         redirect_uri,
-        has_code_verifier: !!code_verifier
+        has_code_verifier: !!code_verifier,
+        authCodeStoreSize: authCodeStore.size()
       });
 
       // Validate grant type
@@ -71,11 +73,22 @@ export function registerTokenRoutes(router: Router) {
       }
 
       // Retrieve and consume authorization code
+      logger.info('TOKEN EXCHANGE: Looking up authorization code', {
+        code: `${code.substring(0, 8)}...`,
+        fullCode: code,
+        storeSize: authCodeStore.size(),
+        requestedClientId: client_id
+      });
+
       const authData = authCodeStore.retrieve(code);
+
       if (!authData) {
-        logger.warn('Invalid or expired authorization code', {
+        logger.warn('TOKEN EXCHANGE: Authorization code not found in store', {
           code: `${code.substring(0, 8)}...`,
-          client_id
+          fullCode: code,
+          client_id,
+          storeSize: authCodeStore.size(),
+          storeEmpty: authCodeStore.size() === 0
         });
         ctx.status = 400;
         ctx.body = {
@@ -85,12 +98,22 @@ export function registerTokenRoutes(router: Router) {
         return;
       }
 
+      logger.info('TOKEN EXCHANGE: Authorization code found, validating client ID', {
+        storedClientId: authData.clientId,
+        requestedClientId: client_id,
+        clientIdMatch: authData.clientId === client_id,
+        code: `${code.substring(0, 8)}...`,
+        storedRedirectUri: authData.redirectUri,
+        requestedRedirectUri: redirect_uri
+      });
+
       // Validate client ID
       if (authData.clientId !== client_id) {
-        logger.error('Client ID mismatch in token exchange', {
+        logger.error('TOKEN EXCHANGE: Client ID mismatch', {
           expected: authData.clientId,
           provided: client_id,
-          code: `${code.substring(0, 8)}...`
+          code: `${code.substring(0, 8)}...`,
+          authDataFull: JSON.stringify(authData, null, 2)
         });
         ctx.status = 400;
         ctx.body = {
