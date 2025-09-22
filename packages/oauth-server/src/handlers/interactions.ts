@@ -78,6 +78,14 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
 
       await store.save(interactionRecord, INTERACTION_TTL);
 
+      logger.info('INTERACTION STORED: Successfully saved to store', {
+        uid: details.uid,
+        state: `${state.substring(0, 8)}...`,
+        fullState: state,
+        ttlSeconds: INTERACTION_TTL,
+        storeInstance: store.constructor.name
+      });
+
       const authorizationUrl = client.authorizationUrl({
         scope: config.scope || getDefaultScopeString(),
         redirect_uri: 'https://mittwald-oauth-server.fly.dev/mittwald/callback', // Mittwald should redirect to OUR server
@@ -147,11 +155,13 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       const existingRecord = await store.getByState(state);
       logger.info('Checking for existing interaction record', {
         state: `${state.substring(0, 8)}...`,
+        fullState: state,
         recordExists: !!existingRecord,
         recordUid: existingRecord?.uid,
         recordCreatedAt: existingRecord?.createdAt,
         ageMinutes: existingRecord ? (Date.now() - existingRecord.createdAt) / (1000 * 60) : undefined,
-        storeInstance: store.constructor.name
+        storeInstance: store.constructor.name,
+        storeSize: (store as any).size ? (store as any).size() : 'unknown'
       });
 
       if (!existingRecord) {
