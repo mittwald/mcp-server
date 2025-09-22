@@ -76,10 +76,16 @@ export class OAuthMetadataRoutes {
         ]
       };
 
-      logger.debug('Serving OAuth authorization server metadata', { 
+      logger.debug('Serving OAuth authorization server metadata', {
         requestedFrom: req.ip,
         userAgent: req.get('User-Agent')
       });
+
+      // Add cache-busting headers to force client re-discovery
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      res.set('Last-Modified', new Date().toUTCString());
 
       res.json(metadata);
     } catch (error) {
@@ -116,10 +122,16 @@ export class OAuthMetadataRoutes {
         }
       };
 
-      logger.debug('Serving OAuth protected resource metadata', { 
+      logger.debug('Serving OAuth protected resource metadata', {
         requestedFrom: req.ip,
         userAgent: req.get('User-Agent')
       });
+
+      // Add cache-busting headers to force client re-discovery
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      res.set('Last-Modified', new Date().toUTCString());
 
       res.json(metadata);
     } catch (error) {
