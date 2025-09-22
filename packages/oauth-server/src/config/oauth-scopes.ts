@@ -28,6 +28,8 @@ export const OAUTH_SCOPES: OAuthScopeConfig = {
   SUPPORTED_SCOPES: [
     // OpenID Connect scope (for client compatibility)
     'openid',
+    // Profile scope (for MCP compatibility)
+    'profile',
     // Application Management
     'app:read',
     'app:write',
