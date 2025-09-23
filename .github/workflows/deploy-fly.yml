@@ -119,12 +119,13 @@ jobs:
 
       - name: Diagnostics on failure (status + recent logs)
         if: failure()
+        continue-on-error: true
         run: |
           set +e
           echo "Fly status for ${{ matrix.app }}:";
           flyctl status -a ${{ matrix.app }} || true
           echo "\nLast 200 lines of logs:";
-          flyctl logs -a ${{ matrix.app }} --since 20m | tail -n 200 || true
+          flyctl logs -a ${{ matrix.app }} | tail -n 200 || true
 
       - name: Verify /version endpoint (digest optional)
         run: |
