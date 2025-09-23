@@ -72,6 +72,14 @@ jobs:
             echo "No package.json in $CTX; skipping pre-compile"
           fi
 
+      - name: Run OAuth Integration Tests (fail-fast)
+        run: |
+          set -e
+          # Run comprehensive OAuth 2.1 + MCP lifecycle tests
+          echo "Running OAuth integration test suite"
+          npm ci --no-audit --no-fund
+          npm run test
+
       # Skip manual docker push. Fly remote builder will build + publish in deploy step.
       # This avoids registry permission pitfalls and simplifies digest handling.
 
