@@ -44,6 +44,19 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       const prompt = details.prompt?.name;
       logger.info('Interaction details', { uid: details.uid, prompt, clientId });
 
+      // Check if this is a consent prompt (user already authenticated)
+      if (prompt === 'consent' || details.prompt?.details?.missingOIDCScope || details.prompt?.details?.missingOAuth2Scope) {
+        logger.info('Consent prompt detected - showing consent screen', {
+          uid: details.uid,
+          prompt,
+          clientId,
+          promptDetails: details.prompt?.details
+        });
+
+        // Show consent screen for already authenticated user
+        return await showConsentScreen(ctx, details, 'authenticated-user');
+      }
+
       // Check if user has already been authenticated via Mittwald
       // If so, show consent screen instead of redirecting to Mittwald again
       const accountId = await checkIfUserAuthenticated(details);
