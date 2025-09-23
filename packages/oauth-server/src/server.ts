@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid';
 import { registerInteractionRoutes } from './handlers/interactions.js';
 // REMOVED: Custom token routes - using oidc-provider's standard /token endpoint
 import { getClientSecretStore } from './services/client-secrets.js';
-import { createCustomScopeValidationMiddleware } from './middleware/custom-scope-validation.js';
+// REMOVED: Custom scope validation middleware - using oidc-provider's built-in validation
 import { getSupportedScopes, getDefaultScopeString } from './config/oauth-scopes.js';
 
 // Environment configuration
@@ -362,20 +362,17 @@ async function createServer() {
 
   // REMOVED: Custom token routes - oidc-provider handles /token endpoint automatically
 
-  // Custom scope validation middleware (CRITICAL FIX)
-  // This addresses oidc-provider's scope validation inconsistency where it
-  // advertises scopes but rejects explicit requests for them
-  // MUST BE BEFORE ROUTER TO INTERCEPT /auth REQUESTS
-  const customScopeValidator = createCustomScopeValidationMiddleware();
-  app.use(customScopeValidator);
+  // REMOVED: Custom scope validation middleware
+  // With pure oidc-provider approach and centralized scope configuration,
+  // oidc-provider handles all scope validation correctly
 
   app.use(router.routes());
   app.use(router.allowedMethods());
 
-  logger.info('Custom scope validation middleware enabled', {
-    purpose: 'Fix oidc-provider scope validation inconsistency',
-    target: 'Enable Claude.ai and ChatGPT OAuth flows',
-    preserves: 'MCP Jam compatibility and existing infrastructure'
+  logger.info('Pure oidc-provider scope validation enabled', {
+    scopeCount: getSupportedScopes().length,
+    approach: 'oidc-provider built-in validation',
+    artificialLimits: 'removed'
   });
 
   // Mount OIDC provider app using koa-mount to preserve correct Koa ctx/res semantics
