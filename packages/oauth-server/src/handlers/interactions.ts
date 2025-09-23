@@ -3,6 +3,7 @@ import Router from '@koa/router';
 import { createInteractionStore } from '../services/interaction-store.js';
 import { getMittwaldClient, createPkce } from '../services/mittwald-oauth-client.js';
 import { authCodeStore, type AuthCodeData } from '../services/auth-code-store.js';
+import { mittwaldTokenStore } from '../services/mittwald-token-store.js';
 import { nanoid } from 'nanoid';
 import { logger } from '../services/logger.js';
 import { getDefaultScopeString } from '../config/oauth-scopes.js';
@@ -290,131 +291,74 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         logger.info('Using fallback account ID', { accountId: `${accountId.substring(0, 8)}...` });
       }
 
-      logger.info('Finishing OIDC interaction', {
+      logger.info('STANDARD OAUTH: Starting oidc-provider interaction completion', {
         accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-        interactionUid: record.uid
+        interactionUid: record.uid,
+        clientId: record.clientId,
+        hasAccessToken: !!tokenSet.access_token,
+        hasRefreshToken: !!tokenSet.refresh_token
       });
 
-      // Generate a temporary authorization code for the client
-      const authCode = nanoid(32);
-
-      // Store the authorization code mapping in persistent storage using stored interaction data
-      const authCodeData: AuthCodeData = {
-        code: authCode,
-        accountId,
+      // Store Mittwald tokens for this user (used by findAccount function)
+      mittwaldTokenStore.store(accountId, {
         accessToken: tokenSet.access_token,
         refreshToken: tokenSet.refresh_token,
-        clientId: record.clientId,
-        redirectUri: record.clientRedirectUri,
-        codeChallenge: undefined, // TODO: Store PKCE challenge in interaction record
-        codeChallengeMethod: undefined,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + (10 * 60 * 1000) // 10 minutes
-      };
-
-      // Store in authorization code store for later token exchange
-      authCodeStore.store(authCode, authCodeData);
-
-      logger.info('Authorization code stored', {
-        authCode: `${authCode.substring(0, 8)}...`,
-        expiresAt: new Date(authCodeData.expiresAt).toISOString(),
-        clientId: authCodeData.clientId,
-        storeSize: authCodeStore.size()
+        accountId,
+        email: undefined, // TODO: Extract from Mittwald tokens if available
+        name: undefined,  // TODO: Extract from Mittwald tokens if available
+        issuedAt: Date.now(),
+        expiresAt: tokenSet.expires_in ? Date.now() + (tokenSet.expires_in * 1000) : undefined
       });
 
-      logger.info('Generating authorization code for client', {
-        authCode: `${authCode.substring(0, 8)}...`,
-        clientRedirectUri: config.redirectUri,
-        hasAccessToken: !!tokenSet.access_token
-      });
-
-      // Use client redirect URI from stored interaction record (not oidc-provider details)
-      const clientRedirectUri = record.clientRedirectUri;
-
-      logger.info('REDIRECT DECISION: Using stored interaction record', {
-        storedClientId: record.clientId,
-        storedRedirectUri: record.clientRedirectUri,
-        interactionUid: record.uid,
-        method: 'stored-record-direct'
-      });
-
-      // Validate client redirect URI from original OAuth request
-      if (!clientRedirectUri) {
-        logger.error('Missing client redirect_uri in OAuth request', {
-          interactionUid: record.uid,
-          storedClientId: record.clientId,
-          storedRedirectUri: record.clientRedirectUri
-        });
-        ctx.status = 400;
-        ctx.body = {
-          error: 'invalid_request',
-          error_description: 'Missing redirect_uri parameter'
-        };
-        return;
-      }
-
-      // Validate redirect URI format
-      let clientRedirectUrl: URL;
-      try {
-        clientRedirectUrl = new URL(clientRedirectUri);
-        if (clientRedirectUrl.protocol !== 'https:' && clientRedirectUrl.hostname !== 'localhost') {
-          throw new Error('Invalid redirect URI: HTTPS required for non-localhost');
-        }
-      } catch (redirectError) {
-        logger.error('Invalid client redirect URI', {
-          interactionUid: record.uid,
-          redirectUri: clientRedirectUri,
-          error: redirectError instanceof Error ? redirectError.message : String(redirectError)
-        });
-        ctx.status = 400;
-        ctx.body = {
-          error: 'invalid_request',
-          error_description: 'Invalid redirect_uri format'
-        };
-        return;
-      }
-
-      // Redirect to client with authorization code
-      const clientCallbackUrl = new URL(clientRedirectUri);
-      clientCallbackUrl.searchParams.set('code', authCode);
-      clientCallbackUrl.searchParams.set('state', state);
-
-      logger.info('OAuth redirect decision', {
-        mittwaldRedirectUri: config.redirectUri,
-        clientRedirectUri: clientRedirectUri,
-        usingClientUri: clientRedirectUri !== config.redirectUri,
-        authCode: `${authCode.substring(0, 8)}...`,
-        interactionUid: record.uid,
-        usingStoredRecord: true
-      });
-
-      logger.info('Redirecting to client with authorization code', {
-        redirectUrl: clientCallbackUrl.toString()
-      });
-
-      logger.info('FINAL REDIRECT: About to redirect user to client', {
-        from: 'mittwald-callback-handler',
-        to: clientCallbackUrl.toString(),
-        method: 'ctx.redirect',
-        userAgent: ctx.headers['user-agent'],
-        timestamp: new Date().toISOString()
-      });
-
-      ctx.redirect(clientCallbackUrl.toString());
-
-      logger.info('FINAL REDIRECT: ctx.redirect() called successfully', {
-        redirectUrl: clientCallbackUrl.toString(),
-        statusCode: ctx.status,
-        responseHeaders: ctx.response.headers,
-        timestamp: new Date().toISOString()
-      });
-
-      logger.info('OAuth flow completed successfully', {
+      // STANDARD OAUTH 2.1: Use oidc-provider's interaction completion
+      // This replaces our custom authorization code generation and manual redirects
+      logger.info('STANDARD OAUTH: Calling provider.interactionFinished()', {
         accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-        authCode: `${authCode.substring(0, 8)}...`,
-        clientRedirectUri: clientRedirectUri,
-        finalRedirectExecuted: true
+        interactionUid: record.uid,
+        method: 'provider.interactionFinished'
       });
+
+      try {
+        await (provider as any).interactionFinished(ctx.req, ctx.res, {
+          login: {
+            accountId,
+            remember: false,
+            ts: Math.floor(Date.now() / 1000)
+          },
+          consent: {
+            grantedScopes: ['user:read', 'customer:read', 'project:read', 'project:write', 'app:read', 'app:write', 'database:read', 'database:write', 'domain:read', 'domain:write'],
+            rejectedScopes: []
+          }
+        }, {
+          mergeWithLastSubmission: false
+        });
+
+        logger.info('STANDARD OAUTH: provider.interactionFinished() completed successfully', {
+          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
+          interactionUid: record.uid,
+          method: 'oidc-provider-standard'
+        });
+
+        // oidc-provider will automatically handle the redirect to client
+        // No manual redirect needed - oidc-provider handles everything
+        ctx.respond = false; // Let oidc-provider handle the response
+
+      } catch (interactionError) {
+        logger.error('STANDARD OAUTH: provider.interactionFinished() failed', {
+          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
+          interactionUid: record.uid,
+          error: interactionError instanceof Error ? interactionError.message : String(interactionError),
+          stack: interactionError instanceof Error ? interactionError.stack : undefined
+        });
+
+        // Fallback to manual redirect if oidc-provider fails
+        const clientCallbackUrl = new URL(record.clientRedirectUri);
+        clientCallbackUrl.searchParams.set('error', 'server_error');
+        clientCallbackUrl.searchParams.set('error_description', 'OAuth interaction completion failed');
+        clientCallbackUrl.searchParams.set('state', state);
+
+        ctx.redirect(clientCallbackUrl.toString());
+      }
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);

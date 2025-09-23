@@ -4,6 +4,7 @@ import { logger } from '../services/logger.js';
 import { JWKSManager } from '../services/jwks-keystore.js';
 import { nanoid } from 'nanoid';
 import { getDefaultScopeString } from './oauth-scopes.js';
+import { mittwaldTokenStore } from '../services/mittwald-token-store.js';
 
 export interface ProviderConfig {
   issuer: string;
@@ -302,6 +303,82 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
         error: error.error || 'server_error',
         error_description: error.error_description || error.message || 'Internal server error',
       };
+    },
+
+    // CRITICAL: findAccount function required by oidc-provider for user discovery
+    // This function is called during token issuance to retrieve user account data
+    async findAccount(ctx: any, sub: string, token?: any) {
+      logger.info('FIND ACCOUNT: oidc-provider requesting user account', {
+        sub: sub.substring(0, 16) + '...',
+        tokenType: token?.kind || 'unknown',
+        hasToken: !!token
+      });
+
+      try {
+        // Retrieve Mittwald tokens for this user from our storage
+        const mittwaldTokens = mittwaldTokenStore.get(sub);
+
+        if (!mittwaldTokens) {
+          logger.warn('FIND ACCOUNT: No Mittwald tokens found for user', {
+            sub: sub.substring(0, 16) + '...',
+            storeSize: mittwaldTokenStore.size()
+          });
+
+          // Return minimal account for oidc-provider (allows flow to continue)
+          return {
+            accountId: sub,
+            async claims(use: string, scope: string) {
+              return {
+                sub,
+                // No Mittwald tokens available
+              };
+            }
+          };
+        }
+
+        logger.info('FIND ACCOUNT: Mittwald tokens found, returning account with claims', {
+          sub: sub.substring(0, 16) + '...',
+          hasAccessToken: !!mittwaldTokens.accessToken,
+          hasRefreshToken: !!mittwaldTokens.refreshToken
+        });
+
+        return {
+          accountId: sub,
+          async claims(use: string, scope: string) {
+            logger.info('CLAIMS: Generating token claims for user', {
+              sub: sub.substring(0, 16) + '...',
+              use,
+              scope,
+              hasAccessToken: !!mittwaldTokens.accessToken
+            });
+
+            return {
+              sub,
+              // Standard OIDC claims
+              email: mittwaldTokens.email,
+              name: mittwaldTokens.name,
+              // Custom claims for Mittwald tokens (embedded in JWT)
+              mittwald_access_token: mittwaldTokens.accessToken,
+              mittwald_refresh_token: mittwaldTokens.refreshToken,
+              mittwald_issued_at: mittwaldTokens.issuedAt
+            };
+          }
+        };
+
+      } catch (error) {
+        logger.error('FIND ACCOUNT: Error retrieving user account', {
+          sub: sub.substring(0, 16) + '...',
+          error: error instanceof Error ? error.message : String(error)
+        });
+
+        // Return minimal account to prevent OAuth flow failure
+        return {
+          accountId: sub,
+          async claims(use: string, scope: string) {
+            return { sub };
+          }
+        };
+      }
     },
   };
 }

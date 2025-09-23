@@ -8,7 +8,7 @@ import { createProviderConfiguration, type ProviderConfig } from './config/provi
 import { logger } from './services/logger.js';
 import { nanoid } from 'nanoid';
 import { registerInteractionRoutes } from './handlers/interactions.js';
-import { registerTokenRoutes } from './handlers/token.js';
+// REMOVED: Custom token routes - using oidc-provider's standard /token endpoint
 import { getClientSecretStore } from './services/client-secrets.js';
 import { createCustomScopeValidationMiddleware } from './middleware/custom-scope-validation.js';
 import { getSupportedScopes } from './config/oauth-scopes.js';
@@ -360,8 +360,7 @@ async function createServer() {
   // Register interaction routes (login/consent/abort and Mittwald callback)
   registerInteractionRoutes(router, provider);
 
-  // Register custom token routes (Phase 3: Standards compliance)
-  registerTokenRoutes(router);
+  // REMOVED: Custom token routes - oidc-provider handles /token endpoint automatically
 
   // Custom scope validation middleware (CRITICAL FIX)
   // This addresses oidc-provider's scope validation inconsistency where it
