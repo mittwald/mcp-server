@@ -319,16 +319,16 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       });
 
       try {
+        // Standard oidc-provider interaction completion
+        // Format based on oidc-provider documentation examples
         await (provider as any).interactionFinished(ctx.req, ctx.res, {
           login: {
             accountId,
             remember: false,
             ts: Math.floor(Date.now() / 1000)
-          },
-          consent: {
-            grantedScopes: ['user:read', 'customer:read', 'project:read', 'project:write', 'app:read', 'app:write', 'database:read', 'database:write', 'domain:read', 'domain:write'],
-            rejectedScopes: []
           }
+          // NOTE: Removed consent object - let oidc-provider handle consent automatically
+          // This follows the standard pattern from oidc-provider examples
         }, {
           mergeWithLastSubmission: false
         });
