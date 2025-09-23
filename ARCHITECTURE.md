@@ -37,23 +37,15 @@ This document describes the CLI‑first architecture for the Mittwald MCP Server
 
 ## 🏗️ Architecture Overview
 
-### High‑Level Architecture
+### High‑Level Architecture Overview
 
-```mermaid
-sequenceDiagram
-    participant Client as MCP Client
-    participant Server as MCP Server
-    participant Studio as Mittwald Studio (OAuth)
-    participant CLI as mw CLI
+**See "Complete OAuth 2.1 + MCP Lifecycle Flow" diagram below for detailed sequence.**
 
-    Client->>Server: 1) Discover + request auth
-    Server->>Studio: 2) OAuth 2.1 (PKCE) auth flow
-    Studio-->>Server: 3) Access token (per user)
-    Client->>Server: 4) MCP tool call
-    Server->>CLI: 5) Run mw ... --token <access_token>
-    CLI-->>Server: 6) CLI output / exit code
-    Server-->>Client: 7) MCP response
-```
+**Key Architecture Principles:**
+- **OAuth 2.1 + PKCE**: Standards-compliant authorization with oidc-provider
+- **CLI-centric**: All Mittwald operations via `mw` tool with `--token`
+- **Pure oidc-provider**: No custom token endpoints or authorization code handling
+- **User consent**: Transparent scope approval following OAuth security principles
 
 ### Service Breakdown
 
@@ -103,39 +95,9 @@ sequenceDiagram
 
 ### OAuth 2.1 Flow Implementation
 
-```mermaid
-sequenceDiagram
-    participant Client as MCP Client
-    participant OAuth as OAuth Server<br/>(SQLite)
-    participant Studio as Mittwald Studio
-    participant MCP as MCP Server<br/>(Stateless)
-    participant CLI as mw CLI
+**Replaced by comprehensive "Complete OAuth 2.1 + MCP Lifecycle Flow" diagram above.**
 
-    Client->>OAuth: 1. GET /.well-known/oauth-authorization-server
-    OAuth-->>Client: OAuth metadata + endpoints
-
-    Client->>OAuth: 2. POST /reg (DCR)
-    OAuth-->>Client: Client registration info
-
-    Client->>OAuth: 3. GET /auth + PKCE
-    Note over OAuth: Store state in SQLite
-    OAuth->>Studio: 4. Redirect for user auth
-    Studio-->>OAuth: 5. Authorization code + callback
-    Note over OAuth: Retrieve state from SQLite
-
-    Client->>OAuth: 6. POST /token + code_verifier
-    OAuth->>Studio: 7. Exchange code for Mittwald token
-    Studio-->>OAuth: 8. Mittwald access token
-    OAuth-->>Client: 9. JWT token (contains Mittwald token)
-    Note over OAuth: Clean up SQLite state
-
-    Client->>MCP: 10. MCP request + JWT
-    MCP->>OAuth: 11. Validate JWT (JWKS)
-    Note over MCP: Extract Mittwald token from JWT
-    MCP->>CLI: 12. mw ... --token <mittwald_token>
-    CLI-->>MCP: 13. CLI response
-    MCP-->>Client: 14. MCP response
-```
+**This section preserved for reference to older implementation approach.**
 
 ### What we do not use
 - No `MITTWALD_API_TOKEN` anywhere in dev or prod
@@ -310,26 +272,123 @@ CREATE INDEX idx_consumed_at ON oauth_data(consumed_at);
 | **Backup** | Simple file copy | Redis-specific procedures |
 | **Debugging** | Standard SQL tools | Redis CLI required |
 
-### **Service Communication Pattern**
+### **Complete OAuth 2.1 + MCP Lifecycle Flow**
+
+**Based on MCP Authorization Specification 2025-06-18 and OAuth 2.1 Standards**
 
 ```mermaid
-flowchart LR
-    Client[MCP Client] --> OAuth[OAuth Server]
-    OAuth --> SQLite[(SQLite DB)]
-    OAuth --> JWT[Issues JWT Token]
-    JWT --> MCP[MCP Server]
-    MCP --> Validate[JWT Validation]
-    MCP --> Extract[Extract Mittwald Token]
-    MCP --> CLI[mw CLI]
+sequenceDiagram
+    participant Claude as Claude.ai Client
+    participant MCP as MCP Server<br/>mittwald-mcp-fly2.fly.dev
+    participant OAuth as OAuth Server<br/>mittwald-oauth-server.fly.dev<br/>(oidc-provider)
+    participant Mittwald as Mittwald IdP<br/>api.mittwald.de
+    participant CLI as mw CLI<br/>(Mittwald Tools)
 
-    style SQLite fill:#e1f5fe
-    style JWT fill:#f3e5f5
-    style CLI fill:#e8f5e8
+    Note over Claude,CLI: Phase 1: Discovery & Protected Resource Challenge
+    Claude->>MCP: 1. POST /mcp (MCP tool request)
+    Note right of Claude: Initial request without auth
+    MCP->>Claude: 2. 401 Unauthorized + WWW-Authenticate header
+    Note right of MCP: Points to oauth-server.fly.dev
+    Claude->>MCP: 3. GET /.well-known/oauth-protected-resource
+    MCP->>Claude: 4. Resource metadata + authorization_servers[]
+    Note right of MCP: Advertises 41 Mittwald scopes<br/>Points to OAuth server
+
+    Note over Claude,OAuth: Phase 2: Authorization Server Discovery
+    Claude->>OAuth: 5. GET /.well-known/oauth-authorization-server
+    OAuth->>Claude: 6. AS metadata (DCR, auth, token endpoints)
+    Note right of OAuth: RFC8414 metadata<br/>DCR enabled, PKCE required
+
+    Note over Claude,OAuth: Phase 3: Dynamic Client Registration (RFC7591)
+    Claude->>OAuth: 7. POST /reg (DCR request)
+    Note right of Claude: client_name: "Claude"<br/>redirect_uris: ["https://claude.ai/api/mcp/auth_callback"]<br/>token_endpoint_auth_method: "client_secret_post"
+    OAuth->>OAuth: 8. Generate client_id + client_secret
+    OAuth->>Claude: 9. Client credentials response
+    Note right of OAuth: client_id, client_secret<br/>Stored in SQLite
+
+    Note over Claude,Mittwald: Phase 4: Authorization Request + User Authentication
+    Claude->>OAuth: 10. GET /auth (OAuth 2.1 + PKCE + resource indicator)
+    Note right of Claude: response_type=code<br/>code_challenge (PKCE)<br/>resource=mcp-fly2.fly.dev/mcp<br/>scope=openid+app:read+...
+    OAuth->>OAuth: 11. Create interaction session
+    OAuth->>Claude: 12. 303 → /interaction/:uid (login prompt)
+    Claude->>OAuth: 13. GET /interaction/:uid
+    OAuth->>Mittwald: 14. 302 → Mittwald OAuth authorize
+    Note right of OAuth: client_id=mittwald-mcp-server<br/>redirect_uri=oauth-server/mittwald/callback
+    Mittwald->>Mittwald: 15. User enters credentials
+    Mittwald->>OAuth: 16. 302 → /mittwald/callback?code=mittwald_code
+
+    Note over OAuth,OAuth: Phase 5: Mittwald Token Exchange + User Session
+    OAuth->>Mittwald: 17. POST /v2/oauth2/token (exchange Mittwald code)
+    Mittwald->>OAuth: 18. Mittwald access_token + refresh_token
+    OAuth->>OAuth: 19. Store Mittwald tokens (userAccountStore)
+    Note right of OAuth: accountId = mittwald:user_id<br/>mittwaldAccessToken<br/>mittwaldRefreshToken
+    OAuth->>OAuth: 20. provider.interactionFinished({login: {accountId}})
+    OAuth->>Claude: 21. 303 → /interaction/:uid (consent prompt)
+
+    Note over Claude,OAuth: Phase 6: User Consent (OAuth Security)
+    Claude->>OAuth: 22. GET /interaction/:uid
+    OAuth->>Claude: 23. HTML consent screen
+    Note right of OAuth: Shows all 41 requested scopes<br/>✅ Allow Access / ❌ Deny buttons
+    Claude->>OAuth: 24. POST /interaction/:uid/confirm (user consent)
+    OAuth->>OAuth: 25. provider.interactionFinished({consent: {grantedScopes}})
+
+    Note over Claude,MCP: Phase 7: Authorization Code + Token Exchange
+    OAuth->>Claude: 26. 302 → claude.ai/auth_callback?code=oidc_code
+    Note right of OAuth: Standard oidc-provider auth code<br/>Generated securely by oidc-provider
+    Claude->>OAuth: 27. POST /token (standard OAuth 2.1 endpoint)
+    Note right of Claude: client_secret_post auth<br/>code_verifier (PKCE)<br/>resource indicator
+    OAuth->>OAuth: 28. findAccount(accountId) → Mittwald tokens
+    OAuth->>Claude: 29. JWT access_token + refresh_token
+    Note right of OAuth: Custom claims:<br/>mittwald_access_token<br/>mittwald_refresh_token<br/>Standard audience, expiry
+
+    Note over Claude,CLI: Phase 8: Authenticated MCP Tool Execution
+    Claude->>MCP: 30. POST /mcp + Bearer JWT
+    MCP->>MCP: 31. Validate JWT signature + extract Mittwald token
+    MCP->>CLI: 32. mw {tool_name} --token mittwald_access_token
+    Note right of MCP: CLI-centric architecture<br/>Every tool uses --token
+    CLI->>Mittwald: 33. Direct API calls with Mittwald token
+    Mittwald->>CLI: 34. API response (projects, databases, etc.)
+    CLI->>MCP: 35. Tool output + exit code
+    MCP->>Claude: 36. MCP tool response (formatted)
+
+    Note over Claude,Claude: Phase 9: Token Refresh (as needed)
+    Claude->>OAuth: 37. POST /token (refresh_token grant)
+    OAuth->>Claude: 38. New JWT tokens (refreshed)
 ```
 
-**Key Insight**: OAuth server and MCP server have **separate storage responsibilities**:
-- **OAuth server**: Temporary OAuth state (minutes) in SQLite
-- **MCP server**: Stateless JWT validation, no persistent storage needed
+### **State Management at Each System**
+
+#### **Claude.ai Client State:**
+- **Registration**: `client_id`, `client_secret` (confidential client)
+- **Authorization**: PKCE `code_verifier`, `state` parameter
+- **Tokens**: JWT `access_token`, `refresh_token` from OAuth server
+- **Session**: Bearer token for subsequent MCP requests
+
+#### **OAuth Server (oidc-provider) State:**
+- **SQLite DB**: Client registrations, interaction sessions, grants
+- **User Accounts**: `userAccountStore` mapping `accountId` → Mittwald tokens
+- **JWKS**: JWT signing keys for token issuance
+- **Interaction Sessions**: Login/consent prompts, PKCE challenges
+
+#### **Mittwald IdP State:**
+- **Static Client**: `mittwald-mcp-server` configuration
+- **User Sessions**: Mittwald user authentication state
+- **Tokens**: Issued `access_token` + `refresh_token` for OAuth server
+
+#### **MCP Server State:**
+- **Stateless**: No persistent storage (JWT validation only)
+- **Request Context**: Extracted Mittwald tokens from JWT
+- **CLI Process**: Temporary execution context with `--token`
+
+#### **CLI (mw) Process State:**
+- **Per-Command**: Mittwald access token via `--token` parameter
+- **API Context**: Direct authenticated calls to `api.mittwald.de`
+- **Output**: Tool results returned to MCP server
+
+### **Data Flow Summary**
+
+**Discovery → Registration → Authentication → Consent → Token Exchange → Tool Execution → Refresh**
+
+This comprehensive flow ensures **proper OAuth 2.1 security** with **user consent transparency** while maintaining **CLI-centric architecture** for reliable Mittwald API integration.
 
 ---
 
