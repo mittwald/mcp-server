@@ -385,12 +385,23 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       return;
     }
 
-    logger.info('INTERACTION CONFIRM: Calling interactionFinished', {
+    logger.info('INTERACTION CONFIRM: Calling interactionFinished with consent', {
       uid,
-      method: 'standard-oidc-provider'
+      method: 'standard-oidc-provider',
+      requestedScopes: details.params?.scope,
+      clientId: details.params?.client_id
     });
 
-    await (provider as any).interactionFinished(ctx.req, ctx.res, { consent: {} }, { mergeWithLastSubmission: true });
+    // Grant consent for all requested scopes (user authenticated via Mittwald)
+    const grantedScopes = details.params?.scope?.split(' ') || getDefaultScopeString().split(' ');
+
+    await (provider as any).interactionFinished(ctx.req, ctx.res, {
+      consent: {
+        grantedScopes: grantedScopes,
+        rejectedScopes: []
+      }
+    }, { mergeWithLastSubmission: true });
+
     ctx.respond = false;
 
     logger.info('INTERACTION CONFIRM: interactionFinished completed successfully', {
