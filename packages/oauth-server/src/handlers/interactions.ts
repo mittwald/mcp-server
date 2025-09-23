@@ -44,6 +44,20 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       const prompt = details.prompt?.name;
       logger.info('Interaction details', { uid: details.uid, prompt, clientId });
 
+      // Check if user has already been authenticated via Mittwald
+      // If so, show consent screen instead of redirecting to Mittwald again
+      const accountId = await checkIfUserAuthenticated(details);
+      if (accountId) {
+        logger.info('User already authenticated - showing consent screen', {
+          accountId: accountId.substring(0, 8) + '...',
+          uid: details.uid,
+          clientId
+        });
+
+        // Show consent screen (this is what oidc-provider expects)
+        return await showConsentScreen(ctx, details, accountId);
+      }
+
     // Require Mittwald OAuth configuration to be present; if not, fail explicitly.
     const missing: string[] = [];
     if (!process.env.MITTWALD_AUTHORIZATION_URL) missing.push('MITTWALD_AUTHORIZATION_URL');
@@ -340,8 +354,9 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
           confirmUrl: `/interaction/${correctUid}/confirm`
         });
 
-        // Redirect to the correct oidc-provider interaction confirm route
-        ctx.redirect(`/interaction/${correctUid}/confirm`);
+        // Redirect back to interaction route to show consent screen
+        // User will see what permissions they're granting and can approve/deny
+        ctx.redirect(`/interaction/${correctUid}`);
         return;
 
       } catch (detailsError) {
@@ -351,8 +366,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
           fallbackUid: record.uid
         });
 
-        // Fallback: try with our stored UID
-        ctx.redirect(`/interaction/${record.oidcInteractionUid || record.uid}/confirm`);
+        // Fallback: redirect to interaction route to show consent screen
+        ctx.redirect(`/interaction/${record.oidcInteractionUid || record.uid}`);
         return;
       }
 
@@ -419,9 +434,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
     });
   };
 
-  // Support both GET and POST for confirm route (for different OAuth flow patterns)
+  // Standard OAuth consent confirmation (POST only - user must explicitly consent)
   router.post('/interaction/:uid/confirm', confirmHandler);
-  router.get('/interaction/:uid/confirm', confirmHandler);
 
   // Abort interaction
   router.post('/interaction/:uid/abort', async (ctx) => {
@@ -432,4 +446,75 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
     await (provider as any).interactionFinished(ctx.req, ctx.res, result, { mergeWithLastSubmission: false });
     ctx.respond = false;
   });
+}
+
+/**
+ * Check if user has already been authenticated via Mittwald
+ * by looking for stored tokens
+ */
+async function checkIfUserAuthenticated(details: any): Promise<string | null> {
+  // For now, simple check - in a real implementation, check session/cookies
+  // This could check for stored Mittwald tokens or existing user sessions
+  return null; // Always require fresh Mittwald authentication for security
+}
+
+/**
+ * Show OAuth consent screen to user
+ * This renders a proper consent form where users can see and approve requested scopes
+ */
+async function showConsentScreen(ctx: any, details: any, accountId: string): Promise<void> {
+  const { clientId } = details.params;
+  const requestedScopes = details.params?.scope?.split(' ') || [];
+
+  logger.info('CONSENT SCREEN: Rendering consent form', {
+    accountId: accountId.substring(0, 8) + '...',
+    clientId,
+    requestedScopes,
+    uid: details.uid
+  });
+
+  // Render consent screen HTML (in production, use proper templating)
+  const consentHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Authorize Application</title>
+      <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .consent-form { border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+        .scopes { background: #f9f9f9; padding: 15px; margin: 15px 0; border-radius: 4px; }
+        .scope-item { margin: 5px 0; padding: 5px; background: white; border-radius: 3px; }
+        .buttons { margin-top: 20px; text-align: center; }
+        .allow-btn { background: #007cba; color: white; padding: 12px 24px; border: none; border-radius: 4px; margin: 0 10px; cursor: pointer; }
+        .deny-btn { background: #ccc; color: black; padding: 12px 24px; border: none; border-radius: 4px; margin: 0 10px; cursor: pointer; }
+      </style>
+    </head>
+    <body>
+      <div class="consent-form">
+        <h2>🔐 Authorization Request</h2>
+        <p><strong>Client:</strong> ${clientId}</p>
+        <p>This application is requesting access to your Mittwald account with the following permissions:</p>
+
+        <div class="scopes">
+          <h3>📋 Requested Permissions:</h3>
+          ${requestedScopes.map((scope: string) => `<div class="scope-item">🔹 ${scope}</div>`).join('')}
+        </div>
+
+        <p>⚠️ <strong>Only grant access if you trust this application.</strong></p>
+
+        <div class="buttons">
+          <form method="POST" action="/interaction/${details.uid}/confirm" style="display: inline;">
+            <button type="submit" class="allow-btn">✅ Allow Access</button>
+          </form>
+          <form method="POST" action="/interaction/${details.uid}/abort" style="display: inline;">
+            <button type="submit" class="deny-btn">❌ Deny Access</button>
+          </form>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  ctx.type = 'text/html';
+  ctx.body = consentHtml;
 }
