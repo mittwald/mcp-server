@@ -319,8 +319,18 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       });
 
       try {
+        // Get the current oidc-provider interaction details
+        const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
+
+        logger.info('STANDARD OAUTH: Retrieved oidc-provider interaction details', {
+          interactionUid: details.uid,
+          prompt: details.prompt,
+          params: details.params ? Object.keys(details.params) : [],
+          clientId: details.params?.client_id
+        });
+
         // Standard oidc-provider interaction completion
-        // Format based on oidc-provider documentation examples
+        // Use the actual oidc-provider interaction, not our custom stored one
         await (provider as any).interactionFinished(ctx.req, ctx.res, {
           login: {
             accountId,
