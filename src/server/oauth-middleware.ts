@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import type { AuthenticatedRequest } from "./auth-types.js";
 import { CONFIG } from "./config.js";
 import { getSupportedScopes } from "../config/oauth-scopes.js";
+import { logger } from "../utils/logger.js";
 
 /**
  * OAuth authentication middleware for MCP server
@@ -30,25 +31,39 @@ export function createOAuthMiddleware() {
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
       
       try {
-        // Verify JWT token
-        if (!CONFIG.JWT_SECRET) {
-          throw new Error('JWT_SECRET not configured');
+        // Verify JWT token using same key as OAuth server
+        const jwtSigningKey = process.env.JWT_SIGNING_KEY || process.env.JWT_SECRET || 'development-key-not-secure';
+
+        if (!jwtSigningKey || jwtSigningKey === 'development-key-not-secure') {
+          throw new Error('JWT_SIGNING_KEY not configured - must match OAuth server');
         }
+
+        const decoded = jwt.verify(token, jwtSigningKey) as any;
         
-        const decoded = jwt.verify(token, CONFIG.JWT_SECRET) as any;
-        
+        // Extract Mittwald tokens from JWT claims
+        const mittwaldTokens = decoded.mittwald || {};
+
         // Set auth info on request matching MCP SDK AuthInfo interface
         req.auth = {
           token: token, // The JWT token itself
-          clientId: decoded.aud || decoded.client_id || 'mittwald-mcp-server',
+          clientId: decoded.client_id || 'mittwald-mcp-server',
           scopes: decoded.scope?.split(' ') || [],
           expiresAt: decoded.exp, // Keep as seconds since epoch (not milliseconds)
           extra: {
             userId: decoded.sub,
-            accessToken: decoded.access_token,
-            refreshToken: decoded.refresh_token
+            mittwaldAccessToken: mittwaldTokens.access_token,
+            mittwaldRefreshToken: mittwaldTokens.refresh_token,
+            issuer: decoded.iss,
+            audience: decoded.aud
           }
         };
+
+        logger.info('JWT VALIDATION: Token accepted', {
+          clientId: req.auth.clientId,
+          userId: decoded.sub,
+          expiresAt: decoded.exp,
+          hasMittwaldToken: !!mittwaldTokens.access_token
+        });
         
         next();
       } catch (error) {
