@@ -2,6 +2,7 @@ import { logger } from './logger.js';
 
 export interface InteractionRecord {
   uid: string;
+  oidcInteractionUid: string;
   state: string;
   nonce: string;
   codeVerifier: string;

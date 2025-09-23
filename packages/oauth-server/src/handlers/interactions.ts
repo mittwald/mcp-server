@@ -66,7 +66,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
     const { codeVerifier, codeChallenge } = createPkce();
 
       const interactionRecord = {
-        uid: details.uid,
+        uid: details.uid, // Use oidc-provider's interaction UID
+        oidcInteractionUid: details.uid, // Store oidc-provider UID explicitly
         state,
         nonce,
         codeVerifier,
@@ -330,8 +331,17 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
           confirmUrl: `/interaction/${oidcInteractionUid}/confirm`
         });
 
+        // Use the stored oidc-provider interaction UID
+        const correctUid = record.oidcInteractionUid;
+
+        logger.info('STANDARD OAUTH: Using stored oidc-provider interaction UID', {
+          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
+          storedOidcUid: correctUid,
+          confirmUrl: `/interaction/${correctUid}/confirm`
+        });
+
         // Redirect to the correct oidc-provider interaction confirm route
-        ctx.redirect(`/interaction/${oidcInteractionUid}/confirm`);
+        ctx.redirect(`/interaction/${correctUid}/confirm`);
         return;
 
       } catch (detailsError) {
@@ -342,7 +352,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         });
 
         // Fallback: try with our stored UID
-        ctx.redirect(`/interaction/${record.uid}/confirm`);
+        ctx.redirect(`/interaction/${record.oidcInteractionUid || record.uid}/confirm`);
         return;
       }
 
