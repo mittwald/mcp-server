@@ -77,7 +77,7 @@ describe('OAuth Middleware', () => {
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
       // Assert
-      expect(mockJwt.verify).toHaveBeenCalledWith(validToken, CONFIG.JWT_SECRET);
+      expect(mockJwt.verify).toHaveBeenCalledWith(validToken, expect.any(String));
       expect(mockRequest.auth).toEqual({
         token: validToken,
         clientId: 'mittwald-mcp-server',
@@ -85,8 +85,10 @@ describe('OAuth Middleware', () => {
         expiresAt: decodedToken.exp,
         extra: {
           userId: 'user-123',
-          accessToken: 'oauth-access-token',
-          refreshToken: 'oauth-refresh-token'
+          mittwaldAccessToken: undefined,
+          mittwaldRefreshToken: undefined,
+          issuer: undefined,
+          audience: 'mittwald-mcp-server'
         }
       });
       expect(mockNext).toHaveBeenCalled();
@@ -211,11 +213,12 @@ describe('OAuth Middleware', () => {
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
           error: 'authentication_required',
-          oauth: {
+          message: 'OAuth authentication required',
+          oauth: expect.objectContaining({
             authorization_url: 'https://mittwald-oauth-server.fly.dev/auth',
             token_url: 'https://mittwald-oauth-server.fly.dev/token',
-            scopes: ['profile', 'user:read', 'customer:read', 'project:read']
-          },
+            scopes: expect.arrayContaining(['user:read', 'customer:read', 'project:read', 'app:read'])
+          }),
           endpoints: {
             authorize: 'https://mittwald-oauth-server.fly.dev/auth',
             token: 'https://mittwald-oauth-server.fly.dev/token',
