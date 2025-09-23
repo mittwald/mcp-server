@@ -132,3 +132,4 @@ The authorization code storage in callback handler vs retrieval in token endpoin
 1. Add comprehensive debugging to token endpoint to see exact values being compared
 2. Ensure authorization code storage format matches token endpoint lookup logic
 3. Verify client ID consistency between authorization and token exchange
+- when you  check the fly logs, grep to exclude the word "health" and you will see what you need.

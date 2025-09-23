@@ -1,415 +1,282 @@
 import type Provider from 'oidc-provider';
 import Router from '@koa/router';
-import { createInteractionStore } from '../services/interaction-store.js';
+import { userAccountStore } from '../services/user-account-store.js';
 import { getMittwaldClient, createPkce } from '../services/mittwald-oauth-client.js';
-import { authCodeStore, type AuthCodeData } from '../services/auth-code-store.js';
 import { mittwaldTokenStore } from '../services/mittwald-token-store.js';
 import { nanoid } from 'nanoid';
 import { logger } from '../services/logger.js';
 import { getDefaultScopeString } from '../config/oauth-scopes.js';
 
-const INTERACTION_TTL = parseInt(process.env.INTERACTION_TTL_SECONDS || '900'); // 15min
+// Simple callback state store (replaces complex interaction store)
+interface CallbackState {
+  state: string;
+  codeVerifier: string;
+  interactionUid: string;
+  createdAt: number;
+}
+
+const mittwaldCallbackState = new Map<string, CallbackState>();
+
+// Clean up expired callback states every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  const expired: string[] = [];
+
+  for (const [state, callbackState] of mittwaldCallbackState.entries()) {
+    if (now - callbackState.createdAt > 15 * 60 * 1000) { // 15 minutes
+      expired.push(state);
+    }
+  }
+
+  for (const state of expired) {
+    mittwaldCallbackState.delete(state);
+  }
+
+  if (expired.length > 0) {
+    logger.info('CALLBACK STATE: Cleaned up expired states', { count: expired.length });
+  }
+}, 5 * 60 * 1000);
 
 export function registerInteractionRoutes(router: Router, provider: Provider) {
-  const store = createInteractionStore();
-
-  // Start interaction: attempt Mittwald auth; fallback to dev auto-login/consent
+  // Pure oidc-provider interaction handler
   router.get('/interaction/:uid', async (ctx) => {
     try {
-      logger.info('Interaction handler started', {
-        uid: ctx.params.uid,
-        requestId: ctx.state?.requestId
+      const { uid } = ctx.params as any;
+
+      logger.info('INTERACTION: Starting oidc-provider interaction', {
+        uid,
+        path: ctx.path
       });
-      let details: any;
-      try {
-        // Use ctx.req and ctx.res which are the native Node.js objects
-        details = await (provider as any).interactionDetails(ctx.req, ctx.res);
-      } catch (detailsError) {
-        const errorMsg = detailsError instanceof Error ? detailsError.message : String(detailsError);
-        logger.error('Failed to get interaction details', {
-          uid: ctx.params.uid,
-          error: errorMsg,
-          errorType: detailsError?.constructor?.name,
-          cookies: ctx.cookies.get('_interaction') ? 'present' : 'missing',
-          hasReq: !!ctx.req,
-          hasRes: !!ctx.res,
-          cookieHeader: ctx.req?.headers?.cookie
-        });
-        ctx.status = 500;
-        ctx.body = { error: 'server_error', error_description: errorMsg };
-        return;
-      }
-      
+
+      // Get oidc-provider interaction details
+      const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
       const { clientId } = details.params;
       const prompt = details.prompt?.name;
-      logger.info('Interaction details', { uid: details.uid, prompt, clientId });
+
+      logger.info('INTERACTION: Details retrieved', {
+        uid: details.uid,
+        prompt,
+        clientId,
+        scopes: details.params?.scope
+      });
 
       // Check if this is a consent prompt (user already authenticated)
       if (prompt === 'consent' || details.prompt?.details?.missingOIDCScope || details.prompt?.details?.missingOAuth2Scope) {
-        logger.info('Consent prompt detected - showing consent screen', {
+        logger.info('INTERACTION: Consent prompt detected - showing consent screen', {
           uid: details.uid,
           prompt,
           clientId,
-          promptDetails: details.prompt?.details
+          requestedScopes: details.params?.scope
         });
 
         // Show consent screen for already authenticated user
-        return await showConsentScreen(ctx, details, 'authenticated-user');
+        return await showConsentScreen(ctx, details);
       }
 
-      // Check if user has already been authenticated via Mittwald
-      // If so, show consent screen instead of redirecting to Mittwald again
-      const accountId = await checkIfUserAuthenticated(details);
-      if (accountId) {
-        logger.info('User already authenticated - showing consent screen', {
-          accountId: accountId.substring(0, 8) + '...',
-          uid: details.uid,
-          clientId
-        });
+      // Login prompt - redirect to Mittwald for authentication
+      logger.info('INTERACTION: Login prompt - redirecting to Mittwald', {
+        uid: details.uid,
+        clientId,
+        prompt
+      });
 
-        // Show consent screen (this is what oidc-provider expects)
-        return await showConsentScreen(ctx, details, accountId);
+      // Check required Mittwald OAuth configuration
+      const missing: string[] = [];
+      if (!process.env.MITTWALD_AUTHORIZATION_URL) missing.push('MITTWALD_AUTHORIZATION_URL');
+      if (!process.env.MITTWALD_TOKEN_URL) missing.push('MITTWALD_TOKEN_URL');
+      if (!process.env.MITTWALD_CLIENT_ID) missing.push('MITTWALD_CLIENT_ID');
+      if (!process.env.MITTWALD_REDIRECT_URI) missing.push('MITTWALD_REDIRECT_URI');
+
+      if (missing.length) {
+        const msg = `Missing Mittwald OAuth env: ${missing.join(', ')}`;
+        logger.error('INTERACTION: Configuration error', { uid: details.uid, missing });
+        ctx.status = 500;
+        ctx.body = { error: 'server_error', error_description: msg };
+        return;
       }
 
-    // Require Mittwald OAuth configuration to be present; if not, fail explicitly.
-    const missing: string[] = [];
-    if (!process.env.MITTWALD_AUTHORIZATION_URL) missing.push('MITTWALD_AUTHORIZATION_URL');
-    if (!process.env.MITTWALD_TOKEN_URL) missing.push('MITTWALD_TOKEN_URL');
-    if (!process.env.MITTWALD_CLIENT_ID) missing.push('MITTWALD_CLIENT_ID');
-    if (!process.env.MITTWALD_REDIRECT_URI) missing.push('MITTWALD_REDIRECT_URI');
-    if (missing.length) {
-      const msg = `Missing Mittwald OAuth env: ${missing.join(', ')}`;
-      logger.error('Interaction cannot proceed', { uid: details.uid, prompt, missing });
-      ctx.status = 500;
-      ctx.body = { error: 'server_error', error_description: msg };
-      return;
-    }
-
-      // Mittwald external flow
+      // Initialize Mittwald OAuth client
       const { client, config } = await getMittwaldClient();
+      const state = nanoid(24);
+      const nonce = nanoid(24);
+      const { codeVerifier, codeChallenge } = createPkce();
 
-    const state = nanoid(24);
-    const nonce = nanoid(24);
-    const { codeVerifier, codeChallenge } = createPkce();
-
-      const interactionRecord = {
-        uid: details.uid, // Use oidc-provider's interaction UID
-        oidcInteractionUid: details.uid, // Store oidc-provider UID explicitly
+      // Store minimal state for callback (just PKCE verifier)
+      const callbackState = {
         state,
-        nonce,
         codeVerifier,
-        clientRedirectUri: details.params.redirect_uri,
-        clientId: details.params.client_id,
+        interactionUid: details.uid,
         createdAt: Date.now()
       };
 
-      logger.info('Storing interaction record', {
+      // Store in simple Map for callback retrieval
+      mittwaldCallbackState.set(state, callbackState);
+
+      logger.info('INTERACTION: Stored callback state', {
         uid: details.uid,
-        state: `${state.substring(0, 8)}...`,
-        nonce: `${nonce.substring(0, 8)}...`,
-        hasCodeVerifier: !!codeVerifier,
-        ttlSeconds: INTERACTION_TTL,
-        createdAt: interactionRecord.createdAt,
-        storeInstance: store.constructor.name
+        state: state.substring(0, 8) + '...',
+        hasCodeVerifier: !!codeVerifier
       });
 
-      await store.save(interactionRecord, INTERACTION_TTL);
-
-      logger.info('INTERACTION STORED: Successfully saved to store', {
-        uid: details.uid,
-        state: `${state.substring(0, 8)}...`,
-        fullState: state,
-        ttlSeconds: INTERACTION_TTL,
-        storeInstance: store.constructor.name
-      });
-
+      // Redirect to Mittwald OAuth
       const authorizationUrl = client.authorizationUrl({
         scope: config.scope || getDefaultScopeString(),
-        redirect_uri: 'https://mittwald-oauth-server.fly.dev/mittwald/callback', // Mittwald should redirect to OUR server
+        redirect_uri: 'https://mittwald-oauth-server.fly.dev/mittwald/callback',
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
         state,
         nonce,
       } as any);
 
-      logger.info('Redirecting to Mittwald authorize', {
-        authorizationUrl: authorizationUrl || '',
-        redirectUri: config.redirectUri,
-        scope: config.scope,
-        state,
-        codeChallenge: codeChallenge.substring(0, 10) + '...',
+      logger.info('INTERACTION: Redirecting to Mittwald authorize', {
+        uid: details.uid,
+        authorizationUrl: authorizationUrl.substring(0, 100) + '...'
       });
+
       ctx.redirect(authorizationUrl);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      logger.error('Interaction handler error', { 
-        uid: ctx.params.uid,
-        error: msg,
-        errorType: e?.constructor?.name,
-        stack: e instanceof Error ? e.stack : undefined
+
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.error('INTERACTION: Error', {
+        uid: ctx.params?.uid,
+        error: errorMsg,
+        stack: error instanceof Error ? error.stack : undefined
       });
+
       ctx.status = 500;
-      ctx.body = { error: 'server_error', error_description: msg };
+      ctx.body = { error: 'server_error', error_description: errorMsg };
     }
   });
 
-  // Mittwald callback: exchange code and finish login (support multiple allowed paths)
+  // Streamlined Mittwald callback: Pure oidc-provider approach
   async function handleMittwaldCallback(ctx: any) {
     try {
-      logger.info('Mittwald callback handler started', {
-        requestId: ctx.state?.requestId,
+      logger.info('MITTWALD CALLBACK: Starting pure oidc-provider flow', {
         path: ctx.path,
         query: ctx.querystring
       });
 
       const { client, config } = await getMittwaldClient();
-      logger.info('Mittwald client initialized', { requestId: ctx.state?.requestId });
-
       const params = client.callbackParams(ctx.req);
-      logger.info('Callback params parsed', {
-        requestId: ctx.state?.requestId,
-        paramsKeys: Object.keys(params)
-      });
       const { state, code } = params as any;
 
-      logger.info('Mittwald callback received', {
-        hasState: !!state,
-        hasCode: !!code,
-        state: state ? `${state.substring(0, 8)}...` : 'missing',
-        code: code ? `${code.substring(0, 8)}...` : 'missing',
-        queryParams: ctx.query,
-        requestId: ctx.state?.requestId
-      });
-
       if (!state || !code) {
-        logger.error('Missing state or code in callback', { state, code: !!code });
+        logger.error('MITTWALD CALLBACK: Missing required parameters', {
+          hasState: !!state,
+          hasCode: !!code
+        });
         ctx.status = 400;
-        ctx.body = { error: 'invalid_request', error_description: 'missing state or code' };
+        ctx.body = { error: 'invalid_request', error_description: 'Missing state or code' };
         return;
       }
 
-      // Try to get the record first (without consuming) to see if it exists
-      const existingRecord = await store.getByState(state);
-      logger.info('Checking for existing interaction record', {
-        state: `${state.substring(0, 8)}...`,
-        fullState: state,
-        recordExists: !!existingRecord,
-        recordUid: existingRecord?.uid,
-        recordCreatedAt: existingRecord?.createdAt,
-        ageMinutes: existingRecord ? (Date.now() - existingRecord.createdAt) / (1000 * 60) : undefined,
-        storeInstance: store.constructor.name,
-        storeSize: (store as any).size ? (store as any).size() : 'unknown'
-      });
-
-      if (!existingRecord) {
-        // Check if this is a duplicate callback (state was already consumed)
-        const consumedRecord = await (store as any).getConsumedByState?.(state);
-        if (consumedRecord) {
-          logger.info('Duplicate callback detected - redirecting to client again', {
-            state: `${state.substring(0, 8)}...`,
-            consumedRecordUid: consumedRecord.uid,
-            reason: 'Handling duplicate Mittwald callback gracefully'
-          });
-
-          // Redirect to client again (duplicate callback handling)
-          const clientRedirectUri = consumedRecord.clientRedirectUri;
-          const clientCallbackUrl = new URL(clientRedirectUri);
-          clientCallbackUrl.searchParams.set('code', code);
-          clientCallbackUrl.searchParams.set('state', state);
-
-          ctx.redirect(clientCallbackUrl.toString());
-          return;
-        }
-
-        logger.warn('Interaction state already consumed or missing', {
-          state: `${state.substring(0, 8)}...`,
-          fullState: state,
-          reason: 'No record found for state when callback received'
+      // Retrieve callback state (PKCE verifier)
+      const callbackState = mittwaldCallbackState.get(state);
+      if (!callbackState) {
+        logger.error('MITTWALD CALLBACK: State not found', {
+          state: state.substring(0, 8) + '...',
+          storeSize: mittwaldCallbackState.size
         });
-        ctx.status = 204;
+        ctx.status = 400;
+        ctx.body = { error: 'invalid_request', error_description: 'Invalid state parameter' };
         return;
       }
 
-      const record = await store.consumeByState(state);
-      if (!record) {
-        logger.warn('Interaction record could not be consumed (likely already processed)', {
-          state: `${state.substring(0, 8)}...`,
-          existingUid: existingRecord.uid
-        });
-        ctx.status = 204;
-        return;
-      }
-
-      // Use stored interaction record directly (no dependency on provider.interactionDetails)
-      logger.info('USING STORED INTERACTION: Retrieved from interaction store', {
-        interactionUid: record.uid,
-        clientId: record.clientId,
-        clientRedirectUri: record.clientRedirectUri,
-        method: 'stored-record'
+      logger.info('MITTWALD CALLBACK: Exchanging code for tokens', {
+        state: state.substring(0, 8) + '...',
+        code: code.substring(0, 8) + '...',
+        interactionUid: callbackState.interactionUid
       });
 
-      logger.info('Exchanging authorization code for tokens', {
-        state: `${state.substring(0, 8)}...`,
-        code: `${code.substring(0, 8)}...`,
-        redirectUri: config.redirectUri,
-        hasCodeVerifier: !!record.codeVerifier,
-        recordState: record.state ? `${record.state.substring(0, 8)}...` : 'missing',
-        recordNonce: record.nonce ? `${record.nonce.substring(0, 8)}...` : 'missing'
+      // Exchange Mittwald code for tokens
+      const tokenSet = await (client as any).oauthCallback(config.redirectUri, params as any, {
+        code_verifier: callbackState.codeVerifier,
+        state: callbackState.state
       });
 
-      let tokenSet;
-      try {
-        // Use oauthCallback instead of callback to skip OpenID Connect id_token validation
-        // This is appropriate since we're not using openid scope and Mittwald doesn't provide id_token
-        tokenSet = await (client as any).oauthCallback(config.redirectUri, params as any, { code_verifier: record.codeVerifier, state: record.state } as any);
-      } catch (tokenError) {
-        const errorMsg = tokenError instanceof Error ? tokenError.message : String(tokenError);
-        const errorType = tokenError?.constructor?.name || 'Unknown';
-        const tokenEndpoint = (client.issuer.metadata as any).token_endpoint || 'unknown';
+      // Generate stable account ID from access token
+      const accountId = `mittwald:${tokenSet.access_token.substring(0, 16)}`;
 
-        logger.error(`Token exchange failed: ${errorType} - ${errorMsg}`);
-        logger.error(`Token endpoint: ${tokenEndpoint}`);
-        logger.error(`Redirect URI: ${config.redirectUri}`);
-        logger.error(`State: ${state.substring(0, 8)}... Code: ${code.substring(0, 8)}...`);
-
-        if (tokenError instanceof Error && tokenError.stack) {
-          logger.error(`Stack trace: ${tokenError.stack}`);
-        }
-
-        // Log the full error object as JSON for debugging
-        try {
-          logger.error(`Full error object: ${JSON.stringify(tokenError, Object.getOwnPropertyNames(tokenError), 2)}`);
-        } catch (e) {
-          logger.error(`Could not stringify error object: ${e}`);
-        }
-
-        throw tokenError;
-      }
-
-      logger.info('Token exchange successful', {
+      logger.info('MITTWALD CALLBACK: Storing user account', {
+        accountId: accountId.substring(0, 16) + '...',
         hasAccessToken: !!tokenSet.access_token,
-        hasIdToken: !!tokenSet.id_token,
         hasRefreshToken: !!tokenSet.refresh_token,
-        expiresIn: tokenSet.expires_in
+        interactionUid: callbackState.interactionUid
       });
 
-      let accountId: string | undefined;
-      try {
-        const claims = tokenSet.claims();
-        accountId = (claims && (claims.sub || claims.email)) as string | undefined;
-        logger.info('Claims extracted', { accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none' });
-      } catch (e) {
-        logger.warn('Failed to extract claims from tokens', { error: (e as Error).message });
-      }
-
-      if (!accountId && (client.issuer.metadata as any).userinfo_endpoint) {
-        try {
-          const info: any = await client.userinfo(tokenSet);
-          accountId = info.sub || info.email;
-          logger.info('Account ID from userinfo', { accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none' });
-        } catch (e) {
-          logger.warn('userinfo lookup failed', { error: (e as Error).message });
-        }
-      }
-
-      if (!accountId) {
-        // Fallback: derive a stable-ish id from access_token (not ideal; replace with Mittwald user id once available)
-        const at = tokenSet.access_token || nanoid(16);
-        accountId = `mittwald:${at.substring(0, 16)}`;
-        logger.info('Using fallback account ID', { accountId: `${accountId.substring(0, 8)}...` });
-      }
-
-      logger.info('STANDARD OAUTH: Starting oidc-provider interaction completion', {
-        accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-        interactionUid: record.uid,
-        clientId: record.clientId,
-        hasAccessToken: !!tokenSet.access_token,
-        hasRefreshToken: !!tokenSet.refresh_token
+      // Store user account with Mittwald tokens (for findAccount function)
+      userAccountStore.store(accountId, {
+        accountId,
+        mittwaldAccessToken: tokenSet.access_token,
+        mittwaldRefreshToken: tokenSet.refresh_token,
+        createdAt: Date.now(),
+        expiresAt: tokenSet.expires_in ? Date.now() + (tokenSet.expires_in * 1000) : undefined
       });
 
-      // Store Mittwald tokens for this user (used by findAccount function)
+      // Also store in mittwaldTokenStore for backward compatibility
       mittwaldTokenStore.store(accountId, {
         accessToken: tokenSet.access_token,
         refreshToken: tokenSet.refresh_token,
         accountId,
-        email: undefined, // TODO: Extract from Mittwald tokens if available
-        name: undefined,  // TODO: Extract from Mittwald tokens if available
+        email: undefined,
+        name: undefined,
         issuedAt: Date.now(),
         expiresAt: tokenSet.expires_in ? Date.now() + (tokenSet.expires_in * 1000) : undefined
       });
 
-      // STANDARD OAUTH 2.1: Use oidc-provider's interaction completion
-      // This replaces our custom authorization code generation and manual redirects
-      logger.info('STANDARD OAUTH: Calling provider.interactionFinished()', {
-        accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-        interactionUid: record.uid,
+      logger.info('MITTWALD CALLBACK: Completing oidc-provider login', {
+        accountId: accountId.substring(0, 16) + '...',
+        interactionUid: callbackState.interactionUid,
         method: 'provider.interactionFinished'
       });
 
-      try {
-        // Get the current oidc-provider interaction details to get the correct UID
-        const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
-        const oidcInteractionUid = details.uid;
+      // Complete oidc-provider login - this will trigger consent prompt
+      await (provider as any).interactionFinished(ctx.req, ctx.res, {
+        login: {
+          accountId,
+          remember: false,
+          ts: Math.floor(Date.now() / 1000)
+        }
+      });
 
-        logger.info('STANDARD OAUTH: Retrieved oidc-provider interaction UID', {
-          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-          customStoredUid: record.uid,
-          oidcProviderUid: oidcInteractionUid,
-          confirmUrl: `/interaction/${oidcInteractionUid}/confirm`
-        });
+      // Clean up callback state
+      mittwaldCallbackState.delete(state);
 
-        // Use the stored oidc-provider interaction UID
-        const correctUid = record.oidcInteractionUid;
+      // oidc-provider handles the response (redirect to consent)
+      ctx.respond = false;
 
-        logger.info('STANDARD OAUTH: Using stored oidc-provider interaction UID', {
-          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-          storedOidcUid: correctUid,
-          confirmUrl: `/interaction/${correctUid}/confirm`
-        });
-
-        // Redirect back to interaction route to show consent screen
-        // User will see what permissions they're granting and can approve/deny
-        ctx.redirect(`/interaction/${correctUid}`);
-        return;
-
-      } catch (detailsError) {
-        logger.error('STANDARD OAUTH: Failed to get oidc-provider interaction details', {
-          accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-          error: detailsError instanceof Error ? detailsError.message : String(detailsError),
-          fallbackUid: record.uid
-        });
-
-        // Fallback: redirect to interaction route to show consent screen
-        ctx.redirect(`/interaction/${record.oidcInteractionUid || record.uid}`);
-        return;
-      }
+      logger.info('MITTWALD CALLBACK: Login completed successfully', {
+        accountId: accountId.substring(0, 16) + '...',
+        interactionUid: callbackState.interactionUid
+      });
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      logger.error('Mittwald callback error', {
+      logger.error('MITTWALD CALLBACK: Error', {
         error: errorMsg,
-        errorType: error?.constructor?.name,
-        stack: error instanceof Error ? error.stack : undefined,
-        requestId: ctx.state?.requestId
+        stack: error instanceof Error ? error.stack : undefined
       });
 
       ctx.status = 500;
-      ctx.body = { error: 'server_error', error_description: 'Internal server error' };
+      ctx.body = {
+        error: 'server_error',
+        error_description: 'Mittwald callback processing failed'
+      };
     }
   }
 
+  // Register callback routes
   router.get('/mittwald/callback', handleMittwaldCallback);
   router.get('/oauth/callback', handleMittwaldCallback);
   router.get('/auth/callback', handleMittwaldCallback);
 
-  // Confirm consent (accept all requested by default)
-  const confirmHandler = async (ctx: any) => {
+  // Standard OAuth consent confirmation (POST only - user must explicitly consent)
+  router.post('/interaction/:uid/confirm', async (ctx) => {
     const { uid } = ctx.params as any;
 
     logger.info('INTERACTION CONFIRM: Processing consent confirmation', {
       uid,
-      method: ctx.method,
-      hasUid: !!uid
+      method: ctx.method
     });
 
     const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
@@ -423,9 +290,8 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       return;
     }
 
-    logger.info('INTERACTION CONFIRM: Calling interactionFinished with consent', {
+    logger.info('INTERACTION CONFIRM: Granting consent', {
       uid,
-      method: 'standard-oidc-provider',
       requestedScopes: details.params?.scope,
       clientId: details.params?.client_id
     });
@@ -442,51 +308,43 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
 
     ctx.respond = false;
 
-    logger.info('INTERACTION CONFIRM: interactionFinished completed successfully', {
-      uid
+    logger.info('INTERACTION CONFIRM: Consent granted successfully', {
+      uid,
+      grantedScopes: grantedScopes.length
     });
-  };
-
-  // Standard OAuth consent confirmation (POST only - user must explicitly consent)
-  router.post('/interaction/:uid/confirm', confirmHandler);
+  });
 
   // Abort interaction
   router.post('/interaction/:uid/abort', async (ctx) => {
+    const { uid } = ctx.params as any;
+
+    logger.info('INTERACTION ABORT: User denied consent', { uid });
+
     const result = {
       error: 'access_denied',
       error_description: 'End-User aborted interaction',
     };
+
     await (provider as any).interactionFinished(ctx.req, ctx.res, result, { mergeWithLastSubmission: false });
     ctx.respond = false;
   });
 }
 
 /**
- * Check if user has already been authenticated via Mittwald
- * by looking for stored tokens
- */
-async function checkIfUserAuthenticated(details: any): Promise<string | null> {
-  // For now, simple check - in a real implementation, check session/cookies
-  // This could check for stored Mittwald tokens or existing user sessions
-  return null; // Always require fresh Mittwald authentication for security
-}
-
-/**
  * Show OAuth consent screen to user
  * This renders a proper consent form where users can see and approve requested scopes
  */
-async function showConsentScreen(ctx: any, details: any, accountId: string): Promise<void> {
+async function showConsentScreen(ctx: any, details: any): Promise<void> {
   const { clientId } = details.params;
   const requestedScopes = details.params?.scope?.split(' ') || [];
 
   logger.info('CONSENT SCREEN: Rendering consent form', {
-    accountId: accountId.substring(0, 8) + '...',
     clientId,
-    requestedScopes,
+    requestedScopes: requestedScopes.length,
     uid: details.uid
   });
 
-  // Render consent screen HTML (in production, use proper templating)
+  // Render consent screen HTML
   const consentHtml = `
     <!DOCTYPE html>
     <html>
