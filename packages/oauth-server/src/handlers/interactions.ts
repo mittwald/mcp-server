@@ -365,17 +365,42 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
   router.get('/auth/callback', handleMittwaldCallback);
 
   // Confirm consent (accept all requested by default)
-  router.post('/interaction/:uid/confirm', async (ctx) => {
+  const confirmHandler = async (ctx: any) => {
     const { uid } = ctx.params as any;
+
+    logger.info('INTERACTION CONFIRM: Processing consent confirmation', {
+      uid,
+      method: ctx.method,
+      hasUid: !!uid
+    });
+
     const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
     if (details.uid !== uid) {
+      logger.error('INTERACTION CONFIRM: UID mismatch', {
+        requestUid: uid,
+        detailsUid: details.uid
+      });
       ctx.status = 400;
       ctx.body = { error: 'invalid_request', error_description: 'uid mismatch' };
       return;
     }
+
+    logger.info('INTERACTION CONFIRM: Calling interactionFinished', {
+      uid,
+      method: 'standard-oidc-provider'
+    });
+
     await (provider as any).interactionFinished(ctx.req, ctx.res, { consent: {} }, { mergeWithLastSubmission: true });
     ctx.respond = false;
-  });
+
+    logger.info('INTERACTION CONFIRM: interactionFinished completed successfully', {
+      uid
+    });
+  };
+
+  // Support both GET and POST for confirm route (for different OAuth flow patterns)
+  router.post('/interaction/:uid/confirm', confirmHandler);
+  router.get('/interaction/:uid/confirm', confirmHandler);
 
   // Abort interaction
   router.post('/interaction/:uid/abort', async (ctx) => {
