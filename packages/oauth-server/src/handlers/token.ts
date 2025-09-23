@@ -43,18 +43,23 @@ export function registerTokenRoutes(router: Router) {
         authCodeStoreSize: authCodeStore.size()
       });
 
-      // Validate grant type
-      if (grant_type !== 'authorization_code') {
+      // Validate grant type (support both authorization_code and refresh_token)
+      if (grant_type !== 'authorization_code' && grant_type !== 'refresh_token') {
         logger.error('TOKEN EXCHANGE: Invalid grant type', {
           provided: grant_type,
-          expected: 'authorization_code'
+          expected: 'authorization_code or refresh_token'
         });
         ctx.status = 400;
         ctx.body = {
           error: 'unsupported_grant_type',
-          error_description: 'Only authorization_code grant type is supported'
+          error_description: 'Only authorization_code and refresh_token grant types are supported'
         };
         return;
+      }
+
+      // Handle refresh token flow
+      if (grant_type === 'refresh_token') {
+        return await handleRefreshToken(ctx);
       }
 
       // Validate required parameters
@@ -300,4 +305,163 @@ export function registerTokenRoutes(router: Router) {
       ctx.body = { error: 'server_error' };
     }
   });
+}
+
+/**
+ * Handle refresh token grant type
+ */
+async function handleRefreshToken(ctx: any): Promise<void> {
+  try {
+    const { refresh_token, client_id } = ctx.request.body as any;
+
+    logger.info('REFRESH TOKEN: Request received', {
+      client_id,
+      has_refresh_token: !!refresh_token
+    });
+
+    // Validate required parameters
+    if (!refresh_token) {
+      logger.error('REFRESH TOKEN: Missing refresh token');
+      ctx.status = 400;
+      ctx.body = {
+        error: 'invalid_request',
+        error_description: 'Missing refresh_token'
+      };
+      return;
+    }
+
+    if (!client_id) {
+      logger.error('REFRESH TOKEN: Missing client_id');
+      ctx.status = 400;
+      ctx.body = {
+        error: 'invalid_request',
+        error_description: 'Missing client_id'
+      };
+      return;
+    }
+
+    // Validate and decode refresh token
+    const signingKey = process.env.JWT_SIGNING_KEY || 'development-key-not-secure';
+    let decoded: any;
+
+    try {
+      decoded = jwt.verify(refresh_token, signingKey) as any;
+      logger.info('REFRESH TOKEN: Token validated', {
+        client_id: decoded.client_id,
+        sub: decoded.sub,
+        exp: decoded.exp
+      });
+    } catch (jwtError) {
+      logger.error('REFRESH TOKEN: Invalid refresh token', {
+        error: jwtError instanceof Error ? jwtError.message : String(jwtError)
+      });
+      ctx.status = 400;
+      ctx.body = {
+        error: 'invalid_grant',
+        error_description: 'Invalid or expired refresh token'
+      };
+      return;
+    }
+
+    // Validate client ID matches
+    if (decoded.client_id !== client_id) {
+      logger.error('REFRESH TOKEN: Client ID mismatch', {
+        expected: decoded.client_id,
+        provided: client_id
+      });
+      ctx.status = 400;
+      ctx.body = {
+        error: 'invalid_grant',
+        error_description: 'Refresh token was not issued to this client'
+      };
+      return;
+    }
+
+    // Check if refresh token is expired
+    if (decoded.exp && Date.now() / 1000 > decoded.exp) {
+      logger.error('REFRESH TOKEN: Token expired', {
+        exp: decoded.exp,
+        now: Math.floor(Date.now() / 1000)
+      });
+      ctx.status = 400;
+      ctx.body = {
+        error: 'invalid_grant',
+        error_description: 'Refresh token has expired'
+      };
+      return;
+    }
+
+    // Extract Mittwald refresh token for token refresh
+    const mittwaldRefreshToken = decoded.mittwald_refresh_token || decoded.mittwald?.refresh_token;
+
+    if (!mittwaldRefreshToken) {
+      logger.error('REFRESH TOKEN: Missing Mittwald refresh token in JWT');
+      ctx.status = 400;
+      ctx.body = {
+        error: 'invalid_grant',
+        error_description: 'Refresh token does not contain Mittwald credentials'
+      };
+      return;
+    }
+
+    // TODO: Exchange Mittwald refresh token for new access token
+    // For now, reuse existing Mittwald tokens (they have longer TTL)
+    logger.info('REFRESH TOKEN: Reusing Mittwald tokens (TODO: implement refresh)');
+
+    // Generate new JWT tokens
+    const issuer = process.env.ISSUER || 'http://localhost:3000';
+    const audience = process.env.ALLOWED_RESOURCE || 'https://mittwald-mcp-fly2.fly.dev';
+    const now = Math.floor(Date.now() / 1000);
+
+    const accessTokenPayload = {
+      iss: issuer,
+      sub: decoded.sub,
+      aud: audience,
+      exp: now + 3600, // 1 hour
+      iat: now,
+      jti: nanoid(),
+      client_id: decoded.client_id,
+      mittwald: decoded.mittwald || {
+        access_token: decoded.mittwald?.access_token,
+        refresh_token: mittwaldRefreshToken,
+        issued_at: Date.now()
+      }
+    };
+
+    const newAccessToken = jwt.sign(accessTokenPayload, signingKey, { algorithm: 'HS256' });
+    const newRefreshToken = jwt.sign({
+      ...accessTokenPayload,
+      exp: now + 86400, // 24 hours
+      mittwald_refresh_token: mittwaldRefreshToken
+    }, signingKey, { algorithm: 'HS256' });
+
+    const response = {
+      access_token: newAccessToken,
+      token_type: 'Bearer',
+      expires_in: 3600,
+      refresh_token: newRefreshToken,
+      scope: 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write'
+    };
+
+    logger.info('REFRESH TOKEN: New tokens issued', {
+      client_id: decoded.client_id,
+      sub: decoded.sub,
+      expires_in: 3600
+    });
+
+    ctx.body = response;
+
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    logger.error('REFRESH TOKEN: Server error', {
+      error: errorMsg,
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    ctx.status = 500;
+    ctx.body = {
+      error: 'server_error',
+      error_description: 'Internal server error during token refresh'
+    };
+  }
 }
