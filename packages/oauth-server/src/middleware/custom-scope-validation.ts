@@ -47,8 +47,8 @@ export class CustomScopeValidator {
         ['Claude', {
           strategy: 'filter-excessive',
           allowOpenId: true, // Allow openid for Claude.ai
-          maxScopes: 10,
-          preferredScopes: ['user:read', 'customer:read', 'project:read', 'project:write', 'app:read', 'app:write', 'database:read', 'database:write', 'domain:read', 'domain:write']
+          maxScopes: 12, // Increased to accommodate openid + profile + 10 Mittwald scopes
+          preferredScopes: ['openid', 'profile', 'user:read', 'customer:read', 'project:read', 'project:write', 'app:read', 'app:write', 'database:read', 'database:write', 'domain:read', 'domain:write']
         }],
 
         // ChatGPT - use server defaults like MCP Jam
