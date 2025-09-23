@@ -3,7 +3,7 @@ import { createAdapter } from './adapters.js';
 import { logger } from '../services/logger.js';
 import { JWKSManager } from '../services/jwks-keystore.js';
 import { nanoid } from 'nanoid';
-import { getDefaultScopeString } from './oauth-scopes.js';
+import { getDefaultScopeString, getSupportedScopes } from './oauth-scopes.js';
 import { mittwaldTokenStore } from '../services/mittwald-token-store.js';
 
 export interface ProviderConfig {
@@ -132,66 +132,8 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
     },
     
     // Scopes (Mittwald official client configuration + openid for OIDC clients)
-    scopes: new Set([
-      // OIDC scope (needed for Claude.ai compatibility)
-      'openid',
-      // Application Management
-      'app:read',
-      'app:write',
-      'app:delete',
-      // Backup Management
-      'backup:read',
-      'backup:write',
-      'backup:delete',
-      // Contract & Business
-      'contract:read',
-      'contract:write',
-      // Cron Job Management
-      'cronjob:read',
-      'cronjob:write',
-      'cronjob:delete',
-      // Customer Management
-      'customer:read',
-      'customer:write',
-      // Database Management
-      'database:read',
-      'database:write',
-      'database:delete',
-      // Domain & DNS Management
-      'domain:read',
-      'domain:write',
-      'domain:delete',
-      // Extension Management
-      'extension:read',
-      'extension:write',
-      'extension:delete',
-      // Mail Management
-      'mail:read',
-      'mail:write',
-      'mail:delete',
-      // Order Management
-      'order:domain-create',
-      'order:domain-preview',
-      // Project Management
-      'project:read',
-      'project:write',
-      'project:delete',
-      // Registry Management
-      'registry:read',
-      'registry:write',
-      'registry:delete',
-      // SSH User Management
-      'sshuser:read',
-      'sshuser:write',
-      'sshuser:delete',
-      // Container Stack Management
-      'stack:read',
-      'stack:write',
-      'stack:delete',
-      // User Management
-      'user:read',
-      'user:write'
-    ]),
+    // Scopes: Use centralized configuration (single source of truth)
+    scopes: new Set(getSupportedScopes()),
     
     // Subject types
     subjectTypes: ['public'],

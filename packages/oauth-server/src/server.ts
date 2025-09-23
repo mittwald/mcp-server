@@ -11,7 +11,7 @@ import { registerInteractionRoutes } from './handlers/interactions.js';
 // REMOVED: Custom token routes - using oidc-provider's standard /token endpoint
 import { getClientSecretStore } from './services/client-secrets.js';
 import { createCustomScopeValidationMiddleware } from './middleware/custom-scope-validation.js';
-import { getSupportedScopes } from './config/oauth-scopes.js';
+import { getSupportedScopes, getDefaultScopeString } from './config/oauth-scopes.js';
 
 // Environment configuration
 const config: ProviderConfig = {
@@ -245,14 +245,14 @@ async function createServer() {
           props.token_endpoint_auth_method = 'client_secret_post';
           props.application_type = 'web';
           // CRITICAL: Set allowed scopes for client validation (include openid for Claude)
-          props.scope = 'openid user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
+          props.scope = 'openid ' + getDefaultScopeString();
           logger.info('Configured Claude.ai client for confidential authentication with openid scope');
         } else if (isChatGPTClient) {
           // ChatGPT uses public client
           props.token_endpoint_auth_method = 'none';
           props.application_type = 'native';
           // CRITICAL: Set allowed scopes for client validation
-          props.scope = 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
+          props.scope = getDefaultScopeString();
           logger.info('Configured ChatGPT client for public authentication');
         } else {
           // Default to public client (MCP Jam, etc.)
@@ -260,7 +260,7 @@ async function createServer() {
           props.application_type = 'native';
           // CRITICAL: Set allowed scopes for client validation
           if (!props.scope) {
-            props.scope = 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
+            props.scope = getDefaultScopeString();
           }
         }
 
@@ -282,7 +282,7 @@ async function createServer() {
           }
 
           // Use filtered scopes or fallback to defaults
-          props.scope = filteredScopes.length > 0 ? filteredScopes.join(' ') : 'user:read customer:read project:read project:write app:read app:write database:read database:write domain:read domain:write';
+          props.scope = filteredScopes.length > 0 ? filteredScopes.join(' ') : getDefaultScopeString();
         }
 
         ctx.request.body = props;
