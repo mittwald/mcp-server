@@ -319,55 +319,31 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       });
 
       try {
-        // Get the current oidc-provider interaction details
+        // Get the current oidc-provider interaction details to get the correct UID
         const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
+        const oidcInteractionUid = details.uid;
 
-        logger.info('STANDARD OAUTH: Retrieved oidc-provider interaction details', {
-          interactionUid: details.uid,
-          prompt: details.prompt,
-          params: details.params ? Object.keys(details.params) : [],
-          clientId: details.params?.client_id
-        });
-
-        // Standard oidc-provider interaction completion
-        // Use the actual oidc-provider interaction, not our custom stored one
-        await (provider as any).interactionFinished(ctx.req, ctx.res, {
-          login: {
-            accountId,
-            remember: false,
-            ts: Math.floor(Date.now() / 1000)
-          }
-          // NOTE: Removed consent object - let oidc-provider handle consent automatically
-          // This follows the standard pattern from oidc-provider examples
-        }, {
-          mergeWithLastSubmission: false
-        });
-
-        logger.info('STANDARD OAUTH: provider.interactionFinished() completed successfully', {
+        logger.info('STANDARD OAUTH: Retrieved oidc-provider interaction UID', {
           accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-          interactionUid: record.uid,
-          method: 'oidc-provider-standard'
+          customStoredUid: record.uid,
+          oidcProviderUid: oidcInteractionUid,
+          confirmUrl: `/interaction/${oidcInteractionUid}/confirm`
         });
 
-        // oidc-provider will automatically handle the redirect to client
-        // No manual redirect needed - oidc-provider handles everything
-        ctx.respond = false; // Let oidc-provider handle the response
+        // Redirect to the correct oidc-provider interaction confirm route
+        ctx.redirect(`/interaction/${oidcInteractionUid}/confirm`);
+        return;
 
-      } catch (interactionError) {
-        logger.error('STANDARD OAUTH: provider.interactionFinished() failed', {
+      } catch (detailsError) {
+        logger.error('STANDARD OAUTH: Failed to get oidc-provider interaction details', {
           accountId: accountId ? `${accountId.substring(0, 8)}...` : 'none',
-          interactionUid: record.uid,
-          error: interactionError instanceof Error ? interactionError.message : String(interactionError),
-          stack: interactionError instanceof Error ? interactionError.stack : undefined
+          error: detailsError instanceof Error ? detailsError.message : String(detailsError),
+          fallbackUid: record.uid
         });
 
-        // Fallback to manual redirect if oidc-provider fails
-        const clientCallbackUrl = new URL(record.clientRedirectUri);
-        clientCallbackUrl.searchParams.set('error', 'server_error');
-        clientCallbackUrl.searchParams.set('error_description', 'OAuth interaction completion failed');
-        clientCallbackUrl.searchParams.set('state', state);
-
-        ctx.redirect(clientCallbackUrl.toString());
+        // Fallback: try with our stored UID
+        ctx.redirect(`/interaction/${record.uid}/confirm`);
+        return;
       }
 
     } catch (error) {
