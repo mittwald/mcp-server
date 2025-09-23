@@ -1,10 +1,10 @@
 # CLI‑Centric MCP Architecture (OAuth 2.1 + per‑command --token)
 
-> **Status: MAJOR BREAKTHROUGH - OAUTH AUTHORIZATION WORKING (2025-09-22)**
+> **Status: OAUTH FUNCTIONAL - CLAUDE.AI STANDARDS COMPLIANCE NEEDED (2025-09-23)**
 > **Branch**: `main` (Production)
-> **Achievement**: All OAuth clients successfully complete authorization flow to Mittwald IdP
-> **Current Issue**: Token exchange validation in custom endpoint (final step)
-> **Solution**: OAuth proxy pattern functional, custom token endpoint needs authorization code lookup fix
+> **Achievement**: OAuth proxy working for MCP Jam; Claude.ai requires standard OAuth 2.1 compliance
+> **Current Issue**: Custom token endpoint incompatible with Claude.ai's standard OAuth client
+> **Solution**: Migrate to standard oidc-provider token handling for Claude.ai compatibility
 > **Principle**: Always wrap the official Mittwald CLI (`mw`) and pass `--token <access_token>` on every command
 
 ## 📋 Executive Summary
@@ -1493,13 +1493,190 @@ Pattern: Matches Claude.ai behavior
 
 ---
 
-**Document Version**: 2.1
-**Last Updated**: 2025-09-21
-**Status**: CRITICAL REDIRECT URI BUG IDENTIFIED - Architecture Salvageable
-**Critical Issue**: Redirect URI confusion in OAuth proxy implementation (interactions.ts:273)
-**Primary Next Steps**: Fix redirect URI logic (see OAuth-Redirect-URI-Fix-Project-Plan.md)
-**Secondary**: Address oidc-provider scope validation for full client compatibility
+---
+
+## 🎯 Claude.ai Standards Compliance Plan (2025-09-23)
+
+### **Current Status: OAuth Proxy Working, Standards Compliance Needed**
+
+**✅ Achieved (MCP Jam Compatible):**
+- OAuth authorization flows working for all clients
+- Mittwald IdP integration functional
+- Custom token endpoint working with manual authorization codes
+- JWT validation and refresh token support implemented
+- End-to-end MCP functionality with embedded Mittwald tokens
+
+**❌ Claude.ai Incompatibility Root Cause:**
+Claude.ai expects **standard OAuth 2.1 compliance** using oidc-provider's built-in token endpoint, not custom token handling.
+
+### **Claude.ai OAuth Requirements (MCP Standard)**
+
+Based on official Anthropic documentation and MCP specification 2025-03-26:
+
+**Key References:**
+- [MCP Authorization Specification 2025-03-26](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization)
+- [Claude.ai MCP Connector Documentation](https://docs.claude.com/en/docs/agents-and-tools/mcp-connector)
+- [Building Custom Connectors via Remote MCP Servers](https://support.claude.com/en/articles/11503834-building-custom-connectors-via-remote-mcp-servers)
+- [OAuth 2.1 Authorization Server Metadata (RFC8414)](https://datatracker.ietf.org/doc/html/rfc8414)
+- [Dynamic Client Registration (RFC7591)](https://datatracker.ietf.org/doc/html/rfc7591)
+- [MCP OAuth 2.1, PKCE, and AI Authorization](https://aembit.io/blog/mcp-oauth-2-1-pkce-and-the-future-of-ai-authorization/)
+- [AWS Open Source: Authentication on MCP](https://aws.amazon.com/blogs/opensource/open-protocols-for-agent-interoperability-part-2-authentication-on-mcp/)
+- [WorkOS: MCP Authorization in 5 OAuth specs](https://workos.com/blog/mcp-authorization-in-5-easy-oauth-specs)
+- [Auth0 MCP Configuration Guide](https://aembit.io/blog/configuring-an-mcp-server-with-auth0-as-the-authorization-server/)
+
+#### **1. Standard OAuth 2.1 Endpoints**
+- **Discovery**: `/.well-known/oauth-authorization-server` ✅ (Working)
+- **Authorization**: `/auth` ✅ (Working)
+- **Token**: `/token` ❌ (Custom implementation incompatible)
+- **Registration**: `/reg` ✅ (Working)
+
+#### **2. Token Exchange Standards**
+- **MUST use oidc-provider's built-in token endpoint** (not custom handlers)
+- **Authorization codes MUST be issued by oidc-provider** (not manual generation)
+- **JWT structure MUST follow OpenID Connect standards** with custom claims
+
+#### **3. Client Authentication**
+- **Claude.ai uses**: `token_endpoint_auth_method: "client_secret_post"`
+- **Requires**: Confidential client with generated client secret
+- **Expects**: Standard OAuth client registration and validation
+
+### **Implementation Gap Analysis**
+
+#### **Current Custom Approach (MCP Jam Compatible):**
+```typescript
+// Manual authorization code generation
+const authCode = nanoid(32);
+authCodeStore.store(authCode, authData);
+
+// Custom token endpoint
+router.post('/token', async (ctx) => {
+  const authData = authCodeStore.retrieve(code);
+  const jwt = createCustomJWT(authData);
+});
+```
+
+#### **Required Standard Approach (Claude.ai Compatible):**
+```typescript
+// Standard oidc-provider flow
+await provider.interactionFinished(ctx.req, ctx.res, {
+  login: { accountId },
+  consent: { grantedScopes: [...] }
+});
+
+// oidc-provider handles token endpoint automatically
+// Custom claims embedded via provider configuration
+```
+
+### **Migration Plan to Claude.ai Compatibility**
+
+#### **Phase 1: Implement Standard OAuth 2.1 Flow**
+**Objective**: Replace custom token handling with oidc-provider standards
+
+**Changes Required:**
+1. **Remove custom token endpoint** (`/packages/oauth-server/src/handlers/token.ts`)
+2. **Implement `provider.interactionFinished()`** in Mittwald callback handler
+3. **Configure oidc-provider custom claims** to embed Mittwald tokens
+4. **Implement `findAccount` function** to store/retrieve Mittwald credentials
+
+**Technical Implementation:**
+```typescript
+// In Mittwald callback handler (interactions.ts)
+await provider.interactionFinished(ctx.req, ctx.res, {
+  login: {
+    accountId: mittwaldUserId,
+    remember: false
+  },
+  consent: {
+    grantedScopes: requestedScopes,
+    rejectedScopes: []
+  }
+}, {
+  mergeWithLastSubmission: false
+});
+
+// oidc-provider configuration (provider.ts)
+claims: {
+  openid: ['sub'],
+  profile: ['name', 'email'],
+  mittwald_access: ['mittwald_access_token'],
+  mittwald_refresh: ['mittwald_refresh_token']
+},
+
+async findAccount(ctx, sub) {
+  // Retrieve stored Mittwald tokens for this user
+  return {
+    accountId: sub,
+    claims: async () => ({
+      sub,
+      mittwald_access_token: storedTokens.access_token,
+      mittwald_refresh_token: storedTokens.refresh_token
+    })
+  };
+}
+```
+
+#### **Phase 2: Dual Compatibility Support**
+**Objective**: Support both MCP Jam (custom) and Claude.ai (standard) simultaneously
+
+**Strategy:**
+- **Keep custom token endpoint** for MCP Jam compatibility
+- **Enable oidc-provider token endpoint** for Claude.ai
+- **Route detection** based on client type or endpoint called
+
+#### **Phase 3: Full Standards Migration**
+**Objective**: Migrate all clients to standard OAuth 2.1
+
+**End State:**
+- Single oidc-provider token endpoint handling all clients
+- Standard JWT structure with custom claims for Mittwald tokens
+- Complete OAuth 2.1 compliance for Claude.ai, ChatGPT, and evolved MCP Jam
+
+### **Implementation Timeline**
+
+| Phase | Duration | Deliverable | Claude.ai Status |
+|-------|----------|-------------|------------------|
+| **Phase 1** | 2-3 hours | Standard oidc-provider flow | ✅ Compatible |
+| **Phase 2** | 1-2 hours | Dual endpoint support | ✅ Compatible + MCP Jam working |
+| **Phase 3** | 1-2 hours | Full standards migration | ✅ All clients standard compliant |
+
+### **Risk Assessment**
+
+#### **Low Risk (Phase 1)**
+- ✅ oidc-provider is proven technology
+- ✅ Standard OAuth 2.1 patterns well documented
+- ✅ Rollback to custom implementation if needed
+
+#### **Medium Risk (Phase 2)**
+- ⚠️ Dual endpoint complexity
+- ⚠️ Client routing logic needed
+
+#### **High Impact (Phase 3)**
+- 🎯 Full Claude.ai compatibility
+- 🎯 Future-proof for other MCP clients
+- 🎯 Standards-compliant architecture
+
+### **Success Criteria**
+
+#### **Phase 1 Success:**
+- [ ] Claude.ai completes full OAuth flow without "Invalid authorization" errors
+- [ ] Standard `/token` endpoint handles Claude.ai token exchange
+- [ ] JWT tokens contain properly embedded Mittwald credentials
+- [ ] MCP connection test passes in Claude.ai
+
+#### **Technical Validation:**
+- [ ] `provider.interactionFinished()` successfully completes OAuth flow
+- [ ] oidc-provider issues valid authorization codes
+- [ ] Standard token endpoint validates and exchanges codes
+- [ ] Custom claims properly embed Mittwald access/refresh tokens
 
 ---
 
-*This document reflects extensive investigation into OAuth server implementation challenges. MAJOR BREAKTHROUGH: The primary issue is a redirect URI bug in the OAuth proxy implementation, not fundamental oidc-provider incompatibility. The architecture is salvageable with targeted fixes. See OAuth-Redirect-URI-Fix-Project-Plan.md for immediate solution.*
+**Document Version**: 3.0
+**Last Updated**: 2025-09-23
+**Status**: OAUTH PROXY FUNCTIONAL - CLAUDE.AI STANDARDS COMPLIANCE IN PROGRESS
+**Current Priority**: Implement standard oidc-provider token flow for Claude.ai compatibility
+**Success Metric**: Claude.ai completes full OAuth flow and MCP connection without errors
+
+---
+
+*This document reflects the successful implementation of OAuth proxy pattern with custom token handling. The next evolution focuses on Claude.ai standards compliance using oidc-provider's built-in OAuth 2.1 capabilities while maintaining compatibility with existing MCP Jam functionality.*
