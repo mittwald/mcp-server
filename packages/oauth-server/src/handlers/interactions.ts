@@ -87,10 +87,29 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
           method: 'auto-complete-oauth-flow'
         });
 
-        // Let oidc-provider's default handler complete the flow
-        // loadExistingGrant will create necessary grants automatically
-        // No additional consent screen needed - Mittwald already handled it
-        return;
+        // Complete the interaction properly - user is authenticated and consented via Mittwald
+        // Use interactionFinished to signal authentication completion to oidc-provider
+        try {
+          await (provider as any).interactionFinished(ctx.req, ctx.res, {
+            login: {
+              accountId: authResult.accountId,
+              remember: false,
+              ts: Math.floor(Date.now() / 1000)
+            }
+          });
+
+          // Let oidc-provider handle the response
+          ctx.respond = false;
+          return;
+
+        } catch (interactionError) {
+          logger.error('INTERACTION: Failed to complete authenticated interaction', {
+            uid: details.uid,
+            error: interactionError instanceof Error ? interactionError.message : String(interactionError)
+          });
+
+          // Fallback: let oidc-provider handle normally
+        }
       }
 
       // Check if this is a consent prompt (user already authenticated)
