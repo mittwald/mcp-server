@@ -15,7 +15,14 @@ interface CallbackState {
   createdAt: number;
 }
 
+interface AuthResult {
+  accountId: string;
+  authenticated: boolean;
+  timestamp: number;
+}
+
 const mittwaldCallbackState = new Map<string, CallbackState>();
+const mittwaldAuthResults = new Map<string, AuthResult>();
 
 // Clean up expired callback states every 5 minutes
 setInterval(() => {
@@ -59,6 +66,23 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         clientId,
         scopes: details.params?.scope
       });
+
+      // Check if user has been authenticated via Mittwald callback
+      const authResult = mittwaldAuthResults.get(`auth_${details.uid}`);
+      if (authResult && authResult.authenticated) {
+        logger.info('INTERACTION: User authenticated via Mittwald - using loadExistingGrant pattern', {
+          uid: details.uid,
+          accountId: authResult.accountId.substring(0, 16) + '...',
+          method: 'loadExistingGrant-will-handle'
+        });
+
+        // Clean up auth state
+        mittwaldAuthResults.delete(`auth_${details.uid}`);
+
+        // Let oidc-provider handle this with loadExistingGrant - just continue normal flow
+        // The loadExistingGrant function will automatically create grants
+        // No manual interactionFinished() call needed
+      }
 
       // Check if this is a consent prompt (user already authenticated)
       if (prompt === 'consent' || details.prompt?.details?.missingOIDCScope || details.prompt?.details?.missingOAuth2Scope) {
@@ -224,26 +248,27 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         expiresAt: tokenSet.expires_in ? Date.now() + (tokenSet.expires_in * 1000) : undefined
       });
 
-      logger.info('MITTWALD CALLBACK: Completing oidc-provider login', {
+      logger.info('MITTWALD CALLBACK: Redirecting back to interaction (research-based pattern)', {
         accountId: accountId.substring(0, 16) + '...',
         interactionUid: callbackState.interactionUid,
-        method: 'provider.interactionFinished'
+        method: 'redirect-to-interaction-route'
       });
 
-      // Complete oidc-provider login - this will trigger consent prompt
-      await (provider as any).interactionFinished(ctx.req, ctx.res, {
-        login: {
-          accountId,
-          remember: false,
-          ts: Math.floor(Date.now() / 1000)
-        }
-      });
+      // Store authentication result for interaction route to detect
+      const authResult = {
+        accountId,
+        authenticated: true,
+        timestamp: Date.now()
+      };
 
-      // Clean up callback state
+      // Use interaction UID as key for authentication state
+      mittwaldAuthResults.set(`auth_${callbackState.interactionUid}`, authResult);
+
+      // Clean up original callback state
       mittwaldCallbackState.delete(state);
 
-      // oidc-provider handles the response (redirect to consent)
-      ctx.respond = false;
+      // Redirect back to interaction route - let oidc-provider + loadExistingGrant handle completion
+      ctx.redirect(`/interaction/${callbackState.interactionUid}`);
 
       logger.info('MITTWALD CALLBACK: Login completed successfully', {
         accountId: accountId.substring(0, 16) + '...',
