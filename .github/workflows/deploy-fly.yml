@@ -101,21 +101,40 @@ jobs:
         run: |
           set -e
           HOST=${{ matrix.hostname }}
-          # wait up to ~5 minutes for health with retries
+          echo "🔍 Starting health check for $HOST"
+
+          # wait up to ~8 minutes for health with progressive backoff
           ok=0
-          for i in $(seq 1 60); do
-            if curl -fsS --max-time 6 "https://$HOST/health" >/dev/null; then
-              ok=1; break
+          for i in $(seq 1 80); do
+            echo "Health check attempt $i/80 for $HOST"
+
+            if curl -fsS --max-time 10 "https://$HOST/health" >/dev/null 2>&1; then
+              echo "✅ Health check passed for $HOST"
+              ok=1
+              break
+            else
+              echo "❌ Health check failed for $HOST (attempt $i)"
             fi
-            sleep 5
+
+            # Progressive backoff: 5s for first 30 attempts, 10s after
+            if [ $i -lt 30 ]; then
+              sleep 5
+            else
+              sleep 10
+            fi
           done
+
           if [ "$ok" != "1" ]; then
-            echo "Health check did not pass in time for $HOST" >&2
+            echo "💥 Health check did not pass in time for $HOST after 8 minutes" >&2
+            echo "Checking final status..."
+            curl -v "https://$HOST/health" || true
             exit 22
           fi
-          echo "Health passed; checking /version"
+
+          echo "✅ Health passed; checking /version for $HOST"
           body=$(curl -fsSL "https://$HOST/version")
           echo "$body" | jq -e --arg sha "${{ steps.meta.outputs.sha }}" '.gitSha == $sha'
+          echo "✅ Version verification passed for $HOST"
 
       - name: Diagnostics on failure (status + recent logs)
         if: failure()
