@@ -79,37 +79,26 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         // Clean up auth state
         mittwaldAuthResults.delete(`auth_${details.uid}`);
 
-        // User is authenticated and consented via Mittwald - no additional consent needed
-        // Mittwald IdP handles consent, we just complete the OAuth flow
-        logger.info('INTERACTION: User authenticated via Mittwald - completing OAuth flow', {
+        // User is authenticated and consented via Mittwald - complete OAuth flow directly
+        // NO consent screen needed - Mittwald already handled consent
+        logger.info('INTERACTION: User authenticated via Mittwald - completing OAuth flow directly', {
           uid: details.uid,
           accountId: authResult.accountId.substring(0, 16) + '...',
-          method: 'auto-complete-oauth-flow'
+          method: 'interactionFinished-login-only'
         });
 
-        // Complete the interaction properly - user is authenticated and consented via Mittwald
-        // Use interactionFinished to signal authentication completion to oidc-provider
-        try {
-          await (provider as any).interactionFinished(ctx.req, ctx.res, {
-            login: {
-              accountId: authResult.accountId,
-              remember: false,
-              ts: Math.floor(Date.now() / 1000)
-            }
-          });
+        // Complete the interaction - user authenticated and consented at Mittwald
+        await (provider as any).interactionFinished(ctx.req, ctx.res, {
+          login: {
+            accountId: authResult.accountId,
+            remember: false,
+            ts: Math.floor(Date.now() / 1000)
+          }
+        });
 
-          // Let oidc-provider handle the response
-          ctx.respond = false;
-          return;
-
-        } catch (interactionError) {
-          logger.error('INTERACTION: Failed to complete authenticated interaction', {
-            uid: details.uid,
-            error: interactionError instanceof Error ? interactionError.message : String(interactionError)
-          });
-
-          // Fallback: let oidc-provider handle normally
-        }
+        // Let oidc-provider handle the response
+        ctx.respond = false;
+        return;
       }
 
       // Check if this is a consent prompt (user already authenticated)
