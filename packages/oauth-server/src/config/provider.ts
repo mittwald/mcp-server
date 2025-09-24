@@ -322,6 +322,57 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
         };
       }
     },
+
+    // CRITICAL: loadExistingGrant for external OAuth integration
+    // Based on Stack Overflow research for federated identity scenarios
+    async loadExistingGrant(ctx: any) {
+      logger.info('LOAD EXISTING GRANT: Creating grant for external OAuth integration', {
+        clientId: ctx?.oidc?.client?.clientId,
+        accountId: ctx?.oidc?.session?.accountId,
+        requestedScopes: ctx?.oidc?.params?.scope
+      });
+
+      try {
+        // Create new grant for federated authentication (external OAuth pattern)
+        const Grant = ctx.oidc.provider.Grant;
+        const grant = new Grant({
+          clientId: ctx.oidc.client.clientId,
+          accountId: ctx.oidc.session?.accountId || ctx.oidc.params?.sub
+        });
+
+        // Add all requested scopes to the grant
+        if (ctx.oidc.params?.scope) {
+          const scopes = ctx.oidc.params.scope.split(' ');
+          for (const scope of scopes) {
+            if (scope === 'openid' || scope === 'profile') {
+              grant.addOIDCScope(scope);
+            } else {
+              grant.addResourceScope('https://mittwald-mcp-fly2.fly.dev/mcp', scope);
+            }
+          }
+        }
+
+        // Save grant with TTL (1 hour)
+        await grant.save(3600);
+
+        logger.info('LOAD EXISTING GRANT: Grant created successfully', {
+          grantId: grant.jti,
+          clientId: ctx.oidc.client.clientId,
+          scopeCount: ctx.oidc.params?.scope?.split(' ').length || 0
+        });
+
+        return grant;
+
+      } catch (error) {
+        logger.error('LOAD EXISTING GRANT: Failed to create grant', {
+          error: error instanceof Error ? error.message : String(error),
+          clientId: ctx?.oidc?.client?.clientId
+        });
+
+        // Return null to let oidc-provider handle grant creation
+        return null;
+      }
+    },
   };
 }
 
