@@ -325,6 +325,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
 
     // CRITICAL: loadExistingGrant for external OAuth integration
     // Based on Stack Overflow research for federated identity scenarios
+    // Fixes callback failures by creating grants automatically
     async loadExistingGrant(ctx: any) {
       logger.info('LOAD EXISTING GRANT: Creating grant for external OAuth integration', {
         clientId: ctx?.oidc?.client?.clientId,
