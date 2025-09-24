@@ -56,10 +56,9 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
       expect(response.data.token_endpoint).toBe(`${OAUTH_SERVER}/token`);
       expect(response.data.registration_endpoint).toBe(`${OAUTH_SERVER}/reg`);
 
-      // Verify all 43 scopes supported (41 Mittwald + openid + profile)
-      expect(response.data.scopes_supported).toHaveLength(43);
+      // Verify all 42 scopes supported (41 Mittwald + openid)
+      expect(response.data.scopes_supported).toHaveLength(42);
       expect(response.data.scopes_supported).toContain('openid');
-      expect(response.data.scopes_supported).toContain('profile');
       expect(response.data.scopes_supported).toContain('app:read');
 
       // Verify OAuth 2.1 compliance
