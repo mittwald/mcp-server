@@ -79,10 +79,14 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         // Clean up auth state
         mittwaldAuthResults.delete(`auth_${details.uid}`);
 
-        // Let oidc-provider handle this with loadExistingGrant naturally
-        // The loadExistingGrant function will automatically create grants
-        // Just let oidc-provider continue its normal flow without redirecting to Mittwald again
-        return; // CRITICAL: Stop here and let oidc-provider handle the authenticated user
+        // User is authenticated - show consent screen for OAuth security compliance
+        // This follows proper OAuth flow: authentication → consent → token issuance
+        logger.info('INTERACTION: Showing consent screen for authenticated user', {
+          uid: details.uid,
+          accountId: authResult.accountId.substring(0, 16) + '...'
+        });
+
+        return await showConsentScreen(ctx, details);
       }
 
       // Check if this is a consent prompt (user already authenticated)
