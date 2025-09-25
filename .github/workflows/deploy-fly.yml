@@ -92,37 +92,44 @@ jobs:
 
       - name: Wait for app health then verify /version (commit SHA)
         run: |
-          set -e
+          set -euo pipefail
+          APP=${{ matrix.app }}
           HOST=${{ matrix.hostname }}
-          echo "🔍 Starting health check for $HOST"
+          MAX_ATTEMPTS=24 # ~2 minutes @ 5s interval
+          echo "🔍 Waiting for $APP health (max $((MAX_ATTEMPTS*5))s)"
 
-          # wait up to ~8 minutes for health with progressive backoff
-          ok=0
-          for i in $(seq 1 80); do
-            echo "Health check attempt $i/80 for $HOST"
+          for attempt in $(seq 1 $MAX_ATTEMPTS); do
+            echo "Health check attempt $attempt/$MAX_ATTEMPTS for $HOST"
+            status_json=$(flyctl status -a "$APP" --json 2>/dev/null || echo '{}')
 
-            if curl -fsS --max-time 10 "https://$HOST/health" >/dev/null 2>&1; then
-              echo "✅ Health check passed for $HOST"
-              ok=1
-              break
-            else
-              echo "❌ Health check failed for $HOST (attempt $i)"
+            if echo "$status_json" | jq -e -r '
+              (.machines // []) as $machines
+              | if ($machines | length) == 0 then false
+                else
+                  reduce $machines[] as $m (
+                    true;
+                    .
+                    and ($m.state == "started")
+                    and (reduce ($m.checks // [])[]? as $c (true; . and ($c.status == "passing")))
+                  )
+                end
+            ' >/dev/null 2>&1; then
+              if curl -fsS --max-time 6 "https://$HOST/health" >/dev/null 2>&1; then
+                echo "✅ $HOST is healthy"
+                break
+              fi
             fi
 
-            # Progressive backoff: 5s for first 30 attempts, 10s after
-            if [ $i -lt 30 ]; then
-              sleep 5
-            else
-              sleep 10
+            if [ "$attempt" -eq "$MAX_ATTEMPTS" ]; then
+              echo "💥 Health check did not pass for $HOST within $((MAX_ATTEMPTS*5)) seconds" >&2
+              echo "Latest status:" >&2
+              echo "$status_json" | jq '.' >&2
+              curl -v --max-time 10 "https://$HOST/health" || true
+              exit 22
             fi
+
+            sleep 5
           done
-
-          if [ "$ok" != "1" ]; then
-            echo "💥 Health check did not pass in time for $HOST after 8 minutes" >&2
-            echo "Checking final status..."
-            curl -v "https://$HOST/health" || true
-            exit 22
-          fi
 
           echo "✅ Health passed; checking /version for $HOST"
           body=$(curl -fsSL "https://$HOST/version")
@@ -134,10 +141,11 @@ jobs:
         continue-on-error: true
         run: |
           set +e
-          echo "Fly status for ${{ matrix.app }}:";
-          flyctl status -a ${{ matrix.app }} || true
-          echo "\nLast 200 lines of logs:";
-          flyctl logs -a ${{ matrix.app }} | tail -n 200 || true
+          APP=${{ matrix.app }}
+          echo "Fly status for $APP:";
+          flyctl status -a "$APP" --json | jq '.' || flyctl status -a "$APP" || true
+          echo "\nLast 100 lines of logs:";
+          flyctl logs -a "$APP" --max-lines 100 || true
 
       - name: Verify /version endpoint (digest optional)
         run: |
