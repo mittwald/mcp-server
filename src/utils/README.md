@@ -8,7 +8,7 @@ Utilities are the "helpers" of the MCP server:
 - Helper functions for common tasks
 - Data transformation and formatting
 - Validation and error handling
-- Cross-cutting concerns
+- Cross-cutting concerns 
 
 ## File Structure
 
