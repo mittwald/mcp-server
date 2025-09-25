@@ -38,9 +38,20 @@ export function createOAuthMiddleware() {
         }
 
         const decoded = jwt.verify(token, jwtSigningKey) as any;
-        
-        // Extract Mittwald tokens from JWT claims
-        const mittwaldTokens = decoded.mittwald || {};
+
+        const mittwaldAccessToken = typeof decoded.mittwald_access_token === 'string'
+          ? decoded.mittwald_access_token
+          : undefined;
+        const mittwaldRefreshToken = typeof decoded.mittwald_refresh_token === 'string'
+          ? decoded.mittwald_refresh_token
+          : undefined;
+        const mittwaldScope = typeof decoded.mittwald_scope === 'string' ? decoded.mittwald_scope : undefined;
+        const mittwaldScopeSource = typeof decoded.mittwald_scope_source === 'string'
+          ? decoded.mittwald_scope_source
+          : undefined;
+        const mittwaldRequestedScope = typeof decoded.mittwald_requested_scope === 'string'
+          ? decoded.mittwald_requested_scope
+          : undefined;
 
         // Set auth info on request matching MCP SDK AuthInfo interface
         req.auth = {
@@ -50,8 +61,11 @@ export function createOAuthMiddleware() {
           expiresAt: decoded.exp, // Keep as seconds since epoch (not milliseconds)
           extra: {
             userId: decoded.sub,
-            mittwaldAccessToken: mittwaldTokens.access_token,
-            mittwaldRefreshToken: mittwaldTokens.refresh_token,
+            mittwaldAccessToken,
+            mittwaldRefreshToken,
+            mittwaldScope,
+            mittwaldScopeSource,
+            mittwaldRequestedScope,
             issuer: decoded.iss,
             audience: decoded.aud
           }
@@ -61,7 +75,7 @@ export function createOAuthMiddleware() {
           clientId: req.auth.clientId,
           userId: decoded.sub,
           expiresAt: decoded.exp,
-          hasMittwaldToken: !!mittwaldTokens.access_token
+          hasMittwaldToken: !!mittwaldAccessToken
         });
         
         next();

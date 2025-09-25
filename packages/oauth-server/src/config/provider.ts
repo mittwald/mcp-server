@@ -336,24 +336,37 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       });
 
       try {
+        const sessionAccountId = ctx?.oidc?.session?.accountId;
+
+        if (!sessionAccountId) {
+          logger.info('LOAD EXISTING GRANT: No session account yet, deferring grant creation', {
+            clientId: ctx?.oidc?.client?.clientId,
+            state: ctx?.oidc?.params?.state,
+          });
+          return undefined;
+        }
+
         // Create new grant for federated authentication (external OAuth pattern)
         const Grant = ctx.oidc.provider.Grant;
         const grant = new Grant({
           clientId: ctx.oidc.client.clientId,
-          accountId: ctx.oidc.session?.accountId || ctx.oidc.params?.sub
+          accountId: sessionAccountId
         });
 
         let scopeString = extractScopeString(ctx.oidc.params?.scope);
-        const accountId = ctx.oidc.session?.accountId;
+        const account = userAccountStore.get(sessionAccountId);
 
-        if (accountId) {
-          const account = userAccountStore.get(accountId);
-          if (account?.mittwaldScope) {
-            scopeString = account.mittwaldScope;
-            logger.info('LOAD EXISTING GRANT: Using Mittwald-issued scope string', {
-              accountId: accountId.substring(0, 16) + '...'
-            });
-          }
+        if (account?.mittwaldScope) {
+          scopeString = account.mittwaldScope;
+          logger.info('LOAD EXISTING GRANT: Using Mittwald-issued scope string', {
+            accountId: sessionAccountId.substring(0, 16) + '...'
+          });
+        }
+
+        if (!account) {
+          logger.warn('LOAD EXISTING GRANT: Session account not found in user store', {
+            accountId: sessionAccountId.substring(0, 16) + '...',
+          });
         }
 
         if (scopeString) {

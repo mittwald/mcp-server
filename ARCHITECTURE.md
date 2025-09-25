@@ -25,7 +25,7 @@ The Mittwald MCP deployment now operates as an OAuth 2.1 proxy. External MCP cli
 2. **Authorization Request**: Client hits `/auth`. oidc-provider creates an interaction and redirects the user to Mittwald's authorization endpoint. Requested scopes come from the client's request; if absent, we send no `scope` parameter (Mittwald applies its defaults) or the optional fallback string.
 3. **Mittwald Login & Consent**: User authenticates and approves scopes in Mittwald Studio. Mittwald redirects back to `/mittwald/callback` with an authorization code.
 4. **Token Exchange (Mittwald)**: Our proxy exchanges the Mittwald code for Mittwald access/refresh tokens using the static client credentials. We store the tokens in `userAccountStore` keyed by the Mittwald subject.
-5. **Interaction Completion**: We immediately call `provider.interactionFinished` with the authenticated account. No consent UI is shown in our proxy; the existing grant is created or updated to include the scopes Mittwald returned.
+5. **Interaction Completion**: We immediately call `provider.interactionFinished` with the authenticated account. No consent UI is shown in our proxy; the existing grant is created or updated to include the scopes Mittwald returned. Until Mittwald authentication succeeds there is no local account, so `loadExistingGrant` must return `undefined` during the initial `/auth` request to let oidc-provider proceed to our `/interaction/:uid` handler.
 6. **Token Issuance (Proxy)**: When the MCP client calls `/token`, oidc-provider issues JWT access/refresh tokens. The JWT payload embeds the Mittwald tokens and the exact scope string returned from Mittwald.
 7. **MCP Access**: The client presents the JWT to the MCP server. The MCP server verifies the signature, extracts the Mittwald access token, and executes the requested CLI command with `mw ... --token <mittwald_access_token>`.
 
@@ -35,6 +35,11 @@ The Mittwald MCP deployment now operates as an OAuth 2.1 proxy. External MCP cli
 - **Passthrough mode**: If discovery fails or the metadata omits scope details, we operate without a local allow-list. DCR requests and authorization prompts retain whatever scope string clients present. Mittwald's token endpoint is authoritative; any invalid scope is rejected during the Mittwald exchange.
 - **Fallback**: Optional `MITTWALD_SCOPE_FALLBACK` allows an operations team to specify a bootstrap scope string for environments where Mittwald is unreachable. Once discovery succeeds, the fallback is ignored.
 - **Token propagation**: The scope string we embed in issued JWTs comes from `tokenSet.scope` returned by Mittwald. Audit logs reference this value rather than a recomputed list.
+
+## Grant Handling
+
+- **Deferred grant creation**: `loadExistingGrant` must only persist a grant after Mittwald has authenticated the user and oidc-provider has an `accountId` on the session. During the first `/auth` request we return `undefined` so oidc-provider advances to `/interaction/:uid` and redirects the browser to Mittwald.
+- **Mittwald-scoped grants**: Once the Mittwald callback completes we build the grant using the stored `mittwaldScope`, ensuring downstream tokens mirror the Mittwald-issued permissions.
 
 ## Consent & Trust
 

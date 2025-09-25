@@ -34,9 +34,13 @@ import type { AuthenticatedRequest } from "./auth-types.js";
 
 // Per-session auth context storage
 interface SessionAuth {
+  /** Mittwald access token propagated via oauth-server */
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
   username: string;
+  /** Original OAuth JWT issued by the proxy */
+  oauthToken?: string;
+  scope?: string;
 }
 
 interface SessionInfo {
@@ -209,21 +213,39 @@ export class MCPHandler implements IMCPHandler {
         logger.info(`🆕 [${clientAddr}] Creating new session: ${sessionId}`);
 
         // Extract auth info if available
-        const sessionAuth =
-          req.auth && req.auth.token
-            ? {
-                accessToken: String(req.auth.token || ""),
-                refreshToken: "",
-                username: String(req.auth.clientId || "unknown"),
-              }
-            : undefined;
-            
+        const mittwaldAccessToken = typeof req.auth?.extra?.mittwaldAccessToken === 'string'
+          ? req.auth.extra.mittwaldAccessToken
+          : undefined;
+        const mittwaldRefreshToken = typeof req.auth?.extra?.mittwaldRefreshToken === 'string'
+          ? req.auth.extra.mittwaldRefreshToken
+          : undefined;
+        const mittwaldScope = typeof req.auth?.extra?.mittwaldScope === 'string'
+          ? req.auth.extra.mittwaldScope
+          : undefined;
+
+        const sessionAuth = mittwaldAccessToken
+          ? {
+              accessToken: mittwaldAccessToken,
+              refreshToken: mittwaldRefreshToken,
+              username: String(req.auth?.extra?.userId || req.auth?.clientId || "unknown"),
+              oauthToken: req.auth?.token,
+              scope: mittwaldScope,
+            }
+          : undefined;
+
         if (sessionAuth) {
-          logger.info(`🔐 [${sessionId}] Session authenticated as: ${sessionAuth.username}`);
+          logger.info(`🔐 [${sessionId}] Session authenticated as: ${sessionAuth.username}`, {
+            hasMittwaldToken: true,
+            hasMittwaldRefresh: !!sessionAuth.refreshToken,
+            scope: sessionAuth.scope,
+          });
         } else {
+          logger.warn(`🔓 [${sessionId}] Mittwald access token missing in JWT claims; session will be unauthenticated`, {
+            clientId: req.auth?.clientId,
+          });
           logger.info(`🔓 [${sessionId}] Session created without authentication`);
         }
-        
+
         const server = this.createServer(sessionId, sessionAuth);
         const transport = new StreamableHTTPServerTransport({
           sessionIdGenerator: () => sessionId!,
@@ -285,19 +307,35 @@ export class MCPHandler implements IMCPHandler {
 
         // Update auth if provided
         if (req.auth && req.auth.token && !sessionInfo.auth) {
-          logger.info(`🔐 [${sessionId}] Adding authentication to existing session`);
-          sessionInfo.auth = {
-            accessToken: String(req.auth.token || ""),
-            refreshToken: "",
-            username: String(req.auth.clientId || "unknown"),
-          };
+          const mittwaldAccessToken = typeof req.auth.extra?.mittwaldAccessToken === 'string'
+            ? req.auth.extra.mittwaldAccessToken
+            : undefined;
+          const mittwaldRefreshToken = typeof req.auth.extra?.mittwaldRefreshToken === 'string'
+            ? req.auth.extra.mittwaldRefreshToken
+            : undefined;
+          const mittwaldScope = typeof req.auth.extra?.mittwaldScope === 'string'
+            ? req.auth.extra.mittwaldScope
+            : undefined;
+
+          if (mittwaldAccessToken) {
+            logger.info(`🔐 [${sessionId}] Adding authentication to existing session`);
+            sessionInfo.auth = {
+              accessToken: mittwaldAccessToken,
+              refreshToken: mittwaldRefreshToken,
+              username: String(req.auth.extra?.userId || req.auth.clientId || "unknown"),
+              oauthToken: req.auth.token,
+              scope: mittwaldScope,
+            };
 
           // Recreate server with auth
-          logger.debug(`🔄 [${sessionId}] Recreating server with authentication`);
-          const newServer = this.createServer(sessionId, sessionInfo.auth);
-          await newServer.connect(sessionInfo.transport);
-          sessionInfo.server = newServer;
-          logger.debug(`✅ [${sessionId}] Server recreated with auth successfully`);
+            logger.debug(`🔄 [${sessionId}] Recreating server with authentication`);
+            const newServer = this.createServer(sessionId, sessionInfo.auth);
+            await newServer.connect(sessionInfo.transport);
+            sessionInfo.server = newServer;
+            logger.debug(`✅ [${sessionId}] Server recreated with auth successfully`);
+          } else {
+            logger.warn(`⚠️ [${sessionId}] Received JWT without Mittwald access token; keeping session unauthenticated`);
+          }
         }
 
         // Let the session's transport handle the request

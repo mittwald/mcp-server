@@ -10,6 +10,7 @@
 - ✅ Login/consent interactions auto-complete without presenting local HTML; Mittwald’s callback seeds `mittwaldInteractionState` and grants use the returned scope string.
 - ✅ `userAccountStore` records `mittwaldScope`, and `findAccount` exposes `mittwald_scope`, `mittwald_scope_source`, and `mittwald_requested_scope` claims.
 - ✅ Legacy scope configuration files (`src/config/oauth-scopes.ts`, `packages/oauth-server/src/config/oauth-scopes.ts`) and dependent middleware/tests were removed or updated.
+- ✅ `loadExistingGrant` now returns `undefined` until the Mittwald callback seeds an oidc-provider session account, preventing premature `access_denied` decisions.
 
 ## Follow-up Recommendations
 1. **Integration tests**: Add coverage for the new scope passthrough (e.g., verify JWT claims contain Mittwald scopes after a simulated callback).
