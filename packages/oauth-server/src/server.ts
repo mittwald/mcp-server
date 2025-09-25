@@ -56,6 +56,8 @@ const rawInitialAccessToken = process.env.INITIAL_ACCESS_TOKEN || '';
 
 if (!rawInitialAccessToken) {
   logger.warn('INITIAL_ACCESS_TOKEN not set – dynamic client registration is open to all callers');
+} else {
+  logger.info('INITIAL_ACCESS_TOKEN is configured but ignored (open registration mode)');
 }
 
 const config: ProviderConfig = {

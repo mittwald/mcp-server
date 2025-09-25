@@ -5,10 +5,46 @@ set -euo pipefail
 # and print a readable summary. Pass any extra flags straight through to
 # `fly logs` (e.g. `--since 1h`).
 
+# Ensure we have an app name if none supplied via CLI
+needs_app=true
+for arg in "$@"; do
+  case "$arg" in
+    -a|--app)
+      needs_app=false
+      break
+      ;;
+  esac
+done
+
+if $needs_app; then
+  if [[ -n "${FLY_APP:-}" ]]; then
+    set -- --app "$FLY_APP" "$@"
+  else
+    candidate_files=("fly.toml" "packages/oauth-server/fly.toml" "packages/mcp-server/fly.toml")
+    default_app=""
+    for candidate in "${candidate_files[@]}"; do
+      if [[ -f "$candidate" ]]; then
+        default_app=$(grep -E '^app *= *' "$candidate" | head -n1 | sed -E 's/app *= *"?([^"[:space:]]+)"?.*/\1/')
+        if [[ -n "$default_app" ]]; then
+          break
+        fi
+      fi
+    done
+    if [[ -n "$default_app" ]]; then
+      set -- --app "$default_app" "$@"
+    else
+      echo "Error: specify Fly app with --app or set FLY_APP environment variable" >&2
+      exit 1
+    fi
+  fi
+fi
+
 fly logs --json "$@" | jq -r '
   .message as $msg
   | ($msg | fromjson? ) as $pino
-  | select($pino != null and ($pino.event? | startswith("registration_")))
+  | select($pino != null)
+  | ($pino.event // "") as $event
+  | select(($event | type) == "string" and ($event | startswith("registration_")))
   | ($pino.time / 1000 | gmtime | strftime("%Y-%m-%dT%H:%M:%SZ")) as $ts
   | ($pino.redirectUris // []) as $uris
   | ($pino.grantTypes // []) as $grants

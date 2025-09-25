@@ -60,7 +60,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       // Enable Dynamic Client Registration (open, no Initial Access Token required)
       registration: {
         enabled: true,
-        initialAccessToken: config.initialAccessToken || false,
+        initialAccessToken: false,
         issueRegistrationAccessToken: true,
       },
       registrationManagement: {
