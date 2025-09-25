@@ -5,15 +5,19 @@
  * Covers all 38 steps from initial MCP request to final tool execution
  */
 
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, beforeEach } from 'vitest';
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
-vi.setTimeout(configureRemoteSuiteTimeout());
+const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
 
 describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
   let claudeClient: any;
+
+  beforeEach((context) => {
+    context.setTimeout(SUITE_TIMEOUT);
+  });
 
   describe('Complete 38-Step Workflow', () => {
     test('Phase 1-2: Discovery and Registration (Steps 1-9)', async () => {

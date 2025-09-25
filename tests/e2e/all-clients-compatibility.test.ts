@@ -5,13 +5,17 @@
  * Ensures all three client types work with pure oidc-provider implementation
  */
 
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect, beforeEach } from 'vitest';
 import axios from 'axios';
 import { configureRemoteSuiteTimeout, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
-vi.setTimeout(configureRemoteSuiteTimeout());
+const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
 
 describe('All OAuth Clients Compatibility', () => {
+  beforeEach((context) => {
+    context.setTimeout(SUITE_TIMEOUT);
+  });
+
   describe('MCP Jam Inspector (Public Client)', () => {
     test('registers as public client successfully', async () => {
       const mcpJamRegistration = {

@@ -5,12 +5,12 @@
  * Tests all 38 steps of the documented workflow across 5 phases
  */
 
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { describe, test, expect, beforeEach } from 'vitest';
 import axios from 'axios';
 import { DEFAULT_SCOPES, SUPPORTED_SCOPES } from '../../src/config/mittwald-scopes.js';
 import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
-vi.setTimeout(configureRemoteSuiteTimeout());
+const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
 
 describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   let testClient: any;
@@ -18,7 +18,8 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   let authorizationCode: string;
   let accessToken: string;
 
-  beforeEach(() => {
+  beforeEach((context) => {
+    context.setTimeout(SUITE_TIMEOUT);
     testClient = null;
     testState = `test_${Date.now()}_${Math.random().toString(36).substring(7)}`;
   });

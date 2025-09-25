@@ -5,17 +5,18 @@
  * Ensures single source of truth for all 41 Mittwald scopes + OIDC scopes
  */
 
-import { describe, test, expect, beforeAll, vi } from 'vitest';
+import { describe, test, expect, beforeAll, beforeEach } from 'vitest';
 import axios from 'axios';
 import { DEFAULT_SCOPES, SUPPORTED_SCOPES } from '../../src/config/mittwald-scopes.js';
 import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
-vi.setTimeout(configureRemoteSuiteTimeout());
+const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
 
 describe('Centralized Scope Configuration', () => {
   let claudeClient: any;
 
-  beforeAll(async () => {
+  beforeAll(async (context) => {
+    context.setTimeout(SUITE_TIMEOUT);
     // Register a test Claude.ai client for scope testing
     const registrationRequest = {
       client_name: 'Test Claude Client',
@@ -39,6 +40,10 @@ describe('Centralized Scope Configuration', () => {
       console.warn('Failed to register test client, using fallback');
       claudeClient = { client_id: 'test-fallback-client' };
     }
+  });
+
+  beforeEach((context) => {
+    context.setTimeout(SUITE_TIMEOUT);
   });
   describe('Single Source of Truth Validation', () => {
     test('MCP server and OAuth server advertise identical Mittwald scopes', async () => {
