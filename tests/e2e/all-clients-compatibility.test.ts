@@ -5,11 +5,11 @@
  * Ensures all three client types work with pure oidc-provider implementation
  */
 
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 import axios from 'axios';
+import { configureRemoteSuiteTimeout, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
-const OAUTH_SERVER = 'https://mittwald-oauth-server.fly.dev';
-const MCP_SERVER = 'https://mittwald-mcp-fly2.fly.dev';
+vi.setTimeout(configureRemoteSuiteTimeout());
 
 describe('All OAuth Clients Compatibility', () => {
   describe('MCP Jam Inspector (Public Client)', () => {
@@ -23,32 +23,27 @@ describe('All OAuth Clients Compatibility', () => {
         client_uri: 'https://github.com/mcpjam/inspector'
       };
 
-      try {
-        const response = await axios.post(`${OAUTH_SERVER}/reg`, mcpJamRegistration, {
-          validateStatus: () => true
-        });
+      const response = await safeRequest(
+        () => axios.post(`${OAUTH_SERVER}/reg`, mcpJamRegistration, { validateStatus: () => true }),
+        'Skipping MCP Jam registration test (OAuth host unavailable)'
+      );
 
-        expect([200, 201, 400]).toContain(response.status);
-        if (response.status >= 400) {
-          expect(response.data.error).toBeDefined();
-          return;
-        }
+      if (!response) return;
 
-        expect(response.data.client_id).toBeDefined();
-        expect(response.data.client_secret).toBeUndefined();
-        expect(response.data.token_endpoint_auth_method).toBe('none');
-        expect(response.data.application_type).toBe('native');
+      expect([200, 201, 400]).toContain(response.status);
+      if (response.status >= 400) {
+        expect(response.data.error).toBeDefined();
+        return;
+      }
 
-        if (response.data.scope) {
-          const scopes = response.data.scope.split(' ');
-          expect(scopes.length).toBeGreaterThan(0);
-        }
-      } catch (error: any) {
-        if (error?.code === 'ENOTFOUND') {
-          console.warn('Skipping MCP Jam registration test (host unavailable)');
-          return;
-        }
-        throw error;
+      expect(response.data.client_id).toBeDefined();
+      expect(response.data.client_secret).toBeUndefined();
+      expect(response.data.token_endpoint_auth_method).toBe('none');
+      expect(response.data.application_type).toBe('native');
+
+      if (response.data.scope) {
+        const scopes = response.data.scope.split(' ');
+        expect(scopes.length).toBeGreaterThan(0);
       }
     });
 
@@ -75,31 +70,26 @@ describe('All OAuth Clients Compatibility', () => {
         token_endpoint_auth_method: 'client_secret_post'
       };
 
-      try {
-        const response = await axios.post(`${OAUTH_SERVER}/reg`, claudeRegistration, {
-          validateStatus: () => true
-        });
+      const response = await safeRequest(
+        () => axios.post(`${OAUTH_SERVER}/reg`, claudeRegistration, { validateStatus: () => true }),
+        'Skipping Claude registration test (OAuth host unavailable)'
+      );
 
-        expect([200, 201, 400]).toContain(response.status);
-        if (response.status >= 400) {
-          expect(response.data.error).toBeDefined();
-          return;
-        }
+      if (!response) return;
 
-        expect(response.data.client_id).toBeDefined();
-        expect(response.data.client_secret).toBeDefined();
-        expect(response.data.token_endpoint_auth_method).toBe('client_secret_post');
-        expect(response.data.application_type).toBe('web');
+      expect([200, 201, 400]).toContain(response.status);
+      if (response.status >= 400) {
+        expect(response.data.error).toBeDefined();
+        return;
+      }
 
-        if (response.data.scope) {
-          expect(response.data.scope).toContain('openid');
-        }
-      } catch (error: any) {
-        if (error?.code === 'ENOTFOUND') {
-          console.warn('Skipping Claude registration test (host unavailable)');
-          return;
-        }
-        throw error;
+      expect(response.data.client_id).toBeDefined();
+      expect(response.data.client_secret).toBeDefined();
+      expect(response.data.token_endpoint_auth_method).toBe('client_secret_post');
+      expect(response.data.application_type).toBe('web');
+
+      if (response.data.scope) {
+        expect(response.data.scope).toContain('openid');
       }
     });
 

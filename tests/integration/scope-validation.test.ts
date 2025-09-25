@@ -5,25 +5,12 @@
  * Ensures single source of truth for all 41 Mittwald scopes + OIDC scopes
  */
 
-import { describe, test, expect, beforeAll } from 'vitest';
+import { describe, test, expect, beforeAll, vi } from 'vitest';
 import axios from 'axios';
-import type { AxiosResponse } from 'axios';
 import { DEFAULT_SCOPES, SUPPORTED_SCOPES } from '../../src/config/mittwald-scopes.js';
+import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
-const OAUTH_SERVER = 'https://mittwald-oauth-server.fly.dev';
-const MCP_SERVER = 'https://mittwald-mcp-fly2.fly.dev';
-
-async function safeRequest<T = AxiosResponse<any>>(fn: () => Promise<T>, skipMessage: string): Promise<T | null> {
-  try {
-    return await fn();
-  } catch (error: any) {
-    if (error?.code === 'ENOTFOUND') {
-      console.warn(skipMessage);
-      return null;
-    }
-    throw error;
-  }
-}
+vi.setTimeout(configureRemoteSuiteTimeout());
 
 describe('Centralized Scope Configuration', () => {
   let claudeClient: any;

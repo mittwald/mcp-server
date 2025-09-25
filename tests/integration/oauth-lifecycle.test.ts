@@ -5,60 +5,12 @@
  * Tests all 38 steps of the documented workflow across 5 phases
  */
 
-import { describe, test, expect, beforeEach, afterEach } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import axios from 'axios';
-import type { AxiosResponse } from 'axios';
 import { DEFAULT_SCOPES, SUPPORTED_SCOPES } from '../../src/config/mittwald-scopes.js';
+import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
-const OAUTH_SERVER = 'https://mittwald-oauth-server.fly.dev';
-const MCP_SERVER = 'https://mittwald-mcp-fly2.fly.dev';
-
-const REQUEST_TIMEOUT_MS = Number(process.env.OAUTH_REMOTE_TIMEOUT_MS ?? '5000');
-axios.defaults.timeout = REQUEST_TIMEOUT_MS;
-
-const SKIPPABLE_ERROR_CODES = new Set([
-  'ENOTFOUND',
-  'ECONNREFUSED',
-  'ECONNRESET',
-  'ETIMEDOUT',
-  'EAI_AGAIN',
-  'ECONNABORTED',
-]);
-
-function shouldSkipNetworkError(error: unknown): { skip: boolean; code?: string } {
-  if (!error) return { skip: false };
-
-  const anyError = error as { code?: string; cause?: { code?: string }; message?: string };
-  const axiosError = axios.isAxiosError(error) ? error : null;
-  const code = anyError.code || anyError.cause?.code || axiosError?.code;
-
-  if (code && SKIPPABLE_ERROR_CODES.has(code)) {
-    return { skip: true, code };
-  }
-
-  if (axiosError && !axiosError.response) {
-    return { skip: true, code: code || 'NO_RESPONSE' };
-  }
-
-  if (axiosError?.message?.toLowerCase().includes('timeout')) {
-    return { skip: true, code: code || 'TIMEOUT' };
-  }
-
-  return { skip: false, code };
-}
-
-async function safeRequest<T = AxiosResponse<any>>(fn: () => Promise<T>, skipMessage: string): Promise<T | null> {
-  try {
-    return await fn();
-  } catch (error: any) {
-    const { skip, code } = shouldSkipNetworkError(error);
-    if (skip) {
-      console.warn(`${skipMessage} (code=${code ?? 'unknown'})`);
-      return null;
-    }
-    throw error;
-  }
-}
+vi.setTimeout(configureRemoteSuiteTimeout());
 
 describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   let testClient: any;
