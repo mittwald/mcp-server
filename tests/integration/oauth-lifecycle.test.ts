@@ -12,6 +12,9 @@ import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } fr
 
 const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
 
+const remoteTest: typeof test = (name, handler, options) =>
+  test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
+
 describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   let testClient: any;
   let testState: string;
@@ -25,7 +28,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('Phase 1: Discovery & Protected Resource Challenge (Steps 1-4)', () => {
-    test('Step 1-2: MCP request returns 401 with WWW-Authenticate header', async () => {
+    remoteTest('Step 1-2: MCP request returns 401 with WWW-Authenticate header', async () => {
       const response = await safeRequest(
         () => axios.get(`${MCP_SERVER}/mcp`, { validateStatus: () => true }),
         'Skipping MCP 401 test (MCP host unavailable)'
@@ -38,7 +41,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
       expect(response.data.oauth.authorization_url).toContain(OAUTH_SERVER);
     });
 
-    test('Step 3-4: MCP server advertises OAuth metadata and scopes', async () => {
+    remoteTest('Step 3-4: MCP server advertises OAuth metadata and scopes', async () => {
       const response = await safeRequest(
         () => axios.get(`${MCP_SERVER}/.well-known/oauth-protected-resource`),
         'Skipping resource metadata test (MCP host unavailable)'
@@ -59,7 +62,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('Phase 2: Authorization Server Discovery (Steps 5-6)', () => {
-    test('Step 5-6: OAuth server metadata discovery', async () => {
+    remoteTest('Step 5-6: OAuth server metadata discovery', async () => {
       const response = await safeRequest(
         () => axios.get(`${OAUTH_SERVER}/.well-known/oauth-authorization-server`),
         'Skipping authorization server metadata test (OAuth host unavailable)'
@@ -93,7 +96,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('Phase 3: Dynamic Client Registration (Steps 7-9)', () => {
-    test('Step 7-9: Claude.ai style confidential client registration', async () => {
+    remoteTest('Step 7-9: Claude.ai style confidential client registration', async () => {
       const registrationRequest = {
         client_name: 'Test Claude Client',
         redirect_uris: ['https://claude.ai/api/mcp/auth_callback'],
@@ -121,7 +124,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
       testClient = response.data;
     });
 
-    test('Step 7-9: MCP Jam style public client registration', async () => {
+    remoteTest('Step 7-9: MCP Jam style public client registration', async () => {
       const registrationRequest = {
         client_name: 'Test MCP Jam Client',
         redirect_uris: ['http://localhost:6274/oauth/callback/debug'],
@@ -171,7 +174,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
       testClient = regResponse.data;
     });
 
-    test('Step 10-12: Authorization request creates interaction session', async () => {
+    remoteTest('Step 10-12: Authorization request creates interaction session', async () => {
       if (!testClient?.client_id) {
         console.warn('Skipping authorization request test (client unavailable)');
         return;
@@ -197,7 +200,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
       expect(response.headers.location).toMatch(/\/interaction\/[A-Za-z0-9_-]+$/);
     });
 
-    test('Step 13: Interaction handler detects login prompt', async () => {
+    remoteTest('Step 13: Interaction handler detects login prompt', async () => {
       // This would require cookie handling and interaction session management
       // Testing the interaction handler requires simulating oidc-provider's interaction flow
       expect(true).toBe(true); // Placeholder - requires complex setup
@@ -205,7 +208,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('Phase 5: Mittwald Token Exchange + User Session (Steps 17-21)', () => {
-    test('Mittwald callback processing with valid state and code', async () => {
+    remoteTest('Mittwald callback processing with valid state and code', async () => {
       // This test requires mocking Mittwald OAuth response
       // Would test the handleMittwaldCallback function
       expect(true).toBe(true); // Placeholder - requires Mittwald mock
@@ -213,13 +216,13 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('Phase 6: User Consent (Steps 22-25)', () => {
-    test('Consent screen renders with proper scope display', async () => {
+    remoteTest('Consent screen renders with proper scope display', async () => {
       // This test would require accessing /interaction/:uid with consent prompt
       // Would verify HTML content includes scope list and allow/deny buttons
       expect(true).toBe(true); // Placeholder - requires interaction simulation
     });
 
-    test('Consent confirmation completes interaction', async () => {
+    remoteTest('Consent confirmation completes interaction', async () => {
       // This test would POST to /interaction/:uid/confirm
       // Would verify provider.interactionFinished() is called with consent
       expect(true).toBe(true); // Placeholder - requires interaction setup
@@ -227,13 +230,13 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('Phase 7: Authorization Code + Token Exchange (Steps 26-29)', () => {
-    test('Standard oidc-provider token endpoint works', async () => {
+    remoteTest('Standard oidc-provider token endpoint works', async () => {
       // This test would exchange authorization code for JWT tokens
       // Would verify JWT contains embedded Mittwald tokens
       expect(true).toBe(true); // Placeholder - requires full OAuth flow
     });
 
-    test('findAccount function provides Mittwald tokens in JWT claims', async () => {
+    remoteTest('findAccount function provides Mittwald tokens in JWT claims', async () => {
       // This test would verify custom claims in issued JWT
       // Would decode JWT and check mittwald_access_token claim
       expect(true).toBe(true); // Placeholder - requires account store setup
@@ -241,13 +244,13 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('Phase 8: Authenticated MCP Tool Execution (Steps 30-36)', () => {
-    test('MCP server validates JWT and extracts Mittwald tokens', async () => {
+    remoteTest('MCP server validates JWT and extracts Mittwald tokens', async () => {
       // This test would POST to /mcp with Bearer JWT
       // Would verify JWT validation and Mittwald token extraction
       expect(true).toBe(true); // Placeholder - requires valid JWT
     });
 
-    test('CLI tool execution with embedded Mittwald token', async () => {
+    remoteTest('CLI tool execution with embedded Mittwald token', async () => {
       // This test would verify mw CLI invocation with --token parameter
       // Would mock CLI execution and verify Mittwald API calls
       expect(true).toBe(true); // Placeholder - requires CLI mocking
@@ -255,7 +258,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('Phase 9: Token Refresh (Steps 37-38)', () => {
-    test('Refresh token grant type works', async () => {
+    remoteTest('Refresh token grant type works', async () => {
       // This test would use refresh_token to get new access tokens
       // Would verify new JWT tokens are issued with updated expiration
       expect(true).toBe(true); // Placeholder - requires refresh token flow
@@ -263,19 +266,19 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   });
 
   describe('End-to-End OAuth Flow Validation', () => {
-    test('Complete Claude.ai simulation', async () => {
+    remoteTest('Complete Claude.ai simulation', async () => {
       // This test would simulate the complete 38-step flow
       // From initial MCP request through to final tool execution
       expect(true).toBe(true); // Placeholder - requires full integration
     });
 
-    test('Complete MCP Jam simulation', async () => {
+    remoteTest('Complete MCP Jam simulation', async () => {
       // This test would verify public client flow works end-to-end
       // Would test with localhost redirect and public client auth
       expect(true).toBe(true); // Placeholder - requires full integration
     });
 
-    test('All supported scopes work in token exchange', async () => {
+    remoteTest('All supported scopes work in token exchange', async () => {
       // This test would verify all 41 Mittwald scopes can be requested
       // Would ensure no artificial limits or filtering
       const allScopes = [

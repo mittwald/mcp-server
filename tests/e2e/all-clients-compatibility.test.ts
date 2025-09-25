@@ -11,13 +11,16 @@ import { configureRemoteSuiteTimeout, OAUTH_SERVER, safeRequest } from '../utils
 
 const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
 
+const remoteTest: typeof test = (name, handler, options) =>
+  test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
+
 describe('All OAuth Clients Compatibility', () => {
   beforeEach((context) => {
     context.setTimeout(SUITE_TIMEOUT);
   });
 
   describe('MCP Jam Inspector (Public Client)', () => {
-    test('registers as public client successfully', async () => {
+    remoteTest('registers as public client successfully', async () => {
       const mcpJamRegistration = {
         client_name: 'MCPJam',
         redirect_uris: ['http://localhost:6274/oauth/callback/debug'],
@@ -51,13 +54,13 @@ describe('All OAuth Clients Compatibility', () => {
       }
     });
 
-    test('completes OAuth flow with localhost redirect', async () => {
+    remoteTest('completes OAuth flow with localhost redirect', async () => {
       // Test complete MCP Jam OAuth flow
       // Should work with localhost:6274 redirect URI
       expect(true).toBe(true); // Placeholder
     });
 
-    test('receives JWT tokens with embedded Mittwald credentials', async () => {
+    remoteTest('receives JWT tokens with embedded Mittwald credentials', async () => {
       // Test JWT token structure for MCP Jam
       // Should contain mittwald_access_token in custom claims
       expect(true).toBe(true); // Placeholder
@@ -65,7 +68,7 @@ describe('All OAuth Clients Compatibility', () => {
   });
 
   describe('Claude.ai (Confidential Client)', () => {
-    test('registers as confidential client successfully', async () => {
+    remoteTest('registers as confidential client successfully', async () => {
       const claudeRegistration = {
         client_name: 'Claude',
         redirect_uris: ['https://claude.ai/api/mcp/auth_callback'],
@@ -97,19 +100,19 @@ describe('All OAuth Clients Compatibility', () => {
       }
     });
 
-    test('supports all requested scopes without artificial limits', async () => {
+    remoteTest('supports all requested scopes without artificial limits', async () => {
       // Test that Claude.ai can request all 41 Mittwald scopes + OIDC
       // Should not be limited by maxScopes or filtering
       expect(true).toBe(true); // Placeholder
     });
 
-    test('completes OAuth flow with HTTPS redirect', async () => {
+    remoteTest('completes OAuth flow with HTTPS redirect', async () => {
       // Test complete Claude.ai OAuth flow
       // Should work with https://claude.ai/api/mcp/auth_callback
       expect(true).toBe(true); // Placeholder
     });
 
-    test('uses client_secret_post for token exchange', async () => {
+    remoteTest('uses client_secret_post for token exchange', async () => {
       // Test confidential client authentication
       // Should authenticate with client secret in POST body
       expect(true).toBe(true); // Placeholder
@@ -117,37 +120,37 @@ describe('All OAuth Clients Compatibility', () => {
   });
 
   describe('ChatGPT (Pre-registered Client)', () => {
-    test('works with pre-registered client ID', async () => {
+    remoteTest('works with pre-registered client ID', async () => {
       // Test ChatGPT's static client ID approach
       // Should work without DCR if client already registered
       expect(true).toBe(true); // Placeholder
     });
 
-    test('uses public client authentication', async () => {
+    remoteTest('uses public client authentication', async () => {
       // Test ChatGPT's authentication method
       // Should use token_endpoint_auth_method: none
       expect(true).toBe(true); // Placeholder
     });
 
-    test('completes OAuth flow with ChatGPT redirect URI', async () => {
+    remoteTest('completes OAuth flow with ChatGPT redirect URI', async () => {
       // Test ChatGPT-specific redirect URI handling
       expect(true).toBe(true); // Placeholder
     });
   });
 
   describe('Cross-Client Compatibility', () => {
-    test('all clients can coexist without conflicts', async () => {
+    remoteTest('all clients can coexist without conflicts', async () => {
       // Test that multiple client registrations don't interfere
       expect(true).toBe(true); // Placeholder
     });
 
-    test('all clients receive proper JWT structure', async () => {
+    remoteTest('all clients receive proper JWT structure', async () => {
       // Test consistent JWT format across all client types
       // All should get mittwald_access_token in custom claims
       expect(true).toBe(true); // Placeholder
     });
 
-    test('consent screens work for all client types', async () => {
+    remoteTest('consent screens work for all client types', async () => {
       // Test consent screen rendering for different clients
       // Should show appropriate scopes for each client
       expect(true).toBe(true); // Placeholder
@@ -155,22 +158,22 @@ describe('All OAuth Clients Compatibility', () => {
   });
 
   describe('Standards Compliance', () => {
-    test('OpenID Certified compliance maintained', async () => {
+    remoteTest('OpenID Certified compliance maintained', async () => {
       // Test that oidc-provider certification is not broken
       expect(true).toBe(true); // Placeholder
     });
 
-    test('OAuth 2.1 PKCE enforcement', async () => {
+    remoteTest('OAuth 2.1 PKCE enforcement', async () => {
       // Test PKCE requirement for all clients
       expect(true).toBe(true); // Placeholder
     });
 
-    test('RFC7591 DCR compliance', async () => {
+    remoteTest('RFC7591 DCR compliance', async () => {
       // Test Dynamic Client Registration standards compliance
       expect(true).toBe(true); // Placeholder
     });
 
-    test('MCP Authorization Specification compliance', async () => {
+    remoteTest('MCP Authorization Specification compliance', async () => {
       // Test MCP 2025-03-26 authorization spec compliance
       expect(true).toBe(true); // Placeholder
     });

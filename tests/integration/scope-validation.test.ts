@@ -12,6 +12,9 @@ import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } fr
 
 const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
 
+const remoteTest: typeof test = (name, handler, options) =>
+  test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
+
 describe('Centralized Scope Configuration', () => {
   let claudeClient: any;
 
@@ -46,7 +49,7 @@ describe('Centralized Scope Configuration', () => {
     context.setTimeout(SUITE_TIMEOUT);
   });
   describe('Single Source of Truth Validation', () => {
-    test('MCP server and OAuth server advertise identical Mittwald scopes', async () => {
+    remoteTest('MCP server and OAuth server advertise identical Mittwald scopes', async () => {
       // Test scope configuration consistency
       const mcpMetadata = await safeRequest(
         () => axios.get(`${MCP_SERVER}/.well-known/oauth-protected-resource`),
@@ -76,7 +79,7 @@ describe('Centralized Scope Configuration', () => {
       }
     });
 
-    test('OAuth server supports OIDC scopes for Claude.ai compatibility', async () => {
+    remoteTest('OAuth server supports OIDC scopes for Claude.ai compatibility', async () => {
       const response = await safeRequest(
         () => axios.get(`${OAUTH_SERVER}/.well-known/oauth-authorization-server`),
         'Skipping OIDC scope test (OAuth host unavailable)'
@@ -89,7 +92,7 @@ describe('Centralized Scope Configuration', () => {
       }
     });
 
-    test('All Mittwald API scopes are supported', async () => {
+    remoteTest('All Mittwald API scopes are supported', async () => {
       const response = await safeRequest(
         () => axios.get(`${OAUTH_SERVER}/.well-known/oauth-authorization-server`),
         'Skipping Mittwald scope listing test (OAuth host unavailable)'
@@ -111,7 +114,7 @@ describe('Centralized Scope Configuration', () => {
   });
 
   describe('No Artificial Scope Limitations', () => {
-    test('Client can register with all 41 Mittwald scopes', async () => {
+    remoteTest('Client can register with all 41 Mittwald scopes', async () => {
       const allMittwaldScopes = SUPPORTED_SCOPES.filter((scope) => !['openid', 'offline_access'].includes(scope));
 
       const registrationRequest = {
@@ -139,7 +142,7 @@ describe('Centralized Scope Configuration', () => {
       }
     });
 
-    test('Authorization request accepts all valid scopes without filtering', async () => {
+    remoteTest('Authorization request accepts all valid scopes without filtering', async () => {
       // Test that authorization requests don't get artificially filtered
       const requestedScopes = ['openid', 'app:read', 'app:write', 'user:read', 'customer:read', 'project:read', 'database:read', 'domain:read'];
       const authParams = new URLSearchParams({
@@ -167,13 +170,13 @@ describe('Centralized Scope Configuration', () => {
   });
 
   describe('Scope Configuration Consistency', () => {
-    test('No hardcoded scopes in codebase', async () => {
+    remoteTest('No hardcoded scopes in codebase', async () => {
       // This test verifies that all scopes come from centralized configuration
       // Would check that getSupportedScopes() is used everywhere
       expect(true).toBe(true); // Placeholder - requires code analysis
     });
 
-    test('Default scopes are subset of supported scopes', async () => {
+    remoteTest('Default scopes are subset of supported scopes', async () => {
       const metadata = await safeRequest(
         () => axios.get(`${OAUTH_SERVER}/.well-known/oauth-authorization-server`),
         'Skipping default scope validation (OAuth host unavailable)'

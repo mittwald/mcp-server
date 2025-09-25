@@ -12,6 +12,9 @@ import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } fr
 
 const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
 
+const remoteTest: typeof test = (name, handler, options) =>
+  test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
+
 describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
   let claudeClient: any;
 
@@ -20,7 +23,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
   });
 
   describe('Complete 38-Step Workflow', () => {
-    test('Phase 1-2: Discovery and Registration (Steps 1-9)', async () => {
+    remoteTest('Phase 1-2: Discovery and Registration (Steps 1-9)', async () => {
       const mcp401Response = await safeRequest(
         () => axios.get(`${MCP_SERVER}/mcp`, { validateStatus: () => true }),
         'Skipping discovery test (MCP host unavailable)'
@@ -81,7 +84,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       claudeClient = regResponse.data;
     });
 
-    test('Phase 3: Authorization Request (Steps 10-12)', async () => {
+    remoteTest('Phase 3: Authorization Request (Steps 10-12)', async () => {
       // Step 10: Authorization request with all Claude.ai parameters
       if (!claudeClient?.client_id) {
         console.warn('Skipping authorization request test (client unavailable)');
@@ -115,7 +118,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       }
     });
 
-    test('Phase 4: Mittwald Authentication Simulation (Steps 13-16)', async () => {
+    remoteTest('Phase 4: Mittwald Authentication Simulation (Steps 13-16)', async () => {
       // This test would simulate:
       // Step 13: GET /interaction/:uid (login prompt)
       // Step 14: Redirect to Mittwald OAuth
@@ -126,7 +129,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       expect(true).toBe(true); // Placeholder - requires Mittwald mock
     });
 
-    test('Phase 5: Token Exchange and User Session (Steps 17-21)', async () => {
+    remoteTest('Phase 5: Token Exchange and User Session (Steps 17-21)', async () => {
       // This test would simulate:
       // Step 17-18: Mittwald token exchange
       // Step 19: User account storage
@@ -136,7 +139,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       expect(true).toBe(true); // Placeholder - requires full flow setup
     });
 
-    test('Phase 6: Consent Flow (Steps 22-25)', async () => {
+    remoteTest('Phase 6: Consent Flow (Steps 22-25)', async () => {
       // This test would verify:
       // Step 22: GET /interaction/:uid (consent prompt)
       // Step 23: HTML consent screen with all scopes
@@ -146,7 +149,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       expect(true).toBe(true); // Placeholder - requires consent simulation
     });
 
-    test('Phase 7: Token Exchange (Steps 26-29)', async () => {
+    remoteTest('Phase 7: Token Exchange (Steps 26-29)', async () => {
       // This test would verify:
       // Step 26: Redirect with authorization code
       // Step 27: POST /token (oidc-provider endpoint)
@@ -156,7 +159,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       expect(true).toBe(true); // Placeholder - requires full OAuth completion
     });
 
-    test('Phase 8: MCP Tool Execution (Steps 30-36)', async () => {
+    remoteTest('Phase 8: MCP Tool Execution (Steps 30-36)', async () => {
       // This test would verify:
       // Step 30: MCP request with Bearer JWT
       // Step 31: JWT validation and token extraction
@@ -169,7 +172,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
   });
 
   describe('Error Scenarios', () => {
-    test('handles invalid client registration', async () => {
+    remoteTest('handles invalid client registration', async () => {
       const invalidRegistration = {
         client_name: 'Invalid Client',
         redirect_uris: ['http://invalid-uri'],
@@ -186,7 +189,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       expect(response.status).toBeGreaterThanOrEqual(400);
     });
 
-    test('handles authorization request with unsupported scopes', async () => {
+    remoteTest('handles authorization request with unsupported scopes', async () => {
       const authParams = new URLSearchParams({
         response_type: 'code',
         client_id: claudeClient?.client_id || 'test-client',
@@ -207,7 +210,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       }
     });
 
-    test('handles missing required authorization parameters', async () => {
+    remoteTest('handles missing required authorization parameters', async () => {
       const invalidAuthParams = new URLSearchParams({
         response_type: 'code'
         // Missing client_id, redirect_uri, etc.
