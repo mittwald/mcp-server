@@ -23,13 +23,11 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "build": "tsc && tsc-alias && chmod +x build/index.js && chmod +x build/oauth-server-standalone.js && echo \"export * from './config.js';\nexport * from './oauth.js';\nexport * from './mcp.js';\nexport * from './auth-store.js';\nexport * from './types.js';\" > build/server/index.js",
+    "build": "tsc && tsc-alias && chmod +x build/index.js && echo \"export * from './config.js';\nexport * from './oauth.js';\nexport * from './mcp.js';\nexport * from './auth-store.js';\nexport * from './types.js';\" > build/server/index.js",
     "watch": "tsc --watch",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "docker": "docker-compose build && docker-compose up -d",
-    "oauth:start": "tsx src/oauth-server-standalone.ts",
-    "oauth:dev": "tsx --watch src/oauth-server-standalone.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
