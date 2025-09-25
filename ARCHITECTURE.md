@@ -17,7 +17,21 @@ The Mittwald MCP deployment now operates as an OAuth 2.1 proxy. External MCP cli
 | **oidc-provider (packages/oauth-server)** | Acts as OAuth AS for MCP clients. Handles DCR, builds Mittwald authorization requests, exchanges Mittwald codes, issues JWTs containing Mittwald tokens. |
 | **Mittwald OAuth** | Authoritative IdP. Provides login UI and consent, enforces scopes, and supplies access/refresh tokens. |
 | **MCP Server** | Validates JWTs from oidc-provider, extracts Mittwald tokens, and invokes the `mw` CLI with `--token`. Stateless aside from JWKS cache. |
+| **Redis (session/state cache)** | Shared, low-latency store for MCP session records and PKCE/OAuth state; accessed by the MCP server and OAuth helper utilities. |
+| **SQLite (oauth-server persistence)** | File-backed database (`better-sqlite3`) used by oidc-provider to persist tokens, grants, registrations, and confidential client secrets across restarts. |
 | **MCP Clients** | Claude, ChatGPT, MCP Inspector etc. Register dynamically, follow OAuth 2.1 + PKCE, and use the JWTs to call our MCP server. |
+
+## Stateful Services
+
+### Redis session cache (MCP runtime)
+- **Where**: Node SDK wrapper in `src/utils/redis-client.ts` encapsulates a singleton `ioredis` client. The MCP handler persists Mittwald access/refresh tokens and per-user context through `sessionManager` (`src/server/session-manager.ts`), while `src/middleware/session-auth.ts` reads the same keys to auth incoming HTTP requests.
+- **When**: Entries are written whenever a session is created or refreshed (e.g., JWT handshake in `src/server/mcp.ts`), and read on every MCP request or during PKCE round-trips managed by `src/auth/oauth-state-manager.ts`. TTLs ensure data ages out automatically.
+- **Why**: MCP workers must share short-lived state (tokens, context, OAuth `state` values) without coupling to a single process. Redis gives sub-millisecond access with expirations so horizontal scaling stays stateless outside this cache.
+
+### SQLite persistence (oidc-provider)
+- **Where**: The oauth-server package selects the SQLite adapter (`packages/oauth-server/src/config/adapters.ts`) which stores rows in `/app/jwks/oauth-sessions.db` via `better-sqlite3`. Client secrets reuse the same file in `packages/oauth-server/src/services/client-secrets.ts`.
+- **When**: oidc-provider writes to SQLite during dynamic client registration, authorization code issuance, refresh token grants, grant revocation, and confidential-client secret lifecycle. Reads happen on every token introspection and grant lookup.
+- **Why**: The OAuth authority needs durable storage that survives Fly restarts and supports open registration. SQLite provides persistence without introducing another external service, aligning with the deployment mount already used for JWKS.
 
 ## OAuth Flow (High Level)
 

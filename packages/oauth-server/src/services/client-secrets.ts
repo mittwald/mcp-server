@@ -5,9 +5,29 @@
  * for confidential clients (like Claude.ai) using client_secret_post authentication.
  */
 
-import Database from 'better-sqlite3';
+import { createRequire } from 'module';
 import { nanoid } from 'nanoid';
 import { logger } from './logger.js';
+
+type BetterSqlite3Module = typeof import('better-sqlite3');
+type BetterSqlite3Instance = InstanceType<BetterSqlite3Module>;
+
+let cachedSQLiteModule: BetterSqlite3Module | null = null;
+
+function loadSQLiteModule(): BetterSqlite3Module {
+  if (cachedSQLiteModule) {
+    return cachedSQLiteModule;
+  }
+
+  try {
+    const require = createRequire(import.meta.url);
+    cachedSQLiteModule = require('better-sqlite3');
+    return cachedSQLiteModule;
+  } catch (error) {
+    logger.error({ error: error instanceof Error ? error.message : String(error) }, 'Failed to load better-sqlite3 module for client secrets');
+    throw new Error('better-sqlite3 is required to manage confidential client secrets. Install better-sqlite3 or disable confidential clients.');
+  }
+}
 
 export interface ClientSecret {
   clientId: string;
@@ -17,11 +37,12 @@ export interface ClientSecret {
 }
 
 export class ClientSecretStore {
-  private db: Database.Database;
+  private db: BetterSqlite3Instance;
 
   constructor() {
     // Use the same database as OAuth sessions
     const dbPath = '/app/jwks/oauth-sessions.db';
+    const Database = loadSQLiteModule();
     this.db = new Database(dbPath);
     this.setupSchema();
     logger.info({ dbPath }, 'Client secret store initialized');
