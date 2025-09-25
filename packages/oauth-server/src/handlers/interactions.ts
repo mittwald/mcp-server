@@ -158,46 +158,47 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
 
       if (consentPromptRequested && sessionAccountId) {
         const account = userAccountStore.get(sessionAccountId);
-        const scopeString = interactionState?.mittwaldScope
-          || account?.mittwaldScope
-          || interactionState?.requestedScope
-          || extractScopeString(details.params?.scope);
 
-        const scopeSource = interactionState?.mittwaldScope
-          ? 'mittwald'
-          : account?.mittwaldScope
+        if (account) {
+          const scopeString = interactionState?.mittwaldScope
+            || account.mittwaldScope
+            || interactionState?.requestedScope
+            || extractScopeString(details.params?.scope);
+
+          const scopeSource = interactionState?.mittwaldScope
             ? 'mittwald'
-            : interactionState?.scopeSource
-              ?? account?.scopeSource
-              ?? 'request';
+            : account.mittwaldScope
+              ? 'mittwald'
+              : interactionState?.scopeSource
+                ?? account.scopeSource
+                ?? 'request';
 
-        const grantedScopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
+          const grantedScopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
 
-        logger.info('INTERACTION: Auto-granting consent based on Mittwald authorization', {
-          uid: details.uid,
-          clientId,
-          accountId: sessionAccountId.substring(0, 16) + '...',
-          scopeSource,
-          scopeString,
-          grantedScopesCount: grantedScopes.length,
-        });
+          logger.info('INTERACTION: Auto-granting consent based on Mittwald authorization', {
+            uid: details.uid,
+            clientId,
+            accountId: sessionAccountId.substring(0, 16) + '...',
+            scopeSource,
+            scopeString,
+            grantedScopesCount: grantedScopes.length,
+          });
 
-        await (provider as any).interactionFinished(ctx.req, ctx.res, {
-          consent: {
-            grantedScopes,
-            rejectedScopes: []
+          await (provider as any).interactionFinished(ctx.req, ctx.res, {
+            consent: {
+              grantedScopes,
+              rejectedScopes: []
+            }
+          }, { mergeWithLastSubmission: true });
+
+          ctx.respond = false;
+          if (interactionState) {
+            mittwaldInteractionState.delete(details.uid);
           }
-        }, { mergeWithLastSubmission: true });
-
-        ctx.respond = false;
-        if (interactionState) {
-          mittwaldInteractionState.delete(details.uid);
+          return;
         }
-        return;
-      }
 
-      if (consentPromptRequested && !sessionAccountId) {
-        logger.info('INTERACTION: Consent requested without Mittwald session, redirecting to Mittwald login', {
+        logger.info('INTERACTION: Consent requested but Mittwald account missing, redirecting to Mittwald login', {
           uid: details.uid,
           clientId,
           prompt,
