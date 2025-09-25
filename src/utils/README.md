@@ -1,9 +1,9 @@
 # Utils Directory
 
 This directory contains utility functions and helpers that provide reusable functionality across the application. These utilities handle common tasks like validation, data transformation, logging, and protocol compliance.
-
+ 
 ## Overview
-
+ 
 Utilities are the "helpers" of the MCP server:
 - Helper functions for common tasks
 - Data transformation and formatting
