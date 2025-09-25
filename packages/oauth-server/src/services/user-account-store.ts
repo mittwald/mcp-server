@@ -1,4 +1,5 @@
 import { logger } from './logger.js';
+import type { ScopeResolutionSource } from './mittwald-metadata.js';
 
 export interface UserAccount {
   accountId: string;
@@ -9,6 +10,9 @@ export interface UserAccount {
   subject?: string;
   email?: string;
   name?: string;
+  mittwaldScope?: string;
+  scopeSource?: ScopeResolutionSource;
+  requestedScope?: string;
 }
 
 /**
@@ -32,6 +36,8 @@ export class UserAccountStore {
       expiresAt: account.expiresAt ? new Date(account.expiresAt).toISOString() : 'never',
       subject: account.subject,
       hasEmail: !!account.email,
+      mittwaldScope: account.mittwaldScope,
+      scopeSource: account.scopeSource,
     });
 
     // Set up automatic cleanup if expiration time provided
@@ -69,6 +75,7 @@ export class UserAccountStore {
         hasAccessToken: !!account.mittwaldAccessToken,
         ageMinutes: (Date.now() - account.createdAt) / (1000 * 60),
         subject: account.subject,
+        mittwaldScope: account.mittwaldScope,
       });
 
       return account;

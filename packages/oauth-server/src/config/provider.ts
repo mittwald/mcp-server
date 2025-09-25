@@ -3,8 +3,8 @@ import { createAdapter } from './adapters.js';
 import { logger } from '../services/logger.js';
 import { JWKSManager } from '../services/jwks-keystore.js';
 import { nanoid } from 'nanoid';
-import { getDefaultScopeString, getSupportedScopes } from './oauth-scopes.js';
 import { userAccountStore } from '../services/user-account-store.js';
+import { extractScopeString } from '../services/mittwald-metadata.js';
 
 export interface ProviderConfig {
   issuer: string;
@@ -90,7 +90,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
         enabled: true,
         // Validate requested resource and define resource server info
         // Accept the MCP resource URL and map scopes/audience accordingly.
-        async getResourceServerInfo(_ctx: any, resourceIndicator: string, _client: any) {
+        async getResourceServerInfo(ctx: any, resourceIndicator: string, _client: any) {
           try {
             const allowed = process.env.ALLOWED_RESOURCE || 'https://mittwald-mcp-fly2.fly.dev/mcp';
             const u = new URL(resourceIndicator);
@@ -100,11 +100,15 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
               await throwInvalidTarget();
             }
             // Return resource server definition
-            return {
-              scope: getDefaultScopeString(),
+            const scopeString = extractScopeString(ctx?.oidc?.params?.scope);
+            const info: any = {
               audience: resourceIndicator,
               accessTokenFormat: 'jwt',
-            } as any;
+            };
+            if (scopeString) {
+              info.scope = scopeString;
+            }
+            return info;
           } catch {
             await throwInvalidTarget();
           }
@@ -135,10 +139,6 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       openid: ['sub'],
       // No profile/email claims since Mittwald doesn't provide them
     },
-    
-    // Scopes (Mittwald official client configuration + openid for OIDC clients)
-    // Scopes: Use centralized configuration (single source of truth)
-    scopes: new Set(getSupportedScopes()),
     
     // Subject types
     subjectTypes: ['public'],
@@ -283,6 +283,8 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
           hasAccessToken: !!account.mittwaldAccessToken,
           hasRefreshToken: !!account.mittwaldRefreshToken,
           subject: account.subject,
+          mittwaldScope: account.mittwaldScope,
+          scopeSource: account.scopeSource,
         });
 
         return {
@@ -302,6 +304,9 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
               mittwald_access_token: account.mittwaldAccessToken,
               mittwald_refresh_token: account.mittwaldRefreshToken,
               mittwald_issued_at: account.createdAt,
+              mittwald_scope: account.mittwaldScope,
+              mittwald_scope_source: account.scopeSource,
+              mittwald_requested_scope: account.requestedScope,
             };
           },
         };
@@ -338,9 +343,21 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
           accountId: ctx.oidc.session?.accountId || ctx.oidc.params?.sub
         });
 
-        // Add all requested scopes to the grant
-        if (ctx.oidc.params?.scope) {
-          const scopes = ctx.oidc.params.scope.split(' ');
+        let scopeString = extractScopeString(ctx.oidc.params?.scope);
+        const accountId = ctx.oidc.session?.accountId;
+
+        if (accountId) {
+          const account = userAccountStore.get(accountId);
+          if (account?.mittwaldScope) {
+            scopeString = account.mittwaldScope;
+            logger.info('LOAD EXISTING GRANT: Using Mittwald-issued scope string', {
+              accountId: accountId.substring(0, 16) + '...'
+            });
+          }
+        }
+
+        if (scopeString) {
+          const scopes = scopeString.split(' ').filter(Boolean);
           for (const scope of scopes) {
             if (scope === 'openid' || scope === 'profile') {
               grant.addOIDCScope(scope);
@@ -356,7 +373,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
         logger.info('LOAD EXISTING GRANT: Grant created successfully', {
           grantId: grant.jti,
           clientId: ctx.oidc.client.clientId,
-          scopeCount: ctx.oidc.params?.scope?.split(' ').length || 0
+          scopeCount: scopeString ? scopeString.split(' ').filter(Boolean).length : 0
         });
 
         return grant;

@@ -37,7 +37,7 @@
 ## 8. Implementation Checklist for Mittwald MCP
 1. **Toggle features**: Ensure `features.registration.enabled` and, if update/delete is required, `features.registrationManagement.enabled` are set in `packages/oauth-server/src/config/provider.ts` to expose `/reg`.
 2. **Access control**: Decide between open registration, shared-secret registration, or adapter-backed IATs; mint IATs with the desired `policies` for regulated onboarding.
-3. **Policies & metadata**: Define policy functions to enforce Mittwald scope defaults, redirect host whitelists, or naming conventions; extend metadata via `extraClientMetadata` if Mittwald-specific fields are needed.
+3. **Policies & metadata**: Avoid scope-filtering policies—the proxy now defers scope validation to Mittwald. Use policies only for redirect URI hygiene or naming conventions; extend metadata via `extraClientMetadata` if Mittwald-specific fields are needed.
 4. **Storage**: Confirm the SQLite adapter persists the `Client`, `InitialAccessToken`, and `RegistrationAccessToken` models so that registrations survive restarts.
 5. **Monitoring**: Subscribe to `registration_*` events to emit audit logs or telemetry.
 6. **Discovery surface**: After enabling DCR, verify the `.well-known/openid-configuration` advertises the registration endpoint expected by OAuth clients.
@@ -48,4 +48,3 @@
 - node-oidc-provider documentation – `docs/README.md#featuresregistration`, `#featuresregistrationmanagement`, `#extraclientmetadata`, `#routes`
 - node-oidc-provider source – `lib/actions/registration.js`, `lib/models/initial_access_token.js`, `lib/models/registration_access_token.js`, `lib/helpers/add_client.js`, `lib/actions/discovery.js`
 - node-oidc-provider events – `docs/events.md`
-

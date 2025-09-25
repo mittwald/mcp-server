@@ -39,7 +39,23 @@ if $needs_app; then
   fi
 fi
 
-fly logs --json "$@" | jq -r '
+stream=false
+remaining=()
+for arg in "$@"; do
+  if [[ "$arg" == "--stream" ]]; then
+    stream=true
+    continue
+  fi
+  remaining+=("$arg")
+done
+
+cmd=(fly logs --json)
+if ! $stream; then
+  cmd+=(--no-tail)
+fi
+cmd+=("${remaining[@]}")
+
+"${cmd[@]}" | jq -r '
   .message as $msg
   | ($msg | fromjson? ) as $pino
   | select($pino != null)

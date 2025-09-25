@@ -11,7 +11,7 @@ import { registerInteractionRoutes } from './handlers/interactions.js';
 // REMOVED: Custom token routes - using oidc-provider's standard /token endpoint
 import { getClientSecretStore } from './services/client-secrets.js';
 // REMOVED: Custom scope validation middleware - using oidc-provider's built-in validation
-import { getSupportedScopes, getDefaultScopeString } from './config/oauth-scopes.js';
+import { extractScopeString, recordScopeResolution } from './services/mittwald-metadata.js';
 
 function compileRedirectPattern(pattern: string): RegExp {
   const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -384,45 +384,31 @@ async function createServer() {
           // Claude.ai requires client_secret_post (confidential client)
           props.token_endpoint_auth_method = 'client_secret_post';
           props.application_type = 'web';
-          // CRITICAL: Set allowed scopes for client validation (include openid for Claude)
-          props.scope = 'openid ' + getDefaultScopeString();
-          logger.info('Configured Claude.ai client for confidential authentication with openid scope');
+          logger.info('Configured Claude.ai client for confidential authentication', { clientName: props.client_name });
         } else if (isChatGPTClient) {
           // ChatGPT uses public client
           props.token_endpoint_auth_method = 'none';
           props.application_type = 'native';
-          // CRITICAL: Set allowed scopes for client validation
-          props.scope = getDefaultScopeString();
           logger.info('Configured ChatGPT client for public authentication');
         } else {
           // Default to public client (MCP Jam, etc.)
           props.token_endpoint_auth_method = props.token_endpoint_auth_method || 'none';
           props.application_type = 'native';
-          // CRITICAL: Set allowed scopes for client validation
-          if (!props.scope) {
-            props.scope = getDefaultScopeString();
-          }
         }
 
-        // CRITICAL: Filter out unsupported scopes from client registration
-        // This prevents oidc-provider DCR validation errors for scopes like 'profile'
-        if (props.scope) {
-          const supportedScopes = new Set([...getSupportedScopes(), 'openid']); // Include openid for compatibility
-          const requestedScopes = props.scope.split(' ').filter(Boolean);
-          const filteredScopes = requestedScopes.filter((scope: string) => supportedScopes.has(scope));
-
-          if (filteredScopes.length !== requestedScopes.length) {
-            const removedScopes = requestedScopes.filter((scope: string) => !supportedScopes.has(scope));
-            logger.info('Filtered unsupported scopes from client registration', {
-              clientName: props.client_name,
-              originalScopes: requestedScopes,
-              filteredScopes,
-              removedScopes
-            });
-          }
-
-          // Use filtered scopes or fallback to defaults
-          props.scope = filteredScopes.length > 0 ? filteredScopes.join(' ') : getDefaultScopeString();
+        const normalizedScope = extractScopeString(props.scope);
+        if (normalizedScope) {
+          props.scope = normalizedScope;
+          recordScopeResolution({ scope: normalizedScope, source: 'client' }, {
+            phase: 'dcr-normalize',
+            clientName: props.client_name,
+          });
+        } else if (props.scope) {
+          delete props.scope;
+          recordScopeResolution({ scope: undefined, source: 'none' }, {
+            phase: 'dcr-normalize',
+            clientName: props.client_name,
+          });
         }
 
         ctx.request.body = props;
@@ -509,10 +495,9 @@ async function createServer() {
   app.use(router.routes());
   app.use(router.allowedMethods());
 
-  logger.info('Pure oidc-provider scope validation enabled', {
-    scopeCount: getSupportedScopes().length,
-    approach: 'oidc-provider built-in validation',
-    artificialLimits: 'removed'
+  logger.info('Mittwald-managed scope passthrough enabled', {
+    mode: 'mittwald-authoritative',
+    fallbackScopeConfigured: !!process.env.MITTWALD_SCOPE_FALLBACK,
   });
 
   // Mount OIDC provider app using koa-mount to preserve correct Koa ctx/res semantics

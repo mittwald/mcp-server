@@ -41,24 +41,23 @@ describe('oidc-provider Configuration', () => {
   });
 
   describe('Scope Configuration', () => {
-    test('uses centralized getSupportedScopes()', () => {
-      // Test that oidc-provider scopes come from oauth-scopes.js
-      // Should use: scopes: new Set(getSupportedScopes())
+    test('defers scope validation to Mittwald', () => {
+      // Test that provider relies on Mittwald for scope validation
       expect(true).toBe(true); // Placeholder
     });
 
-    test('includes all 41 Mittwald scopes', () => {
-      // Test complete Mittwald scope support
+    test('allows clients to request arbitrary scopes', () => {
+      // Test passthrough scope handling
       expect(true).toBe(true); // Placeholder
     });
 
-    test('includes OIDC scopes for Claude.ai', () => {
-      // Test openid and profile scope support
+    test('propagates Mittwald-issued scope strings', () => {
+      // Test that issued JWTs include the scope returned by Mittwald
       expect(true).toBe(true); // Placeholder
     });
 
-    test('no hardcoded scope arrays', () => {
-      // Test that no scopes are hardcoded in provider configuration
+    test('avoids hardcoded scope lists', () => {
+      // Test that no server-side scope arrays exist
       expect(true).toBe(true); // Placeholder
     });
   });

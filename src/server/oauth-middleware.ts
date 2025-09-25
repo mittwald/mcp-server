@@ -2,7 +2,6 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import type { AuthenticatedRequest } from "./auth-types.js";
 import { CONFIG } from "./config.js";
-import { getSupportedScopes } from "../config/oauth-scopes.js";
 import { logger } from "../utils/logger.js";
 
 /**
@@ -101,11 +100,7 @@ function sendOAuthChallenge(res: express.Response): void {
     message: 'OAuth authentication required',
     oauth: {
       authorization_url: `${asBase}/auth`,
-      token_url: `${asBase}/token`,
-      // Do not suggest a static client_id or redirect_uri.
-      // MCP clients (e.g., MCPJam Inspector) should perform Dynamic Client Registration (DCR)
-      // and use their own loopback/custom redirect URIs.
-      scopes: getSupportedScopes()
+      token_url: `${asBase}/token`
     },
     endpoints: {
       authorize: `${asBase}/auth`,

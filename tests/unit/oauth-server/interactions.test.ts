@@ -139,9 +139,8 @@ describe('Consent Confirmation Handler', () => {
       expect(true).toBe(true); // Placeholder
     });
 
-    test('uses centralized scope configuration', () => {
-      // Test scope granting uses getDefaultScopeString()
-      // Should not hardcode scope lists
+    test('auto-grants scopes returned by Mittwald', () => {
+      // Test consent granting relies on Mittwald-issued scope strings
       expect(true).toBe(true); // Placeholder
     });
   });
