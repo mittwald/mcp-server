@@ -10,7 +10,7 @@ Utilities are the "helpers" of the MCP server:
 - Validation and error handling
 - Cross-cutting concerns 
 
-## File Structure
+## File Structure 
 
 ### Core Utilities
 
