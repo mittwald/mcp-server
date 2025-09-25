@@ -4,8 +4,13 @@ import { logger } from '../utils/logger.js';
 export interface UserSession {
   sessionId: string;
   userId: string;
-  oauthAccessToken: string;
-  refreshToken?: string;
+  mittwaldAccessToken: string;
+  mittwaldRefreshToken?: string;
+  oauthToken?: string;
+  scope?: string;
+  scopeSource?: string;
+  requestedScope?: string;
+  scopes?: string[];
   expiresAt: Date;
   currentContext: {
     projectId?: string;
@@ -14,7 +19,6 @@ export interface UserSession {
   };
   accessibleProjects?: string[];
   lastAccessed: Date;
-  scopes?: string[];
 }
 
 export interface SessionCreateOptions {
@@ -42,6 +46,16 @@ export class SessionManager {
     options: SessionCreateOptions = {}
   ): Promise<string> {
     const sessionId = this.generateSessionId();
+    await this.upsertSession(sessionId, userId, sessionData, options);
+    return sessionId;
+  }
+
+  async upsertSession(
+    sessionId: string,
+    userId: string,
+    sessionData: Omit<UserSession, 'sessionId' | 'userId' | 'lastAccessed'>,
+    options: SessionCreateOptions = {}
+  ): Promise<void> {
     const ttl = options.ttlSeconds || this.DEFAULT_TTL;
 
     const session: UserSession = {
@@ -55,19 +69,15 @@ export class SessionManager {
       const sessionKey = this.getSessionKey(sessionId);
       const userSessionsKey = this.getUserSessionsKey(userId);
 
-      // Store session data
       await redisClient.set(sessionKey, JSON.stringify(session), ttl);
 
-      // Add session to user's session list
       await redisClient.getClient().sadd(userSessionsKey, sessionId);
       await redisClient.expire(userSessionsKey, ttl);
 
-      logger.info(`Session created for user ${userId}: ${sessionId}`);
-      return sessionId;
-
+      logger.info(`Session stored for user ${userId}: ${sessionId}`);
     } catch (error) {
-      logger.error('Failed to create session:', error);
-      throw new Error('Session creation failed');
+      logger.error('Failed to upsert session:', error);
+      throw new Error('Session upsert failed');
     }
   }
 

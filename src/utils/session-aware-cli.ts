@@ -76,7 +76,7 @@ export class SessionAwareCli {
   ): CliExecuteOptions {
     return {
       ...options,
-      token: session.oauthAccessToken,
+      token: session.mittwaldAccessToken,
       env: {
         ...options.env,
         MITTWALD_NONINTERACTIVE: '1',

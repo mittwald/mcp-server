@@ -16,7 +16,9 @@ export class SessionDemo {
     try {
       const mockSessionData: Omit<UserSession, 'sessionId' | 'lastAccessed'> = {
         userId,
-        oauthAccessToken: oauthToken || 'mock-oauth-token',
+        mittwaldAccessToken: oauthToken || 'mock-oauth-token',
+        mittwaldRefreshToken: 'mock-refresh-token',
+        oauthToken: 'mock-jwt',
         refreshToken: 'mock-refresh-token',
         expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000), // 8 hours from now
         currentContext: {},
@@ -153,7 +155,7 @@ export class SessionDemo {
         'temp-user',
         {
           userId: 'temp-user',
-          oauthAccessToken: 'temp-token',
+          mittwaldAccessToken: 'temp-token',
           expiresAt: new Date(Date.now() + 10000), // 10 seconds
           currentContext: { projectId: 'temp-project' }
         },

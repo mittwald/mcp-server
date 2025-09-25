@@ -8,8 +8,10 @@ import { executeCli } from '../../src/utils/cli-wrapper.js';
 import { SessionManager } from '../../src/server/session-manager.js';
 
 const buildSessionData = () => ({
-  oauthAccessToken: 'integration-access-token',
-  refreshToken: 'integration-refresh-token',
+  mittwaldAccessToken: 'integration-access-token',
+  mittwaldRefreshToken: 'integration-refresh-token',
+  oauthToken: 'integration-jwt',
+  scope: 'profile',
   expiresAt: new Date(Date.now() + 60_000),
   currentContext: {},
   accessibleProjects: [],

@@ -51,8 +51,8 @@ export function createSessionAuthMiddleware() {
         return sendOAuthChallenge(res, 'Invalid or expired session');
       }
 
-      if (!session.oauthAccessToken) {
-        logger.debug(`Session exists but no OAuth token found: ${sessionId.substring(0, 8)}...`);
+      if (!session.mittwaldAccessToken) {
+        logger.debug(`Session exists but no Mittwald token found: ${sessionId.substring(0, 8)}...`);
         return sendOAuthChallenge(res, 'No OAuth token in session');
       }
 
@@ -63,10 +63,14 @@ export function createSessionAuthMiddleware() {
       }
 
       // Set user context from session
+      const scopeString = session.scope
+        || (Array.isArray(session.scopes) ? session.scopes.join(' ') : undefined)
+        || 'mittwald-api';
+
       req.user = {
         userId: session.userId,
-        scope: session.scopes?.join(' ') || 'mittwald-api',
-        token: session.oauthAccessToken,
+        scope: scopeString,
+        token: session.mittwaldAccessToken,
         sessionId: sessionId
       };
 

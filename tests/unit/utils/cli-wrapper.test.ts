@@ -18,8 +18,9 @@ const { executeCli } = await import('../../../src/utils/cli-wrapper.js');
 const mockSession = {
   sessionId: 'session-123',
   userId: 'user-1',
-  oauthAccessToken: 'mock-access-token',
-  refreshToken: 'mock-refresh-token',
+  mittwaldAccessToken: 'mock-access-token',
+  mittwaldRefreshToken: 'mock-refresh-token',
+  oauthToken: 'jwt-token',
   expiresAt: new Date(Date.now() + 60_000),
   currentContext: {},
   accessibleProjects: [],

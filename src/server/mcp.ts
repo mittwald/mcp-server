@@ -28,6 +28,7 @@ import { handleListTools, handleToolCall } from "../handlers/tool-handlers.js";
 import { handleListPrompts, handleGetPrompt } from "../handlers/prompt-handlers.js";
 import { handleListResources, handleResourceCall } from "../handlers/resource-handlers.js";
 import { logger } from "../utils/logger.js";
+import { sessionManager } from "./session-manager.js";
 import { rateLimitMiddleware, validateProtocolVersion, requestSizeLimit } from "./middleware.js";
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import type { AuthenticatedRequest } from "./auth-types.js";
@@ -239,6 +240,8 @@ export class MCPHandler implements IMCPHandler {
             hasMittwaldRefresh: !!sessionAuth.refreshToken,
             scope: sessionAuth.scope,
           });
+
+          await this.persistSessionAuth(sessionId, sessionAuth, req.auth);
         } else {
           logger.warn(`🔓 [${sessionId}] Mittwald access token missing in JWT claims; session will be unauthenticated`, {
             clientId: req.auth?.clientId,
@@ -333,6 +336,8 @@ export class MCPHandler implements IMCPHandler {
             await newServer.connect(sessionInfo.transport);
             sessionInfo.server = newServer;
             logger.debug(`✅ [${sessionId}] Server recreated with auth successfully`);
+
+            await this.persistSessionAuth(sessionId, sessionInfo.auth, req.auth);
           } else {
             logger.warn(`⚠️ [${sessionId}] Received JWT without Mittwald access token; keeping session unauthenticated`);
           }
@@ -425,6 +430,45 @@ export class MCPHandler implements IMCPHandler {
     }
     // Create a temporary server if none exist
     return new Server(serverConfig, serverCapabilities);
+  }
+
+  private async persistSessionAuth(sessionId: string, sessionAuth: SessionAuth, authInfo?: AuthInfo): Promise<void> {
+    try {
+      const expiresAt = authInfo?.expiresAt
+        ? new Date(authInfo.expiresAt * 1000)
+        : new Date(Date.now() + 60 * 60 * 1000);
+
+      const scopeSource = typeof authInfo?.extra?.mittwaldScopeSource === 'string'
+        ? authInfo.extra.mittwaldScopeSource
+        : undefined;
+      const requestedScope = typeof authInfo?.extra?.mittwaldRequestedScope === 'string'
+        ? authInfo.extra.mittwaldRequestedScope
+        : undefined;
+
+      const existing = await sessionManager.getSession(sessionId);
+
+      const ttlSeconds = Math.max(
+        60,
+        Math.floor(Math.max(expiresAt.getTime() - Date.now(), 0) / 1000)
+      );
+
+      await sessionManager.upsertSession(sessionId, sessionAuth.username, {
+        mittwaldAccessToken: sessionAuth.accessToken,
+        mittwaldRefreshToken: sessionAuth.refreshToken,
+        oauthToken: sessionAuth.oauthToken,
+        scope: sessionAuth.scope,
+        scopeSource,
+        requestedScope,
+        scopes: sessionAuth.scope ? sessionAuth.scope.split(/\s+/).filter(Boolean) : existing?.scopes,
+        expiresAt,
+        currentContext: existing?.currentContext || {},
+        accessibleProjects: existing?.accessibleProjects,
+      }, { ttlSeconds });
+    } catch (error) {
+      logger.error(`💾 [${sessionId}] Failed to persist session auth`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 
   /**

@@ -41,7 +41,7 @@ export async function executeCli(
     if (sessionId) {
       try {
         const session = await sessionManager.getSession(sessionId);
-        effectiveToken = session?.oauthAccessToken;
+        effectiveToken = session?.mittwaldAccessToken;
       } catch {
         // ignore; will proceed without token
       }

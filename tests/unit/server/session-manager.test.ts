@@ -4,8 +4,10 @@ import { resetRedisMock } from '../../helpers/redis-mock.ts';
 import { SessionManager } from '../../../src/server/session-manager.js';
 
 const baseSessionData = () => ({
-  oauthAccessToken: 'access-token',
-  refreshToken: 'refresh-token',
+  mittwaldAccessToken: 'access-token',
+  mittwaldRefreshToken: 'refresh-token',
+  oauthToken: 'jwt-token',
+  scope: 'profile',
   expiresAt: new Date(Date.now() + 60_000),
   currentContext: {},
   accessibleProjects: [],
@@ -29,7 +31,7 @@ describe('SessionManager', () => {
 
     expect(session).not.toBeNull();
     expect(session?.userId).toBe('user-1');
-    expect(session?.oauthAccessToken).toBe('access-token');
+    expect(session?.mittwaldAccessToken).toBe('access-token');
   });
 
   it('returns null for expired sessions and removes them', async () => {
@@ -78,5 +80,17 @@ describe('SessionManager', () => {
 
     const sessions = await manager.getUserSessions('user-1');
     expect(sessions).toHaveLength(0);
+  });
+
+  it('upserts a session with a predetermined ID', async () => {
+    const manager = new SessionManager();
+    const customId = 'custom-session-id';
+
+    await manager.upsertSession('custom-session-id', 'user-2', baseSessionData());
+
+    const stored = await manager.getSession(customId);
+    expect(stored).not.toBeNull();
+    expect(stored?.sessionId).toBe(customId);
+    expect(stored?.mittwaldAccessToken).toBe('access-token');
   });
 });
