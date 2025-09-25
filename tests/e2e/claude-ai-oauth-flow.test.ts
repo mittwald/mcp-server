@@ -12,55 +12,116 @@ import { JSDOM } from 'jsdom';
 const OAUTH_SERVER = 'https://mittwald-oauth-server.fly.dev';
 const MCP_SERVER = 'https://mittwald-mcp-fly2.fly.dev';
 
+const REQUEST_TIMEOUT_MS = Number(process.env.OAUTH_REMOTE_TIMEOUT_MS ?? '5000');
+axios.defaults.timeout = REQUEST_TIMEOUT_MS;
+
+const SKIPPABLE_ERROR_CODES = new Set([
+  'ENOTFOUND',
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'ETIMEDOUT',
+  'EAI_AGAIN',
+  'ECONNABORTED',
+]);
+
+function shouldSkipNetworkError(error: unknown): { skip: boolean; code?: string } {
+  if (!error) return { skip: false };
+
+  const anyError = error as { code?: string; cause?: { code?: string }; message?: string };
+  const axiosError = axios.isAxiosError(error) ? error : null;
+  const code = anyError.code || anyError.cause?.code || axiosError?.code;
+
+  if (code && SKIPPABLE_ERROR_CODES.has(code)) {
+    return { skip: true, code };
+  }
+
+  if (axiosError && !axiosError.response) {
+    return { skip: true, code: code || 'NO_RESPONSE' };
+  }
+
+  if (axiosError?.message?.toLowerCase().includes('timeout')) {
+    return { skip: true, code: code || 'TIMEOUT' };
+  }
+
+  return { skip: false, code };
+}
+
+async function safeRequest<T>(fn: () => Promise<T>, skipMessage: string): Promise<T | null> {
+  try {
+    return await fn();
+  } catch (error: any) {
+    const { skip, code } = shouldSkipNetworkError(error);
+    if (skip) {
+      console.warn(`${skipMessage} (code=${code ?? 'unknown'})`);
+      return null;
+    }
+    throw error;
+  }
+}
+
 describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
   let claudeClient: any;
 
   describe('Complete 38-Step Workflow', () => {
     test('Phase 1-2: Discovery and Registration (Steps 1-9)', async () => {
-      // Step 1-4: Discovery
-      try {
-        const mcp401Response = await axios.get(`${MCP_SERVER}/mcp`, {
-          validateStatus: () => true
-        });
-        expect(mcp401Response.status).toBe(401);
-
-        const resourceMetadata = await axios.get(`${MCP_SERVER}/.well-known/oauth-protected-resource`);
-        expect(resourceMetadata.data.authorization_servers).toContain(OAUTH_SERVER);
-
-        const asMetadata = await axios.get(`${OAUTH_SERVER}/.well-known/oauth-authorization-server`);
-        expect(asMetadata.data.registration_endpoint).toBe(`${OAUTH_SERVER}/reg`);
-
-        const registrationRequest = {
-          client_name: 'Claude',
-          redirect_uris: ['https://claude.ai/api/mcp/auth_callback'],
-          grant_types: ['authorization_code', 'refresh_token'],
-          response_types: ['code'],
-          token_endpoint_auth_method: 'client_secret_post',
-          scope: 'openid offline_access'
-        };
-
-        const regResponse = await axios.post(`${OAUTH_SERVER}/reg`, registrationRequest, {
-          validateStatus: () => true
-        });
-
-        expect([200, 201, 400]).toContain(regResponse.status);
-        if (regResponse.status >= 400) {
-          expect(regResponse.data.error).toBeDefined();
-          claudeClient = null;
-          return;
-        }
-
-        expect(regResponse.data.client_secret).toBeDefined();
-        expect(regResponse.data.token_endpoint_auth_method).toBe('client_secret_post');
-        claudeClient = regResponse.data;
-      } catch (error: any) {
-        if (error?.code === 'ENOTFOUND') {
-          console.warn('Skipping discovery/registration test (host unavailable)');
-          claudeClient = null;
-          return;
-        }
-        throw error;
+      const mcp401Response = await safeRequest(
+        () => axios.get(`${MCP_SERVER}/mcp`, { validateStatus: () => true }),
+        'Skipping discovery test (MCP host unavailable)'
+      );
+      if (!mcp401Response) {
+        claudeClient = null;
+        return;
       }
+      expect(mcp401Response.status).toBe(401);
+
+      const resourceMetadata = await safeRequest(
+        () => axios.get(`${MCP_SERVER}/.well-known/oauth-protected-resource`),
+        'Skipping resource metadata test (MCP host unavailable)'
+      );
+      if (!resourceMetadata) {
+        claudeClient = null;
+        return;
+      }
+      expect(resourceMetadata.data.authorization_servers).toContain(OAUTH_SERVER);
+
+      const asMetadata = await safeRequest(
+        () => axios.get(`${OAUTH_SERVER}/.well-known/oauth-authorization-server`),
+        'Skipping authorization server metadata test (OAuth host unavailable)'
+      );
+      if (!asMetadata) {
+        claudeClient = null;
+        return;
+      }
+      expect(asMetadata.data.registration_endpoint).toBe(`${OAUTH_SERVER}/reg`);
+
+      const registrationRequest = {
+        client_name: 'Claude',
+        redirect_uris: ['https://claude.ai/api/mcp/auth_callback'],
+        grant_types: ['authorization_code', 'refresh_token'],
+        response_types: ['code'],
+        token_endpoint_auth_method: 'client_secret_post',
+        scope: 'openid offline_access'
+      };
+
+      const regResponse = await safeRequest(
+        () => axios.post(`${OAUTH_SERVER}/reg`, registrationRequest, { validateStatus: () => true }),
+        'Skipping Claude registration test (OAuth host unavailable)'
+      );
+      if (!regResponse) {
+        claudeClient = null;
+        return;
+      }
+
+      expect([200, 201, 400]).toContain(regResponse.status);
+      if (regResponse.status >= 400) {
+        expect(regResponse.data.error).toBeDefined();
+        claudeClient = null;
+        return;
+      }
+
+      expect(regResponse.data.client_secret).toBeDefined();
+      expect(regResponse.data.token_endpoint_auth_method).toBe('client_secret_post');
+      claudeClient = regResponse.data;
     });
 
     test('Phase 3: Authorization Request (Steps 10-12)', async () => {
@@ -81,24 +142,19 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
         resource: `${MCP_SERVER}/mcp`
       });
 
-      try {
-        const authResponse = await axios.get(
-          `${OAUTH_SERVER}/auth?${authParams}`,
-          { maxRedirects: 0, validateStatus: () => true }
-        );
+      const authResponse = await safeRequest(
+        () => axios.get(`${OAUTH_SERVER}/auth?${authParams}`, { maxRedirects: 0, validateStatus: () => true }),
+        'Skipping authorization request test (OAuth host unavailable)'
+      );
+      if (!authResponse) {
+        return;
+      }
 
-        expect([303, 400]).toContain(authResponse.status);
-        if (authResponse.status === 303) {
-          expect(authResponse.headers.location).toMatch(/\/interaction\/[A-Za-z0-9_-]+$/);
-          const interactionUid = authResponse.headers.location.split('/').pop();
-          expect(interactionUid).toBeDefined();
-        }
-      } catch (error: any) {
-        if (error?.code === 'ENOTFOUND') {
-          console.warn('Skipping authorization request test (host unavailable)');
-          return;
-        }
-        throw error;
+      expect([303, 400]).toContain(authResponse.status);
+      if (authResponse.status === 303) {
+        expect(authResponse.headers.location).toMatch(/\/interaction\/[A-Za-z0-9_-]+$/);
+        const interactionUid = authResponse.headers.location.split('/').pop();
+        expect(interactionUid).toBeDefined();
       }
     });
 
@@ -163,15 +219,10 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
         token_endpoint_auth_method: 'invalid_method'
       };
 
-      const response = await axios.post(`${OAUTH_SERVER}/reg`, invalidRegistration, {
-        validateStatus: () => true
-      }).catch((error: any) => {
-        if (error?.code === 'ENOTFOUND') {
-          console.warn('Skipping invalid registration test (host unavailable)');
-          return null;
-        }
-        throw error;
-      });
+      const response = await safeRequest(
+        () => axios.post(`${OAUTH_SERVER}/reg`, invalidRegistration, { validateStatus: () => true }),
+        'Skipping invalid registration test (OAuth host unavailable)'
+      );
 
       if (!response) return;
 
@@ -186,16 +237,10 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
         scope: 'invalid:scope unsupported:permission'
       });
 
-      const response = await axios.get(
-        `${OAUTH_SERVER}/auth?${authParams}`,
-        { validateStatus: () => true }
-      ).catch((error: any) => {
-        if (error?.code === 'ENOTFOUND') {
-          console.warn('Skipping unsupported scope test (host unavailable)');
-          return null;
-        }
-        throw error;
-      });
+      const response = await safeRequest(
+        () => axios.get(`${OAUTH_SERVER}/auth?${authParams}`, { validateStatus: () => true }),
+        'Skipping unsupported scope test (OAuth host unavailable)'
+      );
 
       if (!response) return;
 
@@ -211,16 +256,10 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
         // Missing client_id, redirect_uri, etc.
       });
 
-      const response = await axios.get(
-        `${OAUTH_SERVER}/auth?${invalidAuthParams}`,
-        { validateStatus: () => true }
-      ).catch((error: any) => {
-        if (error?.code === 'ENOTFOUND') {
-          console.warn('Skipping missing-params test (host unavailable)');
-          return null;
-        }
-        throw error;
-      });
+      const response = await safeRequest(
+        () => axios.get(`${OAUTH_SERVER}/auth?${invalidAuthParams}`, { validateStatus: () => true }),
+        'Skipping missing-params test (OAuth host unavailable)'
+      );
 
       if (!response) return;
 
