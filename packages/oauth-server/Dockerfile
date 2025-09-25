@@ -14,6 +14,9 @@ RUN npm ci
 # Copy application code
 COPY packages/oauth-server/. .
 
+# Copy shared Mittwald scope catalogue
+COPY config ./config
+
 # Create JWKS and SQLite storage directory
 # This will be mounted as a persistent volume in Fly.io
 RUN mkdir -p /app/jwks
