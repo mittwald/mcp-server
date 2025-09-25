@@ -4,7 +4,7 @@ import { logger } from '../services/logger.js';
 import { JWKSManager } from '../services/jwks-keystore.js';
 import { nanoid } from 'nanoid';
 import { getDefaultScopeString, getSupportedScopes } from './oauth-scopes.js';
-import { mittwaldTokenStore } from '../services/mittwald-token-store.js';
+import { userAccountStore } from '../services/user-account-store.js';
 
 export interface ProviderConfig {
   issuer: string;
@@ -60,7 +60,12 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       // Enable Dynamic Client Registration (open, no Initial Access Token required)
       registration: {
         enabled: true,
-        initialAccessToken: false,
+        initialAccessToken: config.initialAccessToken || false,
+        issueRegistrationAccessToken: true,
+      },
+      registrationManagement: {
+        enabled: true,
+        rotateRegistrationAccessToken: true,
       },
       
       // Enable token revocation
@@ -257,31 +262,27 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
       });
 
       try {
-        // Retrieve Mittwald tokens for this user from our storage
-        const mittwaldTokens = mittwaldTokenStore.get(sub);
+        const account = userAccountStore.get(sub);
 
-        if (!mittwaldTokens) {
-          logger.warn('FIND ACCOUNT: No Mittwald tokens found for user', {
+        if (!account) {
+          logger.warn('FIND ACCOUNT: No Mittwald account found', {
             sub: sub.substring(0, 16) + '...',
-            storeSize: mittwaldTokenStore.size()
+            storeSize: userAccountStore.size(),
           });
 
-          // Return minimal account for oidc-provider (allows flow to continue)
           return {
             accountId: sub,
-            async claims(use: string, scope: string) {
-              return {
-                sub,
-                // No Mittwald tokens available
-              };
-            }
+            async claims() {
+              return { sub };
+            },
           };
         }
 
-        logger.info('FIND ACCOUNT: Mittwald tokens found, returning account with claims', {
+        logger.info('FIND ACCOUNT: Mittwald account resolved', {
           sub: sub.substring(0, 16) + '...',
-          hasAccessToken: !!mittwaldTokens.accessToken,
-          hasRefreshToken: !!mittwaldTokens.refreshToken
+          hasAccessToken: !!account.mittwaldAccessToken,
+          hasRefreshToken: !!account.mittwaldRefreshToken,
+          subject: account.subject,
         });
 
         return {
@@ -291,34 +292,30 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
               sub: sub.substring(0, 16) + '...',
               use,
               scope,
-              hasAccessToken: !!mittwaldTokens.accessToken
+              hasAccessToken: !!account.mittwaldAccessToken,
             });
 
             return {
               sub,
-              // Standard OIDC claims
-              email: mittwaldTokens.email,
-              name: mittwaldTokens.name,
-              // Custom claims for Mittwald tokens (embedded in JWT)
-              mittwald_access_token: mittwaldTokens.accessToken,
-              mittwald_refresh_token: mittwaldTokens.refreshToken,
-              mittwald_issued_at: mittwaldTokens.issuedAt
+              email: account.email,
+              name: account.name,
+              mittwald_access_token: account.mittwaldAccessToken,
+              mittwald_refresh_token: account.mittwaldRefreshToken,
+              mittwald_issued_at: account.createdAt,
             };
-          }
+          },
         };
-
       } catch (error) {
         logger.error('FIND ACCOUNT: Error retrieving user account', {
           sub: sub.substring(0, 16) + '...',
-          error: error instanceof Error ? error.message : String(error)
+          error: error instanceof Error ? error.message : String(error),
         });
 
-        // Return minimal account to prevent OAuth flow failure
         return {
           accountId: sub,
-          async claims(use: string, scope: string) {
+          async claims() {
             return { sub };
-          }
+          },
         };
       }
     },

@@ -1249,6 +1249,7 @@ fly deploy
 - [ ] **Phase 2**: MCP Server Refactoring  
 - [ ] **Phase 3**: Integration Testing
 - [ ] **Phase 4**: Production Deployment
+- [ ] **TODO (post-bring-up)**: Revisit redirect validation in `packages/oauth-server/src/server.ts`. Replace the temporary `ALLOW_ALL` handling with the finalized allowlist of supported MCP client callback patterns and update `ALLOWED_REDIRECT_URI_PATTERNS` guidance accordingly.
 
 ### Quality Assurance
 - [ ] **Unit test coverage > 90%** for both services

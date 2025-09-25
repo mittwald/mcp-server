@@ -6,6 +6,9 @@ export interface UserAccount {
   mittwaldRefreshToken?: string;
   createdAt: number;
   expiresAt?: number;
+  subject?: string;
+  email?: string;
+  name?: string;
 }
 
 /**
@@ -26,7 +29,9 @@ export class UserAccountStore {
       accountId: accountId.substring(0, 16) + '...',
       hasAccessToken: !!account.mittwaldAccessToken,
       hasRefreshToken: !!account.mittwaldRefreshToken,
-      expiresAt: account.expiresAt ? new Date(account.expiresAt).toISOString() : 'never'
+      expiresAt: account.expiresAt ? new Date(account.expiresAt).toISOString() : 'never',
+      subject: account.subject,
+      hasEmail: !!account.email,
     });
 
     // Set up automatic cleanup if expiration time provided
@@ -62,7 +67,8 @@ export class UserAccountStore {
       logger.info('USER ACCOUNT: Retrieved Mittwald tokens', {
         accountId: accountId.substring(0, 16) + '...',
         hasAccessToken: !!account.mittwaldAccessToken,
-        ageMinutes: (Date.now() - account.createdAt) / (1000 * 60)
+        ageMinutes: (Date.now() - account.createdAt) / (1000 * 60),
+        subject: account.subject,
       });
 
       return account;

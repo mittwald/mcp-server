@@ -13,18 +13,52 @@ import { getClientSecretStore } from './services/client-secrets.js';
 // REMOVED: Custom scope validation middleware - using oidc-provider's built-in validation
 import { getSupportedScopes, getDefaultScopeString } from './config/oauth-scopes.js';
 
+function compileRedirectPattern(pattern: string): RegExp {
+  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regexSource = '^' + escaped.replace(/\\\*/g, '.*') + '$';
+  return new RegExp(regexSource);
+}
+
+function buildRedirectValidator(patterns: string[]): (uri: string) => boolean {
+  const trimmed = patterns.map((pattern) => pattern.trim()).filter(Boolean);
+
+  if (trimmed.some((pattern) => pattern === '*' || pattern.toLowerCase() === 'allow_all')) {
+    logger.warn('Redirect URI validation disabled (TODO: tighten ALLOWED_REDIRECT_URI_PATTERNS for production)');
+    return () => true;
+  }
+
+  const regexes = trimmed.map(compileRedirectPattern);
+
+  return (uri: string) => {
+    try {
+      // Throws if malformed, which will be treated as invalid
+      new URL(uri);
+    } catch {
+      return false;
+    }
+
+    return regexes.some((regex) => regex.test(uri));
+  };
+}
+
 // Environment configuration
+const rawInitialAccessToken = process.env.INITIAL_ACCESS_TOKEN || '';
+
+if (!rawInitialAccessToken) {
+  logger.warn('INITIAL_ACCESS_TOKEN not set – dynamic client registration is open to all callers');
+}
+
 const config: ProviderConfig = {
   issuer: process.env.ISSUER || 'http://localhost:3000',
   port: parseInt(process.env.PORT || '3000'),
   storageAdapter: (process.env.STORAGE_ADAPTER as 'sqlite' | 'memory') || 'sqlite',
-  initialAccessToken: process.env.INITIAL_ACCESS_TOKEN || nanoid(32),
+  initialAccessToken: rawInitialAccessToken,
   jwksKeystorePath: process.env.JWKS_KEYSTORE_PATH || '/app/jwks/jwks.json',
   cookiesSecure: process.env.COOKIES_SECURE === 'true',
   // Dev-friendly default: allow https, localhost loopback, and curated custom schemes
   allowedRedirectUriPatterns: (
     process.env.ALLOWED_REDIRECT_URI_PATTERNS ||
-    'https://*/*,http://localhost:*/*,http://127.0.0.1:*/*,http://[::1]:*/*,claude://*,vscode://*,vscodium://*,cursor://*,windsurf://*,zed://*,jetbrains://*,lmstudio://*,postman://*,warp://*,amazonq://*'
+    'ALLOW_ALL'
   ).split(','),
   tokenTtls: {
     accessToken: parseInt(process.env.TOKEN_TTL_ACCESS_TOKEN || '3600'),
@@ -65,6 +99,8 @@ async function createServer() {
     logger.warn('Using in-memory storage adapter (not recommended for production)');
   }
 
+  const redirectValidator = buildRedirectValidator(config.allowedRedirectUriPatterns);
+
   // Create OIDC provider with cookie keys
   const providerConfig = await createProviderConfiguration({
     ...config,
@@ -93,33 +129,79 @@ async function createServer() {
       'grant.revoked',
       'token.issued',
       'token.error',
-      // DCR-related (supported in some versions)
+      // DCR lifecycle visibility
       'registration_create.success',
       'registration_create.error',
+      'registration_read.error',
+      'registration_update.success',
+      'registration_update.error',
+      'registration_delete.success',
+      'registration_delete.error',
     ];
+    const sanitizeClientMetadata = (meta: Record<string, any> | undefined) => {
+      if (!meta) return undefined;
+      const {
+        client_secret: _clientSecret,
+        registration_access_token: _registrationAccessToken,
+        client_secret_expires_at: _clientSecretExpiresAt,
+        ...rest
+      } = meta;
+      return rest;
+    };
+
+    const sanitizeBody = (body: any) => {
+      if (!body || typeof body !== 'object') return body;
+      try {
+        const clone = JSON.parse(JSON.stringify(body));
+        if (clone.client_secret) delete clone.client_secret;
+        if (clone.registration_access_token) delete clone.registration_access_token;
+        return clone;
+      } catch {
+        return undefined;
+      }
+    };
+
     for (const ev of events) {
       providerAny.on(ev, (ctx: any, errOrData?: any) => {
         const clientId = ctx?.oidc?.client?.clientId || ctx?.client?.clientId;
         const requestId = (ctx && ctx.state && ctx.state.requestId) || 'n/a';
         const path = ctx?.req?.url || ctx?.request?.url;
-        const base = { event: ev, path, clientId, requestId } as any;
-        // On *error events, the second arg is the Error
-        if (String(ev).includes('error') && errOrData) {
+        const base = {
+          event: ev,
+          outcome: String(ev).includes('error') ? 'error' : 'success',
+          path,
+          clientId,
+          requestId,
+          ip: ctx?.ip,
+          userAgent: ctx?.headers?.['user-agent'],
+        } as any;
+
+        if (base.outcome === 'error' && errOrData) {
           base.error = errOrData?.message || String(errOrData);
           base.error_description = errOrData?.error_description;
           base.code = errOrData?.code;
-          // Try to include request body shape (sanitized)
-          try {
-            base.body = ctx?.request?.body ? JSON.parse(JSON.stringify(ctx.request.body)) : undefined;
-          } catch (serializationError) {
-            logger.debug('Failed to serialize request body for logging', {
-              error: serializationError instanceof Error ? serializationError.message : String(serializationError),
-            });
-          }
+          const sanitizedBody = sanitizeBody(ctx?.request?.body);
+          if (sanitizedBody) base.request = sanitizedBody;
           logger.error(base, `OIDC ${ev} client=${clientId || 'n/a'} path=${path || ''} id=${requestId}`);
-        } else {
-          logger.info(base, `OIDC ${ev} client=${clientId || 'n/a'} path=${path || ''} id=${requestId}`);
+          return;
         }
+
+        // Success payload enrichment
+        if (errOrData?.metadata) {
+          base.metadata = sanitizeClientMetadata(errOrData.metadata());
+          base.redirectUris = errOrData.redirectUris;
+          base.tokenEndpointAuthMethod = errOrData.tokenEndpointAuthMethod;
+          base.grantTypes = errOrData.grantTypes;
+        } else if (ctx?.oidc?.client) {
+          // Some success events (e.g. delete) provide client on ctx
+          const meta = ctx.oidc.client.metadata();
+          base.metadata = sanitizeClientMetadata(meta);
+          base.redirectUris = ctx.oidc.client.redirectUris;
+          base.tokenEndpointAuthMethod = ctx.oidc.client.tokenEndpointAuthMethod;
+          base.grantTypes = ctx.oidc.client.grantTypes;
+        }
+
+        logger.info(base, `OIDC ${ev} client=${clientId || 'n/a'} path=${path || ''} id=${requestId}`);
       });
     }
   } catch (e) {
@@ -221,6 +303,53 @@ async function createServer() {
       if (ctx.is('application/json') && ctx.request.body) {
         const props = ctx.request.body as any;
 
+        if (Array.isArray(props.redirect_uris)) {
+          const trimmedUris = props.redirect_uris.map((uri: string) => (typeof uri === 'string' ? uri.trim() : '')).filter(Boolean);
+          const invalidUris = trimmedUris.filter((uri: string) => !redirectValidator(uri));
+
+          if (invalidUris.length > 0) {
+            logger.warn('DCR validation failed: redirect URIs outside allowed patterns', {
+              invalidUris,
+              allowedPatterns: config.allowedRedirectUriPatterns,
+            });
+            ctx.status = 400;
+            ctx.body = {
+              error: 'invalid_redirect_uri',
+              error_description: 'Redirect URI not permitted by server policy',
+            };
+            return;
+          }
+
+          if (trimmedUris.length === 0) {
+            ctx.status = 400;
+            ctx.body = {
+              error: 'invalid_redirect_uri',
+              error_description: 'No redirect URIs provided',
+            };
+            return;
+          }
+
+          props.redirect_uris = trimmedUris;
+        } else if (typeof props.redirect_uris === 'string') {
+          const uri = props.redirect_uris.trim();
+          if (!uri || !redirectValidator(uri)) {
+            ctx.status = 400;
+            ctx.body = {
+              error: 'invalid_redirect_uri',
+              error_description: 'Redirect URI not permitted by server policy',
+            };
+            return;
+          }
+          props.redirect_uris = [uri];
+        } else {
+          ctx.status = 400;
+          ctx.body = {
+            error: 'invalid_redirect_uri',
+            error_description: 'Redirect URIs are required',
+          };
+          return;
+        }
+
         // Detect client type and apply appropriate configuration
         const isClaudeClient = props.client_name === 'Claude' ||
           props.redirect_uris?.some((uri: string) => uri.includes('claude.ai') || uri.includes('claude.com'));
@@ -229,7 +358,6 @@ async function createServer() {
 
         // Configure grant types
         if (Array.isArray(props.grant_types)) {
-          const hasAuthCode = props.grant_types.includes('authorization_code');
           const hasRefresh = props.grant_types.includes('refresh_token');
           props.grant_types = ['authorization_code'];
           if (hasRefresh || props.scope?.includes('offline_access')) {

@@ -2,10 +2,10 @@ import type Provider from 'oidc-provider';
 import Router from '@koa/router';
 import { userAccountStore } from '../services/user-account-store.js';
 import { getMittwaldClient, createPkce } from '../services/mittwald-oauth-client.js';
-import { mittwaldTokenStore } from '../services/mittwald-token-store.js';
 import { nanoid } from 'nanoid';
 import { logger } from '../services/logger.js';
 import { getDefaultScopeString } from '../config/oauth-scopes.js';
+import { createHash } from 'crypto';
 
 // Simple callback state store (replaces complex interaction store)
 interface CallbackState {
@@ -23,6 +23,86 @@ interface AuthResult {
 
 const mittwaldCallbackState = new Map<string, CallbackState>();
 const mittwaldAuthResults = new Map<string, AuthResult>();
+
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderConsentHtml(details: any, scopes: string[]): string {
+  const clientName = details?.params?.client_name || details?.client?.clientName || 'OAuth Client';
+  const clientId = details?.params?.client_id || details?.client?.clientId || 'unknown-client';
+  const scopeList = scopes.map((scope) => `<li><code>${escapeHtml(scope)}</code></li>`).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Authorize ${escapeHtml(clientName)}</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 2rem; color: #1d1c1d; }
+      h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+      ul { list-style: disc; margin-left: 1.5rem; }
+      .actions { margin-top: 1.5rem; display: flex; gap: 1rem; }
+      button { font-size: 1rem; padding: 0.6rem 1.6rem; border-radius: 6px; border: none; cursor: pointer; }
+      .approve { background-color: #0b8bff; color: #fff; }
+      .deny { background-color: transparent; color: #b00020; border: 1px solid #b00020; }
+      code { background: #f2f2f2; padding: 0.15rem 0.35rem; border-radius: 4px; }
+      .client-meta { color: #555; margin-bottom: 1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Authorize ${escapeHtml(clientName)}</h1>
+    <p class="client-meta">Client ID: <code>${escapeHtml(clientId)}</code></p>
+    <p>The application is requesting access to the following Mittwald permissions:</p>
+    <ul>${scopeList}</ul>
+    <p>You can allow or deny this access. You may revoke it later from within Mittwald Studio.</p>
+    <div class="actions">
+      <form method="post" action="/interaction/${escapeHtml(details.uid)}/confirm">
+        <button type="submit" class="approve">Allow Access</button>
+      </form>
+      <form method="post" action="/interaction/${escapeHtml(details.uid)}/abort">
+        <button type="submit" class="deny">Deny</button>
+      </form>
+    </div>
+  </body>
+</html>`;
+}
+
+function deriveMittwaldAccountId(tokenSet: any, fallbackKey: string): {
+  accountId: string;
+  subject?: string;
+  email?: string;
+  name?: string;
+} {
+  try {
+    if (typeof tokenSet?.claims === 'function') {
+      const claims = tokenSet.claims();
+      const subject = claims?.sub || claims?.user_id || claims?.email;
+      if (subject) {
+        return {
+          accountId: `mittwald:${subject}`,
+          subject,
+          email: claims?.email,
+          name: claims?.name || claims?.preferred_username,
+        };
+      }
+    }
+  } catch (error) {
+    logger.warn('MITTWALD ACCOUNT: Failed to extract claims from tokenSet', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  const hashed = createHash('sha256').update(fallbackKey).digest('hex').slice(0, 40);
+  return {
+    accountId: `mittwald:anon:${hashed}`,
+  };
+}
 
 // Clean up expired callback states every 5 minutes
 setInterval(() => {
@@ -79,15 +159,14 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         // Clean up auth state
         mittwaldAuthResults.delete(`auth_${details.uid}`);
 
-        // User is authenticated and consented via Mittwald - complete OAuth flow directly
-        // NO consent screen needed - Mittwald already handled consent
-        logger.info('INTERACTION: User authenticated via Mittwald - completing OAuth flow directly', {
+        // Complete the authentication step and allow oidc-provider to continue to consent handling
+        logger.info('INTERACTION: User authenticated via Mittwald - completing oauth login stage', {
           uid: details.uid,
           accountId: authResult.accountId.substring(0, 16) + '...',
           method: 'interactionFinished-login-only'
         });
 
-        // Complete the interaction - user authenticated and consented at Mittwald
+        // Complete the interaction login stage - consent will trigger a follow-up prompt
         await (provider as any).interactionFinished(ctx.req, ctx.res, {
           login: {
             accountId: authResult.accountId,
@@ -103,23 +182,17 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
 
       // Check if this is a consent prompt (user already authenticated)
       if (prompt === 'consent' || details.prompt?.details?.missingOIDCScope || details.prompt?.details?.missingOAuth2Scope) {
-        logger.info('INTERACTION: Consent prompt detected - auto-approving (Mittwald handled consent)', {
+        const requestedScopes = (details.params?.scope as string | undefined)?.split(' ').filter(Boolean) || getDefaultScopeString().split(' ');
+
+        logger.info('INTERACTION: Consent prompt detected - rendering approval screen', {
           uid: details.uid,
           prompt,
           clientId,
-          requestedScopes: details.params?.scope
+          requestedScopes,
         });
 
-        // Auto-approve consent since Mittwald already handled it
-        // User provided consent at Mittwald, just complete the OAuth flow
-        await (provider as any).interactionFinished(ctx.req, ctx.res, {
-          consent: {
-            grantedScopes: details.params?.scope?.split(' ') || getDefaultScopeString().split(' '),
-            rejectedScopes: []
-          }
-        }, { mergeWithLastSubmission: true });
-
-        ctx.respond = false;
+        ctx.type = 'text/html; charset=utf-8';
+        ctx.body = renderConsentHtml(details, requestedScopes);
         return;
       }
 
@@ -244,8 +317,33 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         state: callbackState.state
       });
 
-      // Generate stable account ID from access token
-      const accountId = `mittwald:${tokenSet.access_token.substring(0, 16)}`;
+      let subjectInfo: { accountId: string; subject?: string; email?: string; name?: string } | undefined;
+
+      if ((client as any).issuer?.userinfo_endpoint) {
+        try {
+          const userinfo = await (client as any).userinfo(tokenSet);
+          const subject = userinfo?.sub || userinfo?.user_id || userinfo?.email;
+          if (subject) {
+            subjectInfo = {
+              accountId: `mittwald:${subject}`,
+              subject,
+              email: userinfo?.email,
+              name: userinfo?.name || userinfo?.preferred_username,
+            };
+          }
+        } catch (error) {
+          logger.warn('MITTWALD CALLBACK: Failed to fetch userinfo, falling back to token claims', {
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
+
+      if (!subjectInfo) {
+        const fallbackKey = tokenSet.refresh_token || tokenSet.access_token || `${callbackState.interactionUid}:${state}`;
+        subjectInfo = deriveMittwaldAccountId(tokenSet, fallbackKey);
+      }
+
+      const accountId = subjectInfo.accountId;
 
       logger.info('MITTWALD CALLBACK: Storing user account', {
         accountId: accountId.substring(0, 16) + '...',
@@ -260,18 +358,10 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         mittwaldAccessToken: tokenSet.access_token,
         mittwaldRefreshToken: tokenSet.refresh_token,
         createdAt: Date.now(),
-        expiresAt: tokenSet.expires_in ? Date.now() + (tokenSet.expires_in * 1000) : undefined
-      });
-
-      // Also store in mittwaldTokenStore for backward compatibility
-      mittwaldTokenStore.store(accountId, {
-        accessToken: tokenSet.access_token,
-        refreshToken: tokenSet.refresh_token,
-        accountId,
-        email: undefined,
-        name: undefined,
-        issuedAt: Date.now(),
-        expiresAt: tokenSet.expires_in ? Date.now() + (tokenSet.expires_in * 1000) : undefined
+        expiresAt: tokenSet.expires_in ? Date.now() + (tokenSet.expires_in * 1000) : undefined,
+        subject: subjectInfo.subject,
+        email: subjectInfo.email,
+        name: subjectInfo.name,
       });
 
       logger.info('MITTWALD CALLBACK: Redirecting back to interaction (research-based pattern)', {
