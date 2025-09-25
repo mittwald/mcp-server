@@ -12,21 +12,20 @@ import { logger } from './logger.js';
 type BetterSqlite3Module = typeof import('better-sqlite3');
 type BetterSqlite3Instance = InstanceType<BetterSqlite3Module>;
 
-let cachedSQLiteModule: BetterSqlite3Module | null = null;
+let cachedSQLiteModule: BetterSqlite3Module | undefined;
 
 function loadSQLiteModule(): BetterSqlite3Module {
-  if (cachedSQLiteModule) {
-    return cachedSQLiteModule;
+  if (!cachedSQLiteModule) {
+    try {
+      const require = createRequire(import.meta.url);
+      cachedSQLiteModule = require('better-sqlite3');
+    } catch (error) {
+      logger.error({ error: error instanceof Error ? error.message : String(error) }, 'Failed to load better-sqlite3 module for client secrets');
+      throw new Error('better-sqlite3 is required to manage confidential client secrets. Install better-sqlite3 or disable confidential clients.');
+    }
   }
 
-  try {
-    const require = createRequire(import.meta.url);
-    cachedSQLiteModule = require('better-sqlite3');
-    return cachedSQLiteModule;
-  } catch (error) {
-    logger.error({ error: error instanceof Error ? error.message : String(error) }, 'Failed to load better-sqlite3 module for client secrets');
-    throw new Error('better-sqlite3 is required to manage confidential client secrets. Install better-sqlite3 or disable confidential clients.');
-  }
+  return cachedSQLiteModule!;
 }
 
 export interface ClientSecret {
@@ -42,8 +41,8 @@ export class ClientSecretStore {
   constructor() {
     // Use the same database as OAuth sessions
     const dbPath = '/app/jwks/oauth-sessions.db';
-    const Database = loadSQLiteModule();
-    this.db = new Database(dbPath);
+    const DatabaseCtor = loadSQLiteModule();
+    this.db = new DatabaseCtor(dbPath);
     this.setupSchema();
     logger.info({ dbPath }, 'Client secret store initialized');
   }

@@ -11,23 +11,22 @@ import { logger } from '../services/logger.js';
 type BetterSqlite3Module = typeof import('better-sqlite3');
 type BetterSqlite3Instance = InstanceType<BetterSqlite3Module>;
 
-let cachedSQLiteModule: BetterSqlite3Module | null = null;
+let cachedSQLiteModule: BetterSqlite3Module | undefined;
 
 function loadSQLiteModule(): BetterSqlite3Module {
-  if (cachedSQLiteModule) {
-    return cachedSQLiteModule;
+  if (!cachedSQLiteModule) {
+    try {
+      const require = createRequire(import.meta.url);
+      cachedSQLiteModule = require('better-sqlite3');
+    } catch (error) {
+      logger.error({ error: error instanceof Error ? error.message : String(error) }, 'Failed to load better-sqlite3 module');
+      throw new Error(
+        'better-sqlite3 is required for the SQLite storage adapter. Install better-sqlite3 or switch STORAGE_ADAPTER=memory.',
+      );
+    }
   }
 
-  try {
-    const require = createRequire(import.meta.url);
-    cachedSQLiteModule = require('better-sqlite3');
-    return cachedSQLiteModule;
-  } catch (error) {
-    logger.error({ error: error instanceof Error ? error.message : String(error) }, 'Failed to load better-sqlite3 module');
-    throw new Error(
-      'better-sqlite3 is required for the SQLite storage adapter. Install better-sqlite3 or switch STORAGE_ADAPTER=memory.',
-    );
-  }
+  return cachedSQLiteModule!;
 }
 
 export interface AdapterPayload {
@@ -44,8 +43,8 @@ export class SQLiteAdapter {
     // Use the same volume as JWKS storage for consistency
     const dbPath = '/app/jwks/oauth-sessions.db';
 
-    const Database = loadSQLiteModule();
-    this.db = new Database(dbPath);
+    const DatabaseCtor = loadSQLiteModule();
+    this.db = new DatabaseCtor(dbPath);
     this.db.pragma('journal_mode = WAL'); // Better concurrency
     this.db.pragma('synchronous = NORMAL'); // Good balance of safety/performance
     this.db.pragma('cache_size = 10000'); // 10MB cache
