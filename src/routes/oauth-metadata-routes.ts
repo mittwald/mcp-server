@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { SUPPORTED_SCOPES, DEFAULT_SCOPE_STRING } from '../config/mittwald-scopes.js';
 import { logger } from '../utils/logger.js';
 
 export class OAuthMetadataRoutes {
@@ -62,6 +63,8 @@ export class OAuthMetadataRoutes {
           'client_secret_post',
           'none'
         ],
+        scopes_supported: SUPPORTED_SCOPES,
+        default_scopes: DEFAULT_SCOPE_STRING.split(' '),
         claims_supported: [
           'sub',
           'iss',
@@ -106,6 +109,8 @@ export class OAuthMetadataRoutes {
           'header',
           'query'
         ],
+        scopes_supported: SUPPORTED_SCOPES,
+        default_scopes: DEFAULT_SCOPE_STRING.split(' '),
         resource_documentation: `${this.baseUrl}/docs`,
         resource_policy_uri: `${this.baseUrl}/policy`,
         resource_tos_uri: `${this.baseUrl}/terms`,

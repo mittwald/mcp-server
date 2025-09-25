@@ -5,6 +5,7 @@ import cors from '@koa/cors';
 import bodyParser from 'koa-bodyparser';
 import Provider from 'oidc-provider';
 import { createProviderConfiguration, type ProviderConfig } from './config/provider.js';
+import { DEFAULT_SCOPE_STRING, SUPPORTED_SCOPES, buildScopeString, validateRequestedScopes } from './config/mittwald-scopes.js';
 import { logger } from './services/logger.js';
 import { nanoid } from 'nanoid';
 import { registerInteractionRoutes } from './handlers/interactions.js';
@@ -398,16 +399,55 @@ async function createServer() {
 
         const normalizedScope = extractScopeString(props.scope);
         if (normalizedScope) {
-          props.scope = normalizedScope;
-          recordScopeResolution({ scope: normalizedScope, source: 'client' }, {
-            phase: 'dcr-normalize',
-            clientName: props.client_name,
-          });
+          const entries = normalizedScope.split(/\s+/).filter(Boolean);
+          const { valid, passthroughOnly, unsupported } = validateRequestedScopes(entries);
+
+          if (unsupported.length) {
+            ctx.status = 400;
+            ctx.body = {
+              error: 'invalid_scope',
+              error_description: `Unsupported scopes requested during registration: ${unsupported.join(', ')}`,
+              supported_scopes: SUPPORTED_SCOPES,
+            };
+            return;
+          }
+
+          const sanitizedForRegistration = buildScopeString([...valid, ...passthroughOnly]);
+
+          if (passthroughOnly.length) {
+            logger.info('DCR: client requested passthrough-only scopes', {
+              clientName: props.client_name,
+              passthroughOnly,
+            });
+          }
+
+          if (sanitizedForRegistration) {
+            props.scope = sanitizedForRegistration;
+            recordScopeResolution({ scope: buildScopeString(valid), source: 'client' }, {
+              phase: 'dcr-normalize',
+              clientName: props.client_name,
+              passthroughOnly: passthroughOnly.length ? passthroughOnly : undefined,
+            });
+          } else {
+            delete props.scope;
+            recordScopeResolution({ scope: undefined, source: 'none' }, {
+              phase: 'dcr-normalize',
+              clientName: props.client_name,
+            });
+          }
         } else if (props.scope) {
           delete props.scope;
           recordScopeResolution({ scope: undefined, source: 'none' }, {
             phase: 'dcr-normalize',
             clientName: props.client_name,
+          });
+        } else {
+          // No scope provided at registration time, fall back to configured defaults
+          props.scope = DEFAULT_SCOPE_STRING;
+          recordScopeResolution({ scope: DEFAULT_SCOPE_STRING, source: 'config' }, {
+            phase: 'dcr-normalize',
+            clientName: props.client_name,
+            inferred: true,
           });
         }
 
@@ -495,8 +535,10 @@ async function createServer() {
   app.use(router.routes());
   app.use(router.allowedMethods());
 
-  logger.info('Mittwald-managed scope passthrough enabled', {
+  logger.info('Mittwald-managed scope configuration loaded', {
     mode: 'mittwald-authoritative',
+    configuredScopeCount: SUPPORTED_SCOPES.length,
+    defaultScopeCount: DEFAULT_SCOPE_STRING.split(' ').filter(Boolean).length,
     fallbackScopeConfigured: !!process.env.MITTWALD_SCOPE_FALLBACK,
   });
 

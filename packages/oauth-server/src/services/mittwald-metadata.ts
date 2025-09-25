@@ -1,7 +1,8 @@
 import { Issuer, type Client } from 'openid-client';
+import { DEFAULT_SCOPE_STRING, SUPPORTED_SCOPES, buildScopeString, filterUpstreamScopes, validateRequestedScopes } from '../config/mittwald-scopes.js';
 import { logger } from './logger.js';
 
-export type ScopeResolutionSource = 'client' | 'discovery' | 'fallback' | 'none' | 'mittwald';
+export type ScopeResolutionSource = 'client' | 'discovery' | 'fallback' | 'config' | 'none' | 'mittwald';
 
 export interface MittwaldMetadata {
   issuer: string;
@@ -46,6 +47,21 @@ function parseSupportedScopes(value: unknown): string[] | undefined {
   return undefined;
 }
 
+function splitScopeEntries(scope: string | undefined | null): string[] {
+  if (!scope) return [];
+  return scope
+    .split(/\s+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function sanitizeUpstreamScope(scope: string | undefined | null): string | undefined {
+  const entries = splitScopeEntries(scope);
+  if (!entries.length) return undefined;
+  const filtered = filterUpstreamScopes(entries);
+  return filtered.length ? buildScopeString(filtered) : undefined;
+}
+
 async function discoverMittwaldMetadata(): Promise<MittwaldMetadata | null> {
   const issuerUrl = process.env.MITTWALD_ISSUER?.trim();
   if (!issuerUrl) return null;
@@ -77,6 +93,15 @@ async function discoverMittwaldMetadata(): Promise<MittwaldMetadata | null> {
       defaultScope: normalizeScopeString(metadata.default_scope),
       source: 'discovery',
     };
+
+    if (!result.scopesSupported?.length) {
+      result.scopesSupported = [...SUPPORTED_SCOPES];
+      logger.info('MITTWALD METADATA: discovery missing scopes_supported; using configured scopes');
+    }
+
+    if (!result.defaultScope) {
+      result.defaultScope = sanitizeUpstreamScope(DEFAULT_SCOPE_STRING);
+    }
 
     logger.info('MITTWALD METADATA: discovered issuer', {
       issuer: result.issuer,
@@ -114,14 +139,11 @@ async function buildManualMetadata(): Promise<MittwaldMetadata> {
     userinfo_endpoint: userinfoUrl,
   });
 
-  const fallbackScopes = parseSupportedScopes(process.env.MITTWALD_SCOPES_SUPPORTED);
-  const fallbackDefaultScope = normalizeScopeString(process.env.MITTWALD_SCOPE_FALLBACK);
-
   logger.info('MITTWALD METADATA: using manual configuration', {
     authorizationEndpoint: authorizationUrl,
     tokenEndpoint: tokenUrl,
     hasUserinfo: !!userinfoUrl,
-    fallbackScopeLength: fallbackDefaultScope?.length ?? 0,
+    configuredScopeCount: SUPPORTED_SCOPES.length,
   });
 
   return {
@@ -129,8 +151,8 @@ async function buildManualMetadata(): Promise<MittwaldMetadata> {
     authorizationEndpoint: authorizationUrl,
     tokenEndpoint: tokenUrl,
     userinfoEndpoint: userinfoUrl,
-    scopesSupported: fallbackScopes,
-    defaultScope: fallbackDefaultScope,
+    scopesSupported: [...SUPPORTED_SCOPES],
+    defaultScope: sanitizeUpstreamScope(DEFAULT_SCOPE_STRING),
     source: 'manual',
   };
 }
@@ -173,17 +195,47 @@ export function resolveAuthorizationScope(
   if (requestedScope) {
     const trimmed = requestedScope.trim();
     if (trimmed) {
-      return { scope: trimmed, source: 'client' };
+      const entries = splitScopeEntries(trimmed);
+      const { valid, passthroughOnly, unsupported } = validateRequestedScopes(entries);
+
+      if (unsupported.length) {
+        logger.warn('MITTWALD SCOPE: dropping unsupported client scopes', {
+          unsupported,
+          requestedScope: trimmed,
+        });
+      }
+
+      if (passthroughOnly.length) {
+        logger.info('MITTWALD SCOPE: client requested passthrough-only scopes; they will not be forwarded upstream', {
+          passthroughOnly,
+          requestedScope: trimmed,
+        });
+      }
+
+      if (valid.length) {
+        return { scope: buildScopeString(valid), source: 'client' };
+      }
     }
   }
 
   if (metadata?.defaultScope) {
-    return { scope: metadata.defaultScope, source: 'discovery' };
+    const sanitized = sanitizeUpstreamScope(metadata.defaultScope);
+    if (sanitized) {
+      return { scope: sanitized, source: 'discovery' };
+    }
   }
 
   const fallback = process.env.MITTWALD_SCOPE_FALLBACK?.trim();
   if (fallback) {
-    return { scope: fallback, source: 'fallback' };
+    const sanitizedFallback = sanitizeUpstreamScope(fallback);
+    if (sanitizedFallback) {
+      return { scope: sanitizedFallback, source: 'fallback' };
+    }
+  }
+
+  const configScope = sanitizeUpstreamScope(DEFAULT_SCOPE_STRING) ?? undefined;
+  if (configScope) {
+    return { scope: configScope, source: 'config' };
   }
 
   return { scope: undefined, source: 'none' };
@@ -198,6 +250,8 @@ export function recordScopeResolution(resolution: ScopeResolution, context: Reco
 
   if (resolution.source === 'fallback') {
     logger.warn('MITTWALD SCOPE: using fallback scope string', logContext);
+  } else if (resolution.source === 'config') {
+    logger.info('MITTWALD SCOPE: using configured default scope string', logContext);
   } else if (resolution.source === 'none') {
     logger.info('MITTWALD SCOPE: allowing Mittwald defaults (no scope parameter)', logContext);
   } else if (resolution.source === 'mittwald') {

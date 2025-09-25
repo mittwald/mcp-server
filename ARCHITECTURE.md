@@ -45,10 +45,20 @@ The Mittwald MCP deployment now operates as an OAuth 2.1 proxy. External MCP cli
 
 ## Scope Management
 
-- **Discovery-first**: At startup `packages/oauth-server` attempts OIDC discovery against `MITTWALD_ISSUER`. If the metadata includes `scopes_supported` or `default_scope`, we cache those values and expose them through `/openid-configuration`.
-- **Passthrough mode**: If discovery fails or the metadata omits scope details, we operate without a local allow-list. DCR requests and authorization prompts retain whatever scope string clients present. Mittwald's token endpoint is authoritative; any invalid scope is rejected during the Mittwald exchange.
-- **Fallback**: Optional `MITTWALD_SCOPE_FALLBACK` allows an operations team to specify a bootstrap scope string for environments where Mittwald is unreachable. Once discovery succeeds, the fallback is ignored.
-- **Token propagation**: The scope string we embed in issued JWTs comes from `tokenSet.scope` returned by Mittwald. Audit logs reference this value rather than a recomputed list.
+- **Central configuration**: Both the OAuth proxy and the MCP server load scope data from `config/mittwald-scopes.json`.
+  The file defines three lists: `supportedScopes` (everything clients may request), `upstreamScopes`
+  (the subset forwarded to Mittwald), and `defaultScopes` (sent upstream when the client omits scopes).
+  Set `MITTWALD_SCOPE_CONFIG_PATH` to point at an environment-specific copy.
+- **Discovery assist**: The OAuth proxy still performs OIDC discovery to validate endpoints and capture
+  Mittwald-provided defaults. When discovery omits scope information we inject the configured lists so the
+  discovery documents remain complete.
+- **Runtime sanitisation**: Client-provided scopes are validated against the configured sets. Compatibility
+  scopes such as `openid`/`offline_access` are preserved for local grants but removed before forwarding the
+  request to Mittwald. Any unsupported scope results in an `invalid_scope` error during registration or
+  authorization.
+- **Token propagation**: Mittwald's returned scope string is stored verbatim and embedded in issued JWTs.
+  The configured default scopes are only used to seed the Mittwald request when neither the client request
+  nor discovery supplies one.
 
 ## Grant Handling
 
@@ -65,7 +75,7 @@ The Mittwald MCP deployment now operates as an OAuth 2.1 proxy. External MCP cli
 
 ### Completed
 - ✅ Document the proxy-first architecture and removal of local scope lists.
-- ✅ Define passthrough behavior and fallback environment variables.
+- ✅ Centralise scope configuration (`config/mittwald-scopes.json`) and surface the lists through discovery and metadata.
 - ✅ Document consent short-circuiting and trust implications.
 
 ### In Progress / Planned Code Changes
@@ -89,4 +99,5 @@ The Mittwald MCP deployment now operates as an OAuth 2.1 proxy. External MCP cli
 | `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_USERINFO_URL` | Manual endpoints when discovery is unavailable. |
 | `MITTWALD_CLIENT_ID` | Mittwald static client ID (`mittwald-mcp-server`). |
 | `MITTWALD_REDIRECT_URI` | Callback URI registered with Mittwald for our proxy. |
-| `MITTWALD_SCOPE_FALLBACK` | Optional bootstrap scope string when discovery is offline. |
+| `MITTWALD_SCOPE_CONFIG_PATH` | Optional absolute path to a JSON file with `supportedScopes`, `upstreamScopes`, and `defaultScopes`. Defaults to `config/mittwald-scopes.json`. |
+| `MITTWALD_SCOPE_FALLBACK` | Legacy escape hatch for environments that cannot reach Mittwald discovery; use only if the JSON config cannot be mounted. |

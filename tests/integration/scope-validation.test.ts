@@ -8,6 +8,7 @@
 import { describe, test, expect, beforeAll } from 'vitest';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
+import { DEFAULT_SCOPES, SUPPORTED_SCOPES } from '../../src/config/mittwald-scopes.js';
 
 const OAUTH_SERVER = 'https://mittwald-oauth-server.fly.dev';
 const MCP_SERVER = 'https://mittwald-mcp-fly2.fly.dev';
@@ -69,12 +70,17 @@ describe('Centralized Scope Configuration', () => {
       const mcpScopes = mcpMetadata.data.scopes_supported || [];
       const oauthScopes = oauthMetadata.data.scopes_supported || [];
 
-      if (mcpScopes.length && oauthScopes.length && oauthScopes.length >= mcpScopes.length) {
-        for (const scope of mcpScopes) {
-          expect(oauthScopes).toContain(scope);
-        }
-      } else {
+      if (!mcpScopes.length || !oauthScopes.length) {
         console.warn('Skipping strict scope subset assertion (scope metadata incomplete)');
+        return;
+      }
+
+      const expected = new Set(SUPPORTED_SCOPES);
+      for (const scope of mcpScopes) {
+        expect(expected.has(scope)).toBe(true);
+      }
+      for (const scope of oauthScopes) {
+        expect(expected.has(scope)).toBe(true);
       }
     });
 
@@ -99,28 +105,17 @@ describe('Centralized Scope Configuration', () => {
       if (!response) return;
       const supportedScopes = response.data.scopes_supported || [];
       expect(Array.isArray(supportedScopes)).toBe(true);
+      if (supportedScopes.length) {
+        for (const scope of SUPPORTED_SCOPES) {
+          expect(supportedScopes).toContain(scope);
+        }
+      }
     });
   });
 
   describe('No Artificial Scope Limitations', () => {
     test('Client can register with all 41 Mittwald scopes', async () => {
-      const allMittwaldScopes = [
-        'app:read', 'app:write', 'app:delete',
-        'backup:read', 'backup:write', 'backup:delete',
-        'contract:read', 'contract:write',
-        'cronjob:read', 'cronjob:write', 'cronjob:delete',
-        'customer:read', 'customer:write',
-        'database:read', 'database:write', 'database:delete',
-        'domain:read', 'domain:write', 'domain:delete',
-        'extension:read', 'extension:write', 'extension:delete',
-        'mail:read', 'mail:write', 'mail:delete',
-        'order:domain-create', 'order:domain-preview',
-        'project:read', 'project:write', 'project:delete',
-        'registry:read', 'registry:write', 'registry:delete',
-        'sshuser:read', 'sshuser:write', 'sshuser:delete',
-        'stack:read', 'stack:write', 'stack:delete',
-        'user:read', 'user:write'
-      ];
+      const allMittwaldScopes = SUPPORTED_SCOPES.filter((scope) => !['openid', 'offline_access'].includes(scope));
 
       const registrationRequest = {
         client_name: 'Full Scope Test Client',
@@ -149,6 +144,7 @@ describe('Centralized Scope Configuration', () => {
 
     test('Authorization request accepts all valid scopes without filtering', async () => {
       // Test that authorization requests don't get artificially filtered
+      const requestedScopes = ['openid', 'app:read', 'app:write', 'user:read', 'customer:read', 'project:read', 'database:read', 'domain:read'];
       const authParams = new URLSearchParams({
         response_type: 'code',
         client_id: claudeClient?.client_id || 'test-client',
@@ -156,7 +152,7 @@ describe('Centralized Scope Configuration', () => {
         code_challenge: 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk',
         code_challenge_method: 'S256',
         state: 'test-scope-validation',
-        scope: 'openid app:read app:write user:read customer:read project:read database:read domain:read',
+        scope: requestedScopes.join(' '),
         resource: `${MCP_SERVER}/mcp`
       });
 
@@ -187,9 +183,8 @@ describe('Centralized Scope Configuration', () => {
       );
       if (!metadata) return;
       const supportedScopes = metadata.data.scopes_supported || [];
-      if (supportedScopes.length >= 4) {
-        const defaultScopes = ['user:read', 'customer:read', 'project:read', 'app:read'];
-        for (const scope of defaultScopes) {
+      if (supportedScopes.length >= DEFAULT_SCOPES.length) {
+        for (const scope of DEFAULT_SCOPES) {
           expect(supportedScopes).toContain(scope);
         }
       } else {

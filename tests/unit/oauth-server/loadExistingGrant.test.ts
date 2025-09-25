@@ -4,6 +4,7 @@ import os from 'os';
 import path from 'path';
 
 import { createProviderConfiguration } from '../../../packages/oauth-server/src/config/provider.js';
+import { DEFAULT_SCOPES, DEFAULT_SCOPE_STRING } from '../../../packages/oauth-server/src/config/mittwald-scopes.js';
 import { userAccountStore } from '../../../packages/oauth-server/src/services/user-account-store.js';
 
 describe('loadExistingGrant', () => {
@@ -64,7 +65,7 @@ describe('loadExistingGrant', () => {
       accountId,
       mittwaldAccessToken: 'access-token',
       createdAt: Date.now(),
-      mittwaldScope: 'openid offline_access projects:read',
+      mittwaldScope: DEFAULT_SCOPE_STRING,
       scopeSource: 'mittwald',
     });
 
@@ -91,9 +92,10 @@ describe('loadExistingGrant', () => {
     const result = await providerConfig.loadExistingGrant!(ctx as any);
 
     expect(result).toBe(grantInstance);
-    expect(addOIDCScope).toHaveBeenCalledWith('openid');
-    expect(addResourceScope).toHaveBeenCalledWith('https://mittwald-mcp-fly2.fly.dev/mcp', 'offline_access');
-    expect(addResourceScope).toHaveBeenCalledWith('https://mittwald-mcp-fly2.fly.dev/mcp', 'projects:read');
+    expect(addOIDCScope).not.toHaveBeenCalled();
+    for (const scope of DEFAULT_SCOPES) {
+      expect(addResourceScope).toHaveBeenCalledWith('https://mittwald-mcp-fly2.fly.dev/mcp', scope);
+    }
     expect(save).toHaveBeenCalledWith(3600);
   });
 });

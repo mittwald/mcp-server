@@ -25,14 +25,15 @@ docs/               # Supplemental documentation
    ```bash
    pnpm install
    ```
-2. Provide Mittwald OAuth details (use discovery when possible):
+2. Configure scopes and Mittwald OAuth details:
    ```bash
    export MITTWALD_ISSUER=https://id.mittwald.de
    export MITTWALD_CLIENT_ID=mittwald-mcp-server
    export MITTWALD_REDIRECT_URI=https://your-local-proxy/mittwald/callback
-   # Optional fallback if discovery is unreachable
-   export MITTWALD_SCOPE_FALLBACK="project:read project:write"
    ```
+   The OAuth and MCP services both read their scope catalogue from `config/mittwald-scopes.json`.
+   Update that file (or point `MITTWALD_SCOPE_CONFIG_PATH` at an override) to change supported or
+   default scopes—no code changes required.
 3. Run the OAuth proxy:
    ```bash
    pnpm --filter oauth-server dev
@@ -46,8 +47,10 @@ Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` f
 
 ## Operational Notes
 - Revoke access in Mittwald Studio to force downstream clients to re-authorize.
-- Monitor the OAuth proxy logs for discovery warnings—these indicate a fallback scope string is in use.
-- Keep Fly.io volumes attached for JWKS and SQLite state; the proxy remains stateless outside of volume-backed storage.
+- The OAuth proxy logs the loaded scope configuration (counts, defaults, config file path). Any
+  mismatch between Mittwald discovery and the configured list is surfaced there.
+- Keep Fly.io volumes attached for JWKS and SQLite state; the proxy remains stateless outside of
+  volume-backed storage.
 
 ## Testing
 - Integration tests (planned) will verify that scope passthrough and consent short-circuiting behave as expected.

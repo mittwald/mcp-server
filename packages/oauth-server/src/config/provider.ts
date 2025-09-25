@@ -1,5 +1,6 @@
 import type { Configuration } from 'oidc-provider';
 import { createAdapter } from './adapters.js';
+import { SUPPORTED_SCOPES } from './mittwald-scopes.js';
 import { logger } from '../services/logger.js';
 import { JWKSManager } from '../services/jwks-keystore.js';
 import { nanoid } from 'nanoid';
@@ -29,6 +30,7 @@ export async function createProviderConfiguration(config: ProviderConfig): Promi
   return {
     // Basic configuration
     issuer: config.issuer,
+    scopes: new Set(SUPPORTED_SCOPES),
     
     // Client configuration for DCR
     clients: [],

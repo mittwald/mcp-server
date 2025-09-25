@@ -8,6 +8,7 @@
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
+import { DEFAULT_SCOPES, SUPPORTED_SCOPES } from '../../src/config/mittwald-scopes.js';
 
 const OAUTH_SERVER = 'https://mittwald-oauth-server.fly.dev';
 const MCP_SERVER = 'https://mittwald-mcp-fly2.fly.dev';
@@ -61,8 +62,9 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
       const scopesSupported = response.data.scopes_supported || [];
       if (scopesSupported.length) {
         expect(Array.isArray(scopesSupported)).toBe(true);
-        expect(scopesSupported.length).toBeGreaterThanOrEqual(1);
-        expect(scopesSupported).toContain('app:read');
+        for (const scope of DEFAULT_SCOPES) {
+          expect(scopesSupported).toContain(scope);
+        }
       }
       expect(response.data.resource).toBe(`${MCP_SERVER}/mcp`);
     });
@@ -84,7 +86,9 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
 
       const asScopesSupported = response.data.scopes_supported || [];
       if (asScopesSupported.length) {
-        expect(asScopesSupported).toContain('openid');
+        for (const scope of SUPPORTED_SCOPES) {
+          expect(asScopesSupported).toContain(scope);
+        }
       }
 
       // Verify OAuth 2.1 compliance
