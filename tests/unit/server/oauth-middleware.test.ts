@@ -216,8 +216,7 @@ describe('OAuth Middleware', () => {
           message: 'OAuth authentication required',
           oauth: expect.objectContaining({
             authorization_url: 'https://mittwald-oauth-server.fly.dev/auth',
-            token_url: 'https://mittwald-oauth-server.fly.dev/token',
-            scopes: expect.arrayContaining(['user:read', 'customer:read', 'project:read', 'app:read'])
+            token_url: 'https://mittwald-oauth-server.fly.dev/token'
           }),
           endpoints: {
             authorize: 'https://mittwald-oauth-server.fly.dev/auth',

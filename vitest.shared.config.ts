@@ -39,7 +39,7 @@ export function createSharedVitestConfig(options: SharedVitestOptions): UserConf
       silent: process.env.CI ? true : false,
       reporter: process.env.CI ? 'basic' : 'default',
       coverage: {
-        provider: 'c8',
+        provider: 'v8',
         reporter: ['text', 'json', 'html'],
         exclude: [...DEFAULT_COVERAGE_EXCLUDES, ...coverageExclude]
       },
