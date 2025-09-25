@@ -42,7 +42,7 @@ export class SessionManager {
 
   async createSession(
     userId: string, 
-    sessionData: Omit<UserSession, 'sessionId' | 'lastAccessed'>,
+    sessionData: Omit<UserSession, 'sessionId' | 'userId' | 'lastAccessed'>,
     options: SessionCreateOptions = {}
   ): Promise<string> {
     const sessionId = this.generateSessionId();
