@@ -125,6 +125,14 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         scopes: details.params?.scope
       });
       const interactionState = mittwaldInteractionState.get(details.uid) || null;
+      const sessionAccountId = interactionState?.accountId
+        ?? details.session?.accountId
+        ?? null;
+
+      const consentPromptRequested =
+        prompt === 'consent'
+        || details.prompt?.details?.missingOIDCScope
+        || details.prompt?.details?.missingOAuth2Scope;
 
       if (interactionState && !interactionState.loginCompleted) {
         logger.info('INTERACTION: Completing login stage after Mittwald authentication', {
@@ -148,17 +156,28 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         return;
       }
 
-      if (prompt === 'consent' || details.prompt?.details?.missingOIDCScope || details.prompt?.details?.missingOAuth2Scope) {
+      if (consentPromptRequested && sessionAccountId) {
+        const account = userAccountStore.get(sessionAccountId);
         const scopeString = interactionState?.mittwaldScope
+          || account?.mittwaldScope
           || interactionState?.requestedScope
           || extractScopeString(details.params?.scope);
+
+        const scopeSource = interactionState?.mittwaldScope
+          ? 'mittwald'
+          : account?.mittwaldScope
+            ? 'mittwald'
+            : interactionState?.scopeSource
+              ?? account?.scopeSource
+              ?? 'request';
 
         const grantedScopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
 
         logger.info('INTERACTION: Auto-granting consent based on Mittwald authorization', {
           uid: details.uid,
           clientId,
-          scopeSource: interactionState?.mittwaldScope ? 'mittwald' : interactionState?.scopeSource || 'request',
+          accountId: sessionAccountId.substring(0, 16) + '...',
+          scopeSource,
           scopeString,
           grantedScopesCount: grantedScopes.length,
         });
@@ -175,6 +194,14 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
           mittwaldInteractionState.delete(details.uid);
         }
         return;
+      }
+
+      if (consentPromptRequested && !sessionAccountId) {
+        logger.info('INTERACTION: Consent requested without Mittwald session, redirecting to Mittwald login', {
+          uid: details.uid,
+          clientId,
+          prompt,
+        });
       }
 
       // Login prompt - redirect to Mittwald for authentication
