@@ -59,11 +59,10 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
       expect(response.status).toBe(200);
       expect(response.data.authorization_servers).toContain(OAUTH_SERVER);
       const scopesSupported = response.data.scopes_supported || [];
-      // Scope catalogue is now Mittwald-sourced; ensure at least discovery scopes when present.
       if (scopesSupported.length) {
         expect(Array.isArray(scopesSupported)).toBe(true);
         expect(scopesSupported.length).toBeGreaterThanOrEqual(1);
-        expect(scopesSupported).toContain('openid');
+        expect(scopesSupported).toContain('app:read');
       }
       expect(response.data.resource).toBe(`${MCP_SERVER}/mcp`);
     });
