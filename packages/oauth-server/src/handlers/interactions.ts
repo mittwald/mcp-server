@@ -166,32 +166,61 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
             ? rawPrompt.split(/\s+/).includes('consent')
             : details.params?.prompt === 'consent';
 
+          let scopeString: string | null = null;
+          let scopeSource: ScopeResolutionSource = 'request';
+
           if (explicitConsentRequested) {
-            logger.info('INTERACTION: Explicit consent requested - redirecting to Mittwald for fresh consent', {
-              uid: details.uid,
-              clientId,
-              prompt: rawPrompt,
-              accountId: sessionAccountId.substring(0, 16) + '...',
-            });
-            // Fall through to Mittwald login flow to get fresh consent
+            const refreshedScopeAvailable = Boolean(interactionState?.loginCompleted && interactionState?.mittwaldScope);
+
+            if (!refreshedScopeAvailable) {
+              logger.info('INTERACTION: Explicit consent requested - redirecting to Mittwald for fresh consent', {
+                uid: details.uid,
+                clientId,
+                prompt: rawPrompt,
+                accountId: sessionAccountId.substring(0, 16) + '...',
+              });
+            } else {
+              scopeString = interactionState!.mittwaldScope
+                || account.mittwaldScope
+                || interactionState?.requestedScope
+                || extractScopeString(details.params?.scope)
+                || null;
+
+              scopeSource = interactionState!.mittwaldScope
+                ? 'mittwald'
+                : account.mittwaldScope
+                  ? 'mittwald'
+                  : interactionState?.scopeSource
+                    ?? account.scopeSource
+                    ?? 'request';
+
+              logger.info('INTERACTION: Explicit consent satisfied via Mittwald, auto-granting', {
+                uid: details.uid,
+                clientId,
+                prompt: rawPrompt,
+                accountId: sessionAccountId.substring(0, 16) + '...',
+              });
+            }
           } else {
-            // Auto-grant consent only if no explicit consent was requested
-            const scopeString = interactionState?.mittwaldScope
+            scopeString = interactionState?.mittwaldScope
               || account.mittwaldScope
               || interactionState?.requestedScope
-              || extractScopeString(details.params?.scope);
+              || extractScopeString(details.params?.scope)
+              || null;
 
-            const scopeSource = interactionState?.mittwaldScope
+            scopeSource = interactionState?.mittwaldScope
               ? 'mittwald'
               : account.mittwaldScope
                 ? 'mittwald'
                 : interactionState?.scopeSource
                   ?? account.scopeSource
                   ?? 'request';
+          }
 
-            const grantedScopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
+          if (scopeString) {
+            const grantedScopes = scopeString.split(' ').filter(Boolean);
 
-            logger.info('INTERACTION: Auto-granting consent based on existing Mittwald authorization', {
+            logger.info('INTERACTION: Auto-granting consent based on Mittwald authorization', {
               uid: details.uid,
               clientId,
               accountId: sessionAccountId.substring(0, 16) + '...',
@@ -208,9 +237,7 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
             }, { mergeWithLastSubmission: true });
 
             ctx.respond = false;
-            if (interactionState) {
-              mittwaldInteractionState.delete(details.uid);
-            }
+            mittwaldInteractionState.delete(details.uid);
             return;
           }
         } else {
