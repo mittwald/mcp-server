@@ -169,32 +169,51 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
           let scopeString: string | null = null;
           let scopeSource: ScopeResolutionSource = 'request';
 
-          if (explicitConsentRequested) {
-            const refreshedScopeAvailable = Boolean(interactionState?.loginCompleted && interactionState?.mittwaldScope);
+          const requestScopeFromParams = extractScopeString(details.params?.scope);
+          const storedMittwaldScope = interactionState?.mittwaldScope || account.mittwaldScope || null;
+          const storedScopeSource: ScopeResolutionSource = interactionState?.mittwaldScope
+            ? 'mittwald'
+            : account.mittwaldScope
+              ? 'mittwald'
+              : interactionState?.scopeSource
+                ?? account.scopeSource
+                ?? 'request';
 
-            if (!refreshedScopeAvailable) {
-              logger.info('INTERACTION: Explicit consent requested - redirecting to Mittwald for fresh consent', {
+          const fallbackRequestedScope = interactionState?.requestedScope
+            || account.requestedScope
+            || requestScopeFromParams
+            || null;
+
+          const requestedScopes = (fallbackRequestedScope || '')
+            .split(/\s+/)
+            .map((entry) => entry.trim())
+            .filter(Boolean);
+          const mittwaldScopes = new Set(
+            (storedMittwaldScope || '')
+              .split(/\s+/)
+              .map((entry) => entry.trim())
+              .filter(Boolean)
+          );
+          const passthroughScopes = new Set(['openid', 'offline_access']);
+          const mittwaldCoversRequested = Boolean(
+            storedMittwaldScope &&
+            requestedScopes.every((scope) => mittwaldScopes.has(scope) || passthroughScopes.has(scope))
+          );
+
+          if (explicitConsentRequested) {
+            if (mittwaldCoversRequested) {
+              scopeString = storedMittwaldScope;
+              scopeSource = storedScopeSource;
+
+              logger.info('INTERACTION: Explicit consent satisfied via existing Mittwald grant', {
                 uid: details.uid,
                 clientId,
-                prompt: rawPrompt,
                 accountId: sessionAccountId.substring(0, 16) + '...',
+                requestedScopesCount: requestedScopes.length,
+                grantedScopesCount: mittwaldScopes.size,
               });
             } else {
-              scopeString = interactionState!.mittwaldScope
-                || account.mittwaldScope
-                || interactionState?.requestedScope
-                || extractScopeString(details.params?.scope)
-                || null;
-
-              scopeSource = interactionState!.mittwaldScope
-                ? 'mittwald'
-                : account.mittwaldScope
-                  ? 'mittwald'
-                  : interactionState?.scopeSource
-                    ?? account.scopeSource
-                    ?? 'request';
-
-              logger.info('INTERACTION: Explicit consent satisfied via Mittwald, auto-granting', {
+              logger.info('INTERACTION: Explicit consent requested - redirecting to Mittwald for fresh consent', {
                 uid: details.uid,
                 clientId,
                 prompt: rawPrompt,
@@ -202,19 +221,16 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
               });
             }
           } else {
-            scopeString = interactionState?.mittwaldScope
-              || account.mittwaldScope
-              || interactionState?.requestedScope
-              || extractScopeString(details.params?.scope)
+            scopeString = storedMittwaldScope
+              || fallbackRequestedScope
+              || requestScopeFromParams
               || null;
 
-            scopeSource = interactionState?.mittwaldScope
+            scopeSource = storedMittwaldScope
               ? 'mittwald'
-              : account.mittwaldScope
-                ? 'mittwald'
-                : interactionState?.scopeSource
-                  ?? account.scopeSource
-                  ?? 'request';
+              : interactionState?.scopeSource
+                ?? account.scopeSource
+                ?? 'request';
           }
 
           if (scopeString) {
