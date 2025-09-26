@@ -2,7 +2,7 @@ import { Issuer, type Client } from 'openid-client';
 import { DEFAULT_SCOPE_STRING, SUPPORTED_SCOPES, buildScopeString, filterUpstreamScopes, validateRequestedScopes } from '../config/mittwald-scopes.js';
 import { logger } from './logger.js';
 
-export type ScopeResolutionSource = 'client' | 'discovery' | 'fallback' | 'config' | 'none' | 'mittwald';
+export type ScopeResolutionSource = 'client' | 'discovery' | 'fallback' | 'config' | 'none' | 'mittwald' | 'request';
 
 export interface MittwaldMetadata {
   issuer: string;
