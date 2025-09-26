@@ -11,7 +11,7 @@ Utilities are the "helpers" of the MCP server:
 - Cross-cutting concerns 
 
 ## File Structure 
-
+   
 ### Core Utilities
 
 #### `logger.ts`
