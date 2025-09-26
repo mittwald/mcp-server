@@ -47,11 +47,15 @@ The Mittwald MCP deployment now operates as an OAuth 2.1 proxy. External MCP cli
 
 ## Scope Management
 
-- **Canonical source**: `config/mittwald-scopes.json` lists the 41 Mittwald resource scopes alongside the
+- **Canonical source**: `config/mittwald-scopes.json` lists the Mittwald resource scopes alongside the
   compatibility pair `openid`/`offline_access`, and records the four defaults we request when a client omits
   `scope`. Both binaries read this file, so edits immediately flow to every runtime. The loader logs
-  `supportedCount`, `upstreamCount`, and `defaultCount` on startup (currently 43/41/4) so operators can verify
-  the catalogue. Use `MITTWALD_SCOPE_CONFIG_PATH` to mount an environment-specific copy when needed.
+  `supportedCount`, `upstreamCount`, and `defaultCount` on startup so operators can verify the catalogue. Use
+  `MITTWALD_SCOPE_CONFIG_PATH` to mount an environment-specific copy when needed.
+- **Pass-through client scopes**: When MCP clients need additional OIDC scopes that Mittwald does not recognise
+  (e.g. `profile` for Claude.ai), add them to `supportedScopes` only. Leave them out of `upstreamScopes` so
+  `validateRequestedScopes` accepts the registration while `filterUpstreamScopes` strips them before we call
+  Mittwald. The proxy will continue to embed only the Mittwald-issued scopes in downstream JWTs.
 - **How to consume in code**: Import `SUPPORTED_SCOPES`, `UPSTREAM_SCOPES`, `DEFAULT_SCOPES`,
   `DEFAULT_SCOPE_STRING`, and helpers like `validateRequestedScopes` from
   `src/config/mittwald-scopes.ts` (MCP server) or `packages/oauth-server/src/config/mittwald-scopes.ts`

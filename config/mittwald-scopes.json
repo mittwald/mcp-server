@@ -2,6 +2,7 @@
   "supportedScopes": [
     "openid",
     "offline_access",
+    "profile",
     "app:read",
     "app:write",
     "app:delete",
