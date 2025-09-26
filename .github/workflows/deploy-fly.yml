@@ -90,51 +90,6 @@ jobs:
           flyctl deploy --config "${{ matrix.fly_config }}" --strategy immediate --detach --verbose \
             --env ALLOW_FLY_RELEASE=true
 
-      - name: Wait for app health then verify /version (commit SHA)
-        run: |
-          set -euo pipefail
-          APP=${{ matrix.app }}
-          HOST=${{ matrix.hostname }}
-          MAX_ATTEMPTS=24 # ~2 minutes @ 5s interval
-          echo "🔍 Waiting for $APP health (max $((MAX_ATTEMPTS*5))s)"
-
-          for attempt in $(seq 1 $MAX_ATTEMPTS); do
-            echo "Health check attempt $attempt/$MAX_ATTEMPTS for $HOST"
-            status_json=$(flyctl status -a "$APP" --json 2>/dev/null || echo '{}')
-
-            if echo "$status_json" | jq -e -r '
-              (.machines // []) as $machines
-              | if ($machines | length) == 0 then false
-                else
-                  reduce $machines[] as $m (
-                    true;
-                    .
-                    and ($m.state == "started")
-                    and (reduce ($m.checks // [])[]? as $c (true; . and ($c.status == "passing")))
-                  )
-                end
-            ' >/dev/null 2>&1; then
-              if curl -fsS --max-time 6 "https://$HOST/health" >/dev/null 2>&1; then
-                echo "✅ $HOST is healthy"
-                break
-              fi
-            fi
-
-            if [ "$attempt" -eq "$MAX_ATTEMPTS" ]; then
-              echo "💥 Health check did not pass for $HOST within $((MAX_ATTEMPTS*5)) seconds" >&2
-              echo "Latest status:" >&2
-              echo "$status_json" | jq '.' >&2
-              curl -v --max-time 10 "https://$HOST/health" || true
-              exit 22
-            fi
-
-            sleep 5
-          done
-
-          echo "✅ Health passed; checking /version for $HOST"
-          body=$(curl -fsSL "https://$HOST/version")
-          echo "$body" | jq -e --arg sha "${{ steps.meta.outputs.sha }}" '.gitSha == $sha'
-          echo "✅ Version verification passed for $HOST"
 
       - name: Diagnostics on failure (status + recent logs)
         if: failure()
@@ -146,13 +101,6 @@ jobs:
           flyctl status -a "$APP" --json | jq '.' || flyctl status -a "$APP" || true
           echo "\nLast 100 lines of logs:";
           flyctl logs -a "$APP" --max-lines 100 || true
-
-      - name: Verify /version endpoint (digest optional)
-        run: |
-          set -e
-          URL="https://${{ matrix.hostname }}/version"
-          echo "GET $URL"
-          curl -fsSL "$URL" | jq '.'
 
       - name: Cleanup stopped/stale machines (best-effort)
         continue-on-error: true
@@ -169,9 +117,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: deploy
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -188,15 +141,52 @@ jobs:
 
       - name: Wait for apps to be healthy
         run: |
-          set -e
-          for host in mittwald-oauth-server.fly.dev mittwald-mcp-fly2.fly.dev; do
-            echo "Waiting for https://$host/health";
+          set -euo pipefail
+          declare -A apps
+          apps[mittwald-oauth-server.fly.dev]=mittwald-oauth-server
+          apps[mittwald-mcp-fly2.fly.dev]=mittwald-mcp-fly2
+
+          for host in "${!apps[@]}"; do
+            app="${apps[$host]}"
+            echo "Waiting for $app (https://$host/health)"
             ok=0
-            for i in $(seq 1 60); do
-              if curl -fsS --max-time 6 "https://$host/health" >/dev/null; then ok=1; break; fi
+            for attempt in $(seq 1 36); do # up to 3 minutes @ 5s
+              status_json=$(flyctl status -a "$app" --json 2>/dev/null || echo '{}')
+              if echo "$status_json" | jq -e -r '
+                (.machines // []) as $machines
+                | if ($machines | length) == 0 then false
+                  else
+                    reduce $machines[] as $m (
+                      true;
+                      .
+                      and ($m.state == "started")
+                      and (reduce ($m.checks // [])[]? as $c (true; . and ($c.status == "passing")))
+                    )
+                  end
+              ' >/dev/null 2>&1 && curl -fsS --max-time 6 "https://$host/health" >/dev/null 2>&1; then
+                echo "✅ $host is healthy"
+                ok=1
+                break
+              fi
               sleep 5
             done
-            if [ "$ok" != "1" ]; then echo "Health failed for $host" >&2; exit 22; fi
+            if [ "$ok" != "1" ]; then
+              echo "💥 Health failed for $host" >&2
+              echo "$status_json" | jq '.' >&2 || true
+              curl -v --max-time 10 "https://$host/health" || true
+              exit 22
+            fi
+          done
+
+      - name: Verify deployed version
+        run: |
+          set -euo pipefail
+          sha="${GITHUB_SHA}"
+          for host in mittwald-oauth-server.fly.dev mittwald-mcp-fly2.fly.dev; do
+            echo "Checking version on https://$host/version"
+            body=$(curl -fsSL "https://$host/version")
+            echo "$body" | jq -e --arg sha "$sha" '.gitSha == $sha'
+            echo "✅ $host reports gitSha=$sha"
           done
 
       - name: Run Postman (Newman) smoke
