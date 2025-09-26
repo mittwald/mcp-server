@@ -160,49 +160,66 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         const account = userAccountStore.get(sessionAccountId);
 
         if (account) {
-          const scopeString = interactionState?.mittwaldScope
-            || account.mittwaldScope
-            || interactionState?.requestedScope
-            || extractScopeString(details.params?.scope);
+          // Check if prompt=consent was explicitly requested by the client
+          const rawPrompt = details.params?.prompt;
+          const explicitConsentRequested = typeof rawPrompt === 'string'
+            ? rawPrompt.split(/\s+/).includes('consent')
+            : details.params?.prompt === 'consent';
 
-          const scopeSource = interactionState?.mittwaldScope
-            ? 'mittwald'
-            : account.mittwaldScope
+          if (explicitConsentRequested) {
+            logger.info('INTERACTION: Explicit consent requested - redirecting to Mittwald for fresh consent', {
+              uid: details.uid,
+              clientId,
+              prompt: rawPrompt,
+              accountId: sessionAccountId.substring(0, 16) + '...',
+            });
+            // Fall through to Mittwald login flow to get fresh consent
+          } else {
+            // Auto-grant consent only if no explicit consent was requested
+            const scopeString = interactionState?.mittwaldScope
+              || account.mittwaldScope
+              || interactionState?.requestedScope
+              || extractScopeString(details.params?.scope);
+
+            const scopeSource = interactionState?.mittwaldScope
               ? 'mittwald'
-              : interactionState?.scopeSource
-                ?? account.scopeSource
-                ?? 'request';
+              : account.mittwaldScope
+                ? 'mittwald'
+                : interactionState?.scopeSource
+                  ?? account.scopeSource
+                  ?? 'request';
 
-          const grantedScopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
+            const grantedScopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
 
-          logger.info('INTERACTION: Auto-granting consent based on Mittwald authorization', {
+            logger.info('INTERACTION: Auto-granting consent based on existing Mittwald authorization', {
+              uid: details.uid,
+              clientId,
+              accountId: sessionAccountId.substring(0, 16) + '...',
+              scopeSource,
+              scopeString,
+              grantedScopesCount: grantedScopes.length,
+            });
+
+            await (provider as any).interactionFinished(ctx.req, ctx.res, {
+              consent: {
+                grantedScopes,
+                rejectedScopes: []
+              }
+            }, { mergeWithLastSubmission: true });
+
+            ctx.respond = false;
+            if (interactionState) {
+              mittwaldInteractionState.delete(details.uid);
+            }
+            return;
+          }
+        } else {
+          logger.info('INTERACTION: Consent requested but Mittwald account missing, redirecting to Mittwald login', {
             uid: details.uid,
             clientId,
-            accountId: sessionAccountId.substring(0, 16) + '...',
-            scopeSource,
-            scopeString,
-            grantedScopesCount: grantedScopes.length,
+            prompt,
           });
-
-          await (provider as any).interactionFinished(ctx.req, ctx.res, {
-            consent: {
-              grantedScopes,
-              rejectedScopes: []
-            }
-          }, { mergeWithLastSubmission: true });
-
-          ctx.respond = false;
-          if (interactionState) {
-            mittwaldInteractionState.delete(details.uid);
-          }
-          return;
         }
-
-        logger.info('INTERACTION: Consent requested but Mittwald account missing, redirecting to Mittwald login', {
-          uid: details.uid,
-          clientId,
-          prompt,
-        });
       }
 
       // Login prompt - redirect to Mittwald for authentication
