@@ -472,8 +472,15 @@ async function createServer() {
           });
         } else {
           // No scope provided at registration time, fall back to configured defaults
-          props.scope = DEFAULT_SCOPE_STRING;
-          recordScopeResolution({ scope: DEFAULT_SCOPE_STRING, source: 'config' }, {
+          let defaultScope = DEFAULT_SCOPE_STRING;
+
+          // Claude.ai needs openid scope for OIDC compatibility
+          if (isClaudeClient) {
+            defaultScope = `openid ${DEFAULT_SCOPE_STRING}`;
+          }
+
+          props.scope = defaultScope;
+          recordScopeResolution({ scope: defaultScope, source: 'config' }, {
             phase: 'dcr-normalize',
             clientName: props.client_name,
             inferred: true,
