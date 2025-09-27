@@ -1,8 +1,9 @@
 import { createApp } from './app.js';
+import { loadConfigFromEnv } from './config.js';
 
-const port = Number(process.env.PORT ?? 3000);
-const app = createApp();
+const config = loadConfigFromEnv();
+const app = createApp(config);
 
-app.listen(port, () => {
-  app.context.logger.info({ port }, 'OAuth bridge listening');
+app.listen(config.port, () => {
+  app.context.logger.info({ port: config.port }, 'OAuth bridge listening');
 });
