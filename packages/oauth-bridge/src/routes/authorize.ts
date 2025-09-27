@@ -35,6 +35,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     });
 
     if (error) {
+      ctx.logger.warn({ error: error.error, description: error.error_description, clientId, redirectUri }, 'Authorization request validation failed');
       ctx.status = 400;
       ctx.body = error;
       return;
@@ -42,18 +43,28 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
 
     const internalState = randomUUID();
 
-    await stateStore.storeAuthorizationRequest({
-      state: state!,
-      internalState,
-      clientId: clientId!,
-      redirectUri: redirectUri!,
-      codeChallenge: codeChallenge!,
-      codeChallengeMethod: 'S256',
-      scope,
-      resource,
-      createdAt: 0,
-      expiresAt: 0
-    });
+    try {
+      await stateStore.storeAuthorizationRequest({
+        state: state!,
+        internalState,
+        clientId: clientId!,
+        redirectUri: redirectUri!,
+        codeChallenge: codeChallenge!,
+        codeChallengeMethod: 'S256',
+        scope,
+        resource,
+        createdAt: 0,
+        expiresAt: 0
+      });
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId, redirectUri }, 'Failed to persist authorization request');
+      ctx.status = 500;
+      ctx.body = {
+        error: 'server_error',
+        error_description: 'Failed to persist authorization request'
+      };
+      return;
+    }
 
     const mittwaldRedirect = new URL(config.mittwald.authorizationUrl);
     mittwaldRedirect.searchParams.set('response_type', 'code');
@@ -66,6 +77,8 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     if (resource) {
       mittwaldRedirect.searchParams.set('resource', resource);
     }
+
+    ctx.logger.info({ clientId, redirectUri, scope, resource }, 'Authorization request forwarded to Mittwald');
 
     ctx.status = 303;
     ctx.redirect(mittwaldRedirect.toString());

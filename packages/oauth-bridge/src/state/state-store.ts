@@ -36,6 +36,33 @@ export interface MittwaldTokenResponse {
   scope?: string;
 }
 
+export interface ClientRegistrationRecord {
+  clientId: string;
+  clientSecret?: string;
+  tokenEndpointAuthMethod: 'none' | 'client_secret_basic' | 'client_secret_post';
+  redirectUris: string[];
+  scope?: string;
+  clientName?: string;
+  registrationAccessToken: string;
+  registrationClientUri: string;
+  clientIdIssuedAt: number;
+  clientSecretExpiresAt?: number;
+  metadata?: Record<string, unknown>;
+}
+
+export interface StateStoreHealth {
+  status: 'ok' | 'error';
+  details?: Record<string, unknown>;
+}
+
+export interface StateStoreMetrics {
+  implementation: string;
+  ttlSeconds?: number;
+  pendingAuthorizations: number;
+  pendingGrants: number;
+  registeredClients: number;
+}
+
 export interface StateStore {
   storeAuthorizationRequest(record: AuthorizationRequestRecord): Promise<void>;
   getAuthorizationRequestByInternalState(internalState: string): Promise<AuthorizationRequestRecord | null>;
@@ -44,4 +71,9 @@ export interface StateStore {
   getAuthorizationGrant(authorizationCode: string): Promise<AuthorizationGrantRecord | null>;
   updateAuthorizationGrant(record: AuthorizationGrantRecord): Promise<void>;
   deleteAuthorizationGrant(authorizationCode: string): Promise<void>;
+  storeClientRegistration(record: ClientRegistrationRecord): Promise<void>;
+  getClientRegistration(clientId: string): Promise<ClientRegistrationRecord | null>;
+  deleteClientRegistration(clientId: string): Promise<void>;
+  healthCheck(): Promise<StateStoreHealth>;
+  getMetrics(): Promise<StateStoreMetrics>;
 }

@@ -14,7 +14,12 @@ vi.mock('../../../src/server/config.js', () => ({
       JWT_SECRET: 'test-jwt-secret',
       ISSUER: 'https://bridge.example.com'
     },
-    OAUTH_ISSUER: 'http://localhost:8080/default'
+    OAUTH_ISSUER: 'http://localhost:8080/default',
+    MITTWALD: {
+      TOKEN_URL: 'https://mittwald.example.com/oauth/token',
+      CLIENT_ID: 'mittwald-client',
+      CLIENT_SECRET: 'mittwald-secret'
+    }
   }
 }));
 
@@ -34,7 +39,7 @@ describe('OAuth Middleware', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockJwtVerify.mockReset();
-    process.env.OAUTH_AS_BASE = 'https://mittwald-oauth-server.fly.dev';
+    process.env.OAUTH_AS_BASE = 'https://mittwald-oauth-bridge.fly.dev';
     delete process.env.MCP_PUBLIC_BASE;
     process.env.NODE_ENV = 'test';
     
@@ -64,16 +69,20 @@ describe('OAuth Middleware', () => {
     it('should authenticate valid JWT token', async () => {
       // Arrange
       const validToken = 'valid-jwt-token';
+      const issuedAt = 1_700_000_000;
+      const expiresIn = 3600;
       const decodedToken = {
         sub: 'user-123',
         aud: 'mittwald-mcp-server',
         scope: 'openid profile user:read',
-        exp: Math.floor(Date.now() / 1000) + 3600,
+        exp: issuedAt + expiresIn,
+        iat: issuedAt,
         iss: 'https://bridge.example.com',
         mittwald: {
           access_token: 'oauth-access-token',
           refresh_token: 'oauth-refresh-token',
-          scope: 'openid profile user:read'
+          scope: 'openid profile user:read',
+          expires_in: expiresIn,
         }
       } as any;
 
@@ -92,12 +101,12 @@ describe('OAuth Middleware', () => {
         expect.any(Uint8Array),
         expect.objectContaining({ issuer: 'https://bridge.example.com' })
       );
-      expect(mockRequest.auth).toEqual({
+      expect(mockRequest.auth).toEqual(expect.objectContaining({
         token: validToken,
         clientId: 'mittwald-mcp-server',
         scopes: ['openid', 'profile', 'user:read'],
         expiresAt: decodedToken.exp,
-        extra: {
+        extra: expect.objectContaining({
           userId: 'user-123',
           mittwaldAccessToken: 'oauth-access-token',
           mittwaldRefreshToken: 'oauth-refresh-token',
@@ -106,9 +115,13 @@ describe('OAuth Middleware', () => {
           mittwaldRequestedScope: 'openid profile user:read',
           issuer: 'https://bridge.example.com',
           audience: 'mittwald-mcp-server',
-          resource: undefined
-        }
-      });
+          resource: undefined,
+          mittwaldAccessTokenExpiresAt: decodedToken.exp,
+          mittwaldRefreshTokenExpiresAt: undefined,
+          mittwaldIssuedAt: issuedAt,
+          mittwaldExpiresIn: expiresIn,
+        })
+      }));
       expect(mockNext).toHaveBeenCalled();
     });
 
@@ -165,7 +178,7 @@ describe('OAuth Middleware', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockResponse.set).toHaveBeenCalledWith(
         'WWW-Authenticate',
-        'Bearer realm="MCP Server", authorization_uri="https://mittwald-oauth-server.fly.dev/auth"'
+        'Bearer realm="MCP Server", authorization_uri="https://mittwald-oauth-bridge.fly.dev/authorize"'
       );
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -234,14 +247,14 @@ describe('OAuth Middleware', () => {
           error: 'authentication_required',
           message: 'OAuth authentication required',
           oauth: expect.objectContaining({
-            authorization_url: 'https://mittwald-oauth-server.fly.dev/auth',
-            token_url: 'https://mittwald-oauth-server.fly.dev/token'
+            authorization_url: 'https://mittwald-oauth-bridge.fly.dev/authorize',
+            token_url: 'https://mittwald-oauth-bridge.fly.dev/token'
           }),
-          endpoints: {
-            authorize: 'https://mittwald-oauth-server.fly.dev/auth',
-            token: 'https://mittwald-oauth-server.fly.dev/token',
-            metadata: 'https://mittwald-oauth-server.fly.dev/.well-known/oauth-authorization-server'
-          },
+        endpoints: {
+          authorize: 'https://mittwald-oauth-bridge.fly.dev/authorize',
+          token: 'https://mittwald-oauth-bridge.fly.dev/token',
+          metadata: 'https://mittwald-oauth-bridge.fly.dev/.well-known/oauth-authorization-server'
+        },
           resource: 'https://localhost:3000/mcp'
         })
       );

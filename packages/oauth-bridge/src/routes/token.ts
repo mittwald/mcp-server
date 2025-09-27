@@ -24,12 +24,21 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
 
     const validationError = validateTokenRequest({ grantType, code, redirectUri, clientId, codeVerifier });
     if (validationError) {
+      ctx.logger.warn({ error: validationError.body.error, description: validationError.body.error_description, clientId }, 'Token request validation failed');
       ctx.status = validationError.status;
       ctx.body = validationError.body;
       return;
     }
 
-    const grant = await stateStore.getAuthorizationGrant(code!);
+    let grant;
+    try {
+      grant = await stateStore.getAuthorizationGrant(code!);
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to read authorization grant');
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Failed to read authorization grant' };
+      return;
+    }
 
     if (!grant) {
       ctx.status = 400;
@@ -68,14 +77,34 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
       return;
     }
 
-    const mittwaldTokens = await exchangeMittwaldAuthorizationCode({
-      config,
-      authorizationCode: grant.mittwaldAuthorizationCode,
-      codeVerifier,
-      logger: ctx.logger
-    });
+    let mittwaldTokens;
+    try {
+      mittwaldTokens = await exchangeMittwaldAuthorizationCode({
+        config,
+        authorizationCode: grant.mittwaldAuthorizationCode,
+        codeVerifier,
+        logger: ctx.logger
+      });
+    } catch (err) {
+      ctx.logger.error({
+        error: err instanceof Error ? err.message : String(err),
+        clientId,
+        mittwaldAuthorizationCode: grant.mittwaldAuthorizationCode
+      }, 'Mittwald authorization code exchange failed');
+      ctx.status = 502;
+      ctx.body = { error: 'temporarily_unavailable', error_description: 'Failed to exchange authorization code with Mittwald' };
+      return;
+    }
 
-    const bridgeTokens = await issueBridgeTokens({ config, grant, mittwaldTokens });
+    let bridgeTokens;
+    try {
+      bridgeTokens = await issueBridgeTokens({ config, grant, mittwaldTokens });
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to issue bridge tokens');
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Failed to issue bridge tokens' };
+      return;
+    }
 
     const updatedGrant = {
       ...grant,
@@ -84,7 +113,16 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
       refreshToken: bridgeTokens.refreshToken,
       refreshTokenExpiresAt: bridgeTokens.refreshTokenExpiresAt
     };
-    await stateStore.updateAuthorizationGrant(updatedGrant);
+    try {
+      await stateStore.updateAuthorizationGrant(updatedGrant);
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to update authorization grant');
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Failed to persist authorization grant state' };
+      return;
+    }
+
+    ctx.logger.info({ clientId, scope: grant.scope }, 'Bridge tokens issued');
 
     ctx.status = 200;
     ctx.body = {

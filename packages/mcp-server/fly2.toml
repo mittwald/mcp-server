@@ -14,7 +14,7 @@ kill_timeout = 5
   NODE_ENV = "production"
   PORT = "8080"
   MCP_PUBLIC_BASE = "https://mittwald-mcp-fly2.fly.dev"
-  OAUTH_AS_BASE = "https://mittwald-oauth-server.fly.dev"
+  OAUTH_AS_BASE = "https://mittwald-oauth-bridge.fly.dev"
 
 [[services]]
   internal_port = 8080

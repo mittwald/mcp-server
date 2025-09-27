@@ -1,4 +1,11 @@
-import type { AuthorizationGrantRecord, AuthorizationRequestRecord, StateStore } from './state-store.js';
+import type {
+  AuthorizationGrantRecord,
+  AuthorizationRequestRecord,
+  ClientRegistrationRecord,
+  StateStore,
+  StateStoreHealth,
+  StateStoreMetrics
+} from './state-store.js';
 
 interface MemoryStateStoreOptions {
   ttlMs: number;
@@ -11,6 +18,7 @@ export class MemoryStateStore implements StateStore {
   private readonly ttlMs: number;
   private readonly requestsByInternalState = new Map<string, StoredRequest>();
   private readonly grantsByCode = new Map<string, StoredGrant>();
+  private readonly clientsById = new Map<string, ClientRegistrationRecord>();
 
   constructor(options: MemoryStateStoreOptions) {
     this.ttlMs = options.ttlMs;
@@ -66,6 +74,33 @@ export class MemoryStateStore implements StateStore {
 
   async deleteAuthorizationGrant(authorizationCode: string): Promise<void> {
     this.grantsByCode.delete(authorizationCode);
+  }
+
+  async storeClientRegistration(record: ClientRegistrationRecord): Promise<void> {
+    this.clientsById.set(record.clientId, { ...record });
+  }
+
+  async getClientRegistration(clientId: string): Promise<ClientRegistrationRecord | null> {
+    const record = this.clientsById.get(clientId);
+    return record ? { ...record } : null;
+  }
+
+  async deleteClientRegistration(clientId: string): Promise<void> {
+    this.clientsById.delete(clientId);
+  }
+
+  async healthCheck(): Promise<StateStoreHealth> {
+    return { status: 'ok' };
+  }
+
+  async getMetrics(): Promise<StateStoreMetrics> {
+    return {
+      implementation: 'memory',
+      ttlSeconds: Math.floor(this.ttlMs / 1000),
+      pendingAuthorizations: this.requestsByInternalState.size,
+      pendingGrants: this.grantsByCode.size,
+      registeredClients: this.clientsById.size
+    };
   }
 
   private reapExpired() {

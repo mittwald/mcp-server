@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { SUPPORTED_SCOPES, DEFAULT_SCOPE_STRING } from '../config/mittwald-scopes.js';
 import { logger } from '../utils/logger.js';
+import { CONFIG } from '../server/config.js';
 
 export class OAuthMetadataRoutes {
   private router: Router;
@@ -18,7 +19,7 @@ export class OAuthMetadataRoutes {
     this.router.get('/.well-known/oauth-authorization-server', this.handleAuthorizationServerMetadata.bind(this));
     // Compatibility path used by some MCP clients (suffix /mcp). Redirect to AS metadata
     this.router.get('/.well-known/oauth-authorization-server/mcp', (req, res) => {
-      const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+      const asBase = getAuthorizationServerBase();
       return res.redirect(302, `${asBase}/.well-known/oauth-authorization-server`);
     });
     
@@ -30,14 +31,14 @@ export class OAuthMetadataRoutes {
 
   private async handleAuthorizationServerMetadata(req: Request, res: Response): Promise<void> {
     try {
-      const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+      const asBase = getAuthorizationServerBase();
       const metadata = {
         issuer: asBase,
-        authorization_endpoint: `${asBase}/auth`,
-        token_endpoint: `${asBase}/token`,
+        authorization_endpoint: getAuthorizationEndpoint(asBase),
+        token_endpoint: getTokenEndpoint(asBase),
         userinfo_endpoint: `${asBase}/me`,
         revocation_endpoint: `${asBase}/token/revocation`,
-        registration_endpoint: `${asBase}/reg`,
+        registration_endpoint: getRegistrationEndpoint(asBase),
         jwks_uri: `${asBase}/jwks`,
         response_types_supported: [
           'code'
@@ -74,7 +75,12 @@ export class OAuthMetadataRoutes {
           'email',
           'name',
           'preferred_username'
-        ]
+        ],
+        mcp: {
+          registration_endpoint: getRegistrationEndpoint(asBase),
+          redirect_uris: getBridgeRedirectUris(),
+          token_endpoint_auth_method: 'none'
+        }
       };
 
       logger.debug('Serving OAuth authorization server metadata', {
@@ -100,7 +106,7 @@ export class OAuthMetadataRoutes {
 
   private async handleProtectedResourceMetadata(req: Request, res: Response): Promise<void> {
     try {
-      const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+      const asBase = getAuthorizationServerBase();
       const resourceUrl = `${this.baseUrl}/mcp`;
       const metadata = {
         resource: resourceUrl,
@@ -121,6 +127,10 @@ export class OAuthMetadataRoutes {
           resources: true,
           prompts: true,
           roots: false
+        },
+        mcp: {
+          registration_endpoint: getRegistrationEndpoint(asBase),
+          redirect_uris: getBridgeRedirectUris()
         }
       };
 
@@ -148,4 +158,35 @@ export class OAuthMetadataRoutes {
   getRouter(): Router {
     return this.router;
   }
+}
+
+function getAuthorizationServerBase(): string {
+  return CONFIG.OAUTH_BRIDGE.BASE_URL
+    || process.env.OAUTH_BRIDGE_BASE_URL
+    || process.env.OAUTH_AS_BASE
+    || 'https://mittwald-oauth-bridge.fly.dev';
+}
+
+function normaliseBase(base: string): string {
+  return base.endsWith('/') ? base.slice(0, -1) : base;
+}
+
+function getAuthorizationEndpoint(base: string): string {
+  return CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL || `${normaliseBase(base)}/authorize`;
+}
+
+function getTokenEndpoint(base: string): string {
+  return CONFIG.OAUTH_BRIDGE.TOKEN_URL || `${normaliseBase(base)}/token`;
+}
+
+function getRegistrationEndpoint(base: string): string {
+  return process.env.OAUTH_BRIDGE_REGISTRATION_URL || `${normaliseBase(base)}/register`;
+}
+
+function getBridgeRedirectUris(): string[] {
+  const raw = process.env.OAUTH_BRIDGE_REDIRECT_URIS || process.env.BRIDGE_REDIRECT_URIS;
+  if (!raw) {
+    return [];
+  }
+  return raw.split(',').map((value) => value.trim()).filter(Boolean);
 }

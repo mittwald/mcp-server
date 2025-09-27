@@ -20,7 +20,6 @@ export async function exchangeMittwaldAuthorizationCode({
   body.set('code', authorizationCode);
   body.set('redirect_uri', `${config.bridge.baseUrl}/mittwald/callback`);
   body.set('client_id', config.mittwald.clientId);
-  body.set('client_secret', config.mittwald.clientSecret);
   body.set('code_verifier', codeVerifier);
 
   const response = await fetch(config.mittwald.tokenUrl, {

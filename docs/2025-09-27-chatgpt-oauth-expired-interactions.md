@@ -87,7 +87,7 @@ app.use(cors({
    }));
    ```
 2. Default cookies to `secure: true` whenever the issuer is HTTPS (or set `COOKIES_SECURE=true`) so `_interaction`, `_resume`, and `_session` cookies pass Chrome's `SameSite=None` checks.
-3. Redeploy the OAuth proxy and re-test the ChatGPT OAuth flow, confirming `/auth` responses now include `_interaction` / `_session` cookies and `/token` is invoked.
+3. Redeploy the OAuth proxy and re-test the ChatGPT OAuth flow, confirming `/auth` responses now include `_interaction` / `_session` cookies and `/token` is invoked (our Mittwald app remains a public PKCE client—no client secret involved).
 4. Capture an updated HAR and Fly log bundle for regression tracking.
 
 ## Status

@@ -1,5 +1,8 @@
 import { redisClient } from '../utils/redis-client.js';
 import { logger } from '../utils/logger.js';
+import { refreshMittwaldAccessToken, MittwaldTokenServiceError } from './mittwald-token-service.js';
+
+const TOKEN_REFRESH_SKEW_MS = 60 * 1000; // refresh 1 minute before expiry
 
 export interface UserSession {
   sessionId: string;
@@ -13,6 +16,8 @@ export interface UserSession {
   scopes?: string[];
   resource?: string;
   expiresAt: Date;
+  mittwaldAccessTokenExpiresAt?: Date;
+  mittwaldRefreshTokenExpiresAt?: Date;
   currentContext: {
     projectId?: string;
     serverId?: string;
@@ -91,29 +96,148 @@ export class SessionManager {
         return null;
       }
 
-      const session: UserSession = JSON.parse(sessionData);
-      
-      if (session.expiresAt) {
-        session.expiresAt = new Date(session.expiresAt);
-      }
-      if (session.lastAccessed) {
-        session.lastAccessed = new Date(session.lastAccessed);
-      }
+      const hydrated = this.hydrateSession(JSON.parse(sessionData) as UserSession);
+      const updatedSession = await this.ensureSessionFresh(sessionId, hydrated);
 
-      // Check if session is expired
-      if (session.expiresAt && new Date() > new Date(session.expiresAt)) {
-        await this.destroySession(sessionId);
+      if (!updatedSession) {
         return null;
       }
 
-      // Update last accessed time
-      session.lastAccessed = new Date();
-      await redisClient.set(sessionKey, JSON.stringify(session));
+      updatedSession.lastAccessed = new Date();
 
-      return session;
+      const ttl = await redisClient.ttl(sessionKey);
+      const ttlSeconds = ttl > 0 ? ttl : this.calculateTtl(updatedSession.expiresAt);
+      await redisClient.set(sessionKey, JSON.stringify(updatedSession), ttlSeconds ?? undefined);
+
+      return updatedSession;
 
     } catch (error) {
       logger.error('Failed to get session:', error);
+      return null;
+    }
+  }
+
+  private hydrateSession(raw: UserSession): UserSession {
+    const session: UserSession = {
+      ...raw,
+      expiresAt: raw.expiresAt ? new Date(raw.expiresAt) : raw.expiresAt,
+      lastAccessed: raw.lastAccessed ? new Date(raw.lastAccessed) : new Date(),
+      mittwaldAccessTokenExpiresAt: raw.mittwaldAccessTokenExpiresAt
+        ? new Date(raw.mittwaldAccessTokenExpiresAt)
+        : raw.mittwaldAccessTokenExpiresAt,
+      mittwaldRefreshTokenExpiresAt: raw.mittwaldRefreshTokenExpiresAt
+        ? new Date(raw.mittwaldRefreshTokenExpiresAt)
+        : raw.mittwaldRefreshTokenExpiresAt,
+    };
+
+    return session;
+  }
+
+  private async ensureSessionFresh(sessionId: string, session: UserSession): Promise<UserSession | null> {
+    const now = Date.now();
+    const accessExpiryMs = session.mittwaldAccessTokenExpiresAt?.getTime()
+      ?? session.expiresAt?.getTime();
+
+    if (!accessExpiryMs) {
+      return session;
+    }
+
+    const timeUntilExpiry = accessExpiryMs - now;
+
+    if (timeUntilExpiry <= -TOKEN_REFRESH_SKEW_MS) {
+      return await this.refreshSessionTokens(sessionId, session);
+    }
+
+    if (timeUntilExpiry <= TOKEN_REFRESH_SKEW_MS) {
+      const refreshed = await this.refreshSessionTokens(sessionId, session);
+      return refreshed ?? session;
+    }
+
+    return session;
+  }
+
+  private calculateTtl(expiresAt?: Date): number | undefined {
+    if (!expiresAt) {
+      return undefined;
+    }
+
+    const seconds = Math.floor((expiresAt.getTime() - Date.now()) / 1000);
+    if (seconds <= 0) {
+      return undefined;
+    }
+
+    return Math.max(60, seconds);
+  }
+
+  private async refreshSessionTokens(sessionId: string, session: UserSession): Promise<UserSession | null> {
+    if (!session.mittwaldRefreshToken) {
+      logger.debug(`Session ${sessionId} missing refresh token; destroying session`);
+      await this.destroySession(sessionId);
+      return null;
+    }
+
+    try {
+      const refreshResponse = await refreshMittwaldAccessToken({
+        refreshToken: session.mittwaldRefreshToken,
+        scope: session.requestedScope || session.scope,
+      });
+
+      const now = Date.now();
+      const expiresIn = typeof refreshResponse.expires_in === 'number'
+        ? refreshResponse.expires_in
+        : undefined;
+      const accessExpiresAt = expiresIn ? new Date(now + expiresIn * 1000) : session.expiresAt;
+
+      const refreshExpiresInRaw = (refreshResponse as Record<string, unknown>).refresh_token_expires_in;
+      const refreshExpiresAt = typeof refreshExpiresInRaw === 'number'
+        ? new Date(now + refreshExpiresInRaw * 1000)
+        : session.mittwaldRefreshTokenExpiresAt;
+
+      const scopeString = typeof refreshResponse.scope === 'string'
+        ? refreshResponse.scope
+        : session.scope;
+      const scopes = scopeString
+        ? scopeString.split(/\s+/).filter(Boolean)
+        : session.scopes;
+
+      const updatedSession: UserSession = {
+        ...session,
+        mittwaldAccessToken: refreshResponse.access_token,
+        mittwaldRefreshToken: refreshResponse.refresh_token || session.mittwaldRefreshToken,
+        scope: scopeString,
+        scopes,
+        expiresAt: accessExpiresAt ?? new Date(now + this.DEFAULT_TTL * 1000),
+        mittwaldAccessTokenExpiresAt: accessExpiresAt ?? session.mittwaldAccessTokenExpiresAt,
+        mittwaldRefreshTokenExpiresAt: refreshExpiresAt,
+      };
+
+      const ttlSeconds = this.calculateTtl(updatedSession.expiresAt) ?? this.DEFAULT_TTL;
+
+      await this.upsertSession(sessionId, session.userId, {
+        mittwaldAccessToken: updatedSession.mittwaldAccessToken,
+        mittwaldRefreshToken: updatedSession.mittwaldRefreshToken,
+        oauthToken: updatedSession.oauthToken,
+        scope: updatedSession.scope,
+        scopeSource: updatedSession.scopeSource,
+        requestedScope: updatedSession.requestedScope,
+        scopes: updatedSession.scopes,
+        resource: updatedSession.resource,
+        expiresAt: updatedSession.expiresAt,
+        mittwaldAccessTokenExpiresAt: updatedSession.mittwaldAccessTokenExpiresAt,
+        mittwaldRefreshTokenExpiresAt: updatedSession.mittwaldRefreshTokenExpiresAt,
+        currentContext: updatedSession.currentContext,
+        accessibleProjects: updatedSession.accessibleProjects,
+      }, { ttlSeconds });
+
+      return updatedSession;
+    } catch (error) {
+      if (error instanceof MittwaldTokenServiceError) {
+        logger.warn(`Mittwald token refresh failed for session ${sessionId}: ${error.message}`);
+      } else {
+        logger.error(`Unexpected error refreshing Mittwald token for session ${sessionId}:`, error);
+      }
+
+      await this.destroySession(sessionId);
       return null;
     }
   }

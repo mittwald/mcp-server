@@ -10,7 +10,6 @@ export default [
       "build/**/*",
       "node_modules/**/*",
       "coverage/**/*",
-      "packages/oauth-server/dist/**/*",
       "tests/test-connection-logging.js",
       "tests/test-mcp-client.cjs",
       "tests/test-ssl-trust.cjs",

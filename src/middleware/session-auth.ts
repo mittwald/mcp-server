@@ -14,6 +14,7 @@ declare global {
         sessionId: string;
       };
       sessionId?: string;
+      auth?: import('@modelcontextprotocol/sdk/server/auth/types.js').AuthInfo;
     }
   }
 }
@@ -113,7 +114,8 @@ export function createSessionAuthMiddleware() {
  * This triggers mcp-remote to start the OAuth flow automatically
  */
 function sendOAuthChallenge(res: Response, reason: string) {
-  const authorizationUri = `${process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev'}/auth`;
+  const asBase = getAuthorizationServerBase();
+  const authorizationUri = `${asBase.replace(/\/$/, '')}/auth`;
   const clientId = 'mittwald-mcp-server';
   
   logger.info(`Sending OAuth challenge: ${reason}`);
@@ -127,6 +129,13 @@ function sendOAuthChallenge(res: Response, reason: string) {
     authorization_uri: authorizationUri,
     client_id: clientId
   });
+}
+
+function getAuthorizationServerBase(): string {
+  return CONFIG.OAUTH_BRIDGE.BASE_URL
+    || process.env.OAUTH_BRIDGE_BASE_URL
+    || process.env.OAUTH_AS_BASE
+    || 'https://mittwald-oauth-bridge.fly.dev';
 }
 
 /**

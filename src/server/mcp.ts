@@ -42,6 +42,8 @@ interface SessionAuth {
   /** Original OAuth JWT issued by the proxy */
   oauthToken?: string;
   scope?: string;
+  resource?: string;
+  accessTokenExpiresAt?: Date;
 }
 
 interface SessionInfo {
@@ -223,6 +225,12 @@ export class MCPHandler implements IMCPHandler {
         const mittwaldScope = typeof req.auth?.extra?.mittwaldScope === 'string'
           ? req.auth.extra.mittwaldScope
           : undefined;
+        const mittwaldAccessTokenExpiresAtSeconds = typeof req.auth?.extra?.mittwaldAccessTokenExpiresAt === 'number'
+          ? req.auth.extra.mittwaldAccessTokenExpiresAt
+          : undefined;
+        const mittwaldResource = typeof req.auth?.extra?.resource === 'string'
+          ? req.auth.extra.resource
+          : undefined;
 
         const sessionAuth = mittwaldAccessToken
           ? {
@@ -231,6 +239,10 @@ export class MCPHandler implements IMCPHandler {
               username: String(req.auth?.extra?.userId || req.auth?.clientId || "unknown"),
               oauthToken: req.auth?.token,
               scope: mittwaldScope,
+              resource: mittwaldResource,
+              accessTokenExpiresAt: mittwaldAccessTokenExpiresAtSeconds
+                ? new Date(mittwaldAccessTokenExpiresAtSeconds * 1000)
+                : undefined,
             }
           : undefined;
 
@@ -308,8 +320,46 @@ export class MCPHandler implements IMCPHandler {
         logger.debug(`🔄 [${clientAddr}] Using existing session: ${sessionId}`);
         sessionInfo.lastAccessed = new Date();
 
-        // Update auth if provided
-        if (req.auth && req.auth.token && !sessionInfo.auth) {
+        const persistedSession = await sessionManager.getSession(sessionId);
+        if (!persistedSession) {
+          logger.warn(`❌ [${clientAddr}] Persisted session missing for ${sessionId}; forcing re-authentication`);
+          res.status(401).json({
+            jsonrpc: "2.0",
+            error: {
+              code: -32002,
+              message: "Session expired",
+            },
+            id: null,
+          });
+          return;
+        }
+
+        let requiresServerRecreate = false;
+        if (!sessionInfo.auth) {
+          sessionInfo.auth = {
+            accessToken: persistedSession.mittwaldAccessToken,
+            refreshToken: persistedSession.mittwaldRefreshToken,
+            username: persistedSession.userId,
+            oauthToken: req.auth?.token,
+            scope: persistedSession.scope,
+            resource: persistedSession.resource,
+            accessTokenExpiresAt: persistedSession.mittwaldAccessTokenExpiresAt,
+          };
+          requiresServerRecreate = true;
+        } else {
+          sessionInfo.auth.accessToken = persistedSession.mittwaldAccessToken;
+          sessionInfo.auth.refreshToken = persistedSession.mittwaldRefreshToken;
+          sessionInfo.auth.scope = persistedSession.scope ?? sessionInfo.auth.scope;
+          sessionInfo.auth.resource = persistedSession.resource ?? sessionInfo.auth.resource;
+          sessionInfo.auth.accessTokenExpiresAt = persistedSession.mittwaldAccessTokenExpiresAt ?? sessionInfo.auth.accessTokenExpiresAt;
+          sessionInfo.auth.username = persistedSession.userId ?? sessionInfo.auth.username;
+          if (req.auth?.token) {
+            sessionInfo.auth.oauthToken = req.auth.token;
+          }
+        }
+
+        let tokensPersistedFromRequest = false;
+        if (req.auth && req.auth.token) {
           const mittwaldAccessToken = typeof req.auth.extra?.mittwaldAccessToken === 'string'
             ? req.auth.extra.mittwaldAccessToken
             : undefined;
@@ -319,28 +369,61 @@ export class MCPHandler implements IMCPHandler {
           const mittwaldScope = typeof req.auth.extra?.mittwaldScope === 'string'
             ? req.auth.extra.mittwaldScope
             : undefined;
+          const mittwaldResource = typeof req.auth.extra?.resource === 'string'
+            ? req.auth.extra.resource
+            : undefined;
+          const mittwaldAccessExpiresAtSeconds = typeof req.auth.extra?.mittwaldAccessTokenExpiresAt === 'number'
+            ? req.auth.extra.mittwaldAccessTokenExpiresAt
+            : undefined;
 
-          if (mittwaldAccessToken) {
-            logger.info(`🔐 [${sessionId}] Adding authentication to existing session`);
-            sessionInfo.auth = {
-              accessToken: mittwaldAccessToken,
-              refreshToken: mittwaldRefreshToken,
-              username: String(req.auth.extra?.userId || req.auth.clientId || "unknown"),
-              oauthToken: req.auth.token,
-              scope: mittwaldScope,
-            };
+          if (mittwaldAccessToken && sessionInfo.auth) {
+            let tokensChanged = false;
 
-          // Recreate server with auth
-            logger.debug(`🔄 [${sessionId}] Recreating server with authentication`);
-            const newServer = this.createServer(sessionId, sessionInfo.auth);
-            await newServer.connect(sessionInfo.transport);
-            sessionInfo.server = newServer;
-            logger.debug(`✅ [${sessionId}] Server recreated with auth successfully`);
+            if (sessionInfo.auth.accessToken !== mittwaldAccessToken) {
+              sessionInfo.auth.accessToken = mittwaldAccessToken;
+              tokensChanged = true;
+            }
 
-            await this.persistSessionAuth(sessionId, sessionInfo.auth, req.auth);
-          } else {
-            logger.warn(`⚠️ [${sessionId}] Received JWT without Mittwald access token; keeping session unauthenticated`);
+            if (mittwaldRefreshToken && sessionInfo.auth.refreshToken !== mittwaldRefreshToken) {
+              sessionInfo.auth.refreshToken = mittwaldRefreshToken;
+              tokensChanged = true;
+            }
+
+            if (mittwaldScope && sessionInfo.auth.scope !== mittwaldScope) {
+              sessionInfo.auth.scope = mittwaldScope;
+              tokensChanged = true;
+            }
+
+            if (mittwaldResource && sessionInfo.auth.resource !== mittwaldResource) {
+              sessionInfo.auth.resource = mittwaldResource;
+              tokensChanged = true;
+            }
+
+            if (mittwaldAccessExpiresAtSeconds) {
+              const expiresAtDate = new Date(mittwaldAccessExpiresAtSeconds * 1000);
+              if (!sessionInfo.auth.accessTokenExpiresAt || sessionInfo.auth.accessTokenExpiresAt.getTime() !== expiresAtDate.getTime()) {
+                sessionInfo.auth.accessTokenExpiresAt = expiresAtDate;
+                tokensChanged = true;
+              }
+            }
+
+            sessionInfo.auth.oauthToken = req.auth.token;
+            sessionInfo.auth.username = String(req.auth.extra?.userId || req.auth.clientId || sessionInfo.auth.username || 'unknown');
+
+            if (tokensChanged) {
+              await this.persistSessionAuth(sessionId, sessionInfo.auth, req.auth);
+              tokensPersistedFromRequest = true;
+              requiresServerRecreate = true;
+            }
           }
+        }
+
+        if (requiresServerRecreate || tokensPersistedFromRequest) {
+          logger.debug(`🔄 [${sessionId}] Updating server authentication context`);
+          const newServer = this.createServer(sessionId, sessionInfo.auth);
+          await newServer.connect(sessionInfo.transport);
+          sessionInfo.server = newServer;
+          logger.debug(`✅ [${sessionId}] Server authentication context refreshed`);
         }
 
         // Let the session's transport handle the request
@@ -434,21 +517,41 @@ export class MCPHandler implements IMCPHandler {
 
   private async persistSessionAuth(sessionId: string, sessionAuth: SessionAuth, authInfo?: AuthInfo): Promise<void> {
     try {
-      const expiresAt = authInfo?.expiresAt
-        ? new Date(authInfo.expiresAt * 1000)
-        : new Date(Date.now() + 60 * 60 * 1000);
+      const existing = await sessionManager.getSession(sessionId);
+
+      const expiresAtSeconds = typeof authInfo?.expiresAt === 'number'
+        ? authInfo.expiresAt
+        : undefined;
+      const mittwaldAccessExpiresSeconds = typeof authInfo?.extra?.mittwaldAccessTokenExpiresAt === 'number'
+        ? authInfo.extra.mittwaldAccessTokenExpiresAt
+        : undefined;
+      const mittwaldRefreshExpiresSeconds = typeof authInfo?.extra?.mittwaldRefreshTokenExpiresAt === 'number'
+        ? authInfo.extra.mittwaldRefreshTokenExpiresAt
+        : undefined;
+
+      const calculatedAccessExpiresAt = mittwaldAccessExpiresSeconds
+        ? new Date(mittwaldAccessExpiresSeconds * 1000)
+        : (expiresAtSeconds ? new Date(expiresAtSeconds * 1000) : undefined);
+      const expiresAt = calculatedAccessExpiresAt ?? existing?.expiresAt ?? new Date(Date.now() + 60 * 60 * 1000);
+
+      const refreshTokenExpiresAt = mittwaldRefreshExpiresSeconds
+        ? new Date(mittwaldRefreshExpiresSeconds * 1000)
+        : existing?.mittwaldRefreshTokenExpiresAt;
 
       const scopeSource = typeof authInfo?.extra?.mittwaldScopeSource === 'string'
         ? authInfo.extra.mittwaldScopeSource
-        : undefined;
+        : existing?.scopeSource;
       const requestedScope = typeof authInfo?.extra?.mittwaldRequestedScope === 'string'
         ? authInfo.extra.mittwaldRequestedScope
-        : undefined;
+        : existing?.requestedScope;
       const resource = typeof authInfo?.extra?.resource === 'string'
         ? authInfo.extra.resource
-        : existing?.resource;
+        : (sessionAuth.resource ?? existing?.resource);
 
-      const existing = await sessionManager.getSession(sessionId);
+      const scope = sessionAuth.scope ?? existing?.scope;
+      const scopes = scope
+        ? scope.split(/\s+/).filter(Boolean)
+        : existing?.scopes;
 
       const ttlSeconds = Math.max(
         60,
@@ -457,14 +560,16 @@ export class MCPHandler implements IMCPHandler {
 
       await sessionManager.upsertSession(sessionId, sessionAuth.username, {
         mittwaldAccessToken: sessionAuth.accessToken,
-        mittwaldRefreshToken: sessionAuth.refreshToken,
-        oauthToken: sessionAuth.oauthToken,
-        scope: sessionAuth.scope,
+        mittwaldRefreshToken: sessionAuth.refreshToken ?? existing?.mittwaldRefreshToken,
+        oauthToken: sessionAuth.oauthToken ?? existing?.oauthToken,
+        scope,
         scopeSource,
         requestedScope,
-        scopes: sessionAuth.scope ? sessionAuth.scope.split(/\s+/).filter(Boolean) : existing?.scopes,
+        scopes,
         resource,
         expiresAt,
+        mittwaldAccessTokenExpiresAt: sessionAuth.accessTokenExpiresAt ?? calculatedAccessExpiresAt ?? existing?.mittwaldAccessTokenExpiresAt,
+        mittwaldRefreshTokenExpiresAt: refreshTokenExpiresAt,
         currentContext: existing?.currentContext || {},
         accessibleProjects: existing?.accessibleProjects,
       }, { ttlSeconds });

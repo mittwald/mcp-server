@@ -27,7 +27,15 @@ export function createMittwaldCallbackRouter({ config, stateStore }: MittwaldCal
       return;
     }
 
-    const storedRequest = await stateStore.getAuthorizationRequestByInternalState(state);
+    let storedRequest;
+    try {
+      storedRequest = await stateStore.getAuthorizationRequestByInternalState(state);
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), state }, 'Failed to read authorization request');
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Failed to read authorization request' };
+      return;
+    }
 
     if (!storedRequest) {
       ctx.status = 400;
@@ -35,27 +43,43 @@ export function createMittwaldCallbackRouter({ config, stateStore }: MittwaldCal
       return;
     }
 
-    await stateStore.deleteAuthorizationRequestByInternalState(state);
+    try {
+      await stateStore.deleteAuthorizationRequestByInternalState(state);
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), state }, 'Failed to delete authorization request');
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Failed to delete authorization request' };
+      return;
+    }
 
     const authorizationCode = randomUUID();
 
-    await stateStore.storeAuthorizationGrant({
-      authorizationCode,
-      clientId: storedRequest.clientId,
-      redirectUri: storedRequest.redirectUri,
-      codeChallenge: storedRequest.codeChallenge,
-      codeChallengeMethod: storedRequest.codeChallengeMethod,
-      scope: storedRequest.scope,
-      resource: storedRequest.resource,
-      mittwaldAuthorizationCode: code,
-      createdAt: 0,
-      expiresAt: 0,
-      used: false
-    });
+    try {
+      await stateStore.storeAuthorizationGrant({
+        authorizationCode,
+        clientId: storedRequest.clientId,
+        redirectUri: storedRequest.redirectUri,
+        codeChallenge: storedRequest.codeChallenge,
+        codeChallengeMethod: storedRequest.codeChallengeMethod,
+        scope: storedRequest.scope,
+        resource: storedRequest.resource,
+        mittwaldAuthorizationCode: code,
+        createdAt: 0,
+        expiresAt: 0,
+        used: false
+      });
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), state }, 'Failed to persist authorization grant');
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Failed to persist authorization grant' };
+      return;
+    }
 
     const redirect = new URL(storedRequest.redirectUri);
     redirect.searchParams.set('code', authorizationCode);
     redirect.searchParams.set('state', storedRequest.state);
+
+    ctx.logger.info({ clientId: storedRequest.clientId, redirectUri: storedRequest.redirectUri }, 'Authorization code issued to client');
 
     ctx.status = 303;
     ctx.redirect(redirect.toString());

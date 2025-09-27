@@ -19,7 +19,7 @@ describe('MCP Server JWT Validation', () => {
 
     // Create valid JWT with embedded Mittwald tokens (as per Step 29)
     validJWT = jwt.sign({
-      iss: 'https://mittwald-oauth-server.fly.dev',
+      iss: 'https://mittwald-oauth-bridge.fly.dev',
       sub: 'mittwald:38416b04-c87d-46',
       aud: 'https://mittwald-mcp-fly2.fly.dev/mcp',
       exp: Math.floor(Date.now() / 1000) + 3600,
@@ -49,7 +49,7 @@ describe('MCP Server JWT Validation', () => {
     test('rejects expired JWT', () => {
       // Test expired JWT
       const expiredJWT = jwt.sign({
-        iss: 'https://mittwald-oauth-server.fly.dev',
+        iss: 'https://mittwald-oauth-bridge.fly.dev',
         sub: 'mittwald:38416b04-c87d-46',
         exp: Math.floor(Date.now() / 1000) - 3600, // Expired 1 hour ago
         iat: Math.floor(Date.now() / 1000) - 7200
@@ -77,7 +77,7 @@ describe('MCP Server JWT Validation', () => {
     test('handles missing Mittwald tokens gracefully', () => {
       // Test JWT without Mittwald tokens
       const jwtWithoutTokens = jwt.sign({
-        iss: 'https://mittwald-oauth-server.fly.dev',
+        iss: 'https://mittwald-oauth-bridge.fly.dev',
         sub: 'mittwald:38416b04-c87d-46',
         exp: Math.floor(Date.now() / 1000) + 3600
       }, JWT_SIGNING_KEY);

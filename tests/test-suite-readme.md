@@ -10,10 +10,7 @@ Comprehensive test suite based on ARCHITECTURE.md "Complete OAuth 2.1 + MCP Life
 - **`mittwald-integration.test.ts`**: Mittwald IdP integration and constraints
 
 ### 🔧 **Unit Tests** (`tests/unit/`)
-- **`oauth-server/interactions.test.ts`**: Interaction handler login/consent logic
-- **`oauth-server/findAccount.test.ts`**: User account discovery and custom claims
-- **`oauth-server/user-account-store.test.ts`**: User account storage and management
-- **`oauth-server/oidc-provider-config.test.ts`**: Pure oidc-provider configuration
+- **`oauth-bridge/*.test.ts`**: Bridge request validation, PKCE handling, and Mittwald token exchange
 - **`mcp-server/jwt-validation.test.ts`**: JWT validation and Mittwald token extraction
 
 ### 🌍 **End-to-End Tests** (`tests/e2e/`)

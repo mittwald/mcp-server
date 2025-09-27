@@ -12,9 +12,10 @@ The codebase now uses a **stateless OAuth bridge** in front of the MCP server. R
 - `packages/oauth-bridge/src/routes/authorize.ts` – Validates PKCE input, persists state, and redirects to Mittwald.
 - `packages/oauth-bridge/src/routes/mittwald-callback.ts` – Handles Mittwald callback and stores the bridge authorization code.
 - `packages/oauth-bridge/src/routes/token.ts` – Exchanges the code with Mittwald, verifies PKCE, and issues bridge JWTs/refresh tokens.
+- `packages/oauth-bridge/src/routes/register.ts` – Dynamic client registration plus GET/DELETE management guarded by registration access tokens.
 - `packages/oauth-bridge/src/services/bridge-tokens.ts` – HS256 signing that embeds Mittwald tokens into the JWT payload.
 - `packages/oauth-bridge/tests/token-flow.test.ts` – Supertest flow test for `/authorize → /mittwald/callback → /token`.
-- `packages/oauth-bridge/src/config.ts` – Environment-driven configuration (`BRIDGE_*`, `MITTWALD_*`).
+- `packages/oauth-bridge/src/config.ts` – Environment-driven configuration (`BRIDGE_*`, `MITTWALD_*` without any client secret handling).
 
 ## 3. MCP Server Integration
 - `src/server/config.ts` – Loads `OAUTH_BRIDGE_*` settings (`JWT_SECRET`, issuer, audience) and still exposes `JWT_SECRET` for legacy use.
@@ -42,7 +43,7 @@ The codebase now uses a **stateless OAuth bridge** in front of the MCP server. R
 ## 6. Configuration & Environment
 - Bridge env vars:
   - `BRIDGE_ISSUER`, `BRIDGE_BASE_URL`, `BRIDGE_JWT_SECRET`, `BRIDGE_REDIRECT_URIS`
-  - `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_CLIENT_ID`, `MITTWALD_CLIENT_SECRET`
+  - `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_CLIENT_ID`
 - MCP env vars:
   - `OAUTH_BRIDGE_JWT_SECRET`, `OAUTH_BRIDGE_ISSUER`, `OAUTH_BRIDGE_AUDIENCE`
   - `MCP_PUBLIC_BASE`, `OAUTH_AS_BASE`

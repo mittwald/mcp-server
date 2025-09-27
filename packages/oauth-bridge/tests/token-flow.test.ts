@@ -14,8 +14,10 @@ function setupEnv() {
   process.env.MITTWALD_AUTHORIZATION_URL = 'https://mittwald.example.com/oauth/authorize';
   process.env.MITTWALD_TOKEN_URL = 'https://mittwald.example.com/oauth/token';
   process.env.MITTWALD_CLIENT_ID = 'mittwald-client';
-  process.env.MITTWALD_CLIENT_SECRET = 'mittwald-secret';
-  process.env.BRIDGE_REDIRECT_URIS = 'https://chatgpt.com/connector_platform_oauth_redirect';
+  process.env.BRIDGE_REDIRECT_URIS = [
+    'https://chatgpt.com/connector_platform_oauth_redirect',
+    'https://claude.ai/api/mcp/auth_callback'
+  ].join(',');
   process.env.BRIDGE_ACCESS_TOKEN_TTL_SECONDS = '3600';
   process.env.BRIDGE_REFRESH_TOKEN_TTL_SECONDS = '86400';
 }
@@ -101,6 +103,148 @@ describe('OAuth bridge flow', () => {
     });
     expect(typeof tokenResponse.body.access_token).toBe('string');
     expect(typeof tokenResponse.body.refresh_token).toBe('string');
+  });
+  test('register endpoint accepts dynamic client registration', async () => {
+    const config = loadConfigFromEnv();
+    const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
+    const app = createApp(config, stateStore);
+
+    const response = await request(app.callback())
+      .post('/register')
+      .send({
+        redirect_uris: ['https://chatgpt.com/connector_platform_oauth_redirect'],
+        token_endpoint_auth_method: 'none',
+        client_name: 'ChatGPT Connector',
+        scope: 'user:read'
+      })
+      .expect(201);
+
+    expect(typeof response.body.client_id).toBe('string');
+    expect(response.body.redirect_uris).toEqual(['https://chatgpt.com/connector_platform_oauth_redirect']);
+    expect(response.body.registration_client_uri).toContain(response.body.client_id);
+
+    const stored = await stateStore.getClientRegistration(response.body.client_id);
+    expect(stored).not.toBeNull();
+    expect(stored?.redirectUris).toEqual(['https://chatgpt.com/connector_platform_oauth_redirect']);
+    expect(typeof stored?.registrationAccessToken).toBe('string');
+  });
+
+  test('registration management endpoints enforce registration access token', async () => {
+    const config = loadConfigFromEnv();
+    const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
+    const app = createApp(config, stateStore);
+
+    const postResponse = await request(app.callback())
+      .post('/register')
+      .send({
+        redirect_uris: ['https://chatgpt.com/connector_platform_oauth_redirect'],
+        client_name: 'ChatGPT Connector'
+      })
+      .expect(201);
+
+    const accessToken = postResponse.body.registration_access_token;
+    const clientId = postResponse.body.client_id;
+
+    await request(app.callback())
+      .get(`/register/${clientId}`)
+      .expect(401);
+
+    const getResponse = await request(app.callback())
+      .get(`/register/${clientId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(getResponse.body.client_id).toBe(clientId);
+    expect(getResponse.body.registration_access_token).toBe(accessToken);
+
+    await request(app.callback())
+      .delete(`/register/${clientId}`)
+      .expect(401);
+
+    await request(app.callback())
+      .delete(`/register/${clientId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(204);
+
+    await request(app.callback())
+      .get(`/register/${clientId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(404);
+  });
+
+  test('metadata exposes MCP extensions', async () => {
+    const config = loadConfigFromEnv();
+    const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
+    const app = createApp(config, stateStore);
+
+    const metadataResponse = await request(app.callback())
+      .get('/.well-known/oauth-authorization-server')
+      .expect(200);
+
+    expect(metadataResponse.body).toMatchObject({
+      issuer: BASE_URL,
+      registration_endpoint: `${BASE_URL}/register`,
+      mcp: {
+        registration_endpoint: `${BASE_URL}/register`,
+        redirect_uris: expect.arrayContaining(['https://chatgpt.com/connector_platform_oauth_redirect'])
+      }
+    });
+  });
+
+  test('health endpoint reports state store metrics', async () => {
+    const config = loadConfigFromEnv();
+    const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
+    const app = createApp(config, stateStore);
+
+    const response = await request(app.callback())
+      .get('/health')
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      status: 'ok',
+      issuer: BASE_URL,
+      stateStore: {
+        health: { status: 'ok' }
+      }
+    });
+    expect(response.body.stateStore.metrics).toEqual(expect.objectContaining({
+      implementation: 'memory',
+      registeredClients: 0
+    }));
+  });
+
+  test('version endpoint returns deployment metadata', async () => {
+    const config = loadConfigFromEnv();
+    const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
+    const app = createApp(config, stateStore);
+
+    process.env.GIT_SHA = 'test-sha';
+    process.env.BUILD_TIME = '2025-09-27T00:00:00Z';
+
+    const response = await request(app.callback())
+      .get('/version')
+      .expect(200);
+
+    expect(response.body).toEqual({
+      gitSha: 'test-sha',
+      buildTime: '2025-09-27T00:00:00Z'
+    });
+  });
+
+  test('jwks endpoints return empty key set', async () => {
+    const config = loadConfigFromEnv();
+    const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
+    const app = createApp(config, stateStore);
+
+    const paths = ['/.well-known/jwks.json', '/.well-known/jwks', '/jwks'];
+
+    for (const path of paths) {
+      const response = await request(app.callback())
+        .get(path)
+        .expect(200);
+
+      expect(response.body).toEqual({ keys: [] });
+    }
   });
 });
 

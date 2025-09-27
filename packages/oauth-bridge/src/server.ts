@@ -1,9 +1,10 @@
 import { createApp } from './app.js';
 import { loadConfigFromEnv } from './config.js';
-import { MemoryStateStore } from './state/memory-state-store.js';
+import { createStateStore } from './state/state-store-factory.js';
 
 const config = loadConfigFromEnv();
-const stateStore = new MemoryStateStore({ ttlMs: 5 * 60 * 1000 });
+const ttlSeconds = Number(process.env.BRIDGE_STATE_TTL_SECONDS ?? 300);
+const stateStore = createStateStore({ ttlSeconds });
 const app = createApp(config, stateStore);
 
 app.listen(config.port, () => {

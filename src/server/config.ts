@@ -33,6 +33,19 @@ export interface OAuthBridgeConfig {
   ISSUER?: string;
   /** Expected audience (optional) */
   AUDIENCE?: string;
+  /** Base URL for the OAuth bridge (used for discovery) */
+  BASE_URL?: string;
+  /** Authorization endpoint override */
+  AUTHORIZATION_URL?: string;
+  /** Token endpoint override */
+  TOKEN_URL?: string;
+}
+
+export interface MittwaldOAuthConfig {
+  /** OAuth token endpoint for Mittwald */
+  TOKEN_URL?: string;
+  /** Mittwald OAuth client identifier */
+  CLIENT_ID?: string;
 }
 
 export interface ServerConfig {
@@ -46,6 +59,8 @@ export interface ServerConfig {
   REDIRECT_URL: string;
   /** Server port number */
   PORT: string;
+  /** Mittwald OAuth configuration (used for refresh tokens) */
+  MITTWALD: MittwaldOAuthConfig;
   /** Reserved for future flags (no OAuth bypass) */
   // no-op
   /** Test server ID for running tests */
@@ -78,7 +93,10 @@ export const CONFIG: ServerConfig = {
   OAUTH_BRIDGE: {
     JWT_SECRET: resolvedJwtSecret || '',
     ISSUER: process.env.OAUTH_BRIDGE_ISSUER,
-    AUDIENCE: process.env.OAUTH_BRIDGE_AUDIENCE
+    AUDIENCE: process.env.OAUTH_BRIDGE_AUDIENCE,
+    BASE_URL: process.env.OAUTH_BRIDGE_BASE_URL,
+    AUTHORIZATION_URL: process.env.OAUTH_BRIDGE_AUTHORIZATION_URL,
+    TOKEN_URL: process.env.OAUTH_BRIDGE_TOKEN_URL
   },
   OAUTH_ISSUER: process.env.OAUTH_ISSUER || 
     (process.env.NODE_ENV === "production" 
@@ -87,6 +105,10 @@ export const CONFIG: ServerConfig = {
   REDIRECT_URL: process.env.REDIRECT_URL || 
     `${process.env.OAUTH_ISSUER || `http://localhost:${process.env.PORT || "3000"}`}/oauth/callback`,
   PORT: process.env.PORT || "3000",
+  MITTWALD: {
+    TOKEN_URL: process.env.MITTWALD_TOKEN_URL,
+    CLIENT_ID: process.env.MITTWALD_CLIENT_ID,
+  },
   // no OAuth bypass
   TEST_SERVER_ID: process.env.TEST_SERVER_ID,
   TEST_ADMIN_EMAIL: process.env.TEST_ADMIN_EMAIL,

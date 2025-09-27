@@ -20,7 +20,7 @@ if $needs_app; then
   if [[ -n "${FLY_APP:-}" ]]; then
     set -- --app "$FLY_APP" "$@"
   else
-    candidate_files=("fly.toml" "packages/oauth-server/fly.toml" "packages/mcp-server/fly.toml")
+    candidate_files=("fly.toml" "packages/oauth-bridge/fly.toml" "packages/mcp-server/fly.toml")
     default_app=""
     for candidate in "${candidate_files[@]}"; do
       if [[ -f "$candidate" ]]; then

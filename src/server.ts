@@ -201,7 +201,10 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
     };
     
     // OAuth endpoints (external AS)
-    const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+    const asBase = CONFIG.OAUTH_BRIDGE.BASE_URL
+      || process.env.OAUTH_BRIDGE_BASE_URL
+      || process.env.OAUTH_AS_BASE
+      || 'https://mittwald-oauth-bridge.fly.dev';
     endpoints.oauth = {
       authorize: `${asBase}/auth`,
       token: `${asBase}/token`,

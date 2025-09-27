@@ -4,7 +4,6 @@ export interface BridgeConfig {
     authorizationUrl: string;
     tokenUrl: string;
     clientId: string;
-    clientSecret: string;
   };
   bridge: {
     issuer: string;
@@ -24,7 +23,6 @@ export function loadConfigFromEnv(): BridgeConfig {
     MITTWALD_AUTHORIZATION_URL,
     MITTWALD_TOKEN_URL,
     MITTWALD_CLIENT_ID,
-    MITTWALD_CLIENT_SECRET,
     BRIDGE_REDIRECT_URIS,
     BRIDGE_JWT_SECRET,
     BRIDGE_ACCESS_TOKEN_TTL_SECONDS,
@@ -51,10 +49,6 @@ export function loadConfigFromEnv(): BridgeConfig {
     throw new Error('MITTWALD_CLIENT_ID must be set');
   }
 
-  if (!MITTWALD_CLIENT_SECRET) {
-    throw new Error('MITTWALD_CLIENT_SECRET must be set');
-  }
-
   if (!BRIDGE_JWT_SECRET) {
     throw new Error('BRIDGE_JWT_SECRET must be set');
   }
@@ -77,8 +71,7 @@ export function loadConfigFromEnv(): BridgeConfig {
     mittwald: {
       authorizationUrl: MITTWALD_AUTHORIZATION_URL,
       tokenUrl: MITTWALD_TOKEN_URL,
-      clientId: MITTWALD_CLIENT_ID,
-      clientSecret: MITTWALD_CLIENT_SECRET
+      clientId: MITTWALD_CLIENT_ID
     },
     redirectUris: redirectUriList
   };

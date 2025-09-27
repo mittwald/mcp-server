@@ -51,6 +51,32 @@ export function createOAuthMiddleware() {
           ? payload.mittwald as Record<string, unknown>
           : undefined;
 
+        const nowSeconds = Math.floor(Date.now() / 1000);
+        const issuedAtSecondsRaw = payload.iat;
+        const issuedAtSeconds = typeof issuedAtSecondsRaw === 'number'
+          ? issuedAtSecondsRaw
+          : (typeof issuedAtSecondsRaw === 'string' ? Number(issuedAtSecondsRaw) : undefined);
+        const baseIssuedAt = Number.isFinite(issuedAtSeconds) ? Number(issuedAtSeconds) : nowSeconds;
+
+        const mittwaldExpiresInRaw = mittwaldPayload?.expires_in;
+        const mittwaldExpiresIn = typeof mittwaldExpiresInRaw === 'number'
+          ? mittwaldExpiresInRaw
+          : (typeof mittwaldExpiresInRaw === 'string' ? Number(mittwaldExpiresInRaw) : undefined);
+
+        const mittwaldExpiresAtFromPayload = mittwaldExpiresIn
+          ? baseIssuedAt + mittwaldExpiresIn
+          : (typeof mittwaldPayload?.expires_at === 'number'
+              ? mittwaldPayload.expires_at
+              : (typeof payload.exp === 'number' ? payload.exp : undefined));
+
+        const mittwaldRefreshExpiresInCandidate = (mittwaldPayload as Record<string, unknown> | undefined)?.refresh_token_expires_in
+          ?? (mittwaldPayload as Record<string, unknown> | undefined)?.refresh_expires_in;
+        const mittwaldRefreshTokenExpiresAt = typeof mittwaldRefreshExpiresInCandidate === 'number'
+          ? baseIssuedAt + mittwaldRefreshExpiresInCandidate
+          : (typeof mittwaldRefreshExpiresInCandidate === 'string'
+              ? baseIssuedAt + Number(mittwaldRefreshExpiresInCandidate)
+              : undefined);
+
         const mittwaldAccessToken = typeof mittwaldPayload?.access_token === 'string'
           ? mittwaldPayload.access_token
           : undefined;
@@ -86,7 +112,11 @@ export function createOAuthMiddleware() {
             mittwaldRequestedScope: mittwaldScope,
             issuer: typeof payload.iss === 'string' ? payload.iss : undefined,
             audience: payload.aud,
-            resource
+            resource,
+            mittwaldAccessTokenExpiresAt: mittwaldExpiresAtFromPayload,
+            mittwaldRefreshTokenExpiresAt,
+            mittwaldIssuedAt: baseIssuedAt,
+            mittwaldExpiresIn: mittwaldExpiresIn,
           }
         };
 
@@ -123,23 +153,32 @@ function sendOAuthChallenge(res: express.Response): void {
     : 'https://localhost:3000';
   
   // Authorization Server base (our oauth-server)
-  const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+  const asBase = getAuthorizationServerBase();
+  const authorizeEndpoint = CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL || `${asBase.replace(/\/$/, '')}/auth`;
+  const tokenEndpoint = CONFIG.OAUTH_BRIDGE.TOKEN_URL || `${asBase.replace(/\/$/, '')}/token`;
   
   // Set WWW-Authenticate header as per MCP OAuth spec
-  res.set('WWW-Authenticate', `Bearer realm="MCP Server", authorization_uri="${asBase}/auth"`);
+  res.set('WWW-Authenticate', `Bearer realm="MCP Server", authorization_uri="${authorizeEndpoint}"`);
   
   res.status(401).json({
     error: 'authentication_required',
     message: 'OAuth authentication required',
     oauth: {
-      authorization_url: `${asBase}/auth`,
-      token_url: `${asBase}/token`
+      authorization_url: authorizeEndpoint,
+      token_url: tokenEndpoint
     },
     endpoints: {
-      authorize: `${asBase}/auth`,
-      token: `${asBase}/token`,
-      metadata: `${asBase}/.well-known/oauth-authorization-server`
+      authorize: authorizeEndpoint,
+      token: tokenEndpoint,
+      metadata: `${asBase.replace(/\/$/, '')}/.well-known/oauth-authorization-server`
     },
     resource: `${process.env.MCP_PUBLIC_BASE || baseUrl}/mcp`
   });
+}
+
+function getAuthorizationServerBase(): string {
+  return CONFIG.OAUTH_BRIDGE.BASE_URL
+    || process.env.OAUTH_BRIDGE_BASE_URL
+    || process.env.OAUTH_AS_BASE
+    || 'https://mittwald-oauth-bridge.fly.dev';
 }

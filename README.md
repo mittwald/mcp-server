@@ -1,6 +1,6 @@
 # Mittwald MCP Server
 
-The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector, …) run Mittwald CLI commands on behalf of users. Authentication flows through a dedicated oidc-provider instance that proxies OAuth 2.1 requests to Mittwald's static client (`mittwald-mcp-server`). Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
+The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector, …) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**—there is no client secret to manage or distribute. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
 
 ## What Changed (2025-09-25)
 - **Mittwald is authoritative for scopes and consent.** Our proxy no longer maintains its own scope catalogue or renders consent pages.
@@ -13,7 +13,7 @@ For the full design see `ARCHITECTURE.md`.
 
 ```
 packages/
-  oauth-server/      # oidc-provider proxy to Mittwald OAuth
+  oauth-bridge/      # stateless OAuth proxy to Mittwald OAuth
 src/
   ...               # MCP server (JWT validation + CLI wrapper)
 docs/               # Supplemental documentation
@@ -34,9 +34,9 @@ docs/               # Supplemental documentation
    The OAuth and MCP services both read their scope catalogue from `config/mittwald-scopes.json`.
    Update that file (or point `MITTWALD_SCOPE_CONFIG_PATH` at an override) to change supported or
    default scopes—no code changes required.
-3. Run the OAuth proxy:
+3. Run the OAuth bridge:
    ```bash
-   pnpm --filter oauth-server dev
+   pnpm --filter @mittwald/oauth-bridge dev
    ```
 4. Run the MCP server:
    ```bash

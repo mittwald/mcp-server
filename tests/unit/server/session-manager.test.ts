@@ -1,7 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { resetRedisMock } from '../../helpers/redis-mock.ts';
 
+vi.mock('../../../src/server/mittwald-token-service.js', () => ({
+  refreshMittwaldAccessToken: vi.fn(),
+  MittwaldTokenServiceError: class extends Error {},
+}));
+
+import { refreshMittwaldAccessToken } from '../../../src/server/mittwald-token-service.js';
 import { SessionManager } from '../../../src/server/session-manager.js';
+
+const mockRefreshMittwaldAccessToken = vi.mocked(refreshMittwaldAccessToken);
 
 const baseSessionData = () => ({
   mittwaldAccessToken: 'access-token',
@@ -9,6 +17,7 @@ const baseSessionData = () => ({
   oauthToken: 'jwt-token',
   scope: 'profile',
   expiresAt: new Date(Date.now() + 60_000),
+  mittwaldAccessTokenExpiresAt: new Date(Date.now() + 60_000),
   currentContext: {},
   accessibleProjects: [],
   scopes: ['profile'],
@@ -21,6 +30,7 @@ describe('SessionManager', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    mockRefreshMittwaldAccessToken.mockReset();
   });
 
   it('creates and retrieves a session', async () => {
@@ -54,6 +64,41 @@ describe('SessionManager', () => {
 
     const session = await manager.getSession(sessionId);
     expect(session).toBeNull();
+  });
+
+  it('refreshes access token using Mittwald refresh token when expired', async () => {
+    vi.useFakeTimers();
+    const now = new Date('2025-01-01T00:00:00.000Z');
+    vi.setSystemTime(now);
+
+    const manager = new SessionManager();
+
+    mockRefreshMittwaldAccessToken.mockResolvedValue({
+      access_token: 'new-access-token',
+      token_type: 'Bearer',
+      expires_in: 7200,
+      refresh_token: 'rotated-refresh-token',
+      scope: 'profile extended',
+    });
+
+    const sessionId = await manager.createSession('user-1', {
+      ...baseSessionData(),
+      expiresAt: new Date(now.getTime() - 1_000),
+      mittwaldAccessTokenExpiresAt: new Date(now.getTime() - 1_000),
+    });
+
+    const session = await manager.getSession(sessionId);
+
+    expect(mockRefreshMittwaldAccessToken).toHaveBeenCalledWith({
+      refreshToken: 'refresh-token',
+      scope: 'profile',
+    });
+
+    expect(session).not.toBeNull();
+    expect(session?.mittwaldAccessToken).toBe('new-access-token');
+    expect(session?.mittwaldRefreshToken).toBe('rotated-refresh-token');
+    expect(session?.scope).toBe('profile extended');
+    expect(session?.mittwaldAccessTokenExpiresAt?.getTime()).toBeGreaterThan(now.getTime());
   });
 
   it('cleans up sessions with expired metadata', async () => {

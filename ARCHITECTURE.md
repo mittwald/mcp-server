@@ -23,7 +23,7 @@ Key goals:
 
 | Component | Role |
 |-----------|------|
-| **OAuth Bridge (`packages/oauth-bridge`)** | Koa service handling `/authorize`, `/mittwald/callback`, `/token`, JWT signing, and Redis-backed state. |
+| **OAuth Bridge (`packages/oauth-bridge`)** | Koa service handling `/authorize`, `/mittwald/callback`, `/token`, client registration lifecycle, `/health` metrics, JWT signing, and Redis-backed state. The bridge authenticates as a public Mittwald PKCE client (no client secret). |
 | **Mittwald OAuth** | Authoritative IdP (static client `mittwald-mcp-server`). Provides login UI, enforces scopes, and issues access/refresh tokens. |
 | **MCP Server (`src/server`)** | Validates bridge JWTs, persists sessions in Redis, and drives tool execution via Mittwald tokens. |
 | **Redis** | Session/state cache storing authorization requests (bridge) and user sessions (MCP server). |
@@ -47,7 +47,7 @@ Key goals:
 - `PORT` – Bridge HTTP port (default 3000).
 - `BRIDGE_ISSUER`, `BRIDGE_BASE_URL`, `BRIDGE_JWT_SECRET` – JWT metadata and signing key (shared with MCP server via `OAUTH_BRIDGE_JWT_SECRET`).
 - `BRIDGE_REDIRECT_URIS` – Comma-separated list (ChatGPT `https://chatgpt.com/connector_platform_oauth_redirect`, Claude `https://claude.ai/api/mcp/auth_callback`, etc.).
-- `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_CLIENT_ID`, `MITTWALD_CLIENT_SECRET` – Mittwald endpoints and static credentials.
+- `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_CLIENT_ID` – Mittwald endpoints and static client identifier (public PKCE client; no client secret required).
 - Optional TTL overrides: `BRIDGE_ACCESS_TOKEN_TTL_SECONDS`, `BRIDGE_REFRESH_TOKEN_TTL_SECONDS`.
 
 ### MCP Environment Variables
@@ -63,7 +63,8 @@ Key goals:
 - `src/routes/authorize.ts` – Validates PKCE, persists authorization requests, redirects to Mittwald.
 - `src/routes/mittwald-callback.ts` – Receives Mittwald auth code, maps back to external state.
 - `src/routes/token.ts` – PKCE verification, token exchange, JWT signing via `services/bridge-tokens.ts`.
-- `src/services/mittwald.ts` – HTTP client for Mittwald token exchanges.
+- `src/routes/register.ts` – Dynamic client registration plus GET/DELETE lifecycle endpoints gated by the registration access token.
+- `src/services/mittwald.ts` – HTTP client for Mittwald token exchanges (public client: PKCE only, no client secret).
 - Tests: `tests/token-flow.test.ts` uses Supertest to exercise the full flow.
 
 ### MCP Server
