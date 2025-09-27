@@ -1,5 +1,5 @@
 import express from "express";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 import type { AuthenticatedRequest } from "./auth-types.js";
 import { CONFIG } from "./config.js";
 import { logger } from "../utils/logger.js";
@@ -30,51 +30,70 @@ export function createOAuthMiddleware() {
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
       
       try {
-        // Verify JWT token using same key as OAuth server
-        const jwtSigningKey = process.env.JWT_SIGNING_KEY || process.env.JWT_SECRET || 'development-key-not-secure';
+        const bridgeSecret = CONFIG.OAUTH_BRIDGE.JWT_SECRET;
 
-        if (!jwtSigningKey || jwtSigningKey === 'development-key-not-secure') {
-          throw new Error('JWT_SIGNING_KEY not configured - must match OAuth server');
+        if (!bridgeSecret) {
+          throw new Error('OAUTH_BRIDGE_JWT_SECRET not configured');
         }
 
-        const decoded = jwt.verify(token, jwtSigningKey) as any;
+        const verifyOptions: Record<string, unknown> = {};
+        if (CONFIG.OAUTH_BRIDGE.ISSUER) {
+          verifyOptions.issuer = CONFIG.OAUTH_BRIDGE.ISSUER;
+        }
+        if (CONFIG.OAUTH_BRIDGE.AUDIENCE) {
+          verifyOptions.audience = CONFIG.OAUTH_BRIDGE.AUDIENCE;
+        }
 
-        const mittwaldAccessToken = typeof decoded.mittwald_access_token === 'string'
-          ? decoded.mittwald_access_token
+        const verification = await jwtVerify(token, new TextEncoder().encode(bridgeSecret), verifyOptions);
+        const payload = verification.payload as Record<string, unknown>;
+
+        const mittwaldPayload = typeof payload.mittwald === 'object' && payload.mittwald !== null
+          ? payload.mittwald as Record<string, unknown>
           : undefined;
-        const mittwaldRefreshToken = typeof decoded.mittwald_refresh_token === 'string'
-          ? decoded.mittwald_refresh_token
+
+        const mittwaldAccessToken = typeof mittwaldPayload?.access_token === 'string'
+          ? mittwaldPayload.access_token
           : undefined;
-        const mittwaldScope = typeof decoded.mittwald_scope === 'string' ? decoded.mittwald_scope : undefined;
-        const mittwaldScopeSource = typeof decoded.mittwald_scope_source === 'string'
-          ? decoded.mittwald_scope_source
+        const mittwaldRefreshToken = typeof mittwaldPayload?.refresh_token === 'string'
+          ? mittwaldPayload.refresh_token
           : undefined;
-        const mittwaldRequestedScope = typeof decoded.mittwald_requested_scope === 'string'
-          ? decoded.mittwald_requested_scope
-          : undefined;
+        const mittwaldScope = typeof mittwaldPayload?.scope === 'string'
+          ? mittwaldPayload.scope
+          : (typeof payload.scope === 'string' ? payload.scope : undefined);
+        const resource = typeof mittwaldPayload?.resource === 'string'
+          ? mittwaldPayload.resource
+          : (typeof payload.resource === 'string' ? payload.resource : undefined);
+
+        const scopeString = typeof payload.scope === 'string'
+          ? payload.scope
+          : (typeof mittwaldScope === 'string' ? mittwaldScope : '');
+        const scopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
 
         // Set auth info on request matching MCP SDK AuthInfo interface
         req.auth = {
           token: token, // The JWT token itself
-          clientId: decoded.client_id || 'mittwald-mcp-server',
-          scopes: decoded.scope?.split(' ') || [],
-          expiresAt: decoded.exp, // Keep as seconds since epoch (not milliseconds)
+          clientId: typeof payload.client_id === 'string'
+            ? payload.client_id
+            : (typeof payload.aud === 'string' ? payload.aud : 'mittwald-mcp-server'),
+          scopes,
+          expiresAt: typeof payload.exp === 'number' ? payload.exp : undefined,
           extra: {
-            userId: decoded.sub,
+            userId: typeof payload.sub === 'string' ? payload.sub : undefined,
             mittwaldAccessToken,
             mittwaldRefreshToken,
             mittwaldScope,
-            mittwaldScopeSource,
-            mittwaldRequestedScope,
-            issuer: decoded.iss,
-            audience: decoded.aud
+            mittwaldScopeSource: 'mittwald',
+            mittwaldRequestedScope: mittwaldScope,
+            issuer: typeof payload.iss === 'string' ? payload.iss : undefined,
+            audience: payload.aud,
+            resource
           }
         };
 
         logger.info('JWT VALIDATION: Token accepted', {
           clientId: req.auth.clientId,
-          userId: decoded.sub,
-          expiresAt: decoded.exp,
+          userId: req.auth.extra?.userId,
+          expiresAt: req.auth.expiresAt,
           hasMittwaldToken: !!mittwaldAccessToken
         });
         

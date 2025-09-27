@@ -26,9 +26,20 @@ dotenv.config();
  * Defines all configuration values required by the server.
  * These values are typically loaded from environment variables.
  */
+export interface OAuthBridgeConfig {
+  /** Shared secret for verifying OAuth bridge JWTs */
+  JWT_SECRET: string;
+  /** Expected issuer (optional) */
+  ISSUER?: string;
+  /** Expected audience (optional) */
+  AUDIENCE?: string;
+}
+
 export interface ServerConfig {
   /** Secret key for JWT token signing */
   JWT_SECRET?: string;
+  /** OAuth bridge verification configuration */
+  OAUTH_BRIDGE: OAuthBridgeConfig;
   /** Base URL for OAuth issuer (production or localhost) */
   OAUTH_ISSUER: string;
   /** OAuth callback redirect URL */
@@ -60,8 +71,15 @@ export interface ServerConfig {
  * Centralized configuration loaded from environment variables.
  * Used throughout the application for consistent settings.
  */
+const resolvedJwtSecret = process.env.OAUTH_BRIDGE_JWT_SECRET || process.env.JWT_SECRET;
+
 export const CONFIG: ServerConfig = {
-  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_SECRET: resolvedJwtSecret,
+  OAUTH_BRIDGE: {
+    JWT_SECRET: resolvedJwtSecret || '',
+    ISSUER: process.env.OAUTH_BRIDGE_ISSUER,
+    AUDIENCE: process.env.OAUTH_BRIDGE_AUDIENCE
+  },
   OAUTH_ISSUER: process.env.OAUTH_ISSUER || 
     (process.env.NODE_ENV === "production" 
       ? "https://mittwald-mcp.example.com"
@@ -90,6 +108,9 @@ export function validateConfig(): void {
   const requiredVars: string[] = [];
   if (!CONFIG.JWT_SECRET) {
     requiredVars.push("JWT_SECRET");
+  }
+  if (!CONFIG.OAUTH_BRIDGE.JWT_SECRET) {
+    requiredVars.push("OAUTH_BRIDGE_JWT_SECRET or JWT_SECRET");
   }
   if (requiredVars.length > 0) {
     throw new Error(

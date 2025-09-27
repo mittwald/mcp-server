@@ -1,19 +1,24 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 import { createOAuthMiddleware } from '../../../src/server/oauth-middleware.js';
 import { CONFIG } from '../../../src/server/config.js';
 
-// Mock dependencies
-vi.mock('jsonwebtoken');
+vi.mock('jose', () => ({
+  jwtVerify: vi.fn()
+}));
 vi.mock('../../../src/server/config.js', () => ({
   CONFIG: {
     JWT_SECRET: 'test-jwt-secret',
+    OAUTH_BRIDGE: {
+      JWT_SECRET: 'test-jwt-secret',
+      ISSUER: 'https://bridge.example.com'
+    },
     OAUTH_ISSUER: 'http://localhost:8080/default'
   }
 }));
 
-const mockJwt = jwt as any;
+const mockJwtVerify = vi.mocked(jwtVerify);
 const originalEnv = {
   NODE_ENV: process.env.NODE_ENV,
   MCP_PUBLIC_BASE: process.env.MCP_PUBLIC_BASE,
@@ -28,6 +33,7 @@ describe('OAuth Middleware', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockJwtVerify.mockReset();
     process.env.OAUTH_AS_BASE = 'https://mittwald-oauth-server.fly.dev';
     delete process.env.MCP_PUBLIC_BASE;
     process.env.NODE_ENV = 'test';
@@ -61,23 +67,31 @@ describe('OAuth Middleware', () => {
       const decodedToken = {
         sub: 'user-123',
         aud: 'mittwald-mcp-server',
-        access_token: 'oauth-access-token',
-        refresh_token: 'oauth-refresh-token',
         scope: 'openid profile user:read',
-        exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
-      };
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        iss: 'https://bridge.example.com',
+        mittwald: {
+          access_token: 'oauth-access-token',
+          refresh_token: 'oauth-refresh-token',
+          scope: 'openid profile user:read'
+        }
+      } as any;
 
       mockRequest.headers = {
         authorization: `Bearer ${validToken}`
       };
 
-      mockJwt.verify.mockReturnValue(decodedToken);
+      mockJwtVerify.mockResolvedValue({ payload: decodedToken });
 
       // Act
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
       // Assert
-      expect(mockJwt.verify).toHaveBeenCalledWith(validToken, expect.any(String));
+      expect(mockJwtVerify).toHaveBeenCalledWith(
+        validToken,
+        expect.any(Uint8Array),
+        expect.objectContaining({ issuer: 'https://bridge.example.com' })
+      );
       expect(mockRequest.auth).toEqual({
         token: validToken,
         clientId: 'mittwald-mcp-server',
@@ -85,10 +99,14 @@ describe('OAuth Middleware', () => {
         expiresAt: decodedToken.exp,
         extra: {
           userId: 'user-123',
-          mittwaldAccessToken: undefined,
-          mittwaldRefreshToken: undefined,
-          issuer: undefined,
-          audience: 'mittwald-mcp-server'
+          mittwaldAccessToken: 'oauth-access-token',
+          mittwaldRefreshToken: 'oauth-refresh-token',
+          mittwaldScope: 'openid profile user:read',
+          mittwaldScopeSource: 'mittwald',
+          mittwaldRequestedScope: 'openid profile user:read',
+          issuer: 'https://bridge.example.com',
+          audience: 'mittwald-mcp-server',
+          resource: undefined
         }
       });
       expect(mockNext).toHaveBeenCalled();
@@ -99,16 +117,18 @@ describe('OAuth Middleware', () => {
       const decodedToken = {
         sub: 'user-123',
         client_id: 'custom-client-id',
-        access_token: 'oauth-access-token',
         scope: 'openid profile',
-        exp: Math.floor(Date.now() / 1000) + 3600
-      };
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        mittwald: {
+          access_token: 'oauth-access-token'
+        }
+      } as any;
 
       mockRequest.headers = {
         authorization: `Bearer ${validToken}`
       };
 
-      mockJwt.verify.mockReturnValue(decodedToken);
+      mockJwtVerify.mockResolvedValue({ payload: decodedToken });
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -120,15 +140,14 @@ describe('OAuth Middleware', () => {
       const validToken = 'valid-jwt-token';
       const decodedToken = {
         sub: 'user-123',
-        access_token: 'oauth-access-token',
         exp: Math.floor(Date.now() / 1000) + 3600
-      };
+      } as any;
 
       mockRequest.headers = {
         authorization: `Bearer ${validToken}`
       };
 
-      mockJwt.verify.mockReturnValue(decodedToken);
+      mockJwtVerify.mockResolvedValue({ payload: decodedToken });
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -174,9 +193,7 @@ describe('OAuth Middleware', () => {
         authorization: `Bearer ${invalidToken}`
       };
 
-      mockJwt.verify.mockImplementation(() => {
-        throw new Error('Invalid token');
-      });
+      mockJwtVerify.mockRejectedValue(new Error('Invalid token'));
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -191,8 +208,9 @@ describe('OAuth Middleware', () => {
       };
 
       // Mock missing JWT_SECRET
-      const originalConfig = CONFIG.JWT_SECRET;
-      (CONFIG as any).JWT_SECRET = undefined;
+      const originalConfig = CONFIG.OAUTH_BRIDGE.JWT_SECRET;
+      (CONFIG as any).OAUTH_BRIDGE.JWT_SECRET = '';
+      (CONFIG as any).JWT_SECRET = '';
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -200,6 +218,7 @@ describe('OAuth Middleware', () => {
       expect(mockNext).not.toHaveBeenCalled();
 
       // Restore original config
+      (CONFIG as any).OAUTH_BRIDGE.JWT_SECRET = originalConfig;
       (CONFIG as any).JWT_SECRET = originalConfig;
     });
   });
@@ -252,9 +271,7 @@ describe('OAuth Middleware', () => {
       };
 
       // Mock unexpected error
-      mockJwt.verify.mockImplementation(() => {
-        throw new Error('Unexpected error');
-      });
+      mockJwtVerify.mockRejectedValue(new Error('Unexpected error'));
 
       // Mock console.error to avoid noise in tests
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -273,9 +290,7 @@ describe('OAuth Middleware', () => {
         authorization: `Bearer ${validToken}`
       };
 
-      mockJwt.verify.mockImplementation(() => {
-        throw 'String error'; // Non-Error object
-      });
+      mockJwtVerify.mockRejectedValue('String error');
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -290,16 +305,14 @@ describe('OAuth Middleware', () => {
       const decodedToken = {
         sub: 'user-123',
         aud: 'mittwald-mcp-server',
-        access_token: 'oauth-access-token',
         exp: Math.floor(Date.now() / 1000) + 3600
-        // No scope field
-      };
+      } as any;
 
       mockRequest.headers = {
         authorization: `Bearer ${validToken}`
       };
 
-      mockJwt.verify.mockReturnValue(decodedToken);
+      mockJwtVerify.mockResolvedValue({ payload: decodedToken });
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -312,16 +325,15 @@ describe('OAuth Middleware', () => {
       const decodedToken = {
         sub: 'user-123',
         aud: 'mittwald-mcp-server',
-        access_token: 'oauth-access-token',
         scope: 'openid profile user:read customer:write',
         exp: Math.floor(Date.now() / 1000) + 3600
-      };
+      } as any;
 
       mockRequest.headers = {
         authorization: `Bearer ${validToken}`
       };
 
-      mockJwt.verify.mockReturnValue(decodedToken);
+      mockJwtVerify.mockResolvedValue({ payload: decodedToken });
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
