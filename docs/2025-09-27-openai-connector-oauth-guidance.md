@@ -160,3 +160,4 @@ During September 2025 design discussions an alternative proposal argued for remo
 - 2025-09-27 15:25 UTC — Created feature branch `oauth-bridge-phase1-20250927` and stubbed new `packages/oauth-bridge` service (health route + logging) to kick off Phase 1. Commit: `70abcf7`.
 - 2025-09-27 15:34 UTC — Wired environment-driven configuration loader and injected bridge config into the Koa app skeleton. Commit: `e7e3bfe`.
 - 2025-09-27 15:46 UTC — Added pluggable state-store abstraction with a default in-memory implementation and injected it into the bridge app context. Commit: `12e9e14`.
+- 2025-09-27 16:05 UTC — Implemented `/authorize` endpoint that validates PKCE parameters, persists interaction state, and redirects to Mittwald with an internal state token. Commit: `060edb3`.
