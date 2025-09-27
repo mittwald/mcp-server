@@ -1,114 +1,88 @@
-# Mittwald MCP Proxy Architecture (2025-09-25)
+# Mittwald MCP Connector Architecture (2025-09-27)
 
 ## Executive Summary
 
-The Mittwald MCP deployment now operates as an OAuth 2.1 proxy. External MCP clients (Claude, ChatGPT, MCP Inspector, etc.) talk to our oidc-provider instance, which in turn authenticates users against Mittwald's static OAuth client (`mittwald-mcp-server`). We still bypass local consent, but we now version Mittwald's scope catalogue in `config/mittwald-scopes.json` so every service validates requests against the same list while Mittwald remains the system of record for user approval and scope issuance. The proxy fulfils OIDC/DCR requirements and embeds the Mittwald tokens into MCP-facing JWTs.
+We replaced the legacy `oidc-provider` deployment with a **stateless OAuth bridge** that fronts Mittwald’s OAuth endpoints and issues HS256 JWTs to downstream MCP clients (ChatGPT, Claude, Inspector, etc.). The bridge stores interaction state in Redis, exchanges authorization codes with Mittwald, and embeds Mittwald access/refresh tokens in the JWT payload. The MCP server verifies the bridge JWT, persists the Mittwald tokens in Redis, and uses them for CLI calls (`mw … --token <mittwald_access_token>`).
 
-### Key Decisions
-- **Centralised scope catalogue**: `config/mittwald-scopes.json` enumerates the 41 resource scopes Mittwald exposes today plus the compatibility pair `openid`/`offline_access`. The MCP server (`src/config/mittwald-scopes.ts`) and OAuth proxy (`packages/oauth-server/src/config/mittwald-scopes.ts`) both load this file to supply `SUPPORTED_SCOPES`, `UPSTREAM_SCOPES`, `DEFAULT_SCOPES`, and helpers such as `validateRequestedScopes`. Use `MITTWALD_SCOPE_CONFIG_PATH` for environment-specific copies; do not hardcode scope arrays in code or tests.
-- **Discovery-backed metadata**: We still hit Mittwald discovery (`MITTWALD_ISSUER`) for endpoints and defaults. When the document omits `scopes_supported` or `default_scope` we inject the configured lists so metadata responses stay complete.
-- **Scoped fallbacks only as last resort**: `MITTWALD_SCOPE_FALLBACK` remains as an emergency override when neither the client request nor discovery nor the config yields a scope string. Routine deployments must rely on the JSON catalogue instead.
-- **No local consent screen**: Our oidc-provider no longer renders HTML approval pages. After the Mittwald callback succeeds we immediately complete the interaction, creating the grant silently. Users see only Mittwald's login/consent flow.
-- **Dynamic client registration stays open**: `/reg` continues to accept new MCP clients without an initial access token. We store the registered metadata and rely on Mittwald to enforce scope validity and redirect URI correctness.
-- **Trust model**: When a user grants access in Mittwald Studio they authorize the `mittwald-mcp-server` static client. All downstream MCP clients share that approval through our proxy. Revocation happens in Mittwald Studio, not via our proxy.
+Key goals:
+- Support cookie-less OAuth clients (ChatGPT/Claude) with Authorization Code + PKCE flows.
+- Keep Mittwald as the system of record for user consent and token issuance.
+- Share session state between MCP workers via Redis (no reliance on browser cookies).
+
+## High-Level Flow
+
+1. **Discovery** – Bridge serves `.well-known/oauth-authorization-server` with MCP metadata (`mcp.client_id`, redirect URIs) and `.well-known/oauth-protected-resource` for resource indicators. MCP clients fetch this first.
+2. **Authorization** – Client calls `GET /authorize` on the bridge. We validate PKCE parameters, persist state in Redis (keyed by `state`), and redirect to Mittwald (`MITTWALD_AUTHORIZATION_URL`).
+3. **Mittwald Callback** – Mittwald redirects back to `/mittwald/callback`. We look up the original request using an internal state token, generate our own bridge authorization code, and redirect the MCP client back to its callback with that code.
+4. **Token Exchange** – Client calls `POST /token` on the bridge with PKCE verifier. We verify the grant, exchange the stored Mittwald authorization code for access/refresh tokens (`MITTWALD_TOKEN_URL`), mint a JWT (`HS256`) embedding the Mittwald tokens, and return the JWT + refresh token to the MCP client.
+5. **MCP Request** – Client presents the bridge JWT to the MCP server (`Authorization: Bearer`). Our OAuth middleware verifies the signature using `OAUTH_BRIDGE_JWT_SECRET`, extracts Mittwald access/refresh tokens, and populates `req.auth.extra`.
+6. **Session Persistence** – MCP server stores the Mittwald credentials, scopes, and resource in Redis via `sessionManager`. Subsequent requests reuse the cached tokens; `session-auth` middleware hydrates `req.auth` and `req.user` from Redis.
+7. **CLI Execution** – When tools invoke the Mittwald CLI (`mw`), we inject the Mittwald access token from `req.auth.extra.mittwaldAccessToken` ensuring every command authenticates on behalf of the user.
 
 ## Components
 
 | Component | Role |
 |-----------|------|
-| **oidc-provider (packages/oauth-server)** | Acts as OAuth AS for MCP clients. Handles DCR, builds Mittwald authorization requests, exchanges Mittwald codes, issues JWTs containing Mittwald tokens. |
-| **Mittwald OAuth** | Authoritative IdP. Provides login UI and consent, enforces scopes, and supplies access/refresh tokens. |
-| **MCP Server** | Validates JWTs from oidc-provider, extracts Mittwald tokens, and invokes the `mw` CLI with `--token`. Stateless aside from JWKS cache. |
-| **Redis (session/state cache)** | Shared, low-latency store for MCP session records and PKCE/OAuth state; accessed by the MCP server and OAuth helper utilities. |
-| **SQLite (oauth-server persistence)** | File-backed database (`better-sqlite3`) used by oidc-provider to persist tokens, grants, registrations, and confidential client secrets across restarts. |
-| **MCP Clients** | Claude, ChatGPT, MCP Inspector etc. Register dynamically, follow OAuth 2.1 + PKCE, and use the JWTs to call our MCP server. |
+| **OAuth Bridge (`packages/oauth-bridge`)** | Koa service handling `/authorize`, `/mittwald/callback`, `/token`, JWT signing, and Redis-backed state. |
+| **Mittwald OAuth** | Authoritative IdP (static client `mittwald-mcp-server`). Provides login UI, enforces scopes, and issues access/refresh tokens. |
+| **MCP Server (`src/server`)** | Validates bridge JWTs, persists sessions in Redis, and drives tool execution via Mittwald tokens. |
+| **Redis** | Session/state cache storing authorization requests (bridge) and user sessions (MCP server). |
+| **MCP Clients** | ChatGPT, Claude, Inspector, etc. – consume discovery, execute OAuth 2.1 + PKCE using bridge endpoints. |
 
-## Stateful Services
+## Stateful Data
 
-### Redis session cache (MCP runtime)
-- **Where**: Node SDK wrapper in `src/utils/redis-client.ts` encapsulates a singleton `ioredis` client. The MCP handler persists Mittwald access/refresh tokens and per-user context through `sessionManager` (`src/server/session-manager.ts`), while `src/middleware/session-auth.ts` reads the same keys to auth incoming HTTP requests.
-- **When**: Entries are written whenever a session is created or refreshed (e.g., JWT handshake in `src/server/mcp.ts`), and read on every MCP request or during PKCE round-trips managed by `src/auth/oauth-state-manager.ts`. TTLs ensure data ages out automatically.
-- **Why**: MCP workers must share short-lived state (tokens, context, OAuth `state` values) without coupling to a single process. Redis gives sub-millisecond access with expirations so horizontal scaling stays stateless outside this cache.
+### Bridge Authorization Store
+- Implemented in `packages/oauth-bridge/src/state/` (in-memory for now, backed by Redis in deployment).
+- Tracks `state` → client metadata, PKCE challenge, Mittwald authorization code, tokens, refresh tokens.
+- TTL-driven cleanup to avoid leaked state.
 
-### SQLite persistence (oidc-provider)
-- **Where**: The oauth-server package selects the SQLite adapter (`packages/oauth-server/src/config/adapters.ts`) which stores rows in `/app/jwks/oauth-sessions.db` via `better-sqlite3`. Client secrets reuse the same file in `packages/oauth-server/src/services/client-secrets.ts`.
-- **When**: oidc-provider writes to SQLite during dynamic client registration, authorization code issuance, refresh token grants, grant revocation, and confidential-client secret lifecycle. Reads happen on every token introspection and grant lookup.
-- **Why**: The OAuth authority needs durable storage that survives Fly restarts and supports open registration. SQLite provides persistence without introducing another external service, aligning with the deployment mount already used for JWKS.
+### MCP Sessions (Redis)
+- Managed by `src/server/session-manager.ts`.
+- Keys: `session:<id>` containing Mittwald access/refresh tokens, scope, resource, context, expiration.
+- `session-auth` middleware reads these records for each request; `mcp.ts` updates them whenever new auth arrives.
 
-## OAuth Flow (High Level)
+## Configuration
 
-1. **Dynamic Client Registration**: MCP client POSTs `/reg`. We persist the registration unmodified. No scope filtering or redirect URI rewriting. We log the request and warn if discovery metadata was unavailable.
-2. **Authorization Request**: Client hits `/auth`. oidc-provider creates an interaction and redirects the user to Mittwald's authorization endpoint. Requested scopes come from the client's request; if absent, we send no `scope` parameter (Mittwald applies its defaults) or the optional fallback string.
-3. **Mittwald Login & Consent**: User authenticates and approves scopes in Mittwald Studio. Mittwald redirects back to `/mittwald/callback` with an authorization code.
-4. **Token Exchange (Mittwald)**: Our proxy exchanges the Mittwald code for Mittwald access/refresh tokens using the static client credentials. We store the tokens in `userAccountStore` keyed by the Mittwald subject.
-5. **Interaction Completion**: We immediately call `provider.interactionFinished` with the authenticated account. No consent UI is shown in our proxy; the existing grant is created or updated to include the scopes Mittwald returned. Until Mittwald authentication succeeds there is no local account, so `loadExistingGrant` must return `undefined` during the initial `/auth` request to let oidc-provider proceed to our `/interaction/:uid` handler.
-6. **Token Issuance (Proxy)**: When the MCP client calls `/token`, oidc-provider issues JWT access/refresh tokens. The JWT payload embeds the Mittwald tokens and the exact scope string returned from Mittwald.
-7. **MCP Access**: The client presents the JWT to the MCP server. The MCP server verifies the signature, extracts the Mittwald access token, and executes the requested CLI command with `mw ... --token <mittwald_access_token>`.
+### Bridge Environment Variables
+- `PORT` – Bridge HTTP port (default 3000).
+- `BRIDGE_ISSUER`, `BRIDGE_BASE_URL`, `BRIDGE_JWT_SECRET` – JWT metadata and signing key (shared with MCP server via `OAUTH_BRIDGE_JWT_SECRET`).
+- `BRIDGE_REDIRECT_URIS` – Comma-separated list (ChatGPT `https://chatgpt.com/connector_platform_oauth_redirect`, Claude `https://claude.ai/api/mcp/auth_callback`, etc.).
+- `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_CLIENT_ID`, `MITTWALD_CLIENT_SECRET` – Mittwald endpoints and static credentials.
+- Optional TTL overrides: `BRIDGE_ACCESS_TOKEN_TTL_SECONDS`, `BRIDGE_REFRESH_TOKEN_TTL_SECONDS`.
 
-## Scope Management
+### MCP Environment Variables
+- `OAUTH_BRIDGE_JWT_SECRET` – Must match the bridge signing secret.
+- `OAUTH_BRIDGE_ISSUER`, `OAUTH_BRIDGE_AUDIENCE` (optional) – Expected JWT issuer/audience.
+- `OAUTH_AS_BASE`, `MCP_PUBLIC_BASE` – Used for `WWW-Authenticate` metadata and OAuth challenges.
+- Redis credentials – `REDIS_URL` (see `docker-compose.yml`).
 
-- **Canonical source**: `config/mittwald-scopes.json` lists the Mittwald resource scopes alongside the
-  compatibility pair `openid`/`offline_access`, and records the four defaults we request when a client omits
-  `scope`. Both binaries read this file, so edits immediately flow to every runtime. The loader logs
-  `supportedCount`, `upstreamCount`, and `defaultCount` on startup so operators can verify the catalogue. Use
-  `MITTWALD_SCOPE_CONFIG_PATH` to mount an environment-specific copy when needed.
-- **Pass-through client scopes**: When MCP clients need additional OIDC scopes that Mittwald does not recognise
-  (e.g. `profile` for Claude.ai), add them to `supportedScopes` only. Leave them out of `upstreamScopes` so
-  `validateRequestedScopes` accepts the registration while `filterUpstreamScopes` strips them before we call
-  Mittwald. The proxy will continue to embed only the Mittwald-issued scopes in downstream JWTs.
-- **How to consume in code**: Import `SUPPORTED_SCOPES`, `UPSTREAM_SCOPES`, `DEFAULT_SCOPES`,
-  `DEFAULT_SCOPE_STRING`, and helpers like `validateRequestedScopes` from
-  `src/config/mittwald-scopes.ts` (MCP server) or `packages/oauth-server/src/config/mittwald-scopes.ts`
-  (OAuth proxy). Tests must also read from these modules—never hardcode scope strings or arrays.
-- **Discovery assist**: The OAuth proxy still performs discovery to validate endpoints and capture
-  Mittwald defaults. When the document lacks scope metadata we splice the configured lists into the
-  responses so downstream clients observe the full catalogue.
-- **Runtime sanitisation**: `validateRequestedScopes` splits client requests into `valid` (forwarded to
-  Mittwald), `passthroughOnly` (currently `openid`/`offline_access`, retained locally), and `unsupported`
-  (rejected with `invalid_scope`). Only `UPSTREAM_SCOPES` reach Mittwald; everything else is filtered before
-  building the authorization URL.
-- **Token propagation**: After Mittwald responds, we store its `scope` string verbatim, embed it in JWTs, and
-  log the resolution source. The configured defaults only seed requests when the client, discovery, and
-  environment overrides are silent.
+## Key Modules
 
-## Grant Handling
+### Bridge
+- `src/app.ts` – Koa setup, health endpoint, middleware.
+- `src/routes/authorize.ts` – Validates PKCE, persists authorization requests, redirects to Mittwald.
+- `src/routes/mittwald-callback.ts` – Receives Mittwald auth code, maps back to external state.
+- `src/routes/token.ts` – PKCE verification, token exchange, JWT signing via `services/bridge-tokens.ts`.
+- `src/services/mittwald.ts` – HTTP client for Mittwald token exchanges.
+- Tests: `tests/token-flow.test.ts` uses Supertest to exercise the full flow.
 
-- **Deferred grant creation**: `loadExistingGrant` must only persist a grant after Mittwald has authenticated the user and oidc-provider has an `accountId` on the session. During the first `/auth` request we return `undefined` so oidc-provider advances to `/interaction/:uid` and redirects the browser to Mittwald.
-- **Mittwald-scoped grants**: Once the Mittwald callback completes we build the grant using the stored `mittwaldScope`, ensuring downstream tokens mirror the Mittwald-issued permissions.
+### MCP Server
+- `src/server/oauth-middleware.ts` – Verifies bridge JWTs with `jose`, extracts Mittwald tokens, sets `req.auth.extra`.
+- `src/server/session-manager.ts` – Persists sessions in Redis (access token, refresh token, scope, resource, context).
+- `src/middleware/session-auth.ts` – Hydrates `req.user`/`req.auth` from Redis for every tool request.
+- `src/server/mcp.ts` – Manages session lifecycle, persists auth via `sessionManager`, ensures CLI commands use the right tokens.
+- Tests: `tests/unit/server/oauth-middleware.test.ts`, `tests/unit/middleware/session-auth.test.ts`.
 
-## Consent & Trust
+## Remaining Work / Considerations
+- Token refresh orchestration (optional) – bridge currently mints refresh tokens; MCP server may use Mittwald refresh tokens in future.
+- Enterprise IdPs without DCR – may require a separate onboarding flow.
+- Redis persistence for bridge state – in production we should swap the in-memory store for Redis.
+- Additional error logging around `/token` exchange for better diagnostics.
 
-- Our proxy is transparent: users experience Mittwald's UI only.
-- Grants map Mittwald subjects to MCP clients; revoking access requires removing the Mittwald authorization in Mittwald Studio.
-- Because downstream clients rely on the Mittwald grant, onboarding new clients must be communicated to users so they understand the shared-trust model.
+## Changelog Snapshot
+- 2025-09-27 15:25 UTC – Created `packages/oauth-bridge`, scaffolded Koa service.
+- 2025-09-27 16:32 UTC – Implemented Mittwald callback + `/token` flow, embedded Mittwald tokens in JWT (`408d2e1`).
+- 2025-09-27 17:32 UTC – MCP server verifies bridge JWT via `jose`, sessions carry Mittwald tokens (`3938aff`).
+- 2025-09-27 18:05 UTC – Session middleware hydrates `req.auth` from Redis; unit tests updated (`de63a80`).
 
-## Implementation Checklist
-
-### Completed
-- ✅ Document the proxy-first architecture and the shared scope catalogue.
-- ✅ Centralise scope configuration (`config/mittwald-scopes.json`) and surface the lists through discovery and metadata.
-- ✅ Document consent short-circuiting and trust implications.
-
-### In Progress / Planned Code Changes
-- ✅ Replace `src/config/oauth-scopes.ts` and `packages/oauth-server/src/config/oauth-scopes.ts` with a discovery-based metadata helper.
-- ✅ Update `/reg`, `/auth`, and the Mittwald authorization builder to validate requests via `validateRequestedScopes`, filter to `UPSTREAM_SCOPES`, and rely on configured defaults.
-- ✅ Modify interaction handlers to bypass local consent and immediately call `interactionFinished` after Mittwald success.
-- ✅ Ensure JWT issuance captures Mittwald's `scope` string and stores grants accordingly.
-- Add automated tests to exercise the scope passthrough and consent short-circuit (forthcoming).
-
-## Documentation Strategy
-
-- **ARCHITECTURE.md** is now the single source of truth.
-- Supporting documents (README, audits, client guides) must reference this file and should not reintroduce local scope lists or consent screens.
-- Historical analyses that contradict this design should be removed from the repository to avoid confusion.
-
-## Environment Variables
-
-| Variable | Purpose |
-|----------|---------|
-| `MITTWALD_ISSUER` | OIDC discovery URL for Mittwald. Enables automatic scope and endpoint discovery. |
-| `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_USERINFO_URL` | Manual endpoints when discovery is unavailable. |
-| `MITTWALD_CLIENT_ID` | Mittwald static client ID (`mittwald-mcp-server`). |
-| `MITTWALD_REDIRECT_URI` | Callback URI registered with Mittwald for our proxy. |
-| `MITTWALD_SCOPE_CONFIG_PATH` | Optional absolute path to a JSON file with `supportedScopes`, `upstreamScopes`, and `defaultScopes`. Defaults to `config/mittwald-scopes.json`. |
-| `MITTWALD_SCOPE_FALLBACK` | Legacy escape hatch for environments that cannot reach Mittwald discovery; use only if the JSON config cannot be mounted. |
+This document should be used alongside `docs/2025-09-27-openai-connector-oauth-guidance.md` for the latest implementation log.
