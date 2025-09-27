@@ -4,7 +4,7 @@ Claude Code's OAuth implementation with Dynamic Client Registration presents uni
 
 ## Primary testing solution: oauth2c from Cloudentity
 
-The most comprehensive tool for testing MCP OAuth flows is **oauth2c**, a command-line OAuth client that fully supports Dynamic Client Registration and matches Claude Code's specific requirements. Installation is straightforward via Homebrew (`brew install cloudentity/tap/oauth2c`) or Linux install scripts. Unlike other OAuth testing tools, oauth2c provides complete DCR support with automatic client registration, making it ideal for testing Claude Code compatibility.
+The most comprehensive tool for testing MCP OAuth flows is **oauth2c**, a command-line OAuth client that easily orchestrates discovery, authorization, and token exchange. Installation is straightforward via Homebrew (`brew install cloudentity/tap/oauth2c`) or Linux install scripts. *Note:* recent oauth2c releases (v1.17+) no longer ship a built-in `register` subcommand—perform Dynamic Client Registration with a direct `curl` POST to `/reg`, then feed the resulting `client_id` into oauth2c for the remaining steps. This slight extra step preserves full compatibility with Claude Code’s expectations while keeping the workflow almost entirely automated.
 
 To test an MCP server's OAuth implementation programmatically:
 ```bash

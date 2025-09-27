@@ -284,9 +284,17 @@ async function createServer() {
   });
 
   // Enable CORS for provider routes as well so browser-based flows (e.g., claude.ai) can call /reg, /token
+  const defaultCorsOrigin = (() => {
+    try {
+      return new URL(config.issuer).origin;
+    } catch {
+      return config.issuer;
+    }
+  })();
+
   app.use(cors({
-    origin: '*',
-    credentials: false,
+    origin: (ctx) => ctx.get('Origin') || defaultCorsOrigin,
+    credentials: true,
     allowMethods: ['GET', 'POST', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'mcp-protocol-version']
   }));
