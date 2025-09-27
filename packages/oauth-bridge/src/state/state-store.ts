@@ -1,5 +1,6 @@
 export interface AuthorizationRequestRecord {
   state: string;
+  internalState: string;
   clientId: string;
   redirectUri: string;
   codeChallenge: string;
