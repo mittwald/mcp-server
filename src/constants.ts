@@ -5,7 +5,7 @@
  * @remarks 
  * This module contains constant values used throughout the Mittwald MCP server,
  * including API endpoints, rate limits, default values, and error messages.
- */.  
+ */
 
 /**
  * Default delay between API requests in milliseconds.
