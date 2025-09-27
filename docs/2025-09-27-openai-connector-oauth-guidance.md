@@ -157,4 +157,5 @@ During September 2025 design discussions an alternative proposal argued for remo
 - OpenAI Community threads on ChatGPT connector OAuth challenges (Nov 2023 – Sep 2025)
 
 ## Implementation Log
-- 2025-09-27 15:25 UTC — Created feature branch `oauth-bridge-phase1-20250927` and stubbed new `packages/oauth-bridge` service (health route + logging) to kick off Phase 1.
+- 2025-09-27 15:25 UTC — Created feature branch `oauth-bridge-phase1-20250927` and stubbed new `packages/oauth-bridge` service (health route + logging) to kick off Phase 1. Commit: `70abcf7`.
+- 2025-09-27 15:34 UTC — Wired environment-driven configuration loader and injected bridge config into the Koa app skeleton. Commit: `e7e3bfe`.
