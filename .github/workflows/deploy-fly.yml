@@ -153,14 +153,15 @@ jobs:
             for attempt in $(seq 1 36); do # up to 3 minutes @ 5s
               status_json=$(flyctl status -a "$app" --json 2>/dev/null || echo '{}')
               if echo "$status_json" | jq -e -r '
-                (.machines // []) as $machines
-                | if ($machines | length) == 0 then false
+                (.Machines // []) as $machines
+                | ($machines | map(select(.state == "started"))) as $started_machines
+                | if ($started_machines | length) == 0 then false
                   else
-                    reduce $machines[] as $m (
-                      true;
-                      .
-                      and ($m.state == "started")
-                      and (reduce ($m.checks // [])[]? as $c (true; . and ($c.status == "passing")))
+                    $started_machines | all(
+                      (.checks // []) as $checks
+                      | if ($checks | length) == 0 then true
+                        else $checks | all(.status == "passing")
+                        end
                     )
                   end
               ' >/dev/null 2>&1 && curl -fsS --max-time 6 "https://$host/health" >/dev/null 2>&1; then

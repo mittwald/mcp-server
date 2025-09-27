@@ -36,9 +36,30 @@ GET https://mittwald-oauth-server.fly.dev/auth/r1YTSqZfWEF2_Q22fzTF3CJc34EqJgEyP
 ```
 The browser never stored `_interaction` / `_session` cookies, so oidc-provider treated every visit as a fresh interaction.
 
+### Post-Patch Verification (`/Users/robert/Downloads/chatgpt-3.har`)
+
+After deploying commit `0847dfbc49e3fcce1e739d4f41c13aba14048177` with the CORS fix, a second ChatGPT run showed the proxy now returning `Access-Control-Allow-Credentials: true`. However, Chrome still dropped the interaction cookies because they were missing the `Secure` attribute:
+
+```
+GET https://mittwald-oauth-server.fly.dev/auth?...  → 303
+access-control-allow-origin: https://mittwald-oauth-server.fly.dev
+access-control-allow-credentials: true
+(still no Set-Cookie header)
+```
+
+Subsequent `/interaction/:uid` requests in `chatgpt-3.har` continued to send **no `Cookie` header**, and the flow again ended with
+`
+GET …/auth/tVU7FcMYm3vzStoN0e5K5RX8upqqKdGxWmZiI-wbzei → 400 {"error":"invalid_request","error_description":"authorization request has expired"}
+```
+
+The Fly logs at 07:50 UTC confirm Mittwald returned tokens, but the absence of a resume cookie kept ChatGPT bouncing between `/auth/:uid` and `/interaction/:uid` until the interaction expired.
+
 ## Root Cause
 
-At git `0847dfbc49e3fcce1e739d4f41c13aba14048177`, the global CORS middleware in `packages/oauth-server/src/server.ts` still returns `Access-Control-Allow-Origin: *` with `credentials: false`. Browsers refuse to store cookies on such responses, stripping `Set-Cookie` headers and omitting cookies on subsequent requests. Without the interaction cookies, oidc-provider cannot resume the flow and ultimately emits `authorization request has expired`.
+At git `0847dfbc49e3fcce1e739d4f41c13aba14048177`, two misconfigurations blocked ChatGPT:
+
+1. The global CORS middleware returned `Access-Control-Allow-Origin: *` with `credentials: false`, preventing browsers from accepting any cookies (fixed in the same hash).
+2. The oidc-provider cookie configuration defaulted `secure: false` (`SameSite=None` requires `Secure`). Even after enabling credentials, Chrome discarded every `_interaction` / `_session` cookie because they lacked the `Secure` flag, keeping the flow stuck in the resume loop.
 
 ```ts
 // packages/oauth-server/src/server.ts (current deploy)
@@ -61,9 +82,10 @@ app.use(cors({
      allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'mcp-protocol-version'],
    }));
    ```
-2. Redeploy the OAuth proxy and re-test the ChatGPT OAuth flow, confirming `/auth` responses now include `_interaction` / `_session` cookies and `/token` is invoked.
-3. Capture an updated HAR and Fly log bundle for regression tracking.
+2. Default cookies to `secure: true` whenever the issuer is HTTPS (or set `COOKIES_SECURE=true`) so `_interaction`, `_resume`, and `_session` cookies pass Chrome's `SameSite=None` checks.
+3. Redeploy the OAuth proxy and re-test the ChatGPT OAuth flow, confirming `/auth` responses now include `_interaction` / `_session` cookies and `/token` is invoked.
+4. Capture an updated HAR and Fly log bundle for regression tracking.
 
 ## Status
 
-- **Open.** ChatGPT integrations remain blocked at `0847dfbc49e3fcce1e739d4f41c13aba14048177` until the CORS change is deployed.
+- **Open.** ChatGPT integrations remain blocked at `0847dfbc49e3fcce1e739d4f41c13aba14048177` until the CORS update, the secure-cookie default, and a non-empty `ISSUER` configuration are deployed and verified.

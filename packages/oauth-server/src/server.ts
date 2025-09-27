@@ -61,13 +61,33 @@ if (!rawInitialAccessToken) {
   logger.info('INITIAL_ACCESS_TOKEN is configured but ignored (open registration mode)');
 }
 
+const issuer = (() => {
+  const value = process.env.ISSUER?.trim();
+  if (!value) {
+    throw new Error('ISSUER environment variable is required (e.g. https://mittwald-oauth-server.fly.dev)');
+  }
+  return value;
+})();
+
+const cookiesSecureEnv = process.env.COOKIES_SECURE;
+const cookiesSecure = cookiesSecureEnv === 'true'
+  || (cookiesSecureEnv === undefined && issuer.startsWith('https://'));
+
+if (cookiesSecure && cookiesSecureEnv === undefined) {
+  logger.info('COOKIE SECURITY: inferred secure cookies based on HTTPS ISSUER');
+}
+
+if (!cookiesSecure) {
+  logger.warn('COOKIE SECURITY: secure flag disabled – set COOKIES_SECURE=true for cross-site OAuth flows');
+}
+
 const config: ProviderConfig = {
-  issuer: process.env.ISSUER || 'http://localhost:3000',
+  issuer,
   port: parseInt(process.env.PORT || '3000'),
   storageAdapter: (process.env.STORAGE_ADAPTER as 'sqlite' | 'memory') || 'sqlite',
   initialAccessToken: rawInitialAccessToken,
   jwksKeystorePath: process.env.JWKS_KEYSTORE_PATH || '/app/jwks/jwks.json',
-  cookiesSecure: process.env.COOKIES_SECURE === 'true',
+  cookiesSecure,
   // Dev-friendly default: allow https, localhost loopback, and curated custom schemes
   allowedRedirectUriPatterns: (
     process.env.ALLOWED_REDIRECT_URI_PATTERNS ||
