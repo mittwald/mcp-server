@@ -162,3 +162,4 @@ During September 2025 design discussions an alternative proposal argued for remo
 - 2025-09-27 15:46 UTC — Added pluggable state-store abstraction with a default in-memory implementation and injected it into the bridge app context. Commit: `12e9e14`.
 - 2025-09-27 16:05 UTC — Implemented `/authorize` endpoint that validates PKCE parameters, persists interaction state, and redirects to Mittwald with an internal state token. Commit: `060edb3`.
 - 2025-09-27 16:32 UTC — Added Mittwald callback + `/token` flow: store Mittwald authorization codes, verify PKCE, exchange tokens, and return bridge-issued access tokens. Commit: `408d2e1`.
+- 2025-09-27 16:58 UTC — Signed bridge JWTs, generated refresh tokens, and added Supertest-based happy-path coverage for `/authorize` → `/mittwald/callback` → `/token`. Commit: `b1c162a`.
