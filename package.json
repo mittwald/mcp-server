@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "@mittwald/api-client": "^4.169.0",
+    "@koa/router": "^14.0.0",
     "@modelcontextprotocol/sdk": "^1.13.0",
     "@robertdouglass/mcp-tester": "^1.0.3",
     "@types/jsonwebtoken": "^9.0.10",
@@ -63,6 +64,8 @@
     "ajv-formats": "^3.0.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "koa": "^3.0.1",
+    "koa-bodyparser": "^4.4.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "helmet": "^8.1.0",

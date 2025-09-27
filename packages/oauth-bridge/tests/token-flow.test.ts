@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { createHash } from 'node:crypto';
 import { createApp } from '../src/app.js';
 import { loadConfigFromEnv } from '../src/config.js';
 import { MemoryStateStore } from '../src/state/memory-state-store.js';
@@ -33,6 +34,9 @@ describe('OAuth bridge flow', () => {
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
     const app = createApp(config, stateStore);
 
+    const codeVerifier = 'verifier-123';
+    const codeChallenge = pkceChallenge(codeVerifier);
+
     const authorizeResponse = await request(app.callback())
       .get('/authorize')
       .query({
@@ -41,7 +45,7 @@ describe('OAuth bridge flow', () => {
         redirect_uri: 'https://chatgpt.com/connector_platform_oauth_redirect',
         scope: 'openid profile',
         state: 'external-state',
-        code_challenge: 'abc123',
+        code_challenge: codeChallenge,
         code_challenge_method: 'S256'
       })
       .expect(303);
@@ -87,7 +91,7 @@ describe('OAuth bridge flow', () => {
         code: bridgeAuthCode!,
         redirect_uri: 'https://chatgpt.com/connector_platform_oauth_redirect',
         client_id: 'chatgpt-client',
-        code_verifier: 'verifier'
+        code_verifier: codeVerifier
       })
       .expect(200);
 
@@ -99,3 +103,7 @@ describe('OAuth bridge flow', () => {
     expect(typeof tokenResponse.body.refresh_token).toBe('string');
   });
 });
+
+function pkceChallenge(verifier: string) {
+  return createHash('sha256').update(verifier).digest().toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
