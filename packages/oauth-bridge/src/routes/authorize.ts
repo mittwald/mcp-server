@@ -51,8 +51,8 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
       codeChallengeMethod: 'S256',
       scope,
       resource,
-      createdAt: Date.now(),
-      expiresAt: Date.now()
+      createdAt: 0,
+      expiresAt: 0
     });
 
     const mittwaldRedirect = new URL(config.mittwald.authorizationUrl);
