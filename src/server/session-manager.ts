@@ -11,6 +11,7 @@ export interface UserSession {
   scopeSource?: string;
   requestedScope?: string;
   scopes?: string[];
+  resource?: string;
   expiresAt: Date;
   currentContext: {
     projectId?: string;
@@ -92,6 +93,13 @@ export class SessionManager {
 
       const session: UserSession = JSON.parse(sessionData);
       
+      if (session.expiresAt) {
+        session.expiresAt = new Date(session.expiresAt);
+      }
+      if (session.lastAccessed) {
+        session.lastAccessed = new Date(session.lastAccessed);
+      }
+
       // Check if session is expired
       if (session.expiresAt && new Date() > new Date(session.expiresAt)) {
         await this.destroySession(sessionId);

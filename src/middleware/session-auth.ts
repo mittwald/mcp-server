@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger.js';
 import { sessionManager } from '../server/session-manager.js';
+import { CONFIG } from '../server/config.js';
 
 // Extend Request interface to include user context from session
 declare global {
@@ -63,15 +64,38 @@ export function createSessionAuthMiddleware() {
       }
 
       // Set user context from session
-      const scopeString = session.scope
-        || (Array.isArray(session.scopes) ? session.scopes.join(' ') : undefined)
-        || 'mittwald-api';
+      const scopes = Array.isArray(session.scopes)
+        ? session.scopes
+        : (session.scope ? session.scope.split(/\s+/).filter(Boolean) : []);
+
+      const scopeString = scopes.length > 0 ? scopes.join(' ') : 'mittwald-api';
 
       req.user = {
         userId: session.userId,
         scope: scopeString,
         token: session.mittwaldAccessToken,
-        sessionId: sessionId
+        sessionId
+      };
+
+      const expiresAtSeconds = session.expiresAt
+        ? Math.floor(new Date(session.expiresAt).getTime() / 1000)
+        : undefined;
+
+      req.auth = {
+        token: session.oauthToken ?? session.mittwaldAccessToken,
+        clientId: 'mittwald-mcp-server',
+        scopes,
+        expiresAt: expiresAtSeconds,
+        extra: {
+          userId: session.userId,
+          mittwaldAccessToken: session.mittwaldAccessToken,
+          mittwaldRefreshToken: session.mittwaldRefreshToken,
+          mittwaldScope: session.scope,
+          mittwaldScopeSource: session.scopeSource,
+          mittwaldRequestedScope: session.requestedScope,
+          issuer: CONFIG.OAUTH_BRIDGE?.ISSUER,
+          resource: session.resource
+        }
       };
 
       logger.debug(`Session authenticated successfully: ${sessionId.substring(0, 8)}... (user: ${session.userId})`);

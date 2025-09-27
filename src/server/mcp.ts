@@ -444,6 +444,9 @@ export class MCPHandler implements IMCPHandler {
       const requestedScope = typeof authInfo?.extra?.mittwaldRequestedScope === 'string'
         ? authInfo.extra.mittwaldRequestedScope
         : undefined;
+      const resource = typeof authInfo?.extra?.resource === 'string'
+        ? authInfo.extra.resource
+        : existing?.resource;
 
       const existing = await sessionManager.getSession(sessionId);
 
@@ -460,6 +463,7 @@ export class MCPHandler implements IMCPHandler {
         scopeSource,
         requestedScope,
         scopes: sessionAuth.scope ? sessionAuth.scope.split(/\s+/).filter(Boolean) : existing?.scopes,
+        resource,
         expiresAt,
         currentContext: existing?.currentContext || {},
         accessibleProjects: existing?.accessibleProjects,
