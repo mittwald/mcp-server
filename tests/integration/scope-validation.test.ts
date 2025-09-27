@@ -18,8 +18,7 @@ const remoteTest: typeof test = (name, handler, options) =>
 describe('Centralized Scope Configuration', () => {
   let claudeClient: any;
 
-  beforeAll(async (context) => {
-    context.setTimeout(SUITE_TIMEOUT);
+  beforeAll(async () => {
     // Register a test Claude.ai client for scope testing
     const registrationRequest = {
       client_name: 'Test Claude Client',
@@ -45,8 +44,7 @@ describe('Centralized Scope Configuration', () => {
     }
   });
 
-  beforeEach((context) => {
-    context.setTimeout(SUITE_TIMEOUT);
+  beforeEach(() => {
   });
   describe('Single Source of Truth Validation', () => {
     remoteTest('MCP server and OAuth server advertise identical Mittwald scopes', async () => {

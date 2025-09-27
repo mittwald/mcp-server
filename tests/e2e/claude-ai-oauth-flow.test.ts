@@ -18,8 +18,7 @@ const remoteTest: typeof test = (name, handler, options) =>
 describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
   let claudeClient: any;
 
-  beforeEach((context) => {
-    context.setTimeout(SUITE_TIMEOUT);
+  beforeEach(() => {
   });
 
   describe('Complete 38-Step Workflow', () => {

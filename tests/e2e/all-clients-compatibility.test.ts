@@ -15,8 +15,7 @@ const remoteTest: typeof test = (name, handler, options) =>
   test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
 
 describe('All OAuth Clients Compatibility', () => {
-  beforeEach((context) => {
-    context.setTimeout(SUITE_TIMEOUT);
+  beforeEach(() => {
   });
 
   describe('MCP Jam Inspector (Public Client)', () => {

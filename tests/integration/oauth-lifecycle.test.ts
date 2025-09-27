@@ -21,8 +21,7 @@ describe('OAuth 2.1 + MCP Complete Lifecycle', () => {
   let authorizationCode: string;
   let accessToken: string;
 
-  beforeEach((context) => {
-    context.setTimeout(SUITE_TIMEOUT);
+  beforeEach(() => {
     testClient = null;
     testState = `test_${Date.now()}_${Math.random().toString(36).substring(7)}`;
   });
