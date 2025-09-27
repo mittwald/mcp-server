@@ -54,9 +54,13 @@ GET …/auth/tVU7FcMYm3vzStoN0e5K5RX8upqqKdGxWmZiI-wbzei → 400 {"error":"inval
 
 The Fly logs at 07:50 UTC confirm Mittwald returned tokens, but the absence of a resume cookie kept ChatGPT bouncing between `/auth/:uid` and `/interaction/:uid` until the interaction expired.
 
+### Post-Deploy Retry (`/Users/robert/Downloads/chatgpt-6.har`)
+
+A fresh deploy (12:28 UTC) advertised `Access-Control-Allow-Credentials: true`, yet the new HAR still contains **no `Set-Cookie` headers** on the initial `/auth` redirect and every `/interaction/:uid` request goes out without a `Cookie`. The flow again terminates with `authorization request has expired` (`/auth/VXepJW-… → 400`). This verifies that browser-visible cookies remain absent even after the secure-cookie inference change, so ChatGPT still cannot persist the oidc-provider session.
+
 ## Root Cause
 
-At git `0847dfbc49e3fcce1e739d4f41c13aba14048177`, two misconfigurations blocked ChatGPT:
+At git `6f5bacdcdfe3e5a7c2248485296a435fa7b00ac8`, two misconfigurations blocked ChatGPT:
 
 1. The global CORS middleware returned `Access-Control-Allow-Origin: *` with `credentials: false`, preventing browsers from accepting any cookies (fixed in the same hash).
 2. The oidc-provider cookie configuration defaulted `secure: false` (`SameSite=None` requires `Secure`). Even after enabling credentials, Chrome discarded every `_interaction` / `_session` cookie because they lacked the `Secure` flag, keeping the flow stuck in the resume loop.
@@ -76,8 +80,8 @@ app.use(cors({
 1. Update the provider-level CORS policy to echo the caller's origin and enable credentials so browsers accept the `Set-Cookie` headers, e.g.:
    ```ts
    app.use(cors({
-     origin: (ctx) => ctx.headers.origin ?? '*',
-     credentials: Boolean(ctx.headers.origin),
+     origin: (ctx) => ctx.state.requestOrigin || defaultCorsOrigin,
+     credentials: true,
      allowMethods: ['GET', 'POST', 'OPTIONS'],
      allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'mcp-protocol-version'],
    }));

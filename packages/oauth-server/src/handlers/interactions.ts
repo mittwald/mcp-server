@@ -115,6 +115,15 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
 
       // Get oidc-provider interaction details
       const details = await (provider as any).interactionDetails(ctx.req, ctx.res);
+
+      logger.info('INTERACTION: State snapshot (debug)', {
+        uid: details.uid,
+        prompt: details.prompt?.name,
+        requestOrigin: ctx.state.requestOrigin || ctx.headers.origin || null,
+        requestCookies: ctx.headers.cookie || null,
+        storedInteraction: mittwaldInteractionState.has(details.uid),
+        responseHeaders: ctx.response.headers,
+      });
       const { clientId } = details.params;
       const prompt = details.prompt?.name;
 
@@ -300,6 +309,14 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       // Store in simple Map for callback retrieval
       mittwaldCallbackState.set(state, callbackState);
 
+      logger.info('INTERACTION: Stored callback state (debug)', {
+        uid: details.uid,
+        state,
+        hasCodeVerifier: !!codeVerifier,
+        requestOrigin: ctx.state.requestOrigin || ctx.headers.origin || null,
+        requestCookies: ctx.headers.cookie || null,
+      });
+
       logger.info('INTERACTION: Stored callback state', {
         uid: details.uid,
         state: state.substring(0, 8) + '...',
@@ -327,6 +344,13 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
       });
 
       ctx.redirect(authorizationUrl);
+
+      logger.info('INTERACTION: Redirect issued (debug)', {
+        uid: details.uid,
+        setCookie: ctx.response.headers['set-cookie'],
+        corsOrigin: ctx.response.headers['access-control-allow-origin'],
+        corsCredentials: ctx.response.headers['access-control-allow-credentials'],
+      });
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -452,14 +476,16 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         method: 'redirect-to-interaction-route'
       });
 
-      mittwaldInteractionState.set(callbackState.interactionUid, {
+      const interactionData = {
         accountId,
         loginCompleted: false,
         requestedScope: callbackState.requestedScope,
         scopeSource: callbackState.scopeSource,
         mittwaldScope,
         updatedAt: Date.now(),
-      });
+      } satisfies InteractionState;
+
+      mittwaldInteractionState.set(callbackState.interactionUid, interactionData);
 
       // Clean up original callback state
       mittwaldCallbackState.delete(state);
@@ -471,6 +497,12 @@ export function registerInteractionRoutes(router: Router, provider: Provider) {
         accountId: accountId.substring(0, 16) + '...',
         interactionUid: callbackState.interactionUid,
         mittwaldScope,
+        responseHeaders: {
+          setCookie: ctx.response.headers['set-cookie'],
+          corsOrigin: ctx.response.headers['access-control-allow-origin'],
+          corsCredentials: ctx.response.headers['access-control-allow-credentials'],
+        },
+        redirectLocation: ctx.response.headers['location'],
       });
 
     } catch (error) {

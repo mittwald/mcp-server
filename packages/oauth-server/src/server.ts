@@ -251,6 +251,7 @@ async function createServer() {
     const requestId = nanoid(10);
     
     ctx.state.requestId = requestId;
+    const origin = ctx.state.requestOrigin || ctx.headers['origin'] || null;
     
     logger.info({
       requestId,
@@ -258,6 +259,7 @@ async function createServer() {
       url: ctx.url,
       path: ctx.path,
       query: ctx.querystring,
+      origin,
       userAgent: ctx.headers['user-agent'],
       ip: ctx.ip,
       forwarded: {
@@ -276,12 +278,22 @@ async function createServer() {
     await next();
 
     const duration = Date.now() - startTime;
+    const setCookieHeader = ctx.response.headers['set-cookie'];
+    const logSetCookie = Array.isArray(setCookieHeader)
+      ? setCookieHeader.map((value) => value.split(';')[0])
+      : setCookieHeader
+        ? setCookieHeader.split(';')[0]
+        : null;
+
     logger.info({
       requestId,
       method: ctx.method,
       url: ctx.url,
       status: ctx.status,
       duration: `${duration}ms`,
+      setCookie: logSetCookie,
+      corsOrigin: ctx.response.headers['access-control-allow-origin'],
+      corsCredentials: ctx.response.headers['access-control-allow-credentials'],
     }, `REQ done ${ctx.method} ${ctx.path} -> ${ctx.status} in ${duration}ms id=${requestId}`);
   });
 
@@ -313,8 +325,13 @@ async function createServer() {
     }
   })();
 
+  app.use(async (ctx, next) => {
+    ctx.state.requestOrigin = ctx.get('Origin') || null;
+    await next();
+  });
+
   app.use(cors({
-    origin: (ctx) => ctx.get('Origin') || defaultCorsOrigin,
+    origin: (ctx) => ctx.state.requestOrigin || defaultCorsOrigin,
     credentials: true,
     allowMethods: ['GET', 'POST', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'mcp-protocol-version']
