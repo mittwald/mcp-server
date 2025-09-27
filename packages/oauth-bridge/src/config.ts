@@ -9,6 +9,9 @@ export interface BridgeConfig {
   bridge: {
     issuer: string;
     baseUrl: string;
+    jwtSecret: string;
+    accessTokenTtlSeconds: number;
+    refreshTokenTtlSeconds: number;
   };
   redirectUris: string[];
 }
@@ -22,7 +25,10 @@ export function loadConfigFromEnv(): BridgeConfig {
     MITTWALD_TOKEN_URL,
     MITTWALD_CLIENT_ID,
     MITTWALD_CLIENT_SECRET,
-    BRIDGE_REDIRECT_URIS
+    BRIDGE_REDIRECT_URIS,
+    BRIDGE_JWT_SECRET,
+    BRIDGE_ACCESS_TOKEN_TTL_SECONDS,
+    BRIDGE_REFRESH_TOKEN_TTL_SECONDS
   } = process.env;
 
   if (!BRIDGE_ISSUER) {
@@ -49,6 +55,10 @@ export function loadConfigFromEnv(): BridgeConfig {
     throw new Error('MITTWALD_CLIENT_SECRET must be set');
   }
 
+  if (!BRIDGE_JWT_SECRET) {
+    throw new Error('BRIDGE_JWT_SECRET must be set');
+  }
+
   const redirectUriList = (BRIDGE_REDIRECT_URIS ?? '').split(',').map((value) => value.trim()).filter(Boolean);
 
   if (redirectUriList.length === 0) {
@@ -59,7 +69,10 @@ export function loadConfigFromEnv(): BridgeConfig {
     port: Number(PORT ?? 3000),
     bridge: {
       issuer: BRIDGE_ISSUER,
-      baseUrl: BRIDGE_BASE_URL
+      baseUrl: BRIDGE_BASE_URL,
+      jwtSecret: BRIDGE_JWT_SECRET,
+      accessTokenTtlSeconds: Number(BRIDGE_ACCESS_TOKEN_TTL_SECONDS ?? 3600),
+      refreshTokenTtlSeconds: Number(BRIDGE_REFRESH_TOKEN_TTL_SECONDS ?? 7 * 24 * 3600)
     },
     mittwald: {
       authorizationUrl: MITTWALD_AUTHORIZATION_URL,

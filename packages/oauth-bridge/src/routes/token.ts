@@ -1,8 +1,9 @@
 import Router from '@koa/router';
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import type { BridgeConfig } from '../config.js';
 import type { StateStore } from '../state/state-store.js';
 import { exchangeMittwaldAuthorizationCode } from '../services/mittwald.js';
+import { issueBridgeTokens } from '../services/bridge-tokens.js';
 
 interface TokenRouterDeps {
   config: BridgeConfig;
@@ -74,20 +75,24 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
       logger: ctx.logger
     });
 
+    const bridgeTokens = await issueBridgeTokens({ config, grant, mittwaldTokens });
+
     const updatedGrant = {
       ...grant,
       mittwaldTokens,
-      used: true
+      used: true,
+      refreshToken: bridgeTokens.refreshToken,
+      refreshTokenExpiresAt: bridgeTokens.refreshTokenExpiresAt
     };
     await stateStore.updateAuthorizationGrant(updatedGrant);
 
     ctx.status = 200;
     ctx.body = {
-      access_token: randomUUID(),
+      access_token: bridgeTokens.accessToken,
       token_type: 'Bearer',
-      expires_in: 3600,
+      expires_in: config.bridge.accessTokenTtlSeconds,
       scope: grant.scope,
-      mittwald: mittwaldTokens
+      refresh_token: bridgeTokens.refreshToken
     };
   });
 

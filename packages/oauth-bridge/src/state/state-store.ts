@@ -24,6 +24,8 @@ export interface AuthorizationGrantRecord {
   createdAt: number;
   expiresAt: number;
   used: boolean;
+  refreshToken?: string;
+  refreshTokenExpiresAt?: number;
 }
 
 export interface MittwaldTokenResponse {
