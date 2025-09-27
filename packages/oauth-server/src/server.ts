@@ -80,7 +80,7 @@ if (cookiesSecure && cookiesSecureEnv === undefined) {
 if (!cookiesSecure) {
   logger.warn('COOKIE SECURITY: secure flag disabled – set COOKIES_SECURE=true for cross-site OAuth flows');
 }
-// Force rebuild to ensure fresh deployment with cookie security fixes
+// Force rebuild: fresh deployment with cookie security + setTimeout test fixes
 
 const config: ProviderConfig = {
   issuer,
