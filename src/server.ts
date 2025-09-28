@@ -204,7 +204,7 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
     const asBase = CONFIG.OAUTH_BRIDGE.BASE_URL
       || process.env.OAUTH_BRIDGE_BASE_URL
       || process.env.OAUTH_AS_BASE
-      || 'https://mittwald-oauth-bridge.fly.dev';
+      || 'https://mittwald-oauth-server.fly.dev';
     endpoints.oauth = {
       authorize: `${asBase}/auth`,
       token: `${asBase}/token`,

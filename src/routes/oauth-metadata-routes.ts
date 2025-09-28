@@ -164,7 +164,7 @@ function getAuthorizationServerBase(): string {
   return CONFIG.OAUTH_BRIDGE.BASE_URL
     || process.env.OAUTH_BRIDGE_BASE_URL
     || process.env.OAUTH_AS_BASE
-    || 'https://mittwald-oauth-bridge.fly.dev';
+    || 'https://mittwald-oauth-server.fly.dev';
 }
 
 function normaliseBase(base: string): string {

@@ -39,7 +39,7 @@ describe('OAuth Middleware', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockJwtVerify.mockReset();
-    process.env.OAUTH_AS_BASE = 'https://mittwald-oauth-bridge.fly.dev';
+    process.env.OAUTH_AS_BASE = 'https://mittwald-oauth-server.fly.dev';
     delete process.env.MCP_PUBLIC_BASE;
     process.env.NODE_ENV = 'test';
     
@@ -178,7 +178,7 @@ describe('OAuth Middleware', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockResponse.set).toHaveBeenCalledWith(
         'WWW-Authenticate',
-        'Bearer realm="MCP Server", authorization_uri="https://mittwald-oauth-bridge.fly.dev/authorize"'
+        'Bearer realm="MCP Server", authorization_uri="https://mittwald-oauth-server.fly.dev/auth"'
       );
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -247,13 +247,13 @@ describe('OAuth Middleware', () => {
           error: 'authentication_required',
           message: 'OAuth authentication required',
           oauth: expect.objectContaining({
-            authorization_url: 'https://mittwald-oauth-bridge.fly.dev/authorize',
-            token_url: 'https://mittwald-oauth-bridge.fly.dev/token'
+            authorization_url: 'https://mittwald-oauth-server.fly.dev/auth',
+            token_url: 'https://mittwald-oauth-server.fly.dev/token'
           }),
         endpoints: {
-          authorize: 'https://mittwald-oauth-bridge.fly.dev/authorize',
-          token: 'https://mittwald-oauth-bridge.fly.dev/token',
-          metadata: 'https://mittwald-oauth-bridge.fly.dev/.well-known/oauth-authorization-server'
+          authorize: 'https://mittwald-oauth-server.fly.dev/auth',
+          token: 'https://mittwald-oauth-server.fly.dev/token',
+          metadata: 'https://mittwald-oauth-server.fly.dev/.well-known/oauth-authorization-server'
         },
           resource: 'https://localhost:3000/mcp'
         })

@@ -20,11 +20,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - app: mittwald-oauth-bridge
+          - app: mittwald-oauth-server
             context: packages/oauth-bridge
             dockerfile: packages/oauth-bridge/Dockerfile
             fly_config: packages/oauth-bridge/fly.toml
-            hostname: mittwald-oauth-bridge.fly.dev
+            hostname: mittwald-oauth-server.fly.dev
           - app: mittwald-mcp-fly2
             context: .
             dockerfile: Dockerfile
@@ -147,7 +147,7 @@ jobs:
         run: |
           set -euo pipefail
           declare -A apps
-          apps[mittwald-oauth-bridge.fly.dev]=mittwald-oauth-bridge
+          apps[mittwald-oauth-server.fly.dev]=mittwald-oauth-server
           apps[mittwald-mcp-fly2.fly.dev]=mittwald-mcp-fly2
 
           for host in "${!apps[@]}"; do
@@ -187,7 +187,7 @@ jobs:
         run: |
           set -euo pipefail
           sha="${GITHUB_SHA}"
-          for host in mittwald-oauth-bridge.fly.dev mittwald-mcp-fly2.fly.dev; do
+          for host in mittwald-oauth-server.fly.dev mittwald-mcp-fly2.fly.dev; do
             echo "Checking version on https://$host/version"
             body=$(curl -fsSL "https://$host/version")
             echo "$body" | jq -e --arg sha "$sha" '.gitSha == $sha'
@@ -199,7 +199,7 @@ jobs:
           newman run tests/postman/Mittwald-MCP.postman_collection.json \
             -e tests/postman/Mittwald-MCP.postman_environment.json \
             --env-var mcp_base=https://mittwald-mcp-fly2.fly.dev \
-            --env-var as_base=https://mittwald-oauth-bridge.fly.dev
+            --env-var as_base=https://mittwald-oauth-server.fly.dev
 
       - name: Bridge registration sanity
         run: |
@@ -214,7 +214,7 @@ jobs:
             "application_type": "native"
           }
           JSON
-          CODE=$(curl -sS -o body.json -w "%{http_code}" -H 'Content-Type: application/json' --data @dcr.json https://mittwald-oauth-bridge.fly.dev/register || true)
+          CODE=$(curl -sS -o body.json -w "%{http_code}" -H 'Content-Type: application/json' --data @dcr.json https://mittwald-oauth-server.fly.dev/register || true)
           echo "Bridge registration HTTP $CODE" && cat body.json
           if [ "$CODE" != "201" ]; then
             echo "Bridge registration failed" >&2; exit 1;

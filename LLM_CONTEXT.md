@@ -15,7 +15,7 @@ The codebase now uses a **stateless OAuth bridge** in front of the MCP server. R
 - `packages/oauth-bridge/src/routes/register.ts` – Dynamic client registration plus GET/DELETE management guarded by registration access tokens.
 - `packages/oauth-bridge/src/services/bridge-tokens.ts` – HS256 signing that embeds Mittwald tokens into the JWT payload.
 - `packages/oauth-bridge/tests/token-flow.test.ts` – Supertest flow test for `/authorize → /mittwald/callback → /token`.
-- `packages/oauth-bridge/src/config.ts` – Environment-driven configuration (`BRIDGE_*`, `MITTWALD_*` without any client secret handling).
+- `packages/oauth-bridge/src/config.ts` – Environment-driven configuration (`BRIDGE_*`, `MITTWALD_*` without any client secret handling). Ensure deployments use `BRIDGE_BASE_URL=https://mittwald-oauth-server.fly.dev` so Mittwald’s redirect whitelist remains valid.
 
 ## 3. MCP Server Integration
 - `src/server/config.ts` – Loads `OAUTH_BRIDGE_*` settings (`JWT_SECRET`, issuer, audience) and still exposes `JWT_SECRET` for legacy use.

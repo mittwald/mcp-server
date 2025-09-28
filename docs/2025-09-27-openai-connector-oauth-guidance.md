@@ -126,7 +126,7 @@
 4. **Pen-test / security review** of the bridge endpoints.
 
 ### Phase 5 – Rollout
-1. **Stage deployment** on Fly staging apps (mittwald-mcp-fly2 / mittwald-oauth-bridge staging pair).
+1. **Stage deployment** on Fly staging apps (mittwald-mcp-fly2 / mittwald-oauth-server staging pair).
 2. **Dogfood** with internal ChatGPT and Claude connectors; collect logs for any redirected-loop reoccurrences.
 3. **Production rollout** once staging passes acceptance tests.
 
@@ -145,7 +145,7 @@
    - Ensure both bridge and MCP server images run `npm run build && node dist/server.js` (bridge) / `npm run build && node dist/server.js` (MCP) with latest assets.
 
 4. **Staging Rollout**
-   - Deploy bridge to `mittwald-oauth-bridge` staging app; seed secrets.
+   - Deploy bridge to `mittwald-oauth-server` staging app; seed secrets.
    - Deploy MCP server with updated bridge URLs; restart to pick up new configuration.
    - Run `npx vitest run` pipelines and stage smoke tests (Postman / oauth2c) against staging endpoints.
 
@@ -157,7 +157,7 @@
 
 6. **Cutover Plan**
    - Update production Fly secrets to match bridging config.
-   - Flip discovery from `mittwald-oauth-server.fly.dev` to `mittwald-oauth-bridge.fly.dev` (no longer rely on oidc-provider).
+   - Update discovery headers to reference `https://mittwald-oauth-server.fly.dev` (bridge-hosted) so clients see the correct issuer and callback.
    - Monitor `fly logs` (bridge + MCP) for `/register`, `/authorize`, `/token`, and Redis errors; keep rollback plan (switch env vars back) ready until validation completes.
 
 7. **Regression & Client Testing**
@@ -242,10 +242,31 @@ During September 2025 design discussions an alternative proposal argued for remo
 6. After ChatGPT / Claude validation, scale the oidc-provider app to zero and remove it from traffic routers.
 
 ## CI/CD Migration Plan (Bridge Cutover)
-1. Swap the GitHub Actions Fly deployment matrix to build and deploy `mittwald-oauth-bridge` (context `packages/oauth-bridge`) instead of the legacy oidc-provider. Keep the MCP server entry so both apps publish on every push to `main`.
-2. Point CI smoke tests, Newman collections, and version checks at `https://mittwald-oauth-bridge.fly.dev`; exercise `/register` (POST/GET/DELETE) rather than `/reg`.
+1. Swap the GitHub Actions Fly deployment matrix to build and deploy `mittwald-oauth-server` (context `packages/oauth-bridge`) instead of the legacy oidc-provider. Keep the MCP server entry so both apps publish on every push to `main`.
+2. Point CI smoke tests, Newman collections, and version checks at `https://mittwald-oauth-server.fly.dev`; exercise `/register` (POST/GET/DELETE) rather than `/reg`.
 3. Update `packages/mcp-server/fly.toml` and any integration envs so `OAUTH_AS_BASE` / `as_base` refer to the bridge URL, ensuring `WWW-Authenticate` challenges and docs match the new endpoints.
-4. Once the bridge deploys cleanly via GitHub Actions, destroy the `mittwald-oauth-server` Fly app (or scale it to zero) so all traffic and automation run exclusively through the bridge.
+4. Once the bridge deploys cleanly via GitHub Actions, retire any legacy bridge Fly apps so all traffic and automation run exclusively through `mittwald-oauth-server`.
+
+## Immutable Redirect Requirement
+- Mittwald’s OAuth client treats `https://mittwald-oauth-server.fly.dev/mittwald/callback` as the canonical redirect URI. The bridge **must** continue to serve this callback hostname.
+- Any Fly deployment or DNS change must retain that exact URL (including scheme and path) or the Mittwald authorization endpoint will reject the flow.
+- All bridge deploys must run through the GitHub Actions “Deploy to Fly.io” workflow to preserve build provenance and secret management; manual `fly deploy` commands are no longer permitted.
+
+## Bridge Host Migration Plan (Back to `mittwald-oauth-server`)
+1. **Recreate Fly App** – provision `mittwald-oauth-server` (Fly) again; this will host the stateless OAuth bridge.
+2. **Deploy Bridge Image** – use `packages/oauth-bridge/Dockerfile` and `packages/oauth-bridge/fly.toml`, overriding `app` to `mittwald-oauth-server`. Set secrets (`BRIDGE_*`, `MITTWALD_*`, Redis) so `BRIDGE_BASE_URL=https://mittwald-oauth-server.fly.dev`.
+3. **Update CI/CD (Mandatory)** – change `.github/workflows/deploy-fly.yml` so the bridge entry deploys `mittwald-oauth-server` and **require all Fly deploys to run through this GitHub Action** (no manual `fly deploy`). The matrix must continue deploying the MCP server in the same run.
+4. **Adjust Config Consumers** – update `tests/postman` env, scripts, docs, and `packages/mcp-server/fly.toml` so every reference points to `mittwald-oauth-server`.
+5. **Redeploy & Validate via GitHub Action** – push to `main`, let the pipeline build and ship both MCP and bridge apps; confirm `/health`, `/register`, `/version`, and `/jwks` respond and that the GitHub Action smoke suite passes.
+6. **End-to-End Test** – run a full OAuth flow via `https://mittwald-mcp-fly2.fly.dev/mcp`; verify Mittwald redirects to `https://mittwald-oauth-server.fly.dev/mittwald/callback`, that the bridge returns tokens, and the MCP server refreshes them.
+7. **Retire Legacy App** – once traffic is confirmed on `mittwald-oauth-server`, destroy or scale down the deprecated bridge staging app to avoid confusion.
+
+## Reference Context
+- **ARCHITECTURE.md** – canonical bridge + MCP design, now updated to call out the `mittwald-oauth-server` hostname requirement.
+- **LLM_CONTEXT.md** – consolidated reading order for bridge, MCP server, and Redis state.
+- **docs/2025-09-27-openai-connector-oauth-guidance.md** (this file) – deployment log, checklist, migration plan, and troubleshooting notes.
+- **docs/2025-09-27-chatgpt-oauth-expired-interactions.md** – historical analysis of cookie issues (legacy oidc-provider); useful for regression context.
+- **tests/postman/Mittwald-MCP.postman_collection.json** – canonical smoke tests hitting MCP + bridge endpoints.
 
 ## Azure AD / Entra ID Onboarding Runbook
 1. **Pre-flight**: Ensure tenant admins provision the redirect URIs from `BRIDGE_REDIRECT_URIS` and the MCP metadata endpoints are reachable.

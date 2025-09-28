@@ -13,7 +13,7 @@
  *
  * Usage
  *   MCP_BASE=https://your-mcp-server.com \
- *   AS_BASE=https://mittwald-oauth-bridge.fly.dev \
+ *   AS_BASE=https://mittwald-oauth-server.fly.dev \
  *   AS_DCR_TOKEN=YOUR_INITIAL_ACCESS_TOKEN \
  *   tsx scripts/e2e-mcp-oauth.ts
  *
@@ -43,7 +43,7 @@ type OAuthMetadata = {
 };
 
 const MCP_BASE = process.env.MCP_BASE || process.env.MCP_PUBLIC_BASE || 'https://localhost:3000';
-const AS_BASE = process.env.AS_BASE || process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-bridge.fly.dev';
+const AS_BASE = process.env.AS_BASE || process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
 const AS_DCR_TOKEN = process.env.AS_DCR_TOKEN || process.env.INITIAL_ACCESS_TOKEN;
 const SCOPES = process.env.MCP_SCOPES || 'openid profile email mcp:tools mcp:resources mcp:prompts';
 

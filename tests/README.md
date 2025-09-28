@@ -31,7 +31,7 @@ This reuses the shared Vitest configuration while allowing package-specific alia
 ### End-to-End & Tooling Scripts
 - `npm run test:e2e:mcp` executes the scripted MCP OAuth flow using the mock OAuth server and CLI façade.
 - `npm run test:cleanup` cleans residual functional test data when necessary.
-- Deploy smoke tests should target the Fly.io staging apps (`mittwald-mcp-fly2`, `mittwald-oauth-bridge`) once credentials are configured.
+- Deploy smoke tests should target the Fly.io staging apps (`mittwald-mcp-fly2`, `mittwald-oauth-server`) once credentials are configured.
 
 ## Environment Notes
 - Copy `.env.example` to `.env` and populate secrets before running integration or end-to-end suites.

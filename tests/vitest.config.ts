@@ -28,7 +28,7 @@ export default defineConfig({
       ]
     },
     env: {
-      OAUTH_SERVER_URL: 'https://mittwald-oauth-bridge.fly.dev',
+      OAUTH_SERVER_URL: 'https://mittwald-oauth-server.fly.dev',
       MCP_SERVER_URL: 'https://mittwald-mcp-fly2.fly.dev',
       NODE_ENV: 'test'
     }

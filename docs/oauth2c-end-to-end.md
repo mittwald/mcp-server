@@ -5,7 +5,7 @@ This guide walks an LLM assistant through a full end-to-end validation of the Mi
 ## 1. Prerequisites
 - Local shell access with `curl`, `jq`, and a browser available (desktop or headless).
 - Mittwald account credentials that can complete the Mittwald login flow.
-- The OAuth bridge deployed at `https://mittwald-oauth-bridge.fly.dev`.
+- The OAuth bridge deployed at `https://mittwald-oauth-server.fly.dev`.
 - Optional: A Mittwald staging environment URL (`https://mittwald-mcp-fly2.fly.dev/mcp`) for the resource parameter.
 
 ## 2. Install `oauth2c`
@@ -33,7 +33,7 @@ cat > /tmp/claude/register-request.json << 'EOF'
 }
 EOF
 
-curl -X POST https://mittwald-oauth-bridge.fly.dev/register \
+curl -X POST https://mittwald-oauth-server.fly.dev/register \
   -H "Content-Type: application/json" \
   --data @/tmp/claude/register-request.json | tee /tmp/claude/oauth2c-register.json
 ```
@@ -47,7 +47,7 @@ Confirm the response includes:
 ## 4. Authorization Code Flow (PKCE + Resource Indicator)
 Launch the authorization flow; `oauth2c` will open a browser window. Log in with Mittwald credentials and approve the request.
 ```bash
-oauth2c authorize https://mittwald-oauth-bridge.fly.dev \
+oauth2c authorize https://mittwald-oauth-server.fly.dev \
   --client-id "$(jq -r '.client_id' /tmp/oauth2c-register.json)" \
   --redirect-uri "http://127.0.0.1:8765/callback" \
   --scope "openid offline_access app:read" \
@@ -64,7 +64,7 @@ During the browser step:
 ## 5. Exchange Code for Tokens
 If the authorization succeeded, `oauth2c` automatically captures the code and can exchange it for tokens. Use:
 ```bash
-oauth2c token https://mittwald-oauth-bridge.fly.dev \
+oauth2c token https://mittwald-oauth-server.fly.dev \
   --session /tmp/oauth2c-session.json \
   --format json | tee /tmp/oauth2c-token.json
 ```
@@ -84,7 +84,7 @@ Check for `mittwald_scope`, `mittwald_access_token`, or related custom claims if
 ## 7. Refresh Token Flow
 Validate refresh token support using the saved tokens:
 ```bash
-oauth2c refresh https://mittwald-oauth-bridge.fly.dev \
+oauth2c refresh https://mittwald-oauth-server.fly.dev \
   --client-id "$(jq -r '.client_id' /tmp/oauth2c-register.json)" \
   --refresh-token "$(jq -r '.refresh_token' /tmp/oauth2c-token.json)" \
   --format json | tee /tmp/oauth2c-refresh.json
@@ -94,7 +94,7 @@ Ensure a new `access_token` (and optional `refresh_token`) is returned.
 ## 8. Optional: Token Introspection (if enabled)
 If introspection is allowed:
 ```bash
-oauth2c introspect https://mittwald-oauth-bridge.fly.dev/token/introspection \
+oauth2c introspect https://mittwald-oauth-server.fly.dev/token/introspection \
   --client-id "$(jq -r '.client_id' /tmp/oauth2c-register.json)" \
   --token "$(jq -r '.access_token' /tmp/oauth2c-token.json)"
 ```
@@ -103,7 +103,7 @@ Confirm the response indicates `active: true` and shows the expected scopes.
 ## 9. Optional: Revoke or Delete the Client
 Clean up the dynamically registered client to avoid clutter. Use the `registration_access_token` from step 3.
 ```bash
-oauth2c delete-client https://mittwald-oauth-bridge.fly.dev \
+oauth2c delete-client https://mittwald-oauth-server.fly.dev \
   --client-id "$(jq -r '.client_id' /tmp/oauth2c-register.json)" \
   --registration-access-token "$(jq -r '.registration_access_token' /tmp/oauth2c-register.json)"
 ```
@@ -118,7 +118,7 @@ While running the steps, tail the Fly.io logs for the OAuth server to confirm th
 
 Example:
 ```bash
-fly logs -a mittwald-oauth-bridge --since 10m
+fly logs -a mittwald-oauth-server --since 10m
 ```
 
 ## 11. Test Results Summary (Executed 2025-09-27)
@@ -149,7 +149,7 @@ fly logs -a mittwald-oauth-bridge --since 10m
 ### 📊 SERVER HEALTH STATUS
 **VERDICT: OAuth server is FULLY FUNCTIONAL** ✅
 
-The Mittwald OAuth bridge at `https://mittwald-oauth-bridge.fly.dev` is working correctly:
+The Mittwald OAuth bridge at `https://mittwald-oauth-server.fly.dev` is working correctly:
 - All core OAuth 2.0 endpoints operational
 - Proper security validations in place
 - Correct error handling and responses

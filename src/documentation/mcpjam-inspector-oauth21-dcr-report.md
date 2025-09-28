@@ -105,7 +105,7 @@ How Our Server Maps To These Requirements
   - Files: `src/routes/oauth-metadata-routes.ts` and mounting in `src/server.ts`.
 
 - Recommended environment/config
-  - `OAUTH_AS_BASE`: Base URL of your external AS (e.g., https://mittwald-oauth-bridge.fly.dev).
+  - `OAUTH_AS_BASE`: Base URL of your external AS (e.g., https://mittwald-oauth-server.fly.dev).
   - `MCP_PUBLIC_BASE` (or `BASE_URL`): Used as the protected `resource` URL in the resource metadata.
 
 - CORS

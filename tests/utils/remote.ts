@@ -13,7 +13,7 @@ export const REQUEST_TIMEOUT_MS = (() => {
 
 axios.defaults.timeout = REQUEST_TIMEOUT_MS;
 
-export const OAUTH_SERVER = process.env.OAUTH_SERVER_URL?.trim() || 'https://mittwald-oauth-bridge.fly.dev';
+export const OAUTH_SERVER = process.env.OAUTH_SERVER_URL?.trim() || 'https://mittwald-oauth-server.fly.dev';
 export const MCP_SERVER = process.env.MCP_SERVER_URL?.trim() || 'https://mittwald-mcp-fly2.fly.dev';
 
 const SKIPPABLE_ERROR_CODES = new Set([

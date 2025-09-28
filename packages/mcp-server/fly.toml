@@ -16,7 +16,7 @@ kill_timeout = 5
   # Public base URL where clients reach the MCP server
   MCP_PUBLIC_BASE = "https://mittwald-mcp-fly2.fly.dev"
   # Authorization Server base (bridge)
-  OAUTH_AS_BASE = "https://mittwald-oauth-bridge.fly.dev"
+  OAUTH_AS_BASE = "https://mittwald-oauth-server.fly.dev"
   # JWT validation configuration (must match OAuth server)
   JWT_SIGNING_KEY = "production-jwt-key-must-be-set-as-secret"
 

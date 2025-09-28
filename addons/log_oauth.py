@@ -3,10 +3,10 @@ import json, re, urllib.parse
 
 # Match only our relevant domains and endpoints
 TARGETS = [
-    r"mittwald-oauth-bridge\.fly\.dev/\.well-known/oauth-authorization-server",
-    r"mittwald-oauth-bridge\.fly\.dev/register",
-    r"mittwald-oauth-bridge\.fly\.dev/authorize",
-    r"mittwald-oauth-bridge\.fly\.dev/token",
+    r"mittwald-oauth-server\.fly\.dev/\.well-known/oauth-authorization-server",
+    r"mittwald-oauth-server\.fly\.dev/register",
+    r"mittwald-oauth-server\.fly\.dev/authorize",
+    r"mittwald-oauth-server\.fly\.dev/token",
     r"mittwald-mcp-fly2\.fly\.dev/mcp",
 ]
 

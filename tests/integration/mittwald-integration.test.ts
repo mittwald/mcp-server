@@ -17,7 +17,7 @@ describe('Mittwald IdP Integration', () => {
     });
 
     test('whitelisted callback URL is correct', async () => {
-      // Test that https://mittwald-oauth-bridge.fly.dev/mittwald/callback is whitelisted
+      // Test that https://mittwald-oauth-server.fly.dev/mittwald/callback is whitelisted
       // Based on ARCHITECTURE.md: One whitelisted callback URL
       expect(true).toBe(true); // Placeholder - requires Mittwald configuration check
     });
