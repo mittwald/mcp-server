@@ -4,6 +4,7 @@ import bodyParser from 'koa-bodyparser';
 import pino from 'pino';
 import type { Logger } from 'pino';
 import { koaLogger } from './logger.js';
+import { requestLogger } from './middleware/request-logger.js';
 import type { BridgeConfig } from './config.js';
 import type { StateStore } from './state/state-store.js';
 import { createAuthorizeRouter } from './routes/authorize.js';
@@ -25,6 +26,7 @@ export function createApp(config: BridgeConfig, stateStore: StateStore) {
 
   app.use(koaLogger(logger));
   app.use(bodyParser());
+  app.use(requestLogger(logger));
 
   router.get('/', async (ctx) => {
     let stateHealth;
