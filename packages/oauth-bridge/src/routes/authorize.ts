@@ -2,6 +2,13 @@ import Router from '@koa/router';
 import { randomUUID } from 'node:crypto';
 import type { BridgeConfig } from '../config.js';
 import type { StateStore } from '../state/state-store.js';
+import {
+  DEFAULT_SCOPES,
+  DEFAULT_SCOPE_STRING,
+  buildScopeString,
+  filterUpstreamScopes,
+  validateRequestedScopes
+} from '../config/mittwald-scopes.js';
 
 interface AuthorizeRouterDeps {
   config: BridgeConfig;
@@ -23,11 +30,35 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
       resource
     } = ctx.query as Record<string, string | undefined>;
 
+    const requestedScopes = parseScopeParameter(scope);
+    const effectiveScopes = requestedScopes.length > 0 ? requestedScopes : DEFAULT_SCOPES;
+    const scopeValidation = validateRequestedScopes(effectiveScopes);
+
+    if (scopeValidation.unsupported.length > 0) {
+      ctx.logger.warn({
+        clientId,
+        redirectUri,
+        unsupportedScopes: scopeValidation.unsupported
+      }, 'Authorization request rejected due to unsupported scopes');
+      ctx.status = 400;
+      ctx.body = {
+        error: 'invalid_scope',
+        error_description: `Unsupported scopes requested: ${scopeValidation.unsupported.join(', ')}`
+      };
+      return;
+    }
+
+    const scopedRequest = buildScopeString(effectiveScopes);
+    const upstreamScopes = filterUpstreamScopes(effectiveScopes);
+    const mittwaldScopeString = upstreamScopes.length > 0
+      ? buildScopeString(upstreamScopes)
+      : DEFAULT_SCOPE_STRING;
+
     const error = validateRequest({
       responseType,
       clientId,
       redirectUri,
-      scope,
+      scope: scopedRequest,
       state,
       codeChallenge,
       codeChallengeMethod,
@@ -51,7 +82,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
         redirectUri: redirectUri!,
         codeChallenge: codeChallenge!,
         codeChallengeMethod: 'S256',
-        scope,
+        scope: scopedRequest,
         resource,
         createdAt: 0,
         expiresAt: 0
@@ -70,7 +101,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     mittwaldRedirect.searchParams.set('response_type', 'code');
     mittwaldRedirect.searchParams.set('client_id', config.mittwald.clientId);
     mittwaldRedirect.searchParams.set('redirect_uri', `${config.bridge.baseUrl}/mittwald/callback`);
-    mittwaldRedirect.searchParams.set('scope', scope);
+    mittwaldRedirect.searchParams.set('scope', mittwaldScopeString);
     mittwaldRedirect.searchParams.set('code_challenge', codeChallenge!);
     mittwaldRedirect.searchParams.set('code_challenge_method', 'S256');
     mittwaldRedirect.searchParams.set('state', internalState);
@@ -78,7 +109,13 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
       mittwaldRedirect.searchParams.set('resource', resource);
     }
 
-    ctx.logger.info({ clientId, redirectUri, scope, resource }, 'Authorization request forwarded to Mittwald');
+    ctx.logger.info({
+      clientId,
+      redirectUri,
+      requestedScopes: scopedRequest,
+      forwardedScopes: mittwaldScopeString,
+      resource
+    }, 'Authorization request forwarded to Mittwald');
 
     ctx.status = 303;
     ctx.redirect(mittwaldRedirect.toString());
@@ -128,4 +165,15 @@ function validateRequest(input: ValidationInput): Record<string, string> | null 
   }
 
   return null;
+}
+
+function parseScopeParameter(scopeParam: string): string[] {
+  if (!scopeParam) {
+    return [];
+  }
+
+  return scopeParam
+    .split(/\s+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
 }

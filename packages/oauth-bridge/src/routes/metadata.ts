@@ -1,5 +1,6 @@
 import Router from '@koa/router';
 import type { BridgeConfig } from '../config.js';
+import { DEFAULT_SCOPES, SUPPORTED_SCOPES } from '../config/mittwald-scopes.js';
 
 interface MetadataRouterDeps {
   config: BridgeConfig;
@@ -30,7 +31,8 @@ export function createMetadataRouter({ config }: MetadataRouterDeps) {
       response_types_supported: ['code'],
       grant_types_supported: ['authorization_code', 'refresh_token'],
       token_endpoint_auth_methods_supported: ['none'],
-      scopes_supported: [],
+      scopes_supported: SUPPORTED_SCOPES,
+      default_scopes: DEFAULT_SCOPES,
       mcp: {
         registration_endpoint: `${config.bridge.baseUrl}/register`,
         redirect_uris: config.redirectUris,

@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Copy repo-level TypeScript config that the bridge package extends
 COPY tsconfig.json ./tsconfig.json
+COPY config/mittwald-scopes.json ./config/mittwald-scopes.json
 
 # Copy bridge sources and package metadata
 COPY packages/oauth-bridge/package.json ./packages/oauth-bridge/package.json
@@ -25,6 +26,7 @@ ENV NODE_ENV=production
 COPY --from=build /app/packages/oauth-bridge/dist ./dist
 COPY --from=build /app/packages/oauth-bridge/node_modules ./node_modules
 COPY packages/oauth-bridge/package.json ./package.json
+COPY config/mittwald-scopes.json ./config/mittwald-scopes.json
 
 EXPOSE 3000
 CMD ["node", "dist/server.js"]

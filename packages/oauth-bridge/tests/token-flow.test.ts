@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { createHash } from 'node:crypto';
 import { createApp } from '../src/app.js';
 import { loadConfigFromEnv } from '../src/config.js';
+import { DEFAULT_SCOPE_STRING } from '../src/config/mittwald-scopes.js';
 import { MemoryStateStore } from '../src/state/memory-state-store.js';
 
 const BASE_URL = 'https://bridge.example.com';
@@ -56,6 +57,7 @@ describe('OAuth bridge flow', () => {
     expect(mittwaldLocation.origin + mittwaldLocation.pathname).toEqual('https://mittwald.example.com/oauth/authorize');
     const internalState = mittwaldLocation.searchParams.get('state');
     expect(internalState).toBeTruthy();
+    expect(mittwaldLocation.searchParams.get('scope')).toEqual(DEFAULT_SCOPE_STRING);
 
     const callbackResponse = await request(app.callback())
       .get('/mittwald/callback')
@@ -77,8 +79,8 @@ describe('OAuth bridge flow', () => {
         token_type: 'Bearer',
         expires_in: 3600,
         refresh_token: 'mittwald-refresh',
-        scope: 'openid profile'
-      }),
+      scope: 'openid profile'
+    }),
       {
         status: 200,
         headers: { 'content-type': 'application/json' }
@@ -184,11 +186,54 @@ describe('OAuth bridge flow', () => {
     expect(metadataResponse.body).toMatchObject({
       issuer: BASE_URL,
       registration_endpoint: `${BASE_URL}/register`,
+      scopes_supported: expect.arrayContaining(['app:read']),
       mcp: {
         registration_endpoint: `${BASE_URL}/register`,
         redirect_uris: expect.arrayContaining(['https://chatgpt.com/connector_platform_oauth_redirect'])
       }
     });
+  });
+
+  test('defaults scopes when none provided', async () => {
+    const config = loadConfigFromEnv();
+    const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
+    const app = createApp(config, stateStore);
+
+    const authorizeResponse = await request(app.callback())
+      .get('/authorize')
+      .query({
+        response_type: 'code',
+        client_id: 'chatgpt-client',
+        redirect_uri: 'https://chatgpt.com/connector_platform_oauth_redirect',
+        state: 'state-123',
+        code_challenge: pkceChallenge('verify-me'),
+        code_challenge_method: 'S256'
+      })
+      .expect(303);
+
+    const mittwaldLocation = new URL(authorizeResponse.headers.location);
+    expect(mittwaldLocation.searchParams.get('scope')).toEqual(DEFAULT_SCOPE_STRING);
+  });
+
+  test('rejects unsupported scopes', async () => {
+    const config = loadConfigFromEnv();
+    const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
+    const app = createApp(config, stateStore);
+
+    const response = await request(app.callback())
+      .get('/authorize')
+      .query({
+        response_type: 'code',
+        client_id: 'chatgpt-client',
+        redirect_uri: 'https://chatgpt.com/connector_platform_oauth_redirect',
+        scope: 'totally:unknown',
+        state: 'state-456',
+        code_challenge: pkceChallenge('verify-me'),
+        code_challenge_method: 'S256'
+      })
+      .expect(400);
+
+    expect(response.body).toMatchObject({ error: 'invalid_scope' });
   });
 
   test('health endpoint reports state store metrics', async () => {
