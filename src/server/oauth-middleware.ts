@@ -154,7 +154,9 @@ function sendOAuthChallenge(res: express.Response): void {
   
   // Authorization Server base (our oauth-server)
   const asBase = getAuthorizationServerBase();
-  const authorizeEndpoint = CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL || `${asBase.replace(/\/$/, '')}/auth`;
+  const authorizeEndpoint = CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL
+    || process.env.OAUTH_BRIDGE_AUTHORIZATION_URL
+    || `${asBase.replace(/\/$/, '')}/authorize`;
   const tokenEndpoint = CONFIG.OAUTH_BRIDGE.TOKEN_URL || `${asBase.replace(/\/$/, '')}/token`;
   
   // Set WWW-Authenticate header as per MCP OAuth spec

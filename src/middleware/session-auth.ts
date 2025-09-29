@@ -115,7 +115,7 @@ export function createSessionAuthMiddleware() {
  */
 function sendOAuthChallenge(res: Response, reason: string) {
   const asBase = getAuthorizationServerBase();
-  const authorizationUri = `${asBase.replace(/\/$/, '')}/auth`;
+  const authorizationUri = getAuthorizationEndpoint(asBase);
   const clientId = 'mittwald-mcp-server';
   
   logger.info(`Sending OAuth challenge: ${reason}`);
@@ -136,6 +136,14 @@ function getAuthorizationServerBase(): string {
     || process.env.OAUTH_BRIDGE_BASE_URL
     || process.env.OAUTH_AS_BASE
     || 'https://mittwald-oauth-server.fly.dev';
+}
+
+function getAuthorizationEndpoint(base: string): string {
+  const configured = CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL || process.env.OAUTH_BRIDGE_AUTHORIZATION_URL;
+  if (configured) {
+    return configured;
+  }
+  return `${base.replace(/\/$/, '')}/authorize`;
 }
 
 /**

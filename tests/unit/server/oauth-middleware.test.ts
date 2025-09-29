@@ -178,7 +178,7 @@ describe('OAuth Middleware', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockResponse.set).toHaveBeenCalledWith(
         'WWW-Authenticate',
-        'Bearer realm="MCP Server", authorization_uri="https://mittwald-oauth-server.fly.dev/auth"'
+        'Bearer realm="MCP Server", authorization_uri="https://mittwald-oauth-server.fly.dev/authorize"'
       );
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -247,11 +247,11 @@ describe('OAuth Middleware', () => {
           error: 'authentication_required',
           message: 'OAuth authentication required',
           oauth: expect.objectContaining({
-            authorization_url: 'https://mittwald-oauth-server.fly.dev/auth',
+            authorization_url: 'https://mittwald-oauth-server.fly.dev/authorize',
             token_url: 'https://mittwald-oauth-server.fly.dev/token'
           }),
         endpoints: {
-          authorize: 'https://mittwald-oauth-server.fly.dev/auth',
+          authorize: 'https://mittwald-oauth-server.fly.dev/authorize',
           token: 'https://mittwald-oauth-server.fly.dev/token',
           metadata: 'https://mittwald-oauth-server.fly.dev/.well-known/oauth-authorization-server'
         },
