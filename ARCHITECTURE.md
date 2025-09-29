@@ -23,7 +23,7 @@ Key goals:
 
 | Component | Role |
 |-----------|------|
-| **OAuth Bridge (`packages/oauth-bridge`)** | Koa service handling `/authorize`, `/mittwald/callback`, `/token`, client registration lifecycle, `/health` metrics, JWT signing, and Redis-backed state. The bridge authenticates as a public Mittwald PKCE client (no client secret) and **must** listen on `https://mittwald-oauth-server.fly.dev` so Mittwald’s redirect whitelist continues to match. |
+| **OAuth Bridge (`packages/oauth-bridge`)** | Koa service handling `/authorize`, `/mittwald/callback`, `/token`, client registration lifecycle, `/health` metrics, JWT signing, and Redis-backed state. The bridge authenticates as a public Mittwald PKCE client (no Mittwald client secret) and **must** listen on `https://mittwald-oauth-server.fly.dev` so Mittwald’s redirect whitelist continues to match. Dynamic client registration now supports both public clients (`token_endpoint_auth_method=none`) and confidential clients (`client_secret_post` / `client_secret_basic`) by minting bridge-side client secrets. |
 | **Mittwald OAuth** | Authoritative IdP (static client `mittwald-mcp-server`). Provides login UI, enforces scopes, and issues access/refresh tokens. |
 | **MCP Server (`src/server`)** | Validates bridge JWTs, persists sessions in Redis, and drives tool execution via Mittwald tokens. |
 | **Redis** | Session/state cache storing authorization requests (bridge) and user sessions (MCP server). |
@@ -62,8 +62,8 @@ Key goals:
 - `src/app.ts` – Koa setup, health endpoint, middleware.
 - `src/routes/authorize.ts` – Validates PKCE, persists authorization requests, redirects to Mittwald.
 - `src/routes/mittwald-callback.ts` – Receives Mittwald auth code, maps back to external state.
-- `src/routes/token.ts` – PKCE verification, token exchange, JWT signing via `services/bridge-tokens.ts`.
-- `src/routes/register.ts` – Dynamic client registration plus GET/DELETE lifecycle endpoints gated by the registration access token.
+- `src/routes/token.ts` – PKCE verification, token exchange, JWT signing via `services/bridge-tokens.ts`; enforces client authentication for confidential registrations before exchanging Mittwald codes.
+- `src/routes/register.ts` – Dynamic client registration plus GET/DELETE lifecycle endpoints gated by the registration access token. Generates bridge-managed client secrets for confidential clients and returns them alongside registration access tokens for self-service lifecycle.
 - `src/services/mittwald.ts` – HTTP client for Mittwald token exchanges (public client: PKCE only, no client secret).
 - Tests: `tests/token-flow.test.ts` uses Supertest to exercise the full flow.
 
@@ -79,11 +79,13 @@ Key goals:
 - Enterprise IdPs without DCR – may require a separate onboarding flow.
 - Redis persistence for bridge state – in production we should swap the in-memory store for Redis.
 - Additional error logging around `/token` exchange for better diagnostics.
+- Consider rotating bridge-issued client secrets and surfacing revocation flows once confidential client usage increases.
 
 ## Changelog Snapshot
 - 2025-09-27 15:25 UTC – Created `packages/oauth-bridge`, scaffolded Koa service.
 - 2025-09-27 16:32 UTC – Implemented Mittwald callback + `/token` flow, embedded Mittwald tokens in JWT (`408d2e1`).
 - 2025-09-27 17:32 UTC – MCP server verifies bridge JWT via `jose`, sessions carry Mittwald tokens (`3938aff`).
 - 2025-09-27 18:05 UTC – Session middleware hydrates `req.auth` from Redis; unit tests updated (`de63a80`).
+- 2025-09-29 11:45 UTC – Bridge dynamic registration issues secrets for Claude Desktop confidential clients and validates client authentication on `/token`.
 
 This document should be used alongside `docs/2025-09-27-openai-connector-oauth-guidance.md` for the latest implementation log.

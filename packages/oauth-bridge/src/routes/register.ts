@@ -15,7 +15,9 @@ interface RegistrationRequest {
   scope?: unknown;
 }
 
-const SUPPORTED_TOKEN_AUTH_METHODS = new Set(['none', 'client_secret_post', 'client_secret_basic']);
+type TokenEndpointAuthMethod = 'none' | 'client_secret_post' | 'client_secret_basic';
+
+const SUPPORTED_TOKEN_AUTH_METHODS = new Set<TokenEndpointAuthMethod>(['none', 'client_secret_post', 'client_secret_basic']);
 
 function generateClientSecret(): string {
   return randomBytes(48).toString('base64url');
@@ -35,7 +37,7 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
       return;
     }
 
-    const tokenEndpointAuthMethod = (body.token_endpoint_auth_method as string | undefined)?.toLowerCase() ?? 'none';
+    const tokenEndpointAuthMethod = ((body.token_endpoint_auth_method as string | undefined)?.toLowerCase() ?? 'none') as TokenEndpointAuthMethod;
     const redirectUris = (body.redirect_uris as string[]).map((uri) => uri.trim());
     const scope = typeof body.scope === 'string' ? body.scope : undefined;
     const clientName = typeof body.client_name === 'string' ? body.client_name : undefined;

@@ -1,11 +1,12 @@
 # Mittwald MCP Server
 
-The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**—there is no client secret to manage or distribute. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
+The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**—there is no Mittwald-issued client secret to manage. The bridge mints its own secrets for downstream confidential MCP clients (e.g. Claude Desktop) and verifies them before issuing JWTs. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
 
 ## What Changed (2025-09-25)
 - **Mittwald is authoritative for scopes and consent.** Our proxy no longer maintains its own scope catalogue or renders consent pages.
-- **Dynamic client registration remains open.** Clients register through `/reg`; we store their metadata and rely on Mittwald to validate scopes during the downstream exchange.
+- **Dynamic client registration remains open.** Clients register through `/register`; we store their metadata and rely on Mittwald to validate scopes during the downstream exchange.
 - **JWT payloads include Mittwald tokens verbatim.** The scope string inside each issued JWT comes directly from Mittwald's token response.
+- **Confidential MCP clients are supported.** The bridge returns `client_secret_post` credentials during registration and enforces them on `/token`, allowing Claude Desktop to complete OAuth without custom configuration.
 
 For the full design see `ARCHITECTURE.md`.
 

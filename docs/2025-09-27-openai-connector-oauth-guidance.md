@@ -6,7 +6,7 @@
 
 ## Key Takeaways from OpenAI Documentation
 
-- Mittwald treats our bridge as a **public PKCE client**. There is no client secret to manage or distribute; all exchanges rely on PKCE and server-to-server credentials only.
+- Mittwald treats our bridge as a **public PKCE client**. There is no Mittwald client secret to manage or distribute; all exchanges rely on PKCE and server-to-server credentials only. The bridge now mints **its own** secrets for downstream MCP clients that register as confidential (e.g., Claude Desktop) so we can authenticate those clients without forwarding any Mittwald credentials.
 
 ### User-Driven Authorization
 - Every end user must authenticate their own account with a connector. Admins can enable or preconfigure connectors, but individual users must complete the OAuth login and grant permissions before accessing the connector.
@@ -63,6 +63,7 @@
   - Claude: `https://claude.ai/api/mcp/auth_callback` and `https://claude.com/api/mcp/auth_callback`.
 - **Bridge configuration**: Set `BRIDGE_REDIRECT_URIS` to include every ChatGPT and Claude callback variant (prod + Deep Research + staging) so `/authorize` validation passes without redeploys.
 - **Registration Patterns**: ChatGPT supports Dynamic Client Registration; Claude often expects static client IDs. Support both workflows.
+- **Client Authentication**: Claude Desktop requests `token_endpoint_auth_method=client_secret_post`. The bridge must return a `client_secret` during registration and enforce the secret on `/token` to avoid Claude treating the connector as broken.
 - **Token Presentation**: Both platforms send the access token via `Authorization` header only; never expect form-encoded secrets.
 
 ## Enterprise & IdP Considerations
@@ -279,6 +280,7 @@ During September 2025 design discussions an alternative proposal argued for remo
 1. Run `pnpm vitest --filter "OAuth bridge"` to exercise the `/authorize → /token` flow and the new registration management tests.
 2. Use the Redis-backed deployment with `BRIDGE_STATE_STORE=redis` and confirm `/health` reflects Redis metrics in staging.
 3. For ChatGPT/Claude emulation, use `oauth2c` scripts (see `tests/postman/`) to verify registration rotation and deletion flows.
+4. The GitHub Actions post-deploy smoke now performs a confidential-client DCR round-trip and asserts that `/token` returns `invalid_grant` (not `invalid_client`) when a bad code is presented with valid credentials.
 
 ## Implementation Log
 - 2025-09-27 15:25 UTC — Kick-off: scaffolded `packages/oauth-bridge` (`70abcf7`).
