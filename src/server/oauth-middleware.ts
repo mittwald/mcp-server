@@ -3,6 +3,7 @@ import { jwtVerify } from "jose";
 import type { AuthenticatedRequest } from "./auth-types.js";
 import { CONFIG } from "./config.js";
 import { logger } from "../utils/logger.js";
+import { getPublicBaseUrl } from "../utils/public-base.js";
 
 /**
  * OAuth authentication middleware for MCP server
@@ -148,10 +149,8 @@ export function createOAuthMiddleware() {
  * Sends OAuth challenge response with proper metadata
  */
 function sendOAuthChallenge(res: express.Response): void {
-  const baseUrl = process.env.NODE_ENV === 'production' 
-    ? (process.env.MCP_PUBLIC_BASE || 'https://mcp.mittwald-mcp-fly.fly.dev')
-    : 'https://localhost:3000';
-  
+  const publicBase = getPublicBaseUrl();
+
   // Authorization Server base (our oauth-server)
   const asBase = getAuthorizationServerBase();
   const authorizeEndpoint = CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL
@@ -174,7 +173,7 @@ function sendOAuthChallenge(res: express.Response): void {
       token: tokenEndpoint,
       metadata: `${asBase.replace(/\/$/, '')}/.well-known/oauth-authorization-server`
     },
-    resource: `${process.env.MCP_PUBLIC_BASE || baseUrl}/mcp`
+    resource: `${publicBase}/mcp`
   });
 }
 

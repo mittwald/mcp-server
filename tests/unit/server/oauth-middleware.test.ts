@@ -40,7 +40,7 @@ describe('OAuth Middleware', () => {
     vi.clearAllMocks();
     mockJwtVerify.mockReset();
     process.env.OAUTH_AS_BASE = 'https://mittwald-oauth-server.fly.dev';
-    delete process.env.MCP_PUBLIC_BASE;
+    process.env.MCP_PUBLIC_BASE = 'https://localhost:3000';
     process.env.NODE_ENV = 'test';
     
     mockRequest = {
@@ -242,37 +242,35 @@ describe('OAuth Middleware', () => {
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
-      expect(mockResponse.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: 'authentication_required',
-          message: 'OAuth authentication required',
-          oauth: expect.objectContaining({
-            authorization_url: 'https://mittwald-oauth-server.fly.dev/authorize',
-            token_url: 'https://mittwald-oauth-server.fly.dev/token'
-          }),
+      const payload = vi.mocked(mockResponse.json).mock.calls[0][0];
+      expect(payload).toMatchObject({
+        error: 'authentication_required',
+        message: 'OAuth authentication required',
+        oauth: {
+          authorization_url: 'https://mittwald-oauth-server.fly.dev/authorize',
+          token_url: 'https://mittwald-oauth-server.fly.dev/token'
+        },
         endpoints: {
           authorize: 'https://mittwald-oauth-server.fly.dev/authorize',
           token: 'https://mittwald-oauth-server.fly.dev/token',
           metadata: 'https://mittwald-oauth-server.fly.dev/.well-known/oauth-authorization-server'
-        },
-          resource: 'https://localhost:3000/mcp'
-        })
-      );
+        }
+      });
+      expect(payload.resource).toBe('https://localhost:3000/mcp');
     });
 
     it('should use MCP_PUBLIC_BASE when provided in production', async () => {
       process.env.NODE_ENV = 'production';
       process.env.MCP_PUBLIC_BASE = 'https://example.com';
 
+      middleware = createOAuthMiddleware();
+
       mockRequest.headers = {};
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
-      expect(mockResponse.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          resource: 'https://example.com/mcp'
-        })
-      );
+      const payload = vi.mocked(mockResponse.json).mock.calls[0][0];
+      expect(payload.resource).toBe('https://example.com/mcp');
     });
   });
 

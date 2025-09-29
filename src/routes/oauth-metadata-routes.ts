@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { SUPPORTED_SCOPES, DEFAULT_SCOPE_STRING } from '../config/mittwald-scopes.js';
 import { logger } from '../utils/logger.js';
 import { CONFIG } from '../server/config.js';
+import { getPublicBaseUrl } from '../utils/public-base.js';
 
 export class OAuthMetadataRoutes {
   private router: Router;
@@ -9,8 +10,11 @@ export class OAuthMetadataRoutes {
 
   constructor(baseUrl?: string) {
     this.router = Router();
-    // Prefer explicit public base for MCP, then BASE_URL, then localhost fallback
-    this.baseUrl = baseUrl || process.env.MCP_PUBLIC_BASE || process.env.BASE_URL || (process.env.ENABLE_HTTPS === 'true' ? 'https://localhost:3000' : 'http://localhost:3000');
+    if (baseUrl) {
+      this.baseUrl = normaliseBase(baseUrl);
+    } else {
+      this.baseUrl = getPublicBaseUrl();
+    }
     this.setupRoutes();
   }
 
