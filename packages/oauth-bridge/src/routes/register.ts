@@ -15,9 +15,8 @@ interface RegistrationRequest {
   scope?: unknown;
 }
 
-type TokenEndpointAuthMethod = 'none' | 'client_secret_post' | 'client_secret_basic';
-
-const SUPPORTED_TOKEN_AUTH_METHODS = new Set<TokenEndpointAuthMethod>(['none', 'client_secret_post', 'client_secret_basic']);
+const TOKEN_AUTH_METHODS = ['none', 'client_secret_post', 'client_secret_basic'] as const;
+type TokenEndpointAuthMethod = typeof TOKEN_AUTH_METHODS[number];
 
 function generateClientSecret(): string {
   return randomBytes(48).toString('base64url');
@@ -29,7 +28,9 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
   router.post('/register', async (ctx) => {
     const body = ctx.request.body as RegistrationRequest;
 
-    const validationError = validateRegistrationRequest(body, config.redirectUris);
+    const tokenEndpointAuthMethod = parseTokenEndpointAuthMethod(body.token_endpoint_auth_method);
+
+    const validationError = validateRegistrationRequest(body, config.redirectUris, tokenEndpointAuthMethod);
     if (validationError) {
       ctx.logger.warn({ error: validationError.body.error, description: validationError.body.error_description }, 'Client registration validation failed');
       ctx.status = validationError.status;
@@ -37,11 +38,12 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
       return;
     }
 
-    const tokenEndpointAuthMethod = ((body.token_endpoint_auth_method as string | undefined)?.toLowerCase() ?? 'none') as TokenEndpointAuthMethod;
+    // tokenEndpointAuthMethod is guaranteed to be non-null when validation passes
+    const authMethod = tokenEndpointAuthMethod!;
     const redirectUris = (body.redirect_uris as string[]).map((uri) => uri.trim());
     const scope = typeof body.scope === 'string' ? body.scope : undefined;
     const clientName = typeof body.client_name === 'string' ? body.client_name : undefined;
-    const clientSecret = tokenEndpointAuthMethod === 'none' ? undefined : generateClientSecret();
+    const clientSecret = authMethod === 'none' ? undefined : generateClientSecret();
 
     const clientId = randomUUID();
     const registrationAccessToken = randomUUID();
@@ -49,7 +51,7 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
 
     const clientRecord: ClientRegistrationRecord = {
       clientId,
-      tokenEndpointAuthMethod,
+      tokenEndpointAuthMethod: authMethod,
       clientSecret,
       redirectUris,
       scope,
@@ -180,7 +182,11 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
   return router;
 }
 
-function validateRegistrationRequest(body: RegistrationRequest, allowedRedirectUris: string[]):
+function validateRegistrationRequest(
+  body: RegistrationRequest,
+  allowedRedirectUris: string[],
+  parsedMethod: TokenEndpointAuthMethod | null
+):
   { status: number; body: Record<string, string> } | null {
   if (!body.redirect_uris || !Array.isArray(body.redirect_uris) || body.redirect_uris.length === 0) {
     return {
@@ -224,8 +230,7 @@ function validateRegistrationRequest(body: RegistrationRequest, allowedRedirectU
     };
   }
 
-  const method = (body.token_endpoint_auth_method as string | undefined)?.toLowerCase() ?? 'none';
-  if (!SUPPORTED_TOKEN_AUTH_METHODS.has(method)) {
+  if (!parsedMethod) {
     return {
       status: 400,
       body: {
@@ -302,4 +307,19 @@ function buildClientRegistrationResponse(
   }
 
   return response;
+}
+
+function parseTokenEndpointAuthMethod(value: unknown): TokenEndpointAuthMethod | null {
+  if (value === undefined || value === null) {
+    return 'none';
+  }
+  if (typeof value !== 'string') {
+    return null;
+  }
+  const normalised = value.toLowerCase();
+  return isTokenEndpointAuthMethod(normalised) ? normalised : null;
+}
+
+function isTokenEndpointAuthMethod(value: string): value is TokenEndpointAuthMethod {
+  return (TOKEN_AUTH_METHODS as readonly string[]).includes(value);
 }
