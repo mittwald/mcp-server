@@ -265,7 +265,7 @@ During September 2025 design discussions an alternative proposal argued for remo
 - **ARCHITECTURE.md** – canonical bridge + MCP design, now updated to call out the `mittwald-oauth-server` hostname requirement.
 - **LLM_CONTEXT.md** – consolidated reading order for bridge, MCP server, and Redis state.
 - **docs/2025-09-27-openai-connector-oauth-guidance.md** (this file) – deployment log, checklist, migration plan, and troubleshooting notes.
-- **docs/2025-09-27-chatgpt-oauth-expired-interactions.md** – historical analysis of cookie issues (legacy oidc-provider); useful for regression context.
+- **docs/archive/2025-09-27-chatgpt-oauth-expired-interactions.md** – historical analysis of cookie issues (legacy oidc-provider); useful for regression context.
 - **tests/postman/Mittwald-MCP.postman_collection.json** – canonical smoke tests hitting MCP + bridge endpoints.
 
 ## Azure AD / Entra ID Onboarding Runbook
@@ -281,15 +281,10 @@ During September 2025 design discussions an alternative proposal argued for remo
 3. For ChatGPT/Claude emulation, use `oauth2c` scripts (see `tests/postman/`) to verify registration rotation and deletion flows.
 
 ## Implementation Log
-- 2025-09-27 15:25 UTC — Created feature branch `oauth-bridge-phase1-20250927` and stubbed new `packages/oauth-bridge` service (health route + logging) to kick off Phase 1. Commit: `70abcf7`.
-- 2025-09-27 15:34 UTC — Wired environment-driven configuration loader and injected bridge config into the Koa app skeleton. Commit: `e7e3bfe`.
-- 2025-09-27 15:46 UTC — Added pluggable state-store abstraction with a default in-memory implementation and injected it into the bridge app context. Commit: `12e9e14`.
-- 2025-09-27 16:05 UTC — Implemented `/authorize` endpoint that validates PKCE parameters, persists interaction state, and redirects to Mittwald with an internal state token. Commit: `060edb3`.
-- 2025-09-27 16:32 UTC — Added Mittwald callback + `/token` flow: store Mittwald authorization codes, verify PKCE, exchange tokens, and return bridge-issued access tokens. Commit: `408d2e1`.
-- 2025-09-27 16:58 UTC — Signed bridge JWTs, generated refresh tokens, and added Supertest-based happy-path coverage for `/authorize` → `/mittwald/callback` → `/token`. Commit: `b1c162a`.
-- 2025-09-27 17:32 UTC — MCP server now verifies HS256 tokens from the bridge via `jose`, extracts Mittwald credentials, and refreshes accompanying unit tests. Commit: `3938aff`.
-- 2025-09-27 18:05 UTC — Session middleware now hydrates `req.auth` from Redis, preserving Mittwald access/refresh tokens for CLI calls and covered by new unit tests. Commit: `de63a80`.
-- 2025-09-27 19:40 UTC — Added Mittwald token refresh orchestration in the MCP server; sessions update Redis with new access tokens and CLI calls automatically pick up the latest credentials. Commit: _(pending)_.
-- 2025-09-27 19:45 UTC — Documented Entra ID onboarding playbook, clarified `BRIDGE_REDIRECT_URIS`, and captured Phase 3 Redis migration notes. Commit: _(pending)_.
-- 2025-09-27 20:05 UTC — Bridge now exposes `/register`, serves MCP-aware discovery metadata, and defaults server discovery to the stateless bridge endpoints. Commit: _(pending)_.
-- 2025-09-27 20:12 UTC — Introduced pluggable Redis-backed state store via `BRIDGE_STATE_STORE=redis` and updated docs/tests for multi-instance deployments. Commit: _(pending)_.
+- 2025-09-27 15:25 UTC — Kick-off: scaffolded `packages/oauth-bridge` (`70abcf7`).
+- 2025-09-27 15:46 UTC — Added pluggable state-store abstraction with in-memory default (`12e9e14`).
+- 2025-09-27 16:05 UTC — Implemented `/authorize` flow with PKCE validation (`060edb3`).
+- 2025-09-27 16:32 UTC — Added Mittwald callback + `/token` exchange (`408d2e1`).
+- 2025-09-27 16:58 UTC — Signed bridge JWTs and added Supertest coverage (`b1c162a`).
+- 2025-09-27 17:32 UTC — MCP server now verifies bridge JWTs (`3938aff`).
+- 2025-09-27 18:05 UTC — Session middleware hydrates Redis-backed auth (`de63a80`).

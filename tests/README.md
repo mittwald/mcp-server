@@ -1,41 +1,43 @@
-# Testing
+# Test Guide
 
-This repository ships with a layered test strategy that covers linting, type safety, unit behaviour, integration with Redis, OAuth server compliance, and full MCP end-to-end flows. The commands below assume you are working from the repository root.
+This repository uses a layered test strategy covering linting, type safety, Redis-backed session flows, the OAuth bridge, and MCP end-to-end behaviour. All commands below assume `pnpm` from the repo root.
 
-## Quick Start Commands
-- `npm run lint` — ESLint with the shared config for the entire workspace.
-- `npm run type-check` — Typescript `--noEmit` verification to catch typing regressions early.
-- `npm run test:unit` — Vitest unit suites under `tests/unit`.
-- `npm run test:integration` — Integration suites that interact with Redis and the HTTP server.
-- `npm run test:oauth` — Focused OAuth unit + integration suites (resource server).
-- `npm run test:e2e:mcp` — Scripted MCP + OAuth end-to-end exercise (spawns mock services).
-- `pnpm --filter @mittwald/oauth-bridge test` — Run tests inside the OAuth bridge package.
+## Quick Commands
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm test:unit`
+- `pnpm test:integration`
+- `pnpm --filter @mittwald/oauth-bridge test` (package-specific unit tests)
+
+End-to-end flows will move into `pnpm test:e2e:mcp` as we stabilise the bridge-driven stack; see roadmap notes below.
 
 ## Suite Overview
-### Unit Tests
-Located in `tests/unit/**` and `src/**/__tests__`. These suites execute without external services and focus on:
-- request authentication helpers (`src/server/oauth-middleware.ts`)
-- session storage (`src/server/session-manager.ts`)
-- CLI wrappers and argument handling (`src/utils/cli-wrapper.ts`, `src/utils/session-aware-cli.ts`)
+### Unit Tests (`tests/unit/**`)
+Focus: JWT verification, session management, CLI wrappers.
+- `server/oauth-middleware.test.ts`
+- `server/session-manager.test.ts`
+- `utils/cli-wrapper.test.ts`
+- `oauth-bridge/*` inside `packages/oauth-bridge/tests`
 
-### Integration Tests
-Located in `tests/integration/**`. They spin up Express handlers and Redis, validate session lifecycle, auth flows, and larger request/response payloads. Redis is expected on `redis://localhost:6379`; you can start it with `docker compose up redis`.
+### Integration Tests (`tests/integration/**`)
+Spin up Express handlers + Redis to verify:
+- OAuth lifecycle and Mittwald token passthrough (`oauth-lifecycle.test.ts`)
+- Scope persistence and refresh logic (`scope-validation.test.ts`)
+- CLI token injection via `sessionAwareCli` (`cli-session.integration.test.ts`)
+- Mittwald-specific API constraints (`mittwald-integration.test.ts`)
 
-### OAuth Bridge Package
-`packages/oauth-bridge` hosts the stateless OAuth bridge service. As tests are added they can be run with:
-```bash
-pnpm --filter @mittwald/oauth-bridge test
-```
-This reuses the shared Vitest configuration while allowing package-specific aliases.
-
-### End-to-End & Tooling Scripts
-- `npm run test:e2e:mcp` executes the scripted MCP OAuth flow using the mock OAuth server and CLI façade.
-- `npm run test:cleanup` cleans residual functional test data when necessary.
-- Deploy smoke tests should target the Fly.io staging apps (`mittwald-mcp-fly2`, `mittwald-oauth-server`) once credentials are configured.
+### End-to-End Roadmap (`tests/e2e/**`)
+Legacy suites targeting the oidc-provider remain as references while we port them to the bridge:
+- `all-clients-compatibility.test.ts`
+- `claude-ai-oauth-flow.test.ts`
 
 ## Environment Notes
-- Copy `.env.example` to `.env` and populate secrets before running integration or end-to-end suites.
-- Make SSL certificates available under `./ssl` if you enable HTTPS locally.
-- HAR fixtures referenced in `oauth-debugging-context-2025-09-18.md` live under `~/Downloads` and should be attached manually when replaying flows.
+- Redis must be reachable at `REDIS_URL` (use `docker compose up redis` locally).
+- The OAuth bridge expects Mittwald credentials via environment variables; see `ARCHITECTURE.md` for the list.
+- End-to-end suites require the stateless bridge + MCP server running together; align secrets across both services.
 
-For the detailed project-wide testing roadmap, see the "🧪 Full Project Testing Plan" section in `oauth-debugging-context-2025-09-18.md`.
+## Next Steps
+- Migrate remaining E2E suites to the stateless bridge stack.
+- Add automated coverage for per-scope tool filtering once implemented.
+
+For architectural context and deployment guidance read `ARCHITECTURE.md` and `docs/INDEX.md`.

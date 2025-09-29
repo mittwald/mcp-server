@@ -47,14 +47,16 @@ Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` f
 
 ## Operational Notes
 - Revoke access in Mittwald Studio to force downstream clients to re-authorize.
-- The OAuth proxy logs the loaded scope configuration (counts, defaults, config file path). Any
+- The OAuth bridge logs the loaded scope configuration (counts, defaults, config file path). Any
   mismatch between Mittwald discovery and the configured list is surfaced there.
-- Keep Fly.io volumes attached for JWKS and SQLite state; the proxy remains stateless outside of
-  volume-backed storage.
+- Ensure Redis is available to both the bridge and MCP server (`BRIDGE_STATE_STORE=redis`, shared
+  session store).
 
 ## Testing
-- Integration tests (planned) will verify that scope passthrough and consent short-circuiting behave as expected.
-- Existing MCP tool tests remain unaffected; they rely on the MCP server injecting Mittwald tokens obtained via the proxy.
+- Run `pnpm lint`, `pnpm typecheck`, and `pnpm test:unit` for fast local feedback.
+- `pnpm test:integration` exercises Redis-backed session flows and bridge JWT verification.
+- `pnpm test:e2e:mcp` (when available) drives a full OAuth + MCP tool cycle against the mock stack.
+- See `tests/README.md` for the complete matrix and environment requirements.
 
 ---
 
