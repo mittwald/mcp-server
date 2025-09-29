@@ -125,6 +125,56 @@ describe('Post-deploy OAuth smoke', () => {
       expect(postDeleteResponse.status).toBe(404);
     });
 
+    test('dynamic client registration supports client_secret_post confidential clients', async () => {
+      const metadataResponse = await http.get(`${OAUTH_SERVER}/.well-known/oauth-authorization-server`);
+      expect(metadataResponse.status).toBe(200);
+      const metadata = metadataResponse.data as Record<string, any>;
+      const chosenRedirectUri = pickAllowedRedirect(metadata?.mcp?.redirect_uris);
+
+      const registrationPayload = {
+        client_name: `CI Smoke Confidential ${Date.now()}`,
+        redirect_uris: [chosenRedirectUri],
+        grant_types: ['authorization_code', 'refresh_token'],
+        response_types: ['code'],
+        token_endpoint_auth_method: 'client_secret_post',
+        scope: DEFAULT_SCOPES.join(' ')
+      };
+
+      const registerResponse = await http.post(`${OAUTH_SERVER}/register`, registrationPayload, {
+        headers: {
+          'content-type': 'application/json'
+        }
+      });
+
+      expect(registerResponse.status).toBe(201);
+      const clientId = registerResponse.data?.client_id;
+      const clientSecret = registerResponse.data?.client_secret;
+      const registrationAccessToken = registerResponse.data?.registration_access_token;
+
+      expect(typeof clientId).toBe('string');
+      expect(typeof clientSecret).toBe('string');
+      expect(clientSecret?.length).toBeGreaterThan(10);
+
+      const tokenResponse = await http.post(`${OAUTH_SERVER}/token`, {
+        grant_type: 'authorization_code',
+        code: 'invalid',
+        redirect_uri: chosenRedirectUri,
+        client_id: clientId,
+        client_secret: clientSecret,
+        code_verifier: 'dummydummydummydummydummydummydummydummydummy'
+      });
+      // Should fail with invalid_grant (since code bad) not invalid_client
+      expect(tokenResponse.status).toBe(400);
+      expect(tokenResponse.data?.error).toBe('invalid_grant');
+
+      const deleteResponse = await http.delete(`${OAUTH_SERVER}/register/${clientId}`, {
+        headers: {
+          authorization: `Bearer ${registrationAccessToken}`
+        }
+      });
+      expect(deleteResponse.status).toBe(204);
+    });
+
     test('registration rejects unapproved redirect URIs', async () => {
       const registrationPayload = {
         client_name: 'CI Invalid Redirect',

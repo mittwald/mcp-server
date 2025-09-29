@@ -1,5 +1,5 @@
 import Router, { type RouterContext } from '@koa/router';
-import { randomUUID } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import type { BridgeConfig } from '../config.js';
 import type { StateStore, ClientRegistrationRecord } from '../state/state-store.js';
 
@@ -15,7 +15,11 @@ interface RegistrationRequest {
   scope?: unknown;
 }
 
-const SUPPORTED_TOKEN_AUTH_METHODS = new Set(['none']);
+const SUPPORTED_TOKEN_AUTH_METHODS = new Set(['none', 'client_secret_post', 'client_secret_basic']);
+
+function generateClientSecret(): string {
+  return randomBytes(48).toString('base64url');
+}
 
 export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps) {
   const router = new Router();
@@ -35,6 +39,7 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
     const redirectUris = (body.redirect_uris as string[]).map((uri) => uri.trim());
     const scope = typeof body.scope === 'string' ? body.scope : undefined;
     const clientName = typeof body.client_name === 'string' ? body.client_name : undefined;
+    const clientSecret = tokenEndpointAuthMethod === 'none' ? undefined : generateClientSecret();
 
     const clientId = randomUUID();
     const registrationAccessToken = randomUUID();
@@ -42,7 +47,8 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
 
     const clientRecord: ClientRegistrationRecord = {
       clientId,
-      tokenEndpointAuthMethod: 'none',
+      tokenEndpointAuthMethod,
+      clientSecret,
       redirectUris,
       scope,
       clientName,
@@ -70,7 +76,7 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
     ctx.logger.info({ clientId, redirectUrisCount: redirectUris.length }, 'Client registration created');
 
     ctx.status = 201;
-    ctx.body = buildClientRegistrationResponse(clientRecord, { includeRegistrationAccessToken: true });
+    ctx.body = buildClientRegistrationResponse(clientRecord, { includeRegistrationAccessToken: true, includeClientSecret: true });
   });
 
   router.get('/register/:clientId', async (ctx) => {
@@ -111,7 +117,7 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
       return;
     }
 
-    ctx.body = buildClientRegistrationResponse(record, { includeRegistrationAccessToken: true });
+    ctx.body = buildClientRegistrationResponse(record, { includeRegistrationAccessToken: true, includeClientSecret: true });
   });
 
   router.delete('/register/:clientId', async (ctx) => {
@@ -222,7 +228,7 @@ function validateRegistrationRequest(body: RegistrationRequest, allowedRedirectU
       status: 400,
       body: {
         error: 'invalid_client_metadata',
-        error_description: 'Only token_endpoint_auth_method=none is supported'
+        error_description: 'Unsupported token_endpoint_auth_method'
       }
     };
   }
@@ -270,7 +276,10 @@ function setRegistrationUnauthorized(ctx: RouterContext) {
   };
 }
 
-function buildClientRegistrationResponse(record: ClientRegistrationRecord, options: { includeRegistrationAccessToken: boolean }) {
+function buildClientRegistrationResponse(
+  record: ClientRegistrationRecord,
+  options: { includeRegistrationAccessToken: boolean; includeClientSecret?: boolean }
+) {
   const response: Record<string, unknown> = {
     client_id: record.clientId,
     client_id_issued_at: record.clientIdIssuedAt,
@@ -281,6 +290,10 @@ function buildClientRegistrationResponse(record: ClientRegistrationRecord, optio
     client_name: record.clientName,
     registration_client_uri: record.registrationClientUri
   };
+
+  if (options.includeClientSecret && record.clientSecret) {
+    response.client_secret = record.clientSecret;
+  }
 
   if (options.includeRegistrationAccessToken) {
     response.registration_access_token = record.registrationAccessToken;

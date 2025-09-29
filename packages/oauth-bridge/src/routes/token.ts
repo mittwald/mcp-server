@@ -1,7 +1,7 @@
 import Router from '@koa/router';
 import { createHash } from 'node:crypto';
 import type { BridgeConfig } from '../config.js';
-import type { StateStore } from '../state/state-store.js';
+import type { ClientRegistrationRecord, StateStore } from '../state/state-store.js';
 import { exchangeMittwaldAuthorizationCode } from '../services/mittwald.js';
 import { issueBridgeTokens } from '../services/bridge-tokens.js';
 
@@ -22,11 +22,47 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
     const clientId = body['client_id'];
     const codeVerifier = body['code_verifier'];
 
+    const clientSecretFromBody = body['client_secret'];
+
     const validationError = validateTokenRequest({ grantType, code, redirectUri, clientId, codeVerifier });
     if (validationError) {
       ctx.logger.warn({ error: validationError.body.error, description: validationError.body.error_description, clientId }, 'Token request validation failed');
       ctx.status = validationError.status;
       ctx.body = validationError.body;
+      return;
+    }
+
+    let clientRegistration;
+    try {
+      clientRegistration = await stateStore.getClientRegistration(clientId!);
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to load client registration');
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Failed to load client registration' };
+      return;
+    }
+
+    if (!clientRegistration) {
+      ctx.logger.warn({ clientId }, 'Token request for unknown client');
+      ctx.status = 401;
+      ctx.set('WWW-Authenticate', 'Basic realm="OAuth Bridge"');
+      ctx.body = { error: 'invalid_client', error_description: 'Client not registered' };
+      return;
+    }
+
+    const clientAuthError = validateClientCredentials({
+      registration: clientRegistration,
+      authorizationHeader: ctx.request.headers.authorization,
+      clientId: clientId!,
+      clientSecretFromBody
+    });
+    if (clientAuthError) {
+      ctx.logger.warn({ clientId, reason: clientAuthError.body.error_description }, 'Token client authentication failed');
+      ctx.status = clientAuthError.status;
+      if (clientAuthError.wwwAuthenticate) {
+        ctx.set('WWW-Authenticate', clientAuthError.wwwAuthenticate);
+      }
+      ctx.body = clientAuthError.body;
       return;
     }
 
@@ -137,6 +173,12 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
   return router;
 }
 
+interface ClientAuthError {
+  status: number;
+  body: Record<string, string>;
+  wwwAuthenticate?: string;
+}
+
 function validateTokenRequest(input: {
   grantType?: string;
   code?: string;
@@ -165,6 +207,94 @@ function validateTokenRequest(input: {
   }
 
   return null;
+}
+
+function validateClientCredentials(input: {
+  registration: ClientRegistrationRecord;
+  authorizationHeader?: string;
+  clientId: string;
+  clientSecretFromBody?: string;
+}): ClientAuthError | null {
+  const { registration, authorizationHeader, clientId, clientSecretFromBody } = input;
+
+  switch (registration.tokenEndpointAuthMethod) {
+    case 'none':
+      return null;
+    case 'client_secret_post': {
+      if (!registration.clientSecret) {
+        return {
+          status: 500,
+          body: { error: 'server_error', error_description: 'Client secret not available' }
+        };
+      }
+      if (!clientSecretFromBody) {
+        return {
+          status: 401,
+          body: { error: 'invalid_client', error_description: 'client_secret is required' },
+          wwwAuthenticate: 'Basic realm="OAuth Bridge"'
+        };
+      }
+      if (clientSecretFromBody !== registration.clientSecret) {
+        return {
+          status: 401,
+          body: { error: 'invalid_client', error_description: 'Invalid client credentials' },
+          wwwAuthenticate: 'Basic realm="OAuth Bridge"'
+        };
+      }
+      return null;
+    }
+    case 'client_secret_basic': {
+      if (!registration.clientSecret) {
+        return {
+          status: 500,
+          body: { error: 'server_error', error_description: 'Client secret not available' }
+        };
+      }
+      const parsed = parseBasicAuthHeader(authorizationHeader);
+      if (!parsed) {
+        return {
+          status: 401,
+          body: { error: 'invalid_client', error_description: 'Authorization header with Basic credentials is required' },
+          wwwAuthenticate: 'Basic realm="OAuth Bridge"'
+        };
+      }
+      if (parsed.clientId !== clientId || parsed.clientSecret !== registration.clientSecret) {
+        return {
+          status: 401,
+          body: { error: 'invalid_client', error_description: 'Invalid client credentials' },
+          wwwAuthenticate: 'Basic realm="OAuth Bridge"'
+        };
+      }
+      return null;
+    }
+    default:
+      return {
+        status: 400,
+        body: { error: 'invalid_client', error_description: 'Unsupported client authentication method' }
+      };
+  }
+}
+
+function parseBasicAuthHeader(header?: string): { clientId: string; clientSecret: string } | null {
+  if (!header) {
+    return null;
+  }
+  const [scheme, value] = header.split(' ');
+  if (!scheme || scheme.toLowerCase() !== 'basic' || !value) {
+    return null;
+  }
+  try {
+    const decoded = Buffer.from(value, 'base64').toString('utf-8');
+    const separatorIndex = decoded.indexOf(':');
+    if (separatorIndex === -1) {
+      return null;
+    }
+    const clientId = decoded.slice(0, separatorIndex);
+    const clientSecret = decoded.slice(separatorIndex + 1);
+    return { clientId, clientSecret };
+  } catch {
+    return null;
+  }
 }
 
 function sha256ToBase64Url(value: string) {

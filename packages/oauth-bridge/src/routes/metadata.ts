@@ -30,13 +30,13 @@ export function createMetadataRouter({ config }: MetadataRouterDeps) {
       code_challenge_methods_supported: ['S256'],
       response_types_supported: ['code'],
       grant_types_supported: ['authorization_code', 'refresh_token'],
-      token_endpoint_auth_methods_supported: ['none'],
+      token_endpoint_auth_methods_supported: ['none', 'client_secret_post', 'client_secret_basic'],
       scopes_supported: SUPPORTED_SCOPES,
       default_scopes: DEFAULT_SCOPES,
       mcp: {
         registration_endpoint: `${config.bridge.baseUrl}/register`,
         redirect_uris: config.redirectUris,
-        token_endpoint_auth_method: 'none'
+        token_endpoint_auth_methods_supported: ['none', 'client_secret_post', 'client_secret_basic']
       }
     };
 
@@ -53,7 +53,8 @@ export function createMetadataRouter({ config }: MetadataRouterDeps) {
       bearer_methods_supported: ['header'],
       mcp: {
         registration_endpoint: `${config.bridge.baseUrl}/register`,
-        redirect_uris: config.redirectUris
+        redirect_uris: config.redirectUris,
+        token_endpoint_auth_methods_supported: ['none', 'client_secret_post', 'client_secret_basic']
       }
     };
 
