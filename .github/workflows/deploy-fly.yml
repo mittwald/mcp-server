@@ -220,8 +220,11 @@ jobs:
             echo "Bridge registration failed" >&2; exit 1;
           fi
 
-      - name: Run OAuth Integration Tests
+      - name: Run OAuth smoke tests
+        env:
+          OAUTH_SERVER_URL: https://mittwald-oauth-server.fly.dev
+          MCP_SERVER_URL: https://mittwald-mcp-fly2.fly.dev
         run: |
           set -e
-          echo "Running OAuth integration test suite"
-          npm run test
+          echo "Running post-deploy OAuth smoke suite"
+          npm run test:smoke

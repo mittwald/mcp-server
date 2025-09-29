@@ -34,6 +34,7 @@
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
+    "test:smoke": "vitest run tests/smoke",
     "test:functional": "vitest run tests/functional --reporter=verbose --no-file-parallelism",
     "test:functional:watch": "vitest tests/functional --reporter=verbose --no-file-parallelism",
     "test:cleanup": "vitest run tests/functional/full-lifecycle.test.ts -t 'Manual Cleanup'",
