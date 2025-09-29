@@ -3,6 +3,11 @@ import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { sessionAwareCli } from '../../../../utils/session-aware-cli.js';
 import { sessionManager, type UserSession } from '../../../../server/session-manager.js';
 import { logger } from '../../../../utils/logger.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+
+function resolveSessionId(provided?: string): string | undefined {
+  return provided ?? getCurrentSessionId();
+}
 
 interface SessionAwareContextGetArgs {
   output?: 'txt' | 'json' | 'yaml';
@@ -26,7 +31,9 @@ interface SessionAwareContextResetArgs {
  */
 export const handleSessionAwareContextGet: MittwaldCliToolHandler<SessionAwareContextGetArgs> = async (args, sessionId) => {
   try {
-    if (!sessionId) {
+    const effectiveSessionId = resolveSessionId(sessionId);
+
+    if (!effectiveSessionId) {
       return formatToolResponse(
         "error",
         "Session ID is required for context operations"
@@ -34,7 +41,7 @@ export const handleSessionAwareContextGet: MittwaldCliToolHandler<SessionAwareCo
     }
 
     // Get user session from Redis
-    const session = await sessionManager.getSession(sessionId);
+    const session = await sessionManager.getSession(effectiveSessionId);
     if (!session) {
       return formatToolResponse(
         "error",
@@ -75,7 +82,7 @@ export const handleSessionAwareContextGet: MittwaldCliToolHandler<SessionAwareCo
         context,
         formattedOutput,
         format: outputFormat,
-        sessionId,
+        sessionId: effectiveSessionId,
         userId: session.userId,
         lastAccessed: session.lastAccessed
       }
@@ -96,7 +103,9 @@ export const handleSessionAwareContextGet: MittwaldCliToolHandler<SessionAwareCo
  */
 export const handleSessionAwareContextSet: MittwaldCliToolHandler<SessionAwareContextSetArgs> = async (args, sessionId) => {
   try {
-    if (!sessionId) {
+    const effectiveSessionId = resolveSessionId(sessionId);
+
+    if (!effectiveSessionId) {
       return formatToolResponse(
         "error",
         "Session ID is required for context operations"
@@ -104,7 +113,7 @@ export const handleSessionAwareContextSet: MittwaldCliToolHandler<SessionAwareCo
     }
 
     // Get current session
-    const session = await sessionManager.getSession(sessionId);
+    const session = await sessionManager.getSession(effectiveSessionId);
     if (!session) {
       return formatToolResponse(
         "error",
@@ -142,7 +151,7 @@ export const handleSessionAwareContextSet: MittwaldCliToolHandler<SessionAwareCo
     }
 
     // Update context in Redis with access validation
-    await sessionAwareCli.updateUserContext(sessionId, newContext, true);
+    await sessionAwareCli.updateUserContext(effectiveSessionId, newContext, true);
 
     const parametersList = setParameters
       .map(param => `${param.key}: ${param.value}`)
@@ -155,7 +164,7 @@ export const handleSessionAwareContextSet: MittwaldCliToolHandler<SessionAwareCo
         message: 'Context parameters set successfully in user session',
         parameters: Object.fromEntries(setParameters.map(p => [p.key, p.value])),
         newContext,
-        sessionId,
+        sessionId: effectiveSessionId,
         timestamp: new Date().toISOString()
       }
     );
@@ -183,7 +192,9 @@ export const handleSessionAwareContextSet: MittwaldCliToolHandler<SessionAwareCo
  */
 export const handleSessionAwareContextReset: MittwaldCliToolHandler<SessionAwareContextResetArgs> = async (args, sessionId) => {
   try {
-    if (!sessionId) {
+    const effectiveSessionId = resolveSessionId(sessionId);
+
+    if (!effectiveSessionId) {
       return formatToolResponse(
         "error",
         "Session ID is required for context operations"
@@ -191,7 +202,7 @@ export const handleSessionAwareContextReset: MittwaldCliToolHandler<SessionAware
     }
 
     // Get current session
-    const session = await sessionManager.getSession(sessionId);
+    const session = await sessionManager.getSession(effectiveSessionId);
     if (!session) {
       return formatToolResponse(
         "error",
@@ -201,7 +212,7 @@ export const handleSessionAwareContextReset: MittwaldCliToolHandler<SessionAware
 
     // Reset context to empty
     const emptyContext: UserSession['currentContext'] = {};
-    await sessionAwareCli.updateUserContext(sessionId, emptyContext, false);
+    await sessionAwareCli.updateUserContext(effectiveSessionId, emptyContext, false);
 
     return formatToolResponse(
       "success",
@@ -210,7 +221,7 @@ export const handleSessionAwareContextReset: MittwaldCliToolHandler<SessionAware
         message: 'Session context reset successfully',
         previousContext: session.currentContext,
         newContext: emptyContext,
-        sessionId,
+        sessionId: effectiveSessionId,
         timestamp: new Date().toISOString()
       }
     );
@@ -229,14 +240,16 @@ export const handleSessionAwareContextReset: MittwaldCliToolHandler<SessionAware
  */
 export const handleGetAccessibleProjects: MittwaldCliToolHandler<{}> = async (args, sessionId) => {
   try {
-    if (!sessionId) {
+    const effectiveSessionId = resolveSessionId(sessionId);
+
+    if (!effectiveSessionId) {
       return formatToolResponse(
         "error",
         "Session ID is required for this operation"
       );
     }
 
-    const session = await sessionManager.getSession(sessionId);
+    const session = await sessionManager.getSession(effectiveSessionId);
     if (!session) {
       return formatToolResponse(
         "error",
@@ -244,14 +257,14 @@ export const handleGetAccessibleProjects: MittwaldCliToolHandler<{}> = async (ar
       );
     }
 
-    const projects = await sessionAwareCli.getAccessibleProjects(sessionId);
+    const projects = await sessionAwareCli.getAccessibleProjects(effectiveSessionId);
 
     return formatToolResponse(
       "success",
       `Found ${projects.length} accessible projects`,
       {
         projects,
-        sessionId,
+        sessionId: effectiveSessionId,
         userId: session.userId,
         count: projects.length
       }

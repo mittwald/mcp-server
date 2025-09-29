@@ -1,6 +1,6 @@
 # Mittwald MCP Server
 
-The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector, …) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**—there is no client secret to manage or distribute. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
+The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**—there is no client secret to manage or distribute. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
 
 ## What Changed (2025-09-25)
 - **Mittwald is authoritative for scopes and consent.** Our proxy no longer maintains its own scope catalogue or renders consent pages.
