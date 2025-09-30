@@ -118,4 +118,14 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_app_versions` handler to the shared CLI adapter. _(commit 871b2d3d6ca2789a14d898feb6b562a92ccd1d58)_
 
+- **2025-09-30** – Migrated `mittwald_backup_create` handler to the shared CLI adapter. _(commit 308d906f2e796b79436d12a21b0b754bd3b6054b)_
+
+- **2025-09-30** – Migrated `mittwald_backup_delete` handler to the shared CLI adapter. _(commit c26fb23a2cf4ed137b5df86657b1b5ca15ee7fc6)_
+
+- **2025-09-30** – Migrated `mittwald_backup_download` handler to the shared CLI adapter. _(commit 44344cf88537b0e3f3d15f976b5d3d45db7ab55b)_
+
+- **2025-09-30** – Migrated `mittwald_backup_get` handler to the shared CLI adapter. _(commit c7be3b5aedb4b8336a69858c026445f5243c1a3d)_
+
+- **2025-09-30** – Migrated `mittwald_backup_list` handler to the shared CLI adapter. _(commit f051f034b64982e01fb4f5c5fb30732ef845e695)_
+
 _Last updated: 2025-09-30_
