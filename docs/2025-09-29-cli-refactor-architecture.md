@@ -144,6 +144,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 - **2025-09-30** – Generated end-to-end CLI tool inventory for migration tracking (`docs/2025-09-29-cli-tool-inventory.json`). _(commit 97dadafb695a8f66b4039f0f1c6315839484bc19)_
 - **2025-09-30** – First handler migration complete (`mittwald_app_copy` now uses `invokeCliTool`). _(commit 13195fe6946880611c5d59fc011e21a2134ee14a)_
 - **2025-09-30** – Migrated `mittwald_app_create_node` to the adapter path, continuing alphabetical rollout. _(commit 688ed9397389e6a8f2c65a984cbf6c67c8e40661)_
+- **2025-09-30** – Migrated `mittwald_app_create_php` to the adapter path. _(commit f1ac9827b5c026e1cc1cd85256d3b25ccddf18a3)_
 
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
