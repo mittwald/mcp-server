@@ -158,5 +158,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_app_install_matomo` to the adapter path. _(commit 2dbf80169a3f17f3e450bcf6a38fca714e454a95)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_nextcloud` to the adapter path. _(commit 1c90f3355e41aac552f825c021f5fd91208f4dd3)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
