@@ -170,5 +170,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_app_list` to the adapter path. _(commit 9f3c84b803c0e16907e098fe3a6ba7331c2e8d30)_
 
+- **2025-09-30** – Migrated `mittwald_app_list_upgrade_candidates` to the adapter path. _(commit 7d71c73a4ed6d2261fd444fcacd25cdb840a41b4)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
