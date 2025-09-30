@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldBackupScheduleUpdateCliArgs {
   backupScheduleId: string;
@@ -10,78 +10,84 @@ interface MittwaldBackupScheduleUpdateCliArgs {
   quiet?: boolean;
 }
 
+function buildCliArgs(args: MittwaldBackupScheduleUpdateCliArgs): string[] {
+  const cliArgs: string[] = ['backup', 'schedule', 'update', args.backupScheduleId];
+
+  if (args.description) cliArgs.push('--description', args.description);
+  if (args.schedule) cliArgs.push('--schedule', args.schedule);
+  if (args.ttl) cliArgs.push('--ttl', args.ttl);
+  if (args.quiet) cliArgs.push('--quiet');
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldBackupScheduleUpdateCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('schedule')) {
+    return `Backup schedule not found. Please verify the schedule ID: ${args.backupScheduleId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('invalid') && combined.includes('schedule')) {
+    return `Invalid schedule format. Expected cron expression.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('invalid') && combined.includes('ttl')) {
+    return `Invalid TTL format. Expected format like '7d' (7-400 days).\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
 export const handleBackupScheduleUpdateCli: MittwaldCliToolHandler<MittwaldBackupScheduleUpdateCliArgs> = async (args) => {
+  if (!args.backupScheduleId) {
+    return formatToolResponse('error', 'Backup schedule ID is required. Please provide the backupScheduleId parameter.');
+  }
+
+  if (!args.description && !args.schedule && !args.ttl) {
+    return formatToolResponse('error', 'At least one field (description, schedule, ttl) must be provided to update.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['backup', 'schedule', 'update', args.backupScheduleId];
-    
-    // Optional flags
-    if (args.description) {
-      cliArgs.push('--description', args.description);
-    }
-    
-    if (args.schedule) {
-      cliArgs.push('--schedule', args.schedule);
-    }
-    
-    if (args.ttl) {
-      cliArgs.push('--ttl', args.ttl);
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('schedule')) {
-        return formatToolResponse(
-          "error",
-          `Backup schedule not found. Please verify the schedule ID: ${args.backupScheduleId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('invalid') && errorMessage.includes('schedule')) {
-        return formatToolResponse(
-          "error",
-          `Invalid schedule format. Expected cron expression. Error: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('invalid') && errorMessage.includes('ttl')) {
-        return formatToolResponse(
-          "error",
-          `Invalid TTL format. Expected format like '7d' (7-400 days). Error: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to update backup schedule: ${errorMessage}`
-      );
-    }
-    
-    // Return success response
+    const result = await invokeCliTool({
+      toolName: 'mittwald_backup_schedule_update',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const output = result.result.stdout || result.result.stderr || '';
+    const message = args.quiet
+      ? output || `Backup schedule ${args.backupScheduleId} updated successfully`
+      : `Backup schedule ${args.backupScheduleId} updated successfully`;
+
     return formatToolResponse(
-      "success",
-      `Backup schedule ${args.backupScheduleId} updated successfully`,
+      'success',
+      message,
       {
         backupScheduleId: args.backupScheduleId,
         description: args.description,
         schedule: args.schedule,
         ttl: args.ttl,
-        output: result.stdout
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
