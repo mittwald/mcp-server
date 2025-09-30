@@ -204,5 +204,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_backup_schedule_update` to the adapter path. _(commit 9239c3e47b13e07293f9829c8a0e5b2e41c9a39f)_
 
+- **2025-09-30** – Migrated container handlers (`delete`, `list`, `logs`, `recreate`, `registry_create`) to the adapter path. _(commit 3bafcee1f668d26515083998c2e44593b06dce31)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*

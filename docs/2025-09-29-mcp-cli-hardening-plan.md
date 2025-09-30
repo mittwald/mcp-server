@@ -136,4 +136,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_backup_schedule_update` handler to the shared CLI adapter. _(commit 9239c3e47b13e07293f9829c8a0e5b2e41c9a39f)_
 
+- **2025-09-30** – Migrated container handlers (`delete`, `list`, `logs`, `recreate`, `registry_create`) to the shared CLI adapter. _(commit 3bafcee1f668d26515083998c2e44593b06dce31)_
+
 _Last updated: 2025-09-30_
