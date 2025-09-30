@@ -94,4 +94,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_app_install_shopware5` handler to the shared CLI adapter. _(commit 9b2a205e4712eef79f6f70e969a1356a4b8bc6bf)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_shopware6` handler to the shared CLI adapter. _(commit bd619eff1110c5e7cb482b3f16c66a729d982c31)_
+
 _Last updated: 2025-09-30_
