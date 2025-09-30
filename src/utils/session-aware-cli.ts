@@ -2,6 +2,20 @@ import { executeCli, type CliExecuteOptions, type CliExecuteResult } from './cli
 import { sessionManager, type UserSession } from '../server/session-manager.js';
 import { logger } from './logger.js';
 
+export class SessionNotFoundError extends Error {
+  constructor(sessionId: string) {
+    super(`Session not found or expired: ${sessionId}`);
+    this.name = 'SessionNotFoundError';
+  }
+}
+
+export class SessionAuthenticationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'SessionAuthenticationError';
+  }
+}
+
 export interface SessionAwareCliOptions extends CliExecuteOptions {
   sessionId?: string;
   validateAccess?: boolean;
@@ -30,13 +44,13 @@ export class SessionAwareCli {
       // Get user session from Redis
       const session = await sessionManager.getSession(sessionId);
       if (!session) {
-        throw new Error(`Session not found: ${sessionId}`);
+        throw new SessionNotFoundError(sessionId);
       }
 
       // Validate session is not expired
       if (session.expiresAt && new Date() > new Date(session.expiresAt)) {
         await sessionManager.destroySession(sessionId);
-        throw new Error(`Session expired: ${sessionId}`);
+        throw new SessionNotFoundError(sessionId);
       }
 
       // Inject user's OAuth token and context into CLI command
@@ -62,7 +76,12 @@ export class SessionAwareCli {
 
     } catch (error) {
       logger.error(`Failed to execute CLI command with session ${sessionId}:`, error);
-      throw error;
+      if (error instanceof SessionNotFoundError) {
+        throw error;
+      }
+      throw new SessionAuthenticationError(
+        error instanceof Error ? error.message : String(error)
+      );
     }
   }
 
@@ -162,7 +181,7 @@ export class SessionAwareCli {
       );
 
       if (result.exitCode !== 0) {
-        return [];
+        throw new SessionAuthenticationError('Mittwald CLI returned a non-zero exit code when listing projects');
       }
 
       const projects = JSON.parse(result.stdout);
@@ -170,7 +189,7 @@ export class SessionAwareCli {
 
     } catch (error) {
       logger.error(`Failed to get accessible projects for session ${sessionId}:`, error);
-      return [];
+      throw error;
     }
   }
 

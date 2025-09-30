@@ -58,6 +58,21 @@ export default [
           allowDeclarations: true,
         },
       ],
+      "no-restricted-imports": [
+        "warn",
+        {
+          patterns: [
+            {
+              group: [
+                "**/utils/cli-wrapper",
+                "**/utils/cli-wrapper.js",
+              ],
+              message:
+                "Route CLI calls through the shared adapter instead of importing cli-wrapper directly.",
+            },
+          ],
+        },
+      ],
       "no-console": "off",
       "no-undef": "off",
       "no-dupe-keys": "off",

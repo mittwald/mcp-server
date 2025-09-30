@@ -17,6 +17,8 @@ export interface CliExecuteResult {
   stdout: string;
   stderr: string;
   exitCode: number;
+  /** Execution duration in milliseconds (best effort). */
+  durationMs?: number;
 }
 
 export async function executeCli(
@@ -67,6 +69,8 @@ export async function executeCli(
 
   const fullCommand = `${command} ${escapedArgs.join(' ')}`;
   
+  const startedAt = Date.now();
+
   try {
     const { stdout, stderr } = await execAsync(fullCommand, {
       timeout,
@@ -84,7 +88,8 @@ export async function executeCli(
     return {
       stdout: stdout.trim(),
       stderr: stderr.trim(),
-      exitCode: 0
+      exitCode: 0,
+      durationMs: Date.now() - startedAt
     };
   } catch (error: any) {
     // exec throws an error if the command exits with non-zero
@@ -109,7 +114,8 @@ export async function executeCli(
     return {
       stdout: error.stdout?.trim() || '',
       stderr,
-      exitCode: error.code || 1
+      exitCode: error.code || 1,
+      durationMs: Date.now() - startedAt
     };
   }
 }
