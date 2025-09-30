@@ -92,4 +92,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_app_install_nextcloud` handler to the shared CLI adapter. _(commit 1c90f3355e41aac552f825c021f5fd91208f4dd3)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_shopware5` handler to the shared CLI adapter. _(commit 9b2a205e4712eef79f6f70e969a1356a4b8bc6bf)_
+
 _Last updated: 2025-09-30_

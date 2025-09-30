@@ -160,5 +160,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_app_install_nextcloud` to the adapter path. _(commit 1c90f3355e41aac552f825c021f5fd91208f4dd3)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_shopware5` to the adapter path. _(commit 9b2a205e4712eef79f6f70e969a1356a4b8bc6bf)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
