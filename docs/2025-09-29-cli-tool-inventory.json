@@ -103,8 +103,8 @@
       "tool": "mittwald_app_install_typo3",
       "handler": "handleAppInstallTypo3Cli",
       "file": "src/constants/tool/mittwald-cli/app/install/typo3-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_install_wordpress",
