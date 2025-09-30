@@ -1,77 +1,89 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldAppVersionsArgs {
   app?: string;
 }
 
-export const handleAppVersionsCli: MittwaldCliToolHandler<MittwaldAppVersionsArgs> = async (args) => {
+type VersionsResult = unknown;
+
+function buildCliArgs(args: MittwaldAppVersionsArgs): string[] {
+  const cliArgs: string[] = ['app', 'versions'];
+  if (args.app) cliArgs.push(args.app);
+  return cliArgs;
+}
+
+function parseJsonOutput(output: string): VersionsResult | undefined {
+  if (!output) return undefined;
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['app', 'versions'];
-    
-    // Add app name as positional argument if provided
-    if (args.app) {
-      cliArgs.push(args.app);
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('app')) {
-        return formatToolResponse(
-          "error",
-          `App not found. Please verify the app name: ${args.app || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
+    return JSON.parse(output);
+  } catch {
+    return undefined;
+  }
+}
+
+function mapCliError(error: CliToolError, args: MittwaldAppVersionsArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('app')) {
+    return `App not found. Please verify the app name: ${args.app ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleAppVersionsCli: MittwaldCliToolHandler<MittwaldAppVersionsArgs> = async (args) => {
+  const argv = buildCliArgs(args);
+
+  try {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_app_versions',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const parsed = parseJsonOutput(stdout);
+
+    if (parsed !== undefined) {
       return formatToolResponse(
-        "error",
-        `Failed to get app versions: ${errorMessage}`
+        'success',
+        args.app ? `Found versions for ${args.app}` : 'Found available apps and versions',
+        parsed,
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
-    
-    // Try to parse as JSON first, fallback to plain text
-    try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (Array.isArray(data)) {
-        return formatToolResponse(
-          "success",
-          args.app ? `Found versions for ${args.app}` : "Found available apps and versions",
-          data
-        );
-      } else if (typeof data === 'object' && data !== null) {
-        return formatToolResponse(
-          "success",
-          args.app ? `Found versions for ${args.app}` : "Found available apps and versions",
-          data
-        );
-      }
-    } catch (parseError) {
-      // If JSON parsing fails, return as plain text
-    }
-    
-    // Return plain text output
-    const output = result.stdout || result.stderr || 'No versions found';
-    
+
+    const output = stdout || result.result.stderr || 'No versions found';
+
     return formatToolResponse(
-      "success",
-      args.app ? `Versions for ${args.app}` : "Available apps and versions",
+      'success',
+      args.app ? `Versions for ${args.app}` : 'Available apps and versions',
       {
         app: args.app,
-        rawOutput: output
+        rawOutput: output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

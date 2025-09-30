@@ -173,8 +173,8 @@
       "tool": "mittwald_app_versions",
       "handler": "handleAppVersionsCli",
       "file": "src/constants/tool/mittwald-cli/app/versions-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_backup_create",
