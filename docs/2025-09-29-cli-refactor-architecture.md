@@ -178,5 +178,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_app_uninstall` to the adapter path. _(commit 2452eee1919078fa1a68ae8a40e7cc5701c0fe48)_
 
+- **2025-09-30** – Migrated `mittwald_app_update` to the adapter path. _(commit d171b1d76107323b599631e7608a71331b26a91b)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
