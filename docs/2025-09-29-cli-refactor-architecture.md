@@ -166,5 +166,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_app_install_typo3` to the adapter path. _(commit 4103c6fac0befc931093d24d5e7775f8efe28a81)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_wordpress` to the adapter path. _(commit 97ef1cce5893ada00d0d44e310a1b5e1bd8630db)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
