@@ -1,72 +1,75 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldAppOpenArgs {
   installationId?: string;
 }
 
-export const handleAppOpenCli: MittwaldCliToolHandler<MittwaldAppOpenArgs> = async (args) => {
-  try {
-    if (!args.installationId) {
-      return formatToolResponse(
-        "error",
-        "Installation ID is required. Please provide the installationId parameter."
-      );
-    }
+function buildCliArgs(installationId: string): string[] {
+  return ['app', 'open', installationId];
+}
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['app', 'open'];
-    
-    // Add installation ID as positional argument
-    cliArgs.push(args.installationId);
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_NONINTERACTIVE: '1'
-      }
+function mapCliError(error: CliToolError, installationId: string): string {
+  const stderr = (error.stderr || '').toLowerCase();
+  const stdout = (error.stdout || '').toLowerCase();
+  const combined = `${stdout}\n${stderr}`;
+
+  if (combined.includes('not found') && combined.includes('installation')) {
+    return `App installation not found. Please verify the installation ID: ${installationId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('virtual host')) {
+    return `No virtual host linked to app installation. A virtual host is required to open the app in browser.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleAppOpenCli: MittwaldCliToolHandler<MittwaldAppOpenArgs> = async (args) => {
+  if (!args.installationId) {
+    return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
+  }
+
+  const argv = buildCliArgs(args.installationId);
+
+  try {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_app_open',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliOptions: {
+        env: {
+          MITTWALD_NONINTERACTIVE: '1',
+        },
+      },
     });
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('installation')) {
-        return formatToolResponse(
-          "error",
-          `App installation not found. Please verify the installation ID: ${args.installationId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('virtual host')) {
-        return formatToolResponse(
-          "error",
-          `No virtual host linked to app installation. A virtual host is required to open the app in browser.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to open app: ${errorMessage}`
-      );
-    }
-    
-    // Success response
-    const output = result.stdout || result.stderr || 'App opened in browser';
-    
+
+    const output = result.result.stdout || result.result.stderr || 'App opened in browser';
+
     return formatToolResponse(
-      "success",
-      "App opened in browser successfully",
+      'success',
+      'App opened in browser successfully',
       {
         installationId: args.installationId,
-        output: output
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args.installationId);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

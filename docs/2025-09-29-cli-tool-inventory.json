@@ -131,8 +131,8 @@
       "tool": "mittwald_app_open",
       "handler": "handleAppOpenCli",
       "file": "src/constants/tool/mittwald-cli/app/open-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_ssh",
