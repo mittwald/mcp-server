@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldBackupScheduleDeleteCliArgs {
   backupScheduleId: string;
@@ -8,61 +8,72 @@ interface MittwaldBackupScheduleDeleteCliArgs {
   quiet?: boolean;
 }
 
+function buildCliArgs(args: MittwaldBackupScheduleDeleteCliArgs): string[] {
+  const cliArgs: string[] = ['backup', 'schedule', 'delete', args.backupScheduleId];
+
+  if (args.force) cliArgs.push('--force');
+  if (args.quiet) cliArgs.push('--quiet');
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldBackupScheduleDeleteCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('schedule')) {
+    return `Backup schedule not found. Please verify the schedule ID: ${args.backupScheduleId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('cancelled') || combined.includes('confirmation')) {
+    return `Backup schedule deletion cancelled. Use --force flag to skip confirmation.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
 export const handleBackupScheduleDeleteCli: MittwaldCliToolHandler<MittwaldBackupScheduleDeleteCliArgs> = async (args) => {
+  if (!args.backupScheduleId) {
+    return formatToolResponse('error', 'Backup schedule ID is required. Please provide the backupScheduleId parameter.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['backup', 'schedule', 'delete', args.backupScheduleId];
-    
-    // Optional flags
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('schedule')) {
-        return formatToolResponse(
-          "error",
-          `Backup schedule not found. Please verify the schedule ID: ${args.backupScheduleId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('cancelled') || errorMessage.includes('confirmation')) {
-        return formatToolResponse(
-          "error",
-          `Backup schedule deletion cancelled. Use --force flag to skip confirmation. Error: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to delete backup schedule: ${errorMessage}`
-      );
-    }
-    
-    // Return success response
+    const result = await invokeCliTool({
+      toolName: 'mittwald_backup_schedule_delete',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const output = result.result.stdout || result.result.stderr || '';
+    const message = args.quiet
+      ? output || `Backup schedule ${args.backupScheduleId} deleted successfully`
+      : `Backup schedule ${args.backupScheduleId} deleted successfully`;
+
     return formatToolResponse(
-      "success",
-      `Backup schedule ${args.backupScheduleId} deleted successfully`,
+      'success',
+      message,
       {
         backupScheduleId: args.backupScheduleId,
         deleted: true,
-        output: result.stdout
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
