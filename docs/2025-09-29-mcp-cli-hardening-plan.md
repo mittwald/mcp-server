@@ -116,4 +116,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_app_upload` handler to the shared CLI adapter. _(commit 4fc811706ae24f2048a73b977e8b538a775f5abb)_
 
+- **2025-09-30** – Migrated `mittwald_app_versions` handler to the shared CLI adapter. _(commit 871b2d3d6ca2789a14d898feb6b562a92ccd1d58)_
+
 _Last updated: 2025-09-30_
