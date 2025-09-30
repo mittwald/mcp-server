@@ -215,29 +215,29 @@
       "tool": "mittwald_backup_schedule_create",
       "handler": "handleBackupScheduleCreateCli",
       "file": "src/constants/tool/mittwald-cli/backup/schedule-create-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_backup_schedule_delete",
       "handler": "handleBackupScheduleDeleteCli",
       "file": "src/constants/tool/mittwald-cli/backup/schedule-delete-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_backup_schedule_list",
       "handler": "handleBackupScheduleListCli",
       "file": "src/constants/tool/mittwald-cli/backup/schedule-list-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_backup_schedule_update",
       "handler": "handleBackupScheduleUpdateCli",
       "file": "src/constants/tool/mittwald-cli/backup/schedule-update-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_delete",
