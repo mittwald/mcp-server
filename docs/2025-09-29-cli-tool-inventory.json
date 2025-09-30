@@ -19,8 +19,8 @@
       "tool": "mittwald_app_create_php",
       "handler": "handleAppCreatePhpCli",
       "file": "src/constants/tool/mittwald-cli/app/create/php-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_create_php_worker",
