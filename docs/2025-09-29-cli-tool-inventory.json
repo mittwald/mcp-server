@@ -208,8 +208,8 @@
       "tool": "mittwald_backup_list",
       "handler": "handleBackupListCli",
       "file": "src/constants/tool/mittwald-cli/backup/list-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_backup_schedule_create",
