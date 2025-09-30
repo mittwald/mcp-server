@@ -124,8 +124,8 @@
       "tool": "mittwald_app_list_upgrade_candidates",
       "handler": "handleAppListUpgradeCandidatesCli",
       "file": "src/constants/tool/mittwald-cli/app/list-upgrade-candidates-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_open",
