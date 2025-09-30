@@ -201,8 +201,8 @@
       "tool": "mittwald_backup_get",
       "handler": "handleBackupGetCli",
       "file": "src/constants/tool/mittwald-cli/backup/get-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_backup_list",
