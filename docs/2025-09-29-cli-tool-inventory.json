@@ -12,8 +12,8 @@
       "tool": "mittwald_app_create_node",
       "handler": "handleAppCreateNodeCli",
       "file": "src/constants/tool/mittwald-cli/app/create/node-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_create_php",
