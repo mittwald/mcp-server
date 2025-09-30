@@ -74,5 +74,6 @@ The streams are tracked separately, but share discovery data and release milesto
 - **2025-09-29** – Drafted the [CLI Refactor Architecture](./2025-09-29-cli-refactor-architecture.md) outlining the unified adapter design, error taxonomy, and phased migration plan (covers Workstream B2 and sets prerequisites for B3/B4). Pending review before implementation. _(commit d962978)_
 - **2025-09-29** – Scaffolded the shared CLI adapter, structured error types, session-aware helper updates, and initial lint guardrail to launch Phase 1 infrastructure. Implementation captured in commit d7e4a329a57c4f81666d2a2d5f912a93a1fe6a94.
 - **2025-09-30** – Exported comprehensive tool inventory for migration tracking (`docs/2025-09-29-cli-tool-inventory.json`). _(commit 97dadafb695a8f66b4039f0f1c6315839484bc19)_
+- **2025-09-30** – Migrated `mittwald_app_copy` handler to the shared CLI adapter and recorded progress in the inventory. _(commit 13195fe6946880611c5d59fc011e21a2134ee14a)_
 
 _Last updated: 2025-09-30_
