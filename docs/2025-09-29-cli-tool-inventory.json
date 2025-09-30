@@ -96,8 +96,8 @@
       "tool": "mittwald_app_install_shopware6",
       "handler": "handleAppInstallShopware6Cli",
       "file": "src/constants/tool/mittwald-cli/app/install/shopware6-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_install_typo3",
