@@ -88,4 +88,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_app_install_joomla` handler to the shared CLI adapter. _(commit 4f136822c1a8efb4e0be6db833d91694a8d8c9aa)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_matomo` handler to the shared CLI adapter. _(commit 2dbf80169a3f17f3e450bcf6a38fca714e454a95)_
+
 _Last updated: 2025-09-30_
