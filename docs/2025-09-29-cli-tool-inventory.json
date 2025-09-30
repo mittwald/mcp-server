@@ -138,8 +138,8 @@
       "tool": "mittwald_app_ssh",
       "handler": "handleAppSshCli",
       "file": "src/constants/tool/mittwald-cli/app/ssh-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_uninstall",
