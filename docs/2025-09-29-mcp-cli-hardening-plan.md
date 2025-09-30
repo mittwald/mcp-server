@@ -77,5 +77,6 @@ The streams are tracked separately, but share discovery data and release milesto
 - **2025-09-30** – Migrated `mittwald_app_copy` handler to the shared CLI adapter and recorded progress in the inventory. _(commit 13195fe6946880611c5d59fc011e21a2134ee14a)_
 - **2025-09-30** – Migrated `mittwald_app_create_node` handler to the shared CLI adapter. _(commit 688ed9397389e6a8f2c65a984cbf6c67c8e40661)_
 - **2025-09-30** – Migrated `mittwald_app_create_php` handler to the shared CLI adapter. _(commit f1ac9827b5c026e1cc1cd85256d3b25ccddf18a3)_
+- **2025-09-30** – Migrated `mittwald_app_create_php_worker` handler to the shared CLI adapter. _(commit 4f4dd233f4150eac8261d66a53dda4d0e15fa12c)_
 
 _Last updated: 2025-09-30_
