@@ -68,6 +68,7 @@ The streams are tracked separately, but share discovery data and release milesto
 ---
 
 ## Progress Log
-- **2025-09-29** – Drafted the [CLI Refactor Architecture](./2025-09-29-cli-refactor-architecture.md) outlining the unified adapter design, error taxonomy, and phased migration plan (covers Workstream B2 and sets prerequisites for B3/B4). Pending review before implementation.
+- **2025-09-29** – Drafted the [CLI Refactor Architecture](./2025-09-29-cli-refactor-architecture.md) outlining the unified adapter design, error taxonomy, and phased migration plan (covers Workstream B2 and sets prerequisites for B3/B4). Pending review before implementation. _(commit d962978)_
+- **2025-09-29** – Scaffolded the shared CLI adapter, structured error types, session-aware helper updates, and initial lint guardrail to launch Phase 1 infrastructure. Implementation captured in commit d7e4a329a57c4f81666d2a2d5f912a93a1fe6a94.
 
 _Last updated: 2025-09-29_

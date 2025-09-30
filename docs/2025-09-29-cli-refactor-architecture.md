@@ -139,5 +139,8 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 2. Iterate on adapter interface and error taxonomy.
 3. Once approved, begin Phase 1 implementation under Workstream B tasks.
 
+## Implementation Status
+- **2025-09-29** – Initial adapter scaffolding and helper updates merged in commit d7e4a329a57c4f81666d2a2d5f912a93a1fe6a94.
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
