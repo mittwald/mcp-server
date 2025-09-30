@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldContainerDeleteArgs {
   containerId: string;
@@ -9,94 +9,102 @@ interface MittwaldContainerDeleteArgs {
   quiet?: boolean;
 }
 
-export const handleContainerDeleteCli: MittwaldToolHandler<MittwaldContainerDeleteArgs> = async (args) => {
-  try {
-    if (!args.containerId) {
-      return formatToolResponse(
-        "error",
-        "Container ID is required"
-      );
-    }
+function buildCliArgs(args: MittwaldContainerDeleteArgs): string[] {
+  const cliArgs: string[] = ['container', 'delete', args.containerId];
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['container', 'delete', args.containerId];
-    
-    // Optional flags
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.force) cliArgs.push('--force');
+  if (args.quiet) cliArgs.push('--quiet');
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldContainerDeleteArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('container')) {
+    return `Container not found. Please verify the container ID: ${args.containerId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('still running') || combined.includes('must be stopped')) {
+    return `Container must be stopped before deletion. Please stop the container first.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleContainerDeleteCli: MittwaldCliToolHandler<MittwaldContainerDeleteArgs> = async (args) => {
+  if (!args.containerId) {
+    return formatToolResponse('error', 'Container ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
+  try {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_container_delete',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || `Container ${args.containerId} has been deleted successfully`;
+
     if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('container')) {
-        return formatToolResponse(
-          "error",
-          `Container not found. Please verify the container ID: ${args.containerId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('still running') || errorMessage.includes('must be stopped')) {
-        return formatToolResponse(
-          "error",
-          `Container must be stopped before deletion. Please stop the container first.\nError: ${errorMessage}`
-        );
-      }
-      
+      const containerId = parseQuietOutput(stdout) ?? args.containerId;
       return formatToolResponse(
-        "error",
-        `Failed to delete container: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet mode output
-    if (args.quiet) {
-      const containerId = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Container ${args.containerId} has been deleted successfully`,
+        'success',
+        `Container ${containerId} has been deleted successfully`,
         {
-          containerId: containerId || args.containerId,
-          action: "delete",
-          projectId: args.projectId
+          containerId,
+          action: 'delete',
+          projectId: args.projectId,
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
-    // Handle normal output
+
     return formatToolResponse(
-      "success",
+      'success',
       `Container ${args.containerId} has been deleted successfully`,
       {
         containerId: args.containerId,
-        action: "delete",
+        action: 'delete',
         projectId: args.projectId,
-        output: result.stdout
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
