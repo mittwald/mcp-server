@@ -164,5 +164,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_app_install_shopware6` to the adapter path. _(commit bd619eff1110c5e7cb482b3f16c66a729d982c31)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_typo3` to the adapter path. _(commit 4103c6fac0befc931093d24d5e7775f8efe28a81)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
