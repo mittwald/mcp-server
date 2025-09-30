@@ -75,5 +75,6 @@ The streams are tracked separately, but share discovery data and release milesto
 - **2025-09-29** – Scaffolded the shared CLI adapter, structured error types, session-aware helper updates, and initial lint guardrail to launch Phase 1 infrastructure. Implementation captured in commit d7e4a329a57c4f81666d2a2d5f912a93a1fe6a94.
 - **2025-09-30** – Exported comprehensive tool inventory for migration tracking (`docs/2025-09-29-cli-tool-inventory.json`). _(commit 97dadafb695a8f66b4039f0f1c6315839484bc19)_
 - **2025-09-30** – Migrated `mittwald_app_copy` handler to the shared CLI adapter and recorded progress in the inventory. _(commit 13195fe6946880611c5d59fc011e21a2134ee14a)_
+- **2025-09-30** – Migrated `mittwald_app_create_node` handler to the shared CLI adapter. _(commit 688ed9397389e6a8f2c65a984cbf6c67c8e40661)_
 
 _Last updated: 2025-09-30_
