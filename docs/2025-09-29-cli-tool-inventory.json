@@ -89,8 +89,8 @@
       "tool": "mittwald_app_install_shopware5",
       "handler": "handleAppInstallShopware5Cli",
       "file": "src/constants/tool/mittwald-cli/app/install/shopware5-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_install_shopware6",
