@@ -65,10 +65,14 @@ The streams are tracked separately, but share discovery data and release milesto
 - Block handler migration (B3+) on completion of A4 unless a temporary CLI workaround is in place.
 - Add periodic checkpoints (every minor milestone) to review progress and revise targets.
 
+### Inventory Tracking
+- The authoritative roster of CLI-backed tools lives in `docs/2025-09-29-cli-tool-inventory.json` (generated automatically; update as migrations land).
+
 ---
 
 ## Progress Log
 - **2025-09-29** – Drafted the [CLI Refactor Architecture](./2025-09-29-cli-refactor-architecture.md) outlining the unified adapter design, error taxonomy, and phased migration plan (covers Workstream B2 and sets prerequisites for B3/B4). Pending review before implementation. _(commit d962978)_
 - **2025-09-29** – Scaffolded the shared CLI adapter, structured error types, session-aware helper updates, and initial lint guardrail to launch Phase 1 infrastructure. Implementation captured in commit d7e4a329a57c4f81666d2a2d5f912a93a1fe6a94.
+- **2025-09-30** – Exported comprehensive tool inventory for migration tracking (`docs/2025-09-29-cli-tool-inventory.json`). _(commit 97dadafb695a8f66b4039f0f1c6315839484bc19)_
 
-_Last updated: 2025-09-29_
+_Last updated: 2025-09-30_

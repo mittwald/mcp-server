@@ -141,6 +141,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 ## Implementation Status
 - **2025-09-29** – Initial adapter scaffolding and helper updates merged in commit d7e4a329a57c4f81666d2a2d5f912a93a1fe6a94.
+- **2025-09-30** – Generated end-to-end CLI tool inventory for migration tracking (`docs/2025-09-29-cli-tool-inventory.json`). _(commit 97dadafb695a8f66b4039f0f1c6315839484bc19)_
 
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
