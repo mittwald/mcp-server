@@ -154,5 +154,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_app_install_contao` to the adapter path. _(commit 85ec619f4fee8352f6d5a3e01f04bef0d6f0f8fb)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_joomla` to the adapter path. _(commit 4f136822c1a8efb4e0be6db833d91694a8d8c9aa)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*

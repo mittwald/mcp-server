@@ -86,4 +86,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_app_install_contao` handler to the shared CLI adapter. _(commit 85ec619f4fee8352f6d5a3e01f04bef0d6f0f8fb)_
 
+- **2025-09-30** – Migrated `mittwald_app_install_joomla` handler to the shared CLI adapter. _(commit 4f136822c1a8efb4e0be6db833d91694a8d8c9aa)_
+
 _Last updated: 2025-09-30_
