@@ -33,8 +33,8 @@
       "tool": "mittwald_app_create_python",
       "handler": "handleAppCreatePythonCli",
       "file": "src/constants/tool/mittwald-cli/app/create/python-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_create_static",

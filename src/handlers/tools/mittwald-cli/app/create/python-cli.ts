@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 export interface MittwaldAppCreatePythonArgs {
   projectId?: string;
@@ -11,124 +11,99 @@ export interface MittwaldAppCreatePythonArgs {
   waitTimeout?: number;
 }
 
+const parseAppIdFromStdout = (stdout: string): string | undefined => {
+  const idMatch = stdout.match(/ID\s+([a-z0-9-]+)/i);
+  return idMatch ? idMatch[1] : undefined;
+};
+
+const parseQuietIdentifier = (stdout: string): string | undefined => {
+  const lines = stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  return lines.at(-1);
+};
+
 export const handleAppCreatePythonCli: MittwaldCliToolHandler<MittwaldAppCreatePythonArgs> = async (args) => {
+  const argv: string[] = ['app', 'create', 'python'];
+
+  if (args.projectId) {
+    argv.push('--project-id', args.projectId);
+  }
+
+  if (args.siteTitle) {
+    argv.push('--site-title', args.siteTitle);
+  }
+
+  if (args.entrypoint) {
+    argv.push('--entrypoint', args.entrypoint);
+  }
+
+  if (args.quiet) {
+    argv.push('--quiet');
+  }
+
+  if (args.wait) {
+    argv.push('--wait');
+  }
+
+  if (typeof args.waitTimeout === 'number') {
+    argv.push('--wait-timeout', `${args.waitTimeout}s`);
+  }
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['app', 'create', 'python'];
-    
-    // Optional project ID
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    // Optional site title
-    if (args.siteTitle) {
-      cliArgs.push('--site-title', args.siteTitle);
-    }
-    
-    // Optional entrypoint
-    if (args.entrypoint) {
-      cliArgs.push('--entrypoint', args.entrypoint);
-    }
-    
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Wait for readiness
-    if (args.wait) {
-      cliArgs.push('--wait');
-    }
-    
-    // Wait timeout
-    if (args.waitTimeout) {
-      cliArgs.push('--wait-timeout', `${args.waitTimeout}s`);
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      // Parse error message from stderr or stdout
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Check for common error patterns
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied when creating Python app. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('Invalid') && errorMessage.includes('format')) {
-        return formatToolResponse(
-          "error",
-          `Invalid format in request. Please check your parameters.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to create Python app: ${errorMessage}`
-      );
-    }
-    
-    // Parse the output
-    let appId: string | null = null;
-    
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      appId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
-      // Example: "Python app created successfully with ID a-xxxxx"
-      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        appId = idMatch[1];
-      }
-    }
-    
-    if (!appId) {
-      // If we can't find the ID but the command succeeded, still report success
-      return formatToolResponse(
-        "success",
-        args.quiet ? result.stdout : `Successfully created Python app`,
-        {
-          siteTitle: args.siteTitle,
-          entrypoint: args.entrypoint,
-          output: result.stdout
+    const result = await invokeCliTool({
+      toolName: 'mittwald_app_create_python',
+      argv,
+      parser: (stdout, raw) => {
+        let appId: string | undefined;
+        if (args.quiet) {
+          appId = parseQuietIdentifier(stdout ?? '');
+        } else {
+          appId = parseAppIdFromStdout(stdout ?? '') ?? parseQuietIdentifier(stdout ?? '');
         }
-      );
+
+        return {
+          appInstallationId: appId,
+          output: stdout,
+          meta: raw,
+        };
+      },
+    });
+
+    const payload = result.result;
+    const appInstallationId = payload.appInstallationId;
+
+    if (!appInstallationId) {
+      return formatToolResponse('success', 'Python app created', {
+        projectId: args.projectId,
+        siteTitle: args.siteTitle,
+        entrypoint: args.entrypoint,
+        output: payload.output,
+      }, {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
+      });
     }
-    
-    // Build result data
-    const resultData = {
-      appInstallationId: appId,
-      status: 'created',
+
+    return formatToolResponse('success', `Successfully created Python app with ID ${appInstallationId}`, {
+      appInstallationId,
+      projectId: args.projectId,
       siteTitle: args.siteTitle,
       entrypoint: args.entrypoint,
-      ...(args.projectId && { projectId: args.projectId })
-    };
-    
-    return formatToolResponse(
-      "success",
-      args.quiet ? 
-        appId :
-        `Successfully created Python app with ID ${appId}`,
-      resultData
-    );
-    
+    }, {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    });
   } catch (error) {
+    if (error instanceof CliToolError) {
+      return formatToolResponse('error', error.message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
     return formatToolResponse(
-      "error",
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
