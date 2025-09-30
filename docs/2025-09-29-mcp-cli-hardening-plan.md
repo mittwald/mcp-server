@@ -1,0 +1,73 @@
+# MCP CLI Hardening Plan (2025-09-29)
+
+## Context
+- Claude Desktop tool invocation of `mittwald_project_list` surfaced `@oclif/core` errors (`Invalid regular expression flags`) before the CLI emitted business logic, implying an upstream command resolution issue (likely triggered by colon-delimited command ids under our runtime).
+- The fallback tool `mittwald_user_accessible_projects` reuses the same CLI call but normalises errors to an empty array, masking the failure and giving the impression that zero projects exist.
+- A quick audit (`rg "executeCli('mw'" src/handlers`) shows **90+** handlers issuing raw `mw …` commands via the low-level `executeCli` wrapper instead of the session-aware helper. Only the context-specific handlers currently use `sessionAwareCli`.
+
+We need two coordinated workstreams:
+1. **Oclif stability** – reproduce and patch the CLI/Oclif failure so that `mw project list` and friends succeed in our containerised runtime.
+2. **Tool/handler cleanup** – consolidate all MCP handlers on the session-aware execution path, surface CLI errors consistently, and add regression coverage.
+
+The streams are tracked separately, but share discovery data and release milestones.
+
+---
+
+## Workstream A – Oclif Stability & CLI Runtime Fix
+
+| Item | Description | Owner | Target |
+|------|-------------|-------|--------|
+| A1 | Reproduce the Oclif `Invalid regular expression flags` crash in isolation (Node 20 Alpine, `mw` 1.11.1, CI env). Capture `DEBUG=*` / `--trace-warnings` output plus minimal repro steps. | Platform Eng | 2025-09-30 |
+| A2 | Bisect CLI releases (1.10.x → 1.11.x) to confirm when the regression appeared and whether downgrading unblocks us short-term. | Platform Eng | 2025-10-01 |
+| A3 | Inspect compiled `@oclif/core` resolver (likely in `findCommand`) to identify why colon-separated command ids produce bad regex flags under our env. Draft a fix or upstream issue. | CLI Dev | 2025-10-02 |
+| A4 | Prototype mitigation: patch CLI to sanitise command ids before feeding them to `RegExp`, or set `OCLIF_LEGACY_COMMAND_FLAGS=1` (if available) and validate. | CLI Dev | 2025-10-03 |
+| A5 | Ship hotfix (new CLI version or runtime patch) and update Docker base image + MCP env. Ensure smoke tests cover at least one colonised command (e.g., `extension:list`). | Release Eng | 2025-10-04 |
+| A6 | Postmortem & monitoring – add logging to MCP to flag any future CLI stderr with `Invalid regular expression flags`. | Platform Eng | 2025-10-07 |
+
+**Open Questions**
+- Does the crash reproduce on Node 18, or only Node 20? (Impacts rollback plan.)
+- Do we need to enforce a particular `LANG`/`LC_ALL` setting to avoid unexpected regex behaviour?
+
+---
+
+## Workstream B – Tool & Handler Cleanup
+
+### Current Findings
+- 90+ handlers call `executeCli('mw', …)` directly, only a handful (`context/session-aware-context.ts`) rely on `sessionAwareCli`.
+- Duplicate tool coverage (e.g., “List Projects” vs “List Accessible Projects”) leads to inconsistent error handling.
+- Many handlers interpret CLI failures with bespoke logic (e.g., substring checks for `authentication`), complicating shared behaviour and testing.
+
+### Objectives
+1. Single execution path for all CLI tools (session-aware, token-injecting, context-respecting).
+2. Consistent error surfacing—CLI non-zero exits must propagate to the MCP response (no silent success with empty data).
+3. Regression coverage that stubs CLI failures and validates responses.
+
+| Item | Description | Owner | Target |
+|------|-------------|-------|--------|
+| B1 | Inventory all CLI-based tool registrations and map them to handlers; record which ones currently bypass session-aware execution. (Initial audit complete on 2025-09-29; maintain spreadsheet or doc.) | Tooling PM | 2025-09-30 |
+| B2 | Design shared execution adapter: session-aware wrapper with pluggable post-processing (JSON parsing, text passthrough, quiet id). Define common error object. | Backend Eng | 2025-10-02 |
+| B3 | Migrate high-traffic tools first (projects, servers, conversations) to the shared adapter; drop duplicate/fallback implementations. | Backend Eng | 2025-10-07 |
+| B4 | Migrate remaining handlers (≈90) in batches, each with smoke verification. Track progress in checklist. | Backend Eng | 2025-10-18 |
+| B5 | Update `sessionAwareCli` helpers to return structured errors instead of empty arrays; adjust context tools accordingly. | Backend Eng | 2025-10-05 |
+| B6 | Add Vitest coverage that fakes CLI exit codes (success, auth failure, generic failure) and asserts uniform response formatting. | QA | 2025-10-09 |
+| B7 | Update documentation (`README`, `ARCHITECTURE`, tool docs) to state that all CLI invocations run via session-aware wrapper and to describe error behaviour. | Tech Writer | 2025-10-10 |
+| B8 | Remove legacy tooling once migration completes; ensure smoke tests exercise representative commands (read/write). | Backend Eng | 2025-10-20 |
+
+### Risks & Mitigations
+- **Volume of handlers** – 90+ migrations can regress behaviour. Use automated codemods or lint rules to enforce `sessionAwareCli` usage.
+- **Token/context propagation** – ensure tests cover scenarios with/without context to avoid breaking existing workflows.
+- **CLI stability dependency** – cleanup should follow Oclif fix so we don’t migrate onto a broken runtime.
+
+---
+
+## Coordination
+- Track both workstreams in a shared project board in this document; link tasks A1/B1, etc., for context.
+- Block handler migration (B3+) on completion of A4 unless a temporary CLI workaround is in place.
+- Add periodic checkpoints (every minor milestone) to review progress and revise targets.
+
+---
+
+## Progress Log
+- **2025-09-29** – Drafted the [CLI Refactor Architecture](./2025-09-29-cli-refactor-architecture.md) outlining the unified adapter design, error taxonomy, and phased migration plan (covers Workstream B2 and sets prerequisites for B3/B4). Pending review before implementation.
+
+_Last updated: 2025-09-29_
