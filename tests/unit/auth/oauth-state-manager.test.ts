@@ -1,15 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { redisClientMock, resetRedisMock } from '../../helpers/redis-mock.ts';
 import { OAuthStateManager } from '../../../src/auth/oauth-state-manager.js';
-
-// Mock Redis client
-vi.mock('../../../src/utils/redis-client.js', () => ({
-  redisClient: {
-    set: vi.fn(),
-    get: vi.fn(),
-    del: vi.fn(),
-    keys: vi.fn()
-  }
-}));
 
 // Mock logger
 vi.mock('../../../src/utils/logger.js', () => ({
@@ -20,17 +11,8 @@ vi.mock('../../../src/utils/logger.js', () => ({
   }
 }));
 
-// Mock openid-client for state generation
 vi.mock('openid-client', () => ({
   randomState: vi.fn(() => 'mock-random-state'),
-  randomPKCECodeVerifier: vi.fn(() => 'mock-code-verifier'),
-  calculatePKCECodeChallenge: vi.fn(() => Promise.resolve('mock-code-challenge'))
-}));
-
-const mockOpenidClient = vi.hoisted(() => ({
-  randomState: vi.fn(() => 'mock-random-state'),
-  randomPKCECodeVerifier: vi.fn(() => 'mock-code-verifier'), 
-  calculatePKCECodeChallenge: vi.fn(() => Promise.resolve('mock-code-challenge'))
 }));
 
 describe('OAuthStateManager', () => {
@@ -40,15 +22,13 @@ describe('OAuthStateManager', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     
-    // Import and mock the redis client
-    const { redisClient } = await import('../../../src/utils/redis-client.js');
-    mockRedisClient = redisClient;
-    
-    mockRedisClient.set = vi.fn();
-    mockRedisClient.get = vi.fn();
-    mockRedisClient.del = vi.fn();
-    mockRedisClient.keys = vi.fn();
-    
+    resetRedisMock();
+    mockRedisClient = redisClientMock;
+    mockRedisClient.set = vi.fn(mockRedisClient.set.bind(mockRedisClient));
+    mockRedisClient.get = vi.fn(mockRedisClient.get.bind(mockRedisClient));
+    mockRedisClient.del = vi.fn(mockRedisClient.del.bind(mockRedisClient));
+    mockRedisClient.keys = vi.fn(mockRedisClient.keys.bind(mockRedisClient));
+
     stateManager = new OAuthStateManager();
   });
 
@@ -66,8 +46,8 @@ describe('OAuthStateManager', () => {
 
       expect(result).toMatchObject({
         state: 'mock-random-state',
-        codeVerifier: 'mock-code-verifier',
-        codeChallenge: 'mock-code-challenge',
+        codeVerifier: '',
+        codeChallenge: '',
         sessionId: sessionId,
         createdAt: expect.any(Date),
         expiresAt: expect.any(Date)
@@ -87,7 +67,7 @@ describe('OAuthStateManager', () => {
       mockRedisClient.set.mockRejectedValue(error);
 
       await expect(stateManager.createState(sessionId))
-        .rejects.toThrow(error);
+        .rejects.toThrow('Failed to create OAuth state');
     });
   });
 
@@ -132,16 +112,17 @@ describe('OAuthStateManager', () => {
       const storedData = {
         sessionId: 'session-123',
         codeVerifier: 'code-verifier-123',
+        expiresAt: expiredDate.toISOString(),
         createdAt: expiredDate.toISOString()
       };
 
       mockRedisClient.get.mockResolvedValue(JSON.stringify(storedData));
       mockRedisClient.del.mockResolvedValue(1);
 
-      const result = await stateManager.validateAndConsumeState(state);
+      const result = await stateManager.getState(state);
 
       expect(result).toBeNull();
-      expect(mockRedisClient.del).toHaveBeenCalledWith(`oauth:state:${state}`);
+      expect(mockRedisClient.del).toHaveBeenCalledWith(`oauth_state:${state}`);
     });
 
     it('should handle malformed stored data', async () => {
@@ -149,7 +130,7 @@ describe('OAuthStateManager', () => {
 
       mockRedisClient.get.mockResolvedValue('invalid-json');
 
-      const result = await stateManager.validateAndConsumeState(state);
+      const result = await stateManager.getState(state);
 
       expect(result).toBeNull();
     });
@@ -160,29 +141,73 @@ describe('OAuthStateManager', () => {
 
       mockRedisClient.get.mockRejectedValue(error);
 
-      await expect(stateManager.validateAndConsumeState(state))
-        .rejects.toThrow('Failed to validate OAuth state: Redis connection failed');
+      await expect(stateManager.getState(state)).resolves.toBeNull();
+    });
+  });
+
+  describe('updateState', () => {
+    it('should merge updates into existing state', async () => {
+      const state = 'update-state';
+      const existing = {
+        state,
+        sessionId: 'session-1',
+        codeVerifier: '',
+        codeChallenge: '',
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 600_000).toISOString(),
+      };
+
+      mockRedisClient.get.mockResolvedValue(JSON.stringify(existing));
+      mockRedisClient.set.mockResolvedValue('OK');
+
+      await stateManager.updateState(state, {
+        codeVerifier: 'new-verifier',
+      });
+
+      expect(mockRedisClient.set).toHaveBeenCalledWith(
+        `oauth_state:${state}`,
+        expect.stringContaining('new-verifier'),
+        600
+      );
+    });
+
+    it('should throw when updating missing state', async () => {
+      mockRedisClient.get.mockResolvedValue(null);
+
+      await expect(stateManager.updateState('missing', { codeVerifier: 'a' }))
+        .rejects.toThrow('OAuth state not found');
+    });
+  });
+
+  describe('deleteState', () => {
+    it('should delete state without throwing', async () => {
+      mockRedisClient.del.mockResolvedValue(1);
+
+      await expect(stateManager.deleteState('to-delete')).resolves.toBeUndefined();
+      expect(mockRedisClient.del).toHaveBeenCalledWith('oauth_state:to-delete');
     });
   });
 
   describe('cleanupExpiredStates', () => {
     it('should clean up expired OAuth states', async () => {
-      const expiredStates = ['oauth:state:expired1', 'oauth:state:expired2'];
-      const validStates = ['oauth:state:valid1'];
+      const expiredStates = ['oauth_state:expired1', 'oauth_state:expired2'];
+      const validStates = ['oauth_state:valid1'];
       const allStates = [...expiredStates, ...validStates];
 
       // Mock expired data
       const expiredData = {
         sessionId: 'session-123',
         codeVerifier: 'code-verifier',
-        createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString() // 15 minutes ago
+        createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+        expiresAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
       };
 
       // Mock valid data
       const validData = {
         sessionId: 'session-456',
         codeVerifier: 'code-verifier',
-        createdAt: new Date().toISOString() // Now
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       };
 
       mockRedisClient.keys.mockResolvedValue(allStates);
@@ -202,18 +227,18 @@ describe('OAuthStateManager', () => {
       const cleanedCount = await stateManager.cleanupExpiredStates();
 
       expect(cleanedCount).toBe(2);
-      expect(mockRedisClient.keys).toHaveBeenCalledWith('oauth:state:*');
+      expect(mockRedisClient.keys).toHaveBeenCalledWith('oauth_state:*');
       expect(mockRedisClient.del).toHaveBeenCalledTimes(2);
-      expect(mockRedisClient.del).toHaveBeenCalledWith('oauth:state:expired1');
-      expect(mockRedisClient.del).toHaveBeenCalledWith('oauth:state:expired2');
+      expect(mockRedisClient.del).toHaveBeenCalledWith('oauth_state:expired1');
+      expect(mockRedisClient.del).toHaveBeenCalledWith('oauth_state:expired2');
     });
 
     it('should handle cleanup errors gracefully', async () => {
       const error = new Error('Redis cleanup failed');
       mockRedisClient.keys.mockRejectedValue(error);
 
-      await expect(stateManager.cleanupExpiredStates())
-        .rejects.toThrow('Failed to cleanup expired OAuth states: Redis cleanup failed');
+      const cleaned = await stateManager.cleanupExpiredStates();
+      expect(cleaned).toBe(0);
     });
 
     it('should return 0 when no states exist', async () => {
@@ -225,54 +250,4 @@ describe('OAuthStateManager', () => {
     });
   });
 
-  describe('isStateExpired', () => {
-    it('should correctly identify expired states', () => {
-      const expiredDate = new Date(Date.now() - 15 * 60 * 1000); // 15 minutes ago
-      const validDate = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
-
-      expect((stateManager as any).isStateExpired(expiredDate.toISOString())).toBe(true);
-      expect((stateManager as any).isStateExpired(validDate.toISOString())).toBe(false);
-    });
-
-    it('should handle invalid date strings', () => {
-      expect((stateManager as any).isStateExpired('invalid-date')).toBe(true);
-    });
-  });
-
-  describe('state format validation', () => {
-    it('should validate state data structure', async () => {
-      const validStateData = {
-        sessionId: 'session-123',
-        codeVerifier: 'code-verifier-123',
-        createdAt: new Date().toISOString()
-      };
-
-      const invalidStateData = {
-        sessionId: 'session-123',
-        // Missing codeVerifier
-        createdAt: new Date().toISOString()
-      };
-
-      mockRedisClient.get.mockImplementation((key: string) => {
-        if (key.includes('valid')) {
-          return Promise.resolve(JSON.stringify(validStateData));
-        } else {
-          return Promise.resolve(JSON.stringify(invalidStateData));
-        }
-      });
-
-      mockRedisClient.del.mockResolvedValue(1);
-
-      // Valid state should work
-      const validResult = await stateManager.validateAndConsumeState('valid-state');
-      expect(validResult).toEqual({
-        sessionId: 'session-123',
-        codeVerifier: 'code-verifier-123'
-      });
-
-      // Invalid state should return null
-      const invalidResult = await stateManager.validateAndConsumeState('invalid-state');
-      expect(invalidResult).toBeNull();
-    });
-  });
 });

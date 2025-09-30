@@ -111,11 +111,15 @@ export class AuthMiddleware {
    * Check if user has required scopes
    */
   static hasRequiredScopes(session: UserSession, requiredScopes: string[]): boolean {
-    if (!session.scopes || session.scopes.length === 0) {
+    const scopeList = Array.isArray(session.scopes) && session.scopes.length > 0
+      ? session.scopes
+      : (typeof session.scope === 'string' ? session.scope.split(/\s+/).filter(Boolean) : []);
+
+    if (scopeList.length === 0) {
       return false;
     }
 
-    return requiredScopes.every(scope => session.scopes!.includes(scope));
+    return requiredScopes.every(scope => scopeList.includes(scope));
   }
 
   /**
@@ -135,7 +139,7 @@ export class AuthMiddleware {
         res.status(403).json({
           error: 'insufficient_scope',
           message: `Required scopes: ${requiredScopes.join(', ')}`,
-          userScopes: req.session.scopes || []
+          userScopes: req.session.scopes || (req.session.scope ? req.session.scope.split(/\s+/).filter(Boolean) : [])
         });
         return;
       }

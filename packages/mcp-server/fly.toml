@@ -4,6 +4,9 @@ primary_region = "fra"
 kill_signal = "SIGINT"
 kill_timeout = 5
 
+[deploy]
+  release_command = "sh -lc 'if [ \"${ALLOW_FLY_RELEASE:-}\" != \"true\" ]; then echo Deployment blocked: use GitHub Actions >&2; exit 1; fi'"
+
 [build]
   dockerfile = "Dockerfile"
 
@@ -12,8 +15,10 @@ kill_timeout = 5
   PORT = "8080"
   # Public base URL where clients reach the MCP server
   MCP_PUBLIC_BASE = "https://mittwald-mcp-fly2.fly.dev"
-  # Authorization Server base (oauth-server)
+  # Authorization Server base (bridge)
   OAUTH_AS_BASE = "https://mittwald-oauth-server.fly.dev"
+  # JWT validation configuration (must match OAuth server)
+  JWT_SIGNING_KEY = "production-jwt-key-must-be-set-as-secret"
 
 [[services]]
   internal_port = 8080

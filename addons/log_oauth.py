@@ -4,8 +4,8 @@ import json, re, urllib.parse
 # Match only our relevant domains and endpoints
 TARGETS = [
     r"mittwald-oauth-server\.fly\.dev/\.well-known/oauth-authorization-server",
-    r"mittwald-oauth-server\.fly\.dev/reg",
-    r"mittwald-oauth-server\.fly\.dev/auth",
+    r"mittwald-oauth-server\.fly\.dev/register",
+    r"mittwald-oauth-server\.fly\.dev/authorize",
     r"mittwald-oauth-server\.fly\.dev/token",
     r"mittwald-mcp-fly2\.fly\.dev/mcp",
 ]
@@ -94,4 +94,3 @@ def response(flow: http.HTTPFlow):
     else:
         if text:
             ctx.log.info(f"  Body: {text[:4000]}")
-

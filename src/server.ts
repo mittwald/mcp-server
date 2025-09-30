@@ -30,21 +30,18 @@ import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
 import https from 'https';
 import fs from 'fs';
-import { CONFIG, VALID_REDIRECT_URIS } from './server/config.js';
+import { CONFIG } from './server/config.js';
 // OAuth is disabled for Mittwald integration
 import { MCPHandler } from './server/mcp.js';
 import { setMCPHandlerInstance } from './server/mcp.js';
 import { createOAuthMiddleware } from './server/oauth-middleware.js';
-import { getMittwaldClient } from './services/mittwald/index.js';
 import { responseLoggerMiddleware } from './server/response-logger.js';
 import { initializeToolHandlers } from './handlers/tool-handlers.js';
 import { OAuthMetadataRoutes } from './routes/oauth-metadata-routes.js';
-import { logger } from './utils/logger.js';
 
 // Polyfill for jose library
 if (typeof globalThis.crypto === 'undefined') {
-  // @ts-ignore
-  globalThis.crypto = crypto.webcrypto as any;
+  globalThis.crypto = crypto.webcrypto as unknown as typeof globalThis.crypto;
 }
 
 /**
@@ -138,7 +135,7 @@ export async function createApp(): Promise<express.Application> {
   await setupUtilityRoutes(app);
   
   // Add error handling for uncaught errors
-  app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  app.use((error: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
     const clientAddr = req.ip || req.connection.remoteAddress || 'unknown';
     console.error(`🚨 [${clientAddr}] Express error on ${req.method} ${req.originalUrl}:`, error);
     
@@ -204,9 +201,15 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
     };
     
     // OAuth endpoints (external AS)
-    const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+    const asBase = CONFIG.OAUTH_BRIDGE.BASE_URL
+      || process.env.OAUTH_BRIDGE_BASE_URL
+      || process.env.OAUTH_AS_BASE
+      || 'https://mittwald-oauth-server.fly.dev';
+    const authorizeEndpoint = CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL
+      || process.env.OAUTH_BRIDGE_AUTHORIZATION_URL
+      || `${asBase.replace(/\/$/, '')}/authorize`;
     endpoints.oauth = {
-      authorize: `${asBase}/auth`,
+      authorize: authorizeEndpoint,
       token: `${asBase}/token`,
       metadata: `${asBase}/.well-known/oauth-authorization-server`,
     };

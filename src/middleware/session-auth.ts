@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger.js';
 import { sessionManager } from '../server/session-manager.js';
+import { CONFIG } from '../server/config.js';
 
 // Extend Request interface to include user context from session
 declare global {
@@ -13,6 +14,7 @@ declare global {
         sessionId: string;
       };
       sessionId?: string;
+      auth?: import('@modelcontextprotocol/sdk/server/auth/types.js').AuthInfo;
     }
   }
 }
@@ -51,8 +53,8 @@ export function createSessionAuthMiddleware() {
         return sendOAuthChallenge(res, 'Invalid or expired session');
       }
 
-      if (!session.oauthAccessToken) {
-        logger.debug(`Session exists but no OAuth token found: ${sessionId.substring(0, 8)}...`);
+      if (!session.mittwaldAccessToken) {
+        logger.debug(`Session exists but no Mittwald token found: ${sessionId.substring(0, 8)}...`);
         return sendOAuthChallenge(res, 'No OAuth token in session');
       }
 
@@ -63,11 +65,38 @@ export function createSessionAuthMiddleware() {
       }
 
       // Set user context from session
+      const scopes = Array.isArray(session.scopes)
+        ? session.scopes
+        : (session.scope ? session.scope.split(/\s+/).filter(Boolean) : []);
+
+      const scopeString = scopes.length > 0 ? scopes.join(' ') : 'mittwald-api';
+
       req.user = {
         userId: session.userId,
-        scope: session.scopes?.join(' ') || 'mittwald-api',
-        token: session.oauthAccessToken,
-        sessionId: sessionId
+        scope: scopeString,
+        token: session.mittwaldAccessToken,
+        sessionId
+      };
+
+      const expiresAtSeconds = session.expiresAt
+        ? Math.floor(new Date(session.expiresAt).getTime() / 1000)
+        : undefined;
+
+      req.auth = {
+        token: session.oauthToken ?? session.mittwaldAccessToken,
+        clientId: 'mittwald-mcp-server',
+        scopes,
+        expiresAt: expiresAtSeconds,
+        extra: {
+          userId: session.userId,
+          mittwaldAccessToken: session.mittwaldAccessToken,
+          mittwaldRefreshToken: session.mittwaldRefreshToken,
+          mittwaldScope: session.scope,
+          mittwaldScopeSource: session.scopeSource,
+          mittwaldRequestedScope: session.requestedScope,
+          issuer: CONFIG.OAUTH_BRIDGE?.ISSUER,
+          resource: session.resource
+        }
       };
 
       logger.debug(`Session authenticated successfully: ${sessionId.substring(0, 8)}... (user: ${session.userId})`);
@@ -85,7 +114,8 @@ export function createSessionAuthMiddleware() {
  * This triggers mcp-remote to start the OAuth flow automatically
  */
 function sendOAuthChallenge(res: Response, reason: string) {
-  const authorizationUri = `${process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev'}/auth`;
+  const asBase = getAuthorizationServerBase();
+  const authorizationUri = getAuthorizationEndpoint(asBase);
   const clientId = 'mittwald-mcp-server';
   
   logger.info(`Sending OAuth challenge: ${reason}`);
@@ -99,6 +129,21 @@ function sendOAuthChallenge(res: Response, reason: string) {
     authorization_uri: authorizationUri,
     client_id: clientId
   });
+}
+
+function getAuthorizationServerBase(): string {
+  return CONFIG.OAUTH_BRIDGE.BASE_URL
+    || process.env.OAUTH_BRIDGE_BASE_URL
+    || process.env.OAUTH_AS_BASE
+    || 'https://mittwald-oauth-server.fly.dev';
+}
+
+function getAuthorizationEndpoint(base: string): string {
+  const configured = CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL || process.env.OAUTH_BRIDGE_AUTHORIZATION_URL;
+  if (configured) {
+    return configured;
+  }
+  return `${base.replace(/\/$/, '')}/authorize`;
 }
 
 /**

@@ -1,0 +1,28 @@
+app = "mittwald-oauth-server"
+primary_region = "fra"
+
+[deploy]
+  release_command = "sh -lc 'if [ \"${ALLOW_FLY_RELEASE:-}\" != \"true\" ]; then echo Deployment blocked: use GitHub Actions >&2; exit 1; fi'"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3000"
+  BRIDGE_BASE_URL = "https://mittwald-oauth-server.fly.dev"
+  BRIDGE_ISSUER = "https://mittwald-oauth-server.fly.dev"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_start_machines = true
+  auto_stop_machines = false
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "15s"
+    method = "GET"
+    timeout = "10s"
+    path = "/health"

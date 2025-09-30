@@ -14,10 +14,11 @@ export class SessionDemo {
    */
   async createMockSession(userId: string, oauthToken?: string): Promise<string> {
     try {
-      const mockSessionData: Omit<UserSession, 'sessionId' | 'lastAccessed'> = {
-        userId,
-        oauthAccessToken: oauthToken || 'mock-oauth-token',
-        refreshToken: 'mock-refresh-token',
+      const mockSessionData: Omit<UserSession, 'sessionId' | 'userId' | 'lastAccessed'> = {
+        mittwaldAccessToken: oauthToken || 'mock-oauth-token',
+        mittwaldRefreshToken: 'mock-refresh-token',
+        oauthToken: 'mock-jwt',
+        scope: 'api_read api_write',
         expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000), // 8 hours from now
         currentContext: {},
         accessibleProjects: [],
@@ -152,11 +153,11 @@ export class SessionDemo {
       const shortLivedSession = await sessionManager.createSession(
         'temp-user',
         {
-          userId: 'temp-user',
-          oauthAccessToken: 'temp-token',
+          mittwaldAccessToken: 'temp-token',
+          scope: 'api_read',
           expiresAt: new Date(Date.now() + 10000), // 10 seconds
           currentContext: { projectId: 'temp-project' }
-        },
+        } as Omit<UserSession, 'sessionId' | 'userId' | 'lastAccessed'>,
         { ttlSeconds: 10 }
       );
 

@@ -1,7 +1,9 @@
 import express from "express";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 import type { AuthenticatedRequest } from "./auth-types.js";
 import { CONFIG } from "./config.js";
+import { logger } from "../utils/logger.js";
+import { getPublicBaseUrl } from "../utils/public-base.js";
 
 /**
  * OAuth authentication middleware for MCP server
@@ -29,28 +31,106 @@ export function createOAuthMiddleware() {
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
       
       try {
-        // Verify JWT token
-        if (!CONFIG.JWT_SECRET) {
-          throw new Error('JWT_SECRET not configured');
+        const bridgeSecret = CONFIG.OAUTH_BRIDGE.JWT_SECRET;
+
+        if (!bridgeSecret) {
+          throw new Error('OAUTH_BRIDGE_JWT_SECRET not configured');
         }
-        
-        const decoded = jwt.verify(token, CONFIG.JWT_SECRET) as any;
-        
+
+        const verifyOptions: Record<string, unknown> = {};
+        if (CONFIG.OAUTH_BRIDGE.ISSUER) {
+          verifyOptions.issuer = CONFIG.OAUTH_BRIDGE.ISSUER;
+        }
+        if (CONFIG.OAUTH_BRIDGE.AUDIENCE) {
+          verifyOptions.audience = CONFIG.OAUTH_BRIDGE.AUDIENCE;
+        }
+
+        const verification = await jwtVerify(token, new TextEncoder().encode(bridgeSecret), verifyOptions);
+        const payload = verification.payload as Record<string, unknown>;
+
+        const mittwaldPayload = typeof payload.mittwald === 'object' && payload.mittwald !== null
+          ? payload.mittwald as Record<string, unknown>
+          : undefined;
+
+        const nowSeconds = Math.floor(Date.now() / 1000);
+        const issuedAtSecondsRaw = payload.iat;
+        const issuedAtSeconds = typeof issuedAtSecondsRaw === 'number'
+          ? issuedAtSecondsRaw
+          : (typeof issuedAtSecondsRaw === 'string' ? Number(issuedAtSecondsRaw) : undefined);
+        const baseIssuedAt = Number.isFinite(issuedAtSeconds) ? Number(issuedAtSeconds) : nowSeconds;
+
+        const mittwaldExpiresInRaw = mittwaldPayload?.expires_in;
+        const mittwaldExpiresIn = typeof mittwaldExpiresInRaw === 'number'
+          ? mittwaldExpiresInRaw
+          : (typeof mittwaldExpiresInRaw === 'string' ? Number(mittwaldExpiresInRaw) : undefined);
+
+        const mittwaldExpiresAtFromPayload = mittwaldExpiresIn
+          ? baseIssuedAt + mittwaldExpiresIn
+          : (typeof mittwaldPayload?.expires_at === 'number'
+              ? mittwaldPayload.expires_at
+              : (typeof payload.exp === 'number' ? payload.exp : undefined));
+
+        const mittwaldRefreshExpiresInCandidate = (mittwaldPayload as Record<string, unknown> | undefined)?.refresh_token_expires_in
+          ?? (mittwaldPayload as Record<string, unknown> | undefined)?.refresh_expires_in;
+        const mittwaldRefreshTokenExpiresAt = typeof mittwaldRefreshExpiresInCandidate === 'number'
+          ? baseIssuedAt + mittwaldRefreshExpiresInCandidate
+          : (typeof mittwaldRefreshExpiresInCandidate === 'string'
+              ? baseIssuedAt + Number(mittwaldRefreshExpiresInCandidate)
+              : undefined);
+
+        const mittwaldAccessToken = typeof mittwaldPayload?.access_token === 'string'
+          ? mittwaldPayload.access_token
+          : undefined;
+        const mittwaldRefreshToken = typeof mittwaldPayload?.refresh_token === 'string'
+          ? mittwaldPayload.refresh_token
+          : undefined;
+        const mittwaldScope = typeof mittwaldPayload?.scope === 'string'
+          ? mittwaldPayload.scope
+          : (typeof payload.scope === 'string' ? payload.scope : undefined);
+        const resource = typeof mittwaldPayload?.resource === 'string'
+          ? mittwaldPayload.resource
+          : (typeof payload.resource === 'string' ? payload.resource : undefined);
+
+        const scopeString = typeof payload.scope === 'string'
+          ? payload.scope
+          : (typeof mittwaldScope === 'string' ? mittwaldScope : '');
+        const scopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
+
         // Set auth info on request matching MCP SDK AuthInfo interface
         req.auth = {
           token: token, // The JWT token itself
-          clientId: decoded.aud || decoded.client_id || 'mittwald-mcp-server',
-          scopes: decoded.scope?.split(' ') || [],
-          expiresAt: decoded.exp, // Keep as seconds since epoch (not milliseconds)
+          clientId: typeof payload.client_id === 'string'
+            ? payload.client_id
+            : (typeof payload.aud === 'string' ? payload.aud : 'mittwald-mcp-server'),
+          scopes,
+          expiresAt: typeof payload.exp === 'number' ? payload.exp : undefined,
           extra: {
-            userId: decoded.sub,
-            accessToken: decoded.access_token,
-            refreshToken: decoded.refresh_token
+            userId: typeof payload.sub === 'string' ? payload.sub : undefined,
+            mittwaldAccessToken,
+            mittwaldRefreshToken,
+            mittwaldScope,
+            mittwaldScopeSource: 'mittwald',
+            mittwaldRequestedScope: mittwaldScope,
+            issuer: typeof payload.iss === 'string' ? payload.iss : undefined,
+            audience: payload.aud,
+            resource,
+            mittwaldAccessTokenExpiresAt: mittwaldExpiresAtFromPayload,
+            mittwaldRefreshTokenExpiresAt,
+            mittwaldIssuedAt: baseIssuedAt,
+            mittwaldExpiresIn: mittwaldExpiresIn,
           }
         };
+
+        logger.info('JWT VALIDATION: Token accepted', {
+          clientId: req.auth.clientId,
+          userId: req.auth.extra?.userId,
+          expiresAt: req.auth.expiresAt,
+          hasMittwaldToken: !!mittwaldAccessToken
+        });
         
         next();
-      } catch (jwtError) {
+      } catch (error) {
+        console.warn('JWT verification failed', error);
         // Invalid token - return 401 with OAuth metadata
         return sendOAuthChallenge(res);
       }
@@ -69,32 +149,37 @@ export function createOAuthMiddleware() {
  * Sends OAuth challenge response with proper metadata
  */
 function sendOAuthChallenge(res: express.Response): void {
-  const baseUrl = process.env.NODE_ENV === 'production' 
-    ? (process.env.MCP_PUBLIC_BASE || 'https://mcp.mittwald-mcp-fly.fly.dev')
-    : 'https://localhost:3000';
-  
+  const publicBase = getPublicBaseUrl();
+
   // Authorization Server base (our oauth-server)
-  const asBase = process.env.OAUTH_AS_BASE || 'https://mittwald-oauth-server.fly.dev';
+  const asBase = getAuthorizationServerBase();
+  const authorizeEndpoint = CONFIG.OAUTH_BRIDGE.AUTHORIZATION_URL
+    || process.env.OAUTH_BRIDGE_AUTHORIZATION_URL
+    || `${asBase.replace(/\/$/, '')}/authorize`;
+  const tokenEndpoint = CONFIG.OAUTH_BRIDGE.TOKEN_URL || `${asBase.replace(/\/$/, '')}/token`;
   
   // Set WWW-Authenticate header as per MCP OAuth spec
-  res.set('WWW-Authenticate', `Bearer realm="MCP Server", authorization_uri="${asBase}/auth"`);
+  res.set('WWW-Authenticate', `Bearer realm="MCP Server", authorization_uri="${authorizeEndpoint}"`);
   
   res.status(401).json({
     error: 'authentication_required',
     message: 'OAuth authentication required',
     oauth: {
-      authorization_url: `${asBase}/auth`,
-      token_url: `${asBase}/token`,
-      // Do not suggest a static client_id or redirect_uri.
-      // MCP clients (e.g., MCPJam Inspector) should perform Dynamic Client Registration (DCR)
-      // and use their own loopback/custom redirect URIs.
-      scopes: ['openid', 'profile', 'user:read', 'customer:read', 'project:read']
+      authorization_url: authorizeEndpoint,
+      token_url: tokenEndpoint
     },
     endpoints: {
-      authorize: `${asBase}/auth`,
-      token: `${asBase}/token`,
-      metadata: `${asBase}/.well-known/oauth-authorization-server`
+      authorize: authorizeEndpoint,
+      token: tokenEndpoint,
+      metadata: `${asBase.replace(/\/$/, '')}/.well-known/oauth-authorization-server`
     },
-    resource: `${process.env.MCP_PUBLIC_BASE || baseUrl}/mcp`
+    resource: `${publicBase}/mcp`
   });
+}
+
+function getAuthorizationServerBase(): string {
+  return CONFIG.OAUTH_BRIDGE.BASE_URL
+    || process.env.OAUTH_BRIDGE_BASE_URL
+    || process.env.OAUTH_AS_BASE
+    || 'https://mittwald-oauth-server.fly.dev';
 }

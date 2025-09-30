@@ -11,7 +11,4 @@
  * @see {@link https://json-schema.org/ | JSON Schema Specification}
  */
 
-import type { JSONSchema7 } from "json-schema";
-
-
-
+export {};

@@ -21,9 +21,9 @@ jobs:
       matrix:
         include:
           - app: mittwald-oauth-server
-            context: packages/oauth-server
-            dockerfile: packages/oauth-server/Dockerfile
-            fly_config: packages/oauth-server/fly.toml
+            context: packages/oauth-bridge
+            dockerfile: packages/oauth-bridge/Dockerfile
+            fly_config: packages/oauth-bridge/fly.toml
             hostname: mittwald-oauth-server.fly.dev
           - app: mittwald-mcp-fly2
             context: .
@@ -65,12 +65,17 @@ jobs:
           if [ -f "$CTX/package.json" ]; then
             echo "Pre-building in $CTX";
             pushd "$CTX" >/dev/null
-            npm ci --no-audit --no-fund
+            if [ -f package-lock.json ]; then
+              npm ci --no-audit --no-fund
+            else
+              npm install --no-audit --no-fund
+            fi
             npm run build
             popd >/dev/null
           else
             echo "No package.json in $CTX; skipping pre-compile"
           fi
+
 
       # Skip manual docker push. Fly remote builder will build + publish in deploy step.
       # This avoids registry permission pitfalls and simplifies digest handling.
@@ -86,43 +91,20 @@ jobs:
         run: |
           # Use Fly remote builder to build and deploy from source using app credentials.
           # Secrets staged earlier (GIT_SHA, IMAGE_DIGEST, BUILD_TIME) become visible to the app.
-          flyctl deploy --config "${{ matrix.fly_config }}" --strategy immediate --detach --verbose
+          flyctl deploy --config "${{ matrix.fly_config }}" --strategy immediate --detach --verbose \
+            --env ALLOW_FLY_RELEASE=true
 
-      - name: Wait for app health then verify /version (commit SHA)
-        run: |
-          set -e
-          HOST=${{ matrix.hostname }}
-          # wait up to ~5 minutes for health with retries
-          ok=0
-          for i in $(seq 1 60); do
-            if curl -fsS --max-time 6 "https://$HOST/health" >/dev/null; then
-              ok=1; break
-            fi
-            sleep 5
-          done
-          if [ "$ok" != "1" ]; then
-            echo "Health check did not pass in time for $HOST" >&2
-            exit 22
-          fi
-          echo "Health passed; checking /version"
-          body=$(curl -fsSL "https://$HOST/version")
-          echo "$body" | jq -e --arg sha "${{ steps.meta.outputs.sha }}" '.gitSha == $sha'
 
       - name: Diagnostics on failure (status + recent logs)
         if: failure()
+        continue-on-error: true
         run: |
           set +e
-          echo "Fly status for ${{ matrix.app }}:";
-          flyctl status -a ${{ matrix.app }} || true
-          echo "\nLast 200 lines of logs:";
-          flyctl logs -a ${{ matrix.app }} --since 20m | tail -n 200 || true
-
-      - name: Verify /version endpoint (digest optional)
-        run: |
-          set -e
-          URL="https://${{ matrix.hostname }}/version"
-          echo "GET $URL"
-          curl -fsSL "$URL" | jq '.'
+          APP=${{ matrix.app }}
+          echo "Fly status for $APP:";
+          flyctl status -a "$APP" --json | jq '.' || flyctl status -a "$APP" || true
+          echo "\nLast 100 lines of logs:";
+          flyctl logs -a "$APP" --max-lines 100 || true
 
       - name: Cleanup stopped/stale machines (best-effort)
         continue-on-error: true
@@ -139,9 +121,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: deploy
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -158,15 +145,53 @@ jobs:
 
       - name: Wait for apps to be healthy
         run: |
-          set -e
-          for host in mittwald-oauth-server.fly.dev mittwald-mcp-fly2.fly.dev; do
-            echo "Waiting for https://$host/health";
+          set -euo pipefail
+          declare -A apps
+          apps[mittwald-oauth-server.fly.dev]=mittwald-oauth-server
+          apps[mittwald-mcp-fly2.fly.dev]=mittwald-mcp-fly2
+
+          for host in "${!apps[@]}"; do
+            app="${apps[$host]}"
+            echo "Waiting for $app (https://$host/health)"
             ok=0
-            for i in $(seq 1 60); do
-              if curl -fsS --max-time 6 "https://$host/health" >/dev/null; then ok=1; break; fi
+            for attempt in $(seq 1 36); do # up to 3 minutes @ 5s
+              status_json=$(flyctl status -a "$app" --json 2>/dev/null || echo '{}')
+              if echo "$status_json" | jq -e -r '
+                (.Machines // []) as $machines
+                | ($machines | map(select(.state == "started"))) as $started_machines
+                | if ($started_machines | length) == 0 then false
+                  else
+                    $started_machines | all(
+                      (.checks // []) as $checks
+                      | if ($checks | length) == 0 then true
+                        else $checks | all(.status == "passing")
+                        end
+                    )
+                  end
+              ' >/dev/null 2>&1 && curl -fsS --max-time 6 "https://$host/health" >/dev/null 2>&1; then
+                echo "✅ $host is healthy"
+                ok=1
+                break
+              fi
               sleep 5
             done
-            if [ "$ok" != "1" ]; then echo "Health failed for $host" >&2; exit 22; fi
+            if [ "$ok" != "1" ]; then
+              echo "💥 Health failed for $host" >&2
+              echo "$status_json" | jq '.' >&2 || true
+              curl -v --max-time 10 "https://$host/health" || true
+              exit 22
+            fi
+          done
+
+      - name: Verify deployed version
+        run: |
+          set -euo pipefail
+          sha="${GITHUB_SHA}"
+          for host in mittwald-oauth-server.fly.dev mittwald-mcp-fly2.fly.dev; do
+            echo "Checking version on https://$host/version"
+            body=$(curl -fsSL "https://$host/version")
+            echo "$body" | jq -e --arg sha "$sha" '.gitSha == $sha'
+            echo "✅ $host reports gitSha=$sha"
           done
 
       - name: Run Postman (Newman) smoke
@@ -176,22 +201,30 @@ jobs:
             --env-var mcp_base=https://mittwald-mcp-fly2.fly.dev \
             --env-var as_base=https://mittwald-oauth-server.fly.dev
 
-      - name: AS DCR sanity (headless)
+      - name: Bridge registration sanity
         run: |
           set -e
           cat > dcr.json <<'JSON'
           {
-            "redirect_uris": ["http://127.0.0.1/callback"],
+            "redirect_uris": ["https://chatgpt.com/connector_platform_oauth_redirect"],
             "token_endpoint_auth_method": "none",
             "grant_types": ["authorization_code", "refresh_token"],
             "response_types": ["code"],
             "client_name": "CI Smoke",
-            "application_type": "native",
-            "scope": "openid profile email"
+            "application_type": "native"
           }
           JSON
-          CODE=$(curl -sS -o body.json -w "%{http_code}" -H 'Content-Type: application/json' --data @dcr.json https://mittwald-oauth-server.fly.dev/reg || true)
-          echo "DCR HTTP $CODE" && cat body.json
-          if [ "$CODE" != "201" ] && [ "$CODE" != "200" ]; then
-            echo "DCR failed" >&2; exit 1;
+          CODE=$(curl -sS -o body.json -w "%{http_code}" -H 'Content-Type: application/json' --data @dcr.json https://mittwald-oauth-server.fly.dev/register || true)
+          echo "Bridge registration HTTP $CODE" && cat body.json
+          if [ "$CODE" != "201" ]; then
+            echo "Bridge registration failed" >&2; exit 1;
           fi
+
+      - name: Run OAuth smoke tests
+        env:
+          OAUTH_SERVER_URL: https://mittwald-oauth-server.fly.dev
+          MCP_SERVER_URL: https://mittwald-mcp-fly2.fly.dev
+        run: |
+          set -e
+          echo "Running post-deploy OAuth smoke suite"
+          npm run test:smoke

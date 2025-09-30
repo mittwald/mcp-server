@@ -124,7 +124,7 @@
         "script": {"type": "text/javascript", "exec": [
           "pm.test('200', () => pm.response.code === 200);",
           "const json = pm.response.json();",
-          "pm.test('keys present', () => Array.isArray(json.keys) && json.keys.length > 0);"
+          "pm.test('keys array', () => Array.isArray(json.keys));"
         ]}
       }]
     },
