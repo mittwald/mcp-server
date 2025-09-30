@@ -166,8 +166,8 @@
       "tool": "mittwald_app_upload",
       "handler": "handleAppUploadCli",
       "file": "src/constants/tool/mittwald-cli/app/upload-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_versions",

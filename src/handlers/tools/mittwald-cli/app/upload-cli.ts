@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldAppUploadArgs {
   installationId?: string;
@@ -14,120 +14,135 @@ interface MittwaldAppUploadArgs {
   remoteSubDirectory?: string;
 }
 
+function buildCliArgs(args: MittwaldAppUploadArgs, installationId: string): string[] {
+  const cliArgs: string[] = ['app', 'upload', installationId, '--source', args.source];
+
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.sshUser) cliArgs.push('--ssh-user', args.sshUser);
+  if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
+  if (Array.isArray(args.exclude)) {
+    for (const pattern of args.exclude) {
+      cliArgs.push('--exclude', pattern);
+    }
+  }
+  if (args.dryRun) cliArgs.push('--dry-run');
+  if (args.delete) cliArgs.push('--delete');
+  if (args.remoteSubDirectory) cliArgs.push('--remote-sub-directory', args.remoteSubDirectory);
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldAppUploadArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('installation')) {
+    return `App installation not found. Please verify the installation ID: ${args.installationId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('rsync')) {
+    return `rsync is required but not available. Please install rsync on your system.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('source') && combined.includes('not found')) {
+    return `Source directory not found: ${args.source}.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+function buildSuccessMessage(args: MittwaldAppUploadArgs): string {
+  if (args.dryRun) return 'Dry run completed successfully';
+  return 'App uploaded successfully';
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
 export const handleAppUploadCli: MittwaldCliToolHandler<MittwaldAppUploadArgs> = async (args) => {
+  if (!args.installationId) {
+    return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
+  }
+
+  if (!args.source) {
+    return formatToolResponse('error', 'Source directory is required. Please provide the source parameter.');
+  }
+
+  const argv = buildCliArgs(args, args.installationId);
+
   try {
-    if (!args.installationId) {
-      return formatToolResponse(
-        "error",
-        "Installation ID is required. Please provide the installationId parameter."
-      );
-    }
-
-    if (!args.source) {
-      return formatToolResponse(
-        "error",
-        "Source directory is required. Please provide the source parameter."
-      );
-    }
-
-    // Build CLI command arguments
-    const cliArgs: string[] = ['app', 'upload'];
-    
-    // Add installation ID as positional argument
-    cliArgs.push(args.installationId);
-    
-    // Add source directory
-    cliArgs.push('--source', args.source);
-    
-    // Add optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    if (args.sshUser) {
-      cliArgs.push('--ssh-user', args.sshUser);
-    }
-    
-    if (args.sshIdentityFile) {
-      cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
-    }
-    
-    if (args.exclude && args.exclude.length > 0) {
-      args.exclude.forEach(pattern => {
-        cliArgs.push('--exclude', pattern);
-      });
-    }
-    
-    if (args.dryRun) {
-      cliArgs.push('--dry-run');
-    }
-    
-    if (args.delete) {
-      cliArgs.push('--delete');
-    }
-    
-    if (args.remoteSubDirectory) {
-      cliArgs.push('--remote-sub-directory', args.remoteSubDirectory);
-    }
-    
-    // Execute CLI command with extended timeout for uploads
-    const result = await executeCli('mw', cliArgs, {
-      timeout: 600000, // 10 minutes for upload operations
-      env: {
-        MITTWALD_NONINTERACTIVE: '1'
-      }
+    const result = await invokeCliTool({
+      toolName: 'mittwald_app_upload',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliOptions: {
+        timeout: 600000,
+        env: {
+          MITTWALD_NONINTERACTIVE: '1',
+        },
+      },
     });
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('installation')) {
-        return formatToolResponse(
-          "error",
-          `App installation not found. Please verify the installation ID: ${args.installationId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('rsync')) {
-        return formatToolResponse(
-          "error",
-          `rsync is required but not available. Please install rsync on your system.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('source') && errorMessage.includes('not found')) {
-        return formatToolResponse(
-          "error",
-          `Source directory not found: ${args.source}.\nError: ${errorMessage}`
-        );
-      }
-      
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || 'App uploaded successfully';
+    const message = buildSuccessMessage(args);
+
+    if (args.quiet) {
+      const quietOutput = parseQuietOutput(stdout) ?? output;
       return formatToolResponse(
-        "error",
-        `Failed to upload app: ${errorMessage}`
+        'success',
+        quietOutput,
+        {
+          installationId: args.installationId,
+          source: args.source,
+          remoteSubDirectory: args.remoteSubDirectory,
+          dryRun: args.dryRun,
+          delete: args.delete,
+          sshUser: args.sshUser,
+          sshIdentityFile: args.sshIdentityFile,
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
-    
-    // Success response
-    const output = result.stdout || result.stderr || 'App uploaded successfully';
-    
+
     return formatToolResponse(
-      "success",
-      args.dryRun ? "Dry run completed successfully" : "App uploaded successfully",
+      'success',
+      message,
       {
         installationId: args.installationId,
         source: args.source,
         remoteSubDirectory: args.remoteSubDirectory,
         dryRun: args.dryRun,
         delete: args.delete,
-        output: output
+        sshUser: args.sshUser,
+        sshIdentityFile: args.sshIdentityFile,
+        exclude: args.exclude,
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
