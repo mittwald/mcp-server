@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldAppInstallWordpressArgs {
   projectId: string;
@@ -15,158 +15,130 @@ interface MittwaldAppInstallWordpressArgs {
   waitTimeout?: number;
 }
 
+function buildCliArgs(args: MittwaldAppInstallWordpressArgs): string[] {
+  const cliArgs: string[] = ['app', 'install', 'wordpress'];
+
+  cliArgs.push('--project-id', args.projectId);
+  cliArgs.push('--version', args.version ?? 'latest');
+
+  if (args.host) cliArgs.push('--host', args.host);
+  if (args.adminUser) cliArgs.push('--admin-user', args.adminUser);
+  if (args.adminEmail) cliArgs.push('--admin-email', args.adminEmail);
+  if (args.adminPass) cliArgs.push('--admin-pass', args.adminPass);
+  if (args.siteTitle) cliArgs.push('--site-title', args.siteTitle);
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.wait) cliArgs.push('--wait');
+  if (typeof args.waitTimeout === 'number') {
+    cliArgs.push('--wait-timeout', `${args.waitTimeout}s`);
+  }
+
+  return cliArgs;
+}
+
+function parseInstallationId(output: string, quiet: boolean | undefined): string | undefined {
+  if (!output) return undefined;
+  if (quiet) {
+    const lines = output.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    return lines.at(-1);
+  }
+
+  const match = output.match(/(?:ID|id)\s+([a-z0-9-]+)/i);
+  return match ? match[1] : undefined;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldAppInstallWordpressArgs): string {
+  const stderr = (error.stderr || '').toLowerCase();
+
+  if (stderr.includes('not found') && stderr.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (stderr.includes('permission') || stderr.includes('forbidden')) {
+    return `Permission denied when installing WordPress. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (stderr.includes('invalid') && stderr.includes('version')) {
+    return `Invalid WordPress version: ${args.version ?? 'latest'}. Please use a valid version number.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (stderr.includes('already exists') || stderr.includes('conflict')) {
+    return `WordPress installation already exists or conflicts with an existing installation.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
 export const handleAppInstallWordpressCli: MittwaldCliToolHandler<MittwaldAppInstallWordpressArgs> = async (args) => {
+  if (!args.projectId) {
+    return formatToolResponse('error', 'Project ID is required. Please provide the projectId parameter.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['app', 'install', 'wordpress'];
-    
-    // Required project ID
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    // Version (required by CLI)
-    if (args.version) {
-      cliArgs.push('--version', args.version);
-    } else {
-      // Default to latest if not specified
-      cliArgs.push('--version', 'latest');
-    }
-    
-    // Optional parameters
-    if (args.host) {
-      cliArgs.push('--host', args.host);
-    }
-    
-    if (args.adminUser) {
-      cliArgs.push('--admin-user', args.adminUser);
-    }
-    
-    if (args.adminEmail) {
-      cliArgs.push('--admin-email', args.adminEmail);
-    }
-    
-    if (args.adminPass) {
-      cliArgs.push('--admin-pass', args.adminPass);
-    }
-    
-    if (args.siteTitle) {
-      cliArgs.push('--site-title', args.siteTitle);
-    }
-    
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Wait for completion
-    if (args.wait) {
-      cliArgs.push('--wait');
-    }
-    
-    if (args.waitTimeout) {
-      cliArgs.push('--wait-timeout', `${args.waitTimeout}s`);
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      // Parse error message from stderr or stdout
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Check for common error patterns
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied when installing WordPress. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('Invalid') && errorMessage.includes('version')) {
-        return formatToolResponse(
-          "error",
-          `Invalid WordPress version: ${args.version}. Please use a valid version number.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('already exists') || errorMessage.includes('conflict')) {
-        return formatToolResponse(
-          "error",
-          `WordPress installation already exists or conflicts with existing installation.\nError: ${errorMessage}`
-        );
-      }
-      
+    const result = await invokeCliTool({
+      toolName: 'mittwald_app_install_wordpress',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const output = result.result.stdout || result.result.stderr || '';
+    const installationId = parseInstallationId(output, args.quiet);
+
+    if (!installationId) {
       return formatToolResponse(
-        "error",
-        `Failed to install WordPress: ${errorMessage}`
-      );
-    }
-    
-    // Parse the output
-    let appInstallationId: string | null = null;
-    
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      appInstallationId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
-      // Example: "WordPress installation started with ID app-xxxxx"
-      const idMatch = result.stdout.match(/(?:ID|id)\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        appInstallationId = idMatch[1];
-      }
-    }
-    
-    if (!appInstallationId) {
-      // If we can't find the ID but the command succeeded, still report success
-      return formatToolResponse(
-        "success",
-        args.quiet ? result.stdout : `WordPress installation started successfully`,
+        'success',
+        args.quiet ? output : 'WordPress installation started successfully',
         {
           projectId: args.projectId,
-          version: args.version || 'latest',
+          version: args.version ?? 'latest',
           siteTitle: args.siteTitle,
-          output: result.stdout
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
-    // Build result data
-    const resultData = {
-      appInstallationId,
-      projectId: args.projectId,
-      version: args.version || 'latest',
-      ...(args.host && { host: args.host }),
-      ...(args.adminUser && { adminUser: args.adminUser }),
-      ...(args.adminEmail && { adminEmail: args.adminEmail }),
-      ...(args.siteTitle && { siteTitle: args.siteTitle }),
-      status: args.wait ? 'completed' : 'installing'
-    };
-    
-    const successMessage = args.quiet ? 
-      appInstallationId :
-      args.wait ? 
-        `WordPress installation completed successfully with ID ${appInstallationId}` :
-        `WordPress installation started with ID ${appInstallationId}`;
-    
+
+    const status = args.wait ? 'completed' : 'installing';
+    const successMessage = args.quiet
+      ? installationId
+      : args.wait
+        ? `WordPress installation completed successfully with ID ${installationId}`
+        : `WordPress installation started with ID ${installationId}`;
+
     return formatToolResponse(
-      "success",
+      'success',
       successMessage,
-      resultData
+      {
+        appInstallationId: installationId,
+        projectId: args.projectId,
+        version: args.version ?? 'latest',
+        host: args.host,
+        adminUser: args.adminUser,
+        adminEmail: args.adminEmail,
+        adminPass: args.adminPass,
+        siteTitle: args.siteTitle,
+        status,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
+      }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
