@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldAppUninstallArgs {
   installationId?: string;
@@ -8,77 +8,75 @@ interface MittwaldAppUninstallArgs {
   force?: boolean;
 }
 
-export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallArgs> = async (args) => {
-  try {
-    if (!args.installationId) {
-      return formatToolResponse(
-        "error",
-        "Installation ID is required. Please provide the installationId parameter."
-      );
-    }
+function buildCliArgs(args: MittwaldAppUninstallArgs, installationId: string): string[] {
+  const cliArgs: string[] = ['app', 'uninstall', installationId];
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['app', 'uninstall'];
-    
-    // Add installation ID as positional argument
-    cliArgs.push(args.installationId);
-    
-    // Add optional flags
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_NONINTERACTIVE: '1'
-      }
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.force) cliArgs.push('--force');
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, installationId: string): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('installation')) {
+    return `App installation not found. Please verify the installation ID: ${installationId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('cancelled') || combined.includes('canceled') || combined.includes('abort')) {
+    return `Uninstall operation was cancelled. Use the --force flag to skip confirmation prompts.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallArgs> = async (args) => {
+  if (!args.installationId) {
+    return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
+  }
+
+  const argv = buildCliArgs(args, args.installationId);
+
+  try {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_app_uninstall',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliOptions: {
+        env: {
+          MITTWALD_NONINTERACTIVE: '1',
+        },
+      },
     });
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('installation')) {
-        return formatToolResponse(
-          "error",
-          `App installation not found. Please verify the installation ID: ${args.installationId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('cancelled') || errorMessage.includes('abort')) {
-        return formatToolResponse(
-          "error",
-          `Uninstall operation was cancelled. Use --force flag to skip confirmation.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to uninstall app: ${errorMessage}`
-      );
-    }
-    
-    // Success response
-    const output = result.stdout || result.stderr || 'App uninstalled successfully';
-    
+
+    const output = result.result.stdout || result.result.stderr || 'App uninstalled successfully';
+
     return formatToolResponse(
-      "success",
-      "App uninstalled successfully",
+      'success',
+      'App uninstalled successfully',
       {
         installationId: args.installationId,
         force: args.force,
-        output: output
+        quiet: args.quiet,
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args.installationId);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
