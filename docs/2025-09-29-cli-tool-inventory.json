@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-09-30T14:24:44.824Z",
+  "generatedAt": "2025-09-30T14:27:39.428Z",
   "tools": [
     {
       "tool": "mittwald_app_copy",
@@ -61,8 +61,8 @@
       "tool": "mittwald_app_install_contao",
       "handler": "handleAppInstallContaoCli",
       "file": "src/constants/tool/mittwald-cli/app/install/contao-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_install_joomla",
