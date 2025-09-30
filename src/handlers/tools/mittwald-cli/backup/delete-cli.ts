@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldBackupDeleteCliArgs {
   backupId: string;
@@ -8,61 +8,70 @@ interface MittwaldBackupDeleteCliArgs {
   quiet?: boolean;
 }
 
+function buildCliArgs(args: MittwaldBackupDeleteCliArgs): string[] {
+  const cliArgs: string[] = ['backup', 'delete', args.backupId];
+
+  if (args.force) cliArgs.push('--force');
+  if (args.quiet) cliArgs.push('--quiet');
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldBackupDeleteCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('backup')) {
+    return `Backup not found. Please verify the backup ID: ${args.backupId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('cancelled') || combined.includes('confirmation')) {
+    return `Backup deletion cancelled. Use --force flag to skip confirmation.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
 export const handleBackupDeleteCli: MittwaldCliToolHandler<MittwaldBackupDeleteCliArgs> = async (args) => {
+  if (!args.backupId) {
+    return formatToolResponse('error', 'Backup ID is required. Please provide the backupId parameter.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['backup', 'delete', args.backupId];
-    
-    // Optional flags
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('backup')) {
-        return formatToolResponse(
-          "error",
-          `Backup not found. Please verify the backup ID: ${args.backupId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('cancelled') || errorMessage.includes('confirmation')) {
-        return formatToolResponse(
-          "error",
-          `Backup deletion cancelled. Use --force flag to skip confirmation. Error: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to delete backup: ${errorMessage}`
-      );
-    }
-    
-    // Return success response
+    const result = await invokeCliTool({
+      toolName: 'mittwald_backup_delete',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const output = result.result.stdout || result.result.stderr || '';
+    const message = args.quiet ? output || `Backup ${args.backupId} deleted successfully` : `Backup ${args.backupId} deleted successfully`;
+
     return formatToolResponse(
-      "success",
-      `Backup ${args.backupId} deleted successfully`,
+      'success',
+      message || `Backup ${args.backupId} deleted successfully`,
       {
         backupId: args.backupId,
         deleted: true,
-        output: result.stdout
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
