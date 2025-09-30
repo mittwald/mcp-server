@@ -159,8 +159,8 @@
       "tool": "mittwald_app_upgrade",
       "handler": "handleAppUpgradeCli",
       "file": "src/constants/tool/mittwald-cli/app/upgrade-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_upload",
