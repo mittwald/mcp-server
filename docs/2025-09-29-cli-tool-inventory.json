@@ -5,8 +5,8 @@
       "tool": "mittwald_app_copy",
       "handler": "handleAppCopyCli",
       "file": "src/constants/tool/mittwald-cli/app/copy-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_app_create_node",
