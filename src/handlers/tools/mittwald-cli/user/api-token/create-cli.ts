@@ -1,6 +1,7 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldUserApiTokenCreateArgs {
   description: string;
@@ -9,95 +10,113 @@ interface MittwaldUserApiTokenCreateArgs {
   expires?: string;
 }
 
+function buildCliArgs(args: MittwaldUserApiTokenCreateArgs): string[] {
+  const cliArgs: string[] = ['user', 'api-token', 'create', '--description', args.description];
+  args.roles.forEach((role) => cliArgs.push('--roles', role));
+  if (args.expires) cliArgs.push('--expires', args.expires);
+  if (args.quiet) cliArgs.push('--quiet');
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError): string {
+  const stderr = error.stderr ?? '';
+  const stdout = error.stdout ?? '';
+  const details = stderr || stdout || error.message;
+  return `Failed to create API token: ${details}`;
+}
+
+function extractToken(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed && typeof parsed === 'object' && 'token' in parsed) {
+      const tokenValue = (parsed as Record<string, unknown>).token;
+      if (typeof tokenValue === 'string' && tokenValue) {
+        return tokenValue;
+      }
+    }
+  } catch (error) {
+    // ignore JSON parsing failures, fallback to regex extraction
+  }
+
+  const tokenMatch = trimmed.match(/token\s*[:=]\s*([A-Za-z0-9._-]+)/i) || trimmed.match(/^([A-Za-z0-9._-]+)$/);
+  return tokenMatch ? tokenMatch[1] : undefined;
+}
+
 export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApiTokenCreateArgs> = async (args) => {
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['user', 'api-token', 'create'];
-    
-    // Required arguments
-    cliArgs.push('--description', args.description);
-    
-    // Add roles (multiple values)
-    args.roles.forEach(role => {
-      cliArgs.push('--roles', role);
+    if (!args.description) {
+      return formatToolResponse('error', 'Description is required to create an API token.');
+    }
+
+    if (!Array.isArray(args.roles) || args.roles.length === 0) {
+      return formatToolResponse('error', 'At least one role must be specified to create an API token.');
+    }
+
+    const argv = buildCliArgs(args);
+
+    const result = await invokeCliTool({
+      toolName: 'mittwald_user_api_token_create',
+      argv,
+      parser: (stdout) => stdout,
     });
-    
-    // Optional arguments
-    if (args.expires) {
-      cliArgs.push('--expires', args.expires);
-    }
-    
+
+    const commandMeta = {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    };
+
+    const stdout = result.result ?? '';
+
     if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      return formatToolResponse(
-        "error",
-        `Failed to create API token: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet mode output
-    if (args.quiet) {
-      const token = parseQuietOutput(result.stdout);
-      
+      const token = parseQuietOutput(stdout);
       if (!token) {
-        return formatToolResponse(
-          "error",
-          "Failed to create API token - no token returned"
-        );
+        return formatToolResponse('error', 'Failed to create API token - no token returned.');
       }
-      
+
       return formatToolResponse(
-        "success",
+        'success',
         token,
-        { 
-          token: token
-        }
+        {
+          token,
+          description: args.description,
+          roles: args.roles,
+          expires: args.expires,
+        },
+        commandMeta
       );
     }
-    
-    // For non-quiet mode, parse the output
-    // The CLI might return structured output or just the token
-    const output = result.stdout.trim();
-    
-    // Try to extract the token from the output
-    // This might be in the format "Token: <token>" or just the token itself
-    let token = output;
-    const tokenMatch = output.match(/Token:\s*(.+)/i) || output.match(/^([a-zA-Z0-9_-]+)$/);
-    if (tokenMatch) {
-      token = tokenMatch[1];
-    }
-    
+
+    const token = extractToken(stdout);
     if (!token) {
-      return formatToolResponse(
-        "error",
-        "Failed to create API token - no token in output"
-      );
+      return formatToolResponse('error', 'Failed to create API token - no token in output.');
     }
-    
+
     return formatToolResponse(
-      "success",
-      `API token created successfully`,
+      'success',
+      'API token created successfully',
       {
-        token: token,
+        token,
         description: args.description,
         roles: args.roles,
         expires: args.expires,
-        rawOutput: output
-      }
+        rawOutput: stdout,
+      },
+      commandMeta
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

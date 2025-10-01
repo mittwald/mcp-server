@@ -1117,8 +1117,8 @@
       "tool": "mittwald_user_api_token_create",
       "handler": "handleUserApiTokenCreateCli",
       "file": "src/constants/tool/mittwald-cli/user/api-token/create-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
