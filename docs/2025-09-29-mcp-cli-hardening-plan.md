@@ -152,4 +152,8 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_context_reset` handler to the shared CLI adapter. _(commit 5f00be28cc2927ace46c96d9f142d5e0e3aabf90)_
 
+- **2025-09-30** – Migrated `mittwald_domain_dnszone_list` handler to the shared CLI adapter. _(commit 9332b061b27942bcdde2f1f3c346cb70064cfdf8)_
+
+- **2025-09-30** – Migrated `mittwald_conversation_categories` handler to the shared CLI adapter. _(commit 1d19d34ac2db3efea2df60427e60987b69d6e22e)_
+
 _Last updated: 2025-09-30_
