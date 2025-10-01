@@ -218,6 +218,8 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_cronjob_create` to the adapter path. _(commit 7134557dc8dbeb7b7604450c779a5bd90933789b)_
 
+- **2025-09-30** – Migrated `mittwald_cronjob_execution_abort` to the adapter path. _(commit 82e6dcb9eb567a7cdcd9a06bed90c94308fc3f8a)_
+
 - **2025-09-30** – Migrated `mittwald_domain_list` to the adapter path. _(commit 14e9148ae77dc79d5e403e5caeefe34697503faf)_
 
 - **2025-09-30** – Migrated `mittwald_context_get` to the adapter path. _(commit 1919d326c8dba352286720d58325d5adf7628c43)_
