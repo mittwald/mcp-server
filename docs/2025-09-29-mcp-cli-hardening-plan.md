@@ -250,7 +250,7 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_user_ssh_key_import` handler to the shared CLI adapter. _(commit b6e6082fd30f3aea43f0cbcbb43ba34f4a387a28)_
 
-- **2025-09-30** – Migrated `mittwald_user_ssh_key_list` handler to the shared CLI adapter. _(commit 0080f425f458b14ebcb05a55c6536d81da28dcbf)_
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_list` handler to the shared CLI adapter. _(commit 1d27761269be0b2de9baafde38347ba060a0ee03)_
 
 - **2025-09-30** – Migrated `mittwald_login_status` handler to the shared CLI adapter. _(commit 638c1c3663c170fe0d2b1210204621b43221b660)_
 

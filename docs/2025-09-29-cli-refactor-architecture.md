@@ -323,7 +323,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_user_ssh_key_import` to the adapter path. _(commit b6e6082fd30f3aea43f0cbcbb43ba34f4a387a28)_
 
-- **2025-09-30** – Migrated `mittwald_user_ssh_key_list` to the adapter path. _(commit 0080f425f458b14ebcb05a55c6536d81da28dcbf)_
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_list` to the adapter path. _(commit 1d27761269be0b2de9baafde38347ba060a0ee03)_
 
 - **2025-09-30** – Migrated `mittwald_login_status` to the adapter path. _(commit 638c1c3663c170fe0d2b1210204621b43221b660)_
 
