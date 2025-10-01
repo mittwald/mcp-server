@@ -965,16 +965,16 @@
       "tool": "mittwald_project_invite_list_own",
       "handler": "handleProjectInviteListOwnCli",
       "file": "src/constants/tool/mittwald-cli/project/invite-list-own-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_project_list",
       "handler": "handleMittwaldProjectListCli",
       "file": "src/constants/tool/mittwald-cli/project/list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
