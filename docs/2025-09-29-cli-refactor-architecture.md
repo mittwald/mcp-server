@@ -228,6 +228,12 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_conversation_categories` to the adapter path. _(commit 1d19d34ac2db3efea2df60427e60987b69d6e22e)_
 
+- **2025-09-30** – Migrated `mittwald_user_api_token_get` to the adapter path. _(commit 9e21d3791c50ada436ad7238959c93338e41671a)_
+
+- **2025-09-30** – Migrated `mittwald_user_api_token_list` to the adapter path. _(commit 5e240043dbd3cad3ad49e158e6b920713ab84943)_
+
+- **2025-09-30** – Migrated `mittwald_user_api_token_revoke` to the adapter path. _(commit b0f6c921fac2c7e8d123f218607ff3936900931c)_
+
 - **2025-09-30** – Migrated `mittwald_mail_address_create` to the adapter path. _(commit 21b36c68db1c560556bd3a39f790d46406b38308)_
 
 - **2025-09-30** – Migrated `mittwald_mail_address_get` to the adapter path. _(commit 073fe81e08bbb27efaf0eff40732376e42746b92)_
