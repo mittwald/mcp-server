@@ -845,8 +845,8 @@
       "tool": "mittwald_mail_address_update",
       "handler": "handleMittwaldMailAddressUpdateCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/update-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
