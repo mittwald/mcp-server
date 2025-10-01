@@ -1,6 +1,7 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { parseQuietOutput } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldExtensionInstallCliArgs {
   extensionId: string;
@@ -10,112 +11,109 @@ interface MittwaldExtensionInstallCliArgs {
   consent?: boolean;
 }
 
-export const handleExtensionInstallCli: MittwaldToolHandler<MittwaldExtensionInstallCliArgs> = async (args) => {
+function validateContext(args: MittwaldExtensionInstallCliArgs): string | undefined {
+  if (!args.projectId && !args.orgId) {
+    return 'Either projectId or orgId must be provided';
+  }
+
+  if (args.projectId && args.orgId) {
+    return 'Only one of projectId or orgId can be provided';
+  }
+
+  return undefined;
+}
+
+function buildCliArgs(args: MittwaldExtensionInstallCliArgs): string[] {
+  const cliArgs: string[] = ['extension', 'install', args.extensionId];
+
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.orgId) cliArgs.push('--org-id', args.orgId);
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.consent) cliArgs.push('--consent');
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldExtensionInstallCliArgs): string {
+  const combined = `${error.stderr ?? ''} ${error.stdout ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('extension')) {
+    return `Extension not found: ${args.extensionId}.\nError: ${error.stderr || error.stdout || error.message}`;
+  }
+
+  if (combined.includes('not found') && (combined.includes('project') || combined.includes('organization'))) {
+    return `Resource not found. Please verify the ${args.projectId ? 'project' : 'organization'} ID: ${args.projectId || args.orgId}.\nError: ${error.stderr || error.stdout || error.message}`;
+  }
+
+  if (combined.includes('consent') || combined.includes('scope')) {
+    return `Consent required. Please run the command with consent=true to grant permissions.\nError: ${error.stderr || error.stdout || error.message}`;
+  }
+
+  return `Failed to install extension: ${error.stderr || error.stdout || error.message}`;
+}
+
+export const handleExtensionInstallCli: MittwaldCliToolHandler<MittwaldExtensionInstallCliArgs> = async (args) => {
+  const validationError = validateContext(args);
+  if (validationError) {
+    return formatToolResponse('error', validationError);
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Validate that exactly one of projectId or orgId is provided
-    if (!args.projectId && !args.orgId) {
-      return formatToolResponse(
-        "error",
-        "Either projectId or orgId must be provided"
-      );
-    }
+    const result = await invokeCliTool({
+      toolName: 'mittwald_extension_install',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
 
-    if (args.projectId && args.orgId) {
-      return formatToolResponse(
-        "error",
-        "Only one of projectId or orgId can be provided"
-      );
-    }
+    const stdout = result.result.stdout ?? '';
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['extension', 'install', args.extensionId];
-    
-    // Context flags
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    if (args.orgId) {
-      cliArgs.push('--org-id', args.orgId);
-    }
-    
-    // Optional flags
     if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    if (args.consent) {
-      cliArgs.push('--consent');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('extension')) {
-        return formatToolResponse(
-          "error",
-          `Extension not found: ${args.extensionId}\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && (errorMessage.includes('project') || errorMessage.includes('organization'))) {
-        return formatToolResponse(
-          "error",
-          `Resource not found. Please verify the ${args.projectId ? 'project' : 'organization'} ID: ${args.projectId || args.orgId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('consent') || errorMessage.includes('scope')) {
-        return formatToolResponse(
-          "error",
-          `Consent required. Please run the command with consent=true to grant permissions.\nError: ${errorMessage}`
-        );
-      }
-      
+      const extensionInstanceId = parseQuietOutput(stdout);
       return formatToolResponse(
-        "error",
-        `Failed to install extension: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const extensionInstanceId = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Extension installed successfully`,
+        'success',
+        'Extension installed successfully',
         {
           extensionInstanceId,
           extensionId: args.extensionId,
           projectId: args.projectId,
           orgId: args.orgId,
-          status: 'installed'
+          status: 'installed',
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
-    // Handle regular output
-    const successMessage = result.stdout || 'Extension installation completed successfully';
-    
+
     return formatToolResponse(
-      "success",
-      `Extension installation completed`,
+      'success',
+      'Extension installation completed',
       {
         extensionId: args.extensionId,
         projectId: args.projectId,
         orgId: args.orgId,
         status: 'installed',
-        output: successMessage
+        output: stdout || 'Extension installation completed successfully',
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

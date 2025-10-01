@@ -233,4 +233,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_user_ssh_key_create` handler to the shared CLI adapter. _(commit 9fe7b37e86c148a394aa09260388b2619413d535)_
 
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_delete` handler to the shared CLI adapter. _(commit c9a8a3cb51840ad8f0ad360fe4a8199f076ca45d)_
+
 _Last updated: 2025-10-01_
