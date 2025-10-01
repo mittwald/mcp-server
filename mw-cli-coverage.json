@@ -7,7 +7,7 @@
     "missingCount": 41,
     "coveragePercent": 77,
     "extraToolCount": 12,
-    "excludedCount": 7
+    "excludedCount": 41
   },
   "coverage": [
     {
@@ -105,7 +105,11 @@
       "expectedToolName": "mittwald_app_dependency_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C1 will implement dependency inspection wrappers; CLI command temporarily excluded."
+      }
     },
     {
       "command": "app dependency update",
@@ -119,7 +123,11 @@
       "expectedToolName": "mittwald_app_dependency_update",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C1 backlog item; update functionality to be wrapped once CLI parser is stabilized."
+      }
     },
     {
       "command": "app dependency versions",
@@ -133,7 +141,11 @@
       "expectedToolName": "mittwald_app_dependency_versions",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C1 backlog item; awaiting shared schema for dependency metadata."
+      }
     },
     {
       "command": "app download",
@@ -405,7 +417,11 @@
       "expectedToolName": "mittwald_app_version_info",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C1 backlog; CLI output shape still under review."
+      }
     },
     {
       "command": "app versions",
@@ -724,7 +740,11 @@
       "expectedToolName": "mittwald_container_update",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C2: non-interactive container lifecycle command pending wrapper."
+      }
     },
     {
       "command": "context get",
@@ -1143,7 +1163,11 @@
       "expectedToolName": "mittwald_database_mysql_user_create",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql user delete",
@@ -1158,7 +1182,11 @@
       "expectedToolName": "mittwald_database_mysql_user_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql user get",
@@ -1173,7 +1201,11 @@
       "expectedToolName": "mittwald_database_mysql_user_get",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql user list",
@@ -1188,7 +1220,11 @@
       "expectedToolName": "mittwald_database_mysql_user_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql user update",
@@ -1203,7 +1239,11 @@
       "expectedToolName": "mittwald_database_mysql_user_update",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql versions",
@@ -1231,7 +1271,11 @@
       "expectedToolName": "mittwald_database_redis_create",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
+      }
     },
     {
       "command": "database redis get",
@@ -1245,7 +1289,11 @@
       "expectedToolName": "mittwald_database_redis_get",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
+      }
     },
     {
       "command": "database redis list",
@@ -1259,7 +1307,11 @@
       "expectedToolName": "mittwald_database_redis_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
+      }
     },
     {
       "command": "database redis shell",
@@ -1291,7 +1343,11 @@
       "expectedToolName": "mittwald_database_redis_versions",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
+      }
     },
     {
       "command": "ddev init",
@@ -1304,7 +1360,11 @@
       "expectedToolName": "mittwald_ddev_init",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C6: DDEV wrappers require additional context injection."
+      }
     },
     {
       "command": "ddev render-config",
@@ -1317,7 +1377,11 @@
       "expectedToolName": "mittwald_ddev_render_config",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C6: DDEV wrappers require additional context injection."
+      }
     },
     {
       "command": "domain dnszone get",
@@ -1689,7 +1753,11 @@
       "expectedToolName": "mittwald_org_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Organisation CRUD wrappers planned following permission review."
+      }
     },
     {
       "command": "org get",
@@ -1702,7 +1770,11 @@
       "expectedToolName": "mittwald_org_get",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Organisation CRUD wrappers planned following permission review."
+      }
     },
     {
       "command": "org invite list-own",
@@ -1757,7 +1829,11 @@
       "expectedToolName": "mittwald_org_invite",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Invitation flow being consolidated before exposing via MCP."
+      }
     },
     {
       "command": "org list",
@@ -1770,7 +1846,11 @@
       "expectedToolName": "mittwald_org_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Organisation listing requires pagination harmonisation."
+      }
     },
     {
       "command": "org membership list-own",
@@ -1784,7 +1864,11 @@
       "expectedToolName": "mittwald_org_membership_list_own",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Membership endpoints pending shared schema."
+      }
     },
     {
       "command": "org membership list",
@@ -1798,7 +1882,11 @@
       "expectedToolName": "mittwald_org_membership_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Membership endpoints pending shared schema."
+      }
     },
     {
       "command": "org membership revoke",
@@ -1812,7 +1900,11 @@
       "expectedToolName": "mittwald_org_membership_revoke",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Membership revoke requires audit logging design."
+      }
     },
     {
       "command": "project create",
@@ -2015,7 +2107,11 @@
       "expectedToolName": "mittwald_registry_create",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
+      }
     },
     {
       "command": "registry delete",
@@ -2028,7 +2124,11 @@
       "expectedToolName": "mittwald_registry_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
+      }
     },
     {
       "command": "registry list",
@@ -2041,7 +2141,11 @@
       "expectedToolName": "mittwald_registry_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
+      }
     },
     {
       "command": "registry update",
@@ -2054,7 +2158,11 @@
       "expectedToolName": "mittwald_registry_update",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
+      }
     },
     {
       "command": "server get",
@@ -2197,7 +2305,11 @@
       "expectedToolName": "mittwald_stack_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
+      }
     },
     {
       "command": "stack deploy",
@@ -2210,7 +2322,11 @@
       "expectedToolName": "mittwald_stack_deploy",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
+      }
     },
     {
       "command": "stack list",
@@ -2223,7 +2339,11 @@
       "expectedToolName": "mittwald_stack_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
+      }
     },
     {
       "command": "stack ps",
@@ -2236,7 +2356,11 @@
       "expectedToolName": "mittwald_stack_ps",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
+      }
     },
     {
       "command": "user api-token create",
@@ -2416,7 +2540,11 @@
       "expectedToolName": "mittwald_volume_create",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
+      }
     },
     {
       "command": "volume delete",
@@ -2429,7 +2557,11 @@
       "expectedToolName": "mittwald_volume_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
+      }
     },
     {
       "command": "volume list",
@@ -2442,7 +2574,11 @@
       "expectedToolName": "mittwald_volume_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
+      }
     }
   ],
   "missing": [
@@ -2458,7 +2594,11 @@
       "expectedToolName": "mittwald_app_dependency_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C1 will implement dependency inspection wrappers; CLI command temporarily excluded."
+      }
     },
     {
       "command": "app dependency update",
@@ -2472,7 +2612,11 @@
       "expectedToolName": "mittwald_app_dependency_update",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C1 backlog item; update functionality to be wrapped once CLI parser is stabilized."
+      }
     },
     {
       "command": "app dependency versions",
@@ -2486,7 +2630,11 @@
       "expectedToolName": "mittwald_app_dependency_versions",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C1 backlog item; awaiting shared schema for dependency metadata."
+      }
     },
     {
       "command": "app exec",
@@ -2516,7 +2664,11 @@
       "expectedToolName": "mittwald_app_version_info",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C1 backlog; CLI output shape still under review."
+      }
     },
     {
       "command": "container cp",
@@ -2597,7 +2749,11 @@
       "expectedToolName": "mittwald_container_update",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C2: non-interactive container lifecycle command pending wrapper."
+      }
     },
     {
       "command": "database mysql user create",
@@ -2612,7 +2768,11 @@
       "expectedToolName": "mittwald_database_mysql_user_create",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql user delete",
@@ -2627,7 +2787,11 @@
       "expectedToolName": "mittwald_database_mysql_user_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql user get",
@@ -2642,7 +2806,11 @@
       "expectedToolName": "mittwald_database_mysql_user_get",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql user list",
@@ -2657,7 +2825,11 @@
       "expectedToolName": "mittwald_database_mysql_user_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database mysql user update",
@@ -2672,7 +2844,11 @@
       "expectedToolName": "mittwald_database_mysql_user_update",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: MySQL user management tooling in progress."
+      }
     },
     {
       "command": "database redis create",
@@ -2686,7 +2862,11 @@
       "expectedToolName": "mittwald_database_redis_create",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
+      }
     },
     {
       "command": "database redis get",
@@ -2700,7 +2880,11 @@
       "expectedToolName": "mittwald_database_redis_get",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
+      }
     },
     {
       "command": "database redis list",
@@ -2714,7 +2898,11 @@
       "expectedToolName": "mittwald_database_redis_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
+      }
     },
     {
       "command": "database redis shell",
@@ -2746,7 +2934,11 @@
       "expectedToolName": "mittwald_database_redis_versions",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
+      }
     },
     {
       "command": "ddev init",
@@ -2759,7 +2951,11 @@
       "expectedToolName": "mittwald_ddev_init",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C6: DDEV wrappers require additional context injection."
+      }
     },
     {
       "command": "ddev render-config",
@@ -2772,7 +2968,11 @@
       "expectedToolName": "mittwald_ddev_render_config",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C6: DDEV wrappers require additional context injection."
+      }
     },
     {
       "command": "login status",
@@ -2802,7 +3002,11 @@
       "expectedToolName": "mittwald_org_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Organisation CRUD wrappers planned following permission review."
+      }
     },
     {
       "command": "org get",
@@ -2815,7 +3019,11 @@
       "expectedToolName": "mittwald_org_get",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Organisation CRUD wrappers planned following permission review."
+      }
     },
     {
       "command": "org invite",
@@ -2828,7 +3036,11 @@
       "expectedToolName": "mittwald_org_invite",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Invitation flow being consolidated before exposing via MCP."
+      }
     },
     {
       "command": "org list",
@@ -2841,7 +3053,11 @@
       "expectedToolName": "mittwald_org_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Organisation listing requires pagination harmonisation."
+      }
     },
     {
       "command": "org membership list-own",
@@ -2855,7 +3071,11 @@
       "expectedToolName": "mittwald_org_membership_list_own",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Membership endpoints pending shared schema."
+      }
     },
     {
       "command": "org membership list",
@@ -2869,7 +3089,11 @@
       "expectedToolName": "mittwald_org_membership_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Membership endpoints pending shared schema."
+      }
     },
     {
       "command": "org membership revoke",
@@ -2883,7 +3107,11 @@
       "expectedToolName": "mittwald_org_membership_revoke",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Membership revoke requires audit logging design."
+      }
     },
     {
       "command": "registry create",
@@ -2896,7 +3124,11 @@
       "expectedToolName": "mittwald_registry_create",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
+      }
     },
     {
       "command": "registry delete",
@@ -2909,7 +3141,11 @@
       "expectedToolName": "mittwald_registry_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
+      }
     },
     {
       "command": "registry list",
@@ -2922,7 +3158,11 @@
       "expectedToolName": "mittwald_registry_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
+      }
     },
     {
       "command": "registry update",
@@ -2935,7 +3175,11 @@
       "expectedToolName": "mittwald_registry_update",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
+      }
     },
     {
       "command": "stack delete",
@@ -2948,7 +3192,11 @@
       "expectedToolName": "mittwald_stack_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
+      }
     },
     {
       "command": "stack deploy",
@@ -2961,7 +3209,11 @@
       "expectedToolName": "mittwald_stack_deploy",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
+      }
     },
     {
       "command": "stack list",
@@ -2974,7 +3226,11 @@
       "expectedToolName": "mittwald_stack_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
+      }
     },
     {
       "command": "stack ps",
@@ -2987,7 +3243,11 @@
       "expectedToolName": "mittwald_stack_ps",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
+      }
     },
     {
       "command": "volume create",
@@ -3000,7 +3260,11 @@
       "expectedToolName": "mittwald_volume_create",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
+      }
     },
     {
       "command": "volume delete",
@@ -3013,7 +3277,11 @@
       "expectedToolName": "mittwald_volume_delete",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
+      }
     },
     {
       "command": "volume list",
@@ -3026,7 +3294,11 @@
       "expectedToolName": "mittwald_volume_list",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
+      }
     }
   ],
   "extraTools": [
