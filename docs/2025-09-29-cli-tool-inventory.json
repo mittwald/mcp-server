@@ -901,8 +901,8 @@
       "tool": "mittwald_org_invite_list_own",
       "handler": "ToolHandler",
       "file": "src/constants/tool/mittwald-cli/org/invite-list-own-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
