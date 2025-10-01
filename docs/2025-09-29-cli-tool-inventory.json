@@ -541,8 +541,8 @@
       "tool": "mittwald_cronjob_execution_list",
       "handler": "handleCronjobExecutionListCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execution-list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 4"
     },
     {
@@ -837,8 +837,8 @@
       "tool": "mittwald_mail_address_list",
       "handler": "handleMittwaldMailAddressListCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
