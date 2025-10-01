@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldSshUserDeleteArgs {
   sshUserId: string;
@@ -8,95 +8,100 @@ interface MittwaldSshUserDeleteArgs {
   quiet?: boolean;
 }
 
-export const handleSshUserDeleteCli: MittwaldToolHandler<MittwaldSshUserDeleteArgs> = async (args) => {
+function buildCliArgs(args: MittwaldSshUserDeleteArgs): string[] {
+  const cliArgs: string[] = ['ssh-user', 'delete', args.sshUserId];
+
+  if (args.force) cliArgs.push('--force');
+  if (args.quiet) cliArgs.push('--quiet');
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldSshUserDeleteArgs): string {
+  const stderr = error.stderr ?? '';
+  const stdout = error.stdout ?? '';
+  const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
+
+  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
+    const details = stderr || stdout || error.message;
+    return `Permission denied when deleting SSH user. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${details}`;
+  }
+
+  if (combined.includes('not found') && combined.includes('ssh user')) {
+    const details = stderr || stdout || error.message;
+    return `SSH user not found. Please verify the SSH user ID: ${args.sshUserId}.\nError: ${details}`;
+  }
+
+  if (combined.includes('confirmation')) {
+    const details = stderr || stdout || error.message;
+    return `Deletion requires confirmation. Use 'force: true' to confirm deletion.\nError: ${details}`;
+  }
+
+  const details = stderr || stdout || error.message;
+  return `Failed to delete SSH user: ${details}`;
+}
+
+function buildSuccessPayload(stdout: string, args: MittwaldSshUserDeleteArgs, quiet: boolean) {
+  return {
+    sshUserId: args.sshUserId,
+    action: 'deleted',
+    ...(quiet
+      ? { status: 'success' }
+      : { output: stdout }),
+  };
+}
+
+export const handleSshUserDeleteCli: MittwaldCliToolHandler<MittwaldSshUserDeleteArgs> = async (args) => {
+  if (!args.sshUserId) {
+    return formatToolResponse('error', 'SSH user ID is required to delete an SSH user');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Validate required fields
-    if (!args.sshUserId) {
-      return formatToolResponse(
-        "error",
-        "SSH user ID is required to delete an SSH user"
-      );
-    }
-    
-    // Build CLI command arguments
-    const cliArgs: string[] = ['ssh-user', 'delete'];
-    
-    // Required SSH user ID as positional argument
-    cliArgs.push(args.sshUserId);
-    
-    // Optional flags
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
+    const result = await invokeCliTool({
+      toolName: 'mittwald_ssh_user_delete',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr ?? '' }),
+    });
+
+    const meta = {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    };
+
+    const stdout = result.result.stdout ?? '';
+
     if (args.quiet) {
-      cliArgs.push('--quiet');
+      const quietOutput = parseQuietOutput(stdout);
+      const message = quietOutput || 'SSH user deleted successfully';
+      return formatToolResponse('success', message, buildSuccessPayload(stdout, args, true), meta);
     }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Check for common error patterns
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied when deleting SSH user. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('SSH user')) {
-        return formatToolResponse(
-          "error",
-          `SSH user not found. Please verify the SSH user ID: ${args.sshUserId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('confirmation')) {
-        return formatToolResponse(
-          "error",
-          `Deletion requires confirmation. Use 'force: true' to confirm deletion.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to delete SSH user: ${errorMessage}`
-      );
-    }
-    
-    // Parse the output
-    if (args.quiet) {
-      // In quiet mode, the CLI might output just success status
-      const quietOutput = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        quietOutput || "SSH user deleted successfully",
-        {
-          sshUserId: args.sshUserId,
-          action: "deleted",
-          status: "success"
-        }
-      );
-    } else {
-      // In normal mode, parse the success message
-      return formatToolResponse(
-        "success",
-        `SSH user ${args.sshUserId} has been successfully deleted`,
-        {
-          sshUserId: args.sshUserId,
-          action: "deleted",
-          output: result.stdout
-        }
-      );
-    }
-    
-  } catch (error) {
+
     return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      'success',
+      `SSH user ${args.sshUserId} has been successfully deleted`,
+      buildSuccessPayload(stdout, args, false),
+      meta
     );
+  } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
