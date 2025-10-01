@@ -262,6 +262,8 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_org_invite_revoke` to the adapter path. _(commit 0ffb2ffb37c2f3431791759e99209f7268e5133d)_
 
+- **2025-09-30** – Migrated `mittwald_project_create` to the adapter path. _(commit 652ec1b2d57e48f05418a1d6719c551c0e056f10)_
+
 - **2025-09-30** – Migrated `mittwald_conversation_list` to the adapter path. _(commit 2951d4522c833d6001ed1a6b96b002c410ec7d11)_
 
 - **2025-09-30** – Migrated `mittwald_project_list` to the adapter path. _(commit 857e81591db8dc6199dafb0511c70c65e136f7e3)_
@@ -305,6 +307,8 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 - **2025-09-30** – Migrated `mittwald_user_session_list` to the adapter path. _(commit 7a8f9960126b8d4bbc526e58db4aa4a0a5ec74e8)_
 
 - **2025-09-30** – Migrated `mittwald_user_ssh_key_create` to the adapter path. _(commit 9fe7b37e86c148a394aa09260388b2619413d535)_
+
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_delete` to the adapter path. _(commit c9a8a3cb51840ad8f0ad360fe4a8199f076ca45d)_
 
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*

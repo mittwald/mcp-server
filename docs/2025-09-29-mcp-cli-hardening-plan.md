@@ -189,6 +189,8 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_org_invite_revoke` handler to the shared CLI adapter. _(commit 0ffb2ffb37c2f3431791759e99209f7268e5133d)_
 
+- **2025-09-30** – Migrated `mittwald_project_create` handler to the shared CLI adapter. _(commit 652ec1b2d57e48f05418a1d6719c551c0e056f10)_
+
 - **2025-09-30** – Migrated `mittwald_project_list` handler to the shared CLI adapter. _(commit 857e81591db8dc6199dafb0511c70c65e136f7e3)_
 
 - **2025-09-30** – Migrated `mittwald_project_invite_list_own` handler to the shared CLI adapter. _(commit 36404a7646e780848d7c694386b8f876d5c35a0d)_
@@ -232,5 +234,7 @@ The streams are tracked separately, but share discovery data and release milesto
 - **2025-09-30** – Migrated `mittwald_user_session_list` handler to the shared CLI adapter. _(commit 7a8f9960126b8d4bbc526e58db4aa4a0a5ec74e8)_
 
 - **2025-09-30** – Migrated `mittwald_user_ssh_key_create` handler to the shared CLI adapter. _(commit 9fe7b37e86c148a394aa09260388b2619413d535)_
+
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_delete` handler to the shared CLI adapter. _(commit c9a8a3cb51840ad8f0ad360fe4a8199f076ca45d)_
 
 _Last updated: 2025-10-01_
