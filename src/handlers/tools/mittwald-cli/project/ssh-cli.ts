@@ -1,6 +1,5 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
 
 interface MittwaldProjectSshArgs {
   projectId: string;
@@ -8,44 +7,59 @@ interface MittwaldProjectSshArgs {
   sshIdentityFile?: string;
 }
 
-export const handleProjectSshCli: MittwaldToolHandler<MittwaldProjectSshArgs> = async (args, context) => {
+function quote(value: string): string {
+  return value.includes(' ') ? `"${value}"` : value;
+}
+
+function buildCliCommand(args: MittwaldProjectSshArgs): string {
+  const cliArgs: string[] = ['mw', 'project', 'ssh', args.projectId];
+
+  if (args.sshUser) cliArgs.push('--ssh-user', quote(args.sshUser));
+  if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', quote(args.sshIdentityFile));
+
+  return cliArgs.join(' ');
+}
+
+function buildInstructions(command: string): string {
+  return `INTERACTIVE COMMAND: Project SSH\n\n` +
+    'The project SSH command opens an interactive shell session on the project host and cannot be executed directly through the MCP interface.\n\n' +
+    'To connect to your project via SSH, run the following command in your terminal:\n\n' +
+    `${command}\n\n` +
+    'Ensure you are authenticated with the Mittwald CLI (run `mw login` if needed).\n' +
+    'This command will establish an SSH connection using your configured credentials. Use `exit` to close the session when finished.';
+}
+
+export const handleProjectSshCli: MittwaldCliToolHandler<MittwaldProjectSshArgs> = async (args) => {
+  if (!args.projectId) {
+    return formatToolResponse('error', 'Project ID is required.');
+  }
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['project', 'ssh', args.projectId];
-    
-    // Optional flags
-    if (args.sshUser) {
-      cliArgs.push('--ssh-user', args.sshUser);
-    }
-    
-    if (args.sshIdentityFile) {
-      cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
-    }
-    
-    // Note: SSH is an interactive command, so we'll handle this differently
-    // In an MCP context, we can't start an interactive SSH session
-    // Instead, we'll provide connection information or an error
-    
+    const command = buildCliCommand(args);
+    const instructions = buildInstructions(command);
+
     return formatToolResponse(
-      "error",
-      "SSH connection cannot be established in this context. The SSH command requires an interactive terminal session. Please use this command directly in your terminal:\n" +
-      `mw project ssh ${args.projectId}` + 
-      (args.sshUser ? ` --ssh-user ${args.sshUser}` : '') +
-      (args.sshIdentityFile ? ` --ssh-identity-file ${args.sshIdentityFile}` : ''),
+      'success',
+      'SSH command prepared for interactive execution',
       {
-        command: `mw project ssh ${args.projectId}`,
+        command,
+        projectId: args.projectId,
         flags: {
           sshUser: args.sshUser,
-          sshIdentityFile: args.sshIdentityFile
+          sshIdentityFile: args.sshIdentityFile,
         },
-        note: "This command must be run in an interactive terminal environment"
+        interactive: true,
+        instructions,
+      },
+      {
+        command,
+        durationMs: null,
       }
     );
-    
   } catch (error) {
     return formatToolResponse(
-      "error",
-      `Failed to process SSH command: ${error instanceof Error ? error.message : String(error)}`
+      'error',
+      `Failed to prepare SSH command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };
