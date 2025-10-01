@@ -709,7 +709,7 @@
       "tool": "mittwald_domain_dnszone_update",
       "handler": "handleDomainDnszoneUpdateCli",
       "file": "src/constants/tool/mittwald-cli/domain/dnszone/update-cli.ts",
-      "status": "pending",
+      "status": "migrated",
       "notes": "",
       "agent_assignment": "Agent 5"
     },
@@ -1213,8 +1213,8 @@
       "tool": "UNKNOWN",
       "handler": "UNKNOWN",
       "file": "src/constants/tool/mittwald-cli/database/index-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "re-export module only, no CLI migration required",
       "agent_assignment": "Agent 8"
     },
     {
