@@ -59,6 +59,12 @@ Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` f
 - `pnpm test:e2e:mcp` (when available) drives a full OAuth + MCP tool cycle against the mock stack.
 - See `tests/README.md` for the complete matrix and environment requirements.
 
+## Coverage Reports
+
+- `mw-cli-coverage.json` contains machine-readable coverage stats for the Mittwald CLI.
+- Validate the artifact with `config/mw-cli-coverage.schema.json` (e.g. `npx ajv validate -s config/mw-cli-coverage.schema.json -d mw-cli-coverage.json`).
+- Regeneration is automated via the upcoming Workstream A script (`npm run coverage:generate`); commit both the JSON and `docs/mittwald-cli-coverage.md` after running it.
+
 ---
 
 For questions or onboarding guidance, start with `ARCHITECTURE.md`.

@@ -1,4 +1,5 @@
 {
+  "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 178,
     "toolCount": 149,

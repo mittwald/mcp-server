@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mittwald-mcp/config/mw-cli-coverage.schema.json",
+  "title": "Mittwald CLI Coverage Report",
+  "description": "Schema describing the structure of the mw-cli-coverage.json artifact used to track MCP tool parity with the Mittwald CLI.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["stats", "coverage", "extraTools"],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "properties": {
+    "stats": {
+      "type": "object",
+      "description": "Aggregate statistics describing CLI coverage state.",
+      "additionalProperties": false,
+      "required": [
+        "cliCommandCount",
+        "toolCount",
+        "coveredCount",
+        "missingCount",
+        "coveragePercent",
+        "extraToolCount"
+      ],
+      "properties": {
+        "cliCommandCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "toolCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coveredCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missingCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coveragePercent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "extraToolCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "description": "Per-command coverage entries comparing CLI commands to MCP tools.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "segments",
+          "cliFile",
+          "description",
+          "expectedToolName",
+          "status",
+          "toolPath",
+          "handlerImport"
+        ],
+        "properties": {
+          "command": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "minItems": 1
+          },
+          "cliFile": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "minLength": 0
+          },
+          "expectedToolName": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["covered", "missing"]
+          },
+          "toolPath": {
+            "type": ["string", "null"],
+            "minLength": 1
+          },
+          "handlerImport": {
+            "type": ["string", "null"],
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "extraTools": {
+      "type": "array",
+      "description": "MCP tools that do not map to CLI commands.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "toolName",
+          "relPath",
+          "handlerImport"
+        ],
+        "properties": {
+          "toolName": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "relPath": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "handlerImport": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    }
+  }
+}
