@@ -260,6 +260,8 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_project_membership_list` to the adapter path. _(commit f71de2a2669f8b341cd0f4616b22d88ee2088e9f)_
 
+- **2025-09-30** – Migrated `mittwald_project_membership_list_own` to the adapter path. _(commit 3f3ab50793c2d283ee79bece4646c7f9eeb68dec)_
+
 - **2025-09-30** – Migrated `mittwald_domain_virtualhost_create` to the adapter path. _(commit 0ca2fad53c3667829c41a5c8a502f9ab9adfa5bb)_
 
 - **2025-09-30** – Migrated `mittwald_domain_virtualhost_get/list` to the adapter path. _(commit 6e3e33f0f1f8b8f5170674e7adf0d8d7220ce9bb)_
