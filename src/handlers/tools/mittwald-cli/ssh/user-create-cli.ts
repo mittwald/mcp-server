@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldSshUserCreateArgs {
   projectId?: string;
@@ -11,143 +11,120 @@ interface MittwaldSshUserCreateArgs {
   password?: string;
 }
 
-export const handleSshUserCreateCli: MittwaldToolHandler<MittwaldSshUserCreateArgs> = async (args) => {
+function buildCliArgs(args: MittwaldSshUserCreateArgs): string[] {
+  const cliArgs: string[] = ['ssh-user', 'create', '--description', args.description];
+
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.expires) cliArgs.push('--expires', args.expires);
+  if (args.publicKey) cliArgs.push('--public-key', args.publicKey);
+  if (args.password) cliArgs.push('--password', args.password);
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function extractSshUserId(output: string): string | undefined {
+  const match = output.match(/ID\s+([a-f0-9-]+)/i);
+  if (match) return match[1];
+  return undefined;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldSshUserCreateArgs): string {
+  const stderr = error.stderr ?? '';
+  const stdout = error.stdout ?? '';
+  const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
+
+  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
+    const details = stderr || stdout || error.message;
+    return `Permission denied when creating SSH user. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${details}`;
+  }
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    const details = stderr || stdout || error.message;
+    return `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${details}`;
+  }
+
+  if (combined.includes('invalid') && combined.includes('format')) {
+    const details = stderr || stdout || error.message;
+    return `Invalid format in request. Please check your parameters.\nError: ${details}`;
+  }
+
+  const details = stderr || stdout || error.message;
+  return `Failed to create SSH user: ${details}`;
+}
+
+function buildSuccessPayload(
+  args: MittwaldSshUserCreateArgs,
+  stdout: string,
+  sshUserId: string | undefined
+) {
+  return {
+    id: sshUserId,
+    description: args.description,
+    authenticationMethod: args.publicKey ? 'publicKey' : 'password',
+    output: stdout,
+    ...(args.expires && { expires: args.expires }),
+    ...(args.projectId && { projectId: args.projectId }),
+  };
+}
+
+export const handleSshUserCreateCli: MittwaldCliToolHandler<MittwaldSshUserCreateArgs> = async (args) => {
+  if (!args.description) {
+    return formatToolResponse('error', 'Description is required to create an SSH user');
+  }
+
+  if (args.password && args.publicKey) {
+    return formatToolResponse('error', 'Cannot specify both password and public key authentication. Choose one.');
+  }
+
+  if (!args.password && !args.publicKey) {
+    return formatToolResponse('error', 'Either password or public key must be specified for authentication');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Validate required fields
-    if (!args.description) {
-      return formatToolResponse(
-        "error",
-        "Description is required to create an SSH user"
-      );
-    }
-    
-    // Validate authentication method - either password or public key, but not both
-    if (args.password && args.publicKey) {
-      return formatToolResponse(
-        "error",
-        "Cannot specify both password and public key authentication. Choose one."
-      );
-    }
-    
-    if (!args.password && !args.publicKey) {
-      return formatToolResponse(
-        "error",
-        "Either password or public key must be specified for authentication"
-      );
-    }
-    
-    // Build CLI command arguments
-    const cliArgs: string[] = ['ssh-user', 'create'];
-    
-    // Required description
-    cliArgs.push('--description', args.description);
-    
-    // Optional project ID
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Optional expiration
-    if (args.expires) {
-      cliArgs.push('--expires', args.expires);
-    }
-    
-    // Authentication method
-    if (args.publicKey) {
-      cliArgs.push('--public-key', args.publicKey);
-    }
-    
-    if (args.password) {
-      cliArgs.push('--password', args.password);
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Check for common error patterns
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied when creating SSH user. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('Invalid') && errorMessage.includes('format')) {
-        return formatToolResponse(
-          "error",
-          `Invalid format in request. Please check your parameters.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to create SSH user: ${errorMessage}`
-      );
-    }
-    
-    // Parse the output
-    let sshUserId: string | null = null;
-    
-    if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      sshUserId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
-      // Example: "SSH user created successfully with ID ssh-user-xxxxx"
-      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        sshUserId = idMatch[1];
-      }
-    }
-    
-    if (!sshUserId) {
-      // If we can't find the ID but the command succeeded, still report success
-      return formatToolResponse(
-        "success",
-        args.quiet ? result.stdout : `Successfully created SSH user '${args.description}'`,
-        {
-          description: args.description,
-          output: result.stdout
-        }
-      );
-    }
-    
-    // Build result data
-    const resultData = {
-      id: sshUserId,
-      description: args.description,
-      authenticationMethod: args.publicKey ? 'publicKey' : 'password',
-      ...(args.expires && { expires: args.expires }),
-      ...(args.projectId && { projectId: args.projectId })
+    const result = await invokeCliTool({
+      toolName: 'mittwald_ssh_user_create',
+      argv,
+      parser: (stdout) => stdout,
+    });
+
+    const meta = {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
     };
-    
-    return formatToolResponse(
-      "success",
-      args.quiet ? 
-        sshUserId :
-        `Successfully created SSH user '${args.description}' with ID ${sshUserId}`,
-      resultData
-    );
-    
+
+    const stdout = result.result ?? '';
+
+    const sshUserId = args.quiet ? parseQuietOutput(stdout) : extractSshUserId(stdout);
+    const payload = buildSuccessPayload(args, stdout, sshUserId);
+
+    const message = args.quiet
+      ? sshUserId ?? stdout || 'SSH user created successfully'
+      : sshUserId
+        ? `Successfully created SSH user '${args.description}' with ID ${sshUserId}`
+        : `Successfully created SSH user '${args.description}'`;
+
+    return formatToolResponse('success', message, payload, meta);
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
