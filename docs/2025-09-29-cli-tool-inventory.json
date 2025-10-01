@@ -533,8 +533,8 @@
       "tool": "mittwald_cronjob_execution_get",
       "handler": "handleCronjobExecutionGetCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execution-get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 4"
     },
     {
