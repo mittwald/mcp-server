@@ -1,6 +1,7 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 export interface MittwaldOrgInviteListArgs {
   orgId?: string;
@@ -12,109 +13,120 @@ export interface MittwaldOrgInviteListArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleOrgInviteListCli: MittwaldToolHandler<MittwaldOrgInviteListArgs> = async (args, { orgContext }) => {
-  try {
-    // Get org ID from args or context
-    const orgId = args.orgId || (orgContext as any)?.orgId;
-    
-    if (!orgId) {
-      return formatToolResponse(
-        "error",
-        "Organization ID is required. Either provide it as a parameter or set a default org in the context."
-      );
-    }
+interface BuildArgsResult {
+  argv: string[];
+  orgId: string;
+  outputFormat: Required<MittwaldOrgInviteListArgs>['output'];
+}
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['org', 'invite', 'list'];
-    
-    // Add org ID
-    cliArgs.push('--org-id', orgId);
-    
-    // Add output format
-    if (args.output) {
-      cliArgs.push('--output', args.output);
-    }
-    
-    // Add extended flag
-    if (args.extended) {
-      cliArgs.push('--extended');
-    }
-    
-    // Add no-header flag
-    if (args.noHeader) {
-      cliArgs.push('--no-header');
-    }
-    
-    // Add no-truncate flag
-    if (args.noTruncate) {
-      cliArgs.push('--no-truncate');
-    }
-    
-    // Add no-relative-dates flag
-    if (args.noRelativeDates) {
-      cliArgs.push('--no-relative-dates');
-    }
-    
-    // Add CSV separator
-    if (args.csvSeparator && (args.output === 'csv' || args.output === 'tsv')) {
-      cliArgs.push('--csv-separator', args.csvSeparator);
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found')) {
-        return formatToolResponse(
-          "error",
-          `Organization not found: ${orgId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to list organization invites: ${errorMessage}`
-      );
-    }
-    
-    // If output is JSON, parse and return structured data
-    if (args.output === 'json') {
+function resolveOrgId(args: MittwaldOrgInviteListArgs, context: unknown): string | undefined {
+  return args.orgId || (context as { orgId?: string } | undefined)?.orgId;
+}
+
+function buildCliArgs(args: MittwaldOrgInviteListArgs, orgId: string): BuildArgsResult {
+  const outputFormat = args.output ?? 'txt';
+  const argv: string[] = ['org', 'invite', 'list', '--org-id', orgId, '--output', outputFormat];
+
+  if (args.extended) argv.push('--extended');
+  if (args.noHeader) argv.push('--no-header');
+  if (args.noTruncate) argv.push('--no-truncate');
+  if (args.noRelativeDates) argv.push('--no-relative-dates');
+  if (args.csvSeparator && (outputFormat === 'csv' || outputFormat === 'tsv')) {
+    argv.push('--csv-separator', args.csvSeparator);
+  }
+
+  return { argv, orgId, outputFormat };
+}
+
+function mapCliError(error: CliToolError, orgId: string): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+  const errorMessage = error.stderr || error.stdout || error.message;
+
+  if (combined.includes('not found')) {
+    return `Organization not found: ${orgId}.\nError: ${errorMessage}`;
+  }
+
+  if (combined.includes('permission denied') || combined.includes('forbidden')) {
+    return `Permission denied when listing organization invites.\nError: ${errorMessage}`;
+  }
+
+  return `Failed to list organization invites: ${errorMessage}`;
+}
+
+export const handleOrgInviteListCli: MittwaldToolHandler<MittwaldOrgInviteListArgs> = async (args, { orgContext }) => {
+  const orgId = resolveOrgId(args, orgContext);
+  if (!orgId) {
+    return formatToolResponse('error', 'Organization ID is required. Either provide it as a parameter or set a default org in the context.');
+  }
+
+  const { argv, outputFormat } = buildCliArgs(args, orgId);
+
+  try {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_org_invite_list',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const output = stdout || stderr;
+
+    if (outputFormat === 'json') {
       try {
-        const data = parseJsonOutput(result.stdout);
+        const data = parseJsonOutput(stdout);
+        const count = Array.isArray(data) ? data.length : 0;
+
         return formatToolResponse(
-          "success",
-          `Found ${Array.isArray(data) ? data.length : 0} organization invite(s)`,
-          data
-        );
-      } catch (parseError) {
-        return formatToolResponse(
-          "success",
-          "Organization invites retrieved (raw output)",
+          'success',
+          `Found ${count} organization invite(s)`,
+          data,
           {
-            rawOutput: result.stdout,
-            parseError: parseError instanceof Error ? parseError.message : String(parseError)
+            command: result.meta.command,
+            durationMs: result.meta.durationMs,
+          }
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        return formatToolResponse(
+          'success',
+          'Organization invites retrieved (raw output)',
+          {
+            rawOutput: stdout,
+            parseError: message,
+          },
+          {
+            command: result.meta.command,
+            durationMs: result.meta.durationMs,
           }
         );
       }
     }
-    
-    // For other output formats, return raw output
+
     return formatToolResponse(
-      "success",
-      "Organization invites retrieved",
+      'success',
+      'Organization invites retrieved',
       {
-        output: result.stdout,
-        format: args.output || 'txt',
-        orgId
+        output,
+        format: outputFormat,
+        orgId,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, orgId);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
