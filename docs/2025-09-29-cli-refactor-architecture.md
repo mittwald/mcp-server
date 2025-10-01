@@ -246,6 +246,8 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_mail_address_list` to the adapter path. _(commit 41dc9c4d03c0350e4af10ee4e3da8c7f76fddefd)_
 
+- **2025-09-30** – Migrated `mittwald_mail_address_update` to the adapter path. _(commit 9723e2ecba23f840d980895ac6cf14e55b3c28d6)_
+
 - **2025-09-30** – Migrated `mittwald_conversation_list` to the adapter path. _(commit 2951d4522c833d6001ed1a6b96b002c410ec7d11)_
 
 - **2025-09-30** – Migrated `mittwald_project_list` to the adapter path. _(commit 857e81591db8dc6199dafb0511c70c65e136f7e3)_
@@ -261,6 +263,8 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 - **2025-09-30** – Migrated `mittwald_domain_virtualhost_create` to the adapter path. _(commit 0ca2fad53c3667829c41a5c8a502f9ab9adfa5bb)_
 
 - **2025-09-30** – Migrated `mittwald_domain_virtualhost_get/list` to the adapter path. _(commit 6e3e33f0f1f8b8f5170674e7adf0d8d7220ce9bb)_
+
+- **2025-09-30** – Migrated MySQL handlers (`phpmyadmin`, `port_forward`, `shell`, `versions`) to the adapter path. _(commit 8d8c25cf36e28a0e8cdbf3b5bb6dd9e5695490b5)_
 
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*

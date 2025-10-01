@@ -173,6 +173,8 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_mail_address_list` handler to the shared CLI adapter. _(commit 41dc9c4d03c0350e4af10ee4e3da8c7f76fddefd)_
 
+- **2025-09-30** – Migrated `mittwald_mail_address_update` handler to the shared CLI adapter. _(commit 9723e2ecba23f840d980895ac6cf14e55b3c28d6)_
+
 - **2025-09-30** – Migrated `mittwald_project_list` handler to the shared CLI adapter. _(commit 857e81591db8dc6199dafb0511c70c65e136f7e3)_
 
 - **2025-09-30** – Migrated `mittwald_project_invite_list_own` handler to the shared CLI adapter. _(commit 36404a7646e780848d7c694386b8f876d5c35a0d)_
@@ -188,5 +190,7 @@ The streams are tracked separately, but share discovery data and release milesto
 - **2025-09-30** – Migrated `mittwald_domain_virtualhost_create` handler to the shared CLI adapter. _(commit 0ca2fad53c3667829c41a5c8a502f9ab9adfa5bb)_
 
 - **2025-09-30** – Migrated `mittwald_domain_virtualhost_get/list` handlers to the shared CLI adapter. _(commit 6e3e33f0f1f8b8f5170674e7adf0d8d7220ce9bb)_
+
+- **2025-09-30** – Migrated MySQL handlers (`phpmyadmin`, `port_forward`, `shell`, `versions`) to the shared CLI adapter. _(commit 8d8c25cf36e28a0e8cdbf3b5bb6dd9e5695490b5)_
 
 _Last updated: 2025-10-01_
