@@ -1077,32 +1077,32 @@
       "tool": "mittwald_ssh_user_create",
       "handler": "handleSshUserCreateCli",
       "file": "src/constants/tool/mittwald-cli/ssh/user-create-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_ssh_user_delete",
       "handler": "handleSshUserDeleteCli",
       "file": "src/constants/tool/mittwald-cli/ssh/user-delete-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_ssh_user_list",
       "handler": "handleSshUserListCli",
       "file": "src/constants/tool/mittwald-cli/ssh/user-list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_ssh_user_update",
       "handler": "handleSshUserUpdateCli",
       "file": "src/constants/tool/mittwald-cli/ssh/user-update-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
@@ -1205,8 +1205,8 @@
       "tool": "mittwald_user_ssh_key_list",
       "handler": "handleUserSshKeyListCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
