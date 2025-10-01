@@ -1,86 +1,142 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldUserSshKeyGetArgs {
   keyId: string;
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleUserSshKeyGetCli: MittwaldToolHandler<MittwaldUserSshKeyGetArgs> = async (args) => {
-  try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['user', 'ssh-key', 'get'];
-    
-    // Add key ID
-    cliArgs.push(args.keyId);
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') || errorMessage.includes('No SSH key found')) {
-        return formatToolResponse(
-          "error",
-          `SSH key not found: ${args.keyId}.\nError: ${errorMessage}`
-        );
+interface RawSshKey {
+  id?: string;
+  comment?: string;
+  fingerprint?: string;
+  publicKey?: string;
+  createdAt?: string;
+  expiresAt?: string;
+  [key: string]: unknown;
+}
+
+function buildCliArgs(keyId: string): string[] {
+  return ['user', 'ssh-key', 'get', keyId, '--output', 'json'];
+}
+
+function parseSshKey(stdout: string): RawSshKey {
+  const trimmed = stdout.trim();
+  if (!trimmed) {
+    throw new Error('CLI returned empty output.');
+  }
+
+  const lines = trimmed.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line || (!line.startsWith('{') && !line.startsWith('['))) continue;
+
+    let snippet = line;
+    for (let j = i + 1; j < lines.length; j++) {
+      snippet += '\n' + lines[j];
+      try {
+        const parsed = JSON.parse(snippet);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          return parsed as RawSshKey;
+        }
+      } catch {
+        // continue collecting
       }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to get SSH key: ${errorMessage}`
-      );
     }
-    
-    // Parse JSON output
+
+    const parsed = JSON.parse(snippet);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as RawSshKey;
+    }
+  }
+
+  const parsed = JSON.parse(trimmed);
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    return parsed as RawSshKey;
+  }
+
+  throw new Error('Unexpected output format from CLI command');
+}
+
+function mapCliError(error: CliToolError, keyId: string): string {
+  const stdout = error.stdout ?? '';
+  const stderr = error.stderr ?? '';
+  const combined = `${stdout}\n${stderr}`.toLowerCase();
+
+  if (combined.includes('not found') || combined.includes('no ssh key found')) {
+    return `SSH key not found: ${keyId}.\nError: ${stderr || error.message}`;
+  }
+
+  const rawMessage = stderr || stdout || error.message;
+  return `Failed to get SSH key: ${rawMessage}`;
+}
+
+export const handleUserSshKeyGetCli: MittwaldCliToolHandler<MittwaldUserSshKeyGetArgs> = async (args) => {
+  if (!args.keyId || !args.keyId.trim()) {
+    return formatToolResponse('error', 'SSH key ID is required.');
+  }
+
+  const argv = buildCliArgs(args.keyId);
+
+  try {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_user_ssh_key_get',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+
     try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (!data || typeof data !== 'object') {
-        return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
-        );
-      }
-      
-      // Format the data to match expected structure
+      const key = parseSshKey(stdout);
       const formattedData = {
-        id: data.id,
-        comment: data.comment,
-        fingerprint: data.fingerprint,
-        publicKey: data.publicKey,
-        createdAt: data.createdAt,
-        expiresAt: data.expiresAt,
-        // Include any additional fields from the CLI output
-        ...data
+        id: key.id,
+        comment: key.comment,
+        fingerprint: key.fingerprint,
+        publicKey: key.publicKey,
+        createdAt: key.createdAt,
+        expiresAt: key.expiresAt,
+        ...key,
       };
-      
+
       return formatToolResponse(
-        "success",
+        'success',
         `SSH key information retrieved for ${args.keyId}`,
-        formattedData
-      );
-      
-    } catch (parseError) {
-      // If JSON parsing fails, return the raw output
-      return formatToolResponse(
-        "success",
-        "SSH key retrieved (raw output)",
+        formattedData,
         {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
+      );
+    } catch (parseError) {
+      return formatToolResponse(
+        'success',
+        'SSH key retrieved (raw output)',
+        {
+          rawOutput: stdout || stderr,
+          parseError: parseError instanceof Error ? parseError.message : String(parseError),
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
   } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args.keyId);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
     return formatToolResponse(
-      "error",
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
