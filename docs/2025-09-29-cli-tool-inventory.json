@@ -1221,8 +1221,8 @@
       "tool": "UNKNOWN",
       "handler": "UNKNOWN",
       "file": "src/constants/tool/mittwald-cli/login/status-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     }
   ]
