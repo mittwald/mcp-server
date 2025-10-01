@@ -222,5 +222,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_domain_dnszone_list` to the adapter path. _(commit 9332b061b27942bcdde2f1f3c346cb70064cfdf8)_
 
+- **2025-09-30** – Migrated `mittwald_conversation_categories` to the adapter path. _(commit 1d19d34ac2db3efea2df60427e60987b69d6e22e)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
