@@ -413,8 +413,8 @@
       "tool": "mittwald_context_get_session",
       "handler": "handleSessionAwareContextGet",
       "file": "src/constants/tool/mittwald-cli/context/session-aware-get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 3"
     },
     {
