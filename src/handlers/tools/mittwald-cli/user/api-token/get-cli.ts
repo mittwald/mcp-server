@@ -1,85 +1,128 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldUserApiTokenGetArgs {
   tokenId: string;
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleUserApiTokenGetCli: MittwaldCliToolHandler<MittwaldUserApiTokenGetArgs> = async (args) => {
-  try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['user', 'api-token', 'get'];
-    
-    // Add token ID
-    cliArgs.push(args.tokenId);
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') || errorMessage.includes('No token found')) {
-        return formatToolResponse(
-          "error",
-          `API token not found: ${args.tokenId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to get API token: ${errorMessage}`
-      );
+function buildCliArgs(args: MittwaldUserApiTokenGetArgs): string[] {
+  return ['user', 'api-token', 'get', args.tokenId, '--output', 'json'];
+}
+
+function parseApiTokenOutput(output: string): Record<string, unknown> {
+  const lines = output.split('\n');
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line.startsWith('{') && !line.startsWith('[')) {
+      continue;
     }
-    
-    // Parse JSON output
-    try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (!data || typeof data !== 'object') {
-        return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
-        );
+
+    let jsonStr = line;
+    for (let j = i + 1; j < lines.length; j++) {
+      jsonStr += '\n' + lines[j];
+      try {
+        const parsed = JSON.parse(jsonStr);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          return parsed as Record<string, unknown>;
+        }
+      } catch {
+        // Continue collecting lines until JSON parses
       }
-      
-      // Format the data to match expected structure
+    }
+
+    const parsed = JSON.parse(jsonStr);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
+  }
+
+  const parsed = JSON.parse(output);
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    return parsed as Record<string, unknown>;
+  }
+
+  throw new Error('Parsed output is not an object.');
+}
+
+function mapCliError(error: CliToolError, args: MittwaldUserApiTokenGetArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`;
+  const combinedLower = combined.toLowerCase();
+
+  if (combinedLower.includes('not found') || combinedLower.includes('no token found')) {
+    return `API token not found: ${args.tokenId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  const rawMessage = error.stderr || error.stdout || error.message;
+  return `Failed to get API token: ${rawMessage}`;
+}
+
+export const handleUserApiTokenGetCli: MittwaldCliToolHandler<MittwaldUserApiTokenGetArgs> = async (args) => {
+  if (!args.tokenId) {
+    return formatToolResponse('error', 'Token ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
+  try {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_user_api_token_get',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+
+    try {
+      const parsed = parseApiTokenOutput(stdout);
       const formattedData = {
-        id: data.id,
-        description: data.description,
-        roles: data.roles,
-        createdAt: data.createdAt,
-        expiresAt: data.expiresAt,
-        // Include any additional fields from the CLI output
-        ...data
+        id: parsed.id,
+        description: parsed.description,
+        roles: parsed.roles,
+        createdAt: parsed.createdAt,
+        expiresAt: parsed.expiresAt,
+        ...parsed,
       };
-      
+
       return formatToolResponse(
-        "success",
+        'success',
         `API token information retrieved for ${args.tokenId}`,
-        formattedData
-      );
-      
-    } catch (parseError) {
-      // If JSON parsing fails, return the raw output
-      return formatToolResponse(
-        "success",
-        "API token retrieved (raw output)",
+        formattedData,
         {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
+      );
+    } catch (parseError) {
+      return formatToolResponse(
+        'success',
+        'API token retrieved (raw output)',
+        {
+          rawOutput: stdout || stderr,
+          parseError: parseError instanceof Error ? parseError.message : String(parseError),
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
   } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
     return formatToolResponse(
-      "error",
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
