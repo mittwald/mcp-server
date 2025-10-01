@@ -1149,56 +1149,56 @@
       "tool": "mittwald_user_get",
       "handler": "handleUserGetCli",
       "file": "src/constants/tool/mittwald-cli/user/get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_session_get",
       "handler": "handleUserSessionGetCli",
       "file": "src/constants/tool/mittwald-cli/user/session/get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_session_list",
       "handler": "handleUserSessionListCli",
       "file": "src/constants/tool/mittwald-cli/user/session/list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_create",
       "handler": "handleUserSshKeyCreateCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/create-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_delete",
       "handler": "handleUserSshKeyDeleteCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/delete-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_get",
       "handler": "handleUserSshKeyGetCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_import",
       "handler": "handleUserSshKeyImportCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/import-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
