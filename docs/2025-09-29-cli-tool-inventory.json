@@ -821,8 +821,8 @@
       "tool": "mittwald_mail_address_delete",
       "handler": "handleMittwaldMailAddressDeleteCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/delete-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
