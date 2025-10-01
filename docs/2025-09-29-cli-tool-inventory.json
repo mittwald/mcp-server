@@ -565,8 +565,8 @@
       "tool": "mittwald_cronjob_list",
       "handler": "handleCronjobListCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 4"
     },
     {
@@ -765,32 +765,32 @@
       "tool": "mittwald_extension_install",
       "handler": "handleExtensionInstallCli",
       "file": "src/constants/tool/mittwald-cli/extension/install-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_extension_list",
       "handler": "handleExtensionListCli",
       "file": "src/constants/tool/mittwald-cli/extension/list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_extension_list_installed",
       "handler": "handleExtensionListInstalledCli",
       "file": "src/constants/tool/mittwald-cli/extension/list-installed-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_extension_uninstall",
       "handler": "handleExtensionUninstallCli",
       "file": "src/constants/tool/mittwald-cli/extension/uninstall-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
