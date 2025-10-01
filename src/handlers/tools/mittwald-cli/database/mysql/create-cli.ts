@@ -1,6 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldDatabaseMysqlCreateArgs {
   description: string;
@@ -14,186 +14,188 @@ interface MittwaldDatabaseMysqlCreateArgs {
   userAccessLevel?: "full" | "readonly";
 }
 
+function buildCliArgs(args: MittwaldDatabaseMysqlCreateArgs): string[] {
+  const cliArgs: string[] = ['database', 'mysql', 'create'];
+
+  cliArgs.push('--description', args.description);
+  cliArgs.push('--version', args.version);
+
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.collation) cliArgs.push('--collation', args.collation);
+  if (args.characterSet) cliArgs.push('--character-set', args.characterSet);
+  if (args.userPassword) cliArgs.push('--user-password', args.userPassword);
+  if (args.userExternal) cliArgs.push('--user-external');
+  if (args.userAccessLevel) cliArgs.push('--user-access-level', args.userAccessLevel);
+  if (args.timeout) cliArgs.push('--timeout', args.timeout);
+
+  if (args.enable && args.disable) {
+    // CLI only accepts either enable or disable
+    cliArgs.push('--enable');
+  } else if (args.enable) {
+    cliArgs.push('--enable');
+  } else if (args.disable) {
+    cliArgs.push('--disable');
+  }
+
+  if (args.email) cliArgs.push('--email', args.email);
+  if (args.url) cliArgs.push('--url', args.url);
+  if (args.command) cliArgs.push('--command', args.command);
+  if (args.interpreter) cliArgs.push('--interpreter', args.interpreter);
+
+  return cliArgs;
+}
+
+function parseQuietIdentifier(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1)?.trim();
+}
+
+function extractDatabaseId(output: string): string | undefined {
+  const match = output.match(/ID\s+([a-f0-9-]+)/i);
+  return match ? match[1] : undefined;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldDatabaseMysqlCreateArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+  const message = error.stderr || error.stdout || error.message;
+
+  if (combined.includes('permission denied') || combined.includes('403')) {
+    return `Permission denied when creating MySQL database. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${message}`;
+  }
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId ?? 'not specified'}.\nError: ${message}`;
+  }
+
+  if (combined.includes('version') && combined.includes('not supported')) {
+    return `MySQL version '${args.version}' is not supported. Use 'database mysql versions' to list available versions.\nError: ${message}`;
+  }
+
+  if (combined.includes('invalid') && combined.includes('password')) {
+    return `Invalid password provided. Please check password requirements.\nError: ${message}`;
+  }
+
+  if (combined.includes('400') || combined.includes('request failed with status code 400')) {
+    return `Invalid request parameters for database creation. Please check:\n• Project ID: ${args.projectId ?? 'not specified'}\n• Password provided: ${args.userPassword ? 'yes' : 'no'}\n• MySQL version: ${args.version}\n\nError: ${message}`;
+  }
+
+  if (combined.includes('404') || combined.includes('request failed with status code 404')) {
+    return `Database creation failed - resource not found. This might be due to project limitations or unavailable MySQL version.\nError: ${message}`;
+  }
+
+  return `Failed to create MySQL database: ${message}`;
+}
+
+function mapInteractiveOutput(stdout: string, stderr: string): string | undefined {
+  const output = `${stdout}\n${stderr}`.toLowerCase();
+  if (output.includes('interactive input required') || output.includes('enter password')) {
+    return 'Command requires interactive input, but running in non-interactive mode. Provide --user-password or use a non-interactive authentication method.';
+  }
+  return undefined;
+}
+
 export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseMysqlCreateArgs> = async (args) => {
+  if (!args.projectId) {
+    return formatToolResponse(
+      'error',
+      "Project ID is required for database creation. Please provide --project-id or set a default project context via 'mw context set --project-id=<PROJECT_ID>'."
+    );
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Check if project ID is provided or set in context
-    if (!args.projectId) {
-      return formatToolResponse(
-        "error",
-        "Project ID is required for database creation. Please provide a --project-id parameter or set a default project context using 'mw context set --project-id=<PROJECT_ID>'"
-      );
-    }
-    
-    // Build CLI command arguments
-    const cliArgs: string[] = ['database', 'mysql', 'create'];
-    
-    // Required arguments
-    cliArgs.push('--description', args.description);
-    cliArgs.push('--version', args.version);
-    
-    // Optional project ID
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    // Quiet mode
-    if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Character settings
-    if (args.collation) {
-      cliArgs.push('--collation', args.collation);
-    }
-    
-    if (args.characterSet) {
-      cliArgs.push('--character-set', args.characterSet);
-    }
-    
-    // User settings
-    if (args.userPassword) {
-      cliArgs.push('--user-password', args.userPassword);
-    }
-    
-    if (args.userExternal) {
-      cliArgs.push('--user-external');
-    }
-    
-    if (args.userAccessLevel) {
-      cliArgs.push('--user-access-level', args.userAccessLevel);
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        // Pass user password via environment variable if provided
-        ...(args.userPassword && { MYSQL_PWD: args.userPassword })
-      }
+    const result = await invokeCliTool({
+      toolName: 'mittwald_database_mysql_create',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliOptions: {
+        env: args.userPassword ? { MYSQL_PWD: args.userPassword } : undefined,
+      },
     });
-    
-    // Check for interactive prompt before checking exit code
-    const output = result.stdout + ' ' + result.stderr;
-    if (output.includes('interactive input required') || output.includes('enter password')) {
-      return formatToolResponse(
-        "error",
-        `Command requires interactive input, but running in non-interactive mode. ` +
-        `Please provide the --user-password parameter or use a different authentication method.\nOutput: ${output}`
-      );
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const interactiveMessage = mapInteractiveOutput(stdout, stderr);
+    if (interactiveMessage) {
+      return formatToolResponse('error', `${interactiveMessage}\nOutput: ${stdout}\n${stderr}`);
     }
 
-    if (result.exitCode !== 0) {
-      // Parse error message from stderr or stdout
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Check for common error patterns
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied when creating MySQL database. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('404') || errorMessage.includes('Request failed with status code 404')) {
-        return formatToolResponse(
-          "error",
-          `Database creation failed - resource not found. This might be due to:\n` +
-          `• Project ${args.projectId || 'default'} doesn't exist or lacks database support\n` +
-          `• Account limitations preventing database creation\n` +
-          `• MySQL version '${args.version}' not available in this project\n` +
-          `\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('400') || errorMessage.includes('Request failed with status code 400')) {
-        return formatToolResponse(
-          "error",
-          `Invalid request parameters for database creation. Please check:\n` +
-          `• Project ID is correct: ${args.projectId || 'not specified'}\n` +
-          `• Password meets requirements: ${args.userPassword ? 'provided' : 'not provided'}\n` +
-          `• MySQL version is valid: ${args.version}\n` +
-          `\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('version') && errorMessage.includes('not supported')) {
-        return formatToolResponse(
-          "error",
-          `MySQL version '${args.version}' is not supported. Use the 'database mysql versions' command to list available versions.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('Invalid') && errorMessage.includes('password')) {
-        return formatToolResponse(
-          "error",
-          `Invalid password provided. Please check password requirements.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to create MySQL database: ${errorMessage}`
-      );
-    }
-    
-    // Parse the output
-    let databaseId: string | null = null;
-    
     if (args.quiet) {
-      // In quiet mode, the CLI outputs just the ID
-      databaseId = parseQuietOutput(result.stdout);
-    } else {
-      // In normal mode, parse the success message
-      // Example: "MySQL database created successfully with ID mysql-xxxxx"
-      const idMatch = result.stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) {
-        databaseId = idMatch[1];
+      const databaseId = parseQuietIdentifier(stdout) ?? parseQuietIdentifier(stderr);
+      if (databaseId) {
+        return formatToolResponse(
+          'success',
+          'Successfully created MySQL database',
+          {
+            id: databaseId,
+            description: args.description,
+            version: args.version,
+            projectId: args.projectId,
+            collation: args.collation,
+            characterSet: args.characterSet,
+            userAccessLevel: args.userAccessLevel,
+            userExternal: args.userExternal,
+          },
+          {
+            command: result.meta.command,
+            durationMs: result.meta.durationMs,
+          }
+        );
       }
-    }
-    
-    if (!databaseId) {
-      // If we can't find the ID but the command succeeded, still report success
+
       return formatToolResponse(
-        "success",
-        args.quiet ? result.stdout : `Successfully created MySQL database '${args.description}'`,
+        'success',
+        'Successfully created MySQL database',
         {
           description: args.description,
           version: args.version,
-          output: result.stdout
+          projectId: args.projectId,
+          output: stdout || stderr,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
-    // Build result data
-    const resultData = {
+
+    const databaseId = extractDatabaseId(stdout) ?? extractDatabaseId(stderr);
+
+    const responseData = {
       id: databaseId,
       description: args.description,
       version: args.version,
-      ...(args.projectId && { projectId: args.projectId }),
-      ...(args.collation && { collation: args.collation }),
-      ...(args.characterSet && { characterSet: args.characterSet }),
-      ...(args.userAccessLevel && { userAccessLevel: args.userAccessLevel }),
-      ...(args.userExternal !== undefined && { userExternal: args.userExternal })
+      projectId: args.projectId,
+      collation: args.collation,
+      characterSet: args.characterSet,
+      userAccessLevel: args.userAccessLevel,
+      userExternal: args.userExternal,
+      output: stdout || stderr,
     };
-    
-    return formatToolResponse(
-      "success",
-      args.quiet ? 
-        databaseId :
-        `Successfully created MySQL database '${args.description}' with ID ${databaseId}`,
-      resultData
-    );
-    
+
+    const message = databaseId
+      ? `Successfully created MySQL database '${args.description}' with ID ${databaseId}`
+      : `Successfully created MySQL database '${args.description}'`;
+
+    return formatToolResponse('success', message, responseData, {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    });
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

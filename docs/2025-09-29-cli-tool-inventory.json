@@ -797,8 +797,8 @@
       "tool": "mittwald_login_reset",
       "handler": "handleLoginResetCli",
       "file": "src/constants/tool/mittwald-cli/login/reset-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
