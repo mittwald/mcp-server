@@ -313,43 +313,43 @@
       "tool": "mittwald_container_stack_delete",
       "handler": "handleStackDeleteCli",
       "file": "src/constants/tool/mittwald-cli/container/stack-delete-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_stack_deploy",
       "handler": "handleStackDeployCli",
       "file": "src/constants/tool/mittwald-cli/container/stack-deploy-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_stack_list",
       "handler": "handleStackListCli",
       "file": "src/constants/tool/mittwald-cli/container/stack-list-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_stack_ps",
       "handler": "handleStackPsCli",
       "file": "src/constants/tool/mittwald-cli/container/stack-ps-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_start",
       "handler": "handleContainerStartCli",
       "file": "src/constants/tool/mittwald-cli/container/start-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_stop",
       "handler": "handleContainerStopCli",
       "file": "src/constants/tool/mittwald-cli/container/stop-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_context_get",

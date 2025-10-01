@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldStackDeleteCliArgs {
   stackId?: string;
@@ -9,81 +9,91 @@ interface MittwaldStackDeleteCliArgs {
   withVolumes?: boolean;
 }
 
-export const handleStackDeleteCli: MittwaldToolHandler<MittwaldStackDeleteCliArgs> = async (args) => {
+function buildCliArgs(args: MittwaldStackDeleteCliArgs): string[] {
+  const cliArgs: string[] = ['stack', 'delete'];
+
+  if (args.stackId) cliArgs.push(args.stackId);
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.force) cliArgs.push('--force');
+  if (args.withVolumes) cliArgs.push('--with-volumes');
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldStackDeleteCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('stack')) {
+    return `Stack not found: ${args.stackId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleStackDeleteCli: MittwaldCliToolHandler<MittwaldStackDeleteCliArgs> = async (args) => {
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['stack', 'delete'];
-    
-    // Optional stack ID argument
-    if (args.stackId) {
-      cliArgs.push(args.stackId);
-    }
-    
-    // Optional flags
+    const result = await invokeCliTool({
+      toolName: 'mittwald_container_stack_delete',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || 'Stack deleted successfully';
+
     if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
-    if (args.withVolumes) {
-      cliArgs.push('--with-volumes');
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('stack')) {
-        return formatToolResponse(
-          "error",
-          `Stack not found: ${args.stackId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
+      const stackId = parseQuietOutput(stdout) ?? args.stackId;
       return formatToolResponse(
-        "error",
-        `Failed to delete stack: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const result_id = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Stack deleted successfully`,
+        'success',
+        'Stack deleted successfully',
         {
-          stackId: args.stackId,
+          stackId,
           status: 'deleted',
-          resultId: result_id,
-          withVolumes: args.withVolumes
+          withVolumes: args.withVolumes,
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
-    // Handle regular output
-    const successMessage = result.stdout || 'Stack deleted successfully';
-    
+
     return formatToolResponse(
-      "success",
-      `Stack deletion completed`,
+      'success',
+      'Stack deletion completed',
       {
         stackId: args.stackId,
         status: 'deleted',
         withVolumes: args.withVolumes,
-        output: successMessage
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
