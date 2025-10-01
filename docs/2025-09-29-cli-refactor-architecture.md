@@ -280,6 +280,8 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_sftp_user_create` to the adapter path. _(commit 9cba60cd40b2c9b9818412f58a05060b65481843)_
 
+- **2025-09-30** – Migrated `mittwald_sftp_user_delete` to the adapter path. _(commit 5a50ccfb63c589d2ba643384f099ae4b63dc7b90)_
+
 - **2025-09-30** – Migrated `mittwald_domain_virtualhost_create` to the adapter path. _(commit 0ca2fad53c3667829c41a5c8a502f9ab9adfa5bb)_
 
 - **2025-09-30** – Migrated `mittwald_domain_virtualhost_get/list` to the adapter path. _(commit 6e3e33f0f1f8b8f5170674e7adf0d8d7220ce9bb)_
