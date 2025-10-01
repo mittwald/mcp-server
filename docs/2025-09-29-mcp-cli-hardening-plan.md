@@ -175,6 +175,8 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_project_membership_get` handler to the shared CLI adapter. _(commit 193fac9ecaab9c3f22bbc95ed933f1998bfd7e26)_
 
+- **2025-09-30** – Migrated `mittwald_project_membership_get_own` handler to the shared CLI adapter. _(commit bc6509b0c187247758022aea640223f2bc9b7e73)_
+
 - **2025-09-30** – Migrated `mittwald_conversation_list` handler to the shared CLI adapter. _(commit 2951d4522c833d6001ed1a6b96b002c410ec7d11)_
 
 _Last updated: 2025-10-01_
