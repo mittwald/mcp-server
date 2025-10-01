@@ -1,70 +1,117 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldCronjobExecuteCliArgs {
   cronjobId: string;
   quiet?: boolean;
 }
 
-export const handleCronjobExecuteCli: MittwaldToolHandler<MittwaldCronjobExecuteCliArgs> = async (args, context) => {
+function buildCliArgs(args: MittwaldCronjobExecuteCliArgs): string[] {
+  const cliArgs: string[] = ['cronjob', 'execute', args.cronjobId];
+
+  if (args.quiet) {
+    cliArgs.push('--quiet');
+  }
+
+  return cliArgs;
+}
+
+function parseQuietIdentifier(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1)?.trim();
+}
+
+function mapCliError(error: CliToolError, args: MittwaldCronjobExecuteCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+  const message = error.stderr || error.stdout || error.message;
+
+  if (combined.includes('not found')) {
+    return `Cronjob not found: ${args.cronjobId}.\nError: ${message}`;
+  }
+
+  if (combined.includes('permission denied') || combined.includes('forbidden')) {
+    return `Permission denied when executing cronjob ${args.cronjobId}. Please re-authenticate with Mittwald CLI.`;
+  }
+
+  return `Failed to execute cronjob: ${message}`;
+}
+
+export const handleCronjobExecuteCli: MittwaldToolHandler<MittwaldCronjobExecuteCliArgs> = async (args, _context) => {
+  if (!args.cronjobId) {
+    return formatToolResponse('error', 'Cronjob ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['cronjob', 'execute', args.cronjobId];
-    
-    // Optional flags
+    const result = await invokeCliTool({
+      toolName: 'mittwald_cronjob_execute',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const output = stdout || stderr;
+
     if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found')) {
-        return formatToolResponse(
-          "error",
-          `Cronjob not found: ${args.cronjobId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to execute cronjob: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const executionId = parseQuietOutput(result.stdout);
+      const executionId = parseQuietIdentifier(stdout) ?? parseQuietIdentifier(stderr);
+
       if (executionId) {
         return formatToolResponse(
-          "success",
-          `Cronjob execution started`,
-          { 
+          'success',
+          'Cronjob execution started',
+          {
             cronjobId: args.cronjobId,
-            executionId: executionId 
+            executionId,
+          },
+          {
+            command: result.meta.command,
+            durationMs: result.meta.durationMs,
           }
         );
       }
+
+      return formatToolResponse(
+        'success',
+        'Cronjob execution started',
+        {
+          cronjobId: args.cronjobId,
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
+      );
     }
-    
-    // Return success
+
     return formatToolResponse(
-      "success",
-      `Cronjob execution started`,
+      'success',
+      'Cronjob execution started',
       {
         cronjobId: args.cronjobId,
-        output: result.stdout
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

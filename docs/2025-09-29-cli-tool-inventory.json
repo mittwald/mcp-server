@@ -1061,8 +1061,8 @@
       "tool": "mittwald_sftp_user_list",
       "handler": "handleSftpUserListCli",
       "file": "src/constants/tool/mittwald-cli/sftp/user-list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
