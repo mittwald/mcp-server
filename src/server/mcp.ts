@@ -145,8 +145,6 @@ export class MCPHandler implements IMCPHandler {
             scopes: ["read"],
             extra: {
               userId: sessionAuth.username,
-              redditAccessToken: sessionAuth.accessToken,
-              redditRefreshToken: sessionAuth.refreshToken,
             },
           }
         : undefined;

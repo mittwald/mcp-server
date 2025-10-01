@@ -8,8 +8,6 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
  * external service connections.
  */
 export interface ToolHandlerContext {
-  /** Placeholder for service, not used by utility tools */
-  redditService: any;
   /** User identifier */
   userId: string;
   /** Optional session identifier */

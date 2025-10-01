@@ -13,7 +13,6 @@
  * - `node dist/index.js` - Direct execution
  * 
  * Required environment variables:
- * (No legacy Reddit environment variables are used.)
  * - JWT_SECRET: Secret for signing JWT tokens
  * 
  * @see {@link https://modelcontextprotocol.io} Model Context Protocol Documentation

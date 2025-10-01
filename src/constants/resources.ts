@@ -15,7 +15,7 @@ export const RESOURCES = resources;
  * Server information constants
  */
 export const SERVER_INFO = {
-  name: "systemprompt-mcp-reddit",
+  name: "systemprompt-mcp-mittwald",
   version: "2.0.0",
 } as const;
 

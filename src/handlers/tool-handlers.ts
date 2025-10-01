@@ -122,7 +122,6 @@ export async function handleToolCall(
     
     // Create minimal context for tool handlers
     const handlerContext: ToolHandlerContext = {
-      redditService: null as any, // Not used for CLI tools
       userId: 'cli-user',
       sessionId: context.sessionId,
       progressToken: request.params._meta?.progressToken,
