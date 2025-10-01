@@ -216,5 +216,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_context_get` to the adapter path. _(commit 1919d326c8dba352286720d58325d5adf7628c43)_
 
+- **2025-09-30** – Migrated `mittwald_context_reset` to the adapter path. _(commit 5f00be28cc2927ace46c96d9f142d5e0e3aabf90)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
