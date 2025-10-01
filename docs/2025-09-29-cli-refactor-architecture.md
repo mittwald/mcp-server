@@ -230,6 +230,10 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_mail_address_create` to the adapter path. _(commit 21b36c68db1c560556bd3a39f790d46406b38308)_
 
+- **2025-09-30** – Migrated `mittwald_mail_address_get` to the adapter path. _(commit 073fe81e08bbb27efaf0eff40732376e42746b92)_
+
+- **2025-09-30** – Migrated `mittwald_mail_address_delete` to the adapter path. _(commit 0ebf2580ade8f18a3a04ce484c47f4d311df0d4d)_
+
 - **2025-09-30** – Migrated `mittwald_conversation_list` to the adapter path. _(commit 2951d4522c833d6001ed1a6b96b002c410ec7d11)_
 
 - **2025-09-30** – Migrated `mittwald_project_list` to the adapter path. _(commit 857e81591db8dc6199dafb0511c70c65e136f7e3)_
