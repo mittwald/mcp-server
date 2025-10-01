@@ -8,7 +8,7 @@ interface MittwaldCallbackDeps {
   stateStore: StateStore;
 }
 
-export function createMittwaldCallbackRouter({ config, stateStore }: MittwaldCallbackDeps) {
+export function createMittwaldCallbackRouter({ config: _config, stateStore }: MittwaldCallbackDeps) {
   const router = new Router();
 
   router.get('/mittwald/callback', async (ctx) => {

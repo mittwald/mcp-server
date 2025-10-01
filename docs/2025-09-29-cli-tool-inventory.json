@@ -469,8 +469,8 @@
       "tool": "mittwald_conversation_create",
       "handler": "handleConversationCreateCli",
       "file": "src/constants/tool/mittwald-cli/conversation/create-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 3"
     },
     {
