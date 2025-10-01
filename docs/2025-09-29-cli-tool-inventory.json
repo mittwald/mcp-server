@@ -1005,8 +1005,8 @@
       "tool": "mittwald_project_membership_list_own",
       "handler": "handleProjectMembershipListOwnCli",
       "file": "src/constants/tool/mittwald-cli/project/membership-list-own-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
