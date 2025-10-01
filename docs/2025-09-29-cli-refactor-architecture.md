@@ -206,5 +206,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated container handlers (`delete`, `list`, `logs`, `recreate`, `registry_create`) to the adapter path. _(commit 3bafcee1f668d26515083998c2e44593b06dce31)_
 
+- **2025-09-30** – Migrated container registry (`delete`, `list`, `update`) and container lifecycle (`restart`, `run`) to the adapter path. _(commit 0103cac7d76bed9dfed23b5730bb7419fcd10826)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
