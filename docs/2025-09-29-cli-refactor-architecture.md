@@ -296,5 +296,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated DDEV handlers (`init`, `render_config`) to the adapter path. _(commit b0c760189f07f67afea77eb1494b4a5cd6c1c6ec)_
 
+- **2025-09-30** – Migrated `mittwald_user_get` to the adapter path. _(commit 8bf7cdb61ebafa82a460a0bfb494b7bbf541d8d3)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
