@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldRegistryDeleteCliArgs {
   registryId: string;
@@ -8,70 +8,91 @@ interface MittwaldRegistryDeleteCliArgs {
   force?: boolean;
 }
 
-export const handleRegistryDeleteCli: MittwaldToolHandler<MittwaldRegistryDeleteCliArgs> = async (args) => {
+function buildCliArgs(args: MittwaldRegistryDeleteCliArgs): string[] {
+  const cliArgs: string[] = ['registry', 'delete', args.registryId];
+
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.force) cliArgs.push('--force');
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldRegistryDeleteCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('registry')) {
+    return `Registry not found: ${args.registryId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleRegistryDeleteCli: MittwaldCliToolHandler<MittwaldRegistryDeleteCliArgs> = async (args) => {
+  if (!args.registryId) {
+    return formatToolResponse('error', 'Registry ID is required. Please provide the registryId parameter.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['registry', 'delete', args.registryId];
-    
-    // Optional flags
+    const result = await invokeCliTool({
+      toolName: 'mittwald_container_registry_delete',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || 'Registry deleted successfully';
+
     if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('registry')) {
-        return formatToolResponse(
-          "error",
-          `Registry not found: ${args.registryId}\nError: ${errorMessage}`
-        );
-      }
-      
+      const registryId = parseQuietOutput(stdout) ?? args.registryId;
       return formatToolResponse(
-        "error",
-        `Failed to delete registry: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const result_id = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Registry deleted successfully`,
+        'success',
+        'Registry deleted successfully',
         {
-          registryId: args.registryId,
+          registryId,
           status: 'deleted',
-          resultId: result_id
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
-    // Handle regular output
-    const successMessage = result.stdout || 'Registry deleted successfully';
-    
+
     return formatToolResponse(
-      "success",
-      `Registry deletion completed`,
+      'success',
+      'Registry deletion completed',
       {
         registryId: args.registryId,
         status: 'deleted',
-        output: successMessage
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

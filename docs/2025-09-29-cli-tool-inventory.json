@@ -278,36 +278,36 @@
       "tool": "mittwald_container_registry_delete",
       "handler": "handleRegistryDeleteCli",
       "file": "src/constants/tool/mittwald-cli/container/registry-delete-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_registry_list",
       "handler": "handleRegistryListCli",
       "file": "src/constants/tool/mittwald-cli/container/registry-list-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_registry_update",
       "handler": "handleRegistryUpdateCli",
       "file": "src/constants/tool/mittwald-cli/container/registry-update-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_restart",
       "handler": "handleContainerRestartCli",
       "file": "src/constants/tool/mittwald-cli/container/restart-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_run",
       "handler": "handleContainerRunCli",
       "file": "src/constants/tool/mittwald-cli/container/run-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool"
     },
     {
       "tool": "mittwald_container_stack_delete",
