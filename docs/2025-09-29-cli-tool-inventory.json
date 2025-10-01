@@ -405,8 +405,8 @@
       "tool": "mittwald_context_get",
       "handler": "handleContextGetCli",
       "file": "src/constants/tool/mittwald-cli/context/get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 3"
     },
     {
