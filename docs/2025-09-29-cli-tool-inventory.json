@@ -925,8 +925,8 @@
       "tool": "mittwald_project_delete",
       "handler": "handleProjectDeleteCli",
       "file": "src/constants/tool/mittwald-cli/project/delete-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
