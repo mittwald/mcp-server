@@ -701,8 +701,8 @@
       "tool": "mittwald_domain_dnszone_list",
       "handler": "handleDomainDnszoneListCli",
       "file": "src/constants/tool/mittwald-cli/domain/dnszone/list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
