@@ -152,6 +152,8 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_cronjob_execution_get` handler to the shared CLI adapter. _(commit 886cec312e97cae2d15128757277eb366ca0c41c)_
 
+- **2025-09-30** – Migrated `mittwald_cronjob_get` handler to the shared CLI adapter. _(commit 0307bbc55b63a1813327b13e186149eca3ca2480)_
+
 - **2025-09-30** – Migrated `mittwald_domain_list` handler to the shared CLI adapter. _(commit 14e9148ae77dc79d5e403e5caeefe34697503faf)_
 
 - **2025-09-30** – Migrated `mittwald_context_get` handler to the shared CLI adapter. _(commit 1919d326c8dba352286720d58325d5adf7628c43)_
@@ -238,5 +240,7 @@ The streams are tracked separately, but share discovery data and release milesto
 - **2025-09-30** – Migrated `mittwald_user_ssh_key_create` handler to the shared CLI adapter. _(commit 9fe7b37e86c148a394aa09260388b2619413d535)_
 
 - **2025-09-30** – Migrated `mittwald_user_ssh_key_delete` handler to the shared CLI adapter. _(commit c9a8a3cb51840ad8f0ad360fe4a8199f076ca45d)_
+
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_get` handler to the shared CLI adapter. _(commit bc77a03a9a32a6f0ae15a4ebcb2bafb75593577e)_
 
 _Last updated: 2025-10-01_
