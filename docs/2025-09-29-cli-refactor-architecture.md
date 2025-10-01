@@ -198,6 +198,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_backup_schedule_create` to the adapter path. _(commit 0f5fe89c99b1bcd803dd0b03f133eb4b56026e11)_
 - **2025-09-30** – Migrated `mittwald_user_api_token_get` to the adapter path. _(commit 9e21d3791c50ada436ad7238959c93338e41671a)_
+- **2025-09-30** – Migrated `mittwald_user_api_token_list` to the adapter path. _(commit 5e240043dbd3cad3ad49e158e6b920713ab84943)_
 
 - **2025-09-30** – Migrated `mittwald_backup_schedule_delete` to the adapter path. _(commit db747fa6296bf1885ebbb34d87c472168461a0ad)_
 
