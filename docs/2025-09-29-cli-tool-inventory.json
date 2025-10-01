@@ -549,8 +549,8 @@
       "tool": "mittwald_cronjob_execution_logs",
       "handler": "handleCronjobExecutionLogsCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execution-logs-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 4"
     },
     {
