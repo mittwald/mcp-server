@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldSftpUserDeleteArgs {
   sftpUserId: string;
@@ -8,95 +8,104 @@ interface MittwaldSftpUserDeleteArgs {
   quiet?: boolean;
 }
 
-export const handleSftpUserDeleteCli: MittwaldToolHandler<MittwaldSftpUserDeleteArgs> = async (args) => {
+function buildCliArgs(args: MittwaldSftpUserDeleteArgs): string[] {
+  const cliArgs: string[] = ['sftp-user', 'delete', args.sftpUserId];
+  if (args.force) cliArgs.push('--force');
+  if (args.quiet) cliArgs.push('--quiet');
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldSftpUserDeleteArgs): string {
+  const stderr = error.stderr ?? '';
+  const stdout = error.stdout ?? '';
+  const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
+
+  if (combined.includes('forbidden') || combined.includes('permission denied') || combined.includes('403')) {
+    const details = stderr || stdout || error.message;
+    return `Permission denied when deleting SFTP user. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${details}`;
+  }
+
+  if (combined.includes('not found') && combined.includes('sftp user')) {
+    const details = stderr || stdout || error.message;
+    return `SFTP user not found. Please verify the SFTP user ID: ${args.sftpUserId}.\nError: ${details}`;
+  }
+
+  if (combined.includes('confirmation')) {
+    const details = stderr || stdout || error.message;
+    return `Deletion requires confirmation. Use 'force: true' to confirm deletion.\nError: ${details}`;
+  }
+
+  const details = stderr || stdout || error.message;
+  return `Failed to delete SFTP user: ${details}`;
+}
+
+export const handleSftpUserDeleteCli: MittwaldCliToolHandler<MittwaldSftpUserDeleteArgs> = async (args) => {
   try {
-    // Validate required fields
     if (!args.sftpUserId) {
       return formatToolResponse(
         "error",
         "SFTP user ID is required to delete an SFTP user"
       );
     }
-    
-    // Build CLI command arguments
-    const cliArgs: string[] = ['sftp-user', 'delete'];
-    
-    // Required SFTP user ID as positional argument
-    cliArgs.push(args.sftpUserId);
-    
-    // Optional flags
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
+
+    const argv = buildCliArgs(args);
+
+    const result = await invokeCliTool({
+      toolName: 'mittwald_sftp_user_delete',
+      argv,
+      parser: (stdout) => stdout,
+    });
+
+    const commandMeta = {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    };
+
+    const stdout = result.result ?? '';
+
     if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Check for common error patterns
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied when deleting SFTP user. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('SFTP user')) {
-        return formatToolResponse(
-          "error",
-          `SFTP user not found. Please verify the SFTP user ID: ${args.sftpUserId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('confirmation')) {
-        return formatToolResponse(
-          "error",
-          `Deletion requires confirmation. Use 'force: true' to confirm deletion.\nError: ${errorMessage}`
-        );
-      }
-      
+      const quietOutput = parseQuietOutput(stdout);
       return formatToolResponse(
-        "error",
-        `Failed to delete SFTP user: ${errorMessage}`
-      );
-    }
-    
-    // Parse the output
-    if (args.quiet) {
-      // In quiet mode, the CLI might output just success status
-      const quietOutput = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        quietOutput || "SFTP user deleted successfully",
+        'success',
+        quietOutput || 'SFTP user deleted successfully',
         {
           sftpUserId: args.sftpUserId,
-          action: "deleted",
-          status: "success"
-        }
-      );
-    } else {
-      // In normal mode, parse the success message
-      return formatToolResponse(
-        "success",
-        `SFTP user ${args.sftpUserId} has been successfully deleted`,
-        {
-          sftpUserId: args.sftpUserId,
-          action: "deleted",
-          output: result.stdout
-        }
+          action: 'deleted',
+          status: 'success',
+          output: stdout,
+        },
+        commandMeta
       );
     }
-    
-  } catch (error) {
+
     return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      'success',
+      `SFTP user ${args.sftpUserId} has been successfully deleted`,
+      {
+        sftpUserId: args.sftpUserId,
+        action: 'deleted',
+        output: stdout,
+      },
+      commandMeta
     );
+  } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

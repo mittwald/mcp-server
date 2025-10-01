@@ -893,8 +893,8 @@
       "tool": "mittwald_org_invite_list",
       "handler": "ToolHandler",
       "file": "src/constants/tool/mittwald-cli/org/invite-list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
@@ -1053,8 +1053,8 @@
       "tool": "mittwald_sftp_user_delete",
       "handler": "handleSftpUserDeleteCli",
       "file": "src/constants/tool/mittwald-cli/sftp/user-delete-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
