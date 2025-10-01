@@ -160,6 +160,8 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_cronjob_update` handler to the shared CLI adapter. _(commit 99382924472be914ae558c158dd32c416fd720d1)_
 
+- **2025-09-30** – Migrated `mittwald_database_list` handler to the shared CLI adapter. _(commit f105b5874e2e65d83e003190a2462182073ce75d)_
+
 - **2025-09-30** – Migrated `mittwald_domain_list` handler to the shared CLI adapter. _(commit 14e9148ae77dc79d5e403e5caeefe34697503faf)_
 
 - **2025-09-30** – Migrated `mittwald_context_get` handler to the shared CLI adapter. _(commit 1919d326c8dba352286720d58325d5adf7628c43)_
