@@ -6,7 +6,8 @@
     "coveredCount": 137,
     "missingCount": 41,
     "coveragePercent": 77,
-    "extraToolCount": 12
+    "extraToolCount": 12,
+    "excludedCount": 7
   },
   "coverage": [
     {
@@ -158,7 +159,11 @@
       "expectedToolName": "mittwald_app_exec",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "app get",
@@ -547,7 +552,11 @@
       "expectedToolName": "mittwald_container_cp",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "container delete",
@@ -573,7 +582,11 @@
       "expectedToolName": "mittwald_container_exec",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "container list",
@@ -612,7 +625,11 @@
       "expectedToolName": "mittwald_container_port_forward",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "container recreate",
@@ -664,7 +681,11 @@
       "expectedToolName": "mittwald_container_ssh",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "container start",
@@ -1252,7 +1273,11 @@
       "expectedToolName": "mittwald_database_redis_shell",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "database redis versions",
@@ -1494,7 +1519,11 @@
       "expectedToolName": "mittwald_login_status",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "MCP server uses per-command token injection; CLI login state not applicable"
+      }
     },
     {
       "command": "login token",
@@ -2470,7 +2499,11 @@
       "expectedToolName": "mittwald_app_exec",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "app version-info",
@@ -2496,7 +2529,11 @@
       "expectedToolName": "mittwald_container_cp",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "container exec",
@@ -2509,7 +2546,11 @@
       "expectedToolName": "mittwald_container_exec",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "container port-forward",
@@ -2522,7 +2563,11 @@
       "expectedToolName": "mittwald_container_port_forward",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "container ssh",
@@ -2535,7 +2580,11 @@
       "expectedToolName": "mittwald_container_ssh",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "container update",
@@ -2679,7 +2728,11 @@
       "expectedToolName": "mittwald_database_redis_shell",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+      }
     },
     {
       "command": "database redis versions",
@@ -2732,7 +2785,11 @@
       "expectedToolName": "mittwald_login_status",
       "status": "missing",
       "toolPath": null,
-      "handlerImport": null
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "MCP server uses per-command token injection; CLI login state not applicable"
+      }
     },
     {
       "command": "org delete",

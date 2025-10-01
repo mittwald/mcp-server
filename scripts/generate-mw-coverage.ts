@@ -1,5 +1,5 @@
 import { readdir, readFile, writeFile } from 'fs/promises';
-import { dirname, extname, join, relative, resolve, sep } from 'path';
+import { dirname, join, relative, resolve, sep } from 'path';
 import { pathToFileURL } from 'url';
 
 const ROOT = process.cwd();
@@ -8,6 +8,7 @@ const CONSTANTS_DIR = resolve(ROOT, 'src/constants/tool/mittwald-cli');
 const HANDLERS_DIR = resolve(ROOT, 'src/handlers/tools/mittwald-cli');
 const COVERAGE_JSON_PATH = resolve(ROOT, 'mw-cli-coverage.json');
 const COVERAGE_DOC_PATH = resolve(ROOT, 'docs/mittwald-cli-coverage.md');
+const EXCLUSION_CONFIG_PATH = resolve(ROOT, 'config', 'mw-cli-exclusions.json');
 const SCHEMA_REFERENCE = './config/mw-cli-coverage.schema.json';
 
 interface ToolRegistrationLike {
@@ -37,6 +38,10 @@ interface CoverageEntry extends CliCommandMeta {
   status: 'covered' | 'missing';
   toolPath: string | null;
   handlerImport: string | null;
+  exclusion?: {
+    category: string;
+    reason: string;
+  };
 }
 
 interface CoverageReport {
@@ -47,6 +52,7 @@ interface CoverageReport {
     missingCount: number;
     coveragePercent: number;
     extraToolCount: number;
+    excludedCount: number;
   };
   coverage: CoverageEntry[];
   extraTools: Array<{
@@ -54,6 +60,7 @@ interface CoverageReport {
     relPath: string;
     handlerImport: string;
   }>;
+  missing: CoverageEntry[];
 }
 
 function sortCoverageEntries(entries: CoverageEntry[], existingOrder: Map<string, number>): CoverageEntry[] {
@@ -100,7 +107,8 @@ async function loadExistingCoverageSnapshot(): Promise<ExistingCoverageSnapshot>
         expectedToolName: entry.expectedToolName ?? '',
         status: entry.status === 'covered' ? 'covered' : 'missing',
         toolPath: entry.toolPath ?? null,
-        handlerImport: entry.handlerImport ?? null
+        handlerImport: entry.handlerImport ?? null,
+        exclusion: entry.exclusion
       };
       order.set(snapshot.command, index);
       entries.set(snapshot.command, snapshot);
@@ -128,6 +136,61 @@ async function loadExistingCoverageSnapshot(): Promise<ExistingCoverageSnapshot>
       extraToolOrder: new Map<string, number>(),
       extraTools: new Map<string, { relPath: string; handlerImport: string }>()
     };
+  }
+}
+
+interface ExclusionDefinition {
+  category: string;
+  reason: string;
+}
+
+interface ExclusionConfig {
+  interactive?: string[];
+  intentional?: string[];
+  rationale?: {
+    interactive?: string;
+    intentional?: Record<string, string>;
+    [key: string]: unknown;
+  };
+}
+
+async function loadExclusionConfig(): Promise<Map<string, ExclusionDefinition>> {
+  try {
+    const raw = await readFile(EXCLUSION_CONFIG_PATH, 'utf8');
+    const config = JSON.parse(raw) as ExclusionConfig;
+    const exclusions = new Map<string, ExclusionDefinition>();
+
+    const interactiveReason = typeof config.rationale?.interactive === 'string'
+      ? config.rationale.interactive
+      : 'Interactive command excluded until streaming support is available.';
+
+    for (const command of config.interactive ?? []) {
+      exclusions.set(command.trim(), {
+        category: 'interactive',
+        reason: interactiveReason
+      });
+    }
+
+    const intentionalRationales = config.rationale?.intentional ?? {};
+    for (const command of config.intentional ?? []) {
+      const trimmed = command.trim();
+      const reason = typeof intentionalRationales === 'object' && intentionalRationales !== null
+        ? intentionalRationales[trimmed] ?? 'Intentional exclusion'
+        : 'Intentional exclusion';
+
+      exclusions.set(trimmed, {
+        category: 'intentional',
+        reason
+      });
+    }
+
+    return exclusions;
+  } catch (error) {
+    console.warn(
+      `Failed to load exclusion configuration from ${EXCLUSION_CONFIG_PATH}:`,
+      error instanceof Error ? error.message : error
+    );
+    return new Map<string, ExclusionDefinition>();
   }
 }
 
@@ -299,7 +362,8 @@ function buildCoverage(
   tools: Map<string, ToolMetadata>,
   existingCoverage: Map<string, CoverageEntry>,
   existingExtraTools: Map<string, { relPath: string; handlerImport: string }>,
-  existingExtraToolOrder: Map<string, number>
+  existingExtraToolOrder: Map<string, number>,
+  exclusions: Map<string, ExclusionDefinition>
 ): { report: CoverageReport; coverageEntries: CoverageEntry[]; extraTools: Map<string, ToolMetadata> } {
   const extraTools = new Map(tools);
 
@@ -321,19 +385,24 @@ function buildCoverage(
       handlerImport = existingEntry.handlerImport;
     }
 
+    const exclusion = !toolMeta ? exclusions.get(commandMeta.command) : undefined;
+
     return {
       ...commandMeta,
       description,
       expectedToolName,
       status: toolMeta ? 'covered' : 'missing',
       toolPath,
-      handlerImport
+      handlerImport,
+      exclusion
     };
   });
 
   const coveredCount = coverageEntries.filter((entry) => entry.status === 'covered').length;
   const cliCommandCount = coverageEntries.length;
-  const missingCount = cliCommandCount - coveredCount;
+  const missingEntries = coverageEntries.filter((entry) => entry.status === 'missing');
+  const missingCount = missingEntries.length;
+  const excludedCount = missingEntries.filter((entry) => entry.exclusion).length;
   const coveragePercent = cliCommandCount === 0 ? 0 : Math.round((coveredCount / cliCommandCount) * 100);
   const extraToolEntries = Array.from(extraTools.entries()).map(([toolName, meta]) => {
     const existing = existingExtraTools.get(toolName);
@@ -370,7 +439,8 @@ function buildCoverage(
       coveredCount,
       missingCount,
       coveragePercent,
-      extraToolCount: extraToolEntries.length
+      extraToolCount: extraToolEntries.length,
+      excludedCount
     },
     coverage: coverageEntries,
     extraTools: extraToolEntries,
@@ -427,27 +497,27 @@ async function loadExistingDocMetadata(): Promise<DocMetadata> {
 }
 
 async function writeCoverageJson(report: CoverageReport): Promise<void> {
-  const coverage = report.coverage.map((entry) => ({
-    command: entry.command,
-    segments: entry.segments,
-    cliFile: entry.cliFile,
-    description: entry.description,
-    expectedToolName: entry.expectedToolName,
-    status: entry.status,
-    toolPath: entry.toolPath,
-    handlerImport: entry.handlerImport
-  }));
+  const serializeEntry = (entry: CoverageEntry) => {
+    const base: Record<string, unknown> = {
+      command: entry.command,
+      segments: entry.segments,
+      cliFile: entry.cliFile,
+      description: entry.description,
+      expectedToolName: entry.expectedToolName,
+      status: entry.status,
+      toolPath: entry.toolPath,
+      handlerImport: entry.handlerImport
+    };
 
-  const missing = report.missing.map((entry) => ({
-    command: entry.command,
-    segments: entry.segments,
-    cliFile: entry.cliFile,
-    description: entry.description,
-    expectedToolName: entry.expectedToolName,
-    status: entry.status,
-    toolPath: entry.toolPath,
-    handlerImport: entry.handlerImport
-  }));
+    if (entry.exclusion) {
+      base.exclusion = entry.exclusion;
+    }
+
+    return base;
+  };
+
+  const coverage = report.coverage.map(serializeEntry);
+  const missing = report.missing.map(serializeEntry);
 
   const output = {
     $schema: SCHEMA_REFERENCE,
@@ -517,7 +587,15 @@ async function writeCoverageMarkdown(
       const toolDefinition = entry.status === 'covered' && entry.toolPath
         ? `src/constants/tool/mittwald-cli/${entry.toolPath}`
         : '';
-      const note = docMetadata.notes.get(entry.command) ?? '';
+      const docNote = docMetadata.notes.get(entry.command) ?? '';
+      const exclusionNote = entry.exclusion
+        ? `Allowed missing (${entry.exclusion.category}): ${entry.exclusion.reason}`
+        : '';
+      const note = docNote
+        ? exclusionNote
+          ? `${docNote} — ${exclusionNote}`
+          : docNote
+        : exclusionNote;
       const description = (entry.description ?? '').replace(/\s+/g, ' ').trim();
 
       lines.push(
@@ -536,10 +614,20 @@ async function main(): Promise<void> {
     const tools = await loadToolDefinitions();
     const cliCommands = await loadCliCommands();
     const existingSnapshot = await loadExistingCoverageSnapshot();
-    const { report } = buildCoverage(cliCommands, tools, existingSnapshot.entries, existingSnapshot.extraTools, existingSnapshot.extraToolOrder);
+    const exclusions = await loadExclusionConfig();
+    const { report } = buildCoverage(
+      cliCommands,
+      tools,
+      existingSnapshot.entries,
+      existingSnapshot.extraTools,
+      existingSnapshot.extraToolOrder,
+      exclusions
+    );
     const sortedCoverage = sortCoverageEntries(report.coverage, existingSnapshot.order);
     report.coverage = sortedCoverage;
     report.missing = sortedCoverage.filter((entry) => entry.status === 'missing');
+    report.stats.missingCount = report.missing.length;
+    report.stats.excludedCount = report.missing.filter((entry) => entry.exclusion).length;
     const docMetadata = await loadExistingDocMetadata();
 
     await writeCoverageJson(report);

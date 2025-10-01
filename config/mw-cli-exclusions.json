@@ -1,0 +1,19 @@
+{
+  "interactive": [
+    "app exec",
+    "container exec",
+    "container ssh",
+    "container port-forward",
+    "container cp",
+    "database redis shell"
+  ],
+  "intentional": [
+    "login status"
+  ],
+  "rationale": {
+    "interactive": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)",
+    "intentional": {
+      "login status": "MCP server uses per-command token injection; CLI login state not applicable"
+    }
+  }
+}

@@ -23,7 +23,8 @@
         "coveredCount",
         "missingCount",
         "coveragePercent",
-        "extraToolCount"
+        "extraToolCount",
+        "excludedCount"
       ],
       "properties": {
         "cliCommandCount": {
@@ -48,6 +49,10 @@
           "maximum": 100
         },
         "extraToolCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excludedCount": {
           "type": "integer",
           "minimum": 0
         }
@@ -101,6 +106,21 @@
           "handlerImport": {
             "type": ["string", "null"],
             "minLength": 1
+          },
+          "exclusion": {
+            "type": "object",
+            "required": ["category", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         }
       }
