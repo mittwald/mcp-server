@@ -137,7 +137,7 @@ export const handleSftpUserCreateCli: MittwaldCliToolHandler<MittwaldSftpUserCre
     const payload = buildSuccessPayload(args, stdout, sftpUserId);
 
     const message = args.quiet
-      ? (sftpUserId ?? (stdout || 'SFTP user created successfully'))
+      ? (sftpUserId ?? stdout || 'SFTP user created successfully')
       : sftpUserId
         ? `Successfully created SFTP user '${args.description}' with ID ${sftpUserId}`
         : `Successfully created SFTP user '${args.description}'`;

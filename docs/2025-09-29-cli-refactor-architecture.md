@@ -306,7 +306,5 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_user_ssh_key_create` to the adapter path. _(commit 9fe7b37e86c148a394aa09260388b2619413d535)_
 
-- **2025-09-30** – Migrated `mittwald_user_ssh_key_delete` to the adapter path. _(commit c9a8a3cb51840ad8f0ad360fe4a8199f076ca45d)_
-
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
