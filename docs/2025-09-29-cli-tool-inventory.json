@@ -645,32 +645,32 @@
       "tool": "mittwald_database_mysql_phpmyadmin",
       "handler": "handleDatabaseMysqlPhpmyadminCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/phpmyadmin-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_database_mysql_port_forward",
       "handler": "handleDatabaseMysqlPortForwardCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/port-forward-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_database_mysql_shell",
       "handler": "handleDatabaseMysqlShellCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/shell-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_database_mysql_versions",
       "handler": "handleDatabaseMysqlVersionsCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/versions-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
