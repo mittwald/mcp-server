@@ -493,8 +493,8 @@
       "tool": "mittwald_conversation_show",
       "handler": "handleConversationShowCli",
       "file": "src/constants/tool/mittwald-cli/conversation/show-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 4"
     },
     {
