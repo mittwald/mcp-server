@@ -167,7 +167,7 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_mail_address_get` handler to the shared CLI adapter. _(commit 073fe81e08bbb27efaf0eff40732376e42746b92)_
 
-- **2025-09-30** – Migrated `mittwald_mail_address_delete` handler to the shared CLI adapter. _(commit 0ebf2580ade8f18a3a04ce484c47f4d311df0d4d)_
+- **2025-09-30** – Migrated `mittwald_mail_address_delete` handler to the shared CLI adapter. _(commit b5e1f24e9b6e6329d4c0dc7bdb97a843026d9107)_
 
 - **2025-09-30** – Migrated `mittwald_project_list` handler to the shared CLI adapter. _(commit 857e81591db8dc6199dafb0511c70c65e136f7e3)_
 
