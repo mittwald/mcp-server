@@ -749,16 +749,16 @@
       "tool": "mittwald_domain_virtualhost_get",
       "handler": "handleDomainVirtualhostGetCli",
       "file": "src/constants/tool/mittwald-cli/domain/virtualhost-get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_virtualhost_list",
       "handler": "handleDomainVirtualhostListCli",
       "file": "src/constants/tool/mittwald-cli/domain/virtualhost-list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
