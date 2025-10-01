@@ -1125,24 +1125,24 @@
       "tool": "mittwald_user_api_token_get",
       "handler": "handleUserApiTokenGetCli",
       "file": "src/constants/tool/mittwald-cli/user/api-token/get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_api_token_list",
       "handler": "handleUserApiTokenListCli",
       "file": "src/constants/tool/mittwald-cli/user/api-token/list-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_api_token_revoke",
       "handler": "handleUserApiTokenRevokeCli",
       "file": "src/constants/tool/mittwald-cli/user/api-token/revoke-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 8"
     },
     {
