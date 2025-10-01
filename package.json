@@ -54,7 +54,8 @@
     "test:all": "pnpm test:unit && pnpm test:bridge && pnpm test:session && pnpm test:integration && pnpm test:e2e",
     "inspector": "npx @modelcontextprotocol/inspector",
     "logs:registration": "bash scripts/tail-registration-logs.sh",
-    "coverage:generate": "tsx scripts/generate-mw-coverage.ts"
+    "coverage:generate": "tsx scripts/generate-mw-coverage.ts",
+    "check:cli-version": "tsx scripts/check-cli-version.ts"
   },
   "repository": {
     "type": "git",

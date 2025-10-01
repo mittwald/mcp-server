@@ -33,3 +33,7 @@ jobs:
             echo "Coverage report out of sync. Run 'npm run coverage:generate' and commit changes." >&2
             exit 1
           fi
+
+      - name: Check CLI version drift
+        run: npm run check:cli-version
+        continue-on-error: true

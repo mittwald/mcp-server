@@ -76,3 +76,5 @@ monitor-*.sh
 run-*.sh
 
 .swarm
+
+!scripts/check-cli-version.ts
