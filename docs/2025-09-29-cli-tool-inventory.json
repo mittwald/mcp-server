@@ -885,8 +885,8 @@
       "tool": "mittwald_mail_deliverybox_update",
       "handler": "handleMittwaldMailDeliveryboxUpdateCli",
       "file": "src/constants/tool/mittwald-cli/mail/deliverybox/update-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
