@@ -525,8 +525,8 @@
       "tool": "mittwald_cronjob_execution_abort",
       "handler": "handleCronjobExecutionAbortCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execution-abort-cli.ts",
-      "status": "migrated",
-      "notes": "converted to invokeCliTool",
+      "status": "pending",
+      "notes": "",
       "agent_assignment": "Agent 4"
     },
     {
@@ -821,8 +821,8 @@
       "tool": "mittwald_mail_address_delete",
       "handler": "handleMittwaldMailAddressDeleteCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/delete-cli.ts",
-      "status": "migrated",
-      "notes": "converted to invokeCliTool",
+      "status": "pending",
+      "notes": "",
       "agent_assignment": "Agent 6"
     },
     {

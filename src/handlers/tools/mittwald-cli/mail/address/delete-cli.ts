@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { executeCli } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldMailAddressDeleteArgs {
   id: string;
@@ -8,81 +8,75 @@ interface MittwaldMailAddressDeleteArgs {
   force?: boolean;
 }
 
-function buildCliArgs(args: MittwaldMailAddressDeleteArgs): string[] {
-  const cliArgs: string[] = ['mail', 'address', 'delete', args.id];
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.force) cliArgs.push('--force');
-  return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
-
-function mapCliError(error: CliToolError, args: MittwaldMailAddressDeleteArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-  const errorMessage = error.stderr || error.stdout || error.message;
-
-  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
-    return `Permission denied when deleting mail address. Check if your API token has mail management permissions.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('not found') || combined.includes('404')) {
-    return `Mail address not found: ${args.id}.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('cancelled') || combined.includes('canceled') || combined.includes('aborted')) {
-    return `Delete operation cancelled. Use --force to delete without confirmation.\nError: ${errorMessage}`;
-  }
-
-  return `Failed to delete mail address: ${errorMessage}`;
-}
-
 export const handleMittwaldMailAddressDeleteCli: MittwaldCliToolHandler<MittwaldMailAddressDeleteArgs> = async (args) => {
-  const argv = buildCliArgs(args);
-
   try {
-    const result = await invokeCliTool({
-      toolName: 'mittwald_mail_address_delete',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-    });
-
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-
-    const quietMessage = args.quiet ? parseQuietOutput(stdout) ?? output : undefined;
-
+    // Build CLI command arguments
+    const cliArgs: string[] = ['mail', 'address', 'delete'];
+    
+    // Required ID
+    cliArgs.push(args.id);
+    
+    // Optional flags
+    if (args.quiet) {
+      cliArgs.push('--quiet');
+    }
+    
+    if (args.force) {
+      cliArgs.push('--force');
+    }
+    
+    // Execute CLI command
+    const result = await executeCli('mw', cliArgs);
+    
+    if (result.exitCode !== 0) {
+      // Parse error message from stderr or stdout
+      const errorMessage = result.stderr || result.stdout || 'Unknown error';
+      
+      // Check for common error patterns
+      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
+        return formatToolResponse(
+          "error",
+          `Permission denied when deleting mail address. Check if your API token has mail management permissions.\nError: ${errorMessage}`
+        );
+      }
+      
+      if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+        return formatToolResponse(
+          "error",
+          `Mail address not found: ${args.id}.\nError: ${errorMessage}`
+        );
+      }
+      
+      if (errorMessage.includes('cancelled') || errorMessage.includes('aborted')) {
+        return formatToolResponse(
+          "error",
+          `Delete operation cancelled. Use --force to delete without confirmation.\nError: ${errorMessage}`
+        );
+      }
+      
+      return formatToolResponse(
+        "error",
+        `Failed to delete mail address: ${errorMessage}`
+      );
+    }
+    
+    // Success response
     return formatToolResponse(
-      'success',
-      args.quiet ? (quietMessage || 'Mail address deleted') : `Successfully deleted mail address: ${args.id}`,
+      "success",
+      args.quiet ? 
+        result.stdout || 'Mail address deleted' :
+        `Successfully deleted mail address: ${args.id}`,
       {
         id: args.id,
         deleted: true,
-        output,
-        force: args.force,
-        quiet: args.quiet,
-      },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        output: result.stdout
       }
     );
+    
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
-      });
-    }
-
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    return formatToolResponse(
+      "error",
+      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 };
