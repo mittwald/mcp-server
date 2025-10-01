@@ -741,8 +741,8 @@
       "tool": "mittwald_domain_virtualhost_delete",
       "handler": "handleDomainVirtualhostDeleteCli",
       "file": "src/constants/tool/mittwald-cli/domain/virtualhost-delete-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
@@ -829,8 +829,8 @@
       "tool": "mittwald_mail_address_get",
       "handler": "handleMittwaldMailAddressGetCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/get-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
