@@ -140,4 +140,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated container registry (`delete`, `list`, `update`) and container lifecycle (`restart`, `run`) handlers to the shared CLI adapter. _(commit 0103cac7d76bed9dfed23b5730bb7419fcd10826)_
 
+- **2025-09-30** – Migrated container stack (`delete`, `deploy`, `list`, `ps`) and container start/stop handlers to the shared CLI adapter. _(commit dd11ce3f0412e3f893f02cc8667c5180930a3275)_
+
 _Last updated: 2025-09-30_
