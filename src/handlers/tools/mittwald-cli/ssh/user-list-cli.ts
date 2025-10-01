@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldSshUserListArgs {
   projectId?: string;
@@ -12,109 +12,103 @@ interface MittwaldSshUserListArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleSshUserListCli: MittwaldToolHandler<MittwaldSshUserListArgs> = async (args) => {
+function buildCliArgs(args: MittwaldSshUserListArgs): string[] {
+  const cliArgs: string[] = ['ssh-user', 'list', '--output', 'json'];
+
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.extended) cliArgs.push('--extended');
+  if (args.noHeader) cliArgs.push('--no-header');
+  if (args.noTruncate) cliArgs.push('--no-truncate');
+  if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
+  if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldSshUserListArgs): string {
+  const stderr = error.stderr ?? '';
+  const stdout = error.stdout ?? '';
+  const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    const details = stderr || stdout || error.message;
+    return `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${details}`;
+  }
+
+  const details = stderr || stdout || error.message;
+  return `Failed to list SSH users: ${details}`;
+}
+
+function formatSshUser(record: Record<string, unknown>) {
+  return {
+    id: record.id,
+    description: record.description,
+    active: record.active,
+    projectId: record.projectId,
+    authentication: record.authentication,
+    expiresAt: record.expiresAt,
+    data: record,
+  };
+}
+
+export const handleSshUserListCli: MittwaldCliToolHandler<MittwaldSshUserListArgs> = async (args) => {
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['ssh-user', 'list'];
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Optional flags
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    if (args.extended) {
-      cliArgs.push('--extended');
-    }
-    
-    if (args.noHeader) {
-      cliArgs.push('--no-header');
-    }
-    
-    if (args.noTruncate) {
-      cliArgs.push('--no-truncate');
-    }
-    
-    if (args.noRelativeDates) {
-      cliArgs.push('--no-relative-dates');
-    }
-    
-    if (args.csvSeparator) {
-      cliArgs.push('--csv-separator', args.csvSeparator);
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to list SSH users: ${errorMessage}`
-      );
-    }
-    
-    // Parse JSON output
+    const result = await invokeCliTool({
+      toolName: 'mittwald_ssh_user_list',
+      argv,
+      parser: (stdout) => stdout,
+    });
+
+    const meta = {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    };
+
+    const stdout = result.result ?? '';
+
     try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (!Array.isArray(data)) {
-        return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
-        );
+      const parsed = JSON.parse(stdout);
+
+      if (!Array.isArray(parsed)) {
+        return formatToolResponse('error', 'Unexpected output format from CLI command');
       }
-      
-      if (data.length === 0) {
-        return formatToolResponse(
-          "success",
-          "No SSH users found",
-          []
-        );
+
+      if (parsed.length === 0) {
+        return formatToolResponse('success', 'No SSH users found', [], meta);
       }
-      
-      // Format the data to match our expected structure
-      const formattedData = data.map(item => ({
-        id: item.id,
-        description: item.description,
-        active: item.active,
-        projectId: item.projectId,
-        authentication: item.authentication,
-        expiresAt: item.expiresAt
-      }));
-      
+
+      const formatted = parsed.map((item) => formatSshUser((item ?? {}) as Record<string, unknown>));
+
       return formatToolResponse(
-        "success",
-        `Found ${data.length} SSH user(s)`,
-        formattedData
+        'success',
+        `Found ${formatted.length} SSH user(s)`,
+        formatted,
+        meta
       );
-      
     } catch (parseError) {
-      // If JSON parsing fails, return the raw output
       return formatToolResponse(
-        "success",
-        "SSH users retrieved (raw output)",
+        'success',
+        'SSH users retrieved (raw output)',
         {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
-        }
+          rawOutput: stdout,
+          parseError: parseError instanceof Error ? parseError.message : String(parseError),
+        },
+        meta
       );
     }
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
