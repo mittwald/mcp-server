@@ -437,8 +437,8 @@
       "tool": "mittwald_context_set",
       "handler": "handleContextSetCli",
       "file": "src/constants/tool/mittwald-cli/context/set-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 3"
     },
     {
@@ -461,8 +461,8 @@
       "tool": "mittwald_conversation_close",
       "handler": "handleConversationCloseCli",
       "file": "src/constants/tool/mittwald-cli/conversation/close-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 3"
     },
     {
@@ -509,8 +509,8 @@
       "tool": "mittwald_cronjob_delete",
       "handler": "handleCronjobDeleteCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/delete-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 4"
     },
     {
