@@ -108,7 +108,7 @@ export const handleSshUserCreateCli: MittwaldCliToolHandler<MittwaldSshUserCreat
     const payload = buildSuccessPayload(args, stdout, sshUserId);
 
     const message = args.quiet
-      ? sshUserId ?? stdout || 'SSH user created successfully'
+      ? (sshUserId ?? (stdout || 'SSH user created successfully'))
       : sshUserId
         ? `Successfully created SSH user '${args.description}' with ID ${sshUserId}`
         : `Successfully created SSH user '${args.description}'`;

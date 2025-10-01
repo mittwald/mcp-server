@@ -4,7 +4,7 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { parseJsonOutput } from '../../../../utils/cli-wrapper.js';
 
 function buildCliArgs(): string[] {
-  return ['user', 'accessible-projects', '--output', 'json'];
+  return ['project', 'list', '--output', 'json'];
 }
 
 function mapCliError(error: CliToolError): string {
@@ -16,7 +16,11 @@ function mapCliError(error: CliToolError): string {
   }
 
   if (combined.includes('forbidden') || combined.includes('403')) {
-    return `Access denied. You do not have permission to list accessible projects.\nError: ${errorText}`;
+    return `Access denied. You do not have permission to list projects.\nError: ${errorText}`;
+  }
+
+  if (combined.includes('not found') || combined.includes('404')) {
+    return `Failed to list projects. Ensure your account has access to at least one project.\nError: ${errorText}`;
   }
 
   return `Failed to list accessible projects: ${errorText}`;

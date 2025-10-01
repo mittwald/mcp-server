@@ -12,6 +12,13 @@ interface MittwaldDatabaseMysqlCreateArgs {
   userPassword?: string;
   userExternal?: boolean;
   userAccessLevel?: "full" | "readonly";
+  timeout?: string;
+  enable?: boolean;
+  disable?: boolean;
+  email?: string;
+  url?: string;
+  command?: string;
+  interpreter?: string;
 }
 
 function buildCliArgs(args: MittwaldDatabaseMysqlCreateArgs): string[] {
