@@ -1,0 +1,35 @@
+name: Coverage Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  coverage:
+    name: Generate Coverage Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate coverage artifacts
+        run: npm run coverage:generate
+
+      - name: Ensure coverage artifacts are committed
+        run: |
+          if ! git diff --exit-code; then
+            echo "Coverage report out of sync. Run 'npm run coverage:generate' and commit changes." >&2
+            exit 1
+          fi
