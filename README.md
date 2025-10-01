@@ -64,7 +64,8 @@ Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` f
 
 - `mw-cli-coverage.json` contains machine-readable coverage stats for the Mittwald CLI.
 - Validate the artifact with `config/mw-cli-coverage.schema.json` (e.g. `npx ajv validate -s config/mw-cli-coverage.schema.json -d mw-cli-coverage.json`).
-- Regeneration is automated via the upcoming Workstream A script (`npm run coverage:generate`); commit both the JSON and `docs/mittwald-cli-coverage.md` after running it.
+- Regeneration is automated via the Workstream A script (`npm run coverage:generate`); commit both the JSON and `docs/mittwald-cli-coverage.md` after running it.
+- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` and `stats.excludedCount` diverge.
 
 ---
 
