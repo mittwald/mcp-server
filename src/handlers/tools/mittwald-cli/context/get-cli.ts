@@ -13,7 +13,7 @@ function buildCliArgs(args: MittwaldContextGetArgs): string[] {
   return cliArgs;
 }
 
-interface JsonContextResult {
+type JsonContextResult = {
   ok: true;
   value: Record<string, unknown>;
 } | {
