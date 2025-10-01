@@ -1,0 +1,3036 @@
+{
+  "stats": {
+    "cliCommandCount": 178,
+    "toolCount": 149,
+    "coveredCount": 137,
+    "missingCount": 41,
+    "coveragePercent": 77,
+    "extraToolCount": 12
+  },
+  "coverage": [
+    {
+      "command": "app copy",
+      "segments": [
+        "app",
+        "copy"
+      ],
+      "cliFile": "app/copy.js",
+      "description": "Copy an app within a project",
+      "expectedToolName": "mittwald_app_copy",
+      "status": "covered",
+      "toolPath": "app/copy-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/copy-cli.js"
+    },
+    {
+      "command": "app create node",
+      "segments": [
+        "app",
+        "create",
+        "node"
+      ],
+      "cliFile": "app/create/node.js",
+      "description": "Creates new custom Node.js installation.",
+      "expectedToolName": "mittwald_app_create_node",
+      "status": "covered",
+      "toolPath": "app/create/node-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/node-cli.js"
+    },
+    {
+      "command": "app create php-worker",
+      "segments": [
+        "app",
+        "create",
+        "php-worker"
+      ],
+      "cliFile": "app/create/php-worker.js",
+      "description": "Creates new PHP worker installation.",
+      "expectedToolName": "mittwald_app_create_php_worker",
+      "status": "covered",
+      "toolPath": "app/create/php-worker-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/php-worker-cli.js"
+    },
+    {
+      "command": "app create php",
+      "segments": [
+        "app",
+        "create",
+        "php"
+      ],
+      "cliFile": "app/create/php.js",
+      "description": "Creates new custom PHP installation.",
+      "expectedToolName": "mittwald_app_create_php",
+      "status": "covered",
+      "toolPath": "app/create/php-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/php-cli.js"
+    },
+    {
+      "command": "app create python",
+      "segments": [
+        "app",
+        "create",
+        "python"
+      ],
+      "cliFile": "app/create/python.js",
+      "description": "Creates new custom python site installation.",
+      "expectedToolName": "mittwald_app_create_python",
+      "status": "covered",
+      "toolPath": "app/create/python-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/python-cli.js"
+    },
+    {
+      "command": "app create static",
+      "segments": [
+        "app",
+        "create",
+        "static"
+      ],
+      "cliFile": "app/create/static.js",
+      "description": "Creates new custom static site installation.",
+      "expectedToolName": "mittwald_app_create_static",
+      "status": "covered",
+      "toolPath": "app/create/static-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/static-cli.js"
+    },
+    {
+      "command": "app dependency list",
+      "segments": [
+        "app",
+        "dependency",
+        "list"
+      ],
+      "cliFile": "app/dependency/list.js",
+      "description": "Get all available dependencies",
+      "expectedToolName": "mittwald_app_dependency_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app dependency update",
+      "segments": [
+        "app",
+        "dependency",
+        "update"
+      ],
+      "cliFile": "app/dependency/update.js",
+      "description": null,
+      "expectedToolName": "mittwald_app_dependency_update",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app dependency versions",
+      "segments": [
+        "app",
+        "dependency",
+        "versions"
+      ],
+      "cliFile": "app/dependency/versions.js",
+      "description": "Get all available versions of a particular dependency",
+      "expectedToolName": "mittwald_app_dependency_versions",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app download",
+      "segments": [
+        "app",
+        "download"
+      ],
+      "cliFile": "app/download.js",
+      "description": "This command downloads the filesystem of an app installation to your local machine via rsync.\n\nFor this, rsync needs to be installed on your system.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.\n\nThis command will also look for a file named .mw-rsync-filter in the current directory and use it as a filter file for rsync. Have a look at https://manpages.ubuntu.com/manpages/noble/en/man1/rsync.1.html#filter%20rules for more information on how to write filter rules.",
+      "expectedToolName": "mittwald_app_download",
+      "status": "covered",
+      "toolPath": "app/download-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/download-cli.js"
+    },
+    {
+      "command": "app exec",
+      "segments": [
+        "app",
+        "exec"
+      ],
+      "cliFile": "app/exec.js",
+      "description": "This command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_app_exec",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app get",
+      "segments": [
+        "app",
+        "get"
+      ],
+      "cliFile": "app/get.js",
+      "description": "Get details about an app installation",
+      "expectedToolName": "mittwald_app_get",
+      "status": "covered",
+      "toolPath": "app/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/get-cli.js"
+    },
+    {
+      "command": "app install contao",
+      "segments": [
+        "app",
+        "install",
+        "contao"
+      ],
+      "cliFile": "app/install/contao.js",
+      "description": "Creates new Contao installation.",
+      "expectedToolName": "mittwald_app_install_contao",
+      "status": "covered",
+      "toolPath": "app/install/contao-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/contao-cli.js"
+    },
+    {
+      "command": "app install joomla",
+      "segments": [
+        "app",
+        "install",
+        "joomla"
+      ],
+      "cliFile": "app/install/joomla.js",
+      "description": "Creates new Joomla! installation.",
+      "expectedToolName": "mittwald_app_install_joomla",
+      "status": "covered",
+      "toolPath": "app/install/joomla-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/joomla-cli.js"
+    },
+    {
+      "command": "app install matomo",
+      "segments": [
+        "app",
+        "install",
+        "matomo"
+      ],
+      "cliFile": "app/install/matomo.js",
+      "description": "Creates new Matomo installation.",
+      "expectedToolName": "mittwald_app_install_matomo",
+      "status": "covered",
+      "toolPath": "app/install/matomo-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/matomo-cli.js"
+    },
+    {
+      "command": "app install nextcloud",
+      "segments": [
+        "app",
+        "install",
+        "nextcloud"
+      ],
+      "cliFile": "app/install/nextcloud.js",
+      "description": "Creates new Nextcloud installation.",
+      "expectedToolName": "mittwald_app_install_nextcloud",
+      "status": "covered",
+      "toolPath": "app/install/nextcloud-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/nextcloud-cli.js"
+    },
+    {
+      "command": "app install shopware5",
+      "segments": [
+        "app",
+        "install",
+        "shopware5"
+      ],
+      "cliFile": "app/install/shopware5.js",
+      "description": "Creates new Shopware 5 installation.",
+      "expectedToolName": "mittwald_app_install_shopware5",
+      "status": "covered",
+      "toolPath": "app/install/shopware5-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/shopware5-cli.js"
+    },
+    {
+      "command": "app install shopware6",
+      "segments": [
+        "app",
+        "install",
+        "shopware6"
+      ],
+      "cliFile": "app/install/shopware6.js",
+      "description": "Creates new Shopware 6 installation.",
+      "expectedToolName": "mittwald_app_install_shopware6",
+      "status": "covered",
+      "toolPath": "app/install/shopware6-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/shopware6-cli.js"
+    },
+    {
+      "command": "app install typo3",
+      "segments": [
+        "app",
+        "install",
+        "typo3"
+      ],
+      "cliFile": "app/install/typo3.js",
+      "description": "Creates new TYPO3 installation.",
+      "expectedToolName": "mittwald_app_install_typo3",
+      "status": "covered",
+      "toolPath": "app/install/typo3-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/typo3-cli.js"
+    },
+    {
+      "command": "app install wordpress",
+      "segments": [
+        "app",
+        "install",
+        "wordpress"
+      ],
+      "cliFile": "app/install/wordpress.js",
+      "description": "Creates new WordPress installation.",
+      "expectedToolName": "mittwald_app_install_wordpress",
+      "status": "covered",
+      "toolPath": "app/install/wordpress-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/wordpress-cli.js"
+    },
+    {
+      "command": "app list-upgrade-candidates",
+      "segments": [
+        "app",
+        "list-upgrade-candidates"
+      ],
+      "cliFile": "app/list-upgrade-candidates.js",
+      "description": "List upgrade candidates for an app installation.",
+      "expectedToolName": "mittwald_app_list_upgrade_candidates",
+      "status": "covered",
+      "toolPath": "app/list-upgrade-candidates-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/list-upgrade-candidates-cli.js"
+    },
+    {
+      "command": "app list",
+      "segments": [
+        "app",
+        "list"
+      ],
+      "cliFile": "app/list.js",
+      "description": "List installed apps in a project.",
+      "expectedToolName": "mittwald_app_list",
+      "status": "covered",
+      "toolPath": "app/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/list-cli.js"
+    },
+    {
+      "command": "app open",
+      "segments": [
+        "app",
+        "open"
+      ],
+      "cliFile": "app/open.js",
+      "description": "This command opens an app installation in the browser. For this to work, there needs to be at least one virtual host linked to the app installation.",
+      "expectedToolName": "mittwald_app_open",
+      "status": "covered",
+      "toolPath": "app/open-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/open-cli.js"
+    },
+    {
+      "command": "app ssh",
+      "segments": [
+        "app",
+        "ssh"
+      ],
+      "cliFile": "app/ssh.js",
+      "description": "Establishes an interactive SSH connection to an app installation.\n\nThis command is a wrapper around your systems SSH client, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_app_ssh",
+      "status": "covered",
+      "toolPath": "app/ssh-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/ssh-cli.js"
+    },
+    {
+      "command": "app uninstall",
+      "segments": [
+        "app",
+        "uninstall"
+      ],
+      "cliFile": "app/uninstall.js",
+      "description": "Uninstall an app",
+      "expectedToolName": "mittwald_app_uninstall",
+      "status": "covered",
+      "toolPath": "app/uninstall-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/uninstall-cli.js"
+    },
+    {
+      "command": "app update",
+      "segments": [
+        "app",
+        "update"
+      ],
+      "cliFile": "app/update.js",
+      "description": null,
+      "expectedToolName": "mittwald_app_update",
+      "status": "covered",
+      "toolPath": "app/update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/update-cli.js"
+    },
+    {
+      "command": "app upgrade",
+      "segments": [
+        "app",
+        "upgrade"
+      ],
+      "cliFile": "app/upgrade.js",
+      "description": "Upgrade app installation to target version",
+      "expectedToolName": "mittwald_app_upgrade",
+      "status": "covered",
+      "toolPath": "app/upgrade-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/upgrade-cli.js"
+    },
+    {
+      "command": "app upload",
+      "segments": [
+        "app",
+        "upload"
+      ],
+      "cliFile": "app/upload.js",
+      "description": "Upload the filesystem of an app from your local machine to a project.\n\nFor this, rsync needs to be installed on your system.\n\nCAUTION: This is a potentially destructive operation. It will overwrite files on the server with the files from your local machine. This is NOT a turnkey deployment solution. It is intended for development purposes only.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.\n\nThis command will also look for a file named .mw-rsync-filter in the current directory and use it as a filter file for rsync. Have a look at https://manpages.ubuntu.com/manpages/noble/en/man1/rsync.1.html#filter%20rules for more information on how to write filter rules.",
+      "expectedToolName": "mittwald_app_upload",
+      "status": "covered",
+      "toolPath": "app/upload-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/upload-cli.js"
+    },
+    {
+      "command": "app version-info",
+      "segments": [
+        "app",
+        "version-info"
+      ],
+      "cliFile": "app/version-info.js",
+      "description": "show information about specific app versions",
+      "expectedToolName": "mittwald_app_version_info",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app versions",
+      "segments": [
+        "app",
+        "versions"
+      ],
+      "cliFile": "app/versions.js",
+      "description": "List supported Apps and Versions",
+      "expectedToolName": "mittwald_app_versions",
+      "status": "covered",
+      "toolPath": "app/versions-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/versions-cli.js"
+    },
+    {
+      "command": "backup create",
+      "segments": [
+        "backup",
+        "create"
+      ],
+      "cliFile": "backup/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_backup_create",
+      "status": "covered",
+      "toolPath": "backup/create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/create-cli.js"
+    },
+    {
+      "command": "backup delete",
+      "segments": [
+        "backup",
+        "delete"
+      ],
+      "cliFile": "backup/delete.js",
+      "description": "Delete a backup",
+      "expectedToolName": "mittwald_backup_delete",
+      "status": "covered",
+      "toolPath": "backup/delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/delete-cli.js"
+    },
+    {
+      "command": "backup download",
+      "segments": [
+        "backup",
+        "download"
+      ],
+      "cliFile": "backup/download.js",
+      "description": "Download a backup to your local disk",
+      "expectedToolName": "mittwald_backup_download",
+      "status": "covered",
+      "toolPath": "backup/download-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/download-cli.js"
+    },
+    {
+      "command": "backup get",
+      "segments": [
+        "backup",
+        "get"
+      ],
+      "cliFile": "backup/get.js",
+      "description": "Show details of a backup.",
+      "expectedToolName": "mittwald_backup_get",
+      "status": "covered",
+      "toolPath": "backup/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/get-cli.js"
+    },
+    {
+      "command": "backup list",
+      "segments": [
+        "backup",
+        "list"
+      ],
+      "cliFile": "backup/list.js",
+      "description": "List Backups for a given Project.",
+      "expectedToolName": "mittwald_backup_list",
+      "status": "covered",
+      "toolPath": "backup/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/list-cli.js"
+    },
+    {
+      "command": "backup schedule create",
+      "segments": [
+        "backup",
+        "schedule",
+        "create"
+      ],
+      "cliFile": "backup/schedule/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_backup_schedule_create",
+      "status": "covered",
+      "toolPath": "backup/schedule-create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/schedule-create-cli.js"
+    },
+    {
+      "command": "backup schedule delete",
+      "segments": [
+        "backup",
+        "schedule",
+        "delete"
+      ],
+      "cliFile": "backup/schedule/delete.js",
+      "description": "Delete a backup schedule",
+      "expectedToolName": "mittwald_backup_schedule_delete",
+      "status": "covered",
+      "toolPath": "backup/schedule-delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/schedule-delete-cli.js"
+    },
+    {
+      "command": "backup schedule list",
+      "segments": [
+        "backup",
+        "schedule",
+        "list"
+      ],
+      "cliFile": "backup/schedule/list.js",
+      "description": "List backup schedules belonging to a given project.",
+      "expectedToolName": "mittwald_backup_schedule_list",
+      "status": "covered",
+      "toolPath": "backup/schedule-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/schedule-list-cli.js"
+    },
+    {
+      "command": "backup schedule update",
+      "segments": [
+        "backup",
+        "schedule",
+        "update"
+      ],
+      "cliFile": "backup/schedule/update.js",
+      "description": "Update an existing backup schedule",
+      "expectedToolName": "mittwald_backup_schedule_update",
+      "status": "covered",
+      "toolPath": "backup/schedule-update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/backup/schedule-update-cli.js"
+    },
+    {
+      "command": "container cp",
+      "segments": [
+        "container",
+        "cp"
+      ],
+      "cliFile": "container/cp.js",
+      "description": "The syntax is similar to docker cp:\n- Copy from container to host: mw container cp CONTAINER:SRC_PATH DEST_PATH\n- Copy from host to container: mw container cp SRC_PATH CONTAINER:DEST_PATH\n\nWhere CONTAINER can be a container ID, short ID, or service name.",
+      "expectedToolName": "mittwald_container_cp",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container delete",
+      "segments": [
+        "container",
+        "delete"
+      ],
+      "cliFile": "container/delete.js",
+      "description": "Delete a container",
+      "expectedToolName": "mittwald_container_delete",
+      "status": "covered",
+      "toolPath": "container/delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/delete-cli.js"
+    },
+    {
+      "command": "container exec",
+      "segments": [
+        "container",
+        "exec"
+      ],
+      "cliFile": "container/exec.js",
+      "description": "This command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_container_exec",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container list",
+      "segments": [
+        "container",
+        "list"
+      ],
+      "cliFile": "container/list.js",
+      "description": "List containers belonging to a project.",
+      "expectedToolName": "mittwald_container_list",
+      "status": "covered",
+      "toolPath": "container/list-services-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/list-services-cli.js"
+    },
+    {
+      "command": "container logs",
+      "segments": [
+        "container",
+        "logs"
+      ],
+      "cliFile": "container/logs.js",
+      "description": "This command prints the log output of a specific container. When this command is run in a terminal, the output is piped through a pager. The pager is determined by your PAGER environment variable, with defaulting to \"less\". You can disable this behavior with the --no-pager flag.",
+      "expectedToolName": "mittwald_container_logs",
+      "status": "covered",
+      "toolPath": "container/logs-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/logs-cli.js"
+    },
+    {
+      "command": "container port-forward",
+      "segments": [
+        "container",
+        "port-forward"
+      ],
+      "cliFile": "container/port-forward.js",
+      "description": "This command forwards a TCP port from a container to a local port on your machine. This allows you to connect to services running in the container as if they were running on your local machine.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_container_port_forward",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container recreate",
+      "segments": [
+        "container",
+        "recreate"
+      ],
+      "cliFile": "container/recreate.js",
+      "description": null,
+      "expectedToolName": "mittwald_container_recreate",
+      "status": "covered",
+      "toolPath": "container/recreate-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/recreate-cli.js"
+    },
+    {
+      "command": "container restart",
+      "segments": [
+        "container",
+        "restart"
+      ],
+      "cliFile": "container/restart.js",
+      "description": null,
+      "expectedToolName": "mittwald_container_restart",
+      "status": "covered",
+      "toolPath": "container/restart-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/restart-cli.js"
+    },
+    {
+      "command": "container run",
+      "segments": [
+        "container",
+        "run"
+      ],
+      "cliFile": "container/run.js",
+      "description": null,
+      "expectedToolName": "mittwald_container_run",
+      "status": "covered",
+      "toolPath": "container/run-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/run-cli.js"
+    },
+    {
+      "command": "container ssh",
+      "segments": [
+        "container",
+        "ssh"
+      ],
+      "cliFile": "container/ssh.js",
+      "description": "Establishes an interactive SSH connection to a container.\n\nThis command is a wrapper around your systems SSH client, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_container_ssh",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container start",
+      "segments": [
+        "container",
+        "start"
+      ],
+      "cliFile": "container/start.js",
+      "description": null,
+      "expectedToolName": "mittwald_container_start",
+      "status": "covered",
+      "toolPath": "container/start-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/start-cli.js"
+    },
+    {
+      "command": "container stop",
+      "segments": [
+        "container",
+        "stop"
+      ],
+      "cliFile": "container/stop.js",
+      "description": null,
+      "expectedToolName": "mittwald_container_stop",
+      "status": "covered",
+      "toolPath": "container/stop-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stop-cli.js"
+    },
+    {
+      "command": "container update",
+      "segments": [
+        "container",
+        "update"
+      ],
+      "cliFile": "container/update.js",
+      "description": "Updates attributes of an existing container such as image, environment variables, etc.",
+      "expectedToolName": "mittwald_container_update",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "context get",
+      "segments": [
+        "context",
+        "get"
+      ],
+      "cliFile": "context/get.js",
+      "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
+      "expectedToolName": "mittwald_context_get",
+      "status": "covered",
+      "toolPath": "context/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js"
+    },
+    {
+      "command": "context reset",
+      "segments": [
+        "context",
+        "reset"
+      ],
+      "cliFile": "context/reset.js",
+      "description": "This command resets any values for common parameters that you've previously set with 'context set'.",
+      "expectedToolName": "mittwald_context_reset",
+      "status": "covered",
+      "toolPath": "context/reset-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js"
+    },
+    {
+      "command": "context set",
+      "segments": [
+        "context",
+        "set"
+      ],
+      "cliFile": "context/set.js",
+      "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
+      "expectedToolName": "mittwald_context_set",
+      "status": "covered",
+      "toolPath": "context/set-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js"
+    },
+    {
+      "command": "conversation categories",
+      "segments": [
+        "conversation",
+        "categories"
+      ],
+      "cliFile": "conversation/categories.js",
+      "description": "Get all conversation categories.",
+      "expectedToolName": "mittwald_conversation_categories",
+      "status": "covered",
+      "toolPath": "conversation/categories-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/conversation/categories-cli.js"
+    },
+    {
+      "command": "conversation close",
+      "segments": [
+        "conversation",
+        "close"
+      ],
+      "cliFile": "conversation/close.js",
+      "description": "Close a conversation",
+      "expectedToolName": "mittwald_conversation_close",
+      "status": "covered",
+      "toolPath": "conversation/close-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/conversation/close-cli.js"
+    },
+    {
+      "command": "conversation create",
+      "segments": [
+        "conversation",
+        "create"
+      ],
+      "cliFile": "conversation/create.js",
+      "description": "Create a new conversation",
+      "expectedToolName": "mittwald_conversation_create",
+      "status": "covered",
+      "toolPath": "conversation/create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/conversation/create-cli.js"
+    },
+    {
+      "command": "conversation list",
+      "segments": [
+        "conversation",
+        "list"
+      ],
+      "cliFile": "conversation/list.js",
+      "description": "Get all conversations the authenticated user has created or has access to.",
+      "expectedToolName": "mittwald_conversation_list",
+      "status": "covered",
+      "toolPath": "conversation/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/conversation/list-cli.js"
+    },
+    {
+      "command": "conversation reply",
+      "segments": [
+        "conversation",
+        "reply"
+      ],
+      "cliFile": "conversation/reply.js",
+      "description": "Reply to a conversation",
+      "expectedToolName": "mittwald_conversation_reply",
+      "status": "covered",
+      "toolPath": "conversation/reply-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/conversation/reply-cli.js"
+    },
+    {
+      "command": "conversation show",
+      "segments": [
+        "conversation",
+        "show"
+      ],
+      "cliFile": "conversation/show.js",
+      "description": "Show a conversation and message history",
+      "expectedToolName": "mittwald_conversation_show",
+      "status": "covered",
+      "toolPath": "conversation/show-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/conversation/show-cli.js"
+    },
+    {
+      "command": "cronjob create",
+      "segments": [
+        "cronjob",
+        "create"
+      ],
+      "cliFile": "cronjob/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_cronjob_create",
+      "status": "covered",
+      "toolPath": "cronjob/create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/create-cli.js"
+    },
+    {
+      "command": "cronjob delete",
+      "segments": [
+        "cronjob",
+        "delete"
+      ],
+      "cliFile": "cronjob/delete.js",
+      "description": "Delete a cron job",
+      "expectedToolName": "mittwald_cronjob_delete",
+      "status": "covered",
+      "toolPath": "cronjob/delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/delete-cli.js"
+    },
+    {
+      "command": "cronjob execute",
+      "segments": [
+        "cronjob",
+        "execute"
+      ],
+      "cliFile": "cronjob/execute.js",
+      "description": null,
+      "expectedToolName": "mittwald_cronjob_execute",
+      "status": "covered",
+      "toolPath": "cronjob/execute-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execute-cli.js"
+    },
+    {
+      "command": "cronjob execution abort",
+      "segments": [
+        "cronjob",
+        "execution",
+        "abort"
+      ],
+      "cliFile": "cronjob/execution/abort.js",
+      "description": null,
+      "expectedToolName": "mittwald_cronjob_execution_abort",
+      "status": "covered",
+      "toolPath": "cronjob/execution-abort-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execution-abort-cli.js"
+    },
+    {
+      "command": "cronjob execution get",
+      "segments": [
+        "cronjob",
+        "execution",
+        "get"
+      ],
+      "cliFile": "cronjob/execution/get.js",
+      "description": "Get a cron job execution.",
+      "expectedToolName": "mittwald_cronjob_execution_get",
+      "status": "covered",
+      "toolPath": "cronjob/execution-get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execution-get-cli.js"
+    },
+    {
+      "command": "cronjob execution list",
+      "segments": [
+        "cronjob",
+        "execution",
+        "list"
+      ],
+      "cliFile": "cronjob/execution/list.js",
+      "description": "List CronjobExecutions belonging to a Cronjob.",
+      "expectedToolName": "mittwald_cronjob_execution_list",
+      "status": "covered",
+      "toolPath": "cronjob/execution-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execution-list-cli.js"
+    },
+    {
+      "command": "cronjob execution logs",
+      "segments": [
+        "cronjob",
+        "execution",
+        "logs"
+      ],
+      "cliFile": "cronjob/execution/logs.js",
+      "description": "This command prints the log output of a cronjob execution. When this command is run in a terminal, the output is piped through a pager. The pager is determined by your PAGER environment variable, with defaulting to \"less\". You can disable this behavior with the --no-pager flag.",
+      "expectedToolName": "mittwald_cronjob_execution_logs",
+      "status": "covered",
+      "toolPath": "cronjob/execution-logs-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execution-logs-cli.js"
+    },
+    {
+      "command": "cronjob get",
+      "segments": [
+        "cronjob",
+        "get"
+      ],
+      "cliFile": "cronjob/get.js",
+      "description": "Get details of a cron job",
+      "expectedToolName": "mittwald_cronjob_get",
+      "status": "covered",
+      "toolPath": "cronjob/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/get-cli.js"
+    },
+    {
+      "command": "cronjob list",
+      "segments": [
+        "cronjob",
+        "list"
+      ],
+      "cliFile": "cronjob/list.js",
+      "description": "List cron jobs belonging to a project.",
+      "expectedToolName": "mittwald_cronjob_list",
+      "status": "covered",
+      "toolPath": "cronjob/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/list-cli.js"
+    },
+    {
+      "command": "cronjob update",
+      "segments": [
+        "cronjob",
+        "update"
+      ],
+      "cliFile": "cronjob/update.js",
+      "description": "Update an existing cron job",
+      "expectedToolName": "mittwald_cronjob_update",
+      "status": "covered",
+      "toolPath": "cronjob/update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/update-cli.js"
+    },
+    {
+      "command": "database list",
+      "segments": [
+        "database",
+        "list"
+      ],
+      "cliFile": "database/list.js",
+      "description": "List all kinds of databases belonging to a project.",
+      "expectedToolName": "mittwald_database_list",
+      "status": "covered",
+      "toolPath": "database/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/database/list-cli.js"
+    },
+    {
+      "command": "database mysql charsets",
+      "segments": [
+        "database",
+        "mysql",
+        "charsets"
+      ],
+      "cliFile": "database/mysql/charsets.js",
+      "description": "List available MySQL character sets and collations, optionally filtered by a MySQLVersion.",
+      "expectedToolName": "mittwald_database_mysql_charsets",
+      "status": "covered",
+      "toolPath": "database/mysql/charsets-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/charsets-cli.js"
+    },
+    {
+      "command": "database mysql create",
+      "segments": [
+        "database",
+        "mysql",
+        "create"
+      ],
+      "cliFile": "database/mysql/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_database_mysql_create",
+      "status": "covered",
+      "toolPath": "database/mysql/create-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/create-cli.js"
+    },
+    {
+      "command": "database mysql delete",
+      "segments": [
+        "database",
+        "mysql",
+        "delete"
+      ],
+      "cliFile": "database/mysql/delete.js",
+      "description": "Delete a MySQL database",
+      "expectedToolName": "mittwald_database_mysql_delete",
+      "status": "covered",
+      "toolPath": "database/mysql/delete-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/delete-cli.js"
+    },
+    {
+      "command": "database mysql dump",
+      "segments": [
+        "database",
+        "mysql",
+        "dump"
+      ],
+      "cliFile": "database/mysql/dump.js",
+      "description": "This command creates a dump of a MySQL database via mysqldump and saves it to a local file.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_database_mysql_dump",
+      "status": "covered",
+      "toolPath": "database/mysql/dump-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/dump-cli.js"
+    },
+    {
+      "command": "database mysql get",
+      "segments": [
+        "database",
+        "mysql",
+        "get"
+      ],
+      "cliFile": "database/mysql/get.js",
+      "description": "Get a MySQLDatabase.",
+      "expectedToolName": "mittwald_database_mysql_get",
+      "status": "covered",
+      "toolPath": "database/mysql/get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/get-cli.js"
+    },
+    {
+      "command": "database mysql import",
+      "segments": [
+        "database",
+        "mysql",
+        "import"
+      ],
+      "cliFile": "database/mysql/import.js",
+      "description": "This command imports a mysqldump file from your local filesystem into a MySQL database.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_database_mysql_import",
+      "status": "covered",
+      "toolPath": "database/mysql/import-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/import-cli.js"
+    },
+    {
+      "command": "database mysql list",
+      "segments": [
+        "database",
+        "mysql",
+        "list"
+      ],
+      "cliFile": "database/mysql/list.js",
+      "description": "List MySQLDatabases belonging to a Project.",
+      "expectedToolName": "mittwald_database_mysql_list",
+      "status": "covered",
+      "toolPath": "database/mysql/list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/list-cli.js"
+    },
+    {
+      "command": "database mysql phpmyadmin",
+      "segments": [
+        "database",
+        "mysql",
+        "phpmyadmin"
+      ],
+      "cliFile": "database/mysql/phpmyadmin.js",
+      "description": null,
+      "expectedToolName": "mittwald_database_mysql_phpmyadmin",
+      "status": "covered",
+      "toolPath": "database/mysql/phpmyadmin-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/phpmyadmin-cli.js"
+    },
+    {
+      "command": "database mysql port-forward",
+      "segments": [
+        "database",
+        "mysql",
+        "port-forward"
+      ],
+      "cliFile": "database/mysql/port-forward.js",
+      "description": "This command forwards the TCP port of a MySQL database to a local port on your machine. This allows you to connect to the database as if it were running on your local machine.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_database_mysql_port_forward",
+      "status": "covered",
+      "toolPath": "database/mysql/port-forward-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/port-forward-cli.js"
+    },
+    {
+      "command": "database mysql shell",
+      "segments": [
+        "database",
+        "mysql",
+        "shell"
+      ],
+      "cliFile": "database/mysql/shell.js",
+      "description": "This command opens an interactive mysql shell to a MySQL database.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_database_mysql_shell",
+      "status": "covered",
+      "toolPath": "database/mysql/shell-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/shell-cli.js"
+    },
+    {
+      "command": "database mysql user create",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "create"
+      ],
+      "cliFile": "database/mysql/user/create.js",
+      "description": "Create a new MySQL user",
+      "expectedToolName": "mittwald_database_mysql_user_create",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user delete",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "delete"
+      ],
+      "cliFile": "database/mysql/user/delete.js",
+      "description": "Delete a MySQL user",
+      "expectedToolName": "mittwald_database_mysql_user_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user get",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "get"
+      ],
+      "cliFile": "database/mysql/user/get.js",
+      "description": "Get a MySQL user.",
+      "expectedToolName": "mittwald_database_mysql_user_get",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user list",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "list"
+      ],
+      "cliFile": "database/mysql/user/list.js",
+      "description": "List MySQL users belonging to a database.",
+      "expectedToolName": "mittwald_database_mysql_user_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user update",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "update"
+      ],
+      "cliFile": "database/mysql/user/update.js",
+      "description": "Update an existing MySQL user",
+      "expectedToolName": "mittwald_database_mysql_user_update",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql versions",
+      "segments": [
+        "database",
+        "mysql",
+        "versions"
+      ],
+      "cliFile": "database/mysql/versions.js",
+      "description": "List available MySQL versions.",
+      "expectedToolName": "mittwald_database_mysql_versions",
+      "status": "covered",
+      "toolPath": "database/mysql/versions-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/versions-cli.js"
+    },
+    {
+      "command": "database redis create",
+      "segments": [
+        "database",
+        "redis",
+        "create"
+      ],
+      "cliFile": "database/redis/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_database_redis_create",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis get",
+      "segments": [
+        "database",
+        "redis",
+        "get"
+      ],
+      "cliFile": "database/redis/get.js",
+      "description": "Get a Redis database.",
+      "expectedToolName": "mittwald_database_redis_get",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis list",
+      "segments": [
+        "database",
+        "redis",
+        "list"
+      ],
+      "cliFile": "database/redis/list.js",
+      "description": "List Redis databases belonging to a project.",
+      "expectedToolName": "mittwald_database_redis_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis shell",
+      "segments": [
+        "database",
+        "redis",
+        "shell"
+      ],
+      "cliFile": "database/redis/shell.js",
+      "description": "This command opens an interactive redis-cli shell to a Redis database.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_database_redis_shell",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis versions",
+      "segments": [
+        "database",
+        "redis",
+        "versions"
+      ],
+      "cliFile": "database/redis/versions.js",
+      "description": "List available Redis versions.",
+      "expectedToolName": "mittwald_database_redis_versions",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "ddev init",
+      "segments": [
+        "ddev",
+        "init"
+      ],
+      "cliFile": "ddev/init.js",
+      "description": "This command initializes a new ddev configuration for an existing app installation in the current directory.\n\nMore precisely, this command will do the following:\n\n  1. Create a new ddev configuration file in the .ddev directory, appropriate for the reference app installation\n  2. Initialize a new ddev project with the given configuration\n  3. Install the official mittwald DDEV addon\n  4. Add SSH credentials to the DDEV project\n\nThis command can be run repeatedly to update the DDEV configuration of the project.\n\nPlease note that this command requires DDEV to be installed on your system.",
+      "expectedToolName": "mittwald_ddev_init",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "ddev render-config",
+      "segments": [
+        "ddev",
+        "render-config"
+      ],
+      "cliFile": "ddev/render-config.js",
+      "description": "This command initializes a new ddev configuration in the current directory.",
+      "expectedToolName": "mittwald_ddev_render_config",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "domain dnszone get",
+      "segments": [
+        "domain",
+        "dnszone",
+        "get"
+      ],
+      "cliFile": "domain/dnszone/get.js",
+      "description": "gets a specific zone",
+      "expectedToolName": "mittwald_domain_dnszone_get",
+      "status": "covered",
+      "toolPath": "domain/dnszone/get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/domain/dnszone/get-cli.js"
+    },
+    {
+      "command": "domain dnszone list",
+      "segments": [
+        "domain",
+        "dnszone",
+        "list"
+      ],
+      "cliFile": "domain/dnszone/list.js",
+      "description": "list all DNS zones by project ID",
+      "expectedToolName": "mittwald_domain_dnszone_list",
+      "status": "covered",
+      "toolPath": "domain/dnszone/list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/domain/dnszone/list-cli.js"
+    },
+    {
+      "command": "domain dnszone update",
+      "segments": [
+        "domain",
+        "dnszone",
+        "update"
+      ],
+      "cliFile": "domain/dnszone/update.js",
+      "description": "Updates a record set of a DNS zone",
+      "expectedToolName": "mittwald_domain_dnszone_update",
+      "status": "covered",
+      "toolPath": "domain/dnszone/update-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/domain/dnszone/update-cli.js"
+    },
+    {
+      "command": "domain get",
+      "segments": [
+        "domain",
+        "get"
+      ],
+      "cliFile": "domain/get.js",
+      "description": "gets a specific domain",
+      "expectedToolName": "mittwald_domain_get",
+      "status": "covered",
+      "toolPath": "domain/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/get-cli.js"
+    },
+    {
+      "command": "domain list",
+      "segments": [
+        "domain",
+        "list"
+      ],
+      "cliFile": "domain/list.js",
+      "description": "List domains belonging to a project.",
+      "expectedToolName": "mittwald_domain_list",
+      "status": "covered",
+      "toolPath": "domain/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/list-cli.js"
+    },
+    {
+      "command": "domain virtualhost create",
+      "segments": [
+        "domain",
+        "virtualhost",
+        "create"
+      ],
+      "cliFile": "domain/virtualhost/create.js",
+      "description": "Create a new ingress",
+      "expectedToolName": "mittwald_domain_virtualhost_create",
+      "status": "covered",
+      "toolPath": "domain/virtualhost-create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/virtualhost-create-cli.js"
+    },
+    {
+      "command": "domain virtualhost delete",
+      "segments": [
+        "domain",
+        "virtualhost",
+        "delete"
+      ],
+      "cliFile": "domain/virtualhost/delete.js",
+      "description": "Delete a virtual host",
+      "expectedToolName": "mittwald_domain_virtualhost_delete",
+      "status": "covered",
+      "toolPath": "domain/virtualhost-delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/virtualhost-delete-cli.js"
+    },
+    {
+      "command": "domain virtualhost get",
+      "segments": [
+        "domain",
+        "virtualhost",
+        "get"
+      ],
+      "cliFile": "domain/virtualhost/get.js",
+      "description": "Get a virtual host.",
+      "expectedToolName": "mittwald_domain_virtualhost_get",
+      "status": "covered",
+      "toolPath": "domain/virtualhost-get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/virtualhost-get-cli.js"
+    },
+    {
+      "command": "domain virtualhost list",
+      "segments": [
+        "domain",
+        "virtualhost",
+        "list"
+      ],
+      "cliFile": "domain/virtualhost/list.js",
+      "description": "List virtualhosts for a project.",
+      "expectedToolName": "mittwald_domain_virtualhost_list",
+      "status": "covered",
+      "toolPath": "domain/virtualhost-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/virtualhost-list-cli.js"
+    },
+    {
+      "command": "extension install",
+      "segments": [
+        "extension",
+        "install"
+      ],
+      "cliFile": "extension/install.js",
+      "description": "Install an extension in a project or organization",
+      "expectedToolName": "mittwald_extension_install",
+      "status": "covered",
+      "toolPath": "extension/install-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/extension/install-cli.js"
+    },
+    {
+      "command": "extension list-installed",
+      "segments": [
+        "extension",
+        "list-installed"
+      ],
+      "cliFile": "extension/list-installed.js",
+      "description": "List installed extensions in an organization or project.",
+      "expectedToolName": "mittwald_extension_list_installed",
+      "status": "covered",
+      "toolPath": "extension/list-installed-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/extension/list-installed-cli.js"
+    },
+    {
+      "command": "extension list",
+      "segments": [
+        "extension",
+        "list"
+      ],
+      "cliFile": "extension/list.js",
+      "description": "Get all available extensions.",
+      "expectedToolName": "mittwald_extension_list",
+      "status": "covered",
+      "toolPath": "extension/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/extension/list-cli.js"
+    },
+    {
+      "command": "extension uninstall",
+      "segments": [
+        "extension",
+        "uninstall"
+      ],
+      "cliFile": "extension/uninstall.js",
+      "description": "Remove an extension from an organization",
+      "expectedToolName": "mittwald_extension_uninstall",
+      "status": "covered",
+      "toolPath": "extension/uninstall-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/extension/uninstall-cli.js"
+    },
+    {
+      "command": "login reset",
+      "segments": [
+        "login",
+        "reset"
+      ],
+      "cliFile": "login/reset.js",
+      "description": "Reset your local authentication state",
+      "expectedToolName": "mittwald_login_reset",
+      "status": "covered",
+      "toolPath": "login/reset-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/login/reset-cli.js"
+    },
+    {
+      "command": "login status",
+      "segments": [
+        "login",
+        "status"
+      ],
+      "cliFile": "login/status.js",
+      "description": "Checks your current authentication status",
+      "expectedToolName": "mittwald_login_status",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "login token",
+      "segments": [
+        "login",
+        "token"
+      ],
+      "cliFile": "login/token.js",
+      "description": "Authenticate using an API token",
+      "expectedToolName": "mittwald_login_token",
+      "status": "covered",
+      "toolPath": "login/token-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/login/token-cli.js"
+    },
+    {
+      "command": "mail address create",
+      "segments": [
+        "mail",
+        "address",
+        "create"
+      ],
+      "cliFile": "mail/address/create.js",
+      "description": "This command can be used to create a new mail address in a project.\n    \n    A mail address is either associated with a mailbox, or forwards to another address.\n    \n    To create a forwarding address, use the --forward-to flag. This flag can be used multiple times to forward to multiple addresses.\n    \n    When no --forward-to flag is given, the command will create a mailbox for the address. In this case, the --catch-all flag can be used to make the mailbox a catch-all mailbox.\n  \n    When running this command with the --quiet flag, the output will contain the ID of the newly created address.\n    In addition, when run with --generated-password the output will be the ID of the newly created address, followed by a tab character and the generated password.",
+      "expectedToolName": "mittwald_mail_address_create",
+      "status": "covered",
+      "toolPath": "mail/address/create-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/address/create-cli.js"
+    },
+    {
+      "command": "mail address delete",
+      "segments": [
+        "mail",
+        "address",
+        "delete"
+      ],
+      "cliFile": "mail/address/delete.js",
+      "description": "Delete a mail address",
+      "expectedToolName": "mittwald_mail_address_delete",
+      "status": "covered",
+      "toolPath": "mail/address/delete-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/address/delete-cli.js"
+    },
+    {
+      "command": "mail address get",
+      "segments": [
+        "mail",
+        "address",
+        "get"
+      ],
+      "cliFile": "mail/address/get.js",
+      "description": "Get a specific mail address",
+      "expectedToolName": "mittwald_mail_address_get",
+      "status": "covered",
+      "toolPath": "mail/address/get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/address/get-cli.js"
+    },
+    {
+      "command": "mail address list",
+      "segments": [
+        "mail",
+        "address",
+        "list"
+      ],
+      "cliFile": "mail/address/list.js",
+      "description": "Get all mail addresses for a project ID",
+      "expectedToolName": "mittwald_mail_address_list",
+      "status": "covered",
+      "toolPath": "mail/address/list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/address/list-cli.js"
+    },
+    {
+      "command": "mail address update",
+      "segments": [
+        "mail",
+        "address",
+        "update"
+      ],
+      "cliFile": "mail/address/update.js",
+      "description": "This command can be used to update a mail address in a project.\n    \n    A mail address is either associated with a mailbox, or forwards to another address.\n    \n    To set forwarding addresses, use the --forward-to flag.\n    \n    Use the --catch-all flag to make the mailbox a catch-all mailbox.\n    Use the --no-catch-all flag to make the mailbox a regular mailbox.\n  \n    When running this command with --generated-password the output will be the newly generated and set password.",
+      "expectedToolName": "mittwald_mail_address_update",
+      "status": "covered",
+      "toolPath": "mail/address/update-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/address/update-cli.js"
+    },
+    {
+      "command": "mail deliverybox create",
+      "segments": [
+        "mail",
+        "deliverybox",
+        "create"
+      ],
+      "cliFile": "mail/deliverybox/create.js",
+      "description": "This command can be used to create a new mail delivery box in a project.\n  \n    When running this command with the --quiet flag, the output will contain the ID of the newly created delivery box.\n    In addition, when run with --generated-password the output will be the ID of the newly created delivery box, followed by a tab character and the generated password.",
+      "expectedToolName": "mittwald_mail_deliverybox_create",
+      "status": "covered",
+      "toolPath": "mail/deliverybox/create-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/deliverybox/create-cli.js"
+    },
+    {
+      "command": "mail deliverybox delete",
+      "segments": [
+        "mail",
+        "deliverybox",
+        "delete"
+      ],
+      "cliFile": "mail/deliverybox/delete.js",
+      "description": "Delete a mail delivery box",
+      "expectedToolName": "mittwald_mail_deliverybox_delete",
+      "status": "covered",
+      "toolPath": "mail/deliverybox/delete-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/deliverybox/delete-cli.js"
+    },
+    {
+      "command": "mail deliverybox get",
+      "segments": [
+        "mail",
+        "deliverybox",
+        "get"
+      ],
+      "cliFile": "mail/deliverybox/get.js",
+      "description": "Get a specific delivery box",
+      "expectedToolName": "mittwald_mail_deliverybox_get",
+      "status": "covered",
+      "toolPath": "mail/deliverybox/get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/deliverybox/get-cli.js"
+    },
+    {
+      "command": "mail deliverybox list",
+      "segments": [
+        "mail",
+        "deliverybox",
+        "list"
+      ],
+      "cliFile": "mail/deliverybox/list.js",
+      "description": "Get all delivery boxes by project ID",
+      "expectedToolName": "mittwald_mail_deliverybox_list",
+      "status": "covered",
+      "toolPath": "mail/deliverybox/list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/deliverybox/list-cli.js"
+    },
+    {
+      "command": "mail deliverybox update",
+      "segments": [
+        "mail",
+        "deliverybox",
+        "update"
+      ],
+      "cliFile": "mail/deliverybox/update.js",
+      "description": "This command can be used to update a mail delivery box in a project.\n    \n    A mail delivery box is either associated with a mailbox, or forwards to another address.\n  \n    When running this command with --generated-password the output will be the newly generated and set password.",
+      "expectedToolName": "mittwald_mail_deliverybox_update",
+      "status": "covered",
+      "toolPath": "mail/deliverybox/update-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/mail/deliverybox/update-cli.js"
+    },
+    {
+      "command": "org delete",
+      "segments": [
+        "org",
+        "delete"
+      ],
+      "cliFile": "org/delete.js",
+      "description": "Delete an organization",
+      "expectedToolName": "mittwald_org_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org get",
+      "segments": [
+        "org",
+        "get"
+      ],
+      "cliFile": "org/get.js",
+      "description": "Get an organization profile.",
+      "expectedToolName": "mittwald_org_get",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org invite list-own",
+      "segments": [
+        "org",
+        "invite",
+        "list-own"
+      ],
+      "cliFile": "org/invite/list-own.js",
+      "description": "List all organization invites for the executing user.",
+      "expectedToolName": "mittwald_org_invite_list_own",
+      "status": "covered",
+      "toolPath": "org/invite-list-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/invite-list-own-cli.js"
+    },
+    {
+      "command": "org invite list",
+      "segments": [
+        "org",
+        "invite",
+        "list"
+      ],
+      "cliFile": "org/invite/list.js",
+      "description": "List all invites for an organization.",
+      "expectedToolName": "mittwald_org_invite_list",
+      "status": "covered",
+      "toolPath": "org/invite-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/invite-list-cli.js"
+    },
+    {
+      "command": "org invite revoke",
+      "segments": [
+        "org",
+        "invite",
+        "revoke"
+      ],
+      "cliFile": "org/invite/revoke.js",
+      "description": "Revoke an invite to an organization",
+      "expectedToolName": "mittwald_org_invite_revoke",
+      "status": "covered",
+      "toolPath": "org/invite-revoke-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/invite-revoke-cli.js"
+    },
+    {
+      "command": "org invite",
+      "segments": [
+        "org",
+        "invite"
+      ],
+      "cliFile": "org/invite.js",
+      "description": "Invite a user to an organization.",
+      "expectedToolName": "mittwald_org_invite",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org list",
+      "segments": [
+        "org",
+        "list"
+      ],
+      "cliFile": "org/list.js",
+      "description": "Get all organizations the authenticated user has access to.",
+      "expectedToolName": "mittwald_org_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org membership list-own",
+      "segments": [
+        "org",
+        "membership",
+        "list-own"
+      ],
+      "cliFile": "org/membership/list-own.js",
+      "description": "List all organization memberships for the executing user.",
+      "expectedToolName": "mittwald_org_membership_list_own",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org membership list",
+      "segments": [
+        "org",
+        "membership",
+        "list"
+      ],
+      "cliFile": "org/membership/list.js",
+      "description": "List all memberships belonging to an organization.",
+      "expectedToolName": "mittwald_org_membership_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org membership revoke",
+      "segments": [
+        "org",
+        "membership",
+        "revoke"
+      ],
+      "cliFile": "org/membership/revoke.js",
+      "description": "Revoke a user's membership to an organization",
+      "expectedToolName": "mittwald_org_membership_revoke",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "project create",
+      "segments": [
+        "project",
+        "create"
+      ],
+      "cliFile": "project/create.js",
+      "description": "Create a new project",
+      "expectedToolName": "mittwald_project_create",
+      "status": "covered",
+      "toolPath": "project/create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/create-cli.js"
+    },
+    {
+      "command": "project delete",
+      "segments": [
+        "project",
+        "delete"
+      ],
+      "cliFile": "project/delete.js",
+      "description": "Delete a project",
+      "expectedToolName": "mittwald_project_delete",
+      "status": "covered",
+      "toolPath": "project/delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/delete-cli.js"
+    },
+    {
+      "command": "project filesystem usage",
+      "segments": [
+        "project",
+        "filesystem",
+        "usage"
+      ],
+      "cliFile": "project/filesystem/usage.js",
+      "description": "Get a project directory filesystem usage.",
+      "expectedToolName": "mittwald_project_filesystem_usage",
+      "status": "covered",
+      "toolPath": "project/filesystem-usage-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/filesystem-usage-cli.js"
+    },
+    {
+      "command": "project get",
+      "segments": [
+        "project",
+        "get"
+      ],
+      "cliFile": "project/get.js",
+      "description": "Get details of a project",
+      "expectedToolName": "mittwald_project_get",
+      "status": "covered",
+      "toolPath": "project/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/get-cli.js"
+    },
+    {
+      "command": "project invite get",
+      "segments": [
+        "project",
+        "invite",
+        "get"
+      ],
+      "cliFile": "project/invite/get.js",
+      "description": "Get a ProjectInvite.",
+      "expectedToolName": "mittwald_project_invite_get",
+      "status": "covered",
+      "toolPath": "project/invite-get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/invite-get-cli.js"
+    },
+    {
+      "command": "project invite list-own",
+      "segments": [
+        "project",
+        "invite",
+        "list-own"
+      ],
+      "cliFile": "project/invite/list-own.js",
+      "description": "List all project invites for the executing user.",
+      "expectedToolName": "mittwald_project_invite_list_own",
+      "status": "covered",
+      "toolPath": "project/invite-list-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/invite-list-own-cli.js"
+    },
+    {
+      "command": "project invite list",
+      "segments": [
+        "project",
+        "invite",
+        "list"
+      ],
+      "cliFile": "project/invite/list.js",
+      "description": "List all invites belonging to a project.",
+      "expectedToolName": "mittwald_project_invite_list",
+      "status": "covered",
+      "toolPath": "project/invite-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/invite-list-cli.js"
+    },
+    {
+      "command": "project list",
+      "segments": [
+        "project",
+        "list"
+      ],
+      "cliFile": "project/list.js",
+      "description": "List all projects that you have access to",
+      "expectedToolName": "mittwald_project_list",
+      "status": "covered",
+      "toolPath": "project/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/list-cli.js"
+    },
+    {
+      "command": "project membership get-own",
+      "segments": [
+        "project",
+        "membership",
+        "get-own"
+      ],
+      "cliFile": "project/membership/get-own.js",
+      "description": "Get the executing user's membership in a Project.",
+      "expectedToolName": "mittwald_project_membership_get_own",
+      "status": "covered",
+      "toolPath": "project/membership-get-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-get-own-cli.js"
+    },
+    {
+      "command": "project membership get",
+      "segments": [
+        "project",
+        "membership",
+        "get"
+      ],
+      "cliFile": "project/membership/get.js",
+      "description": "Get a ProjectMembership",
+      "expectedToolName": "mittwald_project_membership_get",
+      "status": "covered",
+      "toolPath": "project/membership-get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-get-cli.js"
+    },
+    {
+      "command": "project membership list-own",
+      "segments": [
+        "project",
+        "membership",
+        "list-own"
+      ],
+      "cliFile": "project/membership/list-own.js",
+      "description": "List ProjectMemberships belonging to the executing user.",
+      "expectedToolName": "mittwald_project_membership_list_own",
+      "status": "covered",
+      "toolPath": "project/membership-list-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-list-own-cli.js"
+    },
+    {
+      "command": "project membership list",
+      "segments": [
+        "project",
+        "membership",
+        "list"
+      ],
+      "cliFile": "project/membership/list.js",
+      "description": "List all memberships for a Project.",
+      "expectedToolName": "mittwald_project_membership_list",
+      "status": "covered",
+      "toolPath": "project/membership-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-list-cli.js"
+    },
+    {
+      "command": "project ssh",
+      "segments": [
+        "project",
+        "ssh"
+      ],
+      "cliFile": "project/ssh.js",
+      "description": "Establishes an interactive SSH connection to a project.\n\nThis command is a wrapper around your systems SSH client, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_project_ssh",
+      "status": "covered",
+      "toolPath": "project/ssh-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/ssh-cli.js"
+    },
+    {
+      "command": "project update",
+      "segments": [
+        "project",
+        "update"
+      ],
+      "cliFile": "project/update.js",
+      "description": "Update an existing project",
+      "expectedToolName": "mittwald_project_update",
+      "status": "covered",
+      "toolPath": "project/update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/update-cli.js"
+    },
+    {
+      "command": "registry create",
+      "segments": [
+        "registry",
+        "create"
+      ],
+      "cliFile": "registry/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_registry_create",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "registry delete",
+      "segments": [
+        "registry",
+        "delete"
+      ],
+      "cliFile": "registry/delete.js",
+      "description": "Delete a container registry",
+      "expectedToolName": "mittwald_registry_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "registry list",
+      "segments": [
+        "registry",
+        "list"
+      ],
+      "cliFile": "registry/list.js",
+      "description": "List container registries.",
+      "expectedToolName": "mittwald_registry_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "registry update",
+      "segments": [
+        "registry",
+        "update"
+      ],
+      "cliFile": "registry/update.js",
+      "description": "Update an existing container registry",
+      "expectedToolName": "mittwald_registry_update",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "server get",
+      "segments": [
+        "server",
+        "get"
+      ],
+      "cliFile": "server/get.js",
+      "description": "Get a server.",
+      "expectedToolName": "mittwald_server_get",
+      "status": "covered",
+      "toolPath": "server/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/server/get-cli.js"
+    },
+    {
+      "command": "server list",
+      "segments": [
+        "server",
+        "list"
+      ],
+      "cliFile": "server/list.js",
+      "description": "List servers for an organization or user.",
+      "expectedToolName": "mittwald_server_list",
+      "status": "covered",
+      "toolPath": "server/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/server/list-cli.js"
+    },
+    {
+      "command": "sftp-user create",
+      "segments": [
+        "sftp-user",
+        "create"
+      ],
+      "cliFile": "sftp-user/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_sftp_user_create",
+      "status": "covered",
+      "toolPath": "sftp/user-create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/sftp/user-create-cli.js"
+    },
+    {
+      "command": "sftp-user delete",
+      "segments": [
+        "sftp-user",
+        "delete"
+      ],
+      "cliFile": "sftp-user/delete.js",
+      "description": "Delete an SFTP user",
+      "expectedToolName": "mittwald_sftp_user_delete",
+      "status": "covered",
+      "toolPath": "sftp/user-delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/sftp/user-delete-cli.js"
+    },
+    {
+      "command": "sftp-user list",
+      "segments": [
+        "sftp-user",
+        "list"
+      ],
+      "cliFile": "sftp-user/list.js",
+      "description": "List all SFTP users for a project.",
+      "expectedToolName": "mittwald_sftp_user_list",
+      "status": "covered",
+      "toolPath": "sftp/user-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/sftp/user-list-cli.js"
+    },
+    {
+      "command": "sftp-user update",
+      "segments": [
+        "sftp-user",
+        "update"
+      ],
+      "cliFile": "sftp-user/update.js",
+      "description": "Update an existing SFTP user",
+      "expectedToolName": "mittwald_sftp_user_update",
+      "status": "covered",
+      "toolPath": "sftp/user-update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/sftp/user-update-cli.js"
+    },
+    {
+      "command": "ssh-user create",
+      "segments": [
+        "ssh-user",
+        "create"
+      ],
+      "cliFile": "ssh-user/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_ssh_user_create",
+      "status": "covered",
+      "toolPath": "ssh/user-create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/ssh/user-create-cli.js"
+    },
+    {
+      "command": "ssh-user delete",
+      "segments": [
+        "ssh-user",
+        "delete"
+      ],
+      "cliFile": "ssh-user/delete.js",
+      "description": "Delete an SSH user",
+      "expectedToolName": "mittwald_ssh_user_delete",
+      "status": "covered",
+      "toolPath": "ssh/user-delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/ssh/user-delete-cli.js"
+    },
+    {
+      "command": "ssh-user list",
+      "segments": [
+        "ssh-user",
+        "list"
+      ],
+      "cliFile": "ssh-user/list.js",
+      "description": "List all SSH users for a project.",
+      "expectedToolName": "mittwald_ssh_user_list",
+      "status": "covered",
+      "toolPath": "ssh/user-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/ssh/user-list-cli.js"
+    },
+    {
+      "command": "ssh-user update",
+      "segments": [
+        "ssh-user",
+        "update"
+      ],
+      "cliFile": "ssh-user/update.js",
+      "description": "Update an existing SSH user",
+      "expectedToolName": "mittwald_ssh_user_update",
+      "status": "covered",
+      "toolPath": "ssh/user-update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/ssh/user-update-cli.js"
+    },
+    {
+      "command": "stack delete",
+      "segments": [
+        "stack",
+        "delete"
+      ],
+      "cliFile": "stack/delete.js",
+      "description": "Delete a container stack",
+      "expectedToolName": "mittwald_stack_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "stack deploy",
+      "segments": [
+        "stack",
+        "deploy"
+      ],
+      "cliFile": "stack/deploy.js",
+      "description": "Deploys a docker-compose compatible file to a mittwald container stack",
+      "expectedToolName": "mittwald_stack_deploy",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "stack list",
+      "segments": [
+        "stack",
+        "list"
+      ],
+      "cliFile": "stack/list.js",
+      "description": "List container stacks for a given project.",
+      "expectedToolName": "mittwald_stack_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "stack ps",
+      "segments": [
+        "stack",
+        "ps"
+      ],
+      "cliFile": "stack/ps.js",
+      "description": "List all services within a given container stack.",
+      "expectedToolName": "mittwald_stack_ps",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "user api-token create",
+      "segments": [
+        "user",
+        "api-token",
+        "create"
+      ],
+      "cliFile": "user/api-token/create.js",
+      "description": "Create a new API token",
+      "expectedToolName": "mittwald_user_api_token_create",
+      "status": "covered",
+      "toolPath": "user/api-token/create-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/api-token/create-cli.js"
+    },
+    {
+      "command": "user api-token get",
+      "segments": [
+        "user",
+        "api-token",
+        "get"
+      ],
+      "cliFile": "user/api-token/get.js",
+      "description": "Get a specific API token",
+      "expectedToolName": "mittwald_user_api_token_get",
+      "status": "covered",
+      "toolPath": "user/api-token/get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/api-token/get-cli.js"
+    },
+    {
+      "command": "user api-token list",
+      "segments": [
+        "user",
+        "api-token",
+        "list"
+      ],
+      "cliFile": "user/api-token/list.js",
+      "description": "List all API tokens of the user",
+      "expectedToolName": "mittwald_user_api_token_list",
+      "status": "covered",
+      "toolPath": "user/api-token/list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/api-token/list-cli.js"
+    },
+    {
+      "command": "user api-token revoke",
+      "segments": [
+        "user",
+        "api-token",
+        "revoke"
+      ],
+      "cliFile": "user/api-token/revoke.js",
+      "description": "Revoke an API token",
+      "expectedToolName": "mittwald_user_api_token_revoke",
+      "status": "covered",
+      "toolPath": "user/api-token/revoke-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/api-token/revoke-cli.js"
+    },
+    {
+      "command": "user get",
+      "segments": [
+        "user",
+        "get"
+      ],
+      "cliFile": "user/get.js",
+      "description": "Get profile information for a user.",
+      "expectedToolName": "mittwald_user_get",
+      "status": "covered",
+      "toolPath": "user/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/user/get-cli.js"
+    },
+    {
+      "command": "user session get",
+      "segments": [
+        "user",
+        "session",
+        "get"
+      ],
+      "cliFile": "user/session/get.js",
+      "description": "Get a specific session",
+      "expectedToolName": "mittwald_user_session_get",
+      "status": "covered",
+      "toolPath": "user/session/get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/session/get-cli.js"
+    },
+    {
+      "command": "user session list",
+      "segments": [
+        "user",
+        "session",
+        "list"
+      ],
+      "cliFile": "user/session/list.js",
+      "description": "List all active sessions",
+      "expectedToolName": "mittwald_user_session_list",
+      "status": "covered",
+      "toolPath": "user/session/list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/session/list-cli.js"
+    },
+    {
+      "command": "user ssh-key create",
+      "segments": [
+        "user",
+        "ssh-key",
+        "create"
+      ],
+      "cliFile": "user/ssh-key/create.js",
+      "description": "Create and import a new SSH key",
+      "expectedToolName": "mittwald_user_ssh_key_create",
+      "status": "covered",
+      "toolPath": "user/ssh-key/create-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/ssh-key/create-cli.js"
+    },
+    {
+      "command": "user ssh-key delete",
+      "segments": [
+        "user",
+        "ssh-key",
+        "delete"
+      ],
+      "cliFile": "user/ssh-key/delete.js",
+      "description": "Delete an SSH key",
+      "expectedToolName": "mittwald_user_ssh_key_delete",
+      "status": "covered",
+      "toolPath": "user/ssh-key/delete-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/ssh-key/delete-cli.js"
+    },
+    {
+      "command": "user ssh-key get",
+      "segments": [
+        "user",
+        "ssh-key",
+        "get"
+      ],
+      "cliFile": "user/ssh-key/get.js",
+      "description": "Get a specific SSH key",
+      "expectedToolName": "mittwald_user_ssh_key_get",
+      "status": "covered",
+      "toolPath": "user/ssh-key/get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/ssh-key/get-cli.js"
+    },
+    {
+      "command": "user ssh-key import",
+      "segments": [
+        "user",
+        "ssh-key",
+        "import"
+      ],
+      "cliFile": "user/ssh-key/import.js",
+      "description": "Import an existing (local) SSH key",
+      "expectedToolName": "mittwald_user_ssh_key_import",
+      "status": "covered",
+      "toolPath": "user/ssh-key/import-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/ssh-key/import-cli.js"
+    },
+    {
+      "command": "user ssh-key list",
+      "segments": [
+        "user",
+        "ssh-key",
+        "list"
+      ],
+      "cliFile": "user/ssh-key/list.js",
+      "description": "Get your stored ssh keys",
+      "expectedToolName": "mittwald_user_ssh_key_list",
+      "status": "covered",
+      "toolPath": "user/ssh-key/list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/ssh-key/list-cli.js"
+    },
+    {
+      "command": "volume create",
+      "segments": [
+        "volume",
+        "create"
+      ],
+      "cliFile": "volume/create.js",
+      "description": "Creates a new named volume in the project stack. The volume will be available for use by containers.",
+      "expectedToolName": "mittwald_volume_create",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "volume delete",
+      "segments": [
+        "volume",
+        "delete"
+      ],
+      "cliFile": "volume/delete.js",
+      "description": "Removes named volumes from the project stack. Be careful as this will permanently delete the volume data.",
+      "expectedToolName": "mittwald_volume_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "volume list",
+      "segments": [
+        "volume",
+        "list"
+      ],
+      "cliFile": "volume/list.js",
+      "description": "List volumes belonging to a project.",
+      "expectedToolName": "mittwald_volume_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    }
+  ],
+  "missing": [
+    {
+      "command": "app dependency list",
+      "segments": [
+        "app",
+        "dependency",
+        "list"
+      ],
+      "cliFile": "app/dependency/list.js",
+      "description": "Get all available dependencies",
+      "expectedToolName": "mittwald_app_dependency_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app dependency update",
+      "segments": [
+        "app",
+        "dependency",
+        "update"
+      ],
+      "cliFile": "app/dependency/update.js",
+      "description": null,
+      "expectedToolName": "mittwald_app_dependency_update",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app dependency versions",
+      "segments": [
+        "app",
+        "dependency",
+        "versions"
+      ],
+      "cliFile": "app/dependency/versions.js",
+      "description": "Get all available versions of a particular dependency",
+      "expectedToolName": "mittwald_app_dependency_versions",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app exec",
+      "segments": [
+        "app",
+        "exec"
+      ],
+      "cliFile": "app/exec.js",
+      "description": "This command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_app_exec",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "app version-info",
+      "segments": [
+        "app",
+        "version-info"
+      ],
+      "cliFile": "app/version-info.js",
+      "description": "show information about specific app versions",
+      "expectedToolName": "mittwald_app_version_info",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container cp",
+      "segments": [
+        "container",
+        "cp"
+      ],
+      "cliFile": "container/cp.js",
+      "description": "The syntax is similar to docker cp:\n- Copy from container to host: mw container cp CONTAINER:SRC_PATH DEST_PATH\n- Copy from host to container: mw container cp SRC_PATH CONTAINER:DEST_PATH\n\nWhere CONTAINER can be a container ID, short ID, or service name.",
+      "expectedToolName": "mittwald_container_cp",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container exec",
+      "segments": [
+        "container",
+        "exec"
+      ],
+      "cliFile": "container/exec.js",
+      "description": "This command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_container_exec",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container port-forward",
+      "segments": [
+        "container",
+        "port-forward"
+      ],
+      "cliFile": "container/port-forward.js",
+      "description": "This command forwards a TCP port from a container to a local port on your machine. This allows you to connect to services running in the container as if they were running on your local machine.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_container_port_forward",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container ssh",
+      "segments": [
+        "container",
+        "ssh"
+      ],
+      "cliFile": "container/ssh.js",
+      "description": "Establishes an interactive SSH connection to a container.\n\nThis command is a wrapper around your systems SSH client, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_container_ssh",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "container update",
+      "segments": [
+        "container",
+        "update"
+      ],
+      "cliFile": "container/update.js",
+      "description": "Updates attributes of an existing container such as image, environment variables, etc.",
+      "expectedToolName": "mittwald_container_update",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user create",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "create"
+      ],
+      "cliFile": "database/mysql/user/create.js",
+      "description": "Create a new MySQL user",
+      "expectedToolName": "mittwald_database_mysql_user_create",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user delete",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "delete"
+      ],
+      "cliFile": "database/mysql/user/delete.js",
+      "description": "Delete a MySQL user",
+      "expectedToolName": "mittwald_database_mysql_user_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user get",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "get"
+      ],
+      "cliFile": "database/mysql/user/get.js",
+      "description": "Get a MySQL user.",
+      "expectedToolName": "mittwald_database_mysql_user_get",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user list",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "list"
+      ],
+      "cliFile": "database/mysql/user/list.js",
+      "description": "List MySQL users belonging to a database.",
+      "expectedToolName": "mittwald_database_mysql_user_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database mysql user update",
+      "segments": [
+        "database",
+        "mysql",
+        "user",
+        "update"
+      ],
+      "cliFile": "database/mysql/user/update.js",
+      "description": "Update an existing MySQL user",
+      "expectedToolName": "mittwald_database_mysql_user_update",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis create",
+      "segments": [
+        "database",
+        "redis",
+        "create"
+      ],
+      "cliFile": "database/redis/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_database_redis_create",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis get",
+      "segments": [
+        "database",
+        "redis",
+        "get"
+      ],
+      "cliFile": "database/redis/get.js",
+      "description": "Get a Redis database.",
+      "expectedToolName": "mittwald_database_redis_get",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis list",
+      "segments": [
+        "database",
+        "redis",
+        "list"
+      ],
+      "cliFile": "database/redis/list.js",
+      "description": "List Redis databases belonging to a project.",
+      "expectedToolName": "mittwald_database_redis_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis shell",
+      "segments": [
+        "database",
+        "redis",
+        "shell"
+      ],
+      "cliFile": "database/redis/shell.js",
+      "description": "This command opens an interactive redis-cli shell to a Redis database.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_database_redis_shell",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "database redis versions",
+      "segments": [
+        "database",
+        "redis",
+        "versions"
+      ],
+      "cliFile": "database/redis/versions.js",
+      "description": "List available Redis versions.",
+      "expectedToolName": "mittwald_database_redis_versions",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "ddev init",
+      "segments": [
+        "ddev",
+        "init"
+      ],
+      "cliFile": "ddev/init.js",
+      "description": "This command initializes a new ddev configuration for an existing app installation in the current directory.\n\nMore precisely, this command will do the following:\n\n  1. Create a new ddev configuration file in the .ddev directory, appropriate for the reference app installation\n  2. Initialize a new ddev project with the given configuration\n  3. Install the official mittwald DDEV addon\n  4. Add SSH credentials to the DDEV project\n\nThis command can be run repeatedly to update the DDEV configuration of the project.\n\nPlease note that this command requires DDEV to be installed on your system.",
+      "expectedToolName": "mittwald_ddev_init",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "ddev render-config",
+      "segments": [
+        "ddev",
+        "render-config"
+      ],
+      "cliFile": "ddev/render-config.js",
+      "description": "This command initializes a new ddev configuration in the current directory.",
+      "expectedToolName": "mittwald_ddev_render_config",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "login status",
+      "segments": [
+        "login",
+        "status"
+      ],
+      "cliFile": "login/status.js",
+      "description": "Checks your current authentication status",
+      "expectedToolName": "mittwald_login_status",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org delete",
+      "segments": [
+        "org",
+        "delete"
+      ],
+      "cliFile": "org/delete.js",
+      "description": "Delete an organization",
+      "expectedToolName": "mittwald_org_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org get",
+      "segments": [
+        "org",
+        "get"
+      ],
+      "cliFile": "org/get.js",
+      "description": "Get an organization profile.",
+      "expectedToolName": "mittwald_org_get",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org invite",
+      "segments": [
+        "org",
+        "invite"
+      ],
+      "cliFile": "org/invite.js",
+      "description": "Invite a user to an organization.",
+      "expectedToolName": "mittwald_org_invite",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org list",
+      "segments": [
+        "org",
+        "list"
+      ],
+      "cliFile": "org/list.js",
+      "description": "Get all organizations the authenticated user has access to.",
+      "expectedToolName": "mittwald_org_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org membership list-own",
+      "segments": [
+        "org",
+        "membership",
+        "list-own"
+      ],
+      "cliFile": "org/membership/list-own.js",
+      "description": "List all organization memberships for the executing user.",
+      "expectedToolName": "mittwald_org_membership_list_own",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org membership list",
+      "segments": [
+        "org",
+        "membership",
+        "list"
+      ],
+      "cliFile": "org/membership/list.js",
+      "description": "List all memberships belonging to an organization.",
+      "expectedToolName": "mittwald_org_membership_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "org membership revoke",
+      "segments": [
+        "org",
+        "membership",
+        "revoke"
+      ],
+      "cliFile": "org/membership/revoke.js",
+      "description": "Revoke a user's membership to an organization",
+      "expectedToolName": "mittwald_org_membership_revoke",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "registry create",
+      "segments": [
+        "registry",
+        "create"
+      ],
+      "cliFile": "registry/create.js",
+      "description": null,
+      "expectedToolName": "mittwald_registry_create",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "registry delete",
+      "segments": [
+        "registry",
+        "delete"
+      ],
+      "cliFile": "registry/delete.js",
+      "description": "Delete a container registry",
+      "expectedToolName": "mittwald_registry_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "registry list",
+      "segments": [
+        "registry",
+        "list"
+      ],
+      "cliFile": "registry/list.js",
+      "description": "List container registries.",
+      "expectedToolName": "mittwald_registry_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "registry update",
+      "segments": [
+        "registry",
+        "update"
+      ],
+      "cliFile": "registry/update.js",
+      "description": "Update an existing container registry",
+      "expectedToolName": "mittwald_registry_update",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "stack delete",
+      "segments": [
+        "stack",
+        "delete"
+      ],
+      "cliFile": "stack/delete.js",
+      "description": "Delete a container stack",
+      "expectedToolName": "mittwald_stack_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "stack deploy",
+      "segments": [
+        "stack",
+        "deploy"
+      ],
+      "cliFile": "stack/deploy.js",
+      "description": "Deploys a docker-compose compatible file to a mittwald container stack",
+      "expectedToolName": "mittwald_stack_deploy",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "stack list",
+      "segments": [
+        "stack",
+        "list"
+      ],
+      "cliFile": "stack/list.js",
+      "description": "List container stacks for a given project.",
+      "expectedToolName": "mittwald_stack_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "stack ps",
+      "segments": [
+        "stack",
+        "ps"
+      ],
+      "cliFile": "stack/ps.js",
+      "description": "List all services within a given container stack.",
+      "expectedToolName": "mittwald_stack_ps",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "volume create",
+      "segments": [
+        "volume",
+        "create"
+      ],
+      "cliFile": "volume/create.js",
+      "description": "Creates a new named volume in the project stack. The volume will be available for use by containers.",
+      "expectedToolName": "mittwald_volume_create",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "volume delete",
+      "segments": [
+        "volume",
+        "delete"
+      ],
+      "cliFile": "volume/delete.js",
+      "description": "Removes named volumes from the project stack. Be careful as this will permanently delete the volume data.",
+      "expectedToolName": "mittwald_volume_delete",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    },
+    {
+      "command": "volume list",
+      "segments": [
+        "volume",
+        "list"
+      ],
+      "cliFile": "volume/list.js",
+      "description": "List volumes belonging to a project.",
+      "expectedToolName": "mittwald_volume_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null
+    }
+  ],
+  "extraTools": [
+    {
+      "toolName": "mittwald_container_registry_create",
+      "relPath": "container/registry-create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/registry-create-cli.js"
+    },
+    {
+      "toolName": "mittwald_container_registry_delete",
+      "relPath": "container/registry-delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/registry-delete-cli.js"
+    },
+    {
+      "toolName": "mittwald_container_registry_list",
+      "relPath": "container/registry-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/registry-list-cli.js"
+    },
+    {
+      "toolName": "mittwald_container_registry_update",
+      "relPath": "container/registry-update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/registry-update-cli.js"
+    },
+    {
+      "toolName": "mittwald_container_stack_delete",
+      "relPath": "container/stack-delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stack-delete-cli.js"
+    },
+    {
+      "toolName": "mittwald_container_stack_deploy",
+      "relPath": "container/stack-deploy-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stack-deploy-cli.js"
+    },
+    {
+      "toolName": "mittwald_container_stack_list",
+      "relPath": "container/stack-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stack-list-cli.js"
+    },
+    {
+      "toolName": "mittwald_container_stack_ps",
+      "relPath": "container/stack-ps-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stack-ps-cli.js"
+    },
+    {
+      "toolName": "mittwald_user_accessible_projects",
+      "relPath": "context/accessible-projects-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
+    },
+    {
+      "toolName": "mittwald_context_get_session",
+      "relPath": "context/session-aware-get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
+    },
+    {
+      "toolName": "mittwald_context_reset_session",
+      "relPath": "context/session-aware-reset-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
+    },
+    {
+      "toolName": "mittwald_context_set_session",
+      "relPath": "context/session-aware-set-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
+    }
+  ]
+}
