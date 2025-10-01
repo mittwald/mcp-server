@@ -142,4 +142,6 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated container stack (`delete`, `deploy`, `list`, `ps`) and container start/stop handlers to the shared CLI adapter. _(commit dd11ce3f0412e3f893f02cc8667c5180930a3275)_
 
+- **2025-09-30** – Migrated `mittwald_conversation_reply` handler to the shared CLI adapter. _(commit c6bf7d8fa7fc1716ecf4bcf500544e8a1f11d6a1)_
+
 _Last updated: 2025-09-30_

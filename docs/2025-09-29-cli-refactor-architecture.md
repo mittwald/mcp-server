@@ -210,5 +210,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated container stack (`delete`, `deploy`, `list`, `ps`) and container start/stop to the adapter path. _(commit dd11ce3f0412e3f893f02cc8667c5180930a3275)_
 
+- **2025-09-30** – Migrated `mittwald_conversation_reply` to the adapter path. _(commit c6bf7d8fa7fc1716ecf4bcf500544e8a1f11d6a1)_
+
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*
