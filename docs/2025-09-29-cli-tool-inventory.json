@@ -861,8 +861,8 @@
       "tool": "mittwald_mail_deliverybox_delete",
       "handler": "handleMittwaldMailDeliveryboxDeleteCli",
       "file": "src/constants/tool/mittwald-cli/mail/deliverybox/delete-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
@@ -1021,8 +1021,8 @@
       "tool": "mittwald_project_update",
       "handler": "handleProjectUpdateCli",
       "file": "src/constants/tool/mittwald-cli/project/update-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 7"
     },
     {
