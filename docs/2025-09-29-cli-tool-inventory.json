@@ -693,8 +693,8 @@
       "tool": "mittwald_domain_dnszone_get",
       "handler": "handleDomainDnszoneGetCli",
       "file": "src/constants/tool/mittwald-cli/domain/dnszone/get-cli.ts",
-      "status": "migrated",
-      "notes": "converted to invokeCliTool",
+      "status": "pending",
+      "notes": "",
       "agent_assignment": "Agent 5"
     },
     {
