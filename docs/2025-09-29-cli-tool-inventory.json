@@ -853,8 +853,8 @@
       "tool": "mittwald_mail_deliverybox_create",
       "handler": "handleMittwaldMailDeliveryboxCreateCli",
       "file": "src/constants/tool/mittwald-cli/mail/deliverybox/create-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
