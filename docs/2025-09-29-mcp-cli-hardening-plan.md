@@ -202,6 +202,7 @@ The streams are tracked separately, but share discovery data and release milesto
 - **2025-09-30** – Migrated `mittwald_project_create` handler to the shared CLI adapter. _(commit 652ec1b2d57e48f05418a1d6719c551c0e056f10)_
 - **2025-09-30** – Updated inventory to reflect the migrated `mittwald_project_delete` handler. _(commit 5814af1)_
 - **2025-09-30** – Migrated `mittwald_project_filesystem_usage` handler to the shared CLI adapter. _(commit d67b76bd4214417d3f022ee155c391935eab5add)_
+- **2025-09-30** – Migrated `mittwald_project_get` handler to the shared CLI adapter. _(commit c739fda7d343323ff9370531ec9abf896f879027)_
 
 - **2025-09-30** – Migrated `mittwald_project_list` handler to the shared CLI adapter. _(commit 857e81591db8dc6199dafb0511c70c65e136f7e3)_
 

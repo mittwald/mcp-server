@@ -275,6 +275,7 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 - **2025-09-30** – Migrated `mittwald_project_create` to the adapter path. _(commit 652ec1b2d57e48f05418a1d6719c551c0e056f10)_
 - **2025-09-30** – Inventory now marks the migrated `mittwald_project_delete` handler. _(commit 5814af1)_
 - **2025-09-30** – Migrated `mittwald_project_filesystem_usage` to the adapter path. _(commit d67b76bd4214417d3f022ee155c391935eab5add)_
+- **2025-09-30** – Migrated `mittwald_project_get` to the adapter path. _(commit c739fda7d343323ff9370531ec9abf896f879027)_
 
 - **2025-09-30** – Migrated `mittwald_conversation_list` to the adapter path. _(commit 2951d4522c833d6001ed1a6b96b002c410ec7d11)_
 
