@@ -733,8 +733,8 @@
       "tool": "mittwald_domain_virtualhost_create",
       "handler": "handleDomainVirtualhostCreateCli",
       "file": "src/constants/tool/mittwald-cli/domain/virtualhost-create-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
