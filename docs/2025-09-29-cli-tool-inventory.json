@@ -6,1071 +6,1224 @@
       "handler": "handleAppCopyCli",
       "file": "src/constants/tool/mittwald-cli/app/copy-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_create_node",
       "handler": "handleAppCreateNodeCli",
       "file": "src/constants/tool/mittwald-cli/app/create/node-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_create_php",
       "handler": "handleAppCreatePhpCli",
       "file": "src/constants/tool/mittwald-cli/app/create/php-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_create_php_worker",
       "handler": "handleAppCreatePhpWorkerCli",
       "file": "src/constants/tool/mittwald-cli/app/create/php-worker-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_create_python",
       "handler": "handleAppCreatePythonCli",
       "file": "src/constants/tool/mittwald-cli/app/create/python-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_create_static",
       "handler": "handleAppCreateStaticCli",
       "file": "src/constants/tool/mittwald-cli/app/create/static-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_download",
       "handler": "handleAppDownloadCli",
       "file": "src/constants/tool/mittwald-cli/app/download-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_get",
       "handler": "handleAppGetCli",
       "file": "src/constants/tool/mittwald-cli/app/get-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_install_contao",
       "handler": "handleAppInstallContaoCli",
       "file": "src/constants/tool/mittwald-cli/app/install/contao-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_install_joomla",
       "handler": "handleAppInstallJoomlaCli",
       "file": "src/constants/tool/mittwald-cli/app/install/joomla-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_install_matomo",
       "handler": "handleAppInstallMatomoCli",
       "file": "src/constants/tool/mittwald-cli/app/install/matomo-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_install_nextcloud",
       "handler": "handleAppInstallNextcloudCli",
       "file": "src/constants/tool/mittwald-cli/app/install/nextcloud-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_install_shopware5",
       "handler": "handleAppInstallShopware5Cli",
       "file": "src/constants/tool/mittwald-cli/app/install/shopware5-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_install_shopware6",
       "handler": "handleAppInstallShopware6Cli",
       "file": "src/constants/tool/mittwald-cli/app/install/shopware6-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_install_typo3",
       "handler": "handleAppInstallTypo3Cli",
       "file": "src/constants/tool/mittwald-cli/app/install/typo3-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_install_wordpress",
       "handler": "handleAppInstallWordpressCli",
       "file": "src/constants/tool/mittwald-cli/app/install/wordpress-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_list",
       "handler": "handleAppListCli",
       "file": "src/constants/tool/mittwald-cli/app/list-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_list_upgrade_candidates",
       "handler": "handleAppListUpgradeCandidatesCli",
       "file": "src/constants/tool/mittwald-cli/app/list-upgrade-candidates-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_open",
       "handler": "handleAppOpenCli",
       "file": "src/constants/tool/mittwald-cli/app/open-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_ssh",
       "handler": "handleAppSshCli",
       "file": "src/constants/tool/mittwald-cli/app/ssh-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 1"
     },
     {
       "tool": "mittwald_app_uninstall",
       "handler": "handleAppUninstallCli",
       "file": "src/constants/tool/mittwald-cli/app/uninstall-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_app_update",
       "handler": "handleAppUpdateCli",
       "file": "src/constants/tool/mittwald-cli/app/update-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_app_upgrade",
       "handler": "handleAppUpgradeCli",
       "file": "src/constants/tool/mittwald-cli/app/upgrade-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_app_upload",
       "handler": "handleAppUploadCli",
       "file": "src/constants/tool/mittwald-cli/app/upload-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_app_versions",
       "handler": "handleAppVersionsCli",
       "file": "src/constants/tool/mittwald-cli/app/versions-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_create",
       "handler": "handleBackupCreateCli",
       "file": "src/constants/tool/mittwald-cli/backup/create-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_delete",
       "handler": "handleBackupDeleteCli",
       "file": "src/constants/tool/mittwald-cli/backup/delete-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_download",
       "handler": "handleBackupDownloadCli",
       "file": "src/constants/tool/mittwald-cli/backup/download-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_get",
       "handler": "handleBackupGetCli",
       "file": "src/constants/tool/mittwald-cli/backup/get-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_list",
       "handler": "handleBackupListCli",
       "file": "src/constants/tool/mittwald-cli/backup/list-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_schedule_create",
       "handler": "handleBackupScheduleCreateCli",
       "file": "src/constants/tool/mittwald-cli/backup/schedule-create-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_schedule_delete",
       "handler": "handleBackupScheduleDeleteCli",
       "file": "src/constants/tool/mittwald-cli/backup/schedule-delete-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_schedule_list",
       "handler": "handleBackupScheduleListCli",
       "file": "src/constants/tool/mittwald-cli/backup/schedule-list-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_backup_schedule_update",
       "handler": "handleBackupScheduleUpdateCli",
       "file": "src/constants/tool/mittwald-cli/backup/schedule-update-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_container_delete",
       "handler": "handleContainerDeleteCli",
       "file": "src/constants/tool/mittwald-cli/container/delete-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_container_list",
       "handler": "handleContainerListCli",
       "file": "src/constants/tool/mittwald-cli/container/list-services-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_container_logs",
       "handler": "handleContainerLogsCli",
       "file": "src/constants/tool/mittwald-cli/container/logs-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_container_recreate",
       "handler": "handleContainerRecreateCli",
       "file": "src/constants/tool/mittwald-cli/container/recreate-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_container_registry_create",
       "handler": "handleRegistryCreateCli",
       "file": "src/constants/tool/mittwald-cli/container/registry-create-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_container_registry_delete",
       "handler": "handleRegistryDeleteCli",
       "file": "src/constants/tool/mittwald-cli/container/registry-delete-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 2"
     },
     {
       "tool": "mittwald_container_registry_list",
       "handler": "handleRegistryListCli",
       "file": "src/constants/tool/mittwald-cli/container/registry-list-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_registry_update",
       "handler": "handleRegistryUpdateCli",
       "file": "src/constants/tool/mittwald-cli/container/registry-update-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_restart",
       "handler": "handleContainerRestartCli",
       "file": "src/constants/tool/mittwald-cli/container/restart-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_run",
       "handler": "handleContainerRunCli",
       "file": "src/constants/tool/mittwald-cli/container/run-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_stack_delete",
       "handler": "handleStackDeleteCli",
       "file": "src/constants/tool/mittwald-cli/container/stack-delete-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_stack_deploy",
       "handler": "handleStackDeployCli",
       "file": "src/constants/tool/mittwald-cli/container/stack-deploy-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_stack_list",
       "handler": "handleStackListCli",
       "file": "src/constants/tool/mittwald-cli/container/stack-list-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_stack_ps",
       "handler": "handleStackPsCli",
       "file": "src/constants/tool/mittwald-cli/container/stack-ps-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_start",
       "handler": "handleContainerStartCli",
       "file": "src/constants/tool/mittwald-cli/container/start-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_container_stop",
       "handler": "handleContainerStopCli",
       "file": "src/constants/tool/mittwald-cli/container/stop-cli.ts",
       "status": "migrated",
-      "notes": "converted to invokeCliTool"
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_context_get",
       "handler": "handleContextGetCli",
       "file": "src/constants/tool/mittwald-cli/context/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_context_get_session",
       "handler": "handleSessionAwareContextGet",
       "file": "src/constants/tool/mittwald-cli/context/session-aware-get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_context_reset",
       "handler": "handleContextResetCli",
       "file": "src/constants/tool/mittwald-cli/context/reset-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_context_reset_session",
       "handler": "handleSessionAwareContextReset",
       "file": "src/constants/tool/mittwald-cli/context/session-aware-reset-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_context_set",
       "handler": "handleContextSetCli",
       "file": "src/constants/tool/mittwald-cli/context/set-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_context_set_session",
       "handler": "handleSessionAwareContextSet",
       "file": "src/constants/tool/mittwald-cli/context/session-aware-set-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_conversation_categories",
       "handler": "handleConversationCategoriesCli",
       "file": "src/constants/tool/mittwald-cli/conversation/categories-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_conversation_close",
       "handler": "handleConversationCloseCli",
       "file": "src/constants/tool/mittwald-cli/conversation/close-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_conversation_create",
       "handler": "handleConversationCreateCli",
       "file": "src/constants/tool/mittwald-cli/conversation/create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_conversation_list",
       "handler": "handleConversationListCli",
       "file": "src/constants/tool/mittwald-cli/conversation/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 3"
     },
     {
       "tool": "mittwald_conversation_reply",
       "handler": "handleConversationReplyCli",
       "file": "src/constants/tool/mittwald-cli/conversation/reply-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_conversation_show",
       "handler": "handleConversationShowCli",
       "file": "src/constants/tool/mittwald-cli/conversation/show-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_create",
       "handler": "handleCronjobCreateCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_delete",
       "handler": "handleCronjobDeleteCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_execute",
       "handler": "handleCronjobExecuteCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execute-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_execution_abort",
       "handler": "handleCronjobExecutionAbortCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execution-abort-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_execution_get",
       "handler": "handleCronjobExecutionGetCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execution-get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_execution_list",
       "handler": "handleCronjobExecutionListCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execution-list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_execution_logs",
       "handler": "handleCronjobExecutionLogsCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/execution-logs-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_get",
       "handler": "handleCronjobGetCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_list",
       "handler": "handleCronjobListCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_cronjob_update",
       "handler": "handleCronjobUpdateCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/update-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_list",
       "handler": "handleDatabaseListCli",
       "file": "src/constants/tool/mittwald-cli/database/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_mysql_charsets",
       "handler": "handleDatabaseMysqlCharsetsCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/charsets-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_mysql_create",
       "handler": "handleDatabaseMysqlCreateCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_mysql_delete",
       "handler": "handleDatabaseMysqlDeleteCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_mysql_dump",
       "handler": "handleDatabaseMysqlDumpCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/dump-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_mysql_get",
       "handler": "handleDatabaseMysqlGetCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_mysql_import",
       "handler": "handleDatabaseMysqlImportCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/import-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_mysql_list",
       "handler": "handleDatabaseMysqlListCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 4"
     },
     {
       "tool": "mittwald_database_mysql_phpmyadmin",
       "handler": "handleDatabaseMysqlPhpmyadminCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/phpmyadmin-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_database_mysql_port_forward",
       "handler": "handleDatabaseMysqlPortForwardCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/port-forward-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_database_mysql_shell",
       "handler": "handleDatabaseMysqlShellCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/shell-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_database_mysql_versions",
       "handler": "handleDatabaseMysqlVersionsCli",
       "file": "src/constants/tool/mittwald-cli/database/mysql/versions-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_ddev_init",
       "handler": "UNKNOWN",
       "file": "src/constants/tool/mittwald-cli/ddev/init-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_ddev_render_config",
       "handler": "UNKNOWN",
       "file": "src/constants/tool/mittwald-cli/ddev/render-config-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_dnszone_get",
       "handler": "handleDomainDnszoneGetCli",
       "file": "src/constants/tool/mittwald-cli/domain/dnszone/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_dnszone_list",
       "handler": "handleDomainDnszoneListCli",
       "file": "src/constants/tool/mittwald-cli/domain/dnszone/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_dnszone_update",
       "handler": "handleDomainDnszoneUpdateCli",
       "file": "src/constants/tool/mittwald-cli/domain/dnszone/update-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_get",
       "handler": "handleDomainGetCli",
       "file": "src/constants/tool/mittwald-cli/domain/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_list",
       "handler": "handleDomainListCli",
       "file": "src/constants/tool/mittwald-cli/domain/list-cli.ts",
-      "status": "pending",
-      "notes": ""
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_virtualhost_create",
       "handler": "handleDomainVirtualhostCreateCli",
       "file": "src/constants/tool/mittwald-cli/domain/virtualhost-create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_virtualhost_delete",
       "handler": "handleDomainVirtualhostDeleteCli",
       "file": "src/constants/tool/mittwald-cli/domain/virtualhost-delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_virtualhost_get",
       "handler": "handleDomainVirtualhostGetCli",
       "file": "src/constants/tool/mittwald-cli/domain/virtualhost-get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_domain_virtualhost_list",
       "handler": "handleDomainVirtualhostListCli",
       "file": "src/constants/tool/mittwald-cli/domain/virtualhost-list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_extension_install",
       "handler": "handleExtensionInstallCli",
       "file": "src/constants/tool/mittwald-cli/extension/install-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_extension_list",
       "handler": "handleExtensionListCli",
       "file": "src/constants/tool/mittwald-cli/extension/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_extension_list_installed",
       "handler": "handleExtensionListInstalledCli",
       "file": "src/constants/tool/mittwald-cli/extension/list-installed-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_extension_uninstall",
       "handler": "handleExtensionUninstallCli",
       "file": "src/constants/tool/mittwald-cli/extension/uninstall-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_login_reset",
       "handler": "handleLoginResetCli",
       "file": "src/constants/tool/mittwald-cli/login/reset-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_login_token",
       "handler": "handleLoginTokenCli",
       "file": "src/constants/tool/mittwald-cli/login/token-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_address_create",
       "handler": "handleMittwaldMailAddressCreateCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_address_delete",
       "handler": "handleMittwaldMailAddressDeleteCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_address_get",
       "handler": "handleMittwaldMailAddressGetCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_address_list",
       "handler": "handleMittwaldMailAddressListCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_address_update",
       "handler": "handleMittwaldMailAddressUpdateCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/update-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_deliverybox_create",
       "handler": "handleMittwaldMailDeliveryboxCreateCli",
       "file": "src/constants/tool/mittwald-cli/mail/deliverybox/create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_deliverybox_delete",
       "handler": "handleMittwaldMailDeliveryboxDeleteCli",
       "file": "src/constants/tool/mittwald-cli/mail/deliverybox/delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_deliverybox_get",
       "handler": "handleMittwaldMailDeliveryboxGetCli",
       "file": "src/constants/tool/mittwald-cli/mail/deliverybox/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_deliverybox_list",
       "handler": "handleMittwaldMailDeliveryboxListCli",
       "file": "src/constants/tool/mittwald-cli/mail/deliverybox/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_mail_deliverybox_update",
       "handler": "handleMittwaldMailDeliveryboxUpdateCli",
       "file": "src/constants/tool/mittwald-cli/mail/deliverybox/update-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_org_invite_list",
       "handler": "ToolHandler",
       "file": "src/constants/tool/mittwald-cli/org/invite-list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_org_invite_list_own",
       "handler": "ToolHandler",
       "file": "src/constants/tool/mittwald-cli/org/invite-list-own-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_org_invite_revoke",
       "handler": "ToolHandler",
       "file": "src/constants/tool/mittwald-cli/org/invite-revoke-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_project_create",
       "handler": "handleProjectCreateCli",
       "file": "src/constants/tool/mittwald-cli/project/create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_project_delete",
       "handler": "handleProjectDeleteCli",
       "file": "src/constants/tool/mittwald-cli/project/delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_project_filesystem_usage",
       "handler": "handleProjectFilesystemUsageCli",
       "file": "src/constants/tool/mittwald-cli/project/filesystem-usage-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_project_get",
       "handler": "handleProjectGetCli",
       "file": "src/constants/tool/mittwald-cli/project/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_project_invite_get",
       "handler": "handleProjectInviteGetCli",
       "file": "src/constants/tool/mittwald-cli/project/invite-get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_project_invite_list",
       "handler": "handleProjectInviteListCli",
       "file": "src/constants/tool/mittwald-cli/project/invite-list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 6"
     },
     {
       "tool": "mittwald_project_invite_list_own",
       "handler": "handleProjectInviteListOwnCli",
       "file": "src/constants/tool/mittwald-cli/project/invite-list-own-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_project_list",
       "handler": "handleMittwaldProjectListCli",
       "file": "src/constants/tool/mittwald-cli/project/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_project_membership_get",
       "handler": "handleProjectMembershipGetCli",
       "file": "src/constants/tool/mittwald-cli/project/membership-get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_project_membership_get_own",
       "handler": "handleProjectMembershipGetOwnCli",
       "file": "src/constants/tool/mittwald-cli/project/membership-get-own-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_project_membership_list",
       "handler": "handleProjectMembershipListCli",
       "file": "src/constants/tool/mittwald-cli/project/membership-list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_project_membership_list_own",
       "handler": "handleProjectMembershipListOwnCli",
       "file": "src/constants/tool/mittwald-cli/project/membership-list-own-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_project_ssh",
       "handler": "handleProjectSshCli",
       "file": "src/constants/tool/mittwald-cli/project/ssh-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_project_update",
       "handler": "handleProjectUpdateCli",
       "file": "src/constants/tool/mittwald-cli/project/update-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_server_get",
       "handler": "handleServerGetCli",
       "file": "src/constants/tool/mittwald-cli/server/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_server_list",
       "handler": "handleServerListCli",
       "file": "src/constants/tool/mittwald-cli/server/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_sftp_user_create",
       "handler": "handleSftpUserCreateCli",
       "file": "src/constants/tool/mittwald-cli/sftp/user-create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_sftp_user_delete",
       "handler": "handleSftpUserDeleteCli",
       "file": "src/constants/tool/mittwald-cli/sftp/user-delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_sftp_user_list",
       "handler": "handleSftpUserListCli",
       "file": "src/constants/tool/mittwald-cli/sftp/user-list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_sftp_user_update",
       "handler": "handleSftpUserUpdateCli",
       "file": "src/constants/tool/mittwald-cli/sftp/user-update-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_ssh_user_create",
       "handler": "handleSshUserCreateCli",
       "file": "src/constants/tool/mittwald-cli/ssh/user-create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_ssh_user_delete",
       "handler": "handleSshUserDeleteCli",
       "file": "src/constants/tool/mittwald-cli/ssh/user-delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_ssh_user_list",
       "handler": "handleSshUserListCli",
       "file": "src/constants/tool/mittwald-cli/ssh/user-list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_ssh_user_update",
       "handler": "handleSshUserUpdateCli",
       "file": "src/constants/tool/mittwald-cli/ssh/user-update-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_user_accessible_projects",
       "handler": "handleGetAccessibleProjects",
       "file": "src/constants/tool/mittwald-cli/context/accessible-projects-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_user_api_token_create",
       "handler": "handleUserApiTokenCreateCli",
       "file": "src/constants/tool/mittwald-cli/user/api-token/create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 7"
     },
     {
       "tool": "mittwald_user_api_token_get",
       "handler": "handleUserApiTokenGetCli",
       "file": "src/constants/tool/mittwald-cli/user/api-token/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_api_token_list",
       "handler": "handleUserApiTokenListCli",
       "file": "src/constants/tool/mittwald-cli/user/api-token/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_api_token_revoke",
       "handler": "handleUserApiTokenRevokeCli",
       "file": "src/constants/tool/mittwald-cli/user/api-token/revoke-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_get",
       "handler": "handleUserGetCli",
       "file": "src/constants/tool/mittwald-cli/user/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_session_get",
       "handler": "handleUserSessionGetCli",
       "file": "src/constants/tool/mittwald-cli/user/session/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_session_list",
       "handler": "handleUserSessionListCli",
       "file": "src/constants/tool/mittwald-cli/user/session/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_create",
       "handler": "handleUserSshKeyCreateCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/create-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_delete",
       "handler": "handleUserSshKeyDeleteCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/delete-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_get",
       "handler": "handleUserSshKeyGetCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/get-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_import",
       "handler": "handleUserSshKeyImportCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/import-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "mittwald_user_ssh_key_list",
       "handler": "handleUserSshKeyListCli",
       "file": "src/constants/tool/mittwald-cli/user/ssh-key/list-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "UNKNOWN",
       "handler": "UNKNOWN",
       "file": "src/constants/tool/mittwald-cli/database/index-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     },
     {
       "tool": "UNKNOWN",
       "handler": "UNKNOWN",
       "file": "src/constants/tool/mittwald-cli/login/status-cli.ts",
       "status": "pending",
-      "notes": ""
+      "notes": "",
+      "agent_assignment": "Agent 8"
     }
   ]
 }
