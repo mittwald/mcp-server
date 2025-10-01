@@ -501,8 +501,8 @@
       "tool": "mittwald_cronjob_create",
       "handler": "handleCronjobCreateCli",
       "file": "src/constants/tool/mittwald-cli/cronjob/create-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 4"
     },
     {
@@ -813,8 +813,8 @@
       "tool": "mittwald_mail_address_create",
       "handler": "handleMittwaldMailAddressCreateCli",
       "file": "src/constants/tool/mittwald-cli/mail/address/create-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 6"
     },
     {
