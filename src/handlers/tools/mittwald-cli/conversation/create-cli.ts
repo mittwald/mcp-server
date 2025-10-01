@@ -11,14 +11,6 @@ interface MittwaldConversationCreateArgs {
   category?: string;
 }
 
-interface ParsedConversationOutput {
-  ok: true;
-  data: Record<string, unknown>;
-} | {
-  ok: false;
-  error: string;
-}
-
 function buildCliArgs(args: MittwaldConversationCreateArgs): string[] {
   const cliArgs: string[] = ['conversation', 'create', '--title', args.title];
 
@@ -33,6 +25,14 @@ function buildCliArgs(args: MittwaldConversationCreateArgs): string[] {
   if (args.editor) cliArgs.push('--editor', args.editor);
 
   return cliArgs;
+}
+
+type ParsedConversationOutput = {
+  ok: true;
+  data: Record<string, unknown>;
+} | {
+  ok: false;
+  error: string;
 }
 
 function parseConversationOutput(stdout: string): ParsedConversationOutput {
