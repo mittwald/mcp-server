@@ -1,79 +1,98 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
+import { parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldDatabaseMysqlGetArgs {
   databaseId: string;
   output?: "txt" | "json" | "yaml";
 }
 
-export const handleDatabaseMysqlGetCli: MittwaldToolHandler<MittwaldDatabaseMysqlGetArgs> = async (args) => {
+function buildCliArgs(args: MittwaldDatabaseMysqlGetArgs): string[] {
+  const outputFormat = args.output ?? 'json';
+  return ['database', 'mysql', 'get', args.databaseId, '--output', outputFormat];
+}
+
+function mapCliError(error: CliToolError, args: MittwaldDatabaseMysqlGetArgs): string {
+  const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}`.toLowerCase();
+  const errorText = error.stderr || error.stdout || error.message;
+
+  if (
+    combined.includes('403') ||
+    combined.includes('forbidden') ||
+    combined.includes('permission denied')
+  ) {
+    return `Permission denied when accessing MySQL database. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorText}`;
+  }
+
+  if (combined.includes('not found') || combined.includes('404')) {
+    return `MySQL database not found. Please verify the database ID: ${args.databaseId}\nError: ${errorText}`;
+  }
+
+  return `Failed to get MySQL database: ${errorText}`;
+}
+
+export const handleDatabaseMysqlGetCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlGetArgs> = async (args) => {
+  if (!args.databaseId) {
+    return formatToolResponse('error', 'Database ID is required.');
+  }
+
+  const outputFormat = args.output ?? 'json';
+  const argv = buildCliArgs({ ...args, output: outputFormat });
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['database', 'mysql', 'get'];
-    
-    // Required database ID
-    cliArgs.push(args.databaseId);
-    
-    // Output format (default to json for structured data)
-    const outputFormat = args.output || 'json';
-    cliArgs.push('--output', outputFormat);
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      // Parse error message from stderr or stdout
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Check for common error patterns
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied when accessing MySQL database. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') || errorMessage.includes('404')) {
-        return formatToolResponse(
-          "error",
-          `MySQL database not found. Please verify the database ID: ${args.databaseId}\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to get MySQL database: ${errorMessage}`
-      );
-    }
-    
-    // Parse the output based on format
+    const result = await invokeCliTool({
+      toolName: 'mittwald_database_mysql_get',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+
     if (outputFormat === 'json') {
       try {
-        const database = parseJsonOutput(result.stdout);
+        const database = parseJsonOutput(stdout);
         return formatToolResponse(
-          "success",
+          'success',
           `Successfully retrieved MySQL database information for ${args.databaseId}`,
-          database
+          database,
+          {
+            command: result.meta.command,
+            durationMs: result.meta.durationMs,
+          }
         );
       } catch (error) {
         return formatToolResponse(
-          "error",
+          'error',
           `Failed to parse JSON output: ${error instanceof Error ? error.message : String(error)}`
         );
       }
-    } else {
-      // For other formats (txt, yaml), return the raw output
-      return formatToolResponse(
-        "success",
-        "MySQL database information retrieved successfully",
-        result.stdout
-      );
     }
-    
-  } catch (error) {
+
+    const output = stdout || stderr;
     return formatToolResponse(
-      "error",
+      'success',
+      'MySQL database information retrieved successfully',
+      output,
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
+      }
+    );
+  } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse(
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
