@@ -181,4 +181,8 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_conversation_list` handler to the shared CLI adapter. _(commit 2951d4522c833d6001ed1a6b96b002c410ec7d11)_
 
+- **2025-09-30** – Migrated `mittwald_domain_virtualhost_create` handler to the shared CLI adapter. _(commit 0ca2fad53c3667829c41a5c8a502f9ab9adfa5bb)_
+
+- **2025-09-30** – Migrated `mittwald_domain_virtualhost_get/list` handlers to the shared CLI adapter. _(commit 6e3e33f0f1f8b8f5170674e7adf0d8d7220ce9bb)_
+
 _Last updated: 2025-10-01_
