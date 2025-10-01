@@ -675,18 +675,18 @@
     },
     {
       "tool": "mittwald_ddev_init",
-      "handler": "UNKNOWN",
+      "handler": "handleDdevInitCli",
       "file": "src/constants/tool/mittwald-cli/ddev/init-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
       "tool": "mittwald_ddev_render_config",
-      "handler": "UNKNOWN",
+      "handler": "handleDdevRenderConfigCli",
       "file": "src/constants/tool/mittwald-cli/ddev/render-config-cli.ts",
-      "status": "pending",
-      "notes": "",
+      "status": "migrated",
+      "notes": "converted to invokeCliTool",
       "agent_assignment": "Agent 5"
     },
     {
