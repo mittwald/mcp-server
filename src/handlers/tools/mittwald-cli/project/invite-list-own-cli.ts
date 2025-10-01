@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 export interface MittwaldProjectInviteListOwnArgs {
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
@@ -11,107 +11,121 @@ export interface MittwaldProjectInviteListOwnArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleProjectInviteListOwnCli: MittwaldToolHandler<MittwaldProjectInviteListOwnArgs> = async (args, context) => {
+function buildCliArgs(args: MittwaldProjectInviteListOwnArgs): string[] {
+  const cliArgs: string[] = ['project', 'invite', 'list-own', '--output', 'json'];
+
+  if (args.extended) cliArgs.push('--extended');
+  if (args.noHeader) cliArgs.push('--no-header');
+  if (args.noTruncate) cliArgs.push('--no-truncate');
+  if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
+  if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError): string {
+  const stderr = error.stderr ?? '';
+  const stdout = error.stdout ?? '';
+  const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
+
+  if (
+    error.kind === 'AUTHENTICATION' ||
+    combined.includes('not authenticated') ||
+    combined.includes('401')
+  ) {
+    const details = stderr || stdout || error.message;
+    return `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${details}`;
+  }
+
+  const details = stderr || stdout || error.message;
+  return `Failed to list own project invites: ${details}`;
+}
+
+function formatInvites(data: unknown[]): Array<{
+  id: unknown;
+  email: unknown;
+  role: unknown;
+  status: 'active' | 'expired';
+  createdAt: unknown;
+  expiresAt: unknown;
+  projectId: unknown;
+  projectName: unknown;
+}> {
+  return data.map((item) => {
+    const record = (item ?? {}) as Record<string, unknown>;
+    const expired = Boolean(record.expired);
+    const project = (record.project ?? {}) as Record<string, unknown>;
+
+    return {
+      id: record.id,
+      email: record.mailAddress ?? record.email,
+      role: record.projectRole ?? record.role,
+      status: expired ? 'expired' : 'active',
+      createdAt: record.createdAt,
+      expiresAt: record.membershipExpiresAt ?? record.expiresAt ?? 'Never',
+      projectId: record.projectId,
+      projectName: record.projectName ?? project.name,
+    };
+  });
+}
+
+export const handleProjectInviteListOwnCli: MittwaldCliToolHandler<MittwaldProjectInviteListOwnArgs> = async (args) => {
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['project', 'invite', 'list-own'];
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Optional flags
-    if (args.extended) {
-      cliArgs.push('--extended');
-    }
-    
-    if (args.noHeader) {
-      cliArgs.push('--no-header');
-    }
-    
-    if (args.noTruncate) {
-      cliArgs.push('--no-truncate');
-    }
-    
-    if (args.noRelativeDates) {
-      cliArgs.push('--no-relative-dates');
-    }
-    
-    if (args.csvSeparator) {
-      cliArgs.push('--csv-separator', args.csvSeparator);
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not authenticated') || errorMessage.includes('401')) {
-        return formatToolResponse(
-          "error",
-          `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to list own project invites: ${errorMessage}`
-      );
-    }
-    
-    // Parse JSON output
+    const result = await invokeCliTool({
+      toolName: 'mittwald_project_invite_list_own',
+      argv,
+    });
+
+    const commandMeta = {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    };
+
+    const output = result.result ?? '';
+
     try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (!Array.isArray(data)) {
-        return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
-        );
+      const parsed = JSON.parse(output);
+
+      if (!Array.isArray(parsed)) {
+        return formatToolResponse('error', 'Unexpected output format from CLI command');
       }
-      
-      if (data.length === 0) {
-        return formatToolResponse(
-          "success",
-          "No project invites found for the current user",
-          []
-        );
+
+      if (parsed.length === 0) {
+        return formatToolResponse('success', 'No project invites found for the current user', [], commandMeta);
       }
-      
-      // Format the data to match our expected structure
-      const formattedData = data.map(item => ({
-        id: item.id,
-        email: item.mailAddress || item.email,
-        role: item.projectRole || item.role,
-        status: item.expired ? 'expired' : 'active',
-        createdAt: item.createdAt,
-        expiresAt: item.membershipExpiresAt || item.expiresAt || 'Never',
-        projectId: item.projectId,
-        projectName: item.projectName || item.project?.name
-      }));
-      
+
+      const formatted = formatInvites(parsed);
+
       return formatToolResponse(
-        "success",
-        `Found ${data.length} project invite(s) for the current user`,
-        formattedData
+        'success',
+        `Found ${formatted.length} project invite(s) for the current user`,
+        formatted,
+        commandMeta
       );
-      
     } catch (parseError) {
-      // If JSON parsing fails, return the raw output
       return formatToolResponse(
-        "success",
-        "Own project invites retrieved (raw output)",
+        'success',
+        'Own project invites retrieved (raw output)',
         {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
-        }
+          rawOutput: output,
+          parseError: parseError instanceof Error ? parseError.message : String(parseError),
+        },
+        commandMeta
       );
     }
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
