@@ -302,7 +302,5 @@ Establish a single, session-aware abstraction for invoking the Mittwald CLI from
 
 - **2025-09-30** – Migrated `mittwald_user_session_get` to the adapter path. _(commit 6f7b61ff88571884c6ea581d1123c98200feed1b)_
 
-- **2025-09-30** – Migrated `mittwald_user_session_list` to the adapter path. _(commit 7a8f9960126b8d4bbc526e58db4aa4a0a5ec74e8)_
-
 ---
 *Draft prepared 2025-09-29 by Codex (LLM).*

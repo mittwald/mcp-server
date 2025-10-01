@@ -1069,8 +1069,8 @@
       "tool": "mittwald_sftp_user_update",
       "handler": "handleSftpUserUpdateCli",
       "file": "src/constants/tool/mittwald-cli/sftp/user-update-cli.ts",
-      "status": "migrated",
-      "notes": "converted to invokeCliTool",
+      "status": "pending",
+      "notes": "",
       "agent_assignment": "Agent 7"
     },
     {

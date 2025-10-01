@@ -229,6 +229,4 @@ The streams are tracked separately, but share discovery data and release milesto
 
 - **2025-09-30** – Migrated `mittwald_user_session_get` handler to the shared CLI adapter. _(commit 6f7b61ff88571884c6ea581d1123c98200feed1b)_
 
-- **2025-09-30** – Migrated `mittwald_user_session_list` handler to the shared CLI adapter. _(commit 7a8f9960126b8d4bbc526e58db4aa4a0a5ec74e8)_
-
 _Last updated: 2025-10-01_
