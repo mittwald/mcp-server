@@ -55,15 +55,49 @@ export async function generateDdevConfig(
 
   let resolvedDatabaseId = databaseId;
   if (!resolvedDatabaseId) {
-    const linked = app.linkedDatabases as unknown;
+    const linked = app.linkedDatabases ?? [];
     if (Array.isArray(linked) && linked.length > 0) {
-      const primary = linked[0] as unknown;
-      if (typeof primary === 'string') {
-        resolvedDatabaseId = primary;
-      } else if (primary && typeof primary === 'object') {
-        const candidate = (primary as { mysqlDatabaseId?: string; databaseId?: string });
-        resolvedDatabaseId = candidate.mysqlDatabaseId ?? candidate.databaseId ?? undefined;
+      const primary = linked.find((entry) => entry?.purpose === 'primary');
+      if (primary?.databaseId) {
+        resolvedDatabaseId = primary.databaseId;
       }
+    }
+  }
+
+  if (!resolvedDatabaseId) {
+    const fallbackLinked = app.linkedDatabases as unknown;
+    if (Array.isArray(fallbackLinked) && fallbackLinked.length > 0) {
+      const coerce = (value: unknown): string | undefined => {
+        if (typeof value === 'string') {
+          return value;
+        }
+
+        if (value && typeof value === 'object') {
+          const candidate = value as Record<string, unknown>;
+          const mysqlId = candidate.mysqlDatabaseId;
+          if (typeof mysqlId === 'string') {
+            return mysqlId;
+          }
+
+          const genericId = candidate.databaseId;
+          if (typeof genericId === 'string') {
+            return genericId;
+          }
+        }
+
+        return undefined;
+      };
+
+      const primaryCandidate = fallbackLinked.find((value) => {
+        if (value && typeof value === 'object' && 'purpose' in (value as Record<string, unknown>)) {
+          const purpose = (value as Record<string, unknown>).purpose;
+          return purpose === 'primary';
+        }
+
+        return false;
+      });
+
+      resolvedDatabaseId = coerce(primaryCandidate) ?? coerce(fallbackLinked[0]);
     }
   }
 
