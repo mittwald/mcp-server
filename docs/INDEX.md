@@ -17,6 +17,7 @@ Use this index to get the current state of the project quickly. Historical deep-
 - `tests/README.md` – up-to-date test matrix and environment notes.
 - `docs/app-dependency-tools.md` – usage guide for app dependency MCP tools.
 - `docs/container-update-tool.md` – container lifecycle MCP tool usage examples.
+- `docs/ddev-resources.md` – overview of DDEV configuration and setup resources exposed via MCP.
 
 ## Archive
 - `docs/archive/` – legacy analyses (oidc-provider, MCP Jam Inspector, cookie issues). Consult only for historical context.
