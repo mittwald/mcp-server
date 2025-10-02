@@ -22,3 +22,4 @@ export { mittwald_database_mysql_user_create_cli } from './mysql/user-create-cli
 export { mittwald_database_mysql_user_delete_cli } from './mysql/user-delete-cli.js';
 export { mittwald_database_mysql_user_get_cli } from './mysql/user-get-cli.js';
 export { mittwald_database_mysql_user_list_cli } from './mysql/user-list-cli.js';
+export { mittwald_database_mysql_user_update_cli } from './mysql/user-update-cli.js';
