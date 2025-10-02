@@ -58,8 +58,8 @@ export const handleOrgMembershipRevokeCli: MittwaldToolHandler<OrgMembershipRevo
   logger.warn('[OrgMembershipRevoke] Attempting to revoke membership', {
     membershipId: args.membershipId,
     organizationId: args.organizationId,
-    sessionId: context.sessionId,
-    userId: context.userId,
+    sessionId: context?.sessionId,
+    userId: context?.userId,
   });
 
   const argv = ['org', 'membership', 'revoke', args.membershipId, '--quiet'];

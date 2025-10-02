@@ -63,8 +63,8 @@ export const handleOrgDeleteCli: MittwaldToolHandler<OrgDeleteArgs> = async (arg
 
   logger.warn('[OrgDelete] Attempting to delete organization', {
     organizationId: args.organizationId,
-    sessionId: context.sessionId,
-    userId: context.userId,
+    sessionId: context?.sessionId,
+    userId: context?.userId,
   });
 
   const argv = ['org', 'delete', args.organizationId, '--force', '--quiet'];
