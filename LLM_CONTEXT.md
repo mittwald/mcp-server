@@ -196,9 +196,9 @@ Result Parsing → MCP Response
 - `src/utils/credential-response.ts` - `buildUpdatedAttributes()`, `buildSecureToolResponse()`
 
 **Automated Enforcement**:
-- ESLint rule `no-credential-leak` detects credential leakage in code
-- CI security checks block PRs with hardcoded credentials
-- Security test suite validates all three layers
+- ESLint rule `no-credential-leak` (`eslint-rules/no-credential-leak.js`) blocks credential leakage during linting
+- CI workflow `.github/workflows/security-check.yml` runs lint + security tests on every push/PR
+- Security test suite `tests/security/credential-leakage.test.ts` validates generation, redaction, and sanitization
 
 See also:
 - [Agent S1 Implementation Guide](./docs/agent-prompts/STANDARD-S1-credential-security.md)

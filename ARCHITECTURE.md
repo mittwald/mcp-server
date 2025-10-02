@@ -83,6 +83,13 @@ All tools that handle passwords, tokens, API keys, or secrets MUST follow the cr
 2. **Layer 2**: Command redaction before logging (`--password [REDACTED]`)
 3. **Layer 3**: Response sanitization (boolean flags, not values)
 
+Reusable utilities enforce these layers consistently:
+- `src/utils/credential-generator.ts` – `generateSecurePassword()` / `generateSecureToken()`
+- `src/utils/credential-redactor.ts` – `redactCredentialsFromCommand()` / `redactMetadata()`
+- `src/utils/credential-response.ts` – `buildSecureToolResponse()` / `buildUpdatedAttributes()`
+- `tests/security/credential-leakage.test.ts` – regression suite ensuring redaction + sanitization
+- `eslint-rules/no-credential-leak.js` – lint rule blocking credential leaks in code review
+
 See also:
 - [Agent S1 Implementation Prompt](./docs/agent-prompts/STANDARD-S1-credential-security.md)
 - [Agent C3 Review (Security Champion)](./docs/agent-reviews/AGENT-C3-REVIEW.md)
