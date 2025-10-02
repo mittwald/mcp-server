@@ -23,3 +23,6 @@ export { mittwald_database_mysql_user_delete_cli } from './mysql/user-delete-cli
 export { mittwald_database_mysql_user_get_cli } from './mysql/user-get-cli.js';
 export { mittwald_database_mysql_user_list_cli } from './mysql/user-list-cli.js';
 export { mittwald_database_mysql_user_update_cli } from './mysql/user-update-cli.js';
+
+// Redis CLI tools
+export { mittwald_database_redis_create_cli } from './redis/create-cli.js';
