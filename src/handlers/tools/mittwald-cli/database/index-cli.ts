@@ -28,3 +28,4 @@ export { handleDatabaseMysqlUserUpdateCli } from './mysql/user-update-cli.js';
 export { handleDatabaseRedisCreateCli } from './redis/create-cli.js';
 export { handleDatabaseRedisGetCli } from './redis/get-cli.js';
 export { handleDatabaseRedisListCli } from './redis/list-cli.js';
+export { handleDatabaseRedisVersionsCli } from './redis/versions-cli.js';
