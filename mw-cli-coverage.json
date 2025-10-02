@@ -2,12 +2,12 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 178,
-    "toolCount": 153,
-    "coveredCount": 149,
-    "missingCount": 29,
-    "coveragePercent": 84,
+    "toolCount": 162,
+    "coveredCount": 158,
+    "missingCount": 20,
+    "coveragePercent": 89,
     "extraToolCount": 4,
-    "excludedCount": 29
+    "excludedCount": 20
   },
   "coverage": [
     {
@@ -1145,13 +1145,9 @@
       "cliFile": "database/mysql/user/create.js",
       "description": "Create a new MySQL user",
       "expectedToolName": "mittwald_database_mysql_user_create",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
+      "status": "covered",
+      "toolPath": "database/mysql/user-create-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/user-create-cli.js"
     },
     {
       "command": "database mysql user delete",
@@ -1164,13 +1160,9 @@
       "cliFile": "database/mysql/user/delete.js",
       "description": "Delete a MySQL user",
       "expectedToolName": "mittwald_database_mysql_user_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
+      "status": "covered",
+      "toolPath": "database/mysql/user-delete-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/user-delete-cli.js"
     },
     {
       "command": "database mysql user get",
@@ -1183,13 +1175,9 @@
       "cliFile": "database/mysql/user/get.js",
       "description": "Get a MySQL user.",
       "expectedToolName": "mittwald_database_mysql_user_get",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
+      "status": "covered",
+      "toolPath": "database/mysql/user-get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/user-get-cli.js"
     },
     {
       "command": "database mysql user list",
@@ -1202,13 +1190,9 @@
       "cliFile": "database/mysql/user/list.js",
       "description": "List MySQL users belonging to a database.",
       "expectedToolName": "mittwald_database_mysql_user_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
+      "status": "covered",
+      "toolPath": "database/mysql/user-list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/user-list-cli.js"
     },
     {
       "command": "database mysql user update",
@@ -1221,13 +1205,9 @@
       "cliFile": "database/mysql/user/update.js",
       "description": "Update an existing MySQL user",
       "expectedToolName": "mittwald_database_mysql_user_update",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
+      "status": "covered",
+      "toolPath": "database/mysql/user-update-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/user-update-cli.js"
     },
     {
       "command": "database mysql versions",
@@ -1253,13 +1233,9 @@
       "cliFile": "database/redis/create.js",
       "description": null,
       "expectedToolName": "mittwald_database_redis_create",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
-      }
+      "status": "covered",
+      "toolPath": "database/redis/create-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/redis/create-cli.js"
     },
     {
       "command": "database redis get",
@@ -1271,13 +1247,9 @@
       "cliFile": "database/redis/get.js",
       "description": "Get a Redis database.",
       "expectedToolName": "mittwald_database_redis_get",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
-      }
+      "status": "covered",
+      "toolPath": "database/redis/get-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/redis/get-cli.js"
     },
     {
       "command": "database redis list",
@@ -1289,13 +1261,9 @@
       "cliFile": "database/redis/list.js",
       "description": "List Redis databases belonging to a project.",
       "expectedToolName": "mittwald_database_redis_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
-      }
+      "status": "covered",
+      "toolPath": "database/redis/list-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/redis/list-cli.js"
     },
     {
       "command": "database redis shell",
@@ -1325,13 +1293,9 @@
       "cliFile": "database/redis/versions.js",
       "description": "List available Redis versions.",
       "expectedToolName": "mittwald_database_redis_versions",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
-      }
+      "status": "covered",
+      "toolPath": "database/redis/versions-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/redis/versions-cli.js"
     },
     {
       "command": "ddev init",
@@ -2637,155 +2601,6 @@
       }
     },
     {
-      "command": "database mysql user create",
-      "segments": [
-        "database",
-        "mysql",
-        "user",
-        "create"
-      ],
-      "cliFile": "database/mysql/user/create.js",
-      "description": "Create a new MySQL user",
-      "expectedToolName": "mittwald_database_mysql_user_create",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
-    },
-    {
-      "command": "database mysql user delete",
-      "segments": [
-        "database",
-        "mysql",
-        "user",
-        "delete"
-      ],
-      "cliFile": "database/mysql/user/delete.js",
-      "description": "Delete a MySQL user",
-      "expectedToolName": "mittwald_database_mysql_user_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
-    },
-    {
-      "command": "database mysql user get",
-      "segments": [
-        "database",
-        "mysql",
-        "user",
-        "get"
-      ],
-      "cliFile": "database/mysql/user/get.js",
-      "description": "Get a MySQL user.",
-      "expectedToolName": "mittwald_database_mysql_user_get",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
-    },
-    {
-      "command": "database mysql user list",
-      "segments": [
-        "database",
-        "mysql",
-        "user",
-        "list"
-      ],
-      "cliFile": "database/mysql/user/list.js",
-      "description": "List MySQL users belonging to a database.",
-      "expectedToolName": "mittwald_database_mysql_user_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
-    },
-    {
-      "command": "database mysql user update",
-      "segments": [
-        "database",
-        "mysql",
-        "user",
-        "update"
-      ],
-      "cliFile": "database/mysql/user/update.js",
-      "description": "Update an existing MySQL user",
-      "expectedToolName": "mittwald_database_mysql_user_update",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: MySQL user management tooling in progress."
-      }
-    },
-    {
-      "command": "database redis create",
-      "segments": [
-        "database",
-        "redis",
-        "create"
-      ],
-      "cliFile": "database/redis/create.js",
-      "description": null,
-      "expectedToolName": "mittwald_database_redis_create",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
-      }
-    },
-    {
-      "command": "database redis get",
-      "segments": [
-        "database",
-        "redis",
-        "get"
-      ],
-      "cliFile": "database/redis/get.js",
-      "description": "Get a Redis database.",
-      "expectedToolName": "mittwald_database_redis_get",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
-      }
-    },
-    {
-      "command": "database redis list",
-      "segments": [
-        "database",
-        "redis",
-        "list"
-      ],
-      "cliFile": "database/redis/list.js",
-      "description": "List Redis databases belonging to a project.",
-      "expectedToolName": "mittwald_database_redis_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
-      }
-    },
-    {
       "command": "database redis shell",
       "segments": [
         "database",
@@ -2801,24 +2616,6 @@
       "exclusion": {
         "category": "interactive",
         "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
-      }
-    },
-    {
-      "command": "database redis versions",
-      "segments": [
-        "database",
-        "redis",
-        "versions"
-      ],
-      "cliFile": "database/redis/versions.js",
-      "description": "List available Redis versions.",
-      "expectedToolName": "mittwald_database_redis_versions",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C3: Redis lifecycle tooling pending CLI schema finalisation."
       }
     },
     {
