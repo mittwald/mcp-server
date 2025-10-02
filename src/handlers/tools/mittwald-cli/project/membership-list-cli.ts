@@ -1,6 +1,6 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 export interface MittwaldProjectMembershipListArgs {
   projectId: string;
@@ -12,125 +12,120 @@ export interface MittwaldProjectMembershipListArgs {
   csvSeparator?: ',' | ';';
 }
 
-export const handleProjectMembershipListCli: MittwaldToolHandler<MittwaldProjectMembershipListArgs> = async (args, context) => {
+function buildCliArgs(args: MittwaldProjectMembershipListArgs): string[] {
+  const cliArgs: string[] = ['project', 'membership', 'list', '--output', 'json', '--project-id', args.projectId];
+
+  if (args.extended) cliArgs.push('--extended');
+  if (args.noHeader) cliArgs.push('--no-header');
+  if (args.noTruncate) cliArgs.push('--no-truncate');
+  if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
+  if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldProjectMembershipListArgs): string {
+  const stderr = error.stderr ?? '';
+  const stdout = error.stdout ?? '';
+  const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    const details = stderr || stdout || error.message;
+    return `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${details}`;
+  }
+
+  if (error.kind === 'AUTHENTICATION' || combined.includes('not authenticated') || combined.includes('401')) {
+    const details = stderr || stdout || error.message;
+    return `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${details}`;
+  }
+
+  if (combined.includes('forbidden') || combined.includes('403')) {
+    const details = stderr || stdout || error.message;
+    return `Access denied. You don't have permission to view project memberships.\nError: ${details}`;
+  }
+
+  const details = stderr || stdout || error.message;
+  return `Failed to list project memberships: ${details}`;
+}
+
+function formatMembership(record: Record<string, unknown>) {
+  const user = (record.user ?? {}) as Record<string, unknown>;
+  const person = (user.person ?? {}) as Record<string, unknown>;
+
+  return {
+    id: record.id,
+    userId: record.userId,
+    email: record.email ?? user.email,
+    name: record.name ?? user.name ?? person.name,
+    role: record.role ?? record.projectRole,
+    status: record.status ?? 'active',
+    createdAt: record.createdAt,
+    expiresAt: record.expiresAt ?? record.membershipExpiresAt ?? 'Never',
+    projectId: record.projectId,
+  };
+}
+
+export const handleProjectMembershipListCli: MittwaldCliToolHandler<MittwaldProjectMembershipListArgs> = async (args) => {
+  if (!args.projectId) {
+    return formatToolResponse('error', 'Project ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['project', 'membership', 'list'];
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Required project ID
-    cliArgs.push('--project-id', args.projectId);
-    
-    // Optional flags
-    if (args.extended) {
-      cliArgs.push('--extended');
-    }
-    
-    if (args.noHeader) {
-      cliArgs.push('--no-header');
-    }
-    
-    if (args.noTruncate) {
-      cliArgs.push('--no-truncate');
-    }
-    
-    if (args.noRelativeDates) {
-      cliArgs.push('--no-relative-dates');
-    }
-    
-    if (args.csvSeparator) {
-      cliArgs.push('--csv-separator', args.csvSeparator);
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not authenticated') || errorMessage.includes('401')) {
-        return formatToolResponse(
-          "error",
-          `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('forbidden') || errorMessage.includes('403')) {
-        return formatToolResponse(
-          "error",
-          `Access denied. You don't have permission to view project memberships.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to list project memberships: ${errorMessage}`
-      );
-    }
-    
-    // Parse JSON output
+    const result = await invokeCliTool({
+      toolName: 'mittwald_project_membership_list',
+      argv,
+    });
+
+    const commandMeta = {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    };
+
+    const output = result.result ?? '';
+
     try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (!Array.isArray(data)) {
-        return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
-        );
+      const parsed = JSON.parse(output);
+
+      if (!Array.isArray(parsed)) {
+        return formatToolResponse('error', 'Unexpected output format from CLI command');
       }
-      
-      if (data.length === 0) {
-        return formatToolResponse(
-          "success",
-          "No project memberships found",
-          []
-        );
+
+      if (parsed.length === 0) {
+        return formatToolResponse('success', 'No project memberships found', [], commandMeta);
       }
-      
-      // Format the data to match our expected structure
-      const formattedData = data.map(item => ({
-        id: item.id,
-        userId: item.userId,
-        email: item.email || item.user?.email,
-        name: item.name || item.user?.name || item.user?.person?.name,
-        role: item.role || item.projectRole,
-        status: item.status || 'active',
-        createdAt: item.createdAt,
-        expiresAt: item.expiresAt || item.membershipExpiresAt || 'Never',
-        projectId: item.projectId
-      }));
-      
+
+      const formatted = parsed.map((item) => formatMembership((item ?? {}) as Record<string, unknown>));
+
       return formatToolResponse(
-        "success",
-        `Found ${data.length} project membership(s)`,
-        formattedData
+        'success',
+        `Found ${formatted.length} project membership(s)`,
+        formatted,
+        commandMeta
       );
-      
     } catch (parseError) {
-      // If JSON parsing fails, return the raw output
       return formatToolResponse(
-        "success",
-        "Project memberships retrieved (raw output)",
+        'success',
+        'Project memberships retrieved (raw output)',
         {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
-        }
+          rawOutput: output,
+          parseError: parseError instanceof Error ? parseError.message : String(parseError),
+        },
+        commandMeta
       );
     }
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

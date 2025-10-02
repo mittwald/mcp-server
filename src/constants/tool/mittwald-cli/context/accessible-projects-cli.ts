@@ -1,6 +1,6 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { ToolRegistration } from '../../../../types/tool-registry.js';
-import { handleGetAccessibleProjects } from '../../../../handlers/tools/mittwald-cli/context/session-aware-context.js';
+import { handleUserAccessibleProjectsCli } from '../../../../handlers/tools/mittwald-cli/context/accessible-projects-cli.js';
 
 const tool: Tool = {
   name: 'mittwald_user_accessible_projects',
@@ -15,7 +15,7 @@ const tool: Tool = {
 
 const registration: ToolRegistration = {
   tool,
-  handler: handleGetAccessibleProjects,
+  handler: handleUserAccessibleProjectsCli,
   schema: tool.inputSchema
 };
 

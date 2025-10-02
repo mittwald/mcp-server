@@ -1,83 +1,117 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldBackupScheduleCreateCliArgs {
   projectId?: string;
   schedule: string;
   ttl: string;
   description?: string;
+  quiet?: boolean;
+}
+
+function buildCliArgs(args: MittwaldBackupScheduleCreateCliArgs): string[] {
+  const cliArgs: string[] = ['backup', 'schedule', 'create', '--schedule', args.schedule, '--ttl', args.ttl];
+
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.description) cliArgs.push('--description', args.description);
+  if (args.quiet) cliArgs.push('--quiet');
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldBackupScheduleCreateCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('invalid') && combined.includes('schedule')) {
+    return `Invalid schedule format. Expected cron expression.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('invalid') && combined.includes('ttl')) {
+    return `Invalid TTL format. Expected format like '7d' (7-400 days).\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+function buildSuccessPayload(args: MittwaldBackupScheduleCreateCliArgs, output: string, scheduleId?: string) {
+  return {
+    scheduleId,
+    projectId: args.projectId,
+    schedule: args.schedule,
+    ttl: args.ttl,
+    description: args.description,
+    output,
+  };
 }
 
 export const handleBackupScheduleCreateCli: MittwaldCliToolHandler<MittwaldBackupScheduleCreateCliArgs> = async (args) => {
+  if (!args.schedule) {
+    return formatToolResponse('error', "'schedule' is required. Please provide the schedule parameter.");
+  }
+
+  if (!args.ttl) {
+    return formatToolResponse('error', "'ttl' is required. Please provide the ttl parameter.");
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['backup', 'schedule', 'create'];
-    
-    // Required flags
-    cliArgs.push('--schedule', args.schedule);
-    cliArgs.push('--ttl', args.ttl);
-    
-    // Optional flags
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    if (args.description) {
-      cliArgs.push('--description', args.description);
-    }
-    
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('invalid') && errorMessage.includes('schedule')) {
-        return formatToolResponse(
-          "error",
-          `Invalid schedule format. Expected cron expression. Error: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('invalid') && errorMessage.includes('ttl')) {
-        return formatToolResponse(
-          "error",
-          `Invalid TTL format. Expected format like '7d' (7-400 days). Error: ${errorMessage}`
-        );
-      }
-      
+    const result = await invokeCliTool({
+      toolName: 'mittwald_backup_schedule_create',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || 'Backup schedule created successfully';
+
+    if (args.quiet) {
+      const scheduleId = parseQuietOutput(stdout);
+      const message = scheduleId ? `Backup schedule created successfully with ID: ${scheduleId}` : output;
       return formatToolResponse(
-        "error",
-        `Failed to create backup schedule: ${errorMessage}`
+        'success',
+        message,
+        buildSuccessPayload(args, output, scheduleId),
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
-    
-    // Return the output
+
     return formatToolResponse(
-      "success",
-      "Backup schedule created successfully",
+      'success',
+      'Backup schedule created successfully',
+      buildSuccessPayload(args, output),
       {
-        projectId: args.projectId,
-        schedule: args.schedule,
-        ttl: args.ttl,
-        description: args.description,
-        output: result.stdout
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -1,55 +1,97 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldUserSshKeyImportArgs {
+  quiet?: boolean;
   expires?: string;
   input?: string;
 }
 
-export const handleUserSshKeyImportCli: MittwaldToolHandler<MittwaldUserSshKeyImportArgs> = async (args) => {
+function buildCliArgs(args: MittwaldUserSshKeyImportArgs): string[] {
+  const argv = ['user', 'ssh-key', 'import'];
+  if (args.expires) argv.push('--expires', args.expires);
+  if (args.input) argv.push('--input', args.input);
+  if (args.quiet) argv.push('--quiet');
+  return argv;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError): string {
+  const stdout = error.stdout ?? '';
+  const stderr = error.stderr ?? '';
+  const rawMessage = stderr || stdout || error.message;
+  return `Failed to import SSH key: ${rawMessage}`;
+}
+
+export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKeyImportArgs> = async (args) => {
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['user', 'ssh-key', 'import'];
-    
-    // Optional arguments
-    if (args.expires) {
-      cliArgs.push('--expires', args.expires);
-    }
-    
-    if (args.input) {
-      cliArgs.push('--input', args.input);
-    }
-    
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
+    const result = await invokeCliTool({
+      toolName: 'mittwald_user_ssh_key_import',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const output = stdout.trim() || stderr.trim();
+
+    if (args.quiet) {
+      const keyId = parseQuietOutput(stdout) ?? parseQuietOutput(stderr ?? '');
+      if (!keyId) {
+        return formatToolResponse('error', 'Failed to import SSH key - no key ID returned');
+      }
+
       return formatToolResponse(
-        "error",
-        `Failed to import SSH key: ${errorMessage}`
+        'success',
+        keyId,
+        {
+          keyId,
+          expires: args.expires,
+          input: args.input,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
-    
-    // Return success with the output
-    const output = result.stdout.trim();
-    
+
+    const message = output || 'SSH key imported successfully';
     return formatToolResponse(
-      "success",
-      output || "SSH key imported successfully",
+      'success',
+      message,
       {
         expires: args.expires,
         input: args.input,
-        rawOutput: output
+        rawOutput: output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
     return formatToolResponse(
-      "error",
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }

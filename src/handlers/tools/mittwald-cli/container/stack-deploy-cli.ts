@@ -1,77 +1,105 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldStackDeployCliArgs {
   stackId?: string;
+  quiet?: boolean;
   composeFile?: string;
   envFile?: string;
 }
 
-export const handleStackDeployCli: MittwaldToolHandler<MittwaldStackDeployCliArgs> = async (args) => {
+function buildCliArgs(args: MittwaldStackDeployCliArgs): string[] {
+  const cliArgs: string[] = ['stack', 'deploy'];
+
+  if (args.stackId) cliArgs.push('--stack-id', args.stackId);
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.composeFile) cliArgs.push('--compose-file', args.composeFile);
+  if (args.envFile) cliArgs.push('--env-file', args.envFile);
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldStackDeployCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('stack')) {
+    return `Stack not found: ${args.stackId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('not found') && combined.includes('file')) {
+    return `Compose file not found: ${args.composeFile ?? 'docker-compose.yml'}.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCliArgs> = async (args) => {
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['stack', 'deploy'];
-    
-    // Optional flags
-    if (args.stackId) {
-      cliArgs.push('--stack-id', args.stackId);
-    }
-    
-    
-    if (args.composeFile) {
-      cliArgs.push('--compose-file', args.composeFile);
-    }
-    
-    if (args.envFile) {
-      cliArgs.push('--env-file', args.envFile);
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('stack')) {
-        return formatToolResponse(
-          "error",
-          `Stack not found: ${args.stackId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('file')) {
-        return formatToolResponse(
-          "error",
-          `Compose file not found: ${args.composeFile || 'docker-compose.yml'}.\nError: ${errorMessage}`
-        );
-      }
-      
+    const result = await invokeCliTool({
+      toolName: 'mittwald_container_stack_deploy',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || 'Stack deployed successfully';
+
+    if (args.quiet) {
+      const stackId = parseQuietOutput(stdout) ?? args.stackId;
       return formatToolResponse(
-        "error",
-        `Failed to deploy stack: ${errorMessage}`
+        'success',
+        'Stack deployed successfully',
+        {
+          stackId,
+          status: 'deployed',
+          composeFile: args.composeFile,
+          envFile: args.envFile,
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
-    
-    // Handle regular output
-    const successMessage = result.stdout || 'Stack deployed successfully';
-    
+
     return formatToolResponse(
-      "success",
-      `Stack deployment completed`,
+      'success',
+      'Stack deployment completed',
       {
         stackId: args.stackId,
         status: 'deployed',
         composeFile: args.composeFile,
         envFile: args.envFile,
-        output: successMessage
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

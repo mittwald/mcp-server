@@ -1,12 +1,13 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldContainerRunArgs {
   image: string;
   command?: string;
   args?: string[];
   projectId?: string;
+  quiet?: boolean;
   env?: string[];
   envFile?: string[];
   description?: string;
@@ -17,137 +18,125 @@ interface MittwaldContainerRunArgs {
   volume?: string[];
 }
 
-export const handleContainerRunCli: MittwaldToolHandler<MittwaldContainerRunArgs> = async (args) => {
+function buildCliArgs(args: MittwaldContainerRunArgs): string[] {
+  const cliArgs: string[] = ['container', 'run', args.image];
+
+  if (args.command) cliArgs.push(args.command);
+  if (args.args?.length) cliArgs.push(...args.args);
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.name) cliArgs.push('--name', args.name);
+  if (args.description) cliArgs.push('--description', args.description);
+  if (args.entrypoint) cliArgs.push('--entrypoint', args.entrypoint);
+  if (args.publishAll) cliArgs.push('--publish-all');
+  args.env?.forEach((item) => cliArgs.push('--env', item));
+  args.envFile?.forEach((item) => cliArgs.push('--env-file', item));
+  args.publish?.forEach((item) => cliArgs.push('--publish', item));
+  args.volume?.forEach((item) => cliArgs.push('--volume', item));
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldContainerRunArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('image') && combined.includes('not found')) {
+    return `Container image not found: ${args.image}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('port') && combined.includes('already')) {
+    return `Port conflict detected. One or more specified ports are already in use.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('volume') && combined.includes('not found')) {
+    return `Volume not found or path does not exist.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleContainerRunCli: MittwaldCliToolHandler<MittwaldContainerRunArgs> = async (args) => {
+  if (!args.image) {
+    return formatToolResponse('error', 'Container image is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    if (!args.image) {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_container_run',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || `Container created and started successfully from image ${args.image}`;
+
+    if (args.quiet) {
+      const containerId = parseQuietOutput(stdout);
       return formatToolResponse(
-        "error",
-        "Container image is required"
+        'success',
+        output,
+        {
+          containerId,
+          image: args.image,
+          name: args.name,
+          action: 'run',
+          projectId: args.projectId,
+          command: args.command,
+          args: args.args,
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['container', 'run', args.image];
-    
-    // Add command if specified
-    if (args.command) {
-      cliArgs.push(args.command);
-    }
-    
-    // Add args if specified
-    if (args.args && args.args.length > 0) {
-      cliArgs.push(...args.args);
-    }
-    
-    // Optional flags
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    
-    if (args.name) {
-      cliArgs.push('--name', args.name);
-    }
-    
-    if (args.description) {
-      cliArgs.push('--description', args.description);
-    }
-    
-    if (args.entrypoint) {
-      cliArgs.push('--entrypoint', args.entrypoint);
-    }
-    
-    if (args.publishAll) {
-      cliArgs.push('--publish-all');
-    }
-    
-    // Handle arrays of values
-    if (args.env && args.env.length > 0) {
-      args.env.forEach(envVar => {
-        cliArgs.push('--env', envVar);
-      });
-    }
-    
-    if (args.envFile && args.envFile.length > 0) {
-      args.envFile.forEach(file => {
-        cliArgs.push('--env-file', file);
-      });
-    }
-    
-    if (args.publish && args.publish.length > 0) {
-      args.publish.forEach(port => {
-        cliArgs.push('--publish', port);
-      });
-    }
-    
-    if (args.volume && args.volume.length > 0) {
-      args.volume.forEach(vol => {
-        cliArgs.push('--volume', vol);
-      });
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('image') && errorMessage.includes('not found')) {
-        return formatToolResponse(
-          "error",
-          `Container image not found: ${args.image}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('port') && errorMessage.includes('already')) {
-        return formatToolResponse(
-          "error",
-          `Port conflict: One or more specified ports are already in use.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('volume') && errorMessage.includes('not found')) {
-        return formatToolResponse(
-          "error",
-          `Volume not found or path does not exist.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to run container: ${errorMessage}`
-      );
-    }
-    
-    // Handle normal output
     return formatToolResponse(
-      "success",
+      'success',
       `Container created and started successfully from image ${args.image}`,
       {
         image: args.image,
         name: args.name,
-        action: "run",
+        action: 'run',
         projectId: args.projectId,
         command: args.command,
         args: args.args,
         env: args.env,
         volumes: args.volume,
         ports: args.publish,
-        output: result.stdout
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -1,85 +1,108 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldContainerStopArgs {
   containerId: string;
   projectId?: string;
+  quiet?: boolean;
 }
 
-export const handleContainerStopCli: MittwaldToolHandler<MittwaldContainerStopArgs> = async (args) => {
+function buildCliArgs(args: MittwaldContainerStopArgs): string[] {
+  const cliArgs: string[] = ['container', 'stop', args.containerId];
+
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.quiet) cliArgs.push('--quiet');
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldContainerStopArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('container')) {
+    return `Container not found. Please verify the container ID: ${args.containerId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('already stopped') || combined.includes('not running')) {
+    return `Container ${args.containerId} is already stopped.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleContainerStopCli: MittwaldCliToolHandler<MittwaldContainerStopArgs> = async (args) => {
+  if (!args.containerId) {
+    return formatToolResponse('error', 'Container ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    if (!args.containerId) {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_container_stop',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || `Container ${args.containerId} has been stopped successfully`;
+
+    if (args.quiet) {
+      const containerId = parseQuietOutput(stdout) ?? args.containerId;
       return formatToolResponse(
-        "error",
-        "Container ID is required"
+        'success',
+        `Container ${containerId} has been stopped successfully`,
+        {
+          containerId,
+          action: 'stop',
+          projectId: args.projectId,
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['container', 'stop', args.containerId];
-    
-    // Optional flags
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-    }
-    
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('container')) {
-        return formatToolResponse(
-          "error",
-          `Container not found. Please verify the container ID: ${args.containerId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('already stopped') || errorMessage.includes('not running')) {
-        return formatToolResponse(
-          "success",
-          `Container ${args.containerId} is already stopped`,
-          {
-            containerId: args.containerId,
-            action: "stop",
-            projectId: args.projectId,
-            status: "already_stopped"
-          }
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to stop container: ${errorMessage}`
-      );
-    }
-    
-    // Handle normal output
     return formatToolResponse(
-      "success",
+      'success',
       `Container ${args.containerId} has been stopped successfully`,
       {
         containerId: args.containerId,
-        action: "stop",
+        action: 'stop',
         projectId: args.projectId,
-        output: result.stdout
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

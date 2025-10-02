@@ -1,88 +1,98 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldServerGetArgs {
   serverId?: string;
   output?: 'txt' | 'json' | 'yaml';
 }
 
+function buildCliArgs(args: MittwaldServerGetArgs): string[] {
+  const cliArgs: string[] = ['server', 'get'];
+  if (args.serverId) cliArgs.push(args.serverId);
+  cliArgs.push('--output', 'json');
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldServerGetArgs): string {
+  const stderr = error.stderr ?? '';
+  const stdout = error.stdout ?? '';
+  const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
+
+  if (combined.includes('not found') || combined.includes('no server found')) {
+    const details = stderr || stdout || error.message;
+    return `Server not found. Please verify the server ID: ${args.serverId || 'not specified'}.\nError: ${details}`;
+  }
+
+  const details = stderr || stdout || error.message;
+  return `Failed to get server: ${details}`;
+}
+
+function formatServer(record: Record<string, unknown>) {
+  return {
+    id: record.id,
+    description: record.description,
+    createdAt: record.createdAt,
+    isReady: record.isReady,
+    status: record.status,
+    data: record,
+  };
+}
+
 export const handleServerGetCli: MittwaldCliToolHandler<MittwaldServerGetArgs> = async (args) => {
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['server', 'get'];
-    
-    // Add server ID if provided
-    if (args.serverId) {
-      cliArgs.push(args.serverId);
-    }
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') || errorMessage.includes('No server found')) {
-        return formatToolResponse(
-          "error",
-          `Server not found. Please verify the server ID: ${args.serverId || 'not specified'}.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to get server: ${errorMessage}`
-      );
-    }
-    
-    // Parse JSON output
+    const result = await invokeCliTool({
+      toolName: 'mittwald_server_get',
+      argv,
+      parser: (stdout) => stdout,
+    });
+
+    const commandMeta = {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    };
+
+    const stdout = result.result ?? '';
+
     try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (!data || typeof data !== 'object') {
-        return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
-        );
+      const parsed = JSON.parse(stdout);
+
+      if (!parsed || typeof parsed !== 'object') {
+        return formatToolResponse('error', 'Unexpected output format from CLI command');
       }
-      
-      // Format the data to match expected structure
-      const formattedData = {
-        id: data.id,
-        description: data.description,
-        createdAt: data.createdAt,
-        isReady: data.isReady,
-        status: data.status,
-        // Include any additional fields from the CLI output
-        ...data
-      };
-      
+
+      const formatted = formatServer(parsed as Record<string, unknown>);
+
       return formatToolResponse(
-        "success",
-        `Server information retrieved for ${data.id || args.serverId}`,
-        formattedData
+        'success',
+        `Server information retrieved for ${String((parsed as Record<string, unknown>).id ?? args.serverId ?? 'server')}`,
+        formatted,
+        commandMeta
       );
-      
     } catch (parseError) {
-      // If JSON parsing fails, return the raw output
       return formatToolResponse(
-        "success",
-        "Server retrieved (raw output)",
+        'success',
+        'Server retrieved (raw output)',
         {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
-        }
+          rawOutput: stdout,
+          parseError: parseError instanceof Error ? parseError.message : String(parseError),
+        },
+        commandMeta
       );
     }
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

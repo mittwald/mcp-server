@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldAppGetArgs {
   installationId?: string;
@@ -8,88 +8,55 @@ interface MittwaldAppGetArgs {
 }
 
 export const handleAppGetCli: MittwaldCliToolHandler<MittwaldAppGetArgs> = async (args) => {
+  if (!args.installationId) {
+    return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
+  }
+
+  const argv: string[] = ['app', 'get', args.installationId, '--output', 'json'];
+
   try {
-    if (!args.installationId) {
-      return formatToolResponse(
-        "error",
-        "Installation ID is required. Please provide the installationId parameter."
-      );
+    const result = await invokeCliTool({
+      toolName: 'mittwald_app_get',
+      argv,
+      parser: (stdout) => JSON.parse(stdout),
+    });
+
+    const data = result.result as Record<string, unknown>;
+    if (!data || typeof data !== 'object') {
+      return formatToolResponse('error', 'Unexpected output format from CLI command');
     }
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['app', 'get'];
-    
-    // Add installation ID as positional argument
-    cliArgs.push(args.installationId);
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('installation')) {
-        return formatToolResponse(
-          "error",
-          `App installation not found. Please verify the installation ID: ${args.installationId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to get app details: ${errorMessage}`
-      );
-    }
-    
-    // Parse JSON output
-    try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (!data || typeof data !== 'object') {
-        return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
-        );
-      }
-      
-      // Format the data to match our expected structure
-      const formattedData = {
-        id: data.id,
-        appId: data.appId,
-        name: data.name,
-        version: data.version,
-        status: data.status,
-        description: data.description,
-        installationPath: data.installationPath,
-        createdAt: data.createdAt,
-        projectId: data.projectId
-      };
-      
-      return formatToolResponse(
-        "success",
-        `App installation details retrieved for: ${data.name || data.appId}`,
-        formattedData
-      );
-      
-    } catch (parseError) {
-      // If JSON parsing fails, return the raw output
-      return formatToolResponse(
-        "success",
-        "App details retrieved (raw output)",
-        {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
-        }
-      );
-    }
-    
+    const formattedData = {
+      id: data.id,
+      appId: data.appId,
+      name: data.name,
+      version: data.version,
+      status: data.status,
+      description: data.description,
+      installationPath: data.installationPath,
+      createdAt: data.createdAt,
+      projectId: data.projectId,
+    };
+
+    return formatToolResponse('success', `App installation details retrieved for: ${data.name || data.appId}`, formattedData, {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    });
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const stderr = (error.stderr || '').toLowerCase();
+      if (stderr.includes('not found') && stderr.includes('installation')) {
+        return formatToolResponse('error', `App installation not found. Please verify the installation ID: ${args.installationId}.\nError: ${error.stderr || error.message}`);
+      }
+
+      return formatToolResponse('error', error.message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

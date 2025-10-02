@@ -1,70 +1,73 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldLoginTokenArgs {
   token: string;
 }
 
+function buildCliArgs(args: MittwaldLoginTokenArgs): string[] {
+  return ['login', 'token', args.token];
+}
+
+function mapCliError(error: CliToolError): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('invalid token') || combined.includes('authentication failed')) {
+    return `Invalid API token: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('network error') || combined.includes('connection failed')) {
+    return `Network error during login: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
 export const handleLoginTokenCli: MittwaldCliToolHandler<MittwaldLoginTokenArgs> = async (args) => {
+  if (!args.token) {
+    return formatToolResponse('error', 'API token is required');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Validate required parameters
-    if (!args.token) {
-      return formatToolResponse(
-        "error",
-        "API token is required"
-      );
-    }
-    
-    // Build CLI command arguments
-    const cliArgs: string[] = ['login', 'token', args.token];
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Handle specific error cases
-      if (errorMessage.includes('invalid token') || errorMessage.includes('authentication failed')) {
-        return formatToolResponse(
-          "error",
-          `Invalid API token: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('network error') || errorMessage.includes('connection failed')) {
-        return formatToolResponse(
-          "error",
-          `Network error during login: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to login with token: ${errorMessage}`
-      );
-    }
-    
-    // Parse success output
-    const output = result.stdout.trim();
-    
+    const result = await invokeCliTool({
+      toolName: 'mittwald_login_token',
+      argv,
+      parser: (stdout, raw) => ({ stdout: stdout.trim(), stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr;
+
     const responseData = {
       message: 'Login successful with API token',
       output: output || null,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
+
     return formatToolResponse(
-      "success",
-      "Login successful with API token",
-      responseData
+      'success',
+      'Login successful with API token',
+      responseData,
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
+      }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

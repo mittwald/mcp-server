@@ -1,84 +1,106 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldProjectDeleteArgs {
   projectId: string;
+  quiet?: boolean;
   force?: boolean;
 }
 
-export const handleProjectDeleteCli: MittwaldToolHandler<MittwaldProjectDeleteArgs> = async (args, context) => {
+function buildCliArgs(args: MittwaldProjectDeleteArgs): string[] {
+  const cliArgs: string[] = ['project', 'delete', args.projectId];
+
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.force) cliArgs.push('--force');
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1)?.trim();
+}
+
+function mapCliError(error: CliToolError, args: MittwaldProjectDeleteArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+  const errorMessage = error.stderr || error.stdout || error.message;
+
+  if (combined.includes('not found') && combined.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${errorMessage}`;
+  }
+
+  if (combined.includes('authentication') || combined.includes('unauthorized')) {
+    return `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`;
+  }
+
+  if (combined.includes('permission') || combined.includes('forbidden')) {
+    return `Permission denied. You may not have the required permissions to delete this project.\nError: ${errorMessage}`;
+  }
+
+  if (combined.includes('dependencies') || combined.includes('resources')) {
+    return `Project deletion failed due to existing dependencies or resources. Please remove all associated resources first.\nError: ${errorMessage}`;
+  }
+
+  if (combined.includes('cancelled') || combined.includes('canceled') || combined.includes('aborted')) {
+    return `Project deletion was cancelled.\nError: ${errorMessage}`;
+  }
+
+  return `Failed to delete project: ${errorMessage}`;
+}
+
+export const handleProjectDeleteCli: MittwaldCliToolHandler<MittwaldProjectDeleteArgs> = async (args) => {
+  if (!args.projectId) {
+    return formatToolResponse('error', 'Project ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['project', 'delete', args.projectId];
-    
-    // Optional flags
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('project')) {
-        return formatToolResponse(
-          "error",
-          `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('authentication') || errorMessage.includes('unauthorized')) {
-        return formatToolResponse(
-          "error",
-          `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('permission') || errorMessage.includes('forbidden')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied. You may not have the required permissions to delete this project.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('dependencies') || errorMessage.includes('resources')) {
-        return formatToolResponse(
-          "error",
-          `Project deletion failed due to existing dependencies or resources. Please remove all associated resources first.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('cancelled') || errorMessage.includes('aborted')) {
-        return formatToolResponse(
-          "error",
-          `Project deletion was cancelled.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to delete project: ${errorMessage}`
-      );
-    }
-    
-    // Handle successful deletion
+    const result = await invokeCliTool({
+      toolName: 'mittwald_project_delete',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const output = stdout || stderr;
+
+    const quietMessage = args.quiet ? parseQuietOutput(stdout) ?? parseQuietOutput(stderr) : undefined;
+    const message = args.quiet
+      ? quietMessage || `Project ${args.projectId} deleted successfully`
+      : `Project ${args.projectId} deleted successfully`;
+
     return formatToolResponse(
-      "success",
-      `Project ${args.projectId} deleted successfully`,
+      'success',
+      message,
       {
         projectId: args.projectId,
-        output: result.stdout,
-        force: args.force || false
+        deleted: true,
+        output,
+        force: Boolean(args.force),
+        quiet: Boolean(args.quiet),
+        quietSummary: quietMessage,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

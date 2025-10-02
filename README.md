@@ -1,4 +1,5 @@
 # Mittwald MCP Server
+[![Coverage Check](https://github.com/robertDouglass/mittwald-mcp/actions/workflows/coverage-check.yml/badge.svg)](https://github.com/robertDouglass/mittwald-mcp/actions/workflows/coverage-check.yml)
 
 The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**—there is no Mittwald-issued client secret to manage. The bridge mints its own secrets for downstream confidential MCP clients (e.g. Claude Desktop) and verifies them before issuing JWTs. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
 
@@ -58,6 +59,18 @@ Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` f
 - `pnpm test:integration` exercises Redis-backed session flows and bridge JWT verification.
 - `pnpm test:e2e:mcp` (when available) drives a full OAuth + MCP tool cycle against the mock stack.
 - See `tests/README.md` for the complete matrix and environment requirements.
+
+## Coverage Reports
+
+- `mw-cli-coverage.json` contains machine-readable coverage stats for the Mittwald CLI.
+- Validate the artifact with `config/mw-cli-coverage.schema.json` (e.g. `npx ajv validate -s config/mw-cli-coverage.schema.json -d mw-cli-coverage.json`).
+- Regeneration is automated via the Workstream A script (`npm run coverage:generate`); commit both the JSON and `docs/mittwald-cli-coverage.md` after running it.
+- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` and `stats.excludedCount` diverge.
+- Quick commands:
+  - `npm run coverage:generate` – rebuild artifacts.
+  - `npm run check:cli-version` – warn when Dockerfile pins drift from npm.
+- See `docs/coverage-automation.md` for the full runbook covering CI guards and allowlist policy.
+- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` and `stats.excludedCount` diverge.
 
 ---
 

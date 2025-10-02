@@ -48,11 +48,12 @@ describe('executeCli', () => {
 
     const result = await executeCli('mw', ['project', 'list']);
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       stdout: 'command output',
       stderr: '',
       exitCode: 0,
     });
+    expect(result.durationMs).toBeGreaterThanOrEqual(0);
     expect(execMock).toHaveBeenCalledTimes(1);
   });
 
@@ -72,6 +73,7 @@ describe('executeCli', () => {
     const result = await executeCli('mw', ['project', 'list', '--token', 'provided-token']);
 
     expect(result.exitCode).toBe(0);
+    expect(result.durationMs).toBeGreaterThanOrEqual(0);
   });
 
   it('propagates non-zero exit codes with redacted tokens', async () => {
@@ -92,5 +94,6 @@ describe('executeCli', () => {
 
     expect(result.exitCode).toBe(127);
     expect(result.stderr).toContain('--token [REDACTED]');
+    expect(result.durationMs).toBeGreaterThanOrEqual(0);
   });
 });

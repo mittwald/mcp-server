@@ -1,56 +1,107 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldCronjobDeleteCliArgs {
   cronjobId: string;
+  quiet?: boolean;
   force?: boolean;
 }
 
-export const handleCronjobDeleteCli: MittwaldToolHandler<MittwaldCronjobDeleteCliArgs> = async (args, context) => {
+function buildCliArgs(args: MittwaldCronjobDeleteCliArgs): string[] {
+  const cliArgs: string[] = ['cronjob', 'delete', args.cronjobId];
+
+  if (args.quiet) {
+    cliArgs.push('--quiet');
+  }
+
+  if (args.force) {
+    cliArgs.push('--force');
+  }
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1)?.trim();
+}
+
+function mapCliError(error: CliToolError, args: MittwaldCronjobDeleteCliArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+  const errorMessage = error.stderr || error.stdout || error.message;
+
+  if (combined.includes('not found')) {
+    return `Cronjob not found: ${args.cronjobId}.\nError: ${errorMessage}`;
+  }
+
+  if (combined.includes('permission denied') || combined.includes('forbidden')) {
+    return `Permission denied when deleting cronjob ${args.cronjobId}. Please ensure you are authenticated with sufficient privileges.\nError: ${errorMessage}`;
+  }
+
+  return `Failed to delete cronjob: ${errorMessage}`;
+}
+
+export const handleCronjobDeleteCli: MittwaldToolHandler<MittwaldCronjobDeleteCliArgs> = async (args, _context) => {
+  if (!args.cronjobId) {
+    return formatToolResponse('error', 'Cronjob ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['cronjob', 'delete', args.cronjobId];
-    
-    // Optional flags
-    
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found')) {
-        return formatToolResponse(
-          "error",
-          `Cronjob not found: ${args.cronjobId}.\nError: ${errorMessage}`
-        );
-      }
-      
+    const result = await invokeCliTool({
+      toolName: 'mittwald_cronjob_delete',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const output = stdout || stderr;
+
+    if (args.quiet) {
+      const quietOutput = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
+
       return formatToolResponse(
-        "error",
-        `Failed to delete cronjob: ${errorMessage}`
+        'success',
+        'Cronjob deleted successfully',
+        {
+          cronjobId: quietOutput ?? args.cronjobId,
+          output,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
-    
-    // Return success
+
     return formatToolResponse(
-      "success",
-      `Cronjob deleted successfully`,
+      'success',
+      'Cronjob deleted successfully',
       {
         cronjobId: args.cronjobId,
-        output: result.stdout
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

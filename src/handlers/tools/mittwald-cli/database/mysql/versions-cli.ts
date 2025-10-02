@@ -1,96 +1,96 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { parseJsonOutput as parseJsonOutputLegacy } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldDatabaseMysqlVersionsArgs {
-  output?: "txt" | "json" | "yaml" | "csv" | "tsv";
+  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
   extended?: boolean;
   noHeader?: boolean;
   noTruncate?: boolean;
   noRelativeDates?: boolean;
-  csvSeparator?: "," | ";";
+  csvSeparator?: ',' | ';';
 }
 
-export const handleDatabaseMysqlVersionsCli: MittwaldToolHandler<MittwaldDatabaseMysqlVersionsArgs> = async (args) => {
+function buildCliArgs(args: MittwaldDatabaseMysqlVersionsArgs): { argv: string[]; outputFormat: string } {
+  const argv: string[] = ['database', 'mysql', 'versions'];
+  const outputFormat = args.output ?? 'json';
+  argv.push('--output', outputFormat);
+
+  if (args.extended) argv.push('--extended');
+  if (args.noHeader) argv.push('--no-header');
+  if (args.noTruncate) argv.push('--no-truncate');
+  if (args.noRelativeDates) argv.push('--no-relative-dates');
+  if (args.csvSeparator && (outputFormat === 'csv' || outputFormat === 'tsv')) {
+    argv.push('--csv-separator', args.csvSeparator);
+  }
+
+  return { argv, outputFormat };
+}
+
+function mapCliError(error: CliToolError): string {
+  const combined = `${error.stderr ?? ''} ${error.stdout ?? ''}`.toLowerCase();
+
+  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
+    return `Permission denied when listing MySQL versions. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${error.stderr || error.stdout || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleDatabaseMysqlVersionsCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlVersionsArgs> = async (args) => {
+  const { argv, outputFormat } = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['database', 'mysql', 'versions'];
-    
-    // Output format (default to json for structured data)
-    const outputFormat = args.output || 'json';
-    cliArgs.push('--output', outputFormat);
-    
-    // Extended information
-    if (args.extended) {
-      cliArgs.push('--extended');
-    }
-    
-    // Formatting options
-    if (args.noHeader) {
-      cliArgs.push('--no-header');
-    }
-    
-    if (args.noTruncate) {
-      cliArgs.push('--no-truncate');
-    }
-    
-    if (args.noRelativeDates) {
-      cliArgs.push('--no-relative-dates');
-    }
-    
-    if (args.csvSeparator && (outputFormat === 'csv' || outputFormat === 'tsv')) {
-      cliArgs.push('--csv-separator', args.csvSeparator);
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      // Parse error message from stderr or stdout
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Check for common error patterns
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden') || errorMessage.includes('Permission denied')) {
-        return formatToolResponse(
-          "error",
-          `Permission denied when listing MySQL versions. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to list MySQL versions: ${errorMessage}`
-      );
-    }
-    
-    // Parse the output based on format
+    const result = await invokeCliTool({
+      toolName: 'mittwald_database_mysql_versions',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+
     if (outputFormat === 'json') {
       try {
-        const versions = parseJsonOutput(result.stdout);
+        const versions = parseJsonOutputLegacy(stdout);
+        const count = Array.isArray(versions) ? versions.length : 'MySQL';
         return formatToolResponse(
-          "success",
-          `Successfully retrieved ${Array.isArray(versions) ? versions.length : 'MySQL'} versions`,
-          versions
+          'success',
+          `Successfully retrieved ${count} versions`,
+          versions,
+          {
+            command: result.meta.command,
+            durationMs: result.meta.durationMs,
+          }
         );
       } catch (error) {
         return formatToolResponse(
-          "error",
+          'error',
           `Failed to parse JSON output: ${error instanceof Error ? error.message : String(error)}`
         );
       }
-    } else {
-      // For other formats (txt, yaml, csv, tsv), return the raw output
-      return formatToolResponse(
-        "success",
-        "MySQL versions retrieved successfully",
-        result.stdout
-      );
     }
-    
-  } catch (error) {
+
     return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      'success',
+      'MySQL versions retrieved successfully',
+      stdout,
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
+      }
     );
+  } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

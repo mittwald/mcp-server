@@ -1,65 +1,62 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 export interface MittwaldProjectInviteGetArgs {
   inviteId: string;
   output?: 'json' | 'table' | 'yaml';
 }
 
-export const handleProjectInviteGetCli: MittwaldToolHandler<MittwaldProjectInviteGetArgs> = async (args, context) => {
+function buildCliArgs(args: MittwaldProjectInviteGetArgs): string[] {
+  return ['project', 'invite', 'get', args.inviteId, '--output', 'json'];
+}
+
+function mapCliError(error: CliToolError, args: MittwaldProjectInviteGetArgs): string {
+  const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}`.toLowerCase();
+  const errorText = error.stderr || error.stdout || error.message;
+
+  if (combined.includes('not found') || combined.includes('404')) {
+    return `Project invite not found. Please verify the invite ID: ${args.inviteId}.\nError: ${errorText}`;
+  }
+
+  if (combined.includes('not authenticated') || combined.includes('401')) {
+    return `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorText}`;
+  }
+
+  if (combined.includes('forbidden') || combined.includes('403')) {
+    return `Access denied. You don't have permission to view this project invite.\nError: ${errorText}`;
+  }
+
+  return `Failed to get project invite: ${errorText}`;
+}
+
+export const handleProjectInviteGetCli: MittwaldCliToolHandler<MittwaldProjectInviteGetArgs> = async (args) => {
+  if (!args.inviteId) {
+    return formatToolResponse('error', 'Invite ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['project', 'invite', 'get', args.inviteId];
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') || errorMessage.includes('404')) {
-        return formatToolResponse(
-          "error",
-          `Project invite not found. Please verify the invite ID: ${args.inviteId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('not authenticated') || errorMessage.includes('401')) {
-        return formatToolResponse(
-          "error",
-          `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('forbidden') || errorMessage.includes('403')) {
-        return formatToolResponse(
-          "error",
-          `Access denied. You don't have permission to view this project invite.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to get project invite: ${errorMessage}`
-      );
-    }
-    
-    // Parse JSON output
+    const result = await invokeCliTool({
+      toolName: 'mittwald_project_invite_get',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+
     try {
-      const data = parseJsonOutput(result.stdout);
-      
+      const data = parseJsonOutput(stdout);
+
       if (!data || typeof data !== 'object') {
         return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
+          'error',
+          'Unexpected output format from CLI command'
         );
       }
-      
-      // Format the data to match our expected structure
+
       const formattedData = {
         id: data.id,
         email: data.mailAddress || data.email,
@@ -70,30 +67,45 @@ export const handleProjectInviteGetCli: MittwaldToolHandler<MittwaldProjectInvit
         projectId: data.projectId,
         userId: data.userId,
         invitedBy: data.invitedBy || data.inviter,
-        message: data.message
+        message: data.message,
       };
-      
+
       return formatToolResponse(
-        "success",
-        `Project invite retrieved successfully`,
-        formattedData
-      );
-      
-    } catch (parseError) {
-      // If JSON parsing fails, return the raw output
-      return formatToolResponse(
-        "success",
-        "Project invite retrieved (raw output)",
+        'success',
+        'Project invite retrieved successfully',
+        formattedData,
         {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
+      );
+    } catch (parseError) {
+      return formatToolResponse(
+        'success',
+        'Project invite retrieved (raw output)',
+        {
+          rawOutput: stdout,
+          parseError: parseError instanceof Error ? parseError.message : String(parseError),
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
   } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
     return formatToolResponse(
-      "error",
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }

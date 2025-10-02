@@ -12,16 +12,6 @@ type SamplingCompleteNotification = {
   };
 };
 
-type RedditConfigNotification = {
-  method: "server/config/changed";
-  params: {
-    _meta: Record<string, any>;
-    message: string;
-    level: "info" | "warning" | "error";
-    timestamp: string;
-  };
-};
-
 type ProgressNotification = {
   method: "notifications/progress";
   params: {
@@ -70,19 +60,6 @@ export async function sendSamplingCompleteNotification(message: string, sessionI
   await sendNotification(notification, sessionId);
 }
 
-export async function sendRedditConfigNotification(message: string): Promise<void> {
-  const notification: RedditConfigNotification = {
-    method: "server/config/changed",
-    params: {
-      _meta: {},
-      message: message,
-      level: "info",
-      timestamp: new Date().toISOString(),
-    },
-  };
-  await sendNotification(notification);
-}
-
 export async function sendProgressNotification(
   progressToken: string | number,
   progress: number,
@@ -101,7 +78,7 @@ export async function sendProgressNotification(
 }
 
 async function sendNotification(
-  notification: ServerNotification | SamplingCompleteNotification | RedditConfigNotification | ProgressNotification,
+  notification: ServerNotification | SamplingCompleteNotification | ProgressNotification,
   sessionId?: string
 ) {
   const handler = getMCPHandlerInstance();
@@ -141,4 +118,3 @@ async function sendNotification(
   
   await Promise.all(notificationPromises);
 }
-

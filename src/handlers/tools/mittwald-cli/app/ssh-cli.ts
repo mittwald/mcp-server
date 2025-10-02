@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldAppSshArgs {
   installationId?: string;
@@ -11,98 +11,94 @@ interface MittwaldAppSshArgs {
   test?: boolean;
 }
 
+function buildCliArgs(args: MittwaldAppSshArgs, installationId: string): string[] {
+  const cliArgs: string[] = ['app', 'ssh', installationId];
+
+  if (args.sshUser) cliArgs.push('--ssh-user', args.sshUser);
+  if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
+
+  if (typeof args.cd === 'boolean') {
+    cliArgs.push(args.cd ? '--cd' : '--no-cd');
+  }
+
+  if (args.info) cliArgs.push('--info');
+  if (args.test) cliArgs.push('--test');
+
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, installationId: string): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('installation')) {
+    return `App installation not found. Please verify the installation ID: ${installationId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  if (combined.includes('ssh')) {
+    return `SSH connection failed. Please check your SSH configuration and credentials.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
 export const handleAppSshCli: MittwaldCliToolHandler<MittwaldAppSshArgs> = async (args) => {
+  if (!args.installationId) {
+    return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
+  }
+
+  const argv = buildCliArgs(args, args.installationId);
+
   try {
-    if (!args.installationId) {
-      return formatToolResponse(
-        "error",
-        "Installation ID is required. Please provide the installationId parameter."
-      );
+    const result = await invokeCliTool({
+      toolName: 'mittwald_app_ssh',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliOptions: {
+        env: {
+          MITTWALD_NONINTERACTIVE: '1',
+        },
+      },
+    });
+
+    const stdout = result.result.stdout || '';
+    const stderr = result.result.stderr || '';
+    const output = stdout || stderr || 'SSH operation completed';
+
+    let message = 'SSH operation completed successfully';
+    if (args.info) {
+      message = 'SSH connection information retrieved';
+    } else if (args.test) {
+      message = 'SSH connection test completed successfully';
     }
 
-    // Build CLI command arguments
-    const cliArgs: string[] = ['app', 'ssh'];
-    
-    // Add installation ID as positional argument
-    cliArgs.push(args.installationId);
-    
-    // Add optional flags
-    if (args.sshUser) {
-      cliArgs.push('--ssh-user', args.sshUser);
-    }
-    
-    if (args.sshIdentityFile) {
-      cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
-    }
-    
-    if (args.cd !== undefined) {
-      cliArgs.push(args.cd ? '--cd' : '--no-cd');
-    }
-    
-    if (args.info) {
-      cliArgs.push('--info');
-    }
-    
-    if (args.test) {
-      cliArgs.push('--test');
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs, {
-      env: {
-        MITTWALD_NONINTERACTIVE: '1'
-      }
-    });
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('installation')) {
-        return formatToolResponse(
-          "error",
-          `App installation not found. Please verify the installation ID: ${args.installationId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('SSH')) {
-        return formatToolResponse(
-          "error",
-          `SSH connection failed. Please check your SSH configuration and credentials.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to connect via SSH: ${errorMessage}`
-      );
-    }
-    
-    // Success response
-    const output = result.stdout || result.stderr || 'SSH operation completed';
-    
-    let message = "SSH operation completed successfully";
-    if (args.info) {
-      message = "SSH connection information retrieved";
-    } else if (args.test) {
-      message = "SSH connection test completed successfully";
-    }
-    
     return formatToolResponse(
-      "success",
+      'success',
       message,
       {
         installationId: args.installationId,
         sshUser: args.sshUser,
+        sshIdentityFile: args.sshIdentityFile,
+        cd: args.cd,
         info: args.info,
         test: args.test,
-        output: output
+        output,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
-    return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args.installationId);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldContextSetArgs {
   projectId?: string;
@@ -10,95 +10,102 @@ interface MittwaldContextSetArgs {
   stackId?: string;
 }
 
+interface ContextParameter {
+  key: string;
+  value: string;
+  flag: string;
+}
+
+function buildCliArgs(args: MittwaldContextSetArgs): { argv: string[]; parameters: ContextParameter[] } {
+  const argv: string[] = ['context', 'set'];
+  const parameters: ContextParameter[] = [];
+
+  if (args.projectId) {
+    argv.push('--project-id', args.projectId);
+    parameters.push({ key: 'project-id', value: args.projectId, flag: '--project-id' });
+  }
+
+  if (args.serverId) {
+    argv.push('--server-id', args.serverId);
+    parameters.push({ key: 'server-id', value: args.serverId, flag: '--server-id' });
+  }
+
+  if (args.orgId) {
+    argv.push('--org-id', args.orgId);
+    parameters.push({ key: 'org-id', value: args.orgId, flag: '--org-id' });
+  }
+
+  if (args.installationId) {
+    argv.push('--installation-id', args.installationId);
+    parameters.push({ key: 'installation-id', value: args.installationId, flag: '--installation-id' });
+  }
+
+  if (args.stackId) {
+    argv.push('--stack-id', args.stackId);
+    parameters.push({ key: 'stack-id', value: args.stackId, flag: '--stack-id' });
+  }
+
+  return { argv, parameters };
+}
+
+function mapCliError(error: CliToolError): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found')) {
+    return `Invalid parameter value: ${error.stderr || error.stdout || error.message}`;
+  }
+
+  if (combined.includes('access denied')) {
+    return `Access denied: ${error.stderr || error.stdout || error.message}`;
+  }
+
+  return error.message;
+}
+
 export const handleContextSetCli: MittwaldCliToolHandler<MittwaldContextSetArgs> = async (args) => {
+  const { argv, parameters } = buildCliArgs(args);
+
+  if (parameters.length === 0) {
+    return formatToolResponse('error', 'At least one parameter must be provided to set context');
+  }
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['context', 'set'];
-    
-    // Add parameters
-    const setParameters: Array<{ key: string; value: string; arg: string }> = [];
-    
-    if (args.projectId) {
-      cliArgs.push('--project-id', args.projectId);
-      setParameters.push({ key: 'project-id', value: args.projectId, arg: '--project-id' });
-    }
-    
-    if (args.serverId) {
-      cliArgs.push('--server-id', args.serverId);
-      setParameters.push({ key: 'server-id', value: args.serverId, arg: '--server-id' });
-    }
-    
-    if (args.orgId) {
-      cliArgs.push('--org-id', args.orgId);
-      setParameters.push({ key: 'org-id', value: args.orgId, arg: '--org-id' });
-    }
-    
-    if (args.installationId) {
-      cliArgs.push('--installation-id', args.installationId);
-      setParameters.push({ key: 'installation-id', value: args.installationId, arg: '--installation-id' });
-    }
-    
-    if (args.stackId) {
-      cliArgs.push('--stack-id', args.stackId);
-      setParameters.push({ key: 'stack-id', value: args.stackId, arg: '--stack-id' });
-    }
-    
-    if (setParameters.length === 0) {
-      return formatToolResponse(
-        "error",
-        "At least one parameter must be provided to set context"
-      );
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      // Handle specific error cases
-      if (errorMessage.includes('not found')) {
-        return formatToolResponse(
-          "error",
-          `Invalid parameter value: ${errorMessage}`
-        );
-      }
-      
-      if (errorMessage.includes('access denied')) {
-        return formatToolResponse(
-          "error",
-          `Access denied: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to set context: ${errorMessage}`
-      );
-    }
-    
-    // Parse success output
-    const output = result.stdout.trim();
-    const parametersList = setParameters
-      .map(param => `${param.key}: ${param.value}`)
-      .join(', ');
-    
+    const result = await invokeCliTool({
+      toolName: 'mittwald_context_set',
+      argv,
+      parser: (stdout) => stdout.trim(),
+    });
+
+    const parametersList = parameters.map((param) => `${param.key}: ${param.value}`).join(', ');
     const responseData = {
       message: 'Context parameters set successfully',
-      parameters: Object.fromEntries(setParameters.map(p => [p.key, p.value])),
-      output: output || null,
-      timestamp: new Date().toISOString()
+      parameters: Object.fromEntries(parameters.map((p) => [p.key, p.value])),
+      output: result.result || null,
+      timestamp: new Date().toISOString(),
     };
-    
+
     return formatToolResponse(
-      "success",
+      'success',
       `Context parameters set: ${parametersList}`,
-      responseData
+      responseData,
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
+      }
     );
-    
   } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
     return formatToolResponse(
-      "error",
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }

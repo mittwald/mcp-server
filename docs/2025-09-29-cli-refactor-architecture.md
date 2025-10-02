@@ -1,0 +1,345 @@
+# MCP CLI Refactor Architecture (Draft – 2025-09-29)
+
+## Purpose
+Establish a single, session-aware abstraction for invoking the Mittwald CLI from MCP tools, eliminate duplicated handlers, and provide a sustainable pattern for future tool development. This document captures the target architecture, design principles, and the migration approach required to unify the current tool landscape.
+
+## Background
+- Current handlers mix direct calls to `executeCli` with bespoke parsing and error handling logic.
+- Session-aware helpers exist (`sessionAwareCli`, `enhancedCliWrapper`) but are inconsistently adopted.
+- Tool metadata lacks scope annotations and lifecycle context, preventing automated filtering or discovery.
+- Redundant tools (e.g., `mittwald_project_list` vs `mittwald_user_accessible_projects`) mask CLI failures and dilute telemetry.
+- The Oclif `Invalid regular expression flags` crash exposes the fragility of the CLI integration path.
+
+## Design Goals
+1. **Single Execution Path** – all CLI invocations route through a common adapter that enforces session awareness, token injection, context propagation, and logging.
+2. **Deterministic Error Surface** – CLI non-zero exits map to structured MCP errors; no silent fallbacks.
+3. **Scope-Aware Tool Registry** – every tool declares `requiredScopes`, enabling filtering (see scope filtering plan) and improved onboarding.
+4. **Composable Post-Processing** – parsing/transformation logic cleanly separates from execution plumbing; JSON, text, and quiet-id outputs handled uniformly.
+5. **Operational Observability** – central logging of command, exit code, stderr, and timing for SLOs.
+6. **Testability** – unit tests mock the common adapter; integration tests cover representative commands only once.
+
+## Target Architecture
+```
+┌─────────────────────────┐
+│ Tool Registration (TS)  │  ─ name/title/description
+│  - requiredScopes[]     │  ─ handler factory (metadata-driven)
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ Tool Handler Shell      │  ─ validates args (zod schema)
+│ (per domain)            │  ─ delegates to CLI adapter with
+│                         │    post-process function
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ CLI Adapter             │  ─ ensures sessionId
+│ (new module)            │  ─ token/context injection
+│                         │  ─ executes via sessionAwareCli
+│                         │  ─ standardises result/error
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ Execution Backend       │  ─ sessionAwareCli (Redis
+│  - runWithSessionContext│    hydration + mw invocation)
+│  - executeCli fallback  │  ─ fallback only for
+│                         │    non-auth flows (e.g. health)
+└─────────────────────────┘
+```
+
+### Key Modules
+- `src/tools/registry.ts` *(new)* – exposes tool descriptors with `requiredScopes`, version, tags.
+- `src/tools/cli-adapter.ts` *(new)* – exports `invokeCliTool({ command, args, sessionId, parser })`.
+- `src/tools/parsers/` *(new)* – reusable result transformers (JSON array → typed objects, quiet output, passthrough).
+- `src/tools/error.ts` *(new)* – defines `CliToolError` + helpers to format MCP responses consistently.
+- `src/handlers/tools/**` – trimmed to glue: gather args, call adapter, format success payload.
+- `src/utils/session-aware-cli.ts` – extended with structured errors, command metadata logging, and opt-in concurrency controls.
+
+### Execution Flow
+1. `handleToolCall` resolves tool metadata and invokes handler with `context.sessionId`.
+2. Handler builds a declarative request for the adapter: `invokeCliTool({ command: 'project', subcommand: 'list', args, sessionId, parser: parseProjectList })`.
+3. Adapter ensures `sessionId` exists, obtains tokens from Redis (via `sessionAwareCli`) and executes CLI.
+4. Adapter captures stdout/stderr, exit code, duration; maps non-zero exit to `CliToolError` with typed `reason` (`AUTHENTICATION`, `NOT_FOUND`, `VALIDATION`, `UNKNOWN`).
+5. Parser transforms stdout into typed domain object or raises `CliToolError` if shape invalid.
+6. Handler wraps result via `formatToolResponse` (expanded to include `errorCode`, `debug` sections when needed).
+
+### Error Semantics
+- Non-zero exit → `CliToolError` with fields: `command`, `exitCode`, `stderr`, `suggestedAction`.
+- Authentication errors flagged by `stderr` heuristics and raised as `AUTHENTICATION_REQUIRED`; bubble up to encourage re-auth.
+- Parsers produce `PARSING_FAILED` with captured payload.
+- Logging: single `logger.error` inside adapter with sanitized command (token redacted).
+
+### Scope Metadata & Filtering
+- Registrations include `requiredScopes`. Example:
+  ```ts
+  const registration: ToolRegistration = {
+    tool: { name: 'mittwald_project_list', ..., requiredScopes: ['project:read'] },
+    handler: createCliToolHandler({
+      command: ['project', 'list'],
+      parser: parseProjectList,
+      permission: 'project:read',
+    }),
+  };
+  ```
+- `createCliToolHandler` attaches required scopes to metadata and enforces them at runtime (pre-check against session scopes; fail fast with `SCOPE_DENIED`).
+
+### Logging & Metrics
+- Adapter emits structured log: `{ command: 'mw project list', exitCode, durationMs, sessionId, stdoutBytes, stderrBytes }`.
+- Hook for tracing (future): optional `traceId` from MCP request metadata.
+
+### Testing Strategy
+- Unit tests for adapter: simulate CLI success/failure, verify error mapping.
+- Parser tests: supply sample stdout (fixture-based).
+- Handler tests: ensure they pass correct args + produce expected tool response.
+- Integration tests (selected commands) verifying end-to-end flow with redis mock + CLI stub.
+
+## Migration Plan
+### Phase 0 – Prep (Now → A4 completion)
+- Confirm Oclif runtime fix availability (Workstream A). Block destructive migrations until CLI stable.
+- Add lint rule (custom ESLint) forbidding direct `executeCli('mw', …)` usage outside adapter (initially warn).
+- Document current tool inventory (spreadsheet or JSON export) – already underway in B1.
+
+### Phase 1 – Infrastructure (Immediately after A4)
+1. Implement new adapter + error types, keep existing handlers untouched.
+2. Update `sessionAwareCli` to return structured result `{ stdout, stderr, exitCode, durationMs }` and throw `SessionMissingError` if no session.
+3. Extend `formatToolResponse` to accept `meta` & `errorCode`.
+4. Add Vitest coverage for adapter & parsers.
+
+### Phase 2 – High-Value Tools (A5–A6 window)
+1. Migrate project/server/conversation list handlers using factory `createCliToolHandler`.
+2. Decommission fallback tool (`mittwald_user_accessible_projects`) by merging logic into `mittwald_project_list` with improved empty state messaging.
+3. Update docs & smoke tests to cover new execution path.
+
+### Phase 3 – Bulk Migration (Post A6)
+1. Auto-generate migration checklist from tool inventory.
+2. Migrate remaining handlers in batches (category per PR): app, backup, database, domain, extension, mail, org, user, etc.
+3. Remove deprecated helper modules (`enhanced-cli-wrapper`, bespoke handler utilities) as batches finish.
+4. Enforce ESLint rule as error once 100% migrated.
+
+### Phase 4 – Cleanup & Observability
+1. Delete duplicate tools and update registry metadata.
+2. Hook adapter logs into existing monitoring (e.g., ship to Datadog).
+3. Update onboarding docs (`README`, `ARCHITECTURE`, scope filtering plan) to reflect new flow.
+4. Final audit verifying there are no direct `executeCli` usages.
+
+### Dependencies & Coordination
+- Workstream A must deliver CLI fix before Phase 2 (tools rely on stable CLI).
+- Scope filtering (separate plan) consumes `requiredScopes` metadata; coordinate schema additions.
+- Engage QA for regression passes after each migration batch.
+
+## Open Questions
+- Do we need support for streaming output (e.g., long-running commands)? If yes, adapter must expose event-based API.
+- Should we adopt a declarative YAML/JSON registry for tools, or keep TypeScript descriptors? (TS favored for type safety.)
+- How to expose CLI version compatibility info? Consider `mw --version` check and metadata field.
+
+## Next Steps
+1. Review this architecture with stakeholders (backend, platform, tooling PM).
+2. Iterate on adapter interface and error taxonomy.
+3. Once approved, begin Phase 1 implementation under Workstream B tasks.
+
+## Implementation Status
+- **2025-09-29** – Initial adapter scaffolding and helper updates merged in commit d7e4a329a57c4f81666d2a2d5f912a93a1fe6a94.
+- **2025-09-30** – Generated end-to-end CLI tool inventory for migration tracking (`docs/2025-09-29-cli-tool-inventory.json`). _(commit 97dadafb695a8f66b4039f0f1c6315839484bc19)_
+- **2025-09-30** – First handler migration complete (`mittwald_app_copy` now uses `invokeCliTool`). _(commit 13195fe6946880611c5d59fc011e21a2134ee14a)_
+- **2025-09-30** – Migrated `mittwald_app_create_node` to the adapter path, continuing alphabetical rollout. _(commit 688ed9397389e6a8f2c65a984cbf6c67c8e40661)_
+- **2025-09-30** – Migrated `mittwald_app_create_php` to the adapter path. _(commit f1ac9827b5c026e1cc1cd85256d3b25ccddf18a3)_
+- **2025-09-30** – Migrated `mittwald_app_create_php_worker` to the adapter path. _(commit 4f4dd233f4150eac8261d66a53dda4d0e15fa12c)_
+- **2025-09-30** – Migrated `mittwald_app_create_python` to the adapter path. _(commit ad1fe396ae2ee3cab713876580dc4f9eb579e40a)_
+- **2025-09-30** – Migrated `mittwald_app_create_static` to the adapter path. _(commit 1230eb67d86972fd4ea5d47bca68975942b14a4e)_
+- **2025-09-30** – Migrated `mittwald_app_download` to the adapter path. _(commit ece20a097b17440ace7a90bed5dbcad9cf5e77e2)_
+
+- **2025-09-30** – Migrated `mittwald_app_get` to the adapter path. _(commit f3f1e5a62e10f08960a4b1a73b5b0ba3e29d673d)_
+
+- **2025-09-30** – Migrated `mittwald_app_install_contao` to the adapter path. _(commit 85ec619f4fee8352f6d5a3e01f04bef0d6f0f8fb)_
+
+- **2025-09-30** – Migrated `mittwald_app_install_joomla` to the adapter path. _(commit 4f136822c1a8efb4e0be6db833d91694a8d8c9aa)_
+
+- **2025-09-30** – Migrated `mittwald_app_install_matomo` to the adapter path. _(commit 2dbf80169a3f17f3e450bcf6a38fca714e454a95)_
+
+- **2025-09-30** – Migrated `mittwald_app_install_nextcloud` to the adapter path. _(commit 1c90f3355e41aac552f825c021f5fd91208f4dd3)_
+
+- **2025-09-30** – Migrated `mittwald_app_install_shopware5` to the adapter path. _(commit 9b2a205e4712eef79f6f70e969a1356a4b8bc6bf)_
+
+- **2025-09-30** – Migrated `mittwald_app_install_shopware6` to the adapter path. _(commit bd619eff1110c5e7cb482b3f16c66a729d982c31)_
+
+- **2025-09-30** – Migrated `mittwald_app_install_typo3` to the adapter path. _(commit 4103c6fac0befc931093d24d5e7775f8efe28a81)_
+
+- **2025-09-30** – Migrated `mittwald_app_install_wordpress` to the adapter path. _(commit 97ef1cce5893ada00d0d44e310a1b5e1bd8630db)_
+
+- **2025-09-30** – Migrated `mittwald_app_list` to the adapter path. _(commit 9f3c84b803c0e16907e098fe3a6ba7331c2e8d30)_
+
+- **2025-09-30** – Migrated `mittwald_app_list_upgrade_candidates` to the adapter path. _(commit 7d71c73a4ed6d2261fd444fcacd25cdb840a41b4)_
+
+- **2025-09-30** – Migrated `mittwald_app_open` to the adapter path. _(commit c4a54d7378608450755c57dc4ff264f2c20d55b2)_
+
+- **2025-09-30** – Migrated `mittwald_app_ssh` to the adapter path. _(commit 935a1456e956fe8e53c384a042657bfb9dba04ea)_
+
+- **2025-09-30** – Migrated `mittwald_app_uninstall` to the adapter path. _(commit 2452eee1919078fa1a68ae8a40e7cc5701c0fe48)_
+
+- **2025-09-30** – Migrated `mittwald_app_update` to the adapter path. _(commit d171b1d76107323b599631e7608a71331b26a91b)_
+
+- **2025-09-30** – Migrated `mittwald_app_upgrade` to the adapter path. _(commit 92b60f9969588b7ea557ece836d7415b52e17a7b)_
+
+- **2025-09-30** – Migrated `mittwald_app_upload` to the adapter path. _(commit 4fc811706ae24f2048a73b977e8b538a775f5abb)_
+
+- **2025-09-30** – Migrated `mittwald_app_versions` to the adapter path. _(commit 871b2d3d6ca2789a14d898feb6b562a92ccd1d58)_
+
+- **2025-09-30** – Migrated `mittwald_backup_create` to the adapter path. _(commit 308d906f2e796b79436d12a21b0b754bd3b6054b)_
+
+- **2025-09-30** – Migrated `mittwald_backup_delete` to the adapter path. _(commit c26fb23a2cf4ed137b5df86657b1b5ca15ee7fc6)_
+
+- **2025-09-30** – Migrated `mittwald_backup_download` to the adapter path. _(commit 44344cf88537b0e3f3d15f976b5d3d45db7ab55b)_
+
+- **2025-09-30** – Migrated `mittwald_backup_get` to the adapter path. _(commit c7be3b5aedb4b8336a69858c026445f5243c1a3d)_
+
+- **2025-09-30** – Migrated `mittwald_backup_list` to the adapter path. _(commit f051f034b64982e01fb4f5c5fb30732ef845e695)_
+
+- **2025-09-30** – Migrated `mittwald_backup_schedule_create` to the adapter path. _(commit 0f5fe89c99b1bcd803dd0b03f133eb4b56026e11)_
+- **2025-09-30** – Migrated `mittwald_user_api_token_get` to the adapter path. _(commit 9e21d3791c50ada436ad7238959c93338e41671a)_
+- **2025-09-30** – Migrated `mittwald_user_api_token_list` to the adapter path. _(commit 5e240043dbd3cad3ad49e158e6b920713ab84943)_
+
+- **2025-09-30** – Migrated `mittwald_backup_schedule_delete` to the adapter path. _(commit db747fa6296bf1885ebbb34d87c472168461a0ad)_
+
+- **2025-09-30** – Migrated `mittwald_backup_schedule_list` to the adapter path. _(commit b7551f36f83aecc0fd7db181ee1bcfb7b1ba49c9)_
+
+- **2025-09-30** – Migrated `mittwald_backup_schedule_update` to the adapter path. _(commit 9239c3e47b13e07293f9829c8a0e5b2e41c9a39f)_
+
+- **2025-09-30** – Migrated container handlers (`delete`, `list`, `logs`, `recreate`, `registry_create`) to the adapter path. _(commit 3bafcee1f668d26515083998c2e44593b06dce31)_
+
+- **2025-09-30** – Migrated container registry (`delete`, `list`, `update`) and container lifecycle (`restart`, `run`) to the adapter path. _(commit 0103cac7d76bed9dfed23b5730bb7419fcd10826)_
+
+- **2025-09-30** – Migrated container stack (`delete`, `deploy`, `list`, `ps`) and container start/stop to the adapter path. _(commit dd11ce3f0412e3f893f02cc8667c5180930a3275)_
+
+- **2025-09-30** – Migrated `mittwald_conversation_reply` to the adapter path. _(commit c6bf7d8fa7fc1716ecf4bcf500544e8a1f11d6a1)_
+
+- **2025-09-30** – Migrated `mittwald_conversation_show` to the adapter path. _(commit b21aa910b293671525ea96aa1a3243fa57502d3e)_
+
+- **2025-09-30** – Migrated `mittwald_cronjob_create` to the adapter path. _(commit 7134557dc8dbeb7b7604450c779a5bd90933789b)_
+
+- **2025-09-30** – Migrated `mittwald_cronjob_execution_abort` to the adapter path. _(commit 82e6dcb9eb567a7cdcd9a06bed90c94308fc3f8a)_
+
+- **2025-09-30** – Migrated `mittwald_cronjob_execution_get` to the adapter path. _(commit 886cec312e97cae2d15128757277eb366ca0c41c)_
+
+- **2025-09-30** – Migrated `mittwald_cronjob_get` to the adapter path. _(commit 0307bbc55b63a1813327b13e186149eca3ca2480)_
+
+- **2025-09-30** – Migrated `mittwald_cronjob_execution_logs` to the adapter path. _(commit 5319f02835f8f4fee8279a78085bb2c0dc65fdb4)_
+
+- **2025-09-30** – Migrated `mittwald_cronjob_list` to the adapter path. _(commit bfd706dbca33e2d7676551da58a0bcfa717fec34)_
+
+- **2025-09-30** – Migrated `mittwald_cronjob_update` to the adapter path. _(commit 99382924472be914ae558c158dd32c416fd720d1)_
+
+- **2025-09-30** – Migrated `mittwald_database_list` to the adapter path. _(commit f105b5874e2e65d83e003190a2462182073ce75d)_
+
+- **2025-09-30** – Migrated `mittwald_domain_list` to the adapter path. _(commit 14e9148ae77dc79d5e403e5caeefe34697503faf)_
+
+- **2025-09-30** – Migrated `mittwald_context_get` to the adapter path. _(commit 1919d326c8dba352286720d58325d5adf7628c43)_
+
+- **2025-09-30** – Migrated `mittwald_context_reset` to the adapter path. _(commit 5f00be28cc2927ace46c96d9f142d5e0e3aabf90)_
+
+- **2025-09-30** – Migrated `mittwald_domain_dnszone_list` to the adapter path. _(commit 9332b061b27942bcdde2f1f3c346cb70064cfdf8)_
+
+- **2025-09-30** – Migrated `mittwald_conversation_categories` to the adapter path. _(commit 1d19d34ac2db3efea2df60427e60987b69d6e22e)_
+
+- **2025-09-30** – Migrated `mittwald_user_api_token_get` to the adapter path. _(commit 9e21d3791c50ada436ad7238959c93338e41671a)_
+
+- **2025-09-30** – Migrated `mittwald_user_api_token_list` to the adapter path. _(commit 5e240043dbd3cad3ad49e158e6b920713ab84943)_
+
+- **2025-09-30** – Migrated `mittwald_user_api_token_revoke` to the adapter path. _(commit b0f6c921fac2c7e8d123f218607ff3936900931c)_
+
+- **2025-09-30** – Migrated `mittwald_mail_address_create` to the adapter path. _(commit 21b36c68db1c560556bd3a39f790d46406b38308)_
+
+- **2025-09-30** – Migrated `mittwald_mail_address_get` to the adapter path. _(commit 073fe81e08bbb27efaf0eff40732376e42746b92)_
+
+- **2025-09-30** – Migrated `mittwald_mail_address_delete` to the adapter path. _(commit b5e1f24e9b6e6329d4c0dc7bdb97a843026d9107)_
+
+- **2025-09-30** – Migrated `mittwald_mail_address_list` to the adapter path. _(commit 41dc9c4d03c0350e4af10ee4e3da8c7f76fddefd)_
+
+- **2025-09-30** – Migrated `mittwald_mail_address_update` to the adapter path. _(commit 9723e2ecba23f840d980895ac6cf14e55b3c28d6)_
+
+- **2025-09-30** – Migrated `mittwald_mail_deliverybox_create` to the adapter path. _(commit d792694b8d8cb1fbb51930add5e1a5816270896b)_
+
+- **2025-09-30** – Migrated `mittwald_mail_deliverybox_get` to the adapter path. _(commit 42a90ef72a915017ba082fb533cc7f69a5f2341e)_
+
+- **2025-09-30** – Migrated `mittwald_mail_deliverybox_list` to the adapter path. _(commit afa0cf5dea4db8000b492235c7ac4fdd2d1de152)_
+
+- **2025-09-30** – Migrated `mittwald_mail_deliverybox_update` to the adapter path. _(commit 4c4a7f50d8d762fc0872434e534141c935908e8d)_
+
+- **2025-09-30** – Migrated `mittwald_org_invite_list` to the adapter path. _(commit 6185efdda7bc4f4731d603bfff1b78aaca43996e)_
+
+- **2025-09-30** – Migrated `mittwald_org_invite_list_own` to the adapter path. _(commit b070f7cc4d28d6da3a8d8a9844e9abe0776ab610)_
+
+- **2025-09-30** – Migrated `mittwald_org_invite_revoke` to the adapter path. _(commit 0ffb2ffb37c2f3431791759e99209f7268e5133d)_
+
+- **2025-09-30** – Migrated `mittwald_project_create` to the adapter path. _(commit 652ec1b2d57e48f05418a1d6719c551c0e056f10)_
+- **2025-09-30** – Inventory now marks the migrated `mittwald_project_delete` handler. _(commit 5814af1)_
+- **2025-09-30** – Migrated `mittwald_project_filesystem_usage` to the adapter path. _(commit d67b76bd4214417d3f022ee155c391935eab5add)_
+- **2025-09-30** – Migrated `mittwald_project_get` to the adapter path. _(commit c739fda7d343323ff9370531ec9abf896f879027)_
+
+- **2025-09-30** – Migrated `mittwald_conversation_list` to the adapter path. _(commit 2951d4522c833d6001ed1a6b96b002c410ec7d11)_
+
+- **2025-09-30** – Migrated `mittwald_project_list` to the adapter path. _(commit 857e81591db8dc6199dafb0511c70c65e136f7e3)_
+
+- **2025-09-30** – Migrated `mittwald_project_invite_list_own` to the adapter path. _(commit 36404a7646e780848d7c694386b8f876d5c35a0d)_
+
+- **2025-09-30** – Migrated `mittwald_project_membership_get` to the adapter path. _(commit 193fac9ecaab9c3f22bbc95ed933f1998bfd7e26)_
+
+- **2025-09-30** – Migrated `mittwald_project_membership_get_own` to the adapter path. _(commit bc6509b0c187247758022aea640223f2bc9b7e73)_
+
+- **2025-09-30** – Migrated `mittwald_project_membership_list` to the adapter path. _(commit f71de2a2669f8b341cd0f4616b22d88ee2088e9f)_
+
+- **2025-09-30** – Migrated `mittwald_project_membership_list_own` to the adapter path. _(commit 3f3ab50793c2d283ee79bece4646c7f9eeb68dec)_
+
+- **2025-09-30** – Migrated `mittwald_project_ssh` to the adapter path. _(commit 6788e9ef9840a62f3bc52d31cb49e61dd3d83e87)_
+
+- **2025-09-30** – Migrated `mittwald_project_update` to the adapter path. _(commit 399b999b8880ba90aa73d3c1b545fbc806e6d963)_
+
+- **2025-09-30** – Migrated `mittwald_server_get` to the adapter path. _(commit b5b0792309584c7a75b3d76d3412487a5dbd0c90)_
+
+- **2025-09-30** – Migrated `mittwald_server_list` to the adapter path. _(commit c49f6a4a4e008c1f68c813ba3b8a25d3ff63bbb0)_
+
+- **2025-09-30** – Migrated `mittwald_sftp_user_create` to the adapter path. _(commit 9cba60cd40b2c9b9818412f58a05060b65481843)_
+
+- **2025-09-30** – Migrated `mittwald_sftp_user_delete` to the adapter path. _(commit 5a50ccfb63c589d2ba643384f099ae4b63dc7b90)_
+
+- **2025-09-30** – Migrated `mittwald_sftp_user_list` to the adapter path. _(commit 740107fd22dc162ac5d2c4c1f50af5b69094ef05)_
+
+- **2025-09-30** – Migrated `mittwald_user_api_token_create` to the adapter path. _(commit 89261e115818752733564e6ec345207fd9cc15ca)_
+
+- **2025-09-30** – Migrated `mittwald_domain_virtualhost_create` to the adapter path. _(commit 0ca2fad53c3667829c41a5c8a502f9ab9adfa5bb)_
+
+- **2025-09-30** – Migrated `mittwald_domain_virtualhost_get/list` to the adapter path. _(commit 6e3e33f0f1f8b8f5170674e7adf0d8d7220ce9bb)_
+
+- **2025-09-30** – Migrated MySQL handlers (`phpmyadmin`, `port_forward`, `shell`, `versions`) to the adapter path. _(commit 8d8c25cf36e28a0e8cdbf3b5bb6dd9e5695490b5)_
+
+- **2025-09-30** – Migrated DDEV handlers (`init`, `render_config`) to the adapter path. _(commit b0c760189f07f67afea77eb1494b4a5cd6c1c6ec)_
+
+- **2025-09-30** – Migrated `mittwald_user_get` to the adapter path. _(commit 8bf7cdb61ebafa82a460a0bfb494b7bbf541d8d3)_
+
+- **2025-09-30** – Migrated `mittwald_user_session_get` to the adapter path. _(commit 6f7b61ff88571884c6ea581d1123c98200feed1b)_
+
+- **2025-09-30** – Migrated `mittwald_user_session_list` to the adapter path. _(commit 7a8f9960126b8d4bbc526e58db4aa4a0a5ec74e8)_
+
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_create` to the adapter path. _(commit 9fe7b37e86c148a394aa09260388b2619413d535)_
+
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_delete` to the adapter path. _(commit c9a8a3cb51840ad8f0ad360fe4a8199f076ca45d)_
+
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_get` to the adapter path. _(commit bc77a03a9a32a6f0ae15a4ebcb2bafb75593577e)_
+
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_import` to the adapter path. _(commit b6e6082fd30f3aea43f0cbcbb43ba34f4a387a28)_
+
+- **2025-09-30** – Migrated `mittwald_user_ssh_key_list` to the adapter path. _(commit 1d27761269be0b2de9baafde38347ba060a0ee03)_
+
+- **2025-09-30** – Migrated `mittwald_login_status` to the adapter path. _(commit 638c1c3663c170fe0d2b1210204621b43221b660)_
+
+- **2025-10-01** – Migrated `mittwald_ssh_user_create` to the adapter path. _(commit fd7b7e452bc9fc93c7c302e2b3bb3255203fc5fd)_
+
+- **2025-10-01** – Migrated `mittwald_ssh_user_delete` to the adapter path. _(commit a4f086254bc3884ddaadfecee89a4b0934207b38)_
+
+- **2025-10-01** – Migrated `mittwald_ssh_user_list` to the adapter path. _(commit ea589f6c886f36d8433c07f0695795e81edb19e2)_
+
+- **2025-10-01** – Migrated `mittwald_ssh_user_update` to the adapter path. _(commit f505fc07279cca9fe54eaa6f89721df0264bdf1d)_
+
+---
+*Draft prepared 2025-09-29 by Codex (LLM).*

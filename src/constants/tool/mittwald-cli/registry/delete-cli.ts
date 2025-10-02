@@ -1,0 +1,31 @@
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
+import type { ToolRegistration } from '../../../../types/tool-registry.js';
+import { handleRegistryDeleteCli } from '../../../../handlers/tools/mittwald-cli/registry/delete-cli.js';
+
+const tool: Tool = {
+  name: 'mittwald_registry_delete',
+  title: 'Delete Registry',
+  description: 'Delete a registry from Mittwald.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      registryId: {
+        type: 'string',
+        description: 'ID of the registry to delete'
+      },
+      force: {
+        type: 'boolean',
+        description: 'Do not ask for confirmation'
+      }
+    },
+    required: ['registryId']
+  }
+};
+
+const registration: ToolRegistration = {
+  tool,
+  handler: handleRegistryDeleteCli,
+  schema: tool.inputSchema
+};
+
+export default registration;

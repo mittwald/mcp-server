@@ -80,6 +80,7 @@ Key goals:
 - Redis persistence for bridge state – in production we should swap the in-memory store for Redis.
 - Additional error logging around `/token` exchange for better diagnostics.
 - Consider rotating bridge-issued client secrets and surfacing revocation flows once confidential client usage increases.
+- **Coverage automation** – The Workstream A tooling generates `mw-cli-coverage.json` / `docs/mittwald-cli-coverage.md`, validates them in CI, and applies exclusion policy via `config/mw-cli-exclusions.json`. See `docs/coverage-automation.md` for maintainer workflow details.
 
 ## Changelog Snapshot
 - 2025-09-27 15:25 UTC – Created `packages/oauth-bridge`, scaffolded Koa service.

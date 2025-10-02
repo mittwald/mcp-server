@@ -4,8 +4,8 @@
  * 
  * @remarks
  * This module implements the MCP sampling feature, which allows the server
- * to request LLM completions from the client. This is used to generate
- * Reddit content (posts, comments, messages) with AI assistance.
+ * to request LLM completions from the client so that operators can review
+ * and apply generated content with human-in-the-loop safeguards.
  * 
  * Complete MCP Sampling Flow (8 steps):
  * @see https://modelcontextprotocol.io/specification/2025-06-18/client/sampling
@@ -23,7 +23,7 @@
  * - Human-in-the-loop approval at every step
  * - Support for model preferences and generation parameters
  * - Callback-based response handling for different content types
- * - Integration with Reddit API for posting generated content
+ * - Integration with platform-specific APIs for applying generated actions
  */
 
 import type { CreateMessageRequest, CreateMessageResult } from '@modelcontextprotocol/sdk/types.js';
@@ -194,14 +194,14 @@ export async function sendSamplingRequest(
  * human-in-the-loop sampling flow is complete.
  * 
  * Supported callbacks:
- * - `create_post_callback`: Posts content to Reddit
- * - `create_comment_callback`: Creates a Reddit comment
- * - `suggest_action`: Analyzes and suggests Reddit actions
- * - `create_message_callback`: Sends a Reddit private message
+ * - `create_post_callback`: Applies generated post content after approval
+ * - `create_comment_callback`: Applies generated comment content after approval
+ * - `suggest_action`: Suggests follow-up actions based on generated output
+ * - `create_message_callback`: Applies generated direct-message content
  * 
  * Each callback handler will:
  * 1. Parse the generated content
- * 2. Perform the Reddit API operation
+ * 2. Perform the downstream API operation
  * 3. Send a notification with the result
  * 
  * @param callback - The callback type identifier

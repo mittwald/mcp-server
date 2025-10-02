@@ -27,7 +27,7 @@ import type { Implementation, ServerCapabilities } from "@modelcontextprotocol/s
  * - Type-safe TypeScript architecture
  * - Production-ready patterns and best practices
  * - OAuth 2.1 authentication flow
- * - Real-world API integration (Reddit)
+ * - Real-world API integration (Mittwald CLI)
  */
 export const serverConfig: Implementation = {
   name: "mittwald-mstudio-mcp",

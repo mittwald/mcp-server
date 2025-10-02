@@ -1,20 +1,23 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
-export interface ToolResponse<T = any> {
+export interface ToolResponse<T = any, M = any> {
   status: "success" | "error";
   message: string;
   data?: T;
+  meta?: M;
 }
 
-export function formatToolResponse<T>(
+export function formatToolResponse<T, M = any>(
   status: "success" | "error",
   message: string,
   data?: T,
+  meta?: M,
 ): CallToolResult {
-  const response: ToolResponse<T> = {
+  const response: ToolResponse<T, M> = {
     status,
     message,
     ...(data && { data }),
+    ...(meta !== undefined && { meta }),
   };
 
   return {

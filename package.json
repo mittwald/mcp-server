@@ -34,6 +34,8 @@
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
+    "test:bridge": "pnpm --filter @mittwald/oauth-bridge test",
+    "test:session": "vitest run tests/integration/cli-session.integration.test.ts",
     "test:smoke": "vitest run tests/smoke",
     "test:functional": "vitest run tests/functional --reporter=verbose --no-file-parallelism",
     "test:functional:watch": "vitest tests/functional --reporter=verbose --no-file-parallelism",
@@ -46,10 +48,14 @@
     "test:oauth": "vitest run tests/unit/auth tests/integration/oauth-flow.test.ts --reporter=verbose",
     "test:oauth:watch": "vitest tests/unit/auth tests/integration/oauth-flow.test.ts --reporter=verbose",
     "test:oauth:mock": "vitest run tests/integration/mock-oauth2-server.test.ts --reporter=verbose",
+    "test:e2e": "vitest run tests/e2e",
     "test:e2e:mcp": "tsx scripts/e2e-mcp-oauth.ts",
     "test:oauth:coverage": "vitest run tests/unit/auth tests/integration --coverage --reporter=verbose",
+    "test:all": "pnpm test:unit && pnpm test:bridge && pnpm test:session && pnpm test:integration && pnpm test:e2e",
     "inspector": "npx @modelcontextprotocol/inspector",
-    "logs:registration": "bash scripts/tail-registration-logs.sh"
+    "logs:registration": "bash scripts/tail-registration-logs.sh",
+    "coverage:generate": "tsx scripts/generate-mw-coverage.ts",
+    "check:cli-version": "tsx scripts/check-cli-version.ts"
   },
   "repository": {
     "type": "git",
@@ -99,7 +105,8 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "@mittwald/cli": "1.11.2"
   },
   "keywords": [
     "mittwald",

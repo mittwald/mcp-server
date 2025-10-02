@@ -1,83 +1,106 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldDomainDnszoneGetArgs {
   dnszoneId: string;
   output?: 'txt' | 'json' | 'yaml';
 }
 
-export const handleDomainDnszoneGetCli: MittwaldToolHandler<MittwaldDomainDnszoneGetArgs> = async (args, context) => {
+function buildCliArgs(args: MittwaldDomainDnszoneGetArgs): string[] {
+  return ['domain', 'dnszone', 'get', args.dnszoneId, '--output', 'json'];
+}
+
+interface ParsedDnszoneResult {
+  item?: Record<string, any>;
+  error?: string;
+}
+
+function parseDnszone(output: string): ParsedDnszoneResult {
+  if (!output) return { error: 'Empty output received from CLI command' };
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['domain', 'dnszone', 'get', args.dnszoneId];
-    
-    // Always use JSON output for consistent parsing
-    cliArgs.push('--output', 'json');
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('zone')) {
-        return formatToolResponse(
-          "error",
-          `DNS zone not found: ${args.dnszoneId}.\nError: ${errorMessage}`
-        );
-      }
-      
+    const parsed = JSON.parse(output);
+    return typeof parsed === 'object' && parsed !== null ? { item: parsed as Record<string, any> } : { error: 'Unexpected output format from CLI command' };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
+}
+
+function mapCliError(error: CliToolError, args: MittwaldDomainDnszoneGetArgs): string {
+  const combined = `${error.stderr ?? ''} ${error.stdout ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('zone')) {
+    return `DNS zone not found: ${args.dnszoneId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  return error.message;
+}
+
+export const handleDomainDnszoneGetCli: MittwaldCliToolHandler<MittwaldDomainDnszoneGetArgs> = async (args) => {
+  if (!args.dnszoneId) {
+    return formatToolResponse('error', 'DNS zone ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
+  try {
+    const result = await invokeCliTool({
+      toolName: 'mittwald_domain_dnszone_get',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const { item, error: parseError } = parseDnszone(stdout);
+
+    if (!item) {
       return formatToolResponse(
-        "error",
-        `Failed to get DNS zone: ${errorMessage}`
-      );
-    }
-    
-    // Parse JSON output
-    try {
-      const data = parseJsonOutput(result.stdout);
-      
-      if (!data || typeof data !== 'object') {
-        return formatToolResponse(
-          "error",
-          "Unexpected output format from CLI command"
-        );
-      }
-      
-      // Format the data to match our expected structure
-      const formattedData = {
-        id: data.id,
-        domainName: data.domainName,
-        projectId: data.projectId,
-        recordCount: data.recordCount,
-        zone: data.zone,
-        domain: data.domain,
-        records: data.records || []
-      };
-      
-      return formatToolResponse(
-        "success",
-        `DNS zone information retrieved for ${args.dnszoneId}`,
-        formattedData
-      );
-      
-    } catch (parseError) {
-      // If JSON parsing fails, return the raw output
-      return formatToolResponse(
-        "success",
-        "DNS zone retrieved (raw output)",
+        'success',
+        'DNS zone retrieved (raw output)',
         {
-          rawOutput: result.stdout,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
+          rawOutput: stdout,
+          stderr,
+          parseError,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
-  } catch (error) {
+
+    const formattedData = {
+      id: item.id,
+      domainName: item.domainName,
+      projectId: item.projectId,
+      recordCount: item.recordCount,
+      zone: item.zone,
+      domain: item.domain,
+      records: item.records || [],
+    };
+
     return formatToolResponse(
-      "error",
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      'success',
+      `DNS zone information retrieved for ${args.dnszoneId}`,
+      formattedData,
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
+      }
     );
+  } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -1,60 +1,107 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { executeCli } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldUserApiTokenRevokeArgs {
   tokenId: string;
   force?: boolean;
+  quiet?: boolean;
+}
+
+function buildCliArgs(args: MittwaldUserApiTokenRevokeArgs): string[] {
+  const cliArgs: string[] = ['user', 'api-token', 'revoke', args.tokenId];
+
+  if (args.force) cliArgs.push('--force');
+  if (args.quiet) cliArgs.push('--quiet');
+
+  return cliArgs;
+}
+
+function parseQuietOutput(output: string): string | undefined {
+  const trimmed = output.trim();
+  if (!trimmed) return undefined;
+  const lines = trimmed.split(/\r?\n/);
+  return lines.at(-1);
+}
+
+function mapCliError(error: CliToolError, args: MittwaldUserApiTokenRevokeArgs): string {
+  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`;
+  const combinedLower = combined.toLowerCase();
+
+  if (combinedLower.includes('not found') || combinedLower.includes('no token found')) {
+    return `API token not found: ${args.tokenId}.\nError: ${error.stderr || error.message}`;
+  }
+
+  const rawMessage = error.stderr || error.stdout || error.message;
+  return `Failed to revoke API token: ${rawMessage}`;
+}
+
+function buildSuccessPayload(
+  args: MittwaldUserApiTokenRevokeArgs,
+  output: string,
+): Record<string, unknown> {
+  return {
+    tokenId: args.tokenId,
+    revoked: true,
+    output,
+    force: args.force,
+    quiet: args.quiet,
+  };
 }
 
 export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApiTokenRevokeArgs> = async (args) => {
+  if (!args.tokenId) {
+    return formatToolResponse('error', 'Token ID is required.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['user', 'api-token', 'revoke'];
-    
-    // Add token ID
-    cliArgs.push(args.tokenId);
-    
-    // Optional flags
-    if (args.force) {
-      cliArgs.push('--force');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') || errorMessage.includes('No token found')) {
-        return formatToolResponse(
-          "error",
-          `API token not found: ${args.tokenId}.\nError: ${errorMessage}`
-        );
-      }
-      
+    const result = await invokeCliTool({
+      toolName: 'mittwald_user_api_token_revoke',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const output = stdout || stderr || `API token ${args.tokenId} revoked successfully`;
+
+    if (args.quiet) {
+      const quietOutput = parseQuietOutput(stdout) ?? output;
       return formatToolResponse(
-        "error",
-        `Failed to revoke API token: ${errorMessage}`
+        'success',
+        quietOutput || 'API token revoked successfully',
+        buildSuccessPayload(args, quietOutput),
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
       );
     }
-    
-    // Handle output
-    const output = result.stdout.trim();
-    
+
     return formatToolResponse(
-      "success",
+      'success',
       output || `API token ${args.tokenId} revoked successfully`,
+      buildSuccessPayload(args, output),
       {
-        tokenId: args.tokenId,
-        revoked: true,
-        rawOutput: output
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
     return formatToolResponse(
-      "error",
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }
