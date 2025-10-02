@@ -87,6 +87,39 @@ See also:
 - [Agent S1 Implementation Prompt](./docs/agent-prompts/STANDARD-S1-credential-security.md)
 - [Agent C3 Review (Security Champion)](./docs/agent-reviews/AGENT-C3-REVIEW.md)
 
+### Destructive Operation Safety (REQUIRED)
+All tools that perform destructive operations (delete, revoke, terminate, etc.) MUST follow the safety pattern established by Agent C4. This pattern prevents accidental data loss and provides audit trails:
+
+1. **Required Confirm Flag**: Schema must include `confirm: boolean` (required) with explicit validation
+2. **Audit Logging**: Use `logger.warn()` before execution with sessionId, userId, and resource identifier
+3. **Clear Error Messages**: Validation failure must explain the operation is "destructive and cannot be undone"
+4. **CLI Force Flags**: Use `--force` and `--quiet` flags for clean execution with ID capture
+
+**Implementation Pattern**:
+```typescript
+// 1. Schema validation
+if (args.confirm !== true) {
+  return formatToolResponse(
+    'error',
+    'This operation is destructive and cannot be undone. Set confirm=true to proceed.'
+  );
+}
+
+// 2. Audit logging
+logger.warn('[ToolName] Destructive operation attempted', {
+  resourceId: args.id,
+  sessionId: context?.sessionId,
+  userId: context?.userId,
+});
+
+// 3. CLI execution with force flags
+const argv = ['resource', 'delete', args.id, '--force', '--quiet'];
+```
+
+See also:
+- [Agent C4 Review (Safety Pattern)](./docs/agent-reviews/AGENT-C4-REVIEW.md)
+- [Destructive Operations Safety Guide](./docs/tool-safety/destructive-operations.md)
+
 ## Remaining Work / Considerations
 - Token refresh orchestration (optional) – bridge currently mints refresh tokens; MCP server may use Mittwald refresh tokens in future.
 - Enterprise IdPs without DCR – may require a separate onboarding flow.

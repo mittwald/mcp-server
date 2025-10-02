@@ -204,6 +204,39 @@ See also:
 - [Agent S1 Implementation Guide](./docs/agent-prompts/STANDARD-S1-credential-security.md)
 - [Agent C3 Review (Security Champion, Grade A+ 98%)](./docs/agent-reviews/AGENT-C3-REVIEW.md)
 
+#### Destructive Operation Safety (REQUIRED)
+**All tools performing destructive operations (delete, revoke, terminate, etc.) MUST follow** the safety pattern established by Agent C4:
+
+- **Required Confirm Flag**: Schema includes `confirm: boolean` (required), handler validates `args.confirm === true`
+- **Audit Logging**: Use `logger.warn()` BEFORE execution with `sessionId`, `userId`, `resourceId`
+- **Clear Error Messages**: Validation failure must state "destructive and cannot be undone"
+- **CLI Force Flags**: Use `--force` and `--quiet` for clean execution
+
+**Implementation Pattern**:
+```typescript
+// 1. Schema validation
+if (args.confirm !== true) {
+  return formatToolResponse(
+    'error',
+    'This operation is destructive and cannot be undone. Set confirm=true to proceed.'
+  );
+}
+
+// 2. Audit logging
+logger.warn('[ToolName] Destructive operation attempted', {
+  resourceId: args.id,
+  sessionId: context?.sessionId,
+  userId: context?.userId,
+});
+
+// 3. CLI execution
+const argv = ['resource', 'delete', args.id, '--force', '--quiet'];
+```
+
+See also:
+- [Agent C4 Review (Safety Pattern, Grade A 96%)](./docs/agent-reviews/AGENT-C4-REVIEW.md)
+- [Destructive Operations Safety Guide](./docs/tool-safety/destructive-operations.md)
+
 ### Stateless OAuth Bridge
 - Bridge stores only ephemeral authorization state (Redis with TTL)
 - No persistent user accounts
