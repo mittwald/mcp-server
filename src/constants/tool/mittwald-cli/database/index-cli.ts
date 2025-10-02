@@ -26,3 +26,4 @@ export { mittwald_database_mysql_user_update_cli } from './mysql/user-update-cli
 
 // Redis CLI tools
 export { mittwald_database_redis_create_cli } from './redis/create-cli.js';
+export { mittwald_database_redis_get_cli } from './redis/get-cli.js';

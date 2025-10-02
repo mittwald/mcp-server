@@ -26,3 +26,4 @@ export { handleDatabaseMysqlUserUpdateCli } from './mysql/user-update-cli.js';
 
 // Redis CLI handlers
 export { handleDatabaseRedisCreateCli } from './redis/create-cli.js';
+export { handleDatabaseRedisGetCli } from './redis/get-cli.js';
