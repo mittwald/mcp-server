@@ -1,5 +1,5 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { buildSecureToolResponse } from '../../../../../utils/credential-response.js';
 import { parseJsonOutput, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 import { logger } from '../../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
@@ -152,15 +152,15 @@ export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDataba
   sessionId,
 ) => {
   if (!args.projectId) {
-    return formatToolResponse('error', 'Project ID is required to create a Redis database.');
+    return buildSecureToolResponse('error', 'Project ID is required to create a Redis database.');
   }
 
   if (!args.description) {
-    return formatToolResponse('error', 'Description is required to create a Redis database.');
+    return buildSecureToolResponse('error', 'Description is required to create a Redis database.');
   }
 
   if (!args.version) {
-    return formatToolResponse('error', 'Version is required to create a Redis database.');
+    return buildSecureToolResponse('error', 'Version is required to create a Redis database.');
   }
 
   const argv = buildCliArgs(args);
@@ -178,9 +178,17 @@ export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDataba
     const redisId = parseRedisCreateOutput(stdout, stderr);
 
     if (!redisId) {
-      return formatToolResponse('error', 'Redis database created but the CLI did not return an identifier.', {
-        output: stdout || stderr,
-      });
+      return buildSecureToolResponse(
+        'error',
+        'Redis database created but the CLI did not return an identifier.',
+        {
+          output: stdout || stderr,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
+      );
     }
 
     const details = await fetchRedisDatabaseDetails(redisId, sessionId);
@@ -205,7 +213,7 @@ export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDataba
       messageParts.push('Unable to retrieve full database details after creation.');
     }
 
-    return formatToolResponse(
+    return buildSecureToolResponse(
       'success',
       messageParts.join(' '),
       responseData,
@@ -217,7 +225,7 @@ export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDataba
   } catch (error) {
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
+      return buildSecureToolResponse('error', message, {
         exitCode: error.exitCode,
         stderr: error.stderr,
         stdout: error.stdout,
@@ -225,7 +233,7 @@ export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDataba
       });
     }
 
-    return formatToolResponse(
+    return buildSecureToolResponse(
       'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
