@@ -1,246 +1,259 @@
-/**
- * Claude.ai OAuth Flow End-to-End Tests
- *
- * Tests the complete Claude.ai OAuth 2.1 workflow based on ARCHITECTURE.md
- * Covers all 38 steps from initial MCP request to final tool execution
- */
-
-import { describe, test, expect, beforeEach } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest';
 import axios from 'axios';
-import { JSDOM } from 'jsdom';
-import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
+import { createHash, randomBytes } from 'node:crypto';
+import { startE2EEnvironment, stopE2EEnvironment, setMittwaldMode, type E2EContext } from './setup.js';
+import { waitForBridgeStack, getBridgeBaseUrl, getMcpBaseUrl } from '../utils/remote.js';
 
-const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
+interface AuthorizationFlowResult {
+  codeVerifier: string;
+  authorizationCode: string;
+  clientState: string;
+}
 
-const remoteTest: typeof test = (name, handler, options) =>
-  test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
+describe.sequential('Claude OAuth flow against bridge stack', () => {
+  let context: E2EContext;
 
-describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
-  let claudeClient: any;
+  beforeAll(async () => {
+    context = await startE2EEnvironment();
+    await waitForBridgeStack({ timeoutMs: 90_000 });
+  }, 120_000);
 
-  beforeEach(() => {
+  afterAll(async () => {
+    await stopE2EEnvironment(context);
+  }, 120_000);
+
+  afterEach(() => {
+    setMittwaldMode(context, 'online');
   });
 
-  describe('Complete 38-Step Workflow', () => {
-    remoteTest('Phase 1-2: Discovery and Registration (Steps 1-9)', async () => {
-      const mcp401Response = await safeRequest(
-        () => axios.get(`${MCP_SERVER}/mcp`, { validateStatus: () => true }),
-        'Skipping discovery test (MCP host unavailable)'
-      );
-      if (!mcp401Response) {
-        claudeClient = null;
-        return;
-      }
-      expect(mcp401Response.status).toBe(401);
+  test('completes discovery, registration, authorization, and tool invocation', async () => {
+    const bridgeBaseUrl = getBridgeBaseUrl();
+    const mcpBaseUrl = getMcpBaseUrl();
 
-      const resourceMetadata = await safeRequest(
-        () => axios.get(`${MCP_SERVER}/.well-known/oauth-protected-resource`),
-        'Skipping resource metadata test (MCP host unavailable)'
-      );
-      if (!resourceMetadata) {
-        claudeClient = null;
-        return;
-      }
-      expect(resourceMetadata.data.authorization_servers).toContain(OAUTH_SERVER);
+    const resourceMetadata = await axios.get(`${mcpBaseUrl}/.well-known/oauth-protected-resource`);
+    const authorizationServers: string[] = resourceMetadata.data.authorization_servers ?? [];
+    const expectedServers = [bridgeBaseUrl, 'http://oauth-bridge:4000'];
+    expect(
+      authorizationServers.some((value) => expectedServers.includes(value))
+    ).toBe(true);
 
-      const asMetadata = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/.well-known/oauth-authorization-server`),
-        'Skipping authorization server metadata test (OAuth host unavailable)'
-      );
-      if (!asMetadata) {
-        claudeClient = null;
-        return;
-      }
-      expect(asMetadata.data.registration_endpoint).toBe(`${OAUTH_SERVER}/reg`);
+    const authMetadata = await axios.get(`${bridgeBaseUrl}/.well-known/oauth-authorization-server`);
+    const tokenEndpoint: string = authMetadata.data.token_endpoint;
+    const possibleTokenEndpoints = [
+      `${bridgeBaseUrl}/token`,
+      'http://oauth-bridge:4000/token'
+    ];
+    expect(possibleTokenEndpoints).toContain(tokenEndpoint);
 
-      const registrationRequest = {
-        client_name: 'Claude',
-        redirect_uris: ['https://claude.ai/api/mcp/auth_callback'],
-        grant_types: ['authorization_code', 'refresh_token'],
-        response_types: ['code'],
-        token_endpoint_auth_method: 'client_secret_post',
-        scope: 'openid offline_access'
-      };
+    const registration = await axios.post(`${bridgeBaseUrl}/register`, {
+      client_name: 'Claude',
+      redirect_uris: ['https://claude.ai/api/mcp/auth_callback'],
+      token_endpoint_auth_method: 'client_secret_post',
+      scope: 'openid offline_access'
+    });
+    expect(registration.status).toBe(201);
 
-      const regResponse = await safeRequest(
-        () => axios.post(`${OAUTH_SERVER}/reg`, registrationRequest, { validateStatus: () => true }),
-        'Skipping Claude registration test (OAuth host unavailable)'
-      );
-      if (!regResponse) {
-        claudeClient = null;
-        return;
-      }
-
-      expect([200, 201, 400]).toContain(regResponse.status);
-      if (regResponse.status >= 400) {
-        expect(regResponse.data.error).toBeDefined();
-        claudeClient = null;
-        return;
-      }
-
-      expect(regResponse.data.client_secret).toBeDefined();
-      expect(regResponse.data.token_endpoint_auth_method).toBe('client_secret_post');
-      claudeClient = regResponse.data;
+    const flow = await runAuthorizationFlow({
+      clientId: registration.data.client_id,
+      redirectUri: 'https://claude.ai/api/mcp/auth_callback',
+      scope: 'openid offline_access'
     });
 
-    remoteTest('Phase 3: Authorization Request (Steps 10-12)', async () => {
-      // Step 10: Authorization request with all Claude.ai parameters
-      if (!claudeClient?.client_id) {
-        console.warn('Skipping authorization request test (client unavailable)');
-        return;
-      }
-
-      const authParams = new URLSearchParams({
-        response_type: 'code',
-        client_id: claudeClient.client_id,
+    const tokenResponse = await axios.post(
+      `${bridgeBaseUrl}/token`,
+      new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: flow.authorizationCode,
         redirect_uri: 'https://claude.ai/api/mcp/auth_callback',
-        code_challenge: 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk',
-        code_challenge_method: 'S256',
-        state: 'test-state-' + Date.now(),
-        scope: 'openid offline_access',
-        resource: `${MCP_SERVER}/mcp`
-      });
+        client_id: registration.data.client_id,
+        client_secret: registration.data.client_secret,
+        code_verifier: flow.codeVerifier
+      }),
+      { headers: { 'content-type': 'application/x-www-form-urlencoded' } }
+    );
 
-      const authResponse = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${authParams}`, { maxRedirects: 0, validateStatus: () => true }),
-        'Skipping authorization request test (OAuth host unavailable)'
-      );
-      if (!authResponse) {
-        return;
+    expect(tokenResponse.status).toBe(200);
+    expect(tokenResponse.data.token_type).toBe('Bearer');
+
+    const accessToken = tokenResponse.data.access_token as string;
+    expect(typeof accessToken).toBe('string');
+
+    const unauthenticated = await axios.get(`${mcpBaseUrl}/mcp`, { validateStatus: () => true });
+    expect(unauthenticated.status).toBe(401);
+
+    const sessionId = await initializeMcpSession(accessToken);
+    const toolsResponse = await axios.post(
+      `${mcpBaseUrl}/mcp`,
+      {
+        jsonrpc: '2.0',
+        id: 'tools-list',
+        method: 'tools/list',
+        params: {}
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'content-type': 'application/json',
+          'mcp-session-id': sessionId,
+          'mcp-protocol-version': '2025-06-18',
+          Accept: 'application/json, text/event-stream'
+        }
       }
+    );
 
-      expect([303, 400]).toContain(authResponse.status);
-      if (authResponse.status === 303) {
-        expect(authResponse.headers.location).toMatch(/\/interaction\/[A-Za-z0-9_-]+$/);
-        const interactionUid = authResponse.headers.location.split('/').pop();
-        expect(interactionUid).toBeDefined();
-      }
+    expect(toolsResponse.status).toBe(200);
+    const toolsPayload = normalizeSseJson(toolsResponse.data);
+
+    if (!Array.isArray(toolsPayload.result?.tools)) {
+      throw new Error(`Unexpected tools response: ${JSON.stringify(toolsPayload)}`);
+    }
+
+    expect(toolsPayload.result.tools.length).toBeGreaterThan(0);
+  }, 120_000);
+
+  test('surfaces Mittwald downtime during token exchange', async () => {
+    const bridgeBaseUrl = getBridgeBaseUrl();
+    const registration = await axios.post(`${bridgeBaseUrl}/register`, {
+      client_name: 'Claude (failure path)',
+      redirect_uris: ['https://claude.ai/api/mcp/auth_callback'],
+      token_endpoint_auth_method: 'client_secret_post'
     });
 
-    remoteTest('Phase 4: Mittwald Authentication Simulation (Steps 13-16)', async () => {
-      // This test would simulate:
-      // Step 13: GET /interaction/:uid (login prompt)
-      // Step 14: Redirect to Mittwald OAuth
-      // Step 15: User authentication (simulated)
-      // Step 16: Callback to /mittwald/callback
-
-      // Note: This requires complex simulation of Mittwald OAuth flow
-      expect(true).toBe(true); // Placeholder - requires Mittwald mock
+    const flow = await runAuthorizationFlow({
+      clientId: registration.data.client_id,
+      redirectUri: 'https://claude.ai/api/mcp/auth_callback',
+      scope: 'openid offline_access'
     });
 
-    remoteTest('Phase 5: Token Exchange and User Session (Steps 17-21)', async () => {
-      // This test would simulate:
-      // Step 17-18: Mittwald token exchange
-      // Step 19: User account storage
-      // Step 20: provider.interactionFinished({login})
-      // Step 21: Redirect to consent
+    setMittwaldMode(context, 'error');
 
-      expect(true).toBe(true); // Placeholder - requires full flow setup
-    });
-
-    remoteTest('Phase 6: Consent Flow (Steps 22-25)', async () => {
-      // This test would verify:
-      // Step 22: GET /interaction/:uid (consent prompt)
-      // Step 23: HTML consent screen with all scopes
-      // Step 24: POST /interaction/:uid/confirm
-      // Step 25: provider.interactionFinished({consent})
-
-      expect(true).toBe(true); // Placeholder - requires consent simulation
-    });
-
-    remoteTest('Phase 7: Token Exchange (Steps 26-29)', async () => {
-      // This test would verify:
-      // Step 26: Redirect with authorization code
-      // Step 27: POST /token (oidc-provider endpoint)
-      // Step 28: findAccount() provides Mittwald tokens
-      // Step 29: JWT with embedded Mittwald credentials
-
-      expect(true).toBe(true); // Placeholder - requires full OAuth completion
-    });
-
-    remoteTest('Phase 8: MCP Tool Execution (Steps 30-36)', async () => {
-      // This test would verify:
-      // Step 30: MCP request with Bearer JWT
-      // Step 31: JWT validation and token extraction
-      // Step 32: CLI execution with --token
-      // Step 33-34: Mittwald API calls
-      // Step 35-36: Tool response formatting
-
-      expect(true).toBe(true); // Placeholder - requires MCP tool mocking
-    });
-  });
-
-  describe('Error Scenarios', () => {
-    remoteTest('handles invalid client registration', async () => {
-      const invalidRegistration = {
-        client_name: 'Invalid Client',
-        redirect_uris: ['http://invalid-uri'],
-        token_endpoint_auth_method: 'invalid_method'
-      };
-
-      const response = await safeRequest(
-        () => axios.post(`${OAUTH_SERVER}/reg`, invalidRegistration, { validateStatus: () => true }),
-        'Skipping invalid registration test (OAuth host unavailable)'
-      );
-
-      if (!response) return;
-
-      expect(response.status).toBeGreaterThanOrEqual(400);
-    });
-
-    remoteTest('handles authorization request with unsupported scopes', async () => {
-      const authParams = new URLSearchParams({
-        response_type: 'code',
-        client_id: claudeClient?.client_id || 'test-client',
+    const response = await axios.post(
+      `${bridgeBaseUrl}/token`,
+      new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: flow.authorizationCode,
         redirect_uri: 'https://claude.ai/api/mcp/auth_callback',
-        scope: 'invalid:scope unsupported:permission'
-      });
-
-      const response = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${authParams}`, { validateStatus: () => true }),
-        'Skipping unsupported scope test (OAuth host unavailable)'
-      );
-
-      if (!response) return;
-
-      expect([400, 403]).toContain(response.status);
-      if (response.status === 400) {
-        expect(['invalid_scope', 'invalid_client']).toContain(response.data.error);
+        client_id: registration.data.client_id,
+        client_secret: registration.data.client_secret,
+        code_verifier: flow.codeVerifier
+      }),
+      {
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        validateStatus: () => true
       }
-    });
+    );
 
-    remoteTest('handles missing required authorization parameters', async () => {
-      const invalidAuthParams = new URLSearchParams({
-        response_type: 'code'
-        // Missing client_id, redirect_uri, etc.
-      });
-
-      const response = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${invalidAuthParams}`, { validateStatus: () => true }),
-        'Skipping missing-params test (OAuth host unavailable)'
-      );
-
-      if (!response) return;
-
-      expect(response.status).toBe(400);
-      expect(response.data.error).toBeDefined();
-    });
+    expect(response.status).toBe(502);
+    expect(response.data.error).toBe('temporarily_unavailable');
   });
 
-  describe('Security Validation', () => {
-    test('enforces PKCE for public clients', async () => {
-      // Test PKCE requirement enforcement
-      expect(true).toBe(true); // Placeholder
+  async function runAuthorizationFlow(options: { clientId: string; redirectUri: string; scope: string }): Promise<AuthorizationFlowResult> {
+    const bridgeBaseUrl = getBridgeBaseUrl();
+    const { codeVerifier, codeChallenge } = createPkcePair();
+    const clientState = `state-${randomBytes(4).toString('hex')}`;
+
+    const authorize = await axios.get(`${bridgeBaseUrl}/authorize`, {
+      params: {
+        response_type: 'code',
+        client_id: options.clientId,
+        redirect_uri: options.redirectUri,
+        scope: options.scope,
+        state: clientState,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256'
+      },
+      maxRedirects: 0,
+      validateStatus: () => true
     });
 
-    test('validates redirect URI exactly', async () => {
-      // Test redirect URI validation
-      expect(true).toBe(true); // Placeholder
+    expect(authorize.status).toBe(303);
+    const redirectUrl = new URL(authorize.headers.location);
+    console.info('🔁 authorize redirect', authorize.headers.location);
+    const internalState = redirectUrl.searchParams.get('state');
+    expect(internalState).toBeTruthy();
+
+    const mittwaldCode = `mittwald-${randomBytes(4).toString('hex')}`;
+
+    const callback = await axios.get(`${bridgeBaseUrl}/mittwald/callback`, {
+      params: {
+        state: internalState,
+        code: mittwaldCode
+      },
+      maxRedirects: 0,
+      validateStatus: () => true
     });
 
-    test('prevents authorization code replay attacks', async () => {
-      // Test authorization code one-time use
-      expect(true).toBe(true); // Placeholder
-    });
-  });
+    expect(callback.status).toBe(303);
+    const clientRedirect = new URL(callback.headers.location);
+    const authorizationCode = clientRedirect.searchParams.get('code');
+    const returnedState = clientRedirect.searchParams.get('state');
+
+    expect(returnedState).toBe(clientState);
+    expect(authorizationCode).toBeTruthy();
+
+    return {
+      codeVerifier,
+      authorizationCode: authorizationCode!,
+      clientState
+    };
+  }
 });
+
+async function initializeMcpSession(accessToken: string): Promise<string> {
+  const mcpBaseUrl = getMcpBaseUrl();
+  const response = await axios.post(
+    `${mcpBaseUrl}/mcp`,
+    {
+      jsonrpc: '2.0',
+      id: 'init',
+      method: 'initialize',
+      params: {
+        protocolVersion: '2025-06-18',
+        capabilities: {},
+        clientInfo: {
+          name: 'Claude Test Client',
+          version: '1.0.0'
+        }
+      }
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'content-type': 'application/json',
+        'mcp-protocol-version': '2025-06-18',
+        Accept: 'application/json, text/event-stream'
+      },
+      validateStatus: () => true
+    }
+  );
+
+  if (response.status !== 200) {
+    throw new Error(`MCP initialize failed status=${response.status} data=${JSON.stringify(response.data)}`);
+  }
+
+  expect(response.status).toBe(200);
+  const sessionId = response.headers['mcp-session-id'] || response.headers['x-session-id'];
+  expect(typeof sessionId).toBe('string');
+  return Array.isArray(sessionId) ? sessionId[0] : sessionId as string;
+}
+
+function createPkcePair(): { codeVerifier: string; codeChallenge: string } {
+  const verifier = randomBytes(32).toString('base64url');
+  const challenge = createHash('sha256').update(verifier).digest('base64url');
+  return { codeVerifier: verifier, codeChallenge: challenge };
+}
+
+function normalizeSseJson<T = any>(payload: unknown): T {
+  if (typeof payload === 'string') {
+    const dataLine = payload
+      .split('\n')
+      .map((line) => line.trim())
+      .find((line) => line.startsWith('data:'));
+    if (dataLine) {
+      const json = dataLine.replace(/^data:\s*/, '');
+      return JSON.parse(json) as T;
+    }
+    return JSON.parse(payload) as T;
+  }
+  return payload as T;
+}

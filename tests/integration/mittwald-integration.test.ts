@@ -1,101 +1,255 @@
-/**
- * Mittwald Integration Tests
- *
- * Tests integration with Mittwald IdP based on ARCHITECTURE.md constraints
- * Covers static client configuration, token exchange, and API scope validation
- */
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import request from 'supertest';
+import { createHash, randomBytes } from 'node:crypto';
+import { createApp } from '../../packages/oauth-bridge/src/app.js';
+import type { BridgeConfig } from '../../packages/oauth-bridge/src/config.js';
+import { MemoryStateStore } from '../../packages/oauth-bridge/src/state/memory-state-store.js';
+import type { MittwaldTokenResponse } from '../../packages/oauth-bridge/src/state/state-store.js';
+import { createMittwaldStub, MittwaldStub } from '../utils/mittwald-stub.js';
 
-import { describe, test, expect } from 'vitest';
-import axios from 'axios';
+const CLIENT_REDIRECT_URI = 'https://client.example/callback';
+const DEFAULT_SCOPE = 'openid offline_access';
 
-describe('Mittwald IdP Integration', () => {
-  describe('Static Client Configuration', () => {
-    test('mittwald-mcp-server client exists and is configured', async () => {
-      // Test that our static client exists in Mittwald's system
-      // Based on ARCHITECTURE.md: Static client `mittwald-mcp-server`
-      expect(true).toBe(true); // Placeholder - requires Mittwald API access
+type KoaCallbackFn = ReturnType<ReturnType<typeof createApp>['callback']>;
+
+interface AuthorizationContext {
+  bridgeAuthorizationCode: string;
+  codeVerifier: string;
+  clientState: string;
+  mittwaldAuthorizationCode: string;
+}
+
+describe('Mittwald OAuth bridge integration', () => {
+  let config: BridgeConfig;
+  let stateStore: MemoryStateStore;
+  let mittwaldStub: MittwaldStub;
+  let server: KoaCallbackFn;
+
+  beforeEach(() => {
+    config = createTestBridgeConfig();
+    stateStore = new MemoryStateStore({ ttlMs: 60_000 });
+    const app = createApp(config, stateStore);
+    server = app.callback();
+    mittwaldStub = createMittwaldStub({ tokenUrl: config.mittwald.tokenUrl });
+  });
+
+  afterEach(() => {
+    mittwaldStub.restore();
+  });
+
+  test('performs PKCE authorization and token exchange', async () => {
+    const registration = await registerConfidentialClient();
+    mittwaldStub.enqueueTokenSuccess(simulateMittwaldSuccess());
+
+    const flow = await completeAuthorizationFlow(registration.client_id, {
+      requestedScope: DEFAULT_SCOPE
     });
 
-    test('whitelisted callback URL is correct', async () => {
-      // Test that https://mittwald-oauth-server.fly.dev/mittwald/callback is whitelisted
-      // Based on ARCHITECTURE.md: One whitelisted callback URL
-      expect(true).toBe(true); // Placeholder - requires Mittwald configuration check
+    const tokenResponse = await request(server)
+      .post('/token')
+      .type('form')
+      .send({
+        grant_type: 'authorization_code',
+        code: flow.bridgeAuthorizationCode,
+        redirect_uri: CLIENT_REDIRECT_URI,
+        client_id: registration.client_id,
+        client_secret: registration.client_secret,
+        code_verifier: flow.codeVerifier
+      });
+
+    expect(tokenResponse.status).toBe(200);
+    expect(tokenResponse.body).toMatchObject({
+      token_type: 'Bearer',
+      scope: DEFAULT_SCOPE
+    });
+    expect(typeof tokenResponse.body.access_token).toBe('string');
+    expect(typeof tokenResponse.body.refresh_token).toBe('string');
+
+    const mittwaldRequest = mittwaldStub.getLastTokenRequest();
+    expect(mittwaldRequest?.body.code).toBe(flow.mittwaldAuthorizationCode);
+    expect(mittwaldRequest?.body.code_verifier).toBe(flow.codeVerifier);
+
+    const jwtPayload = decodeJwtPayload(tokenResponse.body.access_token);
+    expect(jwtPayload.scope).toBe(DEFAULT_SCOPE);
+    expect(jwtPayload.mittwald?.access_token).toBe('mittwald-access-token');
+
+    const persistedGrant = await stateStore.getAuthorizationGrant(flow.bridgeAuthorizationCode);
+    expect(persistedGrant?.used).toBe(true);
+    expect(persistedGrant?.mittwaldTokens?.access_token).toBe('mittwald-access-token');
+  });
+
+  test('surfaces Mittwald upstream outages as temporarily_unavailable', async () => {
+    const registration = await registerConfidentialClient();
+    const flow = await completeAuthorizationFlow(registration.client_id, {});
+
+    mittwaldStub.enqueueTokenError(502, {
+      error: 'bad_gateway',
+      error_description: 'Mittwald unavailable'
     });
 
-    test('all 41 scopes are available from Mittwald', async () => {
-      // Test that Mittwald IdP supports all scopes we advertise
-      // Based on ARCHITECTURE.md: 41 predefined API scopes
-      expect(true).toBe(true); // Placeholder - requires Mittwald scope verification
+    const response = await request(server)
+      .post('/token')
+      .type('form')
+      .send({
+        grant_type: 'authorization_code',
+        code: flow.bridgeAuthorizationCode,
+        redirect_uri: CLIENT_REDIRECT_URI,
+        client_id: registration.client_id,
+        client_secret: registration.client_secret,
+        code_verifier: flow.codeVerifier
+      });
+
+    expect(response.status).toBe(502);
+    expect(response.body).toMatchObject({
+      error: 'temporarily_unavailable'
     });
   });
 
-  describe('OAuth 2.0 Pure Compliance', () => {
-    test('Mittwald does not require OIDC features', async () => {
-      // Test that Mittwald integration works without OpenID Connect
-      // Based on ARCHITECTURE.md: Pure OAuth 2.0, no OIDC required
-      expect(true).toBe(true); // Placeholder
-    });
+  test('rejects authorization requests with unregistered redirect URIs', async () => {
+    const registration = await registerConfidentialClient();
+    expect(registration.client_id).toBeDefined();
 
-    test('Mittwald token format is compatible', async () => {
-      // Test token format from Mittwald OAuth response
-      // Should include access_token, refresh_token, expires_in
-      expect(true).toBe(true); // Placeholder
-    });
+    const { codeVerifier, codeChallenge } = createPkcePair();
+    const response = await request(server)
+      .get('/authorize')
+      .query({
+        response_type: 'code',
+        client_id: registration.client_id,
+        redirect_uri: 'https://rogue.example/callback',
+        state: 'invalid-state',
+        scope: DEFAULT_SCOPE,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256'
+      })
+      .redirects(0);
 
-    test('no user profile claims required', async () => {
-      // Test that we don't depend on Mittwald user profile data
-      // Based on architecture: Fallback account ID generation
-      expect(true).toBe(true); // Placeholder
-    });
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('invalid_request');
+    expect(response.body.error_description).toContain('redirect_uri');
+    expect(codeVerifier).toBeDefined();
   });
 
-  describe('Token Exchange Flow', () => {
-    test('PKCE validation works with Mittwald', async () => {
-      // Test Steps 17-18: Mittwald code exchange with PKCE
-      // Should successfully exchange authorization code for tokens
-      expect(true).toBe(true); // Placeholder
-    });
+  test('enforces confidential client authentication on token endpoint', async () => {
+    const registration = await registerConfidentialClient();
+    const flow = await completeAuthorizationFlow(registration.client_id, {});
 
-    test('handles Mittwald token response format', async () => {
-      // Test token response parsing
-      // Should extract access_token, refresh_token, expires_in
-      expect(true).toBe(true); // Placeholder
-    });
+    const response = await request(server)
+      .post('/token')
+      .type('form')
+      .send({
+        grant_type: 'authorization_code',
+        code: flow.bridgeAuthorizationCode,
+        redirect_uri: CLIENT_REDIRECT_URI,
+        client_id: registration.client_id,
+        client_secret: 'wrong-secret',
+        code_verifier: flow.codeVerifier
+      });
 
-    test('generates stable account IDs', async () => {
-      // Test account ID generation from Mittwald tokens
-      // Should use consistent format: mittwald:${token_prefix}
-      expect(true).toBe(true); // Placeholder
-    });
+    expect(response.status).toBe(401);
+    expect(response.body.error).toBe('invalid_client');
+    expect(mittwaldStub.getAllTokenRequests()).toHaveLength(0);
   });
 
-  describe('Error Handling', () => {
-    test('handles Mittwald OAuth errors gracefully', async () => {
-      // Test error responses from Mittwald OAuth endpoints
-      expect(true).toBe(true); // Placeholder
-    });
+  async function registerConfidentialClient() {
+    const response = await request(server)
+      .post('/register')
+      .send({
+        client_name: 'Integration Client',
+        redirect_uris: [CLIENT_REDIRECT_URI],
+        token_endpoint_auth_method: 'client_secret_post',
+        scope: DEFAULT_SCOPE
+      });
 
-    test('handles network failures to Mittwald', async () => {
-      // Test timeout and connection error handling
-      expect(true).toBe(true); // Placeholder
-    });
+    expect(response.status).toBe(201);
+    expect(typeof response.body.client_id).toBe('string');
+    expect(typeof response.body.client_secret).toBe('string');
+    return response.body as { client_id: string; client_secret: string };
+  }
 
-    test('handles invalid Mittwald responses', async () => {
-      // Test malformed response handling
-      expect(true).toBe(true); // Placeholder
-    });
-  });
+  async function completeAuthorizationFlow(clientId: string, options: { requestedScope?: string }): Promise<AuthorizationContext> {
+    const clientState = `state-${randomBytes(4).toString('hex')}`;
+    const { codeVerifier, codeChallenge } = createPkcePair();
+    const requestedScope = options.requestedScope ?? DEFAULT_SCOPE;
 
-  describe('CLI Integration Preparation', () => {
-    test('Mittwald tokens are in correct format for CLI', async () => {
-      // Test Step 32: mw tool --token format compatibility
-      // Mittwald tokens should work with mw CLI --token parameter
-      expect(true).toBe(true); // Placeholder
-    });
+    const authorizeResponse = await request(server)
+      .get('/authorize')
+      .query({
+        response_type: 'code',
+        client_id: clientId,
+        redirect_uri: CLIENT_REDIRECT_URI,
+        scope: requestedScope,
+        state: clientState,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256'
+      })
+      .redirects(0);
 
-    test('token permissions match CLI requirements', async () => {
-      // Test that OAuth scopes map to CLI tool permissions
-      expect(true).toBe(true); // Placeholder
-    });
-  });
+    expect(authorizeResponse.status).toBe(303);
+    const mittwaldRedirect = new URL(authorizeResponse.headers.location);
+    const internalState = mittwaldRedirect.searchParams.get('state');
+    expect(internalState).toBeDefined();
+
+    const mittwaldAuthorizationCode = `mittwald-${randomBytes(4).toString('hex')}`;
+
+    const callbackResponse = await request(server)
+      .get('/mittwald/callback')
+      .query({ state: internalState, code: mittwaldAuthorizationCode })
+      .redirects(0);
+
+    expect(callbackResponse.status).toBe(303);
+    const clientRedirect = new URL(callbackResponse.headers.location);
+    const bridgeAuthorizationCode = clientRedirect.searchParams.get('code');
+    const returnedState = clientRedirect.searchParams.get('state');
+
+    expect(bridgeAuthorizationCode).toBeDefined();
+    expect(returnedState).toBe(clientState);
+
+    return {
+      bridgeAuthorizationCode: bridgeAuthorizationCode!,
+      codeVerifier,
+      clientState,
+      mittwaldAuthorizationCode
+    };
+  }
 });
+
+function createTestBridgeConfig(): BridgeConfig {
+  return {
+    port: 3000,
+    mittwald: {
+      authorizationUrl: 'https://mittwald.example/oauth/authorize',
+      tokenUrl: 'https://mittwald.example/oauth/token',
+      clientId: 'mittwald-client'
+    },
+    bridge: {
+      issuer: 'https://bridge.test',
+      baseUrl: 'https://bridge.test',
+      jwtSecret: 'super-secret-signing-key',
+      accessTokenTtlSeconds: 900,
+      refreshTokenTtlSeconds: 86_400
+    },
+    redirectUris: [CLIENT_REDIRECT_URI]
+  };
+}
+
+function createPkcePair(): { codeVerifier: string; codeChallenge: string } {
+  const verifier = randomBytes(32).toString('base64url');
+  const challenge = createHash('sha256').update(verifier).digest('base64url');
+  return { codeVerifier: verifier, codeChallenge: challenge };
+}
+
+function decodeJwtPayload(jwt: string): Record<string, any> {
+  const [, payload] = jwt.split('.');
+  const json = Buffer.from(payload, 'base64url').toString('utf-8');
+  return JSON.parse(json);
+}
+
+function simulateMittwaldSuccess(): Partial<MittwaldTokenResponse> {
+  return {
+    access_token: 'mittwald-access-token',
+    refresh_token: 'mittwald-refresh-token',
+    token_type: 'Bearer',
+    expires_in: 1800,
+    scope: 'openid offline_access project:read'
+  };
+}

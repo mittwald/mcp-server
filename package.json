@@ -48,7 +48,7 @@
     "test:oauth": "vitest run tests/unit/auth tests/integration/oauth-flow.test.ts --reporter=verbose",
     "test:oauth:watch": "vitest tests/unit/auth tests/integration/oauth-flow.test.ts --reporter=verbose",
     "test:oauth:mock": "vitest run tests/integration/mock-oauth2-server.test.ts --reporter=verbose",
-    "test:e2e": "vitest run tests/e2e",
+    "test:e2e": "vitest run tests/e2e --maxWorkers=1",
     "test:e2e:mcp": "tsx scripts/e2e-mcp-oauth.ts",
     "test:oauth:coverage": "vitest run tests/unit/auth tests/integration --coverage --reporter=verbose",
     "test:all": "pnpm test:unit && pnpm test:bridge && pnpm test:session && pnpm test:integration && pnpm test:e2e",
