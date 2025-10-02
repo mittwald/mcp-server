@@ -36,10 +36,6 @@
     "registry delete",
     "registry list",
     "registry update",
-    "stack delete",
-    "stack deploy",
-    "stack list",
-    "stack ps",
     "volume create",
     "volume delete",
     "volume list"
@@ -75,10 +71,6 @@
       "registry delete": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment.",
       "registry list": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment.",
       "registry update": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment.",
-      "stack delete": "Workstream B2: Stack command renaming pending alignment with CLI topic.",
-      "stack deploy": "Workstream B2: Stack command renaming pending alignment with CLI topic.",
-      "stack list": "Workstream B2: Stack command renaming pending alignment with CLI topic.",
-      "stack ps": "Workstream B2: Stack command renaming pending alignment with CLI topic.",
       "volume create": "Workstream C5: Volume management wrappers awaiting context scaffolding.",
       "volume delete": "Workstream C5: Volume management wrappers awaiting context scaffolding.",
       "volume list": "Workstream C5: Volume management wrappers awaiting context scaffolding."

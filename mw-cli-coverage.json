@@ -3,11 +3,11 @@
   "stats": {
     "cliCommandCount": 178,
     "toolCount": 149,
-    "coveredCount": 141,
-    "missingCount": 37,
-    "coveragePercent": 79,
-    "extraToolCount": 8,
-    "excludedCount": 37
+    "coveredCount": 145,
+    "missingCount": 33,
+    "coveragePercent": 81,
+    "extraToolCount": 4,
+    "excludedCount": 33
   },
   "coverage": [
     {
@@ -38,20 +38,6 @@
       "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/node-cli.js"
     },
     {
-      "command": "app create php-worker",
-      "segments": [
-        "app",
-        "create",
-        "php-worker"
-      ],
-      "cliFile": "app/create/php-worker.js",
-      "description": "Creates new PHP worker installation.",
-      "expectedToolName": "mittwald_app_create_php_worker",
-      "status": "covered",
-      "toolPath": "app/create/php-worker-cli.ts",
-      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/php-worker-cli.js"
-    },
-    {
       "command": "app create php",
       "segments": [
         "app",
@@ -64,6 +50,20 @@
       "status": "covered",
       "toolPath": "app/create/php-cli.ts",
       "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/php-cli.js"
+    },
+    {
+      "command": "app create php-worker",
+      "segments": [
+        "app",
+        "create",
+        "php-worker"
+      ],
+      "cliFile": "app/create/php-worker.js",
+      "description": "Creates new PHP worker installation.",
+      "expectedToolName": "mittwald_app_create_php_worker",
+      "status": "covered",
+      "toolPath": "app/create/php-worker-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/create/php-worker-cli.js"
     },
     {
       "command": "app create python",
@@ -303,19 +303,6 @@
       "handlerImport": "../../../../../handlers/tools/mittwald-cli/app/install/wordpress-cli.js"
     },
     {
-      "command": "app list-upgrade-candidates",
-      "segments": [
-        "app",
-        "list-upgrade-candidates"
-      ],
-      "cliFile": "app/list-upgrade-candidates.js",
-      "description": "List upgrade candidates for an app installation.",
-      "expectedToolName": "mittwald_app_list_upgrade_candidates",
-      "status": "covered",
-      "toolPath": "app/list-upgrade-candidates-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/list-upgrade-candidates-cli.js"
-    },
-    {
       "command": "app list",
       "segments": [
         "app",
@@ -327,6 +314,19 @@
       "status": "covered",
       "toolPath": "app/list-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/app/list-cli.js"
+    },
+    {
+      "command": "app list-upgrade-candidates",
+      "segments": [
+        "app",
+        "list-upgrade-candidates"
+      ],
+      "cliFile": "app/list-upgrade-candidates.js",
+      "description": "List upgrade candidates for an app installation.",
+      "expectedToolName": "mittwald_app_list_upgrade_candidates",
+      "status": "covered",
+      "toolPath": "app/list-upgrade-candidates-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/list-upgrade-candidates-cli.js"
     },
     {
       "command": "app open",
@@ -1521,19 +1521,6 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/extension/install-cli.js"
     },
     {
-      "command": "extension list-installed",
-      "segments": [
-        "extension",
-        "list-installed"
-      ],
-      "cliFile": "extension/list-installed.js",
-      "description": "List installed extensions in an organization or project.",
-      "expectedToolName": "mittwald_extension_list_installed",
-      "status": "covered",
-      "toolPath": "extension/list-installed-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/extension/list-installed-cli.js"
-    },
-    {
       "command": "extension list",
       "segments": [
         "extension",
@@ -1545,6 +1532,19 @@
       "status": "covered",
       "toolPath": "extension/list-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/extension/list-cli.js"
+    },
+    {
+      "command": "extension list-installed",
+      "segments": [
+        "extension",
+        "list-installed"
+      ],
+      "cliFile": "extension/list-installed.js",
+      "description": "List installed extensions in an organization or project.",
+      "expectedToolName": "mittwald_extension_list_installed",
+      "status": "covered",
+      "toolPath": "extension/list-installed-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/extension/list-installed-cli.js"
     },
     {
       "command": "extension uninstall",
@@ -1777,18 +1777,21 @@
       }
     },
     {
-      "command": "org invite list-own",
+      "command": "org invite",
       "segments": [
         "org",
-        "invite",
-        "list-own"
+        "invite"
       ],
-      "cliFile": "org/invite/list-own.js",
-      "description": "List all organization invites for the executing user.",
-      "expectedToolName": "mittwald_org_invite_list_own",
-      "status": "covered",
-      "toolPath": "org/invite-list-own-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/invite-list-own-cli.js"
+      "cliFile": "org/invite.js",
+      "description": "Invite a user to an organization.",
+      "expectedToolName": "mittwald_org_invite",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Invitation flow being consolidated before exposing via MCP."
+      }
     },
     {
       "command": "org invite list",
@@ -1805,6 +1808,20 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/org/invite-list-cli.js"
     },
     {
+      "command": "org invite list-own",
+      "segments": [
+        "org",
+        "invite",
+        "list-own"
+      ],
+      "cliFile": "org/invite/list-own.js",
+      "description": "List all organization invites for the executing user.",
+      "expectedToolName": "mittwald_org_invite_list_own",
+      "status": "covered",
+      "toolPath": "org/invite-list-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/invite-list-own-cli.js"
+    },
+    {
       "command": "org invite revoke",
       "segments": [
         "org",
@@ -1817,23 +1834,6 @@
       "status": "covered",
       "toolPath": "org/invite-revoke-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/org/invite-revoke-cli.js"
-    },
-    {
-      "command": "org invite",
-      "segments": [
-        "org",
-        "invite"
-      ],
-      "cliFile": "org/invite.js",
-      "description": "Invite a user to an organization.",
-      "expectedToolName": "mittwald_org_invite",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Invitation flow being consolidated before exposing via MCP."
-      }
     },
     {
       "command": "org list",
@@ -1853,24 +1853,6 @@
       }
     },
     {
-      "command": "org membership list-own",
-      "segments": [
-        "org",
-        "membership",
-        "list-own"
-      ],
-      "cliFile": "org/membership/list-own.js",
-      "description": "List all organization memberships for the executing user.",
-      "expectedToolName": "mittwald_org_membership_list_own",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Membership endpoints pending shared schema."
-      }
-    },
-    {
       "command": "org membership list",
       "segments": [
         "org",
@@ -1880,6 +1862,24 @@
       "cliFile": "org/membership/list.js",
       "description": "List all memberships belonging to an organization.",
       "expectedToolName": "mittwald_org_membership_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Membership endpoints pending shared schema."
+      }
+    },
+    {
+      "command": "org membership list-own",
+      "segments": [
+        "org",
+        "membership",
+        "list-own"
+      ],
+      "cliFile": "org/membership/list-own.js",
+      "description": "List all organization memberships for the executing user.",
+      "expectedToolName": "mittwald_org_membership_list_own",
       "status": "missing",
       "toolPath": null,
       "handlerImport": null,
@@ -1974,20 +1974,6 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/project/invite-get-cli.js"
     },
     {
-      "command": "project invite list-own",
-      "segments": [
-        "project",
-        "invite",
-        "list-own"
-      ],
-      "cliFile": "project/invite/list-own.js",
-      "description": "List all project invites for the executing user.",
-      "expectedToolName": "mittwald_project_invite_list_own",
-      "status": "covered",
-      "toolPath": "project/invite-list-own-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/invite-list-own-cli.js"
-    },
-    {
       "command": "project invite list",
       "segments": [
         "project",
@@ -2002,6 +1988,20 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/project/invite-list-cli.js"
     },
     {
+      "command": "project invite list-own",
+      "segments": [
+        "project",
+        "invite",
+        "list-own"
+      ],
+      "cliFile": "project/invite/list-own.js",
+      "description": "List all project invites for the executing user.",
+      "expectedToolName": "mittwald_project_invite_list_own",
+      "status": "covered",
+      "toolPath": "project/invite-list-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/invite-list-own-cli.js"
+    },
+    {
       "command": "project list",
       "segments": [
         "project",
@@ -2013,20 +2013,6 @@
       "status": "covered",
       "toolPath": "project/list-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/project/list-cli.js"
-    },
-    {
-      "command": "project membership get-own",
-      "segments": [
-        "project",
-        "membership",
-        "get-own"
-      ],
-      "cliFile": "project/membership/get-own.js",
-      "description": "Get the executing user's membership in a Project.",
-      "expectedToolName": "mittwald_project_membership_get_own",
-      "status": "covered",
-      "toolPath": "project/membership-get-own-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-get-own-cli.js"
     },
     {
       "command": "project membership get",
@@ -2043,18 +2029,18 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-get-cli.js"
     },
     {
-      "command": "project membership list-own",
+      "command": "project membership get-own",
       "segments": [
         "project",
         "membership",
-        "list-own"
+        "get-own"
       ],
-      "cliFile": "project/membership/list-own.js",
-      "description": "List ProjectMemberships belonging to the executing user.",
-      "expectedToolName": "mittwald_project_membership_list_own",
+      "cliFile": "project/membership/get-own.js",
+      "description": "Get the executing user's membership in a Project.",
+      "expectedToolName": "mittwald_project_membership_get_own",
       "status": "covered",
-      "toolPath": "project/membership-list-own-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-list-own-cli.js"
+      "toolPath": "project/membership-get-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-get-own-cli.js"
     },
     {
       "command": "project membership list",
@@ -2069,6 +2055,20 @@
       "status": "covered",
       "toolPath": "project/membership-list-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-list-cli.js"
+    },
+    {
+      "command": "project membership list-own",
+      "segments": [
+        "project",
+        "membership",
+        "list-own"
+      ],
+      "cliFile": "project/membership/list-own.js",
+      "description": "List ProjectMemberships belonging to the executing user.",
+      "expectedToolName": "mittwald_project_membership_list_own",
+      "status": "covered",
+      "toolPath": "project/membership-list-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/project/membership-list-own-cli.js"
     },
     {
       "command": "project ssh",
@@ -2287,13 +2287,9 @@
       "cliFile": "stack/delete.js",
       "description": "Delete a container stack",
       "expectedToolName": "mittwald_stack_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
-      }
+      "status": "covered",
+      "toolPath": "stack/delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/stack/delete-cli.js"
     },
     {
       "command": "stack deploy",
@@ -2304,13 +2300,9 @@
       "cliFile": "stack/deploy.js",
       "description": "Deploys a docker-compose compatible file to a mittwald container stack",
       "expectedToolName": "mittwald_stack_deploy",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
-      }
+      "status": "covered",
+      "toolPath": "stack/deploy-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/stack/deploy-cli.js"
     },
     {
       "command": "stack list",
@@ -2321,13 +2313,9 @@
       "cliFile": "stack/list.js",
       "description": "List container stacks for a given project.",
       "expectedToolName": "mittwald_stack_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
-      }
+      "status": "covered",
+      "toolPath": "stack/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/stack/list-cli.js"
     },
     {
       "command": "stack ps",
@@ -2338,13 +2326,9 @@
       "cliFile": "stack/ps.js",
       "description": "List all services within a given container stack.",
       "expectedToolName": "mittwald_stack_ps",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
-      }
+      "status": "covered",
+      "toolPath": "stack/ps-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/stack/ps-cli.js"
     },
     {
       "command": "user api-token create",
@@ -3044,24 +3028,6 @@
       }
     },
     {
-      "command": "org membership list-own",
-      "segments": [
-        "org",
-        "membership",
-        "list-own"
-      ],
-      "cliFile": "org/membership/list-own.js",
-      "description": "List all organization memberships for the executing user.",
-      "expectedToolName": "mittwald_org_membership_list_own",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Membership endpoints pending shared schema."
-      }
-    },
-    {
       "command": "org membership list",
       "segments": [
         "org",
@@ -3071,6 +3037,24 @@
       "cliFile": "org/membership/list.js",
       "description": "List all memberships belonging to an organization.",
       "expectedToolName": "mittwald_org_membership_list",
+      "status": "missing",
+      "toolPath": null,
+      "handlerImport": null,
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Workstream C4: Membership endpoints pending shared schema."
+      }
+    },
+    {
+      "command": "org membership list-own",
+      "segments": [
+        "org",
+        "membership",
+        "list-own"
+      ],
+      "cliFile": "org/membership/list-own.js",
+      "description": "List all organization memberships for the executing user.",
+      "expectedToolName": "mittwald_org_membership_list_own",
       "status": "missing",
       "toolPath": null,
       "handlerImport": null,
@@ -3095,74 +3079,6 @@
       "exclusion": {
         "category": "intentional",
         "reason": "Workstream C4: Membership revoke requires audit logging design."
-      }
-    },
-    {
-      "command": "stack delete",
-      "segments": [
-        "stack",
-        "delete"
-      ],
-      "cliFile": "stack/delete.js",
-      "description": "Delete a container stack",
-      "expectedToolName": "mittwald_stack_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
-      }
-    },
-    {
-      "command": "stack deploy",
-      "segments": [
-        "stack",
-        "deploy"
-      ],
-      "cliFile": "stack/deploy.js",
-      "description": "Deploys a docker-compose compatible file to a mittwald container stack",
-      "expectedToolName": "mittwald_stack_deploy",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
-      }
-    },
-    {
-      "command": "stack list",
-      "segments": [
-        "stack",
-        "list"
-      ],
-      "cliFile": "stack/list.js",
-      "description": "List container stacks for a given project.",
-      "expectedToolName": "mittwald_stack_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
-      }
-    },
-    {
-      "command": "stack ps",
-      "segments": [
-        "stack",
-        "ps"
-      ],
-      "cliFile": "stack/ps.js",
-      "description": "List all services within a given container stack.",
-      "expectedToolName": "mittwald_stack_ps",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B2: Stack command renaming pending alignment with CLI topic."
       }
     },
     {
@@ -3219,31 +3135,6 @@
   ],
   "extraTools": [
     {
-      "toolName": "mittwald_container_stack_delete",
-      "relPath": "container/stack-delete-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stack-delete-cli.js"
-    },
-    {
-      "toolName": "mittwald_container_stack_deploy",
-      "relPath": "container/stack-deploy-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stack-deploy-cli.js"
-    },
-    {
-      "toolName": "mittwald_container_stack_list",
-      "relPath": "container/stack-list-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stack-list-cli.js"
-    },
-    {
-      "toolName": "mittwald_container_stack_ps",
-      "relPath": "container/stack-ps-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/stack-ps-cli.js"
-    },
-    {
-      "toolName": "mittwald_user_accessible_projects",
-      "relPath": "context/accessible-projects-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
-    },
-    {
       "toolName": "mittwald_context_get_session",
       "relPath": "context/session-aware-get-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
@@ -3257,6 +3148,11 @@
       "toolName": "mittwald_context_set_session",
       "relPath": "context/session-aware-set-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
+    },
+    {
+      "toolName": "mittwald_user_accessible_projects",
+      "relPath": "context/accessible-projects-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/accessible-projects-cli.js"
     }
   ]
 }
