@@ -73,7 +73,7 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
 
   try {
     const result = await invokeCliTool({
-      toolName: 'mittwald_container_stack_list',
+      toolName: 'mittwald_stack_list',
       argv,
       parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });

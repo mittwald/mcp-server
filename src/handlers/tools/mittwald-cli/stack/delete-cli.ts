@@ -42,7 +42,7 @@ export const handleStackDeleteCli: MittwaldCliToolHandler<MittwaldStackDeleteCli
 
   try {
     const result = await invokeCliTool({
-      toolName: 'mittwald_container_stack_delete',
+      toolName: 'mittwald_stack_delete',
       argv,
       parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });

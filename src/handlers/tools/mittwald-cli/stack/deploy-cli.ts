@@ -46,7 +46,7 @@ export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCli
 
   try {
     const result = await invokeCliTool({
-      toolName: 'mittwald_container_stack_deploy',
+      toolName: 'mittwald_stack_deploy',
       argv,
       parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });

@@ -1,11 +1,11 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { ToolRegistration } from '../../../../types/tool-registry.js';
-import { handleStackListCli } from '../../../../handlers/tools/mittwald-cli/container/stack-list-cli.js';
+import { handleStackListCli } from '../../../../handlers/tools/mittwald-cli/stack/list-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_stack_list',
-  title: 'List Container Stacks',
-  description: 'List container stacks for a given project.',
+  name: 'mittwald_stack_list',
+  title: 'List Stacks',
+  description: 'List stacks for a given project.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -51,6 +51,3 @@ const registration: ToolRegistration = {
 };
 
 export default registration;
-
-// Legacy export for backwards compatibility
-export const mittwald_container_stack_list_cli = tool;

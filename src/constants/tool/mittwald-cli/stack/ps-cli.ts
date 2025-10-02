@@ -1,11 +1,11 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { ToolRegistration } from '../../../../types/tool-registry.js';
-import { handleStackPsCli } from '../../../../handlers/tools/mittwald-cli/container/stack-ps-cli.js';
+import { handleStackPsCli } from '../../../../handlers/tools/mittwald-cli/stack/ps-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_stack_ps',
+  name: 'mittwald_stack_ps',
   title: 'List Stack Services',
-  description: 'List all services within a given container stack.',
+  description: 'List all services within a given stack.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -51,6 +51,3 @@ const registration: ToolRegistration = {
 };
 
 export default registration;
-
-// Legacy export for backwards compatibility
-export const mittwald_container_stack_ps_cli = tool;

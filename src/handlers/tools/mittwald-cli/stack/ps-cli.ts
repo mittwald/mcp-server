@@ -75,7 +75,7 @@ export const handleStackPsCli: MittwaldCliToolHandler<MittwaldStackPsCliArgs> = 
 
   try {
     const result = await invokeCliTool({
-      toolName: 'mittwald_container_stack_ps',
+      toolName: 'mittwald_stack_ps',
       argv,
       parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });
