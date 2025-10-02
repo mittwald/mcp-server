@@ -20,3 +20,4 @@ export { mittwald_database_mysql_charsets_cli } from './mysql/charsets-cli.js';
 export { mittwald_database_mysql_versions_cli } from './mysql/versions-cli.js';
 export { mittwald_database_mysql_user_create_cli } from './mysql/user-create-cli.js';
 export { mittwald_database_mysql_user_delete_cli } from './mysql/user-delete-cli.js';
+export { mittwald_database_mysql_user_get_cli } from './mysql/user-get-cli.js';
