@@ -21,3 +21,4 @@ export { handleDatabaseMysqlVersionsCli } from './mysql/versions-cli.js';
 export { handleDatabaseMysqlUserCreateCli } from './mysql/user-create-cli.js';
 export { handleDatabaseMysqlUserDeleteCli } from './mysql/user-delete-cli.js';
 export { handleDatabaseMysqlUserGetCli } from './mysql/user-get-cli.js';
+export { handleDatabaseMysqlUserListCli } from './mysql/user-list-cli.js';
