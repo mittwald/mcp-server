@@ -43,7 +43,7 @@ export const handleRegistryDeleteCli: MittwaldCliToolHandler<MittwaldRegistryDel
 
   try {
     const result = await invokeCliTool({
-      toolName: 'mittwald_container_registry_delete',
+      toolName: 'mittwald_registry_delete',
       argv,
       parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });

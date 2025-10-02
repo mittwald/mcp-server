@@ -65,7 +65,7 @@ export const handleRegistryUpdateCli: MittwaldCliToolHandler<MittwaldRegistryUpd
 
   try {
     const result = await invokeCliTool({
-      toolName: 'mittwald_container_registry_update',
+      toolName: 'mittwald_registry_update',
       argv,
       parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });

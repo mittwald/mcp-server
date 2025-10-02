@@ -1,11 +1,11 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type { ToolRegistration } from '../../../../types/tool-registry.js';
-import { handleRegistryListCli } from '../../../../handlers/tools/mittwald-cli/container/registry-list-cli.js';
+import { handleRegistryListCli } from '../../../../handlers/tools/mittwald-cli/registry/list-cli.js';
 
 const tool: Tool = {
-  name: 'mittwald_container_registry_list',
-  title: 'List Container Registries',
-  description: 'List container registries.',
+  name: 'mittwald_registry_list',
+  title: 'List Registries',
+  description: 'List registries.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -51,6 +51,3 @@ const registration: ToolRegistration = {
 };
 
 export default registration;
-
-// Legacy export for backwards compatibility
-export const mittwald_container_registry_list_cli = tool;

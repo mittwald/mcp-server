@@ -56,7 +56,7 @@ export const handleRegistryCreateCli: MittwaldCliToolHandler<MittwaldRegistryCre
 
   try {
     const result = await invokeCliTool({
-      toolName: 'mittwald_container_registry_create',
+      toolName: 'mittwald_registry_create',
       argv,
       parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });

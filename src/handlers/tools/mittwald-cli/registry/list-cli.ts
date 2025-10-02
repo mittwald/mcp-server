@@ -67,7 +67,7 @@ export const handleRegistryListCli: MittwaldCliToolHandler<MittwaldRegistryListC
 
   try {
     const result = await invokeCliTool({
-      toolName: 'mittwald_container_registry_list',
+      toolName: 'mittwald_registry_list',
       argv,
       parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });
@@ -78,7 +78,7 @@ export const handleRegistryListCli: MittwaldCliToolHandler<MittwaldRegistryListC
     if (!parsed) {
       return formatToolResponse(
         'success',
-        'Container registries retrieved (raw output)',
+        'Registries retrieved (raw output)',
         {
           rawOutput: stdout,
         },
@@ -92,7 +92,7 @@ export const handleRegistryListCli: MittwaldCliToolHandler<MittwaldRegistryListC
     if (parsed.length === 0) {
       return formatToolResponse(
         'success',
-        'No container registries found',
+        'No registries found',
         [],
         {
           command: result.meta.command,
@@ -103,7 +103,7 @@ export const handleRegistryListCli: MittwaldCliToolHandler<MittwaldRegistryListC
 
     return formatToolResponse(
       'success',
-      `Found ${parsed.length} container registr${parsed.length === 1 ? 'y' : 'ies'}`,
+      `Found ${parsed.length} registr${parsed.length === 1 ? 'y' : 'ies'}`,
       formatRegistries(parsed),
       {
         command: result.meta.command,
