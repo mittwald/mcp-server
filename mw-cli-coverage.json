@@ -2,12 +2,12 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 178,
-    "toolCount": 169,
-    "coveredCount": 165,
-    "missingCount": 13,
-    "coveragePercent": 93,
+    "toolCount": 172,
+    "coveredCount": 168,
+    "missingCount": 10,
+    "coveragePercent": 94,
     "extraToolCount": 4,
-    "excludedCount": 13
+    "excludedCount": 10
   },
   "coverage": [
     {
@@ -2426,13 +2426,9 @@
       "cliFile": "volume/create.js",
       "description": "Creates a new named volume in the project stack. The volume will be available for use by containers.",
       "expectedToolName": "mittwald_volume_create",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
-      }
+      "status": "covered",
+      "toolPath": "volume/create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/volume/create-cli.js"
     },
     {
       "command": "volume delete",
@@ -2443,13 +2439,9 @@
       "cliFile": "volume/delete.js",
       "description": "Removes named volumes from the project stack. Be careful as this will permanently delete the volume data.",
       "expectedToolName": "mittwald_volume_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
-      }
+      "status": "covered",
+      "toolPath": "volume/delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/volume/delete-cli.js"
     },
     {
       "command": "volume list",
@@ -2460,13 +2452,9 @@
       "cliFile": "volume/list.js",
       "description": "List volumes belonging to a project.",
       "expectedToolName": "mittwald_volume_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
-      }
+      "status": "covered",
+      "toolPath": "volume/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/volume/list-cli.js"
     }
   ],
   "missing": [
@@ -2639,57 +2627,6 @@
       "exclusion": {
         "category": "intentional",
         "reason": "MCP server uses per-command token injection; CLI login state not applicable"
-      }
-    },
-    {
-      "command": "volume create",
-      "segments": [
-        "volume",
-        "create"
-      ],
-      "cliFile": "volume/create.js",
-      "description": "Creates a new named volume in the project stack. The volume will be available for use by containers.",
-      "expectedToolName": "mittwald_volume_create",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
-      }
-    },
-    {
-      "command": "volume delete",
-      "segments": [
-        "volume",
-        "delete"
-      ],
-      "cliFile": "volume/delete.js",
-      "description": "Removes named volumes from the project stack. Be careful as this will permanently delete the volume data.",
-      "expectedToolName": "mittwald_volume_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
-      }
-    },
-    {
-      "command": "volume list",
-      "segments": [
-        "volume",
-        "list"
-      ],
-      "cliFile": "volume/list.js",
-      "description": "List volumes belonging to a project.",
-      "expectedToolName": "mittwald_volume_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C5: Volume management wrappers awaiting context scaffolding."
       }
     }
   ],
