@@ -27,39 +27,39 @@ Rename all stack-related tools and handlers from `container/stack-*` → `stack/
 10. **`docs/migrations/registry-rename-2025-10.md`** - Review Agent B1's migration notes (if available)
 11. Follow the same pattern as Agent B1's registry rename
 
-## Your Task List
+## Your Task List (Status: ✅ Completed unless noted)
 
 ### Task B2.1: Audit Current Stack Tools
-- [ ] List all stack-related files:
+- [x] List all stack-related files:
   ```bash
   find src/constants/tool/mittwald-cli/container -name "*stack*" -type f
   ```
-- [ ] Document current tools in a checklist:
-  - [ ] `mittwald_container_stack_delete`
-  - [ ] `mittwald_container_stack_deploy`
-  - [ ] `mittwald_container_stack_list`
-  - [ ] `mittwald_container_stack_ps`
-- [ ] Note their current file paths and tool names
-- [ ] Commit with message: `docs(stack): audit current stack tool structure`
+- [x] Document current tools in a checklist:
+  - [x] `mittwald_container_stack_delete`
+  - [x] `mittwald_container_stack_deploy`
+  - [x] `mittwald_container_stack_list`
+  - [x] `mittwald_container_stack_ps`
+- [x] Note their current file paths and tool names
+- [x] Commit with message: `docs(stack): audit current stack tool structure`
 
 ### Task B2.2: Create New Stack Directory Structure
-- [ ] Create directory: `src/constants/tool/mittwald-cli/stack/`
-- [ ] Create directory: `src/handlers/tools/mittwald-cli/stack/` (if handlers exist separately)
-- [ ] Commit with message: `feat(stack): create new stack directory structure`
+- [x] Create directory: `src/constants/tool/mittwald-cli/stack/`
+- [x] Create directory: `src/handlers/tools/mittwald-cli/stack/` (if handlers exist separately)
+- [x] Commit with message: `feat(stack): create new stack directory structure`
 
 ### Task B2.3: Move and Rename Stack Tool Files
 For each stack tool:
-- [ ] **Delete**: Copy `container/stack-delete-cli.ts` → `stack/delete-cli.ts`
-- [ ] **Deploy**: Copy `container/stack-deploy-cli.ts` → `stack/deploy-cli.ts`
-- [ ] **List**: Copy `container/stack-list-cli.ts` → `stack/list-cli.ts`
-- [ ] **Ps**: Copy `container/stack-ps-cli.ts` → `stack/ps-cli.ts`
-- [ ] Commit with message: `refactor(stack): move tool files to new directory structure`
+- [x] **Delete**: Copy `container/stack-delete-cli.ts` → `stack/delete-cli.ts`
+- [x] **Deploy**: Copy `container/stack-deploy-cli.ts` → `stack/deploy-cli.ts`
+- [x] **List**: Copy `container/stack-list-cli.ts` → `stack/list-cli.ts`
+- [x] **Ps**: Copy `container/stack-ps-cli.ts` → `stack/ps-cli.ts`
+- [x] Commit with message: `refactor(stack): move tool files to new directory structure`
 
 ### Task B2.4: Update Tool Names and Metadata
 For each moved file, update:
-- [ ] Tool name: `mittwald_container_stack_delete` → `mittwald_stack_delete`
-- [ ] Tool title/description: Remove "container" references
-- [ ] CLI command segments: Verify they use `["stack", "delete"]` not `["container", "stack", "delete"]`
+- [x] Tool name: `mittwald_container_stack_delete` → `mittwald_stack_delete`
+- [x] Tool title/description: Remove "container" references
+- [x] CLI command segments: Verify they use `["stack", "delete"]` not `["container", "stack", "delete"]`
 - [ ] Example for delete-cli.ts:
   ```typescript
   export const tool: Tool = {
@@ -76,31 +76,31 @@ For each moved file, update:
     parser: parseStackDeleteOutput
   });
   ```
-- [ ] Pay special attention to `stack deploy` - it may have complex arguments
-- [ ] Commit with message: `refactor(stack): update tool names to match CLI taxonomy`
+- [x] Pay special attention to `stack deploy` - it may have complex arguments
+- [x] Commit with message: `refactor(stack): update tool names to match CLI taxonomy`
 
 ### Task B2.5: Update Tool Scanner (if needed)
-- [ ] Check if tool scanner automatically discovers the new `stack/` directory
-- [ ] If not, update `src/utils/tool-scanner.ts` to include the new path
-- [ ] Test discovery: `npm run build && node -e "require('./build/constants/tools.js').initializeTools().then(() => console.log('Tools loaded'))"`
-- [ ] Commit with message: `fix(scanner): ensure stack tools are discovered`
+- [x] Check if tool scanner automatically discovers the new `stack/` directory
+- [ ] If not, update `src/utils/tool-scanner.ts` to include the new path *(not required)*
+- [x] Test discovery: `npm run build && node -e "require('./build/constants/tools.js').initializeTools().then(() => console.log('Tools loaded'))"` *(validated via `npx tsx` due to `.ts` runtime limitations)*
+- [ ] Commit with message: `fix(scanner): ensure stack tools are discovered` *(not needed)*
 
 ### Task B2.6: Delete Old Files
-- [ ] Remove old files from `src/constants/tool/mittwald-cli/container/stack-*.ts`
-- [ ] Remove old handler files if they exist separately
-- [ ] Commit with message: `refactor(stack): remove deprecated container/stack files`
+- [x] Remove old files from `src/constants/tool/mittwald-cli/container/stack-*.ts`
+- [x] Remove old handler files if they exist separately
+- [ ] Commit with message: `refactor(stack): remove deprecated container/stack files` *(files moved via git mv; no separate deletion commit necessary)*
 
 ### Task B2.7: Update Tests (if any)
-- [ ] Search for test files referencing stack tools:
+- [x] Search for test files referencing stack tools:
   ```bash
   grep -r "mittwald_container_stack" tests/
   ```
-- [ ] Update test imports and tool names
-- [ ] Run tests: `npm run test:unit`
-- [ ] Commit with message: `test(stack): update tests for renamed stack tools`
+- [ ] Update test imports and tool names *(no references found)*
+- [x] Run tests: `npm run test:unit`
+- [ ] Commit with message: `test(stack): update tests for renamed stack tools` *(not required)
 
 ### Task B2.8: Update Documentation
-- [ ] Create migration notes: `docs/migrations/stack-rename-2025-10.md`
+- [x] Create migration notes: `docs/migrations/stack-rename-2025-10.md`
   ```markdown
   # Stack Tool Rename (October 2025)
 
@@ -121,21 +121,21 @@ For each moved file, update:
   - `stack deploy` now uses the updated CLI command structure
   - Docker Compose file parsing remains unchanged
   ```
-- [ ] Add entry to `CHANGELOG.md` (if it exists)
-- [ ] Update `README.md` if it references stack tools
-- [ ] Commit with message: `docs(stack): add migration guide for renamed tools`
+- [ ] Add entry to `CHANGELOG.md` (if it exists) *(no changelog present)*
+- [ ] Update `README.md` if it references stack tools *(no updates required)*
+- [x] Commit with message: `docs(stack): add migration guide for renamed tools`
 
 ### Task B2.9: Regenerate Coverage Reports
-- [ ] Run coverage generator (if Agent A1 completed): `npm run coverage:generate`
-- [ ] Verify stack commands now show as "covered" in `docs/mittwald-cli-coverage.md`
-- [ ] Commit with message: `docs(coverage): update reports after stack rename`
+- [x] Run coverage generator (if Agent A1 completed): `npm run coverage:generate`
+- [x] Verify stack commands now show as "covered" in `docs/mittwald-cli-coverage.md`
+- [x] Commit with message: `docs(coverage): update reports after stack rename`
 
 ### Task B2.10: Verification & Testing
-- [ ] Build project: `npm run build`
-- [ ] Run type checking: `npm run type-check`
-- [ ] Test tool discovery: Verify 4 stack tools appear in tool list
-- [ ] Manual test (if possible): Call `mittwald_stack_list` via MCP Inspector
-- [ ] Commit with message: `test(stack): verify renamed tools function correctly`
+- [x] Build project: `npm run build`
+- [x] Run type checking: `npm run type-check`
+- [x] Test tool discovery: Verify 4 stack tools appear in tool list *(via `npx tsx` scanner invocation)*
+- [ ] Manual test (if possible): Call `mittwald_stack_list` via MCP Inspector *(not executed – Inspector not available in this environment)*
+- [ ] Commit with message: `test(stack): verify renamed tools function correctly` *(manual verification commit not required)
 
 ## Critical Guidelines
 
@@ -165,15 +165,15 @@ For each moved file, update:
 - ❓ **ANY time you're blocked for >20 minutes**
 
 ## Success Criteria
-- [ ] All 4 stack tools moved from `container/` → `stack/`
-- [ ] Tool names updated: `mittwald_container_stack_*` → `mittwald_stack_*`
-- [ ] Old files deleted
-- [ ] Tool scanner discovers new tools
-- [ ] Tests pass (if any exist)
-- [ ] Migration notes published
-- [ ] Coverage reports updated (if Agent A1 complete)
-- [ ] Build succeeds with no TypeScript errors
-- [ ] All commits follow conventional format
+- [x] All 4 stack tools moved from `container/` → `stack/`
+- [x] Tool names updated: `mittwald_container_stack_*` → `mittwald_stack_*`
+- [x] Old files deleted
+- [x] Tool scanner discovers new tools
+- [x] Tests pass (if any exist)
+- [x] Migration notes published
+- [x] Coverage reports updated (if Agent A1 complete)
+- [x] Build succeeds with no TypeScript errors
+- [x] All commits follow conventional format
 
 ## Dependencies
 **Blocking**: None - you can work in parallel with Agent B1!
