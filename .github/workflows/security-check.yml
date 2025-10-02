@@ -1,0 +1,39 @@
+name: Security Checks
+
+on:
+  pull_request:
+    paths:
+      - 'src/handlers/**'
+      - 'src/utils/**'
+  push:
+    branches:
+      - main
+
+jobs:
+  credential-leakage:
+    name: Check for Credential Leakage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security test suite
+        run: npm run test:security
+
+      - name: Check for hardcoded credentials
+        run: |
+          if git grep -E "(password|token|api-key)\s*=\s*['\"]" src/; then
+            echo "❌ Found hardcoded credentials in source code"
+            exit 1
+          fi
+          echo "✅ No hardcoded credentials detected"
+
+      - name: Lint for credential leaks
+        run: npm run lint -- --rule local/no-credential-leak
