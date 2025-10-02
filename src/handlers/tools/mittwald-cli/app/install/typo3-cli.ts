@@ -11,7 +11,6 @@ interface MittwaldAppInstallTypo3Args {
   adminEmail?: string;
   adminPass?: string;
   siteTitle?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: number;
 }
@@ -28,7 +27,6 @@ function buildCliArgs(args: MittwaldAppInstallTypo3Args): string[] {
   if (args.adminEmail) cliArgs.push('--admin-email', args.adminEmail);
   if (args.adminPass) cliArgs.push('--admin-pass', args.adminPass);
   if (args.siteTitle) cliArgs.push('--site-title', args.siteTitle);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.wait) cliArgs.push('--wait');
   if (typeof args.waitTimeout === 'number') {
     cliArgs.push('--wait-timeout', `${args.waitTimeout}s`);
@@ -37,12 +35,8 @@ function buildCliArgs(args: MittwaldAppInstallTypo3Args): string[] {
   return cliArgs;
 }
 
-function parseInstallationId(output: string, quiet: boolean | undefined): string | undefined {
+function parseInstallationId(output: string): string | undefined {
   if (!output) return undefined;
-  if (quiet) {
-    const lines = output.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-    return lines.at(-1);
-  }
 
   const match = output.match(/(?:ID|id)\s+([a-z0-9-]+)/i);
   return match ? match[1] : undefined;
@@ -89,12 +83,12 @@ export const handleAppInstallTypo3Cli: MittwaldCliToolHandler<MittwaldAppInstall
     });
 
     const output = result.result.stdout || result.result.stderr || '';
-    const installationId = parseInstallationId(output, args.quiet);
+    const installationId = parseInstallationId(output);
 
     if (!installationId) {
       return formatToolResponse(
         'success',
-        args.quiet ? output : 'TYPO3 installation started successfully',
+'TYPO3 installation started successfully',
         {
           projectId: args.projectId,
           version: args.version ?? 'latest',
@@ -110,11 +104,9 @@ export const handleAppInstallTypo3Cli: MittwaldCliToolHandler<MittwaldAppInstall
     }
 
     const status = args.wait ? 'completed' : 'installing';
-    const successMessage = args.quiet
-      ? installationId
-      : args.wait
-        ? `TYPO3 installation completed successfully with ID ${installationId}`
-        : `TYPO3 installation started with ID ${installationId}`;
+    const successMessage = args.wait
+      ? `TYPO3 installation completed successfully with ID ${installationId}`
+      : `TYPO3 installation started with ID ${installationId}`;
 
     return formatToolResponse(
       'success',

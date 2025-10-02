@@ -6,7 +6,6 @@ export interface MittwaldAppCreateStaticArgs {
   projectId?: string;
   siteTitle?: string;
   documentRoot: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: number;
 }
@@ -16,10 +15,6 @@ const parseAppIdFromStdout = (stdout: string): string | undefined => {
   return idMatch ? idMatch[1] : undefined;
 };
 
-const parseQuietIdentifier = (stdout: string): string | undefined => {
-  const lines = stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  return lines.at(-1);
-};
 
 export const handleAppCreateStaticCli: MittwaldCliToolHandler<MittwaldAppCreateStaticArgs> = async (args) => {
   if (!args.documentRoot) {
@@ -36,9 +31,6 @@ export const handleAppCreateStaticCli: MittwaldCliToolHandler<MittwaldAppCreateS
     argv.push('--site-title', args.siteTitle);
   }
 
-  if (args.quiet) {
-    argv.push('--quiet');
-  }
 
   if (args.wait) {
     argv.push('--wait');
@@ -53,12 +45,7 @@ export const handleAppCreateStaticCli: MittwaldCliToolHandler<MittwaldAppCreateS
       toolName: 'mittwald_app_create_static',
       argv,
       parser: (stdout, raw) => {
-        let appId: string | undefined;
-        if (args.quiet) {
-          appId = parseQuietIdentifier(stdout ?? '');
-        } else {
-          appId = parseAppIdFromStdout(stdout ?? '') ?? parseQuietIdentifier(stdout ?? '');
-        }
+        const appId = parseAppIdFromStdout(stdout ?? '');
 
         return {
           appInstallationId: appId,

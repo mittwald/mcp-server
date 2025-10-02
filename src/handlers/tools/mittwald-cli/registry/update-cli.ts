@@ -4,7 +4,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldRegistryUpdateCliArgs {
   registryId: string;
-  quiet?: boolean;
   description?: string;
   uri?: string;
   username?: string;
@@ -14,7 +13,6 @@ interface MittwaldRegistryUpdateCliArgs {
 function buildCliArgs(args: MittwaldRegistryUpdateCliArgs): string[] {
   const cliArgs: string[] = ['registry', 'update', args.registryId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.description) cliArgs.push('--description', args.description);
   if (args.uri) cliArgs.push('--uri', args.uri);
   if (args.username) cliArgs.push('--username', args.username);
@@ -23,12 +21,6 @@ function buildCliArgs(args: MittwaldRegistryUpdateCliArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldRegistryUpdateCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -74,24 +66,6 @@ export const handleRegistryUpdateCli: MittwaldCliToolHandler<MittwaldRegistryUpd
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'Registry updated successfully';
     const updates = buildUpdateSummary(args);
-
-    if (args.quiet) {
-      const registryId = parseQuietOutput(stdout) ?? args.registryId;
-      return formatToolResponse(
-        'success',
-        'Registry updated successfully',
-        {
-          registryId,
-          status: 'updated',
-          updates,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

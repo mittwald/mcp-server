@@ -5,7 +5,6 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 interface MittwaldDatabaseMysqlImportArgs {
   databaseId: string;
   input: string;
-  quiet?: boolean;
   mysqlPassword?: string;
   mysqlCharset?: string;
   temporaryUser?: boolean;
@@ -17,7 +16,6 @@ interface MittwaldDatabaseMysqlImportArgs {
 function buildCliArgs(args: MittwaldDatabaseMysqlImportArgs): string[] {
   const cliArgs: string[] = ['database', 'mysql', 'import', args.databaseId, '--input', args.input];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.mysqlPassword) cliArgs.push('--mysql-password', args.mysqlPassword);
   if (args.mysqlCharset) cliArgs.push('--mysql-charset', args.mysqlCharset);
   if (args.temporaryUser !== undefined) cliArgs.push(args.temporaryUser ? '--temporary-user' : '--no-temporary-user');
@@ -110,9 +108,7 @@ export const handleDatabaseMysqlImportCli: MittwaldCliToolHandler<MittwaldDataba
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
     const inputSource = args.input === '-' || args.input === '/dev/stdin' ? 'stdin' : args.input;
-    const message = args.quiet
-      ? stdout || 'Import completed'
-      : `Successfully imported MySQL dump from ${inputSource} to database '${args.databaseId}'`;
+    const message = `Successfully imported MySQL dump from ${inputSource} to database '${args.databaseId}'`;
 
     return formatToolResponse(
       'success',

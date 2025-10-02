@@ -2,18 +2,11 @@ import type { MittwaldToolHandler } from '../../../../types/mittwald/conversatio
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function buildCliArgs(args: MittwaldProjectCreateArgs): string[] {
   const cliArgs: string[] = ['project', 'create', '--description', args.description];
 
   if (args.serverId) cliArgs.push('--server-id', args.serverId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.wait) cliArgs.push('--wait');
   if (args.waitTimeout) cliArgs.push('--wait-timeout', args.waitTimeout);
   if (args.updateContext) cliArgs.push('--update-context');
@@ -50,7 +43,6 @@ function mapCliError(error: CliToolError, args: MittwaldProjectCreateArgs): stri
 interface MittwaldProjectCreateArgs {
   description: string;
   serverId?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: string;
   updateContext?: boolean;
@@ -69,39 +61,6 @@ export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateAr
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
-
-    if (args.quiet) {
-      const projectId = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-
-      if (!projectId) {
-        return formatToolResponse(
-          'error',
-          'Project creation succeeded but no project ID was returned',
-          {
-            rawOutput: output,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        'Project created successfully',
-        {
-          projectId,
-          description: args.description,
-          serverId: args.serverId,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

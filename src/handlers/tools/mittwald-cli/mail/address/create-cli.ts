@@ -5,7 +5,6 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 interface MittwaldMailAddressCreateArgs {
   address: string;
   projectId?: string;
-  quiet?: boolean;
   catchAll?: boolean;
   enableSpamProtection?: boolean;
   quota?: string;
@@ -18,7 +17,6 @@ function buildCliArgs(args: MittwaldMailAddressCreateArgs): string[] {
   const cliArgs: string[] = ['mail', 'address', 'create', '--address', args.address];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.catchAll) cliArgs.push('--catch-all');
 
   if (args.enableSpamProtection !== undefined) {
@@ -38,12 +36,6 @@ function buildCliArgs(args: MittwaldMailAddressCreateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function extractGeneratedPassword(output: string): string | undefined {
   const passwordMatch = output.match(/password:\s*(.+)/i);
@@ -99,26 +91,13 @@ export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<Mittwald
     let addressId: string | undefined;
     let generatedPassword: string | undefined;
 
-    if (args.quiet) {
-      const quietResult = parseQuietOutput(stdout);
-      if (quietResult) {
-        if (args.randomPassword) {
-          const [idPart, passwordPart] = quietResult.split('\t');
-          addressId = idPart;
-          generatedPassword = passwordPart ? passwordPart.trim() : undefined;
-        } else {
-          addressId = quietResult;
-        }
-      }
-    } else {
-      addressId = extractAddressId(stdout);
-      if (args.randomPassword) {
-        generatedPassword = extractGeneratedPassword(stdout);
-      }
+    addressId = extractAddressId(stdout);
+    if (args.randomPassword) {
+      generatedPassword = extractGeneratedPassword(stdout);
     }
 
     if (!addressId) {
-      const message = args.quiet ? output || 'Successfully created mail address' : `Successfully created mail address '${args.address}'`;
+      const message = `Successfully created mail address '${args.address}'`;
       return formatToolResponse(
         'success',
         message,
@@ -143,9 +122,7 @@ export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<Mittwald
       ...(generatedPassword ? { password: generatedPassword } : {}),
     };
 
-    const message = args.quiet
-      ? (generatedPassword ? `${addressId}\t${generatedPassword}` : addressId)
-      : `Successfully created mail address '${args.address}' with ID ${addressId}${generatedPassword ? ' and generated password' : ''}`;
+    const message = `Successfully created mail address '${args.address}' with ID ${addressId}${generatedPassword ? ' and generated password' : ''}`;
 
     return formatToolResponse(
       'success',

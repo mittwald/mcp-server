@@ -12,7 +12,6 @@ interface MittwaldAppInstallJoomlaArgs {
   adminFirstname?: string;
   adminLastname?: string;
   siteTitle?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: number;
 }
@@ -30,7 +29,6 @@ function buildCliArgs(args: MittwaldAppInstallJoomlaArgs): string[] {
   if (args.adminFirstname) cliArgs.push('--admin-firstname', args.adminFirstname);
   if (args.adminLastname) cliArgs.push('--admin-lastname', args.adminLastname);
   if (args.siteTitle) cliArgs.push('--site-title', args.siteTitle);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.wait) cliArgs.push('--wait');
   if (typeof args.waitTimeout === 'number') {
     cliArgs.push('--wait-timeout', `${args.waitTimeout}s`);
@@ -39,12 +37,8 @@ function buildCliArgs(args: MittwaldAppInstallJoomlaArgs): string[] {
   return cliArgs;
 }
 
-function parseInstallationId(output: string, quiet: boolean | undefined): string | undefined {
+function parseInstallationId(output: string): string | undefined {
   if (!output) return undefined;
-  if (quiet) {
-    const lines = output.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-    return lines.at(-1);
-  }
 
   const match = output.match(/(?:ID|id)\s+([a-z0-9-]+)/i);
   return match ? match[1] : undefined;
@@ -87,12 +81,12 @@ export const handleAppInstallJoomlaCli: MittwaldCliToolHandler<MittwaldAppInstal
     });
 
     const output = result.result.stdout || result.result.stderr || '';
-    const installationId = parseInstallationId(output, args.quiet);
+    const installationId = parseInstallationId(output);
 
     if (!installationId) {
       return formatToolResponse(
         'success',
-        args.quiet ? output : 'Joomla installation started successfully',
+'Joomla installation started successfully',
         {
           projectId: args.projectId,
           version: args.version ?? 'latest',
@@ -107,11 +101,9 @@ export const handleAppInstallJoomlaCli: MittwaldCliToolHandler<MittwaldAppInstal
     }
 
     const status = args.wait ? 'completed' : 'installing';
-    const successMessage = args.quiet
-      ? installationId
-      : args.wait
-        ? `Joomla installation completed successfully with ID ${installationId}`
-        : `Joomla installation started with ID ${installationId}`;
+    const successMessage = args.wait
+      ? `Joomla installation completed successfully with ID ${installationId}`
+      : `Joomla installation started with ID ${installationId}`;
 
     return formatToolResponse(
       'success',

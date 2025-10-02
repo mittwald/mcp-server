@@ -2,18 +2,11 @@ import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conve
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function buildCliArgs(args: MittwaldMailDeliveryboxCreateArgs): string[] {
   const cliArgs: string[] = ['mail', 'deliverybox', 'create', '--description', args.description];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.password) cliArgs.push('--password', args.password);
   if (args.randomPassword) cliArgs.push('--random-password');
 
@@ -42,7 +35,6 @@ function mapCliError(error: CliToolError, args: MittwaldMailDeliveryboxCreateArg
 interface MittwaldMailDeliveryboxCreateArgs {
   projectId?: string;
   description: string;
-  quiet?: boolean;
   password?: string;
   randomPassword?: boolean;
 }
@@ -64,27 +56,14 @@ export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<Mitt
     let deliveryBoxId: string | undefined;
     let generatedPassword: string | undefined;
 
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-      if (quietOutput) {
-        if (args.randomPassword) {
-          const [idPart, passwordPart] = quietOutput.split('\t');
-          deliveryBoxId = idPart;
-          generatedPassword = passwordPart ? passwordPart.trim() : undefined;
-        } else {
-          deliveryBoxId = quietOutput;
-        }
-      }
-    } else {
-      const idMatch = stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) deliveryBoxId = idMatch[1];
-      if (args.randomPassword) generatedPassword = stdout ? extractPassword(stdout) : undefined;
-    }
+    const idMatch = stdout.match(/ID\s+([a-f0-9-]+)/i);
+    if (idMatch) deliveryBoxId = idMatch[1];
+    if (args.randomPassword) generatedPassword = stdout ? extractPassword(stdout) : undefined;
 
     if (!deliveryBoxId) {
       return formatToolResponse(
         'success',
-        args.quiet ? output || 'Delivery box created' : `Successfully created delivery box '${args.description}'`,
+        `Successfully created delivery box '${args.description}'`,
         {
           description: args.description,
           output,
@@ -99,9 +78,7 @@ export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<Mitt
 
     return formatToolResponse(
       'success',
-      args.quiet
-        ? (generatedPassword ? `${deliveryBoxId}\t${generatedPassword}` : deliveryBoxId)
-        : `Successfully created delivery box '${args.description}' with ID ${deliveryBoxId}${generatedPassword ? ' and generated password' : ''}`,
+`Successfully created delivery box '${args.description}' with ID ${deliveryBoxId}${generatedPassword ? ' and generated password' : ''}`,
       {
         id: deliveryBoxId,
         description: args.description,

@@ -4,24 +4,15 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldProjectDeleteArgs {
   projectId: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
 function buildCliArgs(args: MittwaldProjectDeleteArgs): string[] {
   const cliArgs: string[] = ['project', 'delete', args.projectId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.force) cliArgs.push('--force');
 
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
 }
 
 function mapCliError(error: CliToolError, args: MittwaldProjectDeleteArgs): string {
@@ -69,10 +60,7 @@ export const handleProjectDeleteCli: MittwaldCliToolHandler<MittwaldProjectDelet
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
 
-    const quietMessage = args.quiet ? parseQuietOutput(stdout) ?? parseQuietOutput(stderr) : undefined;
-    const message = args.quiet
-      ? quietMessage || `Project ${args.projectId} deleted successfully`
-      : `Project ${args.projectId} deleted successfully`;
+    const message = `Project ${args.projectId} deleted successfully`;
 
     return formatToolResponse(
       'success',
@@ -82,8 +70,6 @@ export const handleProjectDeleteCli: MittwaldCliToolHandler<MittwaldProjectDelet
         deleted: true,
         output,
         force: Boolean(args.force),
-        quiet: Boolean(args.quiet),
-        quietSummary: quietMessage,
       },
       {
         command: result.meta.command,

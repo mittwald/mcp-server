@@ -5,7 +5,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldAppDownloadArgs {
   installationId?: string;
   target: string;
-  quiet?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
   exclude?: string[];
@@ -19,9 +18,6 @@ function buildCliArgs(args: MittwaldAppDownloadArgs): string[] {
   cliArgs.push(args.installationId!);
   cliArgs.push('--target', args.target);
 
-  if (args.quiet) {
-    cliArgs.push('--quiet');
-  }
   if (args.sshUser) {
     cliArgs.push('--ssh-user', args.sshUser);
   }

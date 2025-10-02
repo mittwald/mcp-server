@@ -4,7 +4,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldAppUpdateArgs {
   installationId?: string;
-  quiet?: boolean;
   description?: string;
   entrypoint?: string;
   documentRoot?: string;
@@ -13,7 +12,6 @@ interface MittwaldAppUpdateArgs {
 function buildCliArgs(args: MittwaldAppUpdateArgs, installationId: string): string[] {
   const cliArgs: string[] = ['app', 'update', installationId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.description) cliArgs.push('--description', args.description);
   if (args.entrypoint) cliArgs.push('--entrypoint', args.entrypoint);
   if (args.documentRoot) cliArgs.push('--document-root', args.documentRoot);
@@ -74,7 +72,6 @@ export const handleAppUpdateCli: MittwaldCliToolHandler<MittwaldAppUpdateArgs> =
       {
         installationId: args.installationId,
         updates: buildUpdates(args),
-        quiet: args.quiet,
         output,
       },
       {

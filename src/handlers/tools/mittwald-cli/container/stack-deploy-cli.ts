@@ -4,7 +4,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldStackDeployCliArgs {
   stackId?: string;
-  quiet?: boolean;
   composeFile?: string;
   envFile?: string;
 }
@@ -13,18 +12,10 @@ function buildCliArgs(args: MittwaldStackDeployCliArgs): string[] {
   const cliArgs: string[] = ['stack', 'deploy'];
 
   if (args.stackId) cliArgs.push('--stack-id', args.stackId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.composeFile) cliArgs.push('--compose-file', args.composeFile);
   if (args.envFile) cliArgs.push('--env-file', args.envFile);
 
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
 }
 
 function mapCliError(error: CliToolError, args: MittwaldStackDeployCliArgs): string {
@@ -54,25 +45,6 @@ export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCli
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'Stack deployed successfully';
-
-    if (args.quiet) {
-      const stackId = parseQuietOutput(stdout) ?? args.stackId;
-      return formatToolResponse(
-        'success',
-        'Stack deployed successfully',
-        {
-          stackId,
-          status: 'deployed',
-          composeFile: args.composeFile,
-          envFile: args.envFile,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

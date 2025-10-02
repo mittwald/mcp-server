@@ -5,24 +5,16 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldProjectUpdateArgs {
   projectId: string;
   description?: string;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldProjectUpdateArgs): string[] {
   const cliArgs: string[] = ['project', 'update', args.projectId];
 
   if (args.description) cliArgs.push('--description', args.description);
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldProjectUpdateArgs): string {
   const stderr = error.stderr ?? '';
@@ -48,11 +40,10 @@ function mapCliError(error: CliToolError, args: MittwaldProjectUpdateArgs): stri
   return `Failed to update project: ${details}`;
 }
 
-function buildSuccessPayload(args: MittwaldProjectUpdateArgs, output: string, quietValue?: string) {
+function buildSuccessPayload(args: MittwaldProjectUpdateArgs, output: string) {
   return {
     projectId: args.projectId,
     description: args.description,
-    quietOutput: quietValue,
     output,
   };
 }
@@ -81,16 +72,6 @@ export const handleProjectUpdateCli: MittwaldCliToolHandler<MittwaldProjectUpdat
     };
 
     const stdout = result.result ?? '';
-
-    if (args.quiet) {
-      const quietValue = parseQuietOutput(stdout) ?? args.projectId;
-      return formatToolResponse(
-        'success',
-        `Project ${args.projectId} updated successfully`,
-        buildSuccessPayload(args, stdout, quietValue),
-        commandMeta
-      );
-    }
 
     return formatToolResponse(
       'success',

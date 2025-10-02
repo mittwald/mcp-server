@@ -4,22 +4,13 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldMailDeliveryboxDeleteArgs {
   id: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
 function buildCliArgs(args: MittwaldMailDeliveryboxDeleteArgs): string[] {
   const cliArgs: string[] = ['mail', 'deliverybox', 'delete', args.id];
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.force) cliArgs.push('--force');
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
 }
 
 function mapCliError(error: CliToolError, args: MittwaldMailDeliveryboxDeleteArgs): string {
@@ -55,17 +46,15 @@ export const handleMittwaldMailDeliveryboxDeleteCli: MittwaldCliToolHandler<Mitt
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
 
-    const quietMessage = args.quiet ? parseQuietOutput(stdout) ?? parseQuietOutput(stderr) ?? output : undefined;
 
     return formatToolResponse(
       'success',
-      args.quiet ? (quietMessage || 'Delivery box deleted') : `Successfully deleted delivery box: ${args.id}`,
+`Successfully deleted delivery box: ${args.id}`,
       {
         id: args.id,
         deleted: true,
         output,
         force: args.force,
-        quiet: args.quiet,
       },
       {
         command: result.meta.command,

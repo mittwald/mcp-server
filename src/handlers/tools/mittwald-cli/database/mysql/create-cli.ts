@@ -6,7 +6,6 @@ interface MittwaldDatabaseMysqlCreateArgs {
   description: string;
   version: string;
   projectId?: string;
-  quiet?: boolean;
   collation?: string;
   characterSet?: string;
   userPassword?: string;
@@ -28,7 +27,6 @@ function buildCliArgs(args: MittwaldDatabaseMysqlCreateArgs): string[] {
   cliArgs.push('--version', args.version);
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.collation) cliArgs.push('--collation', args.collation);
   if (args.characterSet) cliArgs.push('--character-set', args.characterSet);
   if (args.userPassword) cliArgs.push('--user-password', args.userPassword);
@@ -53,12 +51,6 @@ function buildCliArgs(args: MittwaldDatabaseMysqlCreateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietIdentifier(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function extractDatabaseId(output: string): string | undefined {
   const match = output.match(/ID\s+([a-f0-9-]+)/i);
@@ -129,45 +121,6 @@ export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseM
     const interactiveMessage = mapInteractiveOutput(stdout, stderr);
     if (interactiveMessage) {
       return formatToolResponse('error', `${interactiveMessage}\nOutput: ${stdout}\n${stderr}`);
-    }
-
-    if (args.quiet) {
-      const databaseId = parseQuietIdentifier(stdout) ?? parseQuietIdentifier(stderr);
-      if (databaseId) {
-        return formatToolResponse(
-          'success',
-          'Successfully created MySQL database',
-          {
-            id: databaseId,
-            description: args.description,
-            version: args.version,
-            projectId: args.projectId,
-            collation: args.collation,
-            characterSet: args.characterSet,
-            userAccessLevel: args.userAccessLevel,
-            userExternal: args.userExternal,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        'Successfully created MySQL database',
-        {
-          description: args.description,
-          version: args.version,
-          projectId: args.projectId,
-          output: stdout || stderr,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
     }
 
     const databaseId = extractDatabaseId(stdout) ?? extractDatabaseId(stderr);

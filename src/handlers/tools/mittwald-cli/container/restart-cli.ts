@@ -5,23 +5,14 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldContainerRestartArgs {
   containerId: string;
   projectId?: string;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldContainerRestartArgs): string[] {
   const cliArgs: string[] = ['container', 'restart', args.containerId];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
 }
 
 function mapCliError(error: CliToolError, args: MittwaldContainerRestartArgs): string {
@@ -55,24 +46,6 @@ export const handleContainerRestartCli: MittwaldCliToolHandler<MittwaldContainer
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || `Container ${args.containerId} has been restarted successfully`;
-
-    if (args.quiet) {
-      const containerId = parseQuietOutput(stdout) ?? args.containerId;
-      return formatToolResponse(
-        'success',
-        `Container ${containerId} has been restarted successfully`,
-        {
-          containerId,
-          action: 'restart',
-          projectId: args.projectId,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

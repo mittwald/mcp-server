@@ -1,11 +1,9 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { parseQuietOutput } from '../../../../utils/cli-wrapper.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldSftpUserUpdateArgs {
   sftpUserId: string;
-  quiet?: boolean;
   expires?: string;
   description?: string;
   publicKey?: string;
@@ -19,7 +17,6 @@ interface MittwaldSftpUserUpdateArgs {
 function buildCliArgs(args: MittwaldSftpUserUpdateArgs): string[] {
   const cliArgs: string[] = ['sftp-user', 'update', args.sftpUserId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.expires) cliArgs.push('--expires', args.expires);
   if (args.description) cliArgs.push('--description', args.description);
   if (args.publicKey) cliArgs.push('--public-key', args.publicKey);
@@ -83,23 +80,6 @@ export const handleSftpUserUpdateCli: MittwaldCliToolHandler<MittwaldSftpUserUpd
 
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
-
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout ?? '') || args.sftpUserId;
-      return formatToolResponse(
-        'success',
-        quietOutput,
-        {
-          sftpUserId: args.sftpUserId,
-          action: 'updated',
-          output: stdout || stderr,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     const updatedFields: string[] = [];
     if (args.description) updatedFields.push('description');

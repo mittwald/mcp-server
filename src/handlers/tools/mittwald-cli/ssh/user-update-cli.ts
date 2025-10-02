@@ -4,7 +4,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldSshUserUpdateArgs {
   sshUserId: string;
-  quiet?: boolean;
   expires?: string;
   description?: string;
   publicKey?: string;
@@ -16,7 +15,6 @@ interface MittwaldSshUserUpdateArgs {
 function buildCliArgs(args: MittwaldSshUserUpdateArgs): string[] {
   const cliArgs: string[] = ['ssh-user', 'update', args.sshUserId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.expires) cliArgs.push('--expires', args.expires);
   if (args.description) cliArgs.push('--description', args.description);
   if (args.publicKey) cliArgs.push('--public-key', args.publicKey);
@@ -27,12 +25,6 @@ function buildCliArgs(args: MittwaldSshUserUpdateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function collectUpdatedFields(args: MittwaldSshUserUpdateArgs): string[] {
   const fields: string[] = [];
@@ -98,21 +90,6 @@ export const handleSshUserUpdateCli: MittwaldCliToolHandler<MittwaldSshUserUpdat
     };
 
     const stdout = result.result ?? '';
-
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? args.sshUserId;
-      return formatToolResponse(
-        'success',
-        quietOutput,
-        {
-          sshUserId: args.sshUserId,
-          action: 'updated',
-          updatedFields,
-          output: stdout,
-        },
-        meta
-      );
-    }
 
     return formatToolResponse(
       'success',

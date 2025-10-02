@@ -5,7 +5,6 @@ import { parseJsonOutput as parseJsonOutputLegacy } from '../../../../../utils/c
 
 interface MittwaldDatabaseMysqlPortForwardArgs {
   databaseId: string;
-  quiet?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
   port?: number;
@@ -26,7 +25,6 @@ function quote(value: string): string {
 function buildRecommendedCommand(args: MittwaldDatabaseMysqlPortForwardArgs): { command: string; localPort: number } {
   const cliArgs: string[] = ['mw', 'database', 'mysql', 'port-forward', args.databaseId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.sshUser) cliArgs.push('--ssh-user', quote(args.sshUser));
   if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', quote(args.sshIdentityFile));
   if (args.port && args.port !== 3306) cliArgs.push('--port', String(args.port));

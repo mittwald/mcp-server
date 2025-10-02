@@ -3,7 +3,6 @@ import { formatToolResponse } from '../../../../../utils/format-tool-response.js
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldUserSshKeyImportArgs {
-  quiet?: boolean;
   expires?: string;
   input?: string;
 }
@@ -12,16 +11,9 @@ function buildCliArgs(args: MittwaldUserSshKeyImportArgs): string[] {
   const argv = ['user', 'ssh-key', 'import'];
   if (args.expires) argv.push('--expires', args.expires);
   if (args.input) argv.push('--input', args.input);
-  if (args.quiet) argv.push('--quiet');
   return argv;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError): string {
   const stdout = error.stdout ?? '';
@@ -43,27 +35,6 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout.trim() || stderr.trim();
-
-    if (args.quiet) {
-      const keyId = parseQuietOutput(stdout) ?? parseQuietOutput(stderr ?? '');
-      if (!keyId) {
-        return formatToolResponse('error', 'Failed to import SSH key - no key ID returned');
-      }
-
-      return formatToolResponse(
-        'success',
-        keyId,
-        {
-          keyId,
-          expires: args.expires,
-          input: args.input,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     const message = output || 'SSH key imported successfully';
     return formatToolResponse(

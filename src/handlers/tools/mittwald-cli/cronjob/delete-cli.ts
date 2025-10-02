@@ -4,16 +4,11 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldCronjobDeleteCliArgs {
   cronjobId: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
 function buildCliArgs(args: MittwaldCronjobDeleteCliArgs): string[] {
   const cliArgs: string[] = ['cronjob', 'delete', args.cronjobId];
-
-  if (args.quiet) {
-    cliArgs.push('--quiet');
-  }
 
   if (args.force) {
     cliArgs.push('--force');
@@ -22,12 +17,6 @@ function buildCliArgs(args: MittwaldCronjobDeleteCliArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function mapCliError(error: CliToolError, args: MittwaldCronjobDeleteCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -61,23 +50,6 @@ export const handleCronjobDeleteCli: MittwaldToolHandler<MittwaldCronjobDeleteCl
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
-
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-
-      return formatToolResponse(
-        'success',
-        'Cronjob deleted successfully',
-        {
-          cronjobId: quietOutput ?? args.cronjobId,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

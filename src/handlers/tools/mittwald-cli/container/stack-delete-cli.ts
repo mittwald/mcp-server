@@ -4,7 +4,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldStackDeleteCliArgs {
   stackId?: string;
-  quiet?: boolean;
   force?: boolean;
   withVolumes?: boolean;
 }
@@ -13,18 +12,10 @@ function buildCliArgs(args: MittwaldStackDeleteCliArgs): string[] {
   const cliArgs: string[] = ['stack', 'delete'];
 
   if (args.stackId) cliArgs.push(args.stackId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.force) cliArgs.push('--force');
   if (args.withVolumes) cliArgs.push('--with-volumes');
 
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
 }
 
 function mapCliError(error: CliToolError, args: MittwaldStackDeleteCliArgs): string {
@@ -50,24 +41,6 @@ export const handleStackDeleteCli: MittwaldCliToolHandler<MittwaldStackDeleteCli
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'Stack deleted successfully';
-
-    if (args.quiet) {
-      const stackId = parseQuietOutput(stdout) ?? args.stackId;
-      return formatToolResponse(
-        'success',
-        'Stack deleted successfully',
-        {
-          stackId,
-          status: 'deleted',
-          withVolumes: args.withVolumes,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

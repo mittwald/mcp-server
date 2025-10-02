@@ -5,7 +5,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldSshUserCreateArgs {
   projectId?: string;
   description: string;
-  quiet?: boolean;
   expires?: string;
   publicKey?: string;
   password?: string;
@@ -15,7 +14,6 @@ function buildCliArgs(args: MittwaldSshUserCreateArgs): string[] {
   const cliArgs: string[] = ['ssh-user', 'create', '--description', args.description];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.expires) cliArgs.push('--expires', args.expires);
   if (args.publicKey) cliArgs.push('--public-key', args.publicKey);
   if (args.password) cliArgs.push('--password', args.password);
@@ -23,12 +21,6 @@ function buildCliArgs(args: MittwaldSshUserCreateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function extractSshUserId(output: string): string | undefined {
   const match = output.match(/ID\s+([a-f0-9-]+)/i);
@@ -104,14 +96,12 @@ export const handleSshUserCreateCli: MittwaldCliToolHandler<MittwaldSshUserCreat
 
     const stdout = result.result ?? '';
 
-    const sshUserId = args.quiet ? parseQuietOutput(stdout) : extractSshUserId(stdout);
+    const sshUserId = extractSshUserId(stdout);
     const payload = buildSuccessPayload(args, stdout, sshUserId);
 
-    const message = args.quiet
-      ? (sshUserId ?? (stdout || 'SSH user created successfully'))
-      : sshUserId
-        ? `Successfully created SSH user '${args.description}' with ID ${sshUserId}`
-        : `Successfully created SSH user '${args.description}'`;
+    const message = sshUserId
+      ? `Successfully created SSH user '${args.description}' with ID ${sshUserId}`
+      : `Successfully created SSH user '${args.description}'`;
 
     return formatToolResponse('success', message, payload, meta);
   } catch (error) {

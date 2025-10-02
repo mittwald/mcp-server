@@ -5,7 +5,6 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 interface MittwaldDatabaseMysqlDumpArgs {
   databaseId: string;
   output: string;
-  quiet?: boolean;
   mysqlPassword?: string;
   mysqlCharset?: string;
   temporaryUser?: boolean;
@@ -17,7 +16,6 @@ interface MittwaldDatabaseMysqlDumpArgs {
 function buildCliArgs(args: MittwaldDatabaseMysqlDumpArgs): string[] {
   const cliArgs: string[] = ['database', 'mysql', 'dump', args.databaseId, '--output', args.output];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.mysqlPassword) cliArgs.push('--mysql-password', args.mysqlPassword);
   if (args.mysqlCharset) cliArgs.push('--mysql-charset', args.mysqlCharset);
   if (args.temporaryUser !== undefined) cliArgs.push(args.temporaryUser ? '--temporary-user' : '--no-temporary-user');
@@ -99,9 +97,7 @@ export const handleDatabaseMysqlDumpCli: MittwaldCliToolHandler<MittwaldDatabase
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
     const outputLocation = args.output === '-' || args.output === '/dev/stdout' ? 'stdout' : args.output;
-    const message = args.quiet
-      ? stdout || 'Dump completed'
-      : `Successfully created MySQL dump of database '${args.databaseId}' to ${outputLocation}`;
+    const message = `Successfully created MySQL dump of database '${args.databaseId}' to ${outputLocation}`;
 
     return formatToolResponse(
       'success',

@@ -5,22 +5,14 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldSftpUserDeleteArgs {
   sftpUserId: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldSftpUserDeleteArgs): string[] {
   const cliArgs: string[] = ['sftp-user', 'delete', args.sftpUserId];
   if (args.force) cliArgs.push('--force');
-  if (args.quiet) cliArgs.push('--quiet');
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldSftpUserDeleteArgs): string {
   const stderr = error.stderr ?? '';
@@ -69,21 +61,6 @@ export const handleSftpUserDeleteCli: MittwaldCliToolHandler<MittwaldSftpUserDel
     };
 
     const stdout = result.result ?? '';
-
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout);
-      return formatToolResponse(
-        'success',
-        quietOutput || 'SFTP user deleted successfully',
-        {
-          sftpUserId: args.sftpUserId,
-          action: 'deleted',
-          status: 'success',
-          output: stdout,
-        },
-        commandMeta
-      );
-    }
 
     return formatToolResponse(
       'success',

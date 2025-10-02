@@ -4,7 +4,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldCronjobUpdateCliArgs {
   cronjobId: string;
-  quiet?: boolean;
   description?: string;
   interval?: string;
   email?: string;
@@ -19,7 +18,6 @@ interface MittwaldCronjobUpdateCliArgs {
 function buildCliArgs(args: MittwaldCronjobUpdateCliArgs): string[] {
   const cliArgs: string[] = ['cronjob', 'update', args.cronjobId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.description) cliArgs.push('--description', args.description);
   if (args.interval) cliArgs.push('--interval', args.interval);
   if (args.email) cliArgs.push('--email', args.email);
@@ -33,12 +31,6 @@ function buildCliArgs(args: MittwaldCronjobUpdateCliArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietIdentifier(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function mapCliError(error: CliToolError, args: MittwaldCronjobUpdateCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -76,31 +68,6 @@ export const handleCronjobUpdateCli: MittwaldToolHandler<MittwaldCronjobUpdateCl
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
-
-    if (args.quiet) {
-      const quietValue = parseQuietIdentifier(stdout) ?? parseQuietIdentifier(stderr);
-
-      return formatToolResponse(
-        'success',
-        'Cronjob updated successfully',
-        {
-          cronjobId: quietValue ?? args.cronjobId,
-          description: args.description,
-          interval: args.interval,
-          command: args.command,
-          url: args.url,
-          email: args.email,
-          enable: args.enable,
-          disable: args.disable,
-          timeout: args.timeout,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

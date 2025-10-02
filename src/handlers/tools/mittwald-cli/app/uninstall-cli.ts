@@ -4,14 +4,12 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldAppUninstallArgs {
   installationId?: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
 function buildCliArgs(args: MittwaldAppUninstallArgs, installationId: string): string[] {
   const cliArgs: string[] = ['app', 'uninstall', installationId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.force) cliArgs.push('--force');
 
   return cliArgs;
@@ -58,7 +56,6 @@ export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallA
       {
         installationId: args.installationId,
         force: args.force,
-        quiet: args.quiet,
         output,
       },
       {

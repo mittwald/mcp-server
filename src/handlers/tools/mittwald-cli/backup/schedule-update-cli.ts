@@ -7,7 +7,6 @@ interface MittwaldBackupScheduleUpdateCliArgs {
   description?: string;
   schedule?: string;
   ttl?: string;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldBackupScheduleUpdateCliArgs): string[] {
@@ -16,7 +15,6 @@ function buildCliArgs(args: MittwaldBackupScheduleUpdateCliArgs): string[] {
   if (args.description) cliArgs.push('--description', args.description);
   if (args.schedule) cliArgs.push('--schedule', args.schedule);
   if (args.ttl) cliArgs.push('--ttl', args.ttl);
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
 }
@@ -58,9 +56,7 @@ export const handleBackupScheduleUpdateCli: MittwaldCliToolHandler<MittwaldBacku
     });
 
     const output = result.result.stdout || result.result.stderr || '';
-    const message = args.quiet
-      ? output || `Backup schedule ${args.backupScheduleId} updated successfully`
-      : `Backup schedule ${args.backupScheduleId} updated successfully`;
+    const message = `Backup schedule ${args.backupScheduleId} updated successfully`;
 
     return formatToolResponse(
       'success',

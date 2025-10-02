@@ -5,26 +5,18 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 interface MittwaldMailDeliveryboxUpdateArgs {
   id: string;
   description?: string;
-  quiet?: boolean;
   password?: string;
   randomPassword?: boolean;
 }
 
 function buildCliArgs(args: MittwaldMailDeliveryboxUpdateArgs): string[] {
   const cliArgs: string[] = ['mail', 'deliverybox', 'update', args.id];
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.description) cliArgs.push('--description', args.description);
   if (args.password) cliArgs.push('--password', args.password);
   if (args.randomPassword) cliArgs.push('--random-password');
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function extractGeneratedPassword(output: string): string | undefined {
   const match = output.match(/password:\s*(.+)/i);
@@ -65,20 +57,8 @@ export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldCliToolHandler<Mitt
     const output = stdout || stderr;
 
     let generatedPassword: string | undefined;
-    let quietPayload: string | undefined;
 
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-      if (quietOutput) {
-        if (args.randomPassword) {
-          const [idPart, passwordPart] = quietOutput.split('\t');
-          generatedPassword = passwordPart ? passwordPart.trim() : undefined;
-          quietPayload = generatedPassword ? `${idPart}\t${generatedPassword}` : quietOutput;
-        } else {
-          quietPayload = quietOutput;
-        }
-      }
-    } else if (args.randomPassword) {
+    if (args.randomPassword) {
       generatedPassword = extractGeneratedPassword(stdout);
     }
 
@@ -90,9 +70,7 @@ export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldCliToolHandler<Mitt
       output,
     };
 
-    const message = args.quiet
-      ? (quietPayload ?? (generatedPassword ? `${args.id}\t${generatedPassword}` : output || 'Delivery box updated'))
-      : `Successfully updated delivery box: ${args.id}${generatedPassword ? ' with new generated password' : ''}`;
+    const message = `Successfully updated delivery box: ${args.id}${generatedPassword ? ' with new generated password' : ''}`;
 
     return formatToolResponse(
       'success',

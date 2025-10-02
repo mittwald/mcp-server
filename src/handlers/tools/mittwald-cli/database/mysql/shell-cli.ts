@@ -5,7 +5,6 @@ import { parseJsonOutput as parseJsonOutputLegacy } from '../../../../../utils/c
 
 interface MittwaldDatabaseMysqlShellArgs {
   databaseId: string;
-  quiet?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
   mysqlPassword?: string;
@@ -28,7 +27,6 @@ function quote(value: string): string {
 function buildRecommendedCommand(args: MittwaldDatabaseMysqlShellArgs): string {
   const cliArgs: string[] = ['mw', 'database', 'mysql', 'shell', args.databaseId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.sshUser) cliArgs.push('--ssh-user', quote(args.sshUser));
   if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', quote(args.sshIdentityFile));
   if (args.mysqlPassword) cliArgs.push('--mysql-password', quote(args.mysqlPassword));

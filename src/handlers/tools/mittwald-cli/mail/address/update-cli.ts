@@ -4,7 +4,6 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldMailAddressUpdateArgs {
   id: string;
-  quiet?: boolean;
   catchAll?: boolean;
   enableSpamProtection?: boolean;
   quota?: string;
@@ -16,7 +15,6 @@ interface MittwaldMailAddressUpdateArgs {
 function buildCliArgs(args: MittwaldMailAddressUpdateArgs): string[] {
   const cliArgs: string[] = ['mail', 'address', 'update', args.id];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.catchAll !== undefined) cliArgs.push(args.catchAll ? '--catch-all' : '--no-catch-all');
   if (args.enableSpamProtection !== undefined) {
     cliArgs.push(args.enableSpamProtection ? '--enable-spam-protection' : '--no-enable-spam-protection');
@@ -33,12 +31,6 @@ function buildCliArgs(args: MittwaldMailAddressUpdateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function extractGeneratedPassword(output: string): string | undefined {
   const passwordMatch = output.match(/password:\s*(.+)/i);
@@ -79,20 +71,8 @@ export const handleMittwaldMailAddressUpdateCli: MittwaldCliToolHandler<Mittwald
     const output = stdout || stderr;
 
     let generatedPassword: string | undefined;
-    let quietPayload: string | undefined;
 
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-      if (quietOutput) {
-        if (args.randomPassword) {
-          const [idPart, passwordPart] = quietOutput.split('\t');
-          generatedPassword = passwordPart ? passwordPart.trim() : undefined;
-          quietPayload = generatedPassword ? `${idPart}\t${generatedPassword}` : quietOutput;
-        } else {
-          quietPayload = quietOutput;
-        }
-      }
-    } else if (args.randomPassword) {
+    if (args.randomPassword) {
       generatedPassword = extractGeneratedPassword(stdout);
     }
 
@@ -106,9 +86,7 @@ export const handleMittwaldMailAddressUpdateCli: MittwaldCliToolHandler<Mittwald
       output,
     };
 
-    const message = args.quiet
-      ? (quietPayload ?? (generatedPassword ? `${args.id}\t${generatedPassword}` : output || 'Mail address updated'))
-      : `Successfully updated mail address: ${args.id}${generatedPassword ? ' with new generated password' : ''}`;
+    const message = `Successfully updated mail address: ${args.id}${generatedPassword ? ' with new generated password' : ''}`;
 
     return formatToolResponse(
       'success',

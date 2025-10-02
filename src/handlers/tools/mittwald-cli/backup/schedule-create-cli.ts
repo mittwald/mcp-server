@@ -7,7 +7,6 @@ interface MittwaldBackupScheduleCreateCliArgs {
   schedule: string;
   ttl: string;
   description?: string;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldBackupScheduleCreateCliArgs): string[] {
@@ -15,17 +14,10 @@ function buildCliArgs(args: MittwaldBackupScheduleCreateCliArgs): string[] {
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
   if (args.description) cliArgs.push('--description', args.description);
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldBackupScheduleCreateCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -45,9 +37,8 @@ function mapCliError(error: CliToolError, args: MittwaldBackupScheduleCreateCliA
   return error.message;
 }
 
-function buildSuccessPayload(args: MittwaldBackupScheduleCreateCliArgs, output: string, scheduleId?: string) {
+function buildSuccessPayload(args: MittwaldBackupScheduleCreateCliArgs, output: string) {
   return {
-    scheduleId,
     projectId: args.projectId,
     schedule: args.schedule,
     ttl: args.ttl,
@@ -77,20 +68,6 @@ export const handleBackupScheduleCreateCli: MittwaldCliToolHandler<MittwaldBacku
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'Backup schedule created successfully';
-
-    if (args.quiet) {
-      const scheduleId = parseQuietOutput(stdout);
-      const message = scheduleId ? `Backup schedule created successfully with ID: ${scheduleId}` : output;
-      return formatToolResponse(
-        'success',
-        message,
-        buildSuccessPayload(args, output, scheduleId),
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

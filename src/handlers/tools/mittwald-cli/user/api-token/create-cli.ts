@@ -1,12 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
-import { parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 
 interface MittwaldUserApiTokenCreateArgs {
   description: string;
   roles: ("api_read" | "api_write")[];
-  quiet?: boolean;
   expires?: string;
 }
 
@@ -14,7 +12,6 @@ function buildCliArgs(args: MittwaldUserApiTokenCreateArgs): string[] {
   const cliArgs: string[] = ['user', 'api-token', 'create', '--description', args.description];
   args.roles.forEach((role) => cliArgs.push('--roles', role));
   if (args.expires) cliArgs.push('--expires', args.expires);
-  if (args.quiet) cliArgs.push('--quiet');
   return cliArgs;
 }
 
@@ -69,25 +66,6 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
     };
 
     const stdout = result.result ?? '';
-
-    if (args.quiet) {
-      const token = parseQuietOutput(stdout);
-      if (!token) {
-        return formatToolResponse('error', 'Failed to create API token - no token returned.');
-      }
-
-      return formatToolResponse(
-        'success',
-        token,
-        {
-          token,
-          description: args.description,
-          roles: args.roles,
-          expires: args.expires,
-        },
-        commandMeta
-      );
-    }
 
     const token = extractToken(stdout);
     if (!token) {

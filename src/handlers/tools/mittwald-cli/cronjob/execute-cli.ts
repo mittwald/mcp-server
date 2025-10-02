@@ -4,25 +4,15 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldCronjobExecuteCliArgs {
   cronjobId: string;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldCronjobExecuteCliArgs): string[] {
   const cliArgs: string[] = ['cronjob', 'execute', args.cronjobId];
 
-  if (args.quiet) {
-    cliArgs.push('--quiet');
-  }
 
   return cliArgs;
 }
 
-function parseQuietIdentifier(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function mapCliError(error: CliToolError, args: MittwaldCronjobExecuteCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -56,38 +46,6 @@ export const handleCronjobExecuteCli: MittwaldToolHandler<MittwaldCronjobExecute
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
-
-    if (args.quiet) {
-      const executionId = parseQuietIdentifier(stdout) ?? parseQuietIdentifier(stderr);
-
-      if (executionId) {
-        return formatToolResponse(
-          'success',
-          'Cronjob execution started',
-          {
-            cronjobId: args.cronjobId,
-            executionId,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        'Cronjob execution started',
-        {
-          cronjobId: args.cronjobId,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

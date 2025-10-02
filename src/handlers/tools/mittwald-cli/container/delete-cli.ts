@@ -6,7 +6,6 @@ interface MittwaldContainerDeleteArgs {
   containerId: string;
   projectId?: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldContainerDeleteArgs): string[] {
@@ -14,17 +13,10 @@ function buildCliArgs(args: MittwaldContainerDeleteArgs): string[] {
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
   if (args.force) cliArgs.push('--force');
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldContainerDeleteArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -61,24 +53,6 @@ export const handleContainerDeleteCli: MittwaldCliToolHandler<MittwaldContainerD
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || `Container ${args.containerId} has been deleted successfully`;
-
-    if (args.quiet) {
-      const containerId = parseQuietOutput(stdout) ?? args.containerId;
-      return formatToolResponse(
-        'success',
-        `Container ${containerId} has been deleted successfully`,
-        {
-          containerId,
-          action: 'delete',
-          projectId: args.projectId,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

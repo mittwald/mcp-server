@@ -5,14 +5,12 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldBackupScheduleDeleteCliArgs {
   backupScheduleId: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldBackupScheduleDeleteCliArgs): string[] {
   const cliArgs: string[] = ['backup', 'schedule', 'delete', args.backupScheduleId];
 
   if (args.force) cliArgs.push('--force');
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
 }
@@ -46,9 +44,7 @@ export const handleBackupScheduleDeleteCli: MittwaldCliToolHandler<MittwaldBacku
     });
 
     const output = result.result.stdout || result.result.stderr || '';
-    const message = args.quiet
-      ? output || `Backup schedule ${args.backupScheduleId} deleted successfully`
-      : `Backup schedule ${args.backupScheduleId} deleted successfully`;
+    const message = `Backup schedule ${args.backupScheduleId} deleted successfully`;
 
     return formatToolResponse(
       'success',

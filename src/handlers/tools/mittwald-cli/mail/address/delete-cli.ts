@@ -4,22 +4,13 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldMailAddressDeleteArgs {
   id: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
 function buildCliArgs(args: MittwaldMailAddressDeleteArgs): string[] {
   const cliArgs: string[] = ['mail', 'address', 'delete', args.id];
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.force) cliArgs.push('--force');
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
 }
 
 function mapCliError(error: CliToolError, args: MittwaldMailAddressDeleteArgs): string {
@@ -55,17 +46,15 @@ export const handleMittwaldMailAddressDeleteCli: MittwaldCliToolHandler<Mittwald
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
 
-    const quietMessage = args.quiet ? parseQuietOutput(stdout) ?? output : undefined;
 
     return formatToolResponse(
       'success',
-      args.quiet ? (quietMessage || 'Mail address deleted') : `Successfully deleted mail address: ${args.id}`,
+`Successfully deleted mail address: ${args.id}`,
       {
         id: args.id,
         deleted: true,
         output,
         force: args.force,
-        quiet: args.quiet,
       },
       {
         command: result.meta.command,

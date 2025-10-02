@@ -6,7 +6,6 @@ interface MittwaldCronjobCreateCliArgs {
   description: string;
   interval: string;
   installationId?: string;
-  quiet?: boolean;
   email?: string;
   url?: string;
   command?: string;
@@ -23,10 +22,6 @@ function buildCliArgs(args: MittwaldCronjobCreateCliArgs): string[] {
 
   if (args.installationId) {
     cliArgs.push('--installation-id', args.installationId);
-  }
-
-  if (args.quiet) {
-    cliArgs.push('--quiet');
   }
 
   if (args.email) {
@@ -56,13 +51,6 @@ function buildCliArgs(args: MittwaldCronjobCreateCliArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietIdentifier(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  const last = lines.at(-1)?.trim();
-  return last ? last : undefined;
-}
 
 function mapCliError(error: CliToolError, args: MittwaldCronjobCreateCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -98,38 +86,6 @@ export const handleCronjobCreateCli: MittwaldToolHandler<MittwaldCronjobCreateCl
 
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
-
-    if (args.quiet) {
-      const cronjobId = parseQuietIdentifier(stdout) ?? parseQuietIdentifier(stderr);
-
-      if (cronjobId) {
-        return formatToolResponse(
-          'success',
-          'Cronjob created successfully',
-          {
-            id: cronjobId,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        'Cronjob created successfully',
-        {
-          description: args.description,
-          interval: args.interval,
-          output: stdout || stderr,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

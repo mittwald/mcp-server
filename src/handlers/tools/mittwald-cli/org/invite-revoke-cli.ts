@@ -4,21 +4,13 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 export interface MittwaldOrgInviteRevokeArgs {
   inviteId: string;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldOrgInviteRevokeArgs): string[] {
   const cliArgs: string[] = ['org', 'invite', 'revoke', args.inviteId];
-  if (args.quiet) cliArgs.push('--quiet');
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
 
 function mapCliError(error: CliToolError, inviteId: string): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -52,23 +44,6 @@ export const handleOrgInviteRevokeCli: MittwaldToolHandler<MittwaldOrgInviteRevo
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
-
-    if (args.quiet) {
-      const quietResult = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-      return formatToolResponse(
-        'success',
-        `Organization invite ${args.inviteId} revoked successfully`,
-        {
-          inviteId: args.inviteId,
-          revoked: true,
-          result: quietResult,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

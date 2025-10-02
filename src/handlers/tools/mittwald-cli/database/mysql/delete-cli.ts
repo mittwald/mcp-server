@@ -4,14 +4,12 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldDatabaseMysqlDeleteArgs {
   databaseId: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
 function buildCliArgs(args: MittwaldDatabaseMysqlDeleteArgs): string[] {
   const cliArgs: string[] = ['database', 'mysql', 'delete', args.databaseId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.force) cliArgs.push('--force');
 
   return cliArgs;
@@ -61,9 +59,7 @@ export const handleDatabaseMysqlDeleteCli: MittwaldCliToolHandler<MittwaldDataba
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr;
-    const message = args.quiet
-      ? stdout || `Database ${args.databaseId} deleted`
-      : `Successfully deleted MySQL database '${args.databaseId}'`;
+    const message = `Successfully deleted MySQL database '${args.databaseId}'`;
 
     return formatToolResponse(
       'success',

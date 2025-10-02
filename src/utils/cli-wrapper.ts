@@ -155,12 +155,3 @@ export function parseJsonOutput(output: string): any {
   }
 }
 
-export function parseQuietOutput(output: string): string | null {
-  // Quiet mode typically outputs just the ID
-  const lines = output.split('\n').filter(line => line.trim());
-  if (lines.length > 0) {
-    // Return the last non-empty line (usually the ID)
-    return lines[lines.length - 1].trim();
-  }
-  return null;
-}

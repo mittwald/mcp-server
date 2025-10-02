@@ -5,7 +5,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldContainerRecreateArgs {
   containerId: string;
   projectId?: string;
-  quiet?: boolean;
   pull?: boolean;
   force?: boolean;
 }
@@ -14,19 +13,12 @@ function buildCliArgs(args: MittwaldContainerRecreateArgs): string[] {
   const cliArgs: string[] = ['container', 'recreate', args.containerId];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.pull) cliArgs.push('--pull');
   if (args.force) cliArgs.push('--force');
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldContainerRecreateArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -63,26 +55,6 @@ export const handleContainerRecreateCli: MittwaldCliToolHandler<MittwaldContaine
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || `Container ${args.containerId} has been recreated successfully`;
-
-    if (args.quiet) {
-      const containerId = parseQuietOutput(stdout) ?? args.containerId;
-      return formatToolResponse(
-        'success',
-        `Container ${containerId} has been recreated successfully`,
-        {
-          containerId,
-          action: 'recreate',
-          projectId: args.projectId,
-          pull: args.pull,
-          force: args.force,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

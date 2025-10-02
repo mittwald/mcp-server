@@ -10,7 +10,6 @@ interface MittwaldBackupDownloadCliArgs {
   generatePassword?: boolean;
   promptPassword?: boolean;
   resume?: boolean;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldBackupDownloadCliArgs): string[] {
@@ -22,7 +21,6 @@ function buildCliArgs(args: MittwaldBackupDownloadCliArgs): string[] {
   if (args.generatePassword) cliArgs.push('--generate-password');
   if (args.promptPassword) cliArgs.push('--prompt-password');
   if (args.resume) cliArgs.push('--resume');
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
 }
@@ -62,9 +60,7 @@ export const handleBackupDownloadCli: MittwaldCliToolHandler<MittwaldBackupDownl
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr;
-    const message = args.quiet
-      ? output || `Backup ${args.backupId} downloaded successfully`
-      : `Backup ${args.backupId} downloaded successfully`;
+    const message = `Backup ${args.backupId} downloaded successfully`;
 
     return formatToolResponse(
       'success',

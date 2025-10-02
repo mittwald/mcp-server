@@ -6,7 +6,6 @@ interface MittwaldSftpUserCreateArgs {
   projectId?: string;
   description: string;
   directories: string[];
-  quiet?: boolean;
   expires?: string;
   publicKey?: string;
   password?: string;
@@ -18,20 +17,12 @@ function buildCliArgs(args: MittwaldSftpUserCreateArgs): string[] {
 
   for (const directory of args.directories) cliArgs.push('--directories', directory);
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.expires) cliArgs.push('--expires', args.expires);
   if (args.accessLevel) cliArgs.push('--access-level', args.accessLevel);
   if (args.publicKey) cliArgs.push('--public-key', args.publicKey);
   if (args.password) cliArgs.push('--password', args.password);
 
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
 }
 
 function extractSftpUserId(output: string): string | undefined {
@@ -128,19 +119,13 @@ export const handleSftpUserCreateCli: MittwaldCliToolHandler<MittwaldSftpUserCre
     const stdout = result.result ?? '';
     let sftpUserId: string | undefined;
 
-    if (args.quiet) {
-      sftpUserId = parseQuietOutput(stdout);
-    } else {
-      sftpUserId = extractSftpUserId(stdout);
-    }
+    sftpUserId = extractSftpUserId(stdout);
 
     const payload = buildSuccessPayload(args, stdout, sftpUserId);
 
-    const message = args.quiet
-      ? (sftpUserId ?? (stdout || 'SFTP user created successfully'))
-      : sftpUserId
-        ? `Successfully created SFTP user '${args.description}' with ID ${sftpUserId}`
-        : `Successfully created SFTP user '${args.description}'`;
+    const message = sftpUserId
+      ? `Successfully created SFTP user '${args.description}' with ID ${sftpUserId}`
+      : `Successfully created SFTP user '${args.description}'`;
 
     return formatToolResponse('success', message, payload, commandMeta);
   } catch (error) {

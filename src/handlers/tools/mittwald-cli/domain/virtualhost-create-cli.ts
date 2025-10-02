@@ -5,7 +5,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldDomainVirtualhostCreateArgs {
   hostname: string;
   projectId?: string;
-  quiet?: boolean;
   pathToApp?: string[];
   pathToUrl?: string[];
   pathToContainer?: string[];
@@ -15,7 +14,6 @@ function buildCliArgs(args: MittwaldDomainVirtualhostCreateArgs): string[] {
   const cliArgs: string[] = ['domain', 'virtualhost', 'create', '--hostname', args.hostname];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
 
   if (args.pathToApp) {
     for (const mapping of args.pathToApp) cliArgs.push('--path-to-app', mapping);
@@ -32,12 +30,6 @@ function buildCliArgs(args: MittwaldDomainVirtualhostCreateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietId(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function extractIngressId(output: string): string | undefined {
   const match = output.match(/ID\s+([a-f0-9-]+)/i);
@@ -82,14 +74,12 @@ export const handleDomainVirtualhostCreateCli: MittwaldCliToolHandler<MittwaldDo
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
 
-    const ingressId = args.quiet
-      ? parseQuietId(stdout) ?? parseQuietId(stderr)
-      : extractIngressId(stdout);
+    const ingressId = extractIngressId(stdout);
 
     if (!ingressId) {
       return formatToolResponse(
         'success',
-        args.quiet ? stdout : `Successfully created virtual host '${args.hostname}'`,
+`Successfully created virtual host '${args.hostname}'`,
         {
           hostname: args.hostname,
           output: stdout,
@@ -115,7 +105,7 @@ export const handleDomainVirtualhostCreateCli: MittwaldCliToolHandler<MittwaldDo
 
     return formatToolResponse(
       'success',
-      args.quiet ? ingressId : `Successfully created virtual host '${args.hostname}' with ID ${ingressId}`,
+`Successfully created virtual host '${args.hostname}' with ID ${ingressId}`,
       resultData,
       {
         command: result.meta.command,

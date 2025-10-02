@@ -4,25 +4,17 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldRegistryDeleteCliArgs {
   registryId: string;
-  quiet?: boolean;
   force?: boolean;
 }
 
 function buildCliArgs(args: MittwaldRegistryDeleteCliArgs): string[] {
   const cliArgs: string[] = ['registry', 'delete', args.registryId];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.force) cliArgs.push('--force');
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldRegistryDeleteCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -51,23 +43,6 @@ export const handleRegistryDeleteCli: MittwaldCliToolHandler<MittwaldRegistryDel
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'Registry deleted successfully';
-
-    if (args.quiet) {
-      const registryId = parseQuietOutput(stdout) ?? args.registryId;
-      return formatToolResponse(
-        'success',
-        'Registry deleted successfully',
-        {
-          registryId,
-          status: 'deleted',
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

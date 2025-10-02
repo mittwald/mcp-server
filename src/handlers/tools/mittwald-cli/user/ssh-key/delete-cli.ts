@@ -5,22 +5,14 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 interface MittwaldUserSshKeyDeleteArgs {
   keyId: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldUserSshKeyDeleteArgs): string[] {
   const argv = ['user', 'ssh-key', 'delete', args.keyId];
   if (args.force) argv.push('--force');
-  if (args.quiet) argv.push('--quiet');
   return argv;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldUserSshKeyDeleteArgs): string {
   const stdout = error.stdout ?? '';
@@ -52,22 +44,6 @@ export const handleUserSshKeyDeleteCli: MittwaldCliToolHandler<MittwaldUserSshKe
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout.trim() || stderr.trim();
-
-    if (args.quiet) {
-      const quietMessage = parseQuietOutput(stdout) ?? parseQuietOutput(stderr ?? '') ?? output;
-      return formatToolResponse(
-        'success',
-        quietMessage || `SSH key ${args.keyId} deleted successfully`,
-        {
-          keyId: args.keyId,
-          deleted: true,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     const message = output || `SSH key ${args.keyId} deleted successfully`;
     return formatToolResponse(

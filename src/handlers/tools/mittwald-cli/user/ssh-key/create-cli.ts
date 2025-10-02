@@ -3,7 +3,6 @@ import { formatToolResponse } from '../../../../../utils/format-tool-response.js
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldUserSshKeyCreateArgs {
-  quiet?: boolean;
   expires?: string;
   output?: string;
   noPassphrase?: boolean;
@@ -17,17 +16,10 @@ function buildCliArgs(args: MittwaldUserSshKeyCreateArgs): string[] {
   if (args.output) argv.push('--output', args.output);
   if (args.noPassphrase) argv.push('--no-passphrase');
   if (args.comment) argv.push('--comment', args.comment);
-  if (args.quiet) argv.push('--quiet');
 
   return argv;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError): string {
   const stdout = error.stdout ?? '';
@@ -49,30 +41,6 @@ export const handleUserSshKeyCreateCli: MittwaldCliToolHandler<MittwaldUserSshKe
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout.trim() || stderr.trim();
-
-    if (args.quiet) {
-      const keyId = parseQuietOutput(stdout) ?? parseQuietOutput(stderr ?? '');
-      if (!keyId) {
-        return formatToolResponse(
-          'error',
-          'Failed to create SSH key - no key ID returned'
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        keyId,
-        {
-          keyId,
-          expires: args.expires,
-          comment: args.comment,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     const message = output || 'SSH key created successfully';
 

@@ -5,7 +5,6 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldAppUploadArgs {
   installationId?: string;
   source: string;
-  quiet?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
   exclude?: string[];
@@ -17,7 +16,6 @@ interface MittwaldAppUploadArgs {
 function buildCliArgs(args: MittwaldAppUploadArgs, installationId: string): string[] {
   const cliArgs: string[] = ['app', 'upload', installationId, '--source', args.source];
 
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.sshUser) cliArgs.push('--ssh-user', args.sshUser);
   if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
   if (Array.isArray(args.exclude)) {
@@ -55,12 +53,6 @@ function buildSuccessMessage(args: MittwaldAppUploadArgs): string {
   return 'App uploaded successfully';
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 export const handleAppUploadCli: MittwaldCliToolHandler<MittwaldAppUploadArgs> = async (args) => {
   if (!args.installationId) {
@@ -90,28 +82,6 @@ export const handleAppUploadCli: MittwaldCliToolHandler<MittwaldAppUploadArgs> =
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'App uploaded successfully';
     const message = buildSuccessMessage(args);
-
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? output;
-      return formatToolResponse(
-        'success',
-        quietOutput,
-        {
-          installationId: args.installationId,
-          source: args.source,
-          remoteSubDirectory: args.remoteSubDirectory,
-          dryRun: args.dryRun,
-          delete: args.delete,
-          sshUser: args.sshUser,
-          sshIdentityFile: args.sshIdentityFile,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

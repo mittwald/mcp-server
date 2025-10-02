@@ -5,24 +5,16 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 interface MittwaldSshUserDeleteArgs {
   sshUserId: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldSshUserDeleteArgs): string[] {
   const cliArgs: string[] = ['ssh-user', 'delete', args.sshUserId];
 
   if (args.force) cliArgs.push('--force');
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldSshUserDeleteArgs): string {
   const stderr = error.stderr ?? '';
@@ -48,13 +40,11 @@ function mapCliError(error: CliToolError, args: MittwaldSshUserDeleteArgs): stri
   return `Failed to delete SSH user: ${details}`;
 }
 
-function buildSuccessPayload(stdout: string, args: MittwaldSshUserDeleteArgs, quiet: boolean) {
+function buildSuccessPayload(stdout: string, args: MittwaldSshUserDeleteArgs) {
   return {
     sshUserId: args.sshUserId,
     action: 'deleted',
-    ...(quiet
-      ? { status: 'success' }
-      : { output: stdout }),
+    output: stdout,
   };
 }
 
@@ -79,16 +69,10 @@ export const handleSshUserDeleteCli: MittwaldCliToolHandler<MittwaldSshUserDelet
 
     const stdout = result.result.stdout ?? '';
 
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout);
-      const message = quietOutput || 'SSH user deleted successfully';
-      return formatToolResponse('success', message, buildSuccessPayload(stdout, args, true), meta);
-    }
-
     return formatToolResponse(
       'success',
       `SSH user ${args.sshUserId} has been successfully deleted`,
-      buildSuccessPayload(stdout, args, false),
+      buildSuccessPayload(stdout, args),
       meta
     );
   } catch (error) {

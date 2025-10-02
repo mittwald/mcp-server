@@ -5,24 +5,16 @@ import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 interface MittwaldUserApiTokenRevokeArgs {
   tokenId: string;
   force?: boolean;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldUserApiTokenRevokeArgs): string[] {
   const cliArgs: string[] = ['user', 'api-token', 'revoke', args.tokenId];
 
   if (args.force) cliArgs.push('--force');
-  if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldUserApiTokenRevokeArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`;
@@ -45,7 +37,6 @@ function buildSuccessPayload(
     revoked: true,
     output,
     force: args.force,
-    quiet: args.quiet,
   };
 }
 
@@ -66,19 +57,6 @@ export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApi
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
     const output = stdout || stderr || `API token ${args.tokenId} revoked successfully`;
-
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? output;
-      return formatToolResponse(
-        'success',
-        quietOutput || 'API token revoked successfully',
-        buildSuccessPayload(args, quietOutput),
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

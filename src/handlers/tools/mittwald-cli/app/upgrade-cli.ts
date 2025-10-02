@@ -7,7 +7,6 @@ interface MittwaldAppUpgradeArgs {
   targetVersion?: string;
   force?: boolean;
   projectId?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: string;
 }
@@ -18,7 +17,6 @@ function buildCliArgs(args: MittwaldAppUpgradeArgs, installationId: string): str
   if (args.targetVersion) cliArgs.push('--target-version', args.targetVersion);
   if (args.force) cliArgs.push('--force');
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.wait) cliArgs.push('--wait');
   if (args.waitTimeout) cliArgs.push('--wait-timeout', args.waitTimeout);
 
@@ -43,7 +41,7 @@ function mapCliError(error: CliToolError, args: MittwaldAppUpgradeArgs): string 
   return error.message;
 }
 
-function formatSuccessMessage(args: MittwaldAppUpgradeArgs, installationId: string, quiet: boolean | undefined): { message: string; data: Record<string, unknown> } {
+function formatSuccessMessage(args: MittwaldAppUpgradeArgs, installationId: string): { message: string; data: Record<string, unknown> } {
   const baseData: Record<string, unknown> = {
     installationId,
     targetVersion: args.targetVersion,
@@ -62,12 +60,6 @@ function formatSuccessMessage(args: MittwaldAppUpgradeArgs, installationId: stri
   };
 }
 
-function parseQuietId(stdout: string): string | undefined {
-  const trimmed = stdout.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs> = async (args) => {
   if (!args.installationId) {
@@ -93,24 +85,7 @@ export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs>
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'App upgraded successfully';
 
-    const { message, data } = formatSuccessMessage(args, args.installationId, args.quiet);
-
-    if (args.quiet) {
-      const id = parseQuietId(stdout) ?? args.installationId;
-      return formatToolResponse(
-        'success',
-        id,
-        {
-          ...data,
-          appInstallationId: id,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
+    const { message, data } = formatSuccessMessage(args, args.installationId);
 
     return formatToolResponse(
       'success',

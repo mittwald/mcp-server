@@ -6,7 +6,6 @@ interface MittwaldBackupCreateCliArgs {
   projectId?: string;
   expires: string;
   description?: string;
-  quiet?: boolean;
   wait?: boolean;
   waitTimeout?: string;
 }
@@ -16,19 +15,12 @@ function buildCliArgs(args: MittwaldBackupCreateCliArgs): string[] {
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
   if (args.description) cliArgs.push('--description', args.description);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.wait) cliArgs.push('--wait');
   if (args.waitTimeout) cliArgs.push('--wait-timeout', args.waitTimeout);
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldBackupCreateCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -72,19 +64,6 @@ export const handleBackupCreateCli: MittwaldCliToolHandler<MittwaldBackupCreateC
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'Backup creation initiated';
-
-    if (args.quiet) {
-      const backupId = parseQuietOutput(stdout);
-      return formatToolResponse(
-        'success',
-        backupId ? `Backup created successfully with ID: ${backupId}` : output,
-        buildSuccessPayload(args, output, backupId),
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     const message = args.wait
       ? 'Backup created successfully'

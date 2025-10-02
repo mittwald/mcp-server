@@ -6,7 +6,6 @@ interface MittwaldRegistryCreateCliArgs {
   uri: string;
   description: string;
   projectId?: string;
-  quiet?: boolean;
   username?: string;
   password?: string;
 }
@@ -15,19 +14,12 @@ function buildCliArgs(args: MittwaldRegistryCreateCliArgs): string[] {
   const cliArgs: string[] = ['registry', 'create', '--uri', args.uri, '--description', args.description];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.username) cliArgs.push('--username', args.username);
   if (args.password) cliArgs.push('--password', args.password);
 
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
 
 function mapCliError(error: CliToolError, args: MittwaldRegistryCreateCliArgs): string {
   const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
@@ -64,26 +56,6 @@ export const handleRegistryCreateCli: MittwaldCliToolHandler<MittwaldRegistryCre
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || 'Registry created successfully';
-
-    if (args.quiet) {
-      const registryId = parseQuietOutput(stdout);
-      return formatToolResponse(
-        'success',
-        'Registry created successfully',
-        {
-          registryId,
-          uri: args.uri,
-          description: args.description,
-          projectId: args.projectId,
-          username: args.username,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',

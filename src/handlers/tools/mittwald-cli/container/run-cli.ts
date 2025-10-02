@@ -7,7 +7,6 @@ interface MittwaldContainerRunArgs {
   command?: string;
   args?: string[];
   projectId?: string;
-  quiet?: boolean;
   env?: string[];
   envFile?: string[];
   description?: string;
@@ -24,7 +23,6 @@ function buildCliArgs(args: MittwaldContainerRunArgs): string[] {
   if (args.command) cliArgs.push(args.command);
   if (args.args?.length) cliArgs.push(...args.args);
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
   if (args.name) cliArgs.push('--name', args.name);
   if (args.description) cliArgs.push('--description', args.description);
   if (args.entrypoint) cliArgs.push('--entrypoint', args.entrypoint);
@@ -35,13 +33,6 @@ function buildCliArgs(args: MittwaldContainerRunArgs): string[] {
   args.volume?.forEach((item) => cliArgs.push('--volume', item));
 
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
 }
 
 function mapCliError(error: CliToolError, args: MittwaldContainerRunArgs): string {
@@ -83,28 +74,6 @@ export const handleContainerRunCli: MittwaldCliToolHandler<MittwaldContainerRunA
     const stdout = result.result.stdout || '';
     const stderr = result.result.stderr || '';
     const output = stdout || stderr || `Container created and started successfully from image ${args.image}`;
-
-    if (args.quiet) {
-      const containerId = parseQuietOutput(stdout);
-      return formatToolResponse(
-        'success',
-        output,
-        {
-          containerId,
-          image: args.image,
-          name: args.name,
-          action: 'run',
-          projectId: args.projectId,
-          command: args.command,
-          args: args.args,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
 
     return formatToolResponse(
       'success',
