@@ -157,6 +157,10 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
 
   if (!VOLUME_NAME_PATTERN.test(volumeName)) {
     logger.warn('[Volume Delete] Volume identifier does not match standard naming pattern', { volumeName });
+    return formatToolResponse(
+      'error',
+      'Invalid volume identifier. Use lowercase letters, numbers, and hyphens only.'
+    );
   }
 
   const safety = await checkVolumeSafety(args, volumeName);
