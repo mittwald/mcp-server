@@ -62,8 +62,8 @@
     "url": "git+https://github.com/systempromptio/systemprompt-mcp-server.git"
   },
   "dependencies": {
-    "@mittwald/api-client": "^4.169.0",
     "@koa/router": "^14.0.0",
+    "@mittwald/api-client": "^4.169.0",
     "@modelcontextprotocol/sdk": "^1.13.0",
     "@robertdouglass/mcp-tester": "^1.0.3",
     "@types/jsonwebtoken": "^9.0.10",
@@ -71,25 +71,28 @@
     "ajv-formats": "^3.0.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "koa": "^3.0.1",
-    "koa-bodyparser": "^4.4.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "ioredis": "^5.7.0",
     "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
+    "koa": "^3.0.1",
+    "koa-bodyparser": "^4.4.1",
     "openid-client": "^6.6.2",
     "pino": "^9.11.0",
     "redis": "^5.7.0",
+    "semver": "^7.6.3",
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@mittwald/cli": "1.11.2",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/json-schema": "^7.0.15",
     "@types/node": "^22.15.33",
+    "@types/semver": "^7.7.1",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
@@ -105,8 +108,7 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4",
-    "@mittwald/cli": "1.11.2"
+    "vitest": "^3.2.4"
   },
   "keywords": [
     "mittwald",

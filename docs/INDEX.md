@@ -15,6 +15,7 @@ Use this index to get the current state of the project quickly. Historical deep-
 ## Reference
 - `config/mittwald-scopes.json` – scope catalogue consumed by bridge + MCP server.
 - `tests/README.md` – up-to-date test matrix and environment notes.
+- `docs/app-dependency-tools.md` – usage guide for app dependency MCP tools.
 
 ## Archive
 - `docs/archive/` – legacy analyses (oidc-provider, MCP Jam Inspector, cookie issues). Consult only for historical context.

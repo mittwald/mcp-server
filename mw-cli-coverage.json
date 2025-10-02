@@ -2,12 +2,12 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 178,
-    "toolCount": 149,
-    "coveredCount": 145,
-    "missingCount": 33,
-    "coveragePercent": 81,
+    "toolCount": 152,
+    "coveredCount": 148,
+    "missingCount": 30,
+    "coveragePercent": 83,
     "extraToolCount": 4,
-    "excludedCount": 33
+    "excludedCount": 30
   },
   "coverage": [
     {
@@ -103,13 +103,9 @@
       "cliFile": "app/dependency/list.js",
       "description": "Get all available dependencies",
       "expectedToolName": "mittwald_app_dependency_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C1 will implement dependency inspection wrappers; CLI command temporarily excluded."
-      }
+      "status": "covered",
+      "toolPath": "app/dependency-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/dependency-list-cli.js"
     },
     {
       "command": "app dependency update",
@@ -121,13 +117,9 @@
       "cliFile": "app/dependency/update.js",
       "description": null,
       "expectedToolName": "mittwald_app_dependency_update",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C1 backlog item; update functionality to be wrapped once CLI parser is stabilized."
-      }
+      "status": "covered",
+      "toolPath": "app/dependency-update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/dependency-update-cli.js"
     },
     {
       "command": "app dependency versions",
@@ -139,13 +131,9 @@
       "cliFile": "app/dependency/versions.js",
       "description": "Get all available versions of a particular dependency",
       "expectedToolName": "mittwald_app_dependency_versions",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C1 backlog item; awaiting shared schema for dependency metadata."
-      }
+      "status": "covered",
+      "toolPath": "app/dependency-versions-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/dependency-versions-cli.js"
     },
     {
       "command": "app download",
@@ -2550,60 +2538,6 @@
     }
   ],
   "missing": [
-    {
-      "command": "app dependency list",
-      "segments": [
-        "app",
-        "dependency",
-        "list"
-      ],
-      "cliFile": "app/dependency/list.js",
-      "description": "Get all available dependencies",
-      "expectedToolName": "mittwald_app_dependency_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C1 will implement dependency inspection wrappers; CLI command temporarily excluded."
-      }
-    },
-    {
-      "command": "app dependency update",
-      "segments": [
-        "app",
-        "dependency",
-        "update"
-      ],
-      "cliFile": "app/dependency/update.js",
-      "description": null,
-      "expectedToolName": "mittwald_app_dependency_update",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C1 backlog item; update functionality to be wrapped once CLI parser is stabilized."
-      }
-    },
-    {
-      "command": "app dependency versions",
-      "segments": [
-        "app",
-        "dependency",
-        "versions"
-      ],
-      "cliFile": "app/dependency/versions.js",
-      "description": "Get all available versions of a particular dependency",
-      "expectedToolName": "mittwald_app_dependency_versions",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C1 backlog item; awaiting shared schema for dependency metadata."
-      }
-    },
     {
       "command": "app exec",
       "segments": [
