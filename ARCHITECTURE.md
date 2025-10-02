@@ -74,6 +74,19 @@ Key goals:
 - `src/server/mcp.ts` – Manages session lifecycle, persists auth via `sessionManager`, ensures CLI commands use the right tokens.
 - Tests: `tests/unit/server/oauth-middleware.test.ts`, `tests/unit/middleware/session-auth.test.ts`.
 
+## Security Standards
+
+### Credential Security (REQUIRED)
+All tools that handle passwords, tokens, API keys, or secrets MUST follow the credential security standard documented in [`docs/CREDENTIAL-SECURITY.md`](./docs/CREDENTIAL-SECURITY.md). This three-layer defense-in-depth model prevents credential leakage in multi-tenant environments:
+
+1. **Layer 1**: Cryptographic password generation (`crypto.randomBytes()`)
+2. **Layer 2**: Command redaction before logging (`--password [REDACTED]`)
+3. **Layer 3**: Response sanitization (boolean flags, not values)
+
+See also:
+- [Agent S1 Implementation Prompt](./docs/agent-prompts/STANDARD-S1-credential-security.md)
+- [Agent C3 Review (Security Champion)](./docs/agent-reviews/AGENT-C3-REVIEW.md)
+
 ## Remaining Work / Considerations
 - Token refresh orchestration (optional) – bridge currently mints refresh tokens; MCP server may use Mittwald refresh tokens in future.
 - Enterprise IdPs without DCR – may require a separate onboarding flow.

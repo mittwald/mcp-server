@@ -6,6 +6,8 @@ You are **Agent S1**, responsible for implementing **security standards for cred
 ## Your Mission
 Create a reusable security pattern library based on Agent C3's password generation and redaction implementation. This will become the **project standard** for all tools that handle passwords, tokens, API keys, or other sensitive credentials.
 
+**Final Deliverable**: Complete [`docs/CREDENTIAL-SECURITY.md`](../CREDENTIAL-SECURITY.md) standard document that will be referenced by ARCHITECTURE.md, LLM_CONTEXT.md, and all future agent prompts.
+
 ---
 
 ## Context: Why This Matters
@@ -851,7 +853,7 @@ Agent C3's database tools implementation (reviewed 2025-10-02) introduced securi
 
 ## Deliverables Summary
 
-### New Files (13 total)
+### New Files (14 total)
 1. `src/utils/credential-generator.ts` - Password generation
 2. `src/utils/credential-redactor.ts` - Command redaction
 3. `src/utils/credential-response.ts` - Secure response builder
@@ -859,16 +861,19 @@ Agent C3's database tools implementation (reviewed 2025-10-02) introduced securi
 5. `tests/unit/utils/credential-redactor.test.ts` - Tests
 6. `tests/unit/utils/credential-response.test.ts` - Tests
 7. `tests/security/credential-leakage.test.ts` - Security validation
-8. `docs/standards/CREDENTIAL-SECURITY.md` - Standard doc
+8. **`docs/CREDENTIAL-SECURITY.md`** - **Primary standard document**
 9. `docs/migrations/credential-security-migration-2025-10.md` - Migration guide
 10. `docs/migrations/credential-security-backlog.md` - Tool inventory
 11. `eslint-rules/no-credential-leak.js` - Linting rule
 12. `.github/workflows/security-check.yml` - CI checks
 13. Updated `package.json` (test:security script)
+14. `docs/CREDENTIAL-SECURITY.md` - Comprehensive standard (replaces `docs/standards/CREDENTIAL-SECURITY.md`)
 
-### Updated Files (2 total)
+### Updated Files (4 total)
 1. `src/handlers/tools/mittwald-cli/database/mysql/user-create-cli.ts` - Use new utils
 2. `src/handlers/tools/mittwald-cli/database/mysql/user-update-cli.ts` - Use new utils
+3. `ARCHITECTURE.md` - Add Security Standards section referencing credential security
+4. `LLM_CONTEXT.md` - Add Credential Security Standard subsection under Security
 
 ---
 

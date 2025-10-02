@@ -161,12 +161,10 @@ Result Parsing → MCP Response
 - Parsers transform CLI stdout into typed results
 - Standardized error responses for CLI failures
 
-**Current Coverage** (as of 2025-10-01):
-- **137 of 178 CLI commands wrapped** (77%)
-- Strong coverage: projects, apps, cronjobs, backups, domains, mail, servers, SSH/SFTP
-- **Missing 41 commands**:
-  - Container: `cp`, `exec`, `port-forward`, `ssh`, `update`
-  - Database: MySQL user management, all Redis commands
+**Current Coverage** (as of 2025-10-02):
+- **165 of 178 CLI commands wrapped** (92.7%)
+- Strong coverage: projects, apps, databases, cronjobs, backups, domains, mail, servers, SSH/SFTP, containers, organizations
+- **Missing 13 commands**: Primarily interactive commands (SSH, port-forward, shell) requiring streaming transport (Workstream D)
   - Org: CRUD operations, membership management
   - Registry/Stack/Volume: CLI renamed topics, wrappers need alignment
   - DDEV: tools defined but not registered
@@ -177,11 +175,34 @@ Result Parsing → MCP Response
 ## Key Design Principles
 
 ### Security
+
+#### OAuth 2.1 + Multi-Tenant Security
 - **No credential storage**: MCP server never stores Mittwald passwords
 - **Per-user isolation**: Redis sessions prevent cross-user contamination
 - **HTTPS mandatory**: OAuth flows require TLS in production (Fly.io terminates)
 - **Scope enforcement**: Mittwald is authoritative for scopes and consent
 - **Token rotation**: Automatic refresh with secure storage
+
+#### Credential Security Standard (REQUIRED)
+**All tools handling passwords, tokens, API keys, or secrets MUST follow** [`docs/CREDENTIAL-SECURITY.md`](./docs/CREDENTIAL-SECURITY.md):
+
+- **Layer 1 - Cryptographic Generation**: Use `crypto.randomBytes()` for passwords/tokens (24+ chars, base64url)
+- **Layer 2 - Command Redaction**: Sanitize CLI commands before logging (`--password [REDACTED]`)
+- **Layer 3 - Response Sanitization**: Return boolean flags (not credential values), only return generated credentials once
+
+**Key Security Utilities**:
+- `src/utils/credential-generator.ts` - `generateSecurePassword()`, `generateSecureToken()`
+- `src/utils/credential-redactor.ts` - `redactCredentialsFromCommand()`, `redactMetadata()`
+- `src/utils/credential-response.ts` - `buildUpdatedAttributes()`, `buildSecureToolResponse()`
+
+**Automated Enforcement**:
+- ESLint rule `no-credential-leak` detects credential leakage in code
+- CI security checks block PRs with hardcoded credentials
+- Security test suite validates all three layers
+
+See also:
+- [Agent S1 Implementation Guide](./docs/agent-prompts/STANDARD-S1-credential-security.md)
+- [Agent C3 Review (Security Champion, Grade A+ 98%)](./docs/agent-reviews/AGENT-C3-REVIEW.md)
 
 ### Stateless OAuth Bridge
 - Bridge stores only ephemeral authorization state (Redis with TTL)

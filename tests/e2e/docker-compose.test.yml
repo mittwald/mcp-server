@@ -1,0 +1,86 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --save "" --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 1s
+      retries: 10
+    networks:
+      - mittwald-e2e
+
+  oauth-bridge:
+    build:
+      context: ../..
+      dockerfile: packages/oauth-bridge/Dockerfile
+    environment:
+      PORT: ${BRIDGE_INTERNAL_PORT}
+      BRIDGE_ISSUER: http://oauth-bridge:${BRIDGE_INTERNAL_PORT}
+      BRIDGE_BASE_URL: http://oauth-bridge:${BRIDGE_INTERNAL_PORT}
+      BRIDGE_JWT_SECRET: ${OAUTH_BRIDGE_JWT_SECRET}
+      BRIDGE_ACCESS_TOKEN_TTL_SECONDS: 900
+      BRIDGE_REFRESH_TOKEN_TTL_SECONDS: 86400
+      BRIDGE_REDIRECT_URIS: ${BRIDGE_REDIRECT_URIS}
+      BRIDGE_STATE_STORE: redis
+      BRIDGE_STATE_TTL_SECONDS: 600
+      BRIDGE_REDIS_URL: redis://redis:6379/1
+      MITTWALD_AUTHORIZATION_URL: http://host.docker.internal:${MITTWALD_STUB_PORT}/oauth/authorize
+      MITTWALD_TOKEN_URL: http://host.docker.internal:${MITTWALD_STUB_PORT}/oauth/token
+      MITTWALD_CLIENT_ID: mittwald-client
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${BRIDGE_HOST_PORT}:${BRIDGE_INTERNAL_PORT}"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${BRIDGE_INTERNAL_PORT}/health"]
+      interval: 2s
+      timeout: 1s
+      retries: 30
+    networks:
+      - mittwald-e2e
+
+  mcp-server:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: test
+      PORT: ${MCP_INTERNAL_PORT}
+      JWT_SECRET: ${OAUTH_BRIDGE_JWT_SECRET}
+      OAUTH_BRIDGE_JWT_SECRET: ${OAUTH_BRIDGE_JWT_SECRET}
+      OAUTH_BRIDGE_ISSUER: http://oauth-bridge:${BRIDGE_INTERNAL_PORT}
+      OAUTH_BRIDGE_BASE_URL: http://oauth-bridge:${BRIDGE_INTERNAL_PORT}
+      OAUTH_BRIDGE_AUTHORIZATION_URL: http://oauth-bridge:${BRIDGE_INTERNAL_PORT}/authorize
+      OAUTH_BRIDGE_TOKEN_URL: http://oauth-bridge:${BRIDGE_INTERNAL_PORT}/token
+      REDIS_URL: redis://redis:6379/0
+      OAUTH_ISSUER: http://mcp-server:${MCP_INTERNAL_PORT}
+      REDIRECT_URL: http://mcp-server:${MCP_INTERNAL_PORT}/oauth/callback
+      ENABLE_HTTPS: "false"
+      TOOL_FILTER_ENABLED: "false"
+      TEST_PARALLEL: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${MCP_HOST_PORT}:${MCP_INTERNAL_PORT}"
+    depends_on:
+      redis:
+        condition: service_healthy
+      oauth-bridge:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${MCP_INTERNAL_PORT}/health"]
+      interval: 2s
+      timeout: 1s
+      retries: 30
+    networks:
+      - mittwald-e2e
+
+networks:
+  mittwald-e2e:
+    driver: bridge
