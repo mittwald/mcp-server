@@ -53,7 +53,7 @@ First, get the DDEV configuration YAML:
 # Resource URI: mittwald://ddev/config/${appInstallationId}
 \`\`\`
 
-Save the configuration to \\`.ddev/config.yaml\\`.
+Save the configuration to \`.ddev/config.yaml\`.
 
 ## Step 2: Run DDEV Commands
 
@@ -99,17 +99,17 @@ ddev ssh -c "pwd"
 ## Next Steps
 
 After setup, you can:
-- Pull files: \\`ddev pull mittwald\\`
-- Push files: \\`ddev push mittwald\\`
-- SSH into app: \\`ddev ssh\\`
-- Access database: \\`ddev mysql\\`
+- Pull files: \`ddev pull mittwald\`
+- Push files: \`ddev push mittwald\`
+- SSH into app: \`ddev ssh\`
+- Access database: \`ddev mysql\`
 
 ## Troubleshooting
 
 If you encounter issues:
-1. Verify DDEV version: \\`ddev version\\` (requires >= 1.22)
-2. Check SSH keys: \\`ddev auth ssh\\`
-3. Review logs: \\`ddev logs\\`
+1. Verify DDEV version: \`ddev version\` (requires >= 1.22)
+2. Check SSH keys: \`ddev auth ssh\`
+3. Review logs: \`ddev logs\`
 
 ---
 

@@ -54,8 +54,17 @@ export async function generateDdevConfig(
   const app = appRes.data;
 
   let resolvedDatabaseId = databaseId;
-  if (!resolvedDatabaseId && Array.isArray(app.linkedDatabases) && app.linkedDatabases.length > 0) {
-    resolvedDatabaseId = app.linkedDatabases[0];
+  if (!resolvedDatabaseId) {
+    const linked = app.linkedDatabases as unknown;
+    if (Array.isArray(linked) && linked.length > 0) {
+      const primary = linked[0] as unknown;
+      if (typeof primary === 'string') {
+        resolvedDatabaseId = primary;
+      } else if (primary && typeof primary === 'object') {
+        const candidate = (primary as { mysqlDatabaseId?: string; databaseId?: string });
+        resolvedDatabaseId = candidate.mysqlDatabaseId ?? candidate.databaseId ?? undefined;
+      }
+    }
   }
 
   const builder = new DDEVConfigBuilder(apiClient);
