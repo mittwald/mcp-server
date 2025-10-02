@@ -33,23 +33,23 @@ export class MittwaldClient {
   }
 
   // Direct namespace access for all SDK APIs
-  public get app(): MittwaldAPIV2Client['app'] { return this.client.app; }
-  public get article(): MittwaldAPIV2Client['article'] { return this.client.article; }
-  public get backup(): MittwaldAPIV2Client['backup'] { return this.client.backup; }
-  public get container(): MittwaldAPIV2Client['container'] { return this.client.container; }
-  public get contract(): MittwaldAPIV2Client['contract'] { return this.client.contract; }
-  public get conversation(): MittwaldAPIV2Client['conversation'] { return this.client.conversation; }
-  public get cronjob(): MittwaldAPIV2Client['cronjob'] { return this.client.cronjob; }
-  public get customer(): MittwaldAPIV2Client['customer'] { return this.client.customer; }
-  public get database(): MittwaldAPIV2Client['database'] { return this.client.database; }
-  public get domain(): MittwaldAPIV2Client['domain'] { return this.client.domain; }
-  public get file(): MittwaldAPIV2Client['file'] { return this.client.file; }
-  public get mail(): MittwaldAPIV2Client['mail'] { return this.client.mail; }
-  public get marketplace(): MittwaldAPIV2Client['marketplace'] { return this.client.marketplace; }
-  public get notification(): MittwaldAPIV2Client['notification'] { return this.client.notification; }
-  public get project(): MittwaldAPIV2Client['project'] { return this.client.project; }
-  public get sshsftpUser(): MittwaldAPIV2Client['sshsftpUser'] { return this.client.sshsftpUser; }
-  public get user(): MittwaldAPIV2Client['user'] { return this.client.user; }
+  public get app() { return this.client.app; }
+  public get article() { return this.client.article; }
+  public get backup() { return this.client.backup; }
+  public get container() { return this.client.container; }
+  public get contract() { return this.client.contract; }
+  public get conversation() { return this.client.conversation; }
+  public get cronjob() { return this.client.cronjob; }
+  public get customer() { return this.client.customer; }
+  public get database() { return this.client.database; }
+  public get domain() { return this.client.domain; }
+  public get file() { return this.client.file; }
+  public get mail() { return this.client.mail; }
+  public get marketplace() { return this.client.marketplace; }
+  public get notification() { return this.client.notification; }
+  public get project() { return this.client.project; }
+  public get sshsftpUser() { return this.client.sshsftpUser; }
+  public get user() { return this.client.user; }
 
   /**
    * Test the API connection by fetching the user's email

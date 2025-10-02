@@ -7,12 +7,6 @@
 
 import type { MittwaldAPIV2Client } from '@mittwald/api-client';
 
-type ApiShimResponse<T = unknown> = {
-  status: number;
-  data: T;
-  error?: string;
-};
-
 /**
  * Get current user info (replacement for missing getSelf method)
  */
@@ -50,9 +44,9 @@ export async function getSelf(client: MittwaldAPIV2Client) {
  * Authenticate with session token (workaround using refreshSession)
  */
 export async function authenticateWithSessionToken(
-  client: MittwaldAPIV2Client,
+  client: MittwaldAPIV2Client, 
   sessionToken: string
-): Promise<ApiShimResponse> {
+) {
   try {
     // Use refreshSession as a workaround
     const response = await client.user.refreshSession({
@@ -61,10 +55,7 @@ export async function authenticateWithSessionToken(
       }
     });
     
-    return {
-      status: response.status,
-      data: response.data
-    };
+    return response;
   } catch (error) {
     return {
       status: 401,
@@ -137,7 +128,7 @@ export async function updateUser(
   client: MittwaldAPIV2Client,
   userId: string,
   data: { firstName?: string; lastName?: string }
-): Promise<ApiShimResponse> {
+) {
   try {
     // Try updateAccount as a workaround
     const response = await client.user.updateAccount({
@@ -149,10 +140,7 @@ export async function updateUser(
       }
     });
     
-    return {
-      status: response.status,
-      data: response.data
-    };
+    return response;
   } catch (error) {
     return {
       status: 500,
