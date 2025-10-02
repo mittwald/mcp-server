@@ -1,57 +1,16 @@
 import type { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { assertStatus } from '@mittwald/api-client';
 import { DDEVConfigBuilder } from '@mittwald/cli/dist/lib/ddev/config_builder.js';
+import { dump as yamlDump } from 'js-yaml';
 import { getMittwaldClient } from '../services/mittwald/mittwald-client.js';
 
-// Temporary YAML renderer; replaced with js-yaml in later task.
 function renderYAML(config: Record<string, unknown>): string {
-  const lines: string[] = [];
-
-  const serializeValue = (key: string | null, value: unknown, indent = ''): void => {
-    if (value === undefined || value === null) {
-      return;
-    }
-
-    if (Array.isArray(value)) {
-      const prefix = key ? `${indent}${key}:` : indent;
-      lines.push(prefix);
-      if (value.length === 0) {
-        lines.push(`${indent}  -`);
-        return;
-      }
-      value.forEach(item => {
-        if (item && typeof item === 'object') {
-          lines.push(`${indent}  -`);
-          serializeValue(null, item, `${indent}    `);
-        } else {
-          lines.push(`${indent}  - ${item}`);
-        }
-      });
-      return;
-    }
-
-    if (value && typeof value === 'object') {
-      if (key) {
-        lines.push(`${indent}${key}:`);
-      }
-      Object.entries(value).forEach(([childKey, childValue]) => {
-        serializeValue(childKey, childValue, `${indent}${key ? '  ' : ''}`);
-      });
-      return;
-    }
-
-    if (key) {
-      lines.push(`${indent}${key}: ${value}`);
-    } else {
-      lines.push(`${indent}${value}`);
-    }
-  };
-
-  Object.entries(config).forEach(([key, value]) => {
-    serializeValue(key, value);
+  return yamlDump(config, {
+    indent: 2,
+    lineWidth: 120,
+    noRefs: true,
+    sortKeys: false
   });
-
-  return `${lines.join('\n')}\n`;
 }
 
 export const ddevConfigResource: Resource = {
