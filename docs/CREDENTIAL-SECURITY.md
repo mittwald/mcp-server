@@ -1119,6 +1119,88 @@ console.log(response.meta.command);
 
 ## Implementation Requirements
 
+### Required Practices (Quick Reference)
+
+#### 1. Generate Credentials Securely
+
+**DO** ✅
+```typescript
+import { generateSecurePassword } from '../../utils/credential-generator.js';
+
+const password = args.password ?? generateSecurePassword({ length: 24 }).value;
+```
+
+**DON'T** ❌
+```typescript
+const password = Math.random().toString(36);  // ❌ Not cryptographically secure
+const password = 'password123';               // ❌ Hardcoded default
+```
+
+#### 2. Redact Credentials from Metadata
+
+**DO** ✅
+```typescript
+import { buildSecureToolResponse } from '../../utils/credential-response.js';
+
+return buildSecureToolResponse('success', message, data, {
+  command: result.meta.command,  // ✅ Auto-redacted
+  durationMs: result.meta.durationMs
+});
+```
+
+**DON'T** ❌
+```typescript
+return formatToolResponse('success', message, data, {
+  command: `mw user create --password ${password}`  // ❌ Leaks password
+});
+```
+
+#### 3. Never Return Credential Values
+
+**DO** ✅
+```typescript
+import { buildUpdatedAttributes } from '../../utils/credential-response.js';
+
+const responseData = {
+  userId: 'u-123',
+  updatedAttributes: buildUpdatedAttributes(args)
+};
+```
+
+**DON'T** ❌
+```typescript
+const responseData = {
+  userId: 'u-123',
+  password: args.password  // ❌ Password exposed in response
+};
+```
+
+#### 4. Return Generated Credentials Only Once
+
+```typescript
+const passwordGenerated = !args.password;
+const password = args.password ?? generateSecurePassword().value;
+
+return buildSecureToolResponse('success', message, {
+  userId,
+  password: passwordGenerated ? password : undefined,  // ✅ Only if generated here
+  passwordGenerated
+});
+```
+
+#### 5. Validate Tests Check for Leakage
+
+```typescript
+it('sanitizes password in meta command', async () => {
+  const response = await handleTool({ password: 'super-secret' });
+  const payload = JSON.parse(response.content[0]?.text ?? '{}');
+
+  expect(payload.meta.command).not.toContain('super-secret');
+  expect(payload.meta.command).toContain('[REDACTED]');
+  expect(payload.data.password).toBeUndefined();
+});
+```
+
 ### Mandatory for All Credential-Handling Tools
 
 **A tool handles credentials if it**:
