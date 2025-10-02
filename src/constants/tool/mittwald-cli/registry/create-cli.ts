@@ -5,7 +5,7 @@ import { handleRegistryCreateCli } from '../../../../handlers/tools/mittwald-cli
 const tool: Tool = {
   name: 'mittwald_registry_create',
   title: 'Create Registry',
-  description: 'Create a new registry.',
+  description: 'Create a new registry in Mittwald.',
   inputSchema: {
     type: 'object',
     properties: {

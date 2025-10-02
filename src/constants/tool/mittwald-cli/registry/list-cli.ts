@@ -5,7 +5,7 @@ import { handleRegistryListCli } from '../../../../handlers/tools/mittwald-cli/r
 const tool: Tool = {
   name: 'mittwald_registry_list',
   title: 'List Registries',
-  description: 'List registries.',
+  description: 'List registries available in Mittwald.',
   inputSchema: {
     type: 'object',
     properties: {

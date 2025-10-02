@@ -5,7 +5,7 @@ import { handleRegistryUpdateCli } from '../../../../handlers/tools/mittwald-cli
 const tool: Tool = {
   name: 'mittwald_registry_update',
   title: 'Update Registry',
-  description: 'Update an existing registry.',
+  description: 'Update an existing registry in Mittwald.',
   inputSchema: {
     type: 'object',
     properties: {
