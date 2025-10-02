@@ -2,12 +2,12 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 178,
-    "toolCount": 152,
-    "coveredCount": 148,
-    "missingCount": 30,
-    "coveragePercent": 83,
+    "toolCount": 153,
+    "coveredCount": 149,
+    "missingCount": 29,
+    "coveragePercent": 84,
     "extraToolCount": 4,
-    "excludedCount": 30
+    "excludedCount": 29
   },
   "coverage": [
     {
@@ -726,13 +726,9 @@
       "cliFile": "container/update.js",
       "description": "Updates attributes of an existing container such as image, environment variables, etc.",
       "expectedToolName": "mittwald_container_update",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C2: non-interactive container lifecycle command pending wrapper."
-      }
+      "status": "covered",
+      "toolPath": "container/update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/update-cli.js"
     },
     {
       "command": "context get",
@@ -2638,23 +2634,6 @@
       "exclusion": {
         "category": "interactive",
         "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
-      }
-    },
-    {
-      "command": "container update",
-      "segments": [
-        "container",
-        "update"
-      ],
-      "cliFile": "container/update.js",
-      "description": "Updates attributes of an existing container such as image, environment variables, etc.",
-      "expectedToolName": "mittwald_container_update",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C2: non-interactive container lifecycle command pending wrapper."
       }
     },
     {
