@@ -37,6 +37,7 @@
     "test:bridge": "pnpm --filter @mittwald/oauth-bridge test",
     "test:session": "vitest run tests/integration/cli-session.integration.test.ts",
     "test:smoke": "vitest run tests/smoke",
+    "test:security": "vitest run tests/security",
     "test:functional": "vitest run tests/functional --reporter=verbose --no-file-parallelism",
     "test:functional:watch": "vitest tests/functional --reporter=verbose --no-file-parallelism",
     "test:cleanup": "vitest run tests/functional/full-lifecycle.test.ts -t 'Manual Cleanup'",
