@@ -18,3 +18,4 @@ export { mittwald_database_mysql_phpmyadmin_cli } from './mysql/phpmyadmin-cli.j
 export { mittwald_database_mysql_port_forward_cli } from './mysql/port-forward-cli.js';
 export { mittwald_database_mysql_charsets_cli } from './mysql/charsets-cli.js';
 export { mittwald_database_mysql_versions_cli } from './mysql/versions-cli.js';
+export { mittwald_database_mysql_user_create_cli } from './mysql/user-create-cli.js';
