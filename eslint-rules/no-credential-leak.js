@@ -26,12 +26,12 @@ function getMemberExpressionPropertyName(node) {
 }
 
 function sourceContainsCredentialReference(context, node) {
-  const text = context.getSourceCode().getText(node);
+  const text = context.sourceCode.getText(node);
   return /(password|token|apiKey|secret)/i.test(text);
 }
 
-function isInsideAllowedRedaction(context) {
-  const ancestors = context.getAncestors();
+function isInsideAllowedRedaction(context, node) {
+  const ancestors = context.sourceCode.getAncestors(node);
   return ancestors.some((ancestor) => {
     if (ancestor.type !== 'CallExpression') {
       return false;
@@ -114,11 +114,11 @@ export default {
       Property(node) {
         const keyName = getKeyName(node.key);
         if (keyName !== 'command') return;
-        if (isInsideAllowedRedaction(context)) return;
+        if (isInsideAllowedRedaction(context, node)) return;
 
         const value = node.value;
         if (value.type === 'MemberExpression' || value.type === 'TemplateLiteral' || value.type === 'BinaryExpression') {
-          if (sourceContainsCredentialReference(context, value) || value.type === 'MemberExpression') {
+          if (sourceContainsCredentialReference(context, value)) {
             context.report({ node, messageId: 'unredactedCommand' });
           }
         }

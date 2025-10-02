@@ -83,7 +83,6 @@ export default [
       "no-console": "off",
       "no-undef": "off",
       "no-dupe-keys": "off",
-      "local/no-credential-leak": "error",
     },
   },
   {
@@ -105,6 +104,13 @@ export default [
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "no-unused-vars": "off",
+      "local/no-credential-leak": "off",
+    },
+  },
+  {
+    files: ["src/handlers/tools/**/*.{ts,js}", "src/handlers/**/*-cli.ts"],
+    rules: {
+      "local/no-credential-leak": "error",
     },
   },
 ];

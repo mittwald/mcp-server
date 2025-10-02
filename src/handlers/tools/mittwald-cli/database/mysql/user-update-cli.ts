@@ -104,7 +104,7 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
           : args.disableExternalAccess === true
             ? 'disabled'
             : undefined,
-      password: args.password,
+      password: typeof args.password === 'string' ? true : undefined,
     });
 
     return buildSecureToolResponse(
