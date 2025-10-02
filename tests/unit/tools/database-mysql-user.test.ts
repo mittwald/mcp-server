@@ -55,8 +55,9 @@ describe('MySQL user tool handlers', () => {
       expect(payload.status).toBe('success');
       expect(payload.data.userId).toBe('mysql-user-123');
       expect(payload.data.passwordGenerated).toBe(true);
-      expect(typeof payload.data.password).toBe('string');
-      expect(payload.data.password.length).toBeGreaterThan(10);
+      expect(typeof payload.data.generatedPassword).toBe('string');
+      expect(payload.data.generatedPassword.length).toBeGreaterThan(10);
+      expect(payload.data.password).toBeUndefined();
       expect(payload.data.details).toEqual({ id: 'mysql-user-123', description: 'App user', accessLevel: 'full' });
 
       const firstCall = mockInvokeCliTool.mock.calls[0]?.[0];

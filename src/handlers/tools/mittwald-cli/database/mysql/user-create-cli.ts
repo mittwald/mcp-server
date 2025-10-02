@@ -1,10 +1,9 @@
-import { randomBytes } from 'node:crypto';
-
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { parseJsonOutput, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
 import { logger } from '../../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { buildSecureToolResponse } from '../../../../../utils/credential-response.js';
+import { generateSecurePassword } from '../../../../../utils/credential-generator.js';
 
 interface MittwaldDatabaseMysqlUserCreateArgs {
   databaseId: string;
@@ -29,19 +28,6 @@ interface MysqlUserDetails {
   updatedAt?: string;
   mainUser?: boolean;
   disabled?: boolean;
-}
-
-const DEFAULT_PASSWORD_LENGTH = 24;
-
-function generatePassword(length: number = DEFAULT_PASSWORD_LENGTH): string {
-  const targetLength = Math.max(12, length);
-  let password = '';
-
-  while (password.length < targetLength) {
-    password += randomBytes(targetLength).toString('base64url');
-  }
-
-  return password.slice(0, targetLength);
 }
 
 function buildCliArgs(
@@ -162,14 +148,19 @@ export const handleDatabaseMysqlUserCreateCli: MittwaldCliToolHandler<MittwaldDa
   sessionId,
 ) => {
   if (!args.databaseId) {
-    return formatToolResponse('error', 'Database ID is required to create a MySQL user.');
+    return buildSecureToolResponse('error', 'Database ID is required to create a MySQL user.');
   }
 
   let password = args.password;
-  const passwordGenerated = !password;
+  let generatedPassword: string | undefined;
+
   if (!password) {
-    password = generatePassword();
+    const credential = generateSecurePassword();
+    generatedPassword = credential.value;
+    password = credential.value;
   }
+
+  const passwordGenerated = Boolean(generatedPassword);
 
   let description: string;
   let argv: string[];
@@ -178,7 +169,7 @@ export const handleDatabaseMysqlUserCreateCli: MittwaldCliToolHandler<MittwaldDa
     argv = buildCliArgs(args, password, args.quiet ?? true, description);
   } catch (buildError) {
     if (buildError instanceof CliToolError) {
-      return formatToolResponse('error', buildError.message);
+      return buildSecureToolResponse('error', buildError.message);
     }
     throw buildError;
   }
@@ -196,9 +187,17 @@ export const handleDatabaseMysqlUserCreateCli: MittwaldCliToolHandler<MittwaldDa
     const userId = parseMysqlUserCreateOutput(stdout, stderr);
 
     if (!userId) {
-      return formatToolResponse('error', 'MySQL user created but the CLI did not return an identifier.', {
-        output: stdout || stderr,
-      });
+      return buildSecureToolResponse(
+        'error',
+        'MySQL user created but the CLI did not return an identifier.',
+        {
+          output: stdout || stderr,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
+      );
     }
 
     const details = await fetchMysqlUserDetails(userId, sessionId);
@@ -210,8 +209,8 @@ export const handleDatabaseMysqlUserCreateCli: MittwaldCliToolHandler<MittwaldDa
       description,
       externalAccess: !!args.enableExternalAccess,
       accessIpMask: args.enableExternalAccess ? args.accessIpMask : undefined,
-      password,
       passwordGenerated,
+      generatedPassword,
       details,
     };
 
@@ -223,18 +222,19 @@ export const handleDatabaseMysqlUserCreateCli: MittwaldCliToolHandler<MittwaldDa
       messagePieces.push('Unable to fetch user details; see data payload for raw output.');
     }
 
-    return formatToolResponse(
+    return buildSecureToolResponse(
       'success',
       messagePieces.join(' '),
       responseData,
       {
+        command: result.meta.command,
         durationMs: result.meta.durationMs,
       }
     );
   } catch (error) {
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
+      return buildSecureToolResponse('error', message, {
         exitCode: error.exitCode,
         stderr: error.stderr,
         stdout: error.stdout,
@@ -242,7 +242,7 @@ export const handleDatabaseMysqlUserCreateCli: MittwaldCliToolHandler<MittwaldDa
       });
     }
 
-    return formatToolResponse(
+    return buildSecureToolResponse(
       'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );

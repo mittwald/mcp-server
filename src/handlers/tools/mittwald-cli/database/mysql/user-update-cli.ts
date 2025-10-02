@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { buildSecureToolResponse, buildUpdatedAttributes } from '../../../../../utils/credential-response.js';
 
 interface MittwaldDatabaseMysqlUserUpdateArgs {
   userId: string;
@@ -25,22 +25,6 @@ function buildCliArgs(args: MittwaldDatabaseMysqlUserUpdateArgs): string[] {
   if (args.quiet ?? true) cliArgs.push('--quiet');
 
   return cliArgs;
-}
-
-function sanitizeCommand(argv: string[]): string {
-  const sanitized: string[] = [];
-
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (arg === '--password') {
-      sanitized.push('--password', '[REDACTED]');
-      i += 1; // Skip actual password value
-    } else {
-      sanitized.push(arg);
-    }
-  }
-
-  return `mw ${sanitized.join(' ')}`;
 }
 
 function mapCliError(error: CliToolError, args: MittwaldDatabaseMysqlUserUpdateArgs): string {
@@ -81,22 +65,21 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
   sessionId,
 ) => {
   if (!args.userId) {
-    return formatToolResponse('error', 'User ID is required to update a MySQL user.');
+    return buildSecureToolResponse('error', 'User ID is required to update a MySQL user.');
   }
 
   if (args.enableExternalAccess && args.disableExternalAccess) {
-    return formatToolResponse('error', 'enableExternalAccess and disableExternalAccess cannot both be true.');
+    return buildSecureToolResponse('error', 'enableExternalAccess and disableExternalAccess cannot both be true.');
   }
 
   if (!hasUpdatePayload(args)) {
-    return formatToolResponse(
+    return buildSecureToolResponse(
       'error',
       'Provide at least one property to update (description, accessLevel, password, accessIpMask, or external access flags).'
     );
   }
 
   const argv = buildCliArgs(args);
-  const sanitizedCommand = sanitizeCommand(argv);
 
   try {
     const result = await invokeCliTool({
@@ -111,7 +94,7 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
     const output = stdout || stderr || undefined;
     const nothingToChange = /nothing to change/i.test(stdout) || /nothing to change/i.test(stderr);
 
-    const updatedAttributes = {
+    const updatedAttributes = buildUpdatedAttributes({
       description: args.description,
       accessLevel: args.accessLevel,
       accessIpMask: args.accessIpMask,
@@ -121,10 +104,10 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
           : args.disableExternalAccess === true
             ? 'disabled'
             : undefined,
-      passwordChanged: Boolean(args.password),
-    };
+      password: args.password,
+    });
 
-    return formatToolResponse(
+    return buildSecureToolResponse(
       'success',
       nothingToChange
         ? `No changes were applied to MySQL user ${args.userId}.`
@@ -135,14 +118,14 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
         updatedAttributes,
       },
       {
-        command: sanitizedCommand,
+        command: result.meta.command,
         durationMs: result.meta.durationMs,
       }
     );
   } catch (error) {
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
+      return buildSecureToolResponse('error', message, {
         exitCode: error.exitCode,
         stderr: error.stderr,
         stdout: error.stdout,
@@ -150,7 +133,7 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
       });
     }
 
-    return formatToolResponse(
+    return buildSecureToolResponse(
       'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
