@@ -2,12 +2,12 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 178,
-    "toolCount": 162,
-    "coveredCount": 158,
-    "missingCount": 20,
-    "coveragePercent": 89,
+    "toolCount": 169,
+    "coveredCount": 165,
+    "missingCount": 13,
+    "coveragePercent": 93,
     "extraToolCount": 4,
-    "excludedCount": 20
+    "excludedCount": 13
   },
   "coverage": [
     {
@@ -1699,13 +1699,9 @@
       "cliFile": "org/delete.js",
       "description": "Delete an organization",
       "expectedToolName": "mittwald_org_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Organisation CRUD wrappers planned following permission review."
-      }
+      "status": "covered",
+      "toolPath": "org/delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/delete-cli.js"
     },
     {
       "command": "org get",
@@ -1716,13 +1712,9 @@
       "cliFile": "org/get.js",
       "description": "Get an organization profile.",
       "expectedToolName": "mittwald_org_get",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Organisation CRUD wrappers planned following permission review."
-      }
+      "status": "covered",
+      "toolPath": "org/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/get-cli.js"
     },
     {
       "command": "org invite",
@@ -1733,13 +1725,9 @@
       "cliFile": "org/invite.js",
       "description": "Invite a user to an organization.",
       "expectedToolName": "mittwald_org_invite",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Invitation flow being consolidated before exposing via MCP."
-      }
+      "status": "covered",
+      "toolPath": "org/invite-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/invite-cli.js"
     },
     {
       "command": "org invite list",
@@ -1792,13 +1780,9 @@
       "cliFile": "org/list.js",
       "description": "Get all organizations the authenticated user has access to.",
       "expectedToolName": "mittwald_org_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Organisation listing requires pagination harmonisation."
-      }
+      "status": "covered",
+      "toolPath": "org/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/list-cli.js"
     },
     {
       "command": "org membership list",
@@ -1810,13 +1794,9 @@
       "cliFile": "org/membership/list.js",
       "description": "List all memberships belonging to an organization.",
       "expectedToolName": "mittwald_org_membership_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Membership endpoints pending shared schema."
-      }
+      "status": "covered",
+      "toolPath": "org/membership-list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/membership-list-cli.js"
     },
     {
       "command": "org membership list-own",
@@ -1828,13 +1808,9 @@
       "cliFile": "org/membership/list-own.js",
       "description": "List all organization memberships for the executing user.",
       "expectedToolName": "mittwald_org_membership_list_own",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Membership endpoints pending shared schema."
-      }
+      "status": "covered",
+      "toolPath": "org/membership-list-own-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/membership-list-own-cli.js"
     },
     {
       "command": "org membership revoke",
@@ -1846,13 +1822,9 @@
       "cliFile": "org/membership/revoke.js",
       "description": "Revoke a user's membership to an organization",
       "expectedToolName": "mittwald_org_membership_revoke",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Membership revoke requires audit logging design."
-      }
+      "status": "covered",
+      "toolPath": "org/membership-revoke-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/org/membership-revoke-cli.js"
     },
     {
       "command": "project create",
@@ -2667,128 +2639,6 @@
       "exclusion": {
         "category": "intentional",
         "reason": "MCP server uses per-command token injection; CLI login state not applicable"
-      }
-    },
-    {
-      "command": "org delete",
-      "segments": [
-        "org",
-        "delete"
-      ],
-      "cliFile": "org/delete.js",
-      "description": "Delete an organization",
-      "expectedToolName": "mittwald_org_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Organisation CRUD wrappers planned following permission review."
-      }
-    },
-    {
-      "command": "org get",
-      "segments": [
-        "org",
-        "get"
-      ],
-      "cliFile": "org/get.js",
-      "description": "Get an organization profile.",
-      "expectedToolName": "mittwald_org_get",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Organisation CRUD wrappers planned following permission review."
-      }
-    },
-    {
-      "command": "org invite",
-      "segments": [
-        "org",
-        "invite"
-      ],
-      "cliFile": "org/invite.js",
-      "description": "Invite a user to an organization.",
-      "expectedToolName": "mittwald_org_invite",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Invitation flow being consolidated before exposing via MCP."
-      }
-    },
-    {
-      "command": "org list",
-      "segments": [
-        "org",
-        "list"
-      ],
-      "cliFile": "org/list.js",
-      "description": "Get all organizations the authenticated user has access to.",
-      "expectedToolName": "mittwald_org_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Organisation listing requires pagination harmonisation."
-      }
-    },
-    {
-      "command": "org membership list",
-      "segments": [
-        "org",
-        "membership",
-        "list"
-      ],
-      "cliFile": "org/membership/list.js",
-      "description": "List all memberships belonging to an organization.",
-      "expectedToolName": "mittwald_org_membership_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Membership endpoints pending shared schema."
-      }
-    },
-    {
-      "command": "org membership list-own",
-      "segments": [
-        "org",
-        "membership",
-        "list-own"
-      ],
-      "cliFile": "org/membership/list-own.js",
-      "description": "List all organization memberships for the executing user.",
-      "expectedToolName": "mittwald_org_membership_list_own",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Membership endpoints pending shared schema."
-      }
-    },
-    {
-      "command": "org membership revoke",
-      "segments": [
-        "org",
-        "membership",
-        "revoke"
-      ],
-      "cliFile": "org/membership/revoke.js",
-      "description": "Revoke a user's membership to an organization",
-      "expectedToolName": "mittwald_org_membership_revoke",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream C4: Membership revoke requires audit logging design."
       }
     },
     {
