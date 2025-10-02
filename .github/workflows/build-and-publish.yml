@@ -16,7 +16,7 @@ jobs:
             dockerfile: packages/mcp-server/Dockerfile
             image: mittwald/mcp-server-http
           - package: oauth-server
-            dockerfile: packages/oauth-server/Dockerfile
+            dockerfile: packages/oauth-bridge/Dockerfile
             image: mittwald/mcp-server-oauth
     
     steps:
