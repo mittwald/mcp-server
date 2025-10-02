@@ -19,3 +19,4 @@ export { mittwald_database_mysql_port_forward_cli } from './mysql/port-forward-c
 export { mittwald_database_mysql_charsets_cli } from './mysql/charsets-cli.js';
 export { mittwald_database_mysql_versions_cli } from './mysql/versions-cli.js';
 export { mittwald_database_mysql_user_create_cli } from './mysql/user-create-cli.js';
+export { mittwald_database_mysql_user_delete_cli } from './mysql/user-delete-cli.js';
