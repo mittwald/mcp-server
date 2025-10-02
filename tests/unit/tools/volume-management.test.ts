@@ -137,6 +137,20 @@ describe('Volume management tool handlers', () => {
   });
 
   describe('handleVolumeDeleteCli', () => {
+    it('requires confirm flag for volume deletion', async () => {
+      const response = await handleVolumeDeleteCli({
+        projectId: 'p-12345',
+        volumeId: 'app-volume'
+      });
+      const payload = parseResponse(response);
+
+      expect(payload.status).toBe('error');
+      expect(payload.message).toContain('confirm=true');
+      expect(payload.message).toContain('destructive');
+      expect(payload.message).toContain('cannot be undone');
+      expect(mockInvokeCliTool).not.toHaveBeenCalled();
+    });
+
     it('deletes an unmounted volume successfully', async () => {
       mockInvokeCliTool
         .mockResolvedValueOnce({
@@ -157,7 +171,12 @@ describe('Volume management tool handlers', () => {
           meta: { command: 'mw volume delete', exitCode: 0, durationMs: 10 },
         });
 
-      const response = await handleVolumeDeleteCli({ projectId: 'p-12345', volumeId: 'app-volume', quiet: true });
+      const response = await handleVolumeDeleteCli({
+        projectId: 'p-12345',
+        volumeId: 'app-volume',
+        confirm: true,
+        quiet: true
+      });
       const payload = parseResponse(response);
 
       expect(payload.status).toBe('success');
@@ -188,7 +207,11 @@ describe('Volume management tool handlers', () => {
         meta: { command: 'mw volume list', exitCode: 0, durationMs: 8 },
       });
 
-      const response = await handleVolumeDeleteCli({ projectId: 'p-12345', volumeId: 'app-volume' });
+      const response = await handleVolumeDeleteCli({
+        projectId: 'p-12345',
+        volumeId: 'app-volume',
+        confirm: true
+      });
       const payload = parseResponse(response);
 
       expect(payload.status).toBe('error');
@@ -197,7 +220,11 @@ describe('Volume management tool handlers', () => {
     });
 
     it('rejects volume identifiers with invalid characters', async () => {
-      const response = await handleVolumeDeleteCli({ projectId: 'p-12345', volumeId: 'INVALID!' });
+      const response = await handleVolumeDeleteCli({
+        projectId: 'p-12345',
+        volumeId: 'INVALID!',
+        confirm: true
+      });
       const payload = parseResponse(response);
 
       expect(payload.status).toBe('error');
@@ -226,7 +253,12 @@ describe('Volume management tool handlers', () => {
           })
         );
 
-      const response = await handleVolumeDeleteCli({ projectId: 'p-12345', volumeId: 'app-volume', force: true });
+      const response = await handleVolumeDeleteCli({
+        projectId: 'p-12345',
+        volumeId: 'app-volume',
+        confirm: true,
+        force: true
+      });
       const payload = parseResponse(response);
 
       expect(payload.status).toBe('error');

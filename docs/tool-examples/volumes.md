@@ -45,11 +45,12 @@
   "name": "mittwald_volume_delete",
   "arguments": {
     "projectId": "p-abc123",
-    "volumeId": "app-uploads"
+    "volumeId": "app-uploads",
+    "confirm": true
   }
 }
 ```
-**WARNING**: This permanently deletes all data in the volume!
+**WARNING**: This permanently deletes all data in the volume! The `confirm: true` parameter is REQUIRED.
 
 ### ⚠️⚠️ Force delete mounted volume (extreme caution!)
 ```json
@@ -58,11 +59,12 @@
   "arguments": {
     "projectId": "p-abc123",
     "volumeId": "cache-data",
+    "confirm": true,
     "force": true
   }
 }
 ```
-**DANGER**: This detaches the volume even if containers are still using it. Confirm service downtime and data backups first.
+**DANGER**: This detaches the volume even if containers are still using it. Both `confirm: true` (deletion intent) and `force: true` (mounted override) are required. Confirm service downtime and data backups first.
 
 ## Common Use Cases
 

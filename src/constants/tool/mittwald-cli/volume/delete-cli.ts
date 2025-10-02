@@ -22,9 +22,13 @@ const tool: Tool = {
         type: 'string',
         description: 'Project ID where the volume is located (format: p-xxxxx).'
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       force: {
         type: 'boolean',
-        description: 'Force deletion even if the volume is still mounted to containers.'
+        description: 'Force deletion even if the volume is still mounted to containers (use with extreme caution).'
       },
       quiet: {
         type: 'boolean',
@@ -32,8 +36,8 @@ const tool: Tool = {
       }
     },
     anyOf: [
-      { required: ['volumeId'] },
-      { required: ['name'] }
+      { required: ['volumeId', 'projectId', 'confirm'] },
+      { required: ['name', 'projectId', 'confirm'] }
     ]
   }
 };

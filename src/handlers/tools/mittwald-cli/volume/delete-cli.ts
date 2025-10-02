@@ -7,6 +7,7 @@ interface MittwaldVolumeDeleteArgs {
   volumeId?: string;
   name?: string;
   projectId?: string;
+  confirm?: boolean;
   force?: boolean;
   quiet?: boolean;
 }
@@ -141,7 +142,7 @@ function mapCliError(error: CliToolError, volumeName: string, projectId?: string
   return `Failed to delete volume '${volumeName}'. ${error.stderr || error.message}`;
 }
 
-export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteArgs> = async (args) => {
+export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteArgs> = async (args, context) => {
   const volumeName = resolveVolumeName(args);
 
   if (!volumeName) {
@@ -155,6 +156,14 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
     );
   }
 
+  // C4 Pattern: Confirm flag validation (MUST be first check for destructive operations)
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'Volume deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
   if (!VOLUME_NAME_PATTERN.test(volumeName)) {
     logger.warn('[Volume Delete] Volume identifier does not match standard naming pattern', { volumeName });
     return formatToolResponse(
@@ -162,6 +171,15 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
       'Invalid volume identifier. Use lowercase letters, numbers, and hyphens only.'
     );
   }
+
+  // C4 Pattern: Audit logging with session context (BEFORE any destructive action)
+  logger.warn('[Volume Delete] Destructive operation attempted', {
+    volumeName,
+    projectId: args.projectId,
+    force: Boolean(args.force),
+    sessionId: context?.sessionId,
+    userId: context?.userId,
+  });
 
   const safety = await checkVolumeSafety(args, volumeName);
 
@@ -178,12 +196,6 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
         'Set force: true only if you are certain it is safe to detach the volume.'
     );
   }
-
-  logger.info('[Volume Delete] Deleting volume', {
-    volumeName,
-    projectId: args.projectId,
-    force: Boolean(args.force),
-  });
 
   const argv = buildCliArgs(volumeName, args);
 
