@@ -3,11 +3,11 @@
   "stats": {
     "cliCommandCount": 178,
     "toolCount": 149,
-    "coveredCount": 137,
-    "missingCount": 41,
-    "coveragePercent": 77,
-    "extraToolCount": 12,
-    "excludedCount": 41
+    "coveredCount": 141,
+    "missingCount": 37,
+    "coveragePercent": 79,
+    "extraToolCount": 8,
+    "excludedCount": 37
   },
   "coverage": [
     {
@@ -2105,13 +2105,9 @@
       "cliFile": "registry/create.js",
       "description": null,
       "expectedToolName": "mittwald_registry_create",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
-      }
+      "status": "covered",
+      "toolPath": "registry/create-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/registry/create-cli.js"
     },
     {
       "command": "registry delete",
@@ -2122,13 +2118,9 @@
       "cliFile": "registry/delete.js",
       "description": "Delete a container registry",
       "expectedToolName": "mittwald_registry_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
-      }
+      "status": "covered",
+      "toolPath": "registry/delete-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/registry/delete-cli.js"
     },
     {
       "command": "registry list",
@@ -2139,13 +2131,9 @@
       "cliFile": "registry/list.js",
       "description": "List container registries.",
       "expectedToolName": "mittwald_registry_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
-      }
+      "status": "covered",
+      "toolPath": "registry/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/registry/list-cli.js"
     },
     {
       "command": "registry update",
@@ -2156,13 +2144,9 @@
       "cliFile": "registry/update.js",
       "description": "Update an existing container registry",
       "expectedToolName": "mittwald_registry_update",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
-      }
+      "status": "covered",
+      "toolPath": "registry/update-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/registry/update-cli.js"
     },
     {
       "command": "server get",
@@ -3114,74 +3098,6 @@
       }
     },
     {
-      "command": "registry create",
-      "segments": [
-        "registry",
-        "create"
-      ],
-      "cliFile": "registry/create.js",
-      "description": null,
-      "expectedToolName": "mittwald_registry_create",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
-      }
-    },
-    {
-      "command": "registry delete",
-      "segments": [
-        "registry",
-        "delete"
-      ],
-      "cliFile": "registry/delete.js",
-      "description": "Delete a container registry",
-      "expectedToolName": "mittwald_registry_delete",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
-      }
-    },
-    {
-      "command": "registry list",
-      "segments": [
-        "registry",
-        "list"
-      ],
-      "cliFile": "registry/list.js",
-      "description": "List container registries.",
-      "expectedToolName": "mittwald_registry_list",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
-      }
-    },
-    {
-      "command": "registry update",
-      "segments": [
-        "registry",
-        "update"
-      ],
-      "cliFile": "registry/update.js",
-      "description": "Update an existing container registry",
-      "expectedToolName": "mittwald_registry_update",
-      "status": "missing",
-      "toolPath": null,
-      "handlerImport": null,
-      "exclusion": {
-        "category": "intentional",
-        "reason": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment."
-      }
-    },
-    {
       "command": "stack delete",
       "segments": [
         "stack",
@@ -3302,26 +3218,6 @@
     }
   ],
   "extraTools": [
-    {
-      "toolName": "mittwald_container_registry_create",
-      "relPath": "container/registry-create-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/registry-create-cli.js"
-    },
-    {
-      "toolName": "mittwald_container_registry_delete",
-      "relPath": "container/registry-delete-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/registry-delete-cli.js"
-    },
-    {
-      "toolName": "mittwald_container_registry_list",
-      "relPath": "container/registry-list-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/registry-list-cli.js"
-    },
-    {
-      "toolName": "mittwald_container_registry_update",
-      "relPath": "container/registry-update-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/container/registry-update-cli.js"
-    },
     {
       "toolName": "mittwald_container_stack_delete",
       "relPath": "container/stack-delete-cli.ts",
