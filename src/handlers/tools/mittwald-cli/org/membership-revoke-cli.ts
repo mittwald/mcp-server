@@ -7,6 +7,7 @@ import { logger } from '../../../../utils/logger.js';
 interface OrgMembershipRevokeArgs {
   membershipId: string;
   organizationId?: string;
+  confirm?: boolean;
 }
 
 interface OrgMembershipRevokePayload {
@@ -53,6 +54,13 @@ function mapCliError(error: CliToolError, args: OrgMembershipRevokeArgs): string
 export const handleOrgMembershipRevokeCli: MittwaldToolHandler<OrgMembershipRevokeArgs> = async (args, context) => {
   if (!args.membershipId) {
     return formatToolResponse('error', 'Parameter "membershipId" is required.');
+  }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'Membership revocation requires confirm=true. This operation is destructive and cannot be undone.'
+    );
   }
 
   logger.warn('[OrgMembershipRevoke] Attempting to revoke membership', {

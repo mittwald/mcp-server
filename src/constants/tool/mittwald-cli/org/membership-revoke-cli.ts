@@ -16,9 +16,13 @@ const tool: Tool = {
       organizationId: {
         type: 'string',
         description: 'Organization ID related to the membership (optional)'
+      },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm revocation (DESTRUCTIVE OPERATION - cannot be undone).'
       }
     },
-    required: ['membershipId']
+    required: ['membershipId', 'confirm']
   }
 };
 

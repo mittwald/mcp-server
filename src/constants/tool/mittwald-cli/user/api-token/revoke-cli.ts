@@ -13,16 +13,20 @@ const tool: Tool = {
         type: 'string',
         description: 'ID of the API token to revoke'
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm revocation (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       force: {
         type: 'boolean',
-        description: 'Do not ask for confirmation'
+        description: 'Pass --force to the CLI to override safety prompts after confirm=true is provided.'
       },
       quiet: {
         type: 'boolean',
         description: 'Suppress process output and only display a machine-readable summary'
       }
     },
-    required: ['tokenId'],
+    required: ['tokenId', 'confirm'],
     additionalProperties: false
   }
 };
