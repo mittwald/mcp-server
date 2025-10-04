@@ -11,6 +11,8 @@ import { JSDOM } from 'jsdom';
 import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
 const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
+const REGISTRATION_PATH = '/register';
+const AUTHORIZE_PATH = '/authorize';
 
 const remoteTest: typeof test = (name, handler, options) =>
   test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
@@ -51,7 +53,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
         claudeClient = null;
         return;
       }
-      expect(asMetadata.data.registration_endpoint).toBe(`${OAUTH_SERVER}/reg`);
+      expect(asMetadata.data.registration_endpoint).toBe(`${OAUTH_SERVER}${REGISTRATION_PATH}`);
 
       const registrationRequest = {
         client_name: 'Claude',
@@ -63,7 +65,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       };
 
       const regResponse = await safeRequest(
-        () => axios.post(`${OAUTH_SERVER}/reg`, registrationRequest, { validateStatus: () => true }),
+        () => axios.post(`${OAUTH_SERVER}${REGISTRATION_PATH}`, registrationRequest, { validateStatus: () => true }),
         'Skipping Claude registration test (OAuth host unavailable)'
       );
       if (!regResponse) {
@@ -102,7 +104,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       });
 
       const authResponse = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${authParams}`, { maxRedirects: 0, validateStatus: () => true }),
+        () => axios.get(`${OAUTH_SERVER}${AUTHORIZE_PATH}?${authParams}`, { maxRedirects: 0, validateStatus: () => true }),
         'Skipping authorization request test (OAuth host unavailable)'
       );
       if (!authResponse) {
@@ -111,9 +113,15 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
 
       expect([303, 400]).toContain(authResponse.status);
       if (authResponse.status === 303) {
-        expect(authResponse.headers.location).toMatch(/\/interaction\/[A-Za-z0-9_-]+$/);
-        const interactionUid = authResponse.headers.location.split('/').pop();
-        expect(interactionUid).toBeDefined();
+        const location = authResponse.headers.location ?? '';
+        const isMittwaldRedirect = location.startsWith('https://api.mittwald.de/');
+        const isInteractionRedirect = /\/interaction\/[A-Za-z0-9_-]+$/.test(location);
+        expect(isMittwaldRedirect || isInteractionRedirect).toBe(true);
+
+        if (isInteractionRedirect) {
+          const interactionUid = location.split('/').pop();
+          expect(interactionUid).toBeDefined();
+        }
       }
     });
 
@@ -179,7 +187,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       };
 
       const response = await safeRequest(
-        () => axios.post(`${OAUTH_SERVER}/reg`, invalidRegistration, { validateStatus: () => true }),
+        () => axios.post(`${OAUTH_SERVER}${REGISTRATION_PATH}`, invalidRegistration, { validateStatus: () => true }),
         'Skipping invalid registration test (OAuth host unavailable)'
       );
 
@@ -197,7 +205,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       });
 
       const response = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${authParams}`, { validateStatus: () => true }),
+        () => axios.get(`${OAUTH_SERVER}${AUTHORIZE_PATH}?${authParams}`, { validateStatus: () => true }),
         'Skipping unsupported scope test (OAuth host unavailable)'
       );
 
@@ -216,7 +224,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       });
 
       const response = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${invalidAuthParams}`, { validateStatus: () => true }),
+        () => axios.get(`${OAUTH_SERVER}${AUTHORIZE_PATH}?${invalidAuthParams}`, { validateStatus: () => true }),
         'Skipping missing-params test (OAuth host unavailable)'
       );
 

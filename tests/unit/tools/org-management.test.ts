@@ -257,7 +257,7 @@ describe('Organization management tool handlers', () => {
       });
 
       const response = await handleOrgMembershipRevokeCli(
-        { membershipId: 'm-1', organizationId: 'o-123' },
+        { membershipId: 'm-1', organizationId: 'o-123', confirm: true },
         { sessionId: 'sess', userId: 'user' } as any
       );
       const payload = parseResponse(response);
@@ -277,7 +277,7 @@ describe('Organization management tool handlers', () => {
       );
 
       const response = await handleOrgMembershipRevokeCli(
-        { membershipId: 'm-denied' },
+        { membershipId: 'm-denied', confirm: true },
         { sessionId: 'sess', userId: 'user' } as any
       );
       const payload = parseResponse(response);

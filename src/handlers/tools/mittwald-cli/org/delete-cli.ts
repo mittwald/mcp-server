@@ -1,6 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { parseQuietOutput } from '../../../../utils/cli-output.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { logger } from '../../../../utils/logger.js';
 
