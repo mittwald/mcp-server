@@ -13,19 +13,23 @@ const tool: Tool = {
         type: "string",
         description: "The ID of the invite to revoke"
       },
+      confirm: {
+        type: "boolean",
+        description: "Must be set to true to confirm revocation (DESTRUCTIVE OPERATION - cannot be undone)."
+      },
       quiet: {
         type: "boolean",
         description: "Suppress process output and only display a machine-readable summary",
         default: false
       }
     },
-    required: ["inviteId"]
+    required: ["inviteId", "confirm"]
   }
 };
 
 // Wrapper to adapt MittwaldToolHandler to ToolHandler
-const handler: ToolHandler = async (args) => {
-  return handleOrgInviteRevokeCli(args, {} as any);
+const handler: ToolHandler = async (args, context) => {
+  return handleOrgInviteRevokeCli(args, context as any);
 };
 
 const registration: ToolRegistration = {

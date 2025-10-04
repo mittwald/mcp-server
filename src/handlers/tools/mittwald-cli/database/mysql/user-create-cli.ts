@@ -1,7 +1,7 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { parseJsonOutput, parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { parseJsonOutput, parseQuietOutput } from '@/utils/cli-output.js';
 import { logger } from '../../../../../utils/logger.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { invokeCliTool, CliToolError } from '@/tools/index.js';
 import { buildSecureToolResponse } from '../../../../../utils/credential-response.js';
 import { generateSecurePassword } from '../../../../../utils/credential-generator.js';
 

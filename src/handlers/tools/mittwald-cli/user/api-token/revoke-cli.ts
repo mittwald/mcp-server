@@ -51,7 +51,9 @@ function buildSuccessPayload(
   };
 }
 
-export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApiTokenRevokeArgs> = async (args, context) => {
+export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApiTokenRevokeArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   if (!args.tokenId) {
     return formatToolResponse('error', 'Token ID is required.');
   }
@@ -67,8 +69,8 @@ export const handleUserApiTokenRevokeCli: MittwaldCliToolHandler<MittwaldUserApi
     tokenId: args.tokenId,
     force: Boolean(args.force),
     quiet: Boolean(args.quiet),
-    sessionId: context?.sessionId,
-    userId: context?.userId,
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
   });
 
   const argv = buildCliArgs(args);

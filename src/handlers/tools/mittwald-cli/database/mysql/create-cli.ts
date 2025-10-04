@@ -1,6 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { invokeCliTool, CliToolError } from '@/tools/index.js';
 
 interface MittwaldDatabaseMysqlCreateArgs {
   description: string;

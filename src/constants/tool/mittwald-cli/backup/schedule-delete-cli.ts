@@ -13,6 +13,10 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of a backup schedule'
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       force: {
         type: 'boolean',
         description: 'Skip confirmation prompt'
@@ -22,7 +26,7 @@ const tool: Tool = {
         description: 'Suppress process output and only display a machine-readable summary'
       }
     },
-    required: ['backupScheduleId']
+    required: ['backupScheduleId', 'confirm']
   }
 };
 

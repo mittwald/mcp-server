@@ -110,20 +110,20 @@ logger.warn('[ResourceDelete] Destructive operation attempted', {
 ### Phase 1: Infrastructure Tools (2 days)
 
 **Day 1** (4 hours):
-1. backup/delete-cli.ts
-2. backup/schedule-delete-cli.ts
-3. cronjob/delete-cli.ts
-4. mail/address/delete-cli.ts
-5. mail/deliverybox/delete-cli.ts
-6. domain/virtualhost-delete-cli.ts
+- [x] backup/delete-cli.ts
+- [x] backup/schedule-delete-cli.ts
+- [x] cronjob/delete-cli.ts
+- [x] mail/address/delete-cli.ts
+- [x] mail/deliverybox/delete-cli.ts
+- [x] domain/virtualhost-delete-cli.ts
 
 **Testing**: Run tests for each, verify confirm flag works
 
 **Day 2** (4 hours):
-7. sftp/user-delete-cli.ts
-8. ssh/user-delete-cli.ts
-9. user/ssh-key/delete-cli.ts
-10. org/invite-revoke-cli.ts
+- [x] sftp/user-delete-cli.ts
+- [x] ssh/user-delete-cli.ts
+- [x] user/ssh-key/delete-cli.ts
+- [x] org/invite-revoke-cli.ts
 
 **Testing**: Run tests for each, verify confirm flag works
 
@@ -132,22 +132,65 @@ logger.warn('[ResourceDelete] Destructive operation attempted', {
 ### Phase 2: Core Resources (2 days)
 
 **Day 3** (4 hours):
-11. container/delete-cli.ts
-12. registry/delete-cli.ts
-13. stack/delete-cli.ts
+- [x] container/delete-cli.ts
+- [x] registry/delete-cli.ts
+- [x] stack/delete-cli.ts
 
 **Testing**: Run tests, verify confirm flag works
 
 **Day 4** (4 hours):
-14. database/mysql/delete-cli.ts
-15. database/mysql/user-delete-cli.ts
-16. project/delete-cli.ts
+- [x] database/mysql/delete-cli.ts
+- [x] database/mysql/user-delete-cli.ts
+- [x] project/delete-cli.ts
 
 **Testing**: Run full test suite, verify all 20 tools compliant
 
 ---
 
+## Progress Log
+
+- 2025-10-03: ✅ Optional cleanup (type-check, confirm docs, confirm audit). Commands: `npm run type-check`, `npm test -- tests/unit/tools/destructive-confirm-pattern.test.ts`, `npx tsx scripts/audit-actual-patterns.ts`.
+- 2025-10-03: ✅ Phase 1 Day 1 tool updates (backup/delete, backup/schedule-delete, cronjob/delete, mail/address/delete, mail/deliverybox/delete, domain/virtualhost-delete). Tests: `npm test -- tests/unit/tools/destructive-confirm-pattern.test.ts`.
+- 2025-10-03: ✅ Phase 1 Day 2 tool updates (sftp/user-delete, ssh/user-delete, user/ssh-key/delete, org/invite-revoke). Tests: `npm test -- tests/unit/tools/destructive-confirm-pattern.test.ts`.
+- 2025-10-03: ✅ Phase 2 Day 3 tool updates (container/delete, registry/delete, stack/delete). Tests: `npm test -- tests/unit/tools/destructive-confirm-pattern.test.ts`.
+- 2025-10-03: ✅ Phase 2 Day 4 tool updates (database/mysql/delete, database/mysql/user-delete, project/delete). Tests: `npm test -- tests/unit/tools/destructive-confirm-pattern.test.ts`.
+
+---
+
 ## Implementation Template
+
+## Testing Requirements
+
+### Phase 1
+
+- Backup tools (`backup/delete-cli.ts`, `backup/schedule-delete-cli.ts`)
+  - Ensure missing `confirm` short-circuits before CLI invocation
+  - Successful deletion path exercises CLI call with expected args
+- Cronjob delete (`cronjob/delete-cli.ts`)
+  - Same as above, including quiet-mode assertion
+- Mail tools (`mail/address/delete-cli.ts`, `mail/deliverybox/delete-cli.ts`)
+  - Confirm guard + success verifies CLI arguments and outputs
+- Domain virtualhost delete (`domain/virtualhost-delete-cli.ts`)
+  - Confirm guard + success path
+
+### Phase 1 Day 2
+
+- SFTP / SSH / user key deletes (`sftp/user-delete-cli.ts`, `ssh/user-delete-cli.ts`, `user/ssh-key/delete-cli.ts`)
+  - Confirm guard + success invocation tests
+- Org invite revoke (`org/invite-revoke-cli.ts`)
+  - Confirm guard + success invocation tests
+
+### Phase 2 Day 3
+
+- Container, registry, stack deletes (`container/delete-cli.ts`, `registry/delete-cli.ts`, `stack/delete-cli.ts`)
+  - Confirm guard + force flag propagation tests
+
+### Phase 2 Day 4
+
+- Database deletes (`database/mysql/delete-cli.ts`, `database/mysql/user-delete-cli.ts`)
+  - Confirm guard + CLI invocation tests
+- Project delete (`project/delete-cli.ts`)
+  - Confirm guard + audit log coverage
 
 For each tool, follow this checklist:
 

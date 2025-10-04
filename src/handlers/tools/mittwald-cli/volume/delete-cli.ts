@@ -142,7 +142,9 @@ function mapCliError(error: CliToolError, volumeName: string, projectId?: string
   return `Failed to delete volume '${volumeName}'. ${error.stderr || error.message}`;
 }
 
-export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteArgs> = async (args, context) => {
+export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   const volumeName = resolveVolumeName(args);
 
   if (!volumeName) {
@@ -177,8 +179,8 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
     volumeName,
     projectId: args.projectId,
     force: Boolean(args.force),
-    sessionId: context?.sessionId,
-    userId: context?.userId,
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
   });
 
   const safety = await checkVolumeSafety(args, volumeName);

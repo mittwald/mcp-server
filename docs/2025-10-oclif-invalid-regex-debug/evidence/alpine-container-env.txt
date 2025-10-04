@@ -1,0 +1,11 @@
+CHARSET=UTF-8
+HOME=/root
+HOSTNAME=b1ac893708d1
+LANG=C.UTF-8
+LC_COLLATE=C
+NODE_VERSION=20.19.5
+PAGER=less
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/workspace
+SHLVL=2
+YARN_VERSION=1.22.22

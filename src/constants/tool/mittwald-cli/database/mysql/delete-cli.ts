@@ -13,6 +13,10 @@ const tool: Tool = {
         type: "string",
         description: "The ID or name of the database",
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       quiet: {
         type: "boolean",
         description: "Suppress process output and only display a machine-readable summary",
@@ -22,7 +26,7 @@ const tool: Tool = {
         description: "Do not ask for confirmation",
       },
     },
-    required: ["databaseId"],
+    required: ["databaseId", "confirm"],
   },
 };
 

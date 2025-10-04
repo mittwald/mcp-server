@@ -1,8 +1,8 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { parseJsonOutput } from '../../../../../utils/cli-wrapper.js';
+import { parseJsonOutput } from '@/utils/cli-output.js';
 import { logger } from '../../../../../utils/logger.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { invokeCliTool, CliToolError } from '@/tools/index.js';
 
 interface MittwaldDatabaseMysqlUserListArgs {
   databaseId: string;

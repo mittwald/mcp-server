@@ -1,5 +1,5 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { invokeCliTool, CliToolError } from '@/tools/index.js';
 import { buildSecureToolResponse, buildUpdatedAttributes } from '../../../../../utils/credential-response.js';
 
 interface MittwaldDatabaseMysqlUserUpdateArgs {
@@ -104,7 +104,7 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
           : args.disableExternalAccess === true
             ? 'disabled'
             : undefined,
-      password: typeof args.password === 'string' ? true : undefined,
+      password: typeof args.password === 'string' ? 'updated' : undefined,
     });
 
     return buildSecureToolResponse(

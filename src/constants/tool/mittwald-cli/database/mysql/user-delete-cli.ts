@@ -13,6 +13,10 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of the MySQL user to delete (format: mysql-user-XXXXX).'
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       force: {
         type: 'boolean',
         description: 'Skip confirmation prompts when deleting the user.'
@@ -23,7 +27,7 @@ const tool: Tool = {
         default: true
       }
     },
-    required: ['userId']
+    required: ['userId', 'confirm']
   }
 };
 

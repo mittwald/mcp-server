@@ -1,7 +1,9 @@
 # Project-Wide Pattern Adoption - Reality Check & Audit
 
+> **Archived (2025-10-03)**: This document captures the pre-Oct-03 state of the codebase and is retained for historical context. The confirm/audit gaps highlighted here have since been addressed; for current numbers see `docs/PATTERN-AUDIT-RESULTS.md` and `docs/PATTERN-ADOPTION-REALISTIC.md`.
+
 **Date**: 2025-10-02
-**Status**: AUDIT FINDINGS - Replaces PROJECT-WIDE-PATTERN-ADOPTION.md
+**Status**: AUDIT FINDINGS - Replaces PROJECT-WIDE-PATTERN-ADOPTION.md (historical)
 **Reviewer**: Human + Claude Code validation
 
 ---
@@ -12,7 +14,7 @@ The original `PROJECT-WIDE-PATTERN-ADOPTION.md` plan was **based on assumptions 
 
 1. **Array parameter tools don't exist** - Target files like `container/create-cli.ts`, `container/exec-cli.ts`, `stack/create-cli.ts` are not in the repository
 2. **Dependency detection unfeasible** - List commands don't expose relationships needed for pre-flight checks
-3. **Destructive tools missing C4 pattern** - Tools marked as "done" (revoke-cli.ts) actually lack confirm flags
+3. **Destructive tools missing C4 pattern** - Tools marked as "done" (revoke-cli.ts) actually lack confirm flags *(fixed on 2025-10-03)*
 4. **Missing dependencies** - Audit script requires `glob` package not in package.json
 5. **Document has duplicate sections** - Lines 566+ repeat earlier content verbatim
 

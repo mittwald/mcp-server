@@ -1,9 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldCronjobDeleteCliArgs {
   cronjobId: string;
+  confirm?: boolean;
   quiet?: boolean;
   force?: boolean;
 }
@@ -44,10 +46,24 @@ function mapCliError(error: CliToolError, args: MittwaldCronjobDeleteCliArgs): s
   return `Failed to delete cronjob: ${errorMessage}`;
 }
 
-export const handleCronjobDeleteCli: MittwaldToolHandler<MittwaldCronjobDeleteCliArgs> = async (args, _context) => {
+export const handleCronjobDeleteCli: MittwaldToolHandler<MittwaldCronjobDeleteCliArgs> = async (args, context) => {
   if (!args.cronjobId) {
     return formatToolResponse('error', 'Cronjob ID is required.');
   }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'Cronjob deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[CronjobDelete] Destructive operation attempted', {
+    cronjobId: args.cronjobId,
+    force: Boolean(args.force),
+    sessionId: context?.sessionId,
+    userId: context?.userId,
+  });
 
   const argv = buildCliArgs(args);
 

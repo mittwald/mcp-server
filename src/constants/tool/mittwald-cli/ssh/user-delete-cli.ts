@@ -14,6 +14,10 @@ const tool: Tool = {
         description: "The ID of the SSH user to delete",
         required: true
       },
+      confirm: {
+        type: "boolean",
+        description: "Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone)."
+      },
       force: {
         type: "boolean",
         description: "Do not ask for confirmation",
@@ -25,7 +29,7 @@ const tool: Tool = {
         default: false
       }
     },
-    required: ["sshUserId"]
+    required: ["sshUserId", "confirm"]
   }
 };
 

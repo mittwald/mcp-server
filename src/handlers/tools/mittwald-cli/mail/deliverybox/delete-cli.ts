@@ -1,9 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { logger } from '../../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldMailDeliveryboxDeleteArgs {
   id: string;
+  confirm?: boolean;
   quiet?: boolean;
   force?: boolean;
 }
@@ -41,7 +43,27 @@ function mapCliError(error: CliToolError, args: MittwaldMailDeliveryboxDeleteArg
   return `Failed to delete delivery box: ${errorMessage}`;
 }
 
-export const handleMittwaldMailDeliveryboxDeleteCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxDeleteArgs> = async (args) => {
+export const handleMittwaldMailDeliveryboxDeleteCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxDeleteArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
+  if (!args.id) {
+    return formatToolResponse('error', 'Delivery box ID is required.');
+  }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'Delivery box deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[MailDeliveryboxDelete] Destructive operation attempted', {
+    deliveryboxId: args.id,
+    force: Boolean(args.force),
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+  });
+
   const argv = buildCliArgs(args);
 
   try {

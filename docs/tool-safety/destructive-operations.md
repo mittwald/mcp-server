@@ -1,3 +1,9 @@
+## Global Confirmation Requirement
+
+All destructive Mittwald CLI tools now require `confirm: true` to execute. Calls without the flag are rejected, providing a consistent safety net across backups, databases, containers, users, and projects.
+
+---
+
 # Destructive Operations Safety Guide
 
 ## Organization Management

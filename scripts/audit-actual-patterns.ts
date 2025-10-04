@@ -27,9 +27,9 @@ function auditFile(filePath: string): AuditResult | null {
 
   if (!isDestructive) {
     // Still check for array params in non-destructive tools
-    const arrayParamMatches = content.match(/args\.(\w+)\.forEach/g);
-    const arrayParams = arrayParamMatches
-      ? [...new Set(arrayParamMatches.map(m => m.match(/args\.(\w+)/)?.[1]).filter(Boolean))]
+    const arrayParamMatches = [...content.matchAll(/args\.(\w+)(?:\?\.|\.)forEach/g)];
+    const arrayParams = arrayParamMatches.length > 0
+      ? [...new Set(arrayParamMatches.map((m) => m[1]).filter(Boolean))]
       : undefined;
 
     const hasArrayParams = !!arrayParams && arrayParams.length > 0;
@@ -61,9 +61,9 @@ function auditFile(filePath: string): AuditResult | null {
   const hasAuditLogging = /logger\.warn.*([Dd]estructive|[Rr]evok|[Dd]elet)/.test(content);
 
   // Check for array parameters (even in destructive tools)
-  const arrayParamMatches = content.match(/args\.(\w+)\.forEach/g);
-  const arrayParams = arrayParamMatches
-    ? [...new Set(arrayParamMatches.map(m => m.match(/args\.(\w+)/)?.[1]).filter(Boolean))]
+  const arrayParamMatches = [...content.matchAll(/args\.(\w+)(?:\?\.|\.)forEach/g)];
+  const arrayParams = arrayParamMatches.length > 0
+    ? [...new Set(arrayParamMatches.map((m) => m[1]).filter(Boolean))]
     : undefined;
   const hasArrayParams = !!arrayParams && arrayParams.length > 0;
 

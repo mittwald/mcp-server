@@ -1,9 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldSftpUserDeleteArgs {
   sftpUserId: string;
+  confirm?: boolean;
   force?: boolean;
   quiet?: boolean;
 }
@@ -46,7 +48,7 @@ function mapCliError(error: CliToolError, args: MittwaldSftpUserDeleteArgs): str
   return `Failed to delete SFTP user: ${details}`;
 }
 
-export const handleSftpUserDeleteCli: MittwaldCliToolHandler<MittwaldSftpUserDeleteArgs> = async (args) => {
+export const handleSftpUserDeleteCli: MittwaldCliToolHandler<MittwaldSftpUserDeleteArgs> = async (args, sessionId) => {
   try {
     if (!args.sftpUserId) {
       return formatToolResponse(
@@ -54,6 +56,23 @@ export const handleSftpUserDeleteCli: MittwaldCliToolHandler<MittwaldSftpUserDel
         "SFTP user ID is required to delete an SFTP user"
       );
     }
+
+    if (args.confirm !== true) {
+      return formatToolResponse(
+        'error',
+        'SFTP user deletion requires confirm=true. This operation is destructive and cannot be undone.'
+      );
+    }
+
+    const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+    const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
+
+    logger.warn('[SftpUserDelete] Destructive operation attempted', {
+      sftpUserId: args.sftpUserId,
+      force: Boolean(args.force),
+      sessionId: resolvedSessionId,
+      ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+    });
 
     const argv = buildCliArgs(args);
 

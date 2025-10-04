@@ -1,9 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldDomainVirtualhostDeleteArgs {
   virtualhostId: string;
+  confirm?: boolean;
   force?: boolean;
 }
 
@@ -27,10 +29,26 @@ function mapCliError(error: CliToolError, args: MittwaldDomainVirtualhostDeleteA
   return `Failed to delete virtual host: ${error.stderr || error.stdout || error.message}`;
 }
 
-export const handleDomainVirtualhostDeleteCli: MittwaldCliToolHandler<MittwaldDomainVirtualhostDeleteArgs> = async (args) => {
+export const handleDomainVirtualhostDeleteCli: MittwaldCliToolHandler<MittwaldDomainVirtualhostDeleteArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   if (!args.virtualhostId) {
     return formatToolResponse('error', 'Virtual host ID is required.');
   }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'Virtual host deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[DomainVirtualhostDelete] Destructive operation attempted', {
+    virtualhostId: args.virtualhostId,
+    force: Boolean(args.force),
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+  });
 
   const argv = buildCliArgs(args);
 

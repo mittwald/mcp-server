@@ -1,0 +1,12 @@
+@systemprompt/systemprompt-mcp-server@1.0.1 /Users/robert/Code/mittwald-mcp
+`-- @mittwald/cli@1.11.2
+  +-- @oclif/core@4.5.4
+  +-- @oclif/plugin-autocomplete@3.2.35
+  | `-- @oclif/core@4.5.4 deduped
+  +-- @oclif/plugin-help@6.2.33
+  | `-- @oclif/core@4.5.4 deduped
+  +-- @oclif/plugin-update@4.7.8
+  | `-- @oclif/core@4.5.4 deduped
+  `-- @oclif/plugin-warn-if-update-available@3.1.48
+    `-- @oclif/core@4.5.4 deduped
+

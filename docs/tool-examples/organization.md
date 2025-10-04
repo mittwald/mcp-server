@@ -52,3 +52,28 @@
 }
 ```
 **WARNING**: This permanently deletes the organization!
+
+## ⚠️ Revoke Organization Invite (DESTRUCTIVE)
+```json
+{
+  "name": "mittwald_org_invite_revoke",
+  "arguments": {
+    "inviteId": "org-invite-abc123",
+    "confirm": true
+  }
+}
+```
+**WARNING**: Revoking an invite immediately invalidates the link. `confirm: true` is REQUIRED.
+
+## ⚠️ Revoke Organization Membership (DESTRUCTIVE)
+```json
+{
+  "name": "mittwald_org_membership_revoke",
+  "arguments": {
+    "membershipId": "org-member-xyz789",
+    "confirm": true
+  }
+}
+```
+**WARNING**: Removing a membership cuts access instantly. Double-check user intent before setting `confirm: true`.
+
