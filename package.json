@@ -82,7 +82,7 @@
     "koa": "^3.0.1",
     "koa-bodyparser": "^4.4.1",
     "openid-client": "^6.6.2",
-    "pino": "^9.11.0",
+    "pino": "^9.13.1",
     "redis": "^5.7.0",
     "semver": "^7.6.3",
     "zod": "^3.25.67"
@@ -112,6 +112,7 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
+    "vite": "^7.1.9",
     "vitest": "^3.2.4"
   },
   "keywords": [
