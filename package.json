@@ -133,6 +133,6 @@
   },
   "homepage": "https://systemprompt.io",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.12.0"
   }
 }

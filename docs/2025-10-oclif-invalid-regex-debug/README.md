@@ -32,6 +32,12 @@
 - `evidence/prod-debug-run-instrumented*.txt` add targeted logging from that runtime (modified `plugin.js`/`module-loader.js` temporarily). They show each failure occurs while importing the compiled command modules (e.g. `/usr/local/lib/node_modules/@mittwald/cli/dist/commands/conversation/categories.js`). A direct import of any of those modules (`node -e "import('file:///…/conversation/categories.js')"`) fails because the bundled dependency `string-width@8.1.0` defines `const zeroWidthClusterRegex = …$/v` (see `evidence/prod-string-width-repro.txt`), and Node 18 does not yet support the regex `v` flag—explaining why Node 20 containers work while Node 18 production does not.
 - Instrumentation was rolled back immediately after capturing the evidence (original files restored from `.orig` backups) to avoid leaving modified code on the running machine.
 
+## Resolution Status (2025-10-03)
+- All Dockerfiles (root server, stdio variant, OpenAPI runner, Fly package builds) now pin to `node:20.12.2-alpine`, guaranteeing the deployed runtime supports the `/v` regex flag required by `string-width@8.x`.
+- Repository metadata enforces the same baseline: `package.json`/`package-lock.json` engines updated to `>=20.12.0`, and `.nvmrc` plus `.node-version` guide local tooling.
+- GitHub Actions already execute on Node 20; no workflow change needed beyond keeping the pinned version current.
+- After the next GitHub Actions deploy, confirm on Fly with `node --version` (should report 20.12.2) and rerun `mw org membership list-own --output json` to verify the Oclif error is resolved.
+
 ## Debugging Plan
 1. **Reproduce in Matching Environment**
    - Run the CLI inside the MCP container/base image or a fresh Node 20 Alpine environment with the global `@mittwald/cli` install to mirror the failing path.

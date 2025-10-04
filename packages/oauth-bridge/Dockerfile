@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20-alpine AS build
+FROM node:20.12.2-alpine AS build
 WORKDIR /app
 
 # Copy repo-level TypeScript config that the bridge package extends
@@ -18,7 +18,7 @@ RUN cd packages/oauth-bridge \
   && npm run build \
   && npm prune --omit=dev
 
-FROM node:20-alpine AS runtime
+FROM node:20.12.2-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 

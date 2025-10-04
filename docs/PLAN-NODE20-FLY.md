@@ -2,7 +2,7 @@
 
 **Date**: 2025-10-03  
 **Owner**: Mittwald MCP Platform Team  
-**Status**: Draft – Awaiting approval
+**Status**: In progress – repo Dockerfiles pinned to Node 20.12.2 (2025-10-03)
 
 ---
 
@@ -12,8 +12,8 @@ Run all Fly.io deployments of the Mittwald MCP server family (primary app, stdio
 
 ## Current State
 
-- Dockerfiles in the repo already reference `node:20-alpine`, but production images may still be pinned to older tags in Fly deployments.  
-- `package.json` currently allows Node 18+. CI pipelines do not explicitly enforce Node 20.  
+- Dockerfiles in the repo now pin to `node:20.12.2-alpine`; production deployments need a rebuild to pick up the new base image.  
+- `package.json` now enforces Node >= 20.12.0 and CI pipelines already run on Node 20; production deployments still need to rebuild on the new base image.  
 - Fly configuration (`fly.toml`, GitHub Actions deploy job) is not version-pinned within the repo; we must confirm what the Fly builder currently uses.
 
 ## Deliverables
@@ -76,7 +76,7 @@ Run all Fly.io deployments of the Mittwald MCP server family (primary app, stdio
 | Risk | Impact | Mitigation |
 |------|--------|------------|
 | Node 20 introduces breaking change in dependency | Medium | Run full test suite, review release notes of key dependencies |
-| CI still uses Node 18 | Medium | Update actions/setup-node to `20.x`; add guard script |
+| CI drifts from Node 20 baseline | Medium | Keep `actions/setup-node` pinned to 20.x and add guard script |
 | Fly build cache conflicts | Low | Use `fly deploy --build-arg BUILDKIT_INLINE_CACHE=1`, clear cache if needed |
 | Runtime stats regress | Low | Compare metrics before/after rollout, keep rollback ready |
 

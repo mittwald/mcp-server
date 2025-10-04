@@ -146,7 +146,7 @@ Result Parsing → MCP Response
 ### 3. CLI Integration Strategy
 
 **Docker Setup**:
-- Base: `node:20-alpine`
+- Base: `node:20.12.2-alpine`
 - Mittwald CLI: `@mittwald/cli@1.11.2` installed globally
 - SSH client for SFTP operations
 - Build: TypeScript compilation + tsc-alias for path resolution
@@ -423,7 +423,7 @@ Sub-workstreams by domain:
 - Zod v3.25.67 (schema validation)
 - Pino v9.11.0 (structured logging)
 - Vitest v3.2.4 (testing)
-- Node.js ≥18.0.0
+- Node.js ≥20.12.0
 
 **OAuth Bridge**:
 - Koa v3.0.1 + @koa/router v14.0.0
