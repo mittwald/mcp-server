@@ -2,7 +2,7 @@
 app = "mittwald-mcp-fly2"
 primary_region = "fra"
 kill_signal = "SIGINT"
-kill_timeout = 5
+kill_timeout = "30s" # Extended for graceful shutdown
 
 [deploy]
   release_command = "sh -lc 'if [ \"${ALLOW_FLY_RELEASE:-}\" != \"true\" ]; then echo Deployment blocked: use GitHub Actions >&2; exit 1; fi'"
@@ -46,6 +46,7 @@ kill_timeout = 5
   auto_start_machines = true
   auto_stop_machines = true
   min_machines_running = 1
+  kill_timeout = "30s"
 
   [[http_service.checks]]
     grace_period = "10s"

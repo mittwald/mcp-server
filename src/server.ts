@@ -38,10 +38,24 @@ import { createOAuthMiddleware } from './server/oauth-middleware.js';
 import { responseLoggerMiddleware } from './server/response-logger.js';
 import { initializeToolHandlers } from './handlers/tool-handlers.js';
 import { OAuthMetadataRoutes } from './routes/oauth-metadata-routes.js';
+import { logger } from './utils/logger.js';
 
 // Polyfill for jose library
 if (typeof globalThis.crypto === 'undefined') {
   globalThis.crypto = crypto.webcrypto as unknown as typeof globalThis.crypto;
+}
+
+let shuttingDown = false;
+
+export function markServerShuttingDown(): void {
+  if (!shuttingDown) {
+    logger.info('Server marked for graceful shutdown');
+  }
+  shuttingDown = true;
+}
+
+export function isServerShuttingDown(): boolean {
+  return shuttingDown;
 }
 
 /**
@@ -59,6 +73,10 @@ export async function createApp(): Promise<express.Application> {
 
   // Early health endpoint (defined before any middleware) to validate external routing quickly
   app.get('/health', (req, res) => {
+    if (isServerShuttingDown()) {
+      res.status(503).json({ status: 'shutting_down', service: 'mcp-server', path: '/health', ts: Date.now() });
+      return;
+    }
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const ua = req.get('User-Agent') || 'unknown';
     console.log(`❤️  HEALTH early responder → 200 from ${ip} ua=${ua}`);
@@ -163,6 +181,15 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
 
   // Health check
   app.get('/health', (_, res) => {
+    if (isServerShuttingDown()) {
+      res.status(503).json({
+        status: 'shutting_down',
+        service: 'mcp-server',
+        transport: process.env.ENABLE_HTTPS === 'true' ? 'https' : 'http',
+      });
+      return;
+    }
+
     res.json({
       status: 'ok',
       service: 'mcp-server',
@@ -314,17 +341,6 @@ export async function startServer(port?: number): Promise<ReturnType<express.App
       console.error(`🚨 [HTTP:${serverPort}] Server error:`, error);
     });
     
-    return httpServer
+    return httpServer;
   }
 }
-
-// Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');  
-  process.exit(0);
-});
