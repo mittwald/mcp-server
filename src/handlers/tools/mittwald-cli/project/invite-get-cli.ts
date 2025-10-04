@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { parseJsonOutput } from '../../../../utils/cli-output.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 export interface MittwaldProjectInviteGetArgs {
@@ -58,16 +58,16 @@ export const handleProjectInviteGetCli: MittwaldCliToolHandler<MittwaldProjectIn
       }
 
       const formattedData = {
-        id: data.id,
-        email: data.mailAddress || data.email,
-        role: data.projectRole || data.role,
-        status: data.expired ? 'expired' : 'active',
-        createdAt: data.createdAt,
-        expiresAt: data.membershipExpiresAt || data.expiresAt || 'Never',
-        projectId: data.projectId,
-        userId: data.userId,
-        invitedBy: data.invitedBy || data.inviter,
-        message: data.message,
+        id: (data as any).id,
+        email: (data as any).mailAddress || (data as any).email,
+        role: (data as any).projectRole || (data as any).role,
+        status: (data as any).expired ? 'expired' : 'active',
+        createdAt: (data as any).createdAt,
+        expiresAt: (data as any).membershipExpiresAt || (data as any).expiresAt || 'Never',
+        projectId: (data as any).projectId,
+        userId: (data as any).userId,
+        invitedBy: (data as any).invitedBy || (data as any).inviter,
+        message: (data as any).message,
       };
 
       return formatToolResponse(
