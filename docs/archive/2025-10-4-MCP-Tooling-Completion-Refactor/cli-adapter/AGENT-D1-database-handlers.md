@@ -62,6 +62,21 @@ Migrate all database handlers (MySQL + Redis) from direct `cli-wrapper` imports 
 
 **Total**: 14 handlers to migrate
 
+### Excluded Interactive/Streaming Handlers
+The following MySQL handlers remain on the legacy execution path because they
+require interactive input or persistent connections that are incompatible with
+the MCP request/response lifecycle. They are deferred to Agent E1 (Interactive
+Commands Assessment) for a tailored approach.
+
+- `phpmyadmin-cli.ts` – launches a browser-based phpMyAdmin session and cannot
+  be automated without user interaction.
+- `shell-cli.ts` – opens an interactive MySQL shell that expects a TTY
+  connection.
+- `port-forward-cli.ts` – establishes a long-running port forward and depends
+  on streaming I/O.
+
+Document any future changes for these handlers in the Agent E1 workstream.
+
 ---
 
 ## Migration Pattern

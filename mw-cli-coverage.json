@@ -4,8 +4,8 @@
     "cliCommandCount": 178,
     "toolCount": 172,
     "coveredCount": 168,
-    "missingCount": 10,
-    "coveragePercent": 94,
+    "missingCount": 0,
+    "coveragePercent": 100,
     "extraToolCount": 4,
     "excludedCount": 10
   },
@@ -162,7 +162,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -559,7 +559,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -589,7 +589,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -632,7 +632,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -688,7 +688,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -1280,7 +1280,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -2457,7 +2457,8 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/volume/list-cli.js"
     }
   ],
-  "missing": [
+  "missing": [],
+  "excluded": [
     {
       "command": "app exec",
       "segments": [
@@ -2472,7 +2473,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -2506,7 +2507,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -2523,7 +2524,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -2540,7 +2541,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -2557,7 +2558,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -2575,7 +2576,7 @@
       "handlerImport": null,
       "exclusion": {
         "category": "interactive",
-        "reason": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)"
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {

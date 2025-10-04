@@ -1,71 +1,80 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseQuietOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { parseQuietOutput } from '../../../../utils/cli-output.js';
 
 interface MittwaldExtensionUninstallCliArgs {
   extensionInstanceId: string;
   quiet?: boolean;
 }
 
+function mapCliError(error: CliToolError, extensionInstanceId: string): string {
+  const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}`.toLowerCase();
+
+  if (combined.includes('not found') && combined.includes('extension')) {
+    return `Extension instance not found: ${extensionInstanceId}.\nError: ${error.stderr || error.stdout || error.message}`;
+  }
+
+  return `Failed to uninstall extension: ${error.stderr || error.stdout || error.message}`;
+}
+
 export const handleExtensionUninstallCli: MittwaldToolHandler<MittwaldExtensionUninstallCliArgs> = async (args) => {
+  const cliArgs: string[] = ['extension', 'uninstall', args.extensionInstanceId];
+  if (args.quiet) cliArgs.push('--quiet');
+
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['extension', 'uninstall', args.extensionInstanceId];
-    
-    // Optional flags
+    const result = await invokeCliTool({
+      toolName: 'mittwald_extension_uninstall',
+      argv: cliArgs,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+
     if (args.quiet) {
-      cliArgs.push('--quiet');
-    }
-    
-    // Execute CLI command
-  const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found') && errorMessage.includes('extension')) {
-        return formatToolResponse(
-          "error",
-          `Extension instance not found: ${args.extensionInstanceId}\nError: ${errorMessage}`
-        );
-      }
-      
+      const resultId = parseQuietOutput(stdout);
       return formatToolResponse(
-        "error",
-        `Failed to uninstall extension: ${errorMessage}`
-      );
-    }
-    
-    // Handle quiet output
-    if (args.quiet) {
-      const result_id = parseQuietOutput(result.stdout);
-      return formatToolResponse(
-        "success",
-        `Extension uninstalled successfully`,
+        'success',
+        'Extension uninstalled successfully',
         {
           extensionInstanceId: args.extensionInstanceId,
           status: 'uninstalled',
-          resultId: result_id
+          resultId,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
         }
       );
     }
-    
-    // Handle regular output
-    const successMessage = result.stdout || 'Extension uninstallation completed successfully';
-    
+
+    const successMessage = stdout || 'Extension uninstallation completed successfully';
     return formatToolResponse(
-      "success",
-      `Extension uninstallation completed`,
+      'success',
+      'Extension uninstallation completed',
       {
         extensionInstanceId: args.extensionInstanceId,
         status: 'uninstalled',
-        output: successMessage
+        output: successMessage,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
       }
     );
-    
   } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args.extensionInstanceId);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
     return formatToolResponse(
-      "error",
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }

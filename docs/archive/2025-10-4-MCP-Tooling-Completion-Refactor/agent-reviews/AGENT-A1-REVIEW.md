@@ -165,21 +165,20 @@ steps:
       exit 1
     fi
 
-# Step 5: Fail if gaps don't match exclusions
+# Step 5: Fail if uncovered commands remain
 - name: Validate allowed coverage gaps
   run: |
     node -e "const report = require('./mw-cli-coverage.json');
       const missing = report?.stats?.missingCount ?? 0;
-      const excluded = report?.stats?.excludedCount ?? 0;
-      if (missing !== excluded) {
-        console.error('Coverage gaps detected: missing=' + missing + ', excluded=' + excluded);
+      if (missing > 0) {
+        console.error('Coverage gaps detected: missing=' + missing);
         process.exit(1);
       }"
 ```
 
 **Strengths**:
 - ✅ Prevents stale coverage reports from merging
-- ✅ Enforces exclusion policy (missing === excluded)
+- ✅ Ensures uncovered commands are addressed before merging
 - ✅ CLI version check is non-blocking (warning only)
 - ✅ Clear error messages for developers
 - ✅ Runs on both PR and main branch
@@ -356,7 +355,7 @@ The Workstream A tooling generates `mw-cli-coverage.json` and `docs/mittwald-cli
 ## How Coverage CI Works
 - PR opens → CI runs `coverage:generate`
 - Git diff check → fails if reports stale
-- Validation → fails if `missingCount !== excludedCount`
+- Validation → fails if `stats.missingCount > 0`
 ```
 
 **README.md Coverage Section**:

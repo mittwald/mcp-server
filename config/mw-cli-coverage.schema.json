@@ -125,6 +125,141 @@
         }
       }
     },
+    "missing": {
+      "type": "array",
+      "description": "CLI commands that remain uncovered after accounting for exclusions.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "segments",
+          "cliFile",
+          "description",
+          "expectedToolName",
+          "status",
+          "toolPath",
+          "handlerImport"
+        ],
+        "properties": {
+          "command": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "minItems": 1
+          },
+          "cliFile": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "minLength": 0
+          },
+          "expectedToolName": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["missing"]
+          },
+          "toolPath": {
+            "type": ["string", "null"],
+            "minLength": 1
+          },
+          "handlerImport": {
+            "type": ["string", "null"],
+            "minLength": 1
+          },
+          "exclusion": {
+            "type": "object",
+            "required": ["category", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "description": "CLI commands that are intentionally excluded from coverage calculations.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "segments",
+          "cliFile",
+          "description",
+          "expectedToolName",
+          "status",
+          "toolPath",
+          "handlerImport",
+          "exclusion"
+        ],
+        "properties": {
+          "command": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "minItems": 1
+          },
+          "cliFile": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "minLength": 0
+          },
+          "expectedToolName": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["missing"]
+          },
+          "toolPath": {
+            "type": ["string", "null"],
+            "minLength": 1
+          },
+          "handlerImport": {
+            "type": ["string", "null"],
+            "minLength": 1
+          },
+          "exclusion": {
+            "type": "object",
+            "required": ["category", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
     "extraTools": {
       "type": "array",
       "description": "MCP tools that do not map to CLI commands.",

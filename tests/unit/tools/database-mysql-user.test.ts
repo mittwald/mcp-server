@@ -115,7 +115,7 @@ describe('MySQL user tool handlers', () => {
         meta: { command: 'mw database mysql user delete u-123 --force --quiet', exitCode: 0, durationMs: 10 },
       });
 
-      const response = await handleDatabaseMysqlUserDeleteCli({ userId: 'mysql-user-123', force: true });
+      const response = await handleDatabaseMysqlUserDeleteCli({ userId: 'mysql-user-123', force: true, confirm: true });
       const payload = parseResponse(response);
 
       expect(payload.status).toBe('success');
@@ -143,7 +143,7 @@ describe('MySQL user tool handlers', () => {
         })
       );
 
-      const response = await handleDatabaseMysqlUserDeleteCli({ userId: 'mysql-user-001' });
+      const response = await handleDatabaseMysqlUserDeleteCli({ userId: 'mysql-user-001', confirm: true });
       const payload = parseResponse(response);
 
       expect(payload.status).toBe('error');

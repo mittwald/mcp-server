@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
-import { parseQuietOutput } from '../../../../../utils/cli-wrapper.js';
+import { parseQuietOutput } from '../../../../../utils/cli-output.js';
 import { buildSecureToolResponse } from '../../../../../utils/credential-response.js';
 
 interface MittwaldUserApiTokenCreateArgs {

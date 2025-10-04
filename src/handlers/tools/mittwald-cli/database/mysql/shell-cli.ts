@@ -1,7 +1,7 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
-import { parseJsonOutput as parseJsonOutputLegacy } from '../../../../../utils/cli-wrapper.js';
+import { parseJsonOutput } from '../../../../../utils/cli-output.js';
 
 interface MittwaldDatabaseMysqlShellArgs {
   databaseId: string;
@@ -38,7 +38,7 @@ function buildRecommendedCommand(args: MittwaldDatabaseMysqlShellArgs): string {
 }
 
 function parseDatabaseMetadata(stdout: string): MysqlDatabaseMetadata {
-  const parsed = parseJsonOutputLegacy(stdout);
+  const parsed = parseJsonOutput(stdout);
   if (!parsed || typeof parsed !== 'object') {
     throw new Error('Unexpected CLI output when fetching database metadata.');
   }

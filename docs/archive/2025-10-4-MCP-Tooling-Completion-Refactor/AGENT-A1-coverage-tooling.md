@@ -93,7 +93,7 @@ Build CI automation that:
   }
   ```
 - [ ] Update coverage generator to treat excluded commands as "allowed missing"
-- [ ] Update CI check to pass if `missingCount === excludedCount`
+- [ ] Update CI check to fail when `stats.missingCount > 0`
 - [ ] Commit with message: `feat(coverage): add exclusion allowlist for intentional gaps`
 
 ### Task A1.6: Documentation & Testing
