@@ -11,6 +11,14 @@ COPY package*.json ./
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
 COPY . .
 RUN npm run build
+
+# Create non-root user and switch to it
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
+
+USER nodejs
+
 ARG PORT=3000
 EXPOSE ${PORT}
 CMD ["node", "build/stdio-server.js"]
