@@ -546,6 +546,20 @@ function formatStatus(entry: CoverageEntry): string {
   return entry.status === 'covered' ? '✅ Covered' : '⚠️ Missing';
 }
 
+function addNotePart(target: Map<string, string>, part: string | null | undefined): void {
+  if (!part) {
+    return;
+  }
+  const trimmed = part.trim();
+  if (!trimmed) {
+    return;
+  }
+  const normalized = trimmed.replace(/\s+/g, ' ').toLowerCase();
+  if (!target.has(normalized)) {
+    target.set(normalized, trimmed);
+  }
+}
+
 async function writeCoverageMarkdown(
   coverageEntries: CoverageEntry[],
   stats: CoverageReport['stats'],
@@ -603,11 +617,15 @@ async function writeCoverageMarkdown(
       const exclusionNote = entry.exclusion
         ? `Allowed missing (${entry.exclusion.category}): ${entry.exclusion.reason}`
         : '';
-      const note = docNote
-        ? exclusionNote
-          ? `${docNote} — ${exclusionNote}`
-          : docNote
-        : exclusionNote;
+      const noteParts = new Map<string, string>();
+
+      for (const part of docNote.split('—')) {
+        addNotePart(noteParts, part);
+      }
+
+      addNotePart(noteParts, exclusionNote);
+
+      const note = Array.from(noteParts.values()).join(' — ');
       const description = (entry.description ?? '').replace(/\s+/g, ' ').trim();
 
       lines.push(
