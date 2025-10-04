@@ -123,3 +123,22 @@ export class RedisClient {
 }
 
 export const redisClient = RedisClient.getInstance();
+
+/**
+ * Performs a lightweight Redis health check by issuing a PING command.
+ *
+ * @returns Promise resolving to true when Redis responds successfully, false otherwise.
+ */
+export async function checkRedisHealth(): Promise<boolean> {
+  try {
+    const response = await redisClient.ping();
+    if (response !== 'PONG') {
+      logger.error('Redis health check returned unexpected response', { response });
+      return false;
+    }
+    return true;
+  } catch (error) {
+    logger.error('Redis health check failed', error instanceof Error ? error : { error });
+    return false;
+  }
+}
