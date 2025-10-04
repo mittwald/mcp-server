@@ -270,7 +270,7 @@ curl http://localhost:8080/health
 ```
 
 **Reference**: Audit H8, Section 4.2; Audit H11 (Error Handling), Section 6.3
-**Status**: 🔴 OPEN
+**Status**: ✅ COMPLETE (src/utils/redis-client.ts:132, src/server.ts:90,196 - health checks integrated)
 
 ---
 
@@ -300,7 +300,7 @@ cat package.json | grep -A 1 "homepage"
 ```
 
 **Reference**: Audit H3 (License Compliance), Section 4.1
-**Status**: 🔴 OPEN
+**Status**: ✅ COMPLETE (package.json:137 - "license": "UNLICENSED" added)
 
 ---
 
@@ -341,7 +341,7 @@ npm run build       # Build should succeed
 - Reduced attack surface
 
 **Reference**: Audit H7 (Dependencies), Section 2.1
-**Status**: 🔴 OPEN
+**Status**: ✅ COMPLETE (All unused dependencies removed - package.json now has 14 prod deps, down from 23)
 
 ---
 
