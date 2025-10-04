@@ -36,4 +36,4 @@ jobs:
           echo "✅ No hardcoded credentials detected"
 
       - name: Lint for credential leaks
-        run: npm run lint -- --rule local/no-credential-leak
+        run: npm run lint:credential-leak
