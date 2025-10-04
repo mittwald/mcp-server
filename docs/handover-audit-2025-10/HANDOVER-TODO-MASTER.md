@@ -101,49 +101,13 @@ docker run --rm mcp-test whoami  # Should output: nodejs
 
 **Issue**: Application exits immediately on SIGTERM, causing connection drops during deployment
 
-**Implementation** (`src/index.ts` and `src/server/index.ts`):
+**Implementation** (`src/index.ts`, `src/server.ts`):
+- Added reusable shutdown state helpers so HTTP health checks surface `503` during drain (`markServerShuttingDown`, `isServerShuttingDown`).
+- Registered single-shot SIGTERM/SIGINT handler that stops accepting connections, shuts down the MCP handler, closes Redis, and forces exit after 25s timeout.
+- Updated both `/health` routes to report `shutting_down` JSON payload while draining.
 
-```typescript
-// Add graceful shutdown handler
-let isShuttingDown = false;
-
-process.on('SIGTERM', async () => {
-  if (isShuttingDown) return;
-  isShuttingDown = true;
-
-  logger.info('SIGTERM received, starting graceful shutdown...');
-
-  // Stop accepting new connections
-  server.close(() => {
-    logger.info('HTTP server closed');
-  });
-
-  // Close Redis connection
-  await redisClient.quit();
-  logger.info('Redis connection closed');
-
-  // Wait for in-flight requests (max 25 seconds)
-  setTimeout(() => {
-    logger.warn('Forcing shutdown after timeout');
-    process.exit(0);
-  }, 25000);
-});
-
-// Health check should fail during shutdown
-app.get('/health', (req, res) => {
-  if (isShuttingDown) {
-    res.status(503).json({ status: 'shutting_down' });
-  } else {
-    res.status(200).json({ status: 'ok' });
-  }
-});
-```
-
-**Configuration Update** (`fly.toml`):
-```toml
-[http_service]
-  kill_timeout = "30s"  # Change from 5s to 30s
-```
+**Configuration Update** (`packages/mcp-server/fly.toml`):
+- Increase top-level and `[http_service]` `kill_timeout` values to `30s` so Fly retries respect the drain window.
 
 **Testing**:
 ```bash
@@ -155,7 +119,7 @@ docker logs mcp-test | grep "graceful shutdown"  # Verify logs
 ```
 
 **Reference**: Audit H8, Section 4.4
-**Status**: 🔴 OPEN
+**Status**: ✅ COMPLETE (Docs updated 2025-10-05)
 
 ---
 
@@ -202,7 +166,7 @@ REDIS_TTL=28800
 4. Create `/Users/robert/Code/mittwald-mcp/packages/oauth-bridge/.env.example`
 
 **Reference**: Audit H8, Section 4.3
-**Status**: 🔴 OPEN
+**Status**: ✅ COMPLETE (.env.example rewritten with comprehensive documentation - 2025-10-04)
 
 ---
 
@@ -1743,7 +1707,7 @@ docker run --rm mcp-optimized node build/index.js --version
 - [x] CREDENTIAL-SECURITY.md complete ✅
 - [ ] Production deployment guide (TASK-MEDIUM-001)
 - [ ] Operations runbook (TASK-MEDIUM-002)
-- [ ] Environment variables documented (TASK-HIGH-003)
+- [x] Environment variables documented (TASK-HIGH-003)
 
 **Legal/Compliance** ✅:
 - [x] LICENSE file correct ✅
