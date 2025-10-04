@@ -13,7 +13,7 @@ The generator reads the installed `@mittwald/cli`, scans MCP tool registrations,
 
 ## Maintainer Commands
 
-- `npm run coverage:generate` – Rebuild both artifacts. Run after modifying tools, exclusions, or updating the CLI.
+- `npm run coverage:generate` – Rebuild both artifacts. Run after modifying tools, exclusions, or updating the CLI; no need to run for unrelated commits.
 - `npm run check:cli-version` – Warn when Dockerfiles pin an older CLI than the npm registry. (CI treats this as non-blocking.)
 
 ## Allowlist Management

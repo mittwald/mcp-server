@@ -1219,6 +1219,8 @@ git commit -m "chore: gitignore auto-generated coverage file"
 **Regenerate when needed**:
 ```bash
 npm run coverage:generate  # Creates mw-cli-coverage.json (not tracked)
+# Run the generator only when MCP tools, exclusion config, or the bundled Mittwald CLI version changes;
+# routine commits that don’t touch those inputs can skip regeneration.
 ```
 
 **Reference**: Audit H5, Section 5.1
