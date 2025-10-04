@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CliToolError } from '../../../src/tools/error.js';
 import { handleVolumeCreateCli } from '../../../src/handlers/tools/mittwald-cli/volume/create-cli.js';
 import { handleVolumeListCli } from '../../../src/handlers/tools/mittwald-cli/volume/list-cli.js';
 import { handleVolumeDeleteCli } from '../../../src/handlers/tools/mittwald-cli/volume/delete-cli.js';
+import { logger } from '../../../src/utils/logger.js';
 
 vi.mock('../../../src/tools/index.js', async () => {
   const actual = await vi.importActual<typeof import('../../../src/tools/index.js')>(
@@ -18,6 +19,7 @@ vi.mock('../../../src/tools/index.js', async () => {
 
 const { invokeCliTool } = await import('../../../src/tools/index.js');
 const mockInvokeCliTool = invokeCliTool as unknown as vi.MockInstance<any, any>;
+const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => undefined);
 
 function parseResponse(payload: Awaited<ReturnType<typeof handleVolumeCreateCli>> | Awaited<ReturnType<typeof handleVolumeListCli>> | Awaited<ReturnType<typeof handleVolumeDeleteCli>>) {
   const { content } = payload;
@@ -28,6 +30,11 @@ function parseResponse(payload: Awaited<ReturnType<typeof handleVolumeCreateCli>
 describe('Volume management tool handlers', () => {
   beforeEach(() => {
     mockInvokeCliTool.mockReset();
+    warnSpy.mockClear();
+  });
+
+  afterAll(() => {
+    warnSpy.mockRestore();
   });
 
   describe('handleVolumeCreateCli', () => {
@@ -49,6 +56,7 @@ describe('Volume management tool handlers', () => {
         argv: ['volume', 'create', 'app-volume', '--project-id', 'p-12345', '--quiet'],
         parser: expect.any(Function),
       });
+      expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it('rejects invalid volume names before hitting the CLI', async () => {
@@ -58,6 +66,10 @@ describe('Volume management tool handlers', () => {
       expect(payload.status).toBe('error');
       expect(payload.message).toMatch(/Invalid volume name/i);
       expect(mockInvokeCliTool).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[Volume Create] Invalid volume name provided',
+        expect.objectContaining({ name: 'INVALID_NAME' })
+      );
     });
 
     it('maps CLI errors to descriptive messages', async () => {
@@ -149,6 +161,7 @@ describe('Volume management tool handlers', () => {
       expect(payload.message).toContain('destructive');
       expect(payload.message).toContain('cannot be undone');
       expect(mockInvokeCliTool).not.toHaveBeenCalled();
+      expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it('deletes an unmounted volume successfully', async () => {
@@ -191,6 +204,14 @@ describe('Volume management tool handlers', () => {
         argv: ['volume', 'delete', 'app-volume', '--project-id', 'p-12345', '--quiet'],
         parser: expect.any(Function),
       });
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[Volume Delete] Destructive operation attempted',
+        expect.objectContaining({
+          volumeName: 'app-volume',
+          projectId: 'p-12345',
+          force: false,
+        })
+      );
     });
 
     it('warns when attempting to delete a mounted volume without force', async () => {
@@ -217,6 +238,14 @@ describe('Volume management tool handlers', () => {
       expect(payload.status).toBe('error');
       expect(payload.message).toMatch(/mounted/);
       expect(mockInvokeCliTool).toHaveBeenCalledTimes(1);
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[Volume Delete] Destructive operation attempted',
+        expect.objectContaining({
+          volumeName: 'app-volume',
+          projectId: 'p-12345',
+          force: false,
+        })
+      );
     });
 
     it('rejects volume identifiers with invalid characters', async () => {
@@ -230,6 +259,10 @@ describe('Volume management tool handlers', () => {
       expect(payload.status).toBe('error');
       expect(payload.message).toMatch(/Invalid volume identifier/);
       expect(mockInvokeCliTool).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[Volume Delete] Volume identifier does not match standard naming pattern',
+        expect.objectContaining({ volumeName: 'INVALID!' })
+      );
     });
 
     it('maps CLI errors when deletion fails', async () => {
@@ -263,6 +296,14 @@ describe('Volume management tool handlers', () => {
 
       expect(payload.status).toBe('error');
       expect(payload.message).toMatch(/not found/);
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[Volume Delete] Destructive operation attempted',
+        expect.objectContaining({
+          volumeName: 'app-volume',
+          projectId: 'p-12345',
+          force: true,
+        })
+      );
     });
   });
 });

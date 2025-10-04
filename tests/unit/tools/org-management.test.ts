@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CliToolError } from '../../../src/tools/error.js';
 import { handleOrgListCli } from '../../../src/handlers/tools/mittwald-cli/org/list-cli.js';
@@ -9,6 +9,7 @@ import { handleOrgMembershipListCli } from '../../../src/handlers/tools/mittwald
 import { handleOrgMembershipListOwnCli } from '../../../src/handlers/tools/mittwald-cli/org/membership-list-own-cli.js';
 import { handleOrgMembershipRevokeCli } from '../../../src/handlers/tools/mittwald-cli/org/membership-revoke-cli.js';
 import type { CliToolResult } from '../../../src/tools/error.js';
+import { logger } from '../../../src/utils/logger.js';
 
 vi.mock('../../../src/tools/index.js', async () => {
   const actual = await vi.importActual<typeof import('../../../src/tools/index.js')>(
@@ -23,6 +24,7 @@ vi.mock('../../../src/tools/index.js', async () => {
 
 const { invokeCliTool } = await import('../../../src/tools/index.js');
 const mockInvokeCliTool = invokeCliTool as unknown as vi.MockInstance<Promise<CliToolResult<any>>, any>;
+const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => undefined);
 
 function parseResponse(payload: unknown) {
   return JSON.parse((payload as { content: Array<{ text: string }> }).content?.[0]?.text ?? '{}');
@@ -31,6 +33,11 @@ function parseResponse(payload: unknown) {
 describe('Organization management tool handlers', () => {
   beforeEach(() => {
     mockInvokeCliTool.mockReset();
+    warnSpy.mockClear();
+  });
+
+  afterAll(() => {
+    warnSpy.mockRestore();
   });
 
   describe('handleOrgListCli', () => {
@@ -127,6 +134,7 @@ describe('Organization management tool handlers', () => {
 
       expect(payload.status).toBe('error');
       expect(mockInvokeCliTool).not.toHaveBeenCalled();
+      expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it('deletes an organization when confirmed', async () => {
@@ -148,6 +156,14 @@ describe('Organization management tool handlers', () => {
 
       const args = mockInvokeCliTool.mock.calls[0]?.[0];
       expect(args?.argv).toEqual(['org', 'delete', 'o-123', '--force', '--quiet']);
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[OrgDelete] Attempting to delete organization',
+        expect.objectContaining({
+          organizationId: 'o-123',
+          sessionId: 'sess',
+          userId: 'user',
+        })
+      );
     });
   });
 
@@ -249,6 +265,19 @@ describe('Organization management tool handlers', () => {
   });
 
   describe('handleOrgMembershipRevokeCli', () => {
+    it('requires confirm flag before revoking a membership', async () => {
+      const response = await handleOrgMembershipRevokeCli(
+        { membershipId: 'm-1' },
+        { sessionId: 'sess', userId: 'user' } as any
+      );
+      const payload = parseResponse(response);
+
+      expect(payload.status).toBe('error');
+      expect(payload.message).toContain('confirm=true');
+      expect(mockInvokeCliTool).not.toHaveBeenCalled();
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
     it('revokes a membership and reports success', async () => {
       mockInvokeCliTool.mockResolvedValueOnce({
         ok: true,
@@ -265,6 +294,15 @@ describe('Organization management tool handlers', () => {
       expect(payload.status).toBe('success');
       expect(payload.data.revoked).toBe(true);
       expect(payload.data.membershipId).toBe('m-1');
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[OrgMembershipRevoke] Attempting to revoke membership',
+        expect.objectContaining({
+          membershipId: 'm-1',
+          organizationId: 'o-123',
+          sessionId: 'sess',
+          userId: 'user',
+        })
+      );
     });
 
     it('maps CLI errors to descriptive messages', async () => {
@@ -284,6 +322,14 @@ describe('Organization management tool handlers', () => {
 
       expect(payload.status).toBe('error');
       expect(payload.message).toMatch(/Permission denied/);
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[OrgMembershipRevoke] Attempting to revoke membership',
+        expect.objectContaining({
+          membershipId: 'm-denied',
+          sessionId: 'sess',
+          userId: 'user',
+        })
+      );
     });
   });
 });
