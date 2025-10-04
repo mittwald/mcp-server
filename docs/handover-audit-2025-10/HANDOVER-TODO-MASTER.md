@@ -88,7 +88,7 @@ docker run --rm mcp-test whoami  # Should output: nodejs
 ```
 
 **Reference**: Audit H8 (Build & Deployment), Section 3.2
-**Status**: 🔴 OPEN
+**Status**: ✅ COMPLETE (Commit: 8dab5cb - 2025-10-04)
 
 ---
 
