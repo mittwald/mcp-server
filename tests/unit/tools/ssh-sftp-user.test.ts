@@ -32,9 +32,9 @@ describe('SSH/SFTP user handlers', () => {
     it('creates SSH user with password and redacts credentials in metadata', async () => {
       mockInvokeCliTool.mockResolvedValueOnce({
         ok: true,
-        result: { stdout: 'ssh-user-123\n', stderr: '' },
+        result: { stdout: 'ssh-user123\n', stderr: '' },
         meta: {
-          command: 'mw ssh-user create --description app --password super-secret --quiet',
+          command: 'mw ssh-user create --description app --password super-secret',
           exitCode: 0,
           durationMs: 20,
         },
@@ -52,7 +52,7 @@ describe('SSH/SFTP user handlers', () => {
         passwordProvided: true,
         publicKeyProvided: false,
       });
-      expect(payload.data.id).toBe('ssh-user-123');
+      expect(payload.data.id).toBe('ssh-user123');
       expect(payload.meta.command).toContain('[REDACTED]');
       expect(payload.meta.command).not.toContain('super-secret');
     });
@@ -70,9 +70,9 @@ describe('SSH/SFTP user handlers', () => {
     it('creates SFTP user with public key authentication', async () => {
       mockInvokeCliTool.mockResolvedValueOnce({
         ok: true,
-        result: { stdout: 'sftp-user-555\n', stderr: '' },
+        result: { stdout: 'sftp-user555\n', stderr: '' },
         meta: {
-          command: 'mw sftp-user create --description deploy --public-key ssh-rsa AAA... --quiet',
+          command: 'mw sftp-user create --description deploy --public-key ssh-rsa AAA...',
           exitCode: 0,
           durationMs: 32,
         },
@@ -86,7 +86,7 @@ describe('SSH/SFTP user handlers', () => {
 
       const payload = parseResponse(response);
       expect(payload.status).toBe('success');
-      expect(payload.data.id).toBe('sftp-user-555');
+      expect(payload.data.id).toBe('sftp-user555');
       expect(payload.data.authentication).toEqual({
         method: 'publicKey',
         passwordProvided: false,

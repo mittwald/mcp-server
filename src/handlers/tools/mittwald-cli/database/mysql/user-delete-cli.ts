@@ -7,7 +7,6 @@ interface MittwaldDatabaseMysqlUserDeleteArgs {
   userId: string;
   confirm?: boolean;
   force?: boolean;
-  quiet?: boolean;
 }
 
 function buildCliArgs(args: MittwaldDatabaseMysqlUserDeleteArgs): string[] {
@@ -15,10 +14,6 @@ function buildCliArgs(args: MittwaldDatabaseMysqlUserDeleteArgs): string[] {
 
   if (args.force) {
     cliArgs.push('--force');
-  }
-
-  if (args.quiet ?? true) {
-    cliArgs.push('--quiet');
   }
 
   return cliArgs;

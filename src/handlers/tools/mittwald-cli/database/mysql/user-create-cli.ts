@@ -13,7 +13,6 @@ interface MittwaldDatabaseMysqlUserCreateArgs {
   password?: string;
   enableExternalAccess?: boolean;
   accessIpMask?: string;
-  quiet?: boolean;
 }
 
 interface MysqlUserDetails {
@@ -33,7 +32,6 @@ interface MysqlUserDetails {
 function buildCliArgs(
   args: MittwaldDatabaseMysqlUserCreateArgs,
   password: string,
-  quiet: boolean,
   description: string,
 ): string[] {
   const cliArgs: string[] = ['database', 'mysql', 'user', 'create'];
@@ -51,10 +49,6 @@ function buildCliArgs(
   } else if (args.accessIpMask) {
     // Access mask without external access would be ignored by the CLI
     logger.warn('[MySQL User Create] Ignoring accessIpMask because enableExternalAccess is not set');
-  }
-
-  if (quiet) {
-    cliArgs.push('--quiet');
   }
 
   return cliArgs;
@@ -166,7 +160,7 @@ export const handleDatabaseMysqlUserCreateCli: MittwaldCliToolHandler<MittwaldDa
   let argv: string[];
   try {
     description = resolveDescription(args);
-    argv = buildCliArgs(args, password, args.quiet ?? true, description);
+    argv = buildCliArgs(args, password, description);
   } catch (buildError) {
     if (buildError instanceof CliToolError) {
       return buildSecureToolResponse('error', buildError.message);

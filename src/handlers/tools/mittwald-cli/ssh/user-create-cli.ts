@@ -22,7 +22,7 @@ function buildCliArgs(args: MittwaldSshUserCreateArgs): string[] {
 }
 
 function extractSshUserId(output: string): string | undefined {
-  const match = output.match(/ID\s+([a-f0-9-]+)/i);
+  const match = output.match(/(ssh-[a-z0-9]+)/i);
   return match ? match[1] : undefined;
 }
 

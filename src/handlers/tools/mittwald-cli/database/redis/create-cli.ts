@@ -19,7 +19,6 @@ interface MittwaldDatabaseRedisCreateArgs {
     | 'allkeys-random'
     | 'volatile-random'
     | 'volatile-ttl';
-  quiet?: boolean;
 }
 
 interface RedisDatabaseDetails {
@@ -65,10 +64,6 @@ function buildCliArgs(args: MittwaldDatabaseRedisCreateArgs): string[] {
 
   if (args.maxMemoryPolicy) {
     cliArgs.push('--max-memory-policy', args.maxMemoryPolicy);
-  }
-
-  if (args.quiet ?? true) {
-    cliArgs.push('--quiet');
   }
 
   return cliArgs;

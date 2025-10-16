@@ -21,11 +21,6 @@ const tool: Tool = {
         type: 'boolean',
         description: 'Skip confirmation prompts when deleting the user.'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress CLI output for machine-friendly responses.',
-        default: true
-      }
     },
     required: ['userId', 'confirm']
   }

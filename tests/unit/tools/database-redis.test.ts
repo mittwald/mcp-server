@@ -73,7 +73,6 @@ describe('Redis database tool handlers', () => {
         '--no-persistent',
         '--max-memory',
         '512Mi',
-        '--quiet',
       ]);
     });
 

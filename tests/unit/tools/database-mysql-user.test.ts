@@ -74,7 +74,6 @@ describe('MySQL user tool handlers', () => {
         'App user',
         '--password',
         expect.any(String),
-        '--quiet',
       ]);
 
       const secondCall = mockInvokeCliTool.mock.calls[1]?.[0];
@@ -112,7 +111,7 @@ describe('MySQL user tool handlers', () => {
       mockInvokeCliTool.mockResolvedValueOnce({
         ok: true,
         result: { stdout: '', stderr: '' },
-        meta: { command: 'mw database mysql user delete u-123 --force --quiet', exitCode: 0, durationMs: 10 },
+        meta: { command: 'mw database mysql user delete u-123 --force', exitCode: 0, durationMs: 10 },
       });
 
       const response = await handleDatabaseMysqlUserDeleteCli({ userId: 'mysql-user-123', force: true, confirm: true });
@@ -130,7 +129,6 @@ describe('MySQL user tool handlers', () => {
         'delete',
         'mysql-user-123',
         '--force',
-        '--quiet',
       ]);
     });
 

@@ -131,13 +131,13 @@ describe('cronjob/delete-cli confirm guard', () => {
       meta: { command: 'mw cronjob delete', durationMs: 9 },
     });
 
-    const response = await handleCronjobDeleteCli({ cronjobId: 'cron-1', confirm: true, quiet: true });
+    const response = await handleCronjobDeleteCli({ cronjobId: 'cron-1', confirm: true });
     const payload = parseResponse(response);
 
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_cronjob_delete',
-      argv: ['cronjob', 'delete', 'cron-1', '--quiet'],
+      argv: ['cronjob', 'delete', 'cron-1'],
       parser: expect.any(Function),
     });
     expect(warnSpy).toHaveBeenCalledWith('[CronjobDelete] Destructive operation attempted', expect.objectContaining({
@@ -195,13 +195,13 @@ describe('mail/deliverybox/delete-cli confirm guard', () => {
       meta: { command: 'mw mail deliverybox delete', durationMs: 21 },
     });
 
-    const response = await handleMittwaldMailDeliveryboxDeleteCli({ id: 'box-1', confirm: true, quiet: true });
+    const response = await handleMittwaldMailDeliveryboxDeleteCli({ id: 'box-1', confirm: true });
     const payload = parseResponse(response);
 
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_mail_deliverybox_delete',
-      argv: ['mail', 'deliverybox', 'delete', 'box-1', '--quiet'],
+      argv: ['mail', 'deliverybox', 'delete', 'box-1'],
       parser: expect.any(Function),
     });
     expect(warnSpy).toHaveBeenCalledWith('[MailDeliveryboxDelete] Destructive operation attempted', expect.objectContaining({
@@ -259,13 +259,13 @@ describe('sftp/user-delete-cli confirm guard', () => {
       meta: { command: 'mw sftp-user delete', durationMs: 11 },
     });
 
-    const response = await handleSftpUserDeleteCli({ sftpUserId: 'sftp-1', confirm: true, quiet: true }, { sessionId: 'session', userId: 'user' } as any);
+    const response = await handleSftpUserDeleteCli({ sftpUserId: 'sftp-1', confirm: true }, { sessionId: 'session', userId: 'user' } as any);
     const payload = parseResponse(response);
 
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_sftp_user_delete',
-      argv: ['sftp-user', 'delete', 'sftp-1', '--quiet'],
+      argv: ['sftp-user', 'delete', 'sftp-1'],
       parser: expect.any(Function),
     });
     expect(warnSpy).toHaveBeenCalledWith('[SftpUserDelete] Destructive operation attempted', expect.objectContaining({
@@ -327,13 +327,13 @@ describe('user/ssh-key/delete-cli confirm guard', () => {
       meta: { command: 'mw user ssh-key delete', durationMs: 14 },
     });
 
-    const response = await handleUserSshKeyDeleteCli({ keyId: 'key-1', confirm: true, quiet: true }, { sessionId: 'sess', userId: 'usr' } as any);
+    const response = await handleUserSshKeyDeleteCli({ keyId: 'key-1', confirm: true }, { sessionId: 'sess', userId: 'usr' } as any);
     const payload = parseResponse(response);
 
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_user_ssh_key_delete',
-      argv: ['user', 'ssh-key', 'delete', 'key-1', '--quiet'],
+      argv: ['user', 'ssh-key', 'delete', 'key-1'],
       parser: expect.any(Function),
     });
     expect(warnSpy).toHaveBeenCalledWith('[UserSshKeyDelete] Destructive operation attempted', expect.objectContaining({
@@ -396,7 +396,7 @@ describe('container/delete-cli confirm guard', () => {
     });
 
     const response = await handleContainerDeleteCli(
-      { containerId: 'ctr-1', projectId: 'p-1', confirm: true, quiet: true },
+      { containerId: 'ctr-1', projectId: 'p-1', confirm: true },
       { sessionId: 'sess', userId: 'usr' } as any
     );
     const payload = parseResponse(response);
@@ -404,7 +404,7 @@ describe('container/delete-cli confirm guard', () => {
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_container_delete',
-      argv: ['container', 'delete', 'ctr-1', '--project-id', 'p-1', '--quiet'],
+      argv: ['container', 'delete', 'ctr-1', '--project-id', 'p-1'],
       parser: expect.any(Function),
     });
     expect(warnSpy).toHaveBeenCalledWith('[ContainerDelete] Destructive operation attempted', expect.objectContaining({
@@ -472,7 +472,7 @@ describe('stack/delete-cli confirm guard', () => {
     });
 
     const response = await handleStackDeleteCli(
-      { stackId: 'stack-1', confirm: true, withVolumes: true, quiet: true },
+      { stackId: 'stack-1', confirm: true, withVolumes: true },
       { sessionId: 'sess', userId: 'usr' } as any
     );
     const payload = parseResponse(response);
@@ -480,7 +480,7 @@ describe('stack/delete-cli confirm guard', () => {
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_stack_delete',
-      argv: ['stack', 'delete', 'stack-1', '--quiet', '--with-volumes'],
+      argv: ['stack', 'delete', 'stack-1', '--with-volumes'],
       parser: expect.any(Function),
     });
     expect(warnSpy).toHaveBeenCalledWith('[StackDelete] Destructive operation attempted', expect.objectContaining({
@@ -510,7 +510,7 @@ describe('database/mysql/delete-cli confirm guard', () => {
     });
 
     const response = await handleDatabaseMysqlDeleteCli(
-      { databaseId: 'db-1', confirm: true, quiet: true },
+      { databaseId: 'db-1', confirm: true },
       { sessionId: 'sess', userId: 'usr' } as any
     );
     const payload = parseResponse(response);
@@ -518,7 +518,7 @@ describe('database/mysql/delete-cli confirm guard', () => {
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_database_mysql_delete',
-      argv: ['database', 'mysql', 'delete', 'db-1', '--quiet'],
+      argv: ['database', 'mysql', 'delete', 'db-1'],
       parser: expect.any(Function),
     });
     expect(warnSpy).toHaveBeenCalledWith('[DatabaseMysqlDelete] Destructive operation attempted', expect.objectContaining({
@@ -555,7 +555,7 @@ describe('database/mysql/user-delete-cli confirm guard', () => {
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_database_mysql_user_delete',
-      argv: ['database', 'mysql', 'user', 'delete', 'mysql-user-1', '--quiet'],
+      argv: ['database', 'mysql', 'user', 'delete', 'mysql-user-1'],
       sessionId: 'sess',
       parser: expect.any(Function),
     });
@@ -585,7 +585,7 @@ describe('project/delete-cli confirm guard', () => {
     });
 
     const response = await handleProjectDeleteCli(
-      { projectId: 'p-1', confirm: true, quiet: true },
+      { projectId: 'p-1', confirm: true },
       { sessionId: 'sess', userId: 'usr' } as any
     );
     const payload = parseResponse(response);
@@ -593,7 +593,7 @@ describe('project/delete-cli confirm guard', () => {
     expect(payload.status).toBe('success');
     expect(mockInvokeCliTool).toHaveBeenCalledWith({
       toolName: 'mittwald_project_delete',
-      argv: ['project', 'delete', 'p-1', '--quiet'],
+      argv: ['project', 'delete', 'p-1'],
       parser: expect.any(Function),
     });
     expect(warnSpy).toHaveBeenCalledWith('[ProjectDelete] Destructive operation attempted', expect.objectContaining({

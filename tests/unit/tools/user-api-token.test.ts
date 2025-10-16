@@ -41,7 +41,7 @@ describe('API token handlers', () => {
         ok: true,
         result: { stdout: JSON.stringify({ token: 'tok_12345' }), stderr: '' },
         meta: {
-          command: 'mw user api-token create --description deploy --roles api_read --roles api_write --quiet',
+          command: 'mw user api-token create --description deploy --roles api_read --roles api_write',
           exitCode: 0,
           durationMs: 18,
         },
@@ -127,38 +127,9 @@ describe('API token handlers', () => {
         expect.objectContaining({
           tokenId: 'tok-1',
           force: true,
-          quiet: false,
           sessionId: 'sess-1',
           userId: 'user-9',
         })
-      );
-    });
-
-    it('returns quiet output when quiet flag is set', async () => {
-      mockInvokeCliTool.mockResolvedValueOnce({
-        ok: true,
-        result: { stdout: 'header\nrevoked\n', stderr: '' },
-        meta: { command: 'mw user api-token revoke tok-quiet --quiet', exitCode: 0, durationMs: 12 },
-      });
-
-      const response = await handleUserApiTokenRevokeCli({
-        tokenId: 'tok-quiet',
-        confirm: true,
-        quiet: true,
-      });
-      const payload = parseResponse(response);
-
-      expect(payload.status).toBe('success');
-      expect(payload.message).toBe('revoked');
-      expect(payload.data.output).toBe('revoked');
-      expect(mockInvokeCliTool).toHaveBeenCalledWith({
-        toolName: 'mittwald_user_api_token_revoke',
-        argv: ['user', 'api-token', 'revoke', 'tok-quiet', '--quiet'],
-        parser: expect.any(Function),
-      });
-      expect(warnSpy).toHaveBeenCalledWith(
-        '[UserApiTokenRevoke] Destructive operation attempted',
-        expect.objectContaining({ tokenId: 'tok-quiet', quiet: true })
       );
     });
 
@@ -178,7 +149,7 @@ describe('API token handlers', () => {
       expect(payload.message).toMatch(/API token not found/);
       expect(warnSpy).toHaveBeenCalledWith(
         '[UserApiTokenRevoke] Destructive operation attempted',
-        expect.objectContaining({ tokenId: 'tok-missing', quiet: false })
+        expect.objectContaining({ tokenId: 'tok-missing' })
       );
     });
   });

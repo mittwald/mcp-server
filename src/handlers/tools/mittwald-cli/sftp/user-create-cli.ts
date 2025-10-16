@@ -28,7 +28,7 @@ function buildCliArgs(args: MittwaldSftpUserCreateArgs): string[] {
 }
 
 function extractSftpUserId(output: string): string | undefined {
-  const match = output.match(/ID\s+([a-z0-9-]+)/i);
+  const match = output.match(/(sftp-[a-z0-9]+)/i);
   return match ? match[1] : undefined;
 }
 
