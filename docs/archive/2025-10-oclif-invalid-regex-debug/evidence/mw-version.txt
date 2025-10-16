@@ -1,0 +1,1 @@
+@mittwald/cli/1.11.2 darwin-arm64 node-v20.12.2

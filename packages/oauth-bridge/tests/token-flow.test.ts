@@ -8,6 +8,18 @@ import { MemoryStateStore } from '../src/state/memory-state-store.js';
 
 const BASE_URL = 'https://bridge.example.com';
 
+async function seedChatgptClient(stateStore: MemoryStateStore) {
+  await stateStore.storeClientRegistration({
+    clientId: 'chatgpt-client',
+    tokenEndpointAuthMethod: 'none',
+    redirectUris: ['https://chatgpt.com/connector_platform_oauth_redirect'],
+    registrationAccessToken: 'test-access-token',
+    registrationClientUri: `${BASE_URL}/register/chatgpt-client`,
+    clientIdIssuedAt: Math.floor(Date.now() / 1000),
+    clientName: 'ChatGPT Connector'
+  });
+}
+
 function setupEnv() {
   process.env.BRIDGE_ISSUER = 'https://bridge.example.com';
   process.env.BRIDGE_BASE_URL = BASE_URL;
@@ -36,6 +48,8 @@ describe('OAuth bridge flow', () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
     const app = createApp(config, stateStore);
+
+    await seedChatgptClient(stateStore);
 
     const codeVerifier = 'verifier-123';
     const codeChallenge = pkceChallenge(codeVerifier);
@@ -111,6 +125,8 @@ describe('OAuth bridge flow', () => {
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
     const app = createApp(config, stateStore);
 
+    await seedChatgptClient(stateStore);
+
     const response = await request(app.callback())
       .post('/register')
       .send({
@@ -135,6 +151,8 @@ describe('OAuth bridge flow', () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
     const app = createApp(config, stateStore);
+
+    await seedChatgptClient(stateStore);
 
     const postResponse = await request(app.callback())
       .post('/register')

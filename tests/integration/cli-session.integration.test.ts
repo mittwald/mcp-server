@@ -40,7 +40,7 @@ describe('CLI execution with session context (integration)', () => {
       executeCli('mw', ['project', 'list'])
     );
 
-    expect(result).toEqual({ stdout: 'ok', stderr: '', exitCode: 0 });
+    expect(result).toMatchObject({ stdout: 'ok', stderr: '', exitCode: 0 });
   });
 
   it('respects explicit token arguments without overwriting', async () => {

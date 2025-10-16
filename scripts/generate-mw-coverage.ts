@@ -61,6 +61,7 @@ interface CoverageReport {
     handlerImport: string;
   }>;
   missing: CoverageEntry[];
+  excluded: CoverageEntry[];
 }
 
 function sortCoverageEntries(entries: CoverageEntry[], existingOrder: Map<string, number>): CoverageEntry[] {
@@ -400,10 +401,18 @@ function buildCoverage(
 
   const coveredCount = coverageEntries.filter((entry) => entry.status === 'covered').length;
   const cliCommandCount = coverageEntries.length;
-  const missingEntries = coverageEntries.filter((entry) => entry.status === 'missing');
+  const excludedEntries = coverageEntries.filter(
+    (entry) => entry.status === 'missing' && entry.exclusion,
+  );
+  const missingEntries = coverageEntries.filter(
+    (entry) => entry.status === 'missing' && !entry.exclusion,
+  );
   const missingCount = missingEntries.length;
-  const excludedCount = missingEntries.filter((entry) => entry.exclusion).length;
-  const coveragePercent = cliCommandCount === 0 ? 0 : Math.round((coveredCount / cliCommandCount) * 100);
+  const excludedCount = excludedEntries.length;
+  const coveragePercent =
+    cliCommandCount === 0
+      ? 0
+      : Math.round(((coveredCount + excludedCount) / cliCommandCount) * 100);
   const extraToolEntries = Array.from(extraTools.entries()).map(([toolName, meta]) => {
     const existing = existingExtraTools.get(toolName);
     return {
@@ -444,7 +453,8 @@ function buildCoverage(
     },
     coverage: coverageEntries,
     extraTools: extraToolEntries,
-    missing: coverageEntries.filter((entry) => entry.status === 'missing')
+    missing: missingEntries,
+    excluded: excludedEntries,
   };
 
   return { report, coverageEntries, extraTools };
@@ -518,12 +528,14 @@ async function writeCoverageJson(report: CoverageReport): Promise<void> {
 
   const coverage = report.coverage.map(serializeEntry);
   const missing = report.missing.map(serializeEntry);
+  const excluded = report.excluded.map(serializeEntry);
 
   const output = {
     $schema: SCHEMA_REFERENCE,
     stats: report.stats,
     coverage,
     missing,
+    excluded,
     extraTools: report.extraTools
   };
 
@@ -532,6 +544,20 @@ async function writeCoverageJson(report: CoverageReport): Promise<void> {
 
 function formatStatus(entry: CoverageEntry): string {
   return entry.status === 'covered' ? '✅ Covered' : '⚠️ Missing';
+}
+
+function addNotePart(target: Map<string, string>, part: string | null | undefined): void {
+  if (!part) {
+    return;
+  }
+  const trimmed = part.trim();
+  if (!trimmed) {
+    return;
+  }
+  const normalized = trimmed.replace(/\s+/g, ' ').toLowerCase();
+  if (!target.has(normalized)) {
+    target.set(normalized, trimmed);
+  }
 }
 
 async function writeCoverageMarkdown(
@@ -591,11 +617,15 @@ async function writeCoverageMarkdown(
       const exclusionNote = entry.exclusion
         ? `Allowed missing (${entry.exclusion.category}): ${entry.exclusion.reason}`
         : '';
-      const note = docNote
-        ? exclusionNote
-          ? `${docNote} — ${exclusionNote}`
-          : docNote
-        : exclusionNote;
+      const noteParts = new Map<string, string>();
+
+      for (const part of docNote.split('—')) {
+        addNotePart(noteParts, part);
+      }
+
+      addNotePart(noteParts, exclusionNote);
+
+      const note = Array.from(noteParts.values()).join(' — ');
       const description = (entry.description ?? '').replace(/\s+/g, ' ').trim();
 
       lines.push(
@@ -625,9 +655,24 @@ async function main(): Promise<void> {
     );
     const sortedCoverage = sortCoverageEntries(report.coverage, existingSnapshot.order);
     report.coverage = sortedCoverage;
-    report.missing = sortedCoverage.filter((entry) => entry.status === 'missing');
-    report.stats.missingCount = report.missing.length;
-    report.stats.excludedCount = report.missing.filter((entry) => entry.exclusion).length;
+
+    const sortedMissing = sortedCoverage.filter(
+      (entry) => entry.status === 'missing' && !entry.exclusion,
+    );
+    const sortedExcluded = sortedCoverage.filter(
+      (entry) => entry.status === 'missing' && entry.exclusion,
+    );
+
+    report.missing = sortedMissing;
+    report.excluded = sortedExcluded;
+    report.stats.missingCount = sortedMissing.length;
+    report.stats.excludedCount = sortedExcluded.length;
+    report.stats.coveragePercent =
+      sortedCoverage.length === 0
+        ? 0
+        : Math.round(
+            ((report.stats.coveredCount + sortedExcluded.length) / sortedCoverage.length) * 100,
+          );
     const docMetadata = await loadExistingDocMetadata();
 
     await writeCoverageJson(report);

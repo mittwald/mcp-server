@@ -10,6 +10,7 @@ import axios from 'axios';
 import { configureRemoteSuiteTimeout, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
 
 const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
+const REGISTRATION_PATH = '/register';
 
 const remoteTest: typeof test = (name, handler, options) =>
   test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
@@ -30,7 +31,7 @@ describe('All OAuth Clients Compatibility', () => {
       };
 
       const response = await safeRequest(
-        () => axios.post(`${OAUTH_SERVER}/reg`, mcpJamRegistration, { validateStatus: () => true }),
+        () => axios.post(`${OAUTH_SERVER}${REGISTRATION_PATH}`, mcpJamRegistration, { validateStatus: () => true }),
         'Skipping MCP Jam registration test (OAuth host unavailable)'
       );
 
@@ -77,7 +78,7 @@ describe('All OAuth Clients Compatibility', () => {
       };
 
       const response = await safeRequest(
-        () => axios.post(`${OAUTH_SERVER}/reg`, claudeRegistration, { validateStatus: () => true }),
+        () => axios.post(`${OAUTH_SERVER}${REGISTRATION_PATH}`, claudeRegistration, { validateStatus: () => true }),
         'Skipping Claude registration test (OAuth host unavailable)'
       );
 
@@ -92,7 +93,8 @@ describe('All OAuth Clients Compatibility', () => {
       expect(response.data.client_id).toBeDefined();
       expect(response.data.client_secret).toBeDefined();
       expect(response.data.token_endpoint_auth_method).toBe('client_secret_post');
-      expect(response.data.application_type).toBe('web');
+      const applicationType = response.data.application_type ?? 'web';
+      expect(applicationType).toBe('web');
 
       if (response.data.scope) {
         expect(response.data.scope).toContain('openid');

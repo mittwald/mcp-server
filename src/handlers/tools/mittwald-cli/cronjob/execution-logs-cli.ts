@@ -1,6 +1,7 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { executeCli, parseJsonOutput } from '../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { parseJsonOutput } from '../../../../utils/cli-output.js';
 
 interface MittwaldCronjobExecutionLogsCliArgs {
   cronjobId: string;
@@ -9,82 +10,97 @@ interface MittwaldCronjobExecutionLogsCliArgs {
   noPager?: boolean;
 }
 
-export const handleCronjobExecutionLogsCli: MittwaldToolHandler<MittwaldCronjobExecutionLogsCliArgs> = async (args, context) => {
+function buildCliArgs(args: MittwaldCronjobExecutionLogsCliArgs): string[] {
+  const cliArgs: string[] = ['cronjob', 'execution', 'logs', args.cronjobId, args.executionId];
+  const outputFormat = args.output ?? 'txt';
+  cliArgs.push('--output', outputFormat);
+  if (args.noPager) cliArgs.push('--no-pager');
+  return cliArgs;
+}
+
+function mapCliError(error: CliToolError, args: MittwaldCronjobExecutionLogsCliArgs): string {
+  const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}`.toLowerCase();
+  const baseMessage = error.stderr || error.stdout || error.message;
+
+  if (combined.includes('not found')) {
+    return `Cronjob or execution not found: ${args.cronjobId} / ${args.executionId}.\nError: ${baseMessage}`;
+  }
+
+  return `Failed to get cronjob execution logs: ${baseMessage}`;
+}
+
+export const handleCronjobExecutionLogsCli: MittwaldToolHandler<MittwaldCronjobExecutionLogsCliArgs> = async (args) => {
   try {
-    // Build CLI command arguments
-    const cliArgs: string[] = ['cronjob', 'execution', 'logs', args.cronjobId, args.executionId];
-    
-    // Set output format - use json for structured parsing, txt for raw logs
-    const outputFormat = args.output || 'txt';
-    cliArgs.push('--output', outputFormat);
-    
-    // Optional flags
-    if (args.noPager) {
-      cliArgs.push('--no-pager');
-    }
-    
-    // Execute CLI command
-    const result = await executeCli('mw', cliArgs);
-    
-    if (result.exitCode !== 0) {
-      const errorMessage = result.stderr || result.stdout || 'Unknown error';
-      
-      if (errorMessage.includes('not found')) {
-        return formatToolResponse(
-          "error",
-          `Cronjob or execution not found: ${args.cronjobId} / ${args.executionId}.\nError: ${errorMessage}`
-        );
-      }
-      
-      return formatToolResponse(
-        "error",
-        `Failed to get cronjob execution logs: ${errorMessage}`
-      );
-    }
-    
-    // Handle different output formats
+    const argv = buildCliArgs(args);
+    const result = await invokeCliTool({
+      toolName: 'mittwald_cronjob_execution_logs',
+      argv,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    });
+
+    const stdout = result.result.stdout ?? '';
+    const stderr = result.result.stderr ?? '';
+    const outputFormat = args.output ?? 'txt';
+
     if (outputFormat === 'json') {
       try {
-        const data = parseJsonOutput(result.stdout);
-        
+        const data = parseJsonOutput(stdout);
         return formatToolResponse(
-          "success",
+          'success',
           `Cronjob execution logs for ${args.executionId}`,
           {
             cronjobId: args.cronjobId,
             executionId: args.executionId,
-            logs: data
+            logs: data,
+          },
+          {
+            command: result.meta.command,
+            durationMs: result.meta.durationMs,
           }
         );
-        
       } catch (parseError) {
-        // If JSON parsing fails, return the raw output
         return formatToolResponse(
-          "success",
-          "Cronjob execution logs retrieved (raw output)",
+          'success',
+          'Cronjob execution logs retrieved (raw output)',
           {
-            rawOutput: result.stdout,
-            parseError: parseError instanceof Error ? parseError.message : String(parseError)
+            rawOutput: stdout,
+            parseError: parseError instanceof Error ? parseError.message : String(parseError),
+          },
+          {
+            command: result.meta.command,
+            durationMs: result.meta.durationMs,
           }
         );
       }
-    } else {
-      // For txt/yaml format, return raw output
-      return formatToolResponse(
-        "success",
-        `Cronjob execution logs for ${args.executionId}`,
-        {
-          cronjobId: args.cronjobId,
-          executionId: args.executionId,
-          logs: result.stdout,
-          format: outputFormat
-        }
-      );
     }
-    
-  } catch (error) {
+
     return formatToolResponse(
-      "error",
+      'success',
+      `Cronjob execution logs for ${args.executionId}`,
+      {
+        cronjobId: args.cronjobId,
+        executionId: args.executionId,
+        logs: stdout || stderr,
+        format: outputFormat,
+      },
+      {
+        command: result.meta.command,
+        durationMs: result.meta.durationMs,
+      }
+    );
+  } catch (error) {
+    if (error instanceof CliToolError) {
+      const message = mapCliError(error, args);
+      return formatToolResponse('error', message, {
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
+      });
+    }
+
+    return formatToolResponse(
+      'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
     );
   }

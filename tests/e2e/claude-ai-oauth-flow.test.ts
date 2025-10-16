@@ -5,21 +5,182 @@
  * Covers all 38 steps from initial MCP request to final tool execution
  */
 
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect, beforeEach, afterAll } from 'vitest';
 import axios from 'axios';
-import { JSDOM } from 'jsdom';
-import { configureRemoteSuiteTimeout, MCP_SERVER, OAUTH_SERVER, safeRequest } from '../utils/remote.js';
+import { createHash, randomBytes } from 'node:crypto';
+import { jwtVerify } from 'jose';
+import {
+  configureRemoteSuiteTimeout,
+  MCP_SERVER,
+  OAUTH_SERVER,
+  safeRequest,
+  getBridgeBaseUrl,
+  getMcpBaseUrl
+} from '../utils/remote.js';
+import { startE2EEnvironment, stopE2EEnvironment, type E2EContext } from './setup.js';
 
 const SUITE_TIMEOUT = configureRemoteSuiteTimeout();
+const REGISTRATION_PATH = '/register';
+const AUTHORIZE_PATH = '/authorize';
+const CLAUDE_REDIRECT_URI = 'https://claude.ai/api/mcp/auth_callback';
+const BRIDGE_JWT_SECRET = 'mittwald-e2e-shared-secret';
 
 const remoteTest: typeof test = (name, handler, options) =>
   test(name, { timeout: SUITE_TIMEOUT, ...options }, handler);
 
+function base64UrlEncode(input: Buffer | Uint8Array | string): string {
+  const buffer = typeof input === 'string' ? Buffer.from(input) : Buffer.from(input);
+  return buffer
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
+function generatePkcePair(): { codeVerifier: string; codeChallenge: string } {
+  const codeVerifier = base64UrlEncode(randomBytes(32));
+  const codeChallenge = base64UrlEncode(createHash('sha256').update(codeVerifier).digest());
+  return { codeVerifier, codeChallenge };
+}
+
+async function verifyBridgeJwt(token: string) {
+  const secret = new TextEncoder().encode(BRIDGE_JWT_SECRET);
+  return jwtVerify(token, secret);
+}
+
+async function fetchBridgeMetrics(baseUrl: string): Promise<Record<string, number>> {
+  const response = await axios.get(`${baseUrl}/health`, { validateStatus: () => true });
+  expect(response.status).toBe(200);
+  const metrics = response.data?.stateStore?.metrics ?? {};
+  return {
+    pendingAuthorizations: Number(metrics.pendingAuthorizations) || 0,
+    pendingGrants: Number(metrics.pendingGrants) || 0,
+    registeredClients: Number(metrics.registeredClients) || 0
+  };
+}
+
+async function readFirstJsonMessage(stream: ReadableStream<Uint8Array>): Promise<any> {
+  const reader = stream.getReader();
+  let buffer = '';
+  let dataLines: string[] = [];
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        const remaining = buffer.trim();
+        if (remaining) {
+          dataLines.push(remaining);
+        }
+        if (dataLines.length > 0) {
+          return JSON.parse(dataLines.join('\n'));
+        }
+        throw new Error('MCP stream ended without message');
+      }
+      buffer += Buffer.from(value).toString('utf-8');
+      let newlineIndex;
+      while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+        const line = buffer.slice(0, newlineIndex).trim();
+        buffer = buffer.slice(newlineIndex + 1);
+        if (!line) {
+          if (dataLines.length > 0) {
+            return JSON.parse(dataLines.join('\n'));
+          }
+          continue;
+        }
+        if (line.startsWith('data:')) {
+          dataLines.push(line.slice(5).trim());
+          continue;
+        }
+        if (line.startsWith('event:')) {
+          continue;
+        }
+        if (line.startsWith(':')) {
+          continue;
+        }
+        // Fallback for raw JSON lines
+        if (line) {
+          return JSON.parse(line);
+        }
+      }
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+}
+
+interface McpRequestOptions {
+  baseUrl: string;
+  token: string;
+  payload: unknown;
+  sessionId?: string;
+}
+
+async function postMcpStreamRequest({ baseUrl, token, payload, sessionId }: McpRequestOptions) {
+  const response = await fetch(`${baseUrl}/mcp`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json, text/event-stream',
+      'mcp-protocol-version': '2025-06-18',
+      ...(sessionId ? { 'mcp-session-id': sessionId } : {})
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.body) {
+    throw new Error('MCP response stream missing');
+  }
+
+  const message = await readFirstJsonMessage(response.body);
+  return { response, message };
+}
+
 describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
   let claudeClient: any;
+  let localContext: E2EContext | null = null;
+  let localClaudeClient: any | null = null;
+
+  async function ensureLocalClaudeRegistration(): Promise<{ context: E2EContext; client: any }> {
+    if (!localContext) {
+      localContext = await startE2EEnvironment();
+    }
+
+    if (!localClaudeClient) {
+      const bridgeBaseUrl = getBridgeBaseUrl();
+      const registrationPayload = {
+        client_name: 'Claude E2E',
+        redirect_uris: [CLAUDE_REDIRECT_URI],
+        grant_types: ['authorization_code', 'refresh_token'],
+        response_types: ['code'],
+        token_endpoint_auth_method: 'client_secret_post',
+        scope: 'openid offline_access'
+      };
+
+      const registrationResponse = await axios.post(`${bridgeBaseUrl}${REGISTRATION_PATH}`, registrationPayload, {
+        validateStatus: () => true
+      });
+
+      if (registrationResponse.status >= 400) {
+        throw new Error(
+          `Failed to register local Claude client: ${registrationResponse.status} ${JSON.stringify(registrationResponse.data)}`
+        );
+      }
+
+      localClaudeClient = registrationResponse.data;
+    }
+
+    return { context: localContext!, client: localClaudeClient! };
+  }
 
   beforeEach(() => {
   });
+
+  afterAll(async () => {
+    await stopE2EEnvironment(localContext ?? undefined);
+    localContext = null;
+    localClaudeClient = null;
+  }, SUITE_TIMEOUT * 5);
 
   describe('Complete 38-Step Workflow', () => {
     remoteTest('Phase 1-2: Discovery and Registration (Steps 1-9)', async () => {
@@ -51,7 +212,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
         claudeClient = null;
         return;
       }
-      expect(asMetadata.data.registration_endpoint).toBe(`${OAUTH_SERVER}/reg`);
+      expect(asMetadata.data.registration_endpoint).toBe(`${OAUTH_SERVER}${REGISTRATION_PATH}`);
 
       const registrationRequest = {
         client_name: 'Claude',
@@ -63,7 +224,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       };
 
       const regResponse = await safeRequest(
-        () => axios.post(`${OAUTH_SERVER}/reg`, registrationRequest, { validateStatus: () => true }),
+        () => axios.post(`${OAUTH_SERVER}${REGISTRATION_PATH}`, registrationRequest, { validateStatus: () => true }),
         'Skipping Claude registration test (OAuth host unavailable)'
       );
       if (!regResponse) {
@@ -102,7 +263,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       });
 
       const authResponse = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${authParams}`, { maxRedirects: 0, validateStatus: () => true }),
+        () => axios.get(`${OAUTH_SERVER}${AUTHORIZE_PATH}?${authParams}`, { maxRedirects: 0, validateStatus: () => true }),
         'Skipping authorization request test (OAuth host unavailable)'
       );
       if (!authResponse) {
@@ -111,63 +272,179 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
 
       expect([303, 400]).toContain(authResponse.status);
       if (authResponse.status === 303) {
-        expect(authResponse.headers.location).toMatch(/\/interaction\/[A-Za-z0-9_-]+$/);
-        const interactionUid = authResponse.headers.location.split('/').pop();
-        expect(interactionUid).toBeDefined();
+        const location = authResponse.headers.location ?? '';
+        const isMittwaldRedirect = location.startsWith('https://api.mittwald.de/');
+        const isInteractionRedirect = /\/interaction\/[A-Za-z0-9_-]+$/.test(location);
+        expect(isMittwaldRedirect || isInteractionRedirect).toBe(true);
+
+        if (isInteractionRedirect) {
+          const interactionUid = location.split('/').pop();
+          expect(interactionUid).toBeDefined();
+        }
       }
     });
 
-    remoteTest('Phase 4: Mittwald Authentication Simulation (Steps 13-16)', async () => {
-      // This test would simulate:
-      // Step 13: GET /interaction/:uid (login prompt)
-      // Step 14: Redirect to Mittwald OAuth
-      // Step 15: User authentication (simulated)
-      // Step 16: Callback to /mittwald/callback
+    remoteTest('Phases 4-8: Local OAuth Flow (Steps 13-36)', async () => {
+      const { context, client } = await ensureLocalClaudeRegistration();
+      const bridgeBaseUrl = getBridgeBaseUrl();
+      const mcpBaseUrl = getMcpBaseUrl();
+      const resourceIndicator = `${mcpBaseUrl}/mcp`;
 
-      // Note: This requires complex simulation of Mittwald OAuth flow
-      expect(true).toBe(true); // Placeholder - requires Mittwald mock
-    });
+      const { codeVerifier, codeChallenge } = generatePkcePair();
+      const externalState = `state-${Date.now()}`;
 
-    remoteTest('Phase 5: Token Exchange and User Session (Steps 17-21)', async () => {
-      // This test would simulate:
-      // Step 17-18: Mittwald token exchange
-      // Step 19: User account storage
-      // Step 20: provider.interactionFinished({login})
-      // Step 21: Redirect to consent
+      const authorizeParams = new URLSearchParams({
+        response_type: 'code',
+        client_id: client.client_id,
+        redirect_uri: CLAUDE_REDIRECT_URI,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
+        state: externalState,
+        scope: client.scope ?? 'openid offline_access',
+        resource: resourceIndicator
+      });
 
-      expect(true).toBe(true); // Placeholder - requires full flow setup
-    });
+      const authorizeResponse = await axios.get(`${bridgeBaseUrl}${AUTHORIZE_PATH}?${authorizeParams}`, {
+        maxRedirects: 0,
+        validateStatus: () => true
+      });
 
-    remoteTest('Phase 6: Consent Flow (Steps 22-25)', async () => {
-      // This test would verify:
-      // Step 22: GET /interaction/:uid (consent prompt)
-      // Step 23: HTML consent screen with all scopes
-      // Step 24: POST /interaction/:uid/confirm
-      // Step 25: provider.interactionFinished({consent})
+      expect(authorizeResponse.status).toBe(303);
+      const locationHeader = authorizeResponse.headers.location;
+      expect(locationHeader).toBeDefined();
+      const mittwaldRedirect = new URL(locationHeader as string);
+      expect(mittwaldRedirect.pathname).toBe('/oauth/authorize');
+      const internalState = mittwaldRedirect.searchParams.get('state');
+      expect(internalState).toBeTruthy();
+      expect(mittwaldRedirect.searchParams.get('code_challenge')).toBe(codeChallenge);
 
-      expect(true).toBe(true); // Placeholder - requires consent simulation
-    });
+      if (!internalState) {
+        throw new Error('Mittwald redirect missing internal state parameter');
+      }
 
-    remoteTest('Phase 7: Token Exchange (Steps 26-29)', async () => {
-      // This test would verify:
-      // Step 26: Redirect with authorization code
-      // Step 27: POST /token (oidc-provider endpoint)
-      // Step 28: findAccount() provides Mittwald tokens
-      // Step 29: JWT with embedded Mittwald credentials
+      const metricsAfterAuthorize = await fetchBridgeMetrics(bridgeBaseUrl);
+      expect(metricsAfterAuthorize.pendingAuthorizations).toBeGreaterThan(0);
 
-      expect(true).toBe(true); // Placeholder - requires full OAuth completion
-    });
+      const mittwaldAuthCode = `mittwald-auth-${Date.now()}`;
+      const callbackResponse = await axios.get(`${bridgeBaseUrl}/mittwald/callback`, {
+        params: { state: internalState, code: mittwaldAuthCode },
+        maxRedirects: 0,
+        validateStatus: () => true
+      });
 
-    remoteTest('Phase 8: MCP Tool Execution (Steps 30-36)', async () => {
-      // This test would verify:
-      // Step 30: MCP request with Bearer JWT
-      // Step 31: JWT validation and token extraction
-      // Step 32: CLI execution with --token
-      // Step 33-34: Mittwald API calls
-      // Step 35-36: Tool response formatting
+      expect(callbackResponse.status).toBe(303);
+      const redirectLocation = callbackResponse.headers.location;
+      expect(redirectLocation).toBeDefined();
+      const claudeRedirect = new URL(redirectLocation as string);
+      expect(claudeRedirect.origin + claudeRedirect.pathname).toBe(CLAUDE_REDIRECT_URI);
+      expect(claudeRedirect.searchParams.get('state')).toBe(externalState);
+      const bridgeAuthorizationCode = claudeRedirect.searchParams.get('code');
+      expect(bridgeAuthorizationCode).toBeTruthy();
 
-      expect(true).toBe(true); // Placeholder - requires MCP tool mocking
-    });
+      if (!bridgeAuthorizationCode) {
+        throw new Error('Authorization code missing from Claude redirect');
+      }
+
+
+      const metricsAfterCallback = await fetchBridgeMetrics(bridgeBaseUrl);
+      expect(metricsAfterCallback.pendingAuthorizations ?? 0).toBe(0);
+      expect(metricsAfterCallback.pendingGrants).toBeGreaterThan(0);
+
+      const tokenParams = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: bridgeAuthorizationCode,
+        redirect_uri: CLAUDE_REDIRECT_URI,
+        client_id: client.client_id,
+        code_verifier: codeVerifier
+      });
+
+      if (client.client_secret) {
+        tokenParams.set('client_secret', client.client_secret);
+      }
+
+      const tokenResponse = await axios.post(`${bridgeBaseUrl}/token`, tokenParams, {
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        validateStatus: () => true
+      });
+
+      expect(tokenResponse.status).toBe(200);
+      const tokenBody = tokenResponse.data as Record<string, any>;
+      expect(typeof tokenBody.access_token).toBe('string');
+      expect(tokenBody.token_type).toBe('Bearer');
+      expect(typeof tokenBody.refresh_token).toBe('string');
+      expect(tokenBody.scope).toBeDefined();
+
+
+      const lastTokenRequest = context.stub.getLastTokenRequest();
+      expect(lastTokenRequest).toBeTruthy();
+      expect(lastTokenRequest?.body?.grant_type).toBe('authorization_code');
+      expect(lastTokenRequest?.body?.code).toBe(mittwaldAuthCode);
+      expect(lastTokenRequest?.body?.code_verifier).toBe(codeVerifier);
+      expect(lastTokenRequest?.body?.redirect_uri).toContain('/mittwald/callback');
+
+      const verifiedJwt = await verifyBridgeJwt(tokenBody.access_token);
+      const payload = verifiedJwt.payload as Record<string, any>;
+      expect(payload.sub).toBe(client.client_id);
+      expect(payload.scope).toBe(tokenBody.scope);
+      expect(payload.resource).toBe(resourceIndicator);
+      expect(payload.mittwald?.access_token).toBeDefined();
+      expect(payload.mittwald?.refresh_token).toBeDefined();
+
+      const initializeRequest = {
+        jsonrpc: '2.0',
+        id: 'init-1',
+        method: 'initialize',
+        params: {
+          protocolVersion: '2025-06-18',
+          capabilities: {
+            roots: {
+              listChanged: true
+            }
+          },
+          clientInfo: {
+            name: 'Claude-E2E',
+            version: '1.0.0'
+          }
+        }
+      };
+
+      const { response: initializeResponse, message: initializeMessage } = await postMcpStreamRequest({
+        baseUrl: mcpBaseUrl,
+        token: tokenBody.access_token,
+        payload: initializeRequest
+      });
+
+      expect(initializeResponse.status).toBe(200);
+      const sessionHeader = initializeResponse.headers.get('mcp-session-id') ?? initializeResponse.headers.get('x-session-id');
+      expect(sessionHeader).toBeTruthy();
+      expect(initializeMessage?.result?.capabilities).toBeDefined();
+
+      const sessionId = sessionHeader ?? undefined;
+      if (!sessionId) {
+        throw new Error('Session identifier missing from initialize response');
+      }
+
+
+      const listToolsRequest = {
+        jsonrpc: '2.0',
+        id: 'tools-1',
+        method: 'tools/list',
+        params: {}
+      };
+
+      const { response: listToolsResponse, message: listToolsMessage } = await postMcpStreamRequest({
+        baseUrl: mcpBaseUrl,
+        token: tokenBody.access_token,
+        payload: listToolsRequest,
+        sessionId
+      });
+
+      expect(listToolsResponse.status).toBe(200);
+      const tools = listToolsMessage?.result?.tools;
+      expect(Array.isArray(tools)).toBe(true);
+      expect(tools.length).toBeGreaterThan(0);
+
+    }, { timeout: SUITE_TIMEOUT * 5 });
   });
 
   describe('Error Scenarios', () => {
@@ -179,7 +456,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       };
 
       const response = await safeRequest(
-        () => axios.post(`${OAUTH_SERVER}/reg`, invalidRegistration, { validateStatus: () => true }),
+        () => axios.post(`${OAUTH_SERVER}${REGISTRATION_PATH}`, invalidRegistration, { validateStatus: () => true }),
         'Skipping invalid registration test (OAuth host unavailable)'
       );
 
@@ -197,7 +474,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       });
 
       const response = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${authParams}`, { validateStatus: () => true }),
+        () => axios.get(`${OAUTH_SERVER}${AUTHORIZE_PATH}?${authParams}`, { validateStatus: () => true }),
         'Skipping unsupported scope test (OAuth host unavailable)'
       );
 
@@ -216,7 +493,7 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       });
 
       const response = await safeRequest(
-        () => axios.get(`${OAUTH_SERVER}/auth?${invalidAuthParams}`, { validateStatus: () => true }),
+        () => axios.get(`${OAUTH_SERVER}${AUTHORIZE_PATH}?${invalidAuthParams}`, { validateStatus: () => true }),
         'Skipping missing-params test (OAuth host unavailable)'
       );
 

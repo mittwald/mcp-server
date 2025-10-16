@@ -1,9 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { logger } from '../../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldDatabaseMysqlDeleteArgs {
   databaseId: string;
+  confirm?: boolean;
   force?: boolean;
 }
 
@@ -42,10 +44,26 @@ function mapCliError(error: CliToolError, args: MittwaldDatabaseMysqlDeleteArgs)
   return defaultMessage;
 }
 
-export const handleDatabaseMysqlDeleteCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlDeleteArgs> = async (args) => {
+export const handleDatabaseMysqlDeleteCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlDeleteArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   if (!args.databaseId) {
     return formatToolResponse('error', 'Database ID is required.');
   }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'MySQL database deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[DatabaseMysqlDelete] Destructive operation attempted', {
+    databaseId: args.databaseId,
+    force: Boolean(args.force),
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+  });
 
   const argv = buildCliArgs(args);
 

@@ -21,8 +21,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { startServer } from './server.js';
+import { startServer, markServerShuttingDown } from './server.js';
 import { CONFIG, validateConfig } from './server/config.js';
+import { redisClient } from './utils/redis-client.js';
+import { logger } from './utils/logger.js';
+import { getMCPHandlerInstance } from './server/mcp.js';
 
 // Validate configuration and warn about missing .env
 try {
@@ -40,12 +43,66 @@ const port = parseInt(CONFIG.PORT, 10);
 (async () => {
   try {
     const server = await startServer(port);
+
     server.on('error', (error) => {
-      console.error('Failed to start server:', error);
+      logger.error('Failed to start server:', error);
       process.exit(1);
     });
+
+    let gracefulShutdownInitiated = false;
+
+    const gracefulShutdown = async (signal: NodeJS.Signals): Promise<void> => {
+      if (gracefulShutdownInitiated) {
+        logger.warn(`Shutdown already in progress, ignoring ${signal}`);
+        return;
+      }
+
+      gracefulShutdownInitiated = true;
+      markServerShuttingDown();
+      logger.info(`${signal} received, starting graceful shutdown...`);
+
+      const forceExitTimer = setTimeout(() => {
+        logger.warn('Graceful shutdown timeout reached, forcing exit');
+        process.exit(0);
+      }, 25000);
+      forceExitTimer.unref();
+
+      await new Promise<void>((resolve) => {
+        server.close((error?: Error) => {
+          if (error) {
+            logger.error('Error closing HTTP server during shutdown', error);
+          } else {
+            logger.info('HTTP server closed');
+          }
+          resolve();
+        });
+      });
+
+      try {
+        const handler = getMCPHandlerInstance();
+        handler?.shutdown();
+      } catch (error) {
+        logger.error('Error shutting down MCP handler', error);
+      }
+
+      try {
+        await redisClient.disconnect();
+      } catch (error) {
+        logger.error('Error closing Redis connection during shutdown', error);
+      }
+
+      clearTimeout(forceExitTimer);
+      logger.info('Graceful shutdown complete');
+      process.exit(0);
+    };
+
+    ['SIGTERM', 'SIGINT'].forEach((signal) => {
+      process.once(signal as NodeJS.Signals, () => {
+        void gracefulShutdown(signal as NodeJS.Signals);
+      });
+    });
   } catch (error) {
-    console.error('Failed to initialize server:', error);
+    logger.error('Failed to initialize server:', error);
     process.exit(1);
   }
 })();

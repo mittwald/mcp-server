@@ -146,7 +146,7 @@ Result Parsing → MCP Response
 ### 3. CLI Integration Strategy
 
 **Docker Setup**:
-- Base: `node:20-alpine`
+- Base: `node:20.12.2-alpine`
 - Mittwald CLI: `@mittwald/cli@1.11.2` installed globally
 - SSH client for SFTP operations
 - Build: TypeScript compilation + tsc-alias for path resolution
@@ -161,12 +161,10 @@ Result Parsing → MCP Response
 - Parsers transform CLI stdout into typed results
 - Standardized error responses for CLI failures
 
-**Current Coverage** (as of 2025-10-01):
-- **137 of 178 CLI commands wrapped** (77%)
-- Strong coverage: projects, apps, cronjobs, backups, domains, mail, servers, SSH/SFTP
-- **Missing 41 commands**:
-  - Container: `cp`, `exec`, `port-forward`, `ssh`, `update`
-  - Database: MySQL user management, all Redis commands
+**Current Coverage** (as of 2025-10-02):
+- **165 of 178 CLI commands wrapped** (92.7%)
+- Strong coverage: projects, apps, databases, cronjobs, backups, domains, mail, servers, SSH/SFTP, containers, organizations
+- **Missing 13 commands**: Primarily interactive commands (SSH, port-forward, shell) requiring streaming transport (Workstream D)
   - Org: CRUD operations, membership management
   - Registry/Stack/Volume: CLI renamed topics, wrappers need alignment
   - DDEV: tools defined but not registered
@@ -177,11 +175,67 @@ Result Parsing → MCP Response
 ## Key Design Principles
 
 ### Security
+
+#### OAuth 2.1 + Multi-Tenant Security
 - **No credential storage**: MCP server never stores Mittwald passwords
 - **Per-user isolation**: Redis sessions prevent cross-user contamination
 - **HTTPS mandatory**: OAuth flows require TLS in production (Fly.io terminates)
 - **Scope enforcement**: Mittwald is authoritative for scopes and consent
 - **Token rotation**: Automatic refresh with secure storage
+
+#### Credential Security Standard (REQUIRED)
+**All tools handling passwords, tokens, API keys, or secrets MUST follow** [`docs/CREDENTIAL-SECURITY.md`](./docs/CREDENTIAL-SECURITY.md):
+
+- **Layer 1 - Cryptographic Generation**: Use `crypto.randomBytes()` for passwords/tokens (24+ chars, base64url)
+- **Layer 2 - Command Redaction**: Sanitize CLI commands before logging (`--password [REDACTED]`)
+- **Layer 3 - Response Sanitization**: Return boolean flags (not credential values), only return generated credentials once
+
+**Key Security Utilities**:
+- `src/utils/credential-generator.ts` - `generateSecurePassword()`, `generateSecureToken()`
+- `src/utils/credential-redactor.ts` - `redactCredentialsFromCommand()`, `redactMetadata()`
+- `src/utils/credential-response.ts` - `buildUpdatedAttributes()`, `buildSecureToolResponse()`
+
+**Automated Enforcement**:
+- ESLint rule `no-credential-leak` (`eslint-rules/no-credential-leak.js`) blocks credential leakage during linting
+- CI workflow `.github/workflows/security-check.yml` runs lint + security tests on every push/PR
+- Security test suite `tests/security/credential-leakage.test.ts` validates generation, redaction, and sanitization
+
+See also:
+- [Agent S1 Implementation Guide](./docs/agent-prompts/STANDARD-S1-credential-security.md)
+- [Agent C3 Review (Security Champion, Grade A+ 98%)](./docs/agent-reviews/AGENT-C3-REVIEW.md)
+
+#### Destructive Operation Safety (REQUIRED)
+**All tools performing destructive operations (delete, revoke, terminate, etc.) MUST follow** the safety pattern established by Agent C4:
+
+- **Required Confirm Flag**: Schema includes `confirm: boolean` (required), handler validates `args.confirm === true`
+- **Audit Logging**: Use `logger.warn()` BEFORE execution with `sessionId`, `userId`, `resourceId`
+- **Clear Error Messages**: Validation failure must state "destructive and cannot be undone"
+- **CLI Force Flags**: Use `--force` and `--quiet` for clean execution
+
+**Implementation Pattern**:
+```typescript
+// 1. Schema validation
+if (args.confirm !== true) {
+  return formatToolResponse(
+    'error',
+    'This operation is destructive and cannot be undone. Set confirm=true to proceed.'
+  );
+}
+
+// 2. Audit logging
+logger.warn('[ToolName] Destructive operation attempted', {
+  resourceId: args.id,
+  sessionId: context?.sessionId,
+  userId: context?.userId,
+});
+
+// 3. CLI execution
+const argv = ['resource', 'delete', args.id, '--force', '--quiet'];
+```
+
+See also:
+- [Agent C4 Review (Safety Pattern, Grade A 96%)](./docs/agent-reviews/AGENT-C4-REVIEW.md)
+- [Destructive Operations Safety Guide](./docs/tool-safety/destructive-operations.md)
 
 ### Stateless OAuth Bridge
 - Bridge stores only ephemeral authorization state (Redis with TTL)
@@ -369,7 +423,7 @@ Sub-workstreams by domain:
 - Zod v3.25.67 (schema validation)
 - Pino v9.11.0 (structured logging)
 - Vitest v3.2.4 (testing)
-- Node.js ≥18.0.0
+- Node.js ≥20.12.0
 
 **OAuth Bridge**:
 - Koa v3.0.1 + @koa/router v14.0.0

@@ -1,9 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldBackupDeleteCliArgs {
   backupId: string;
+  confirm?: boolean;
   force?: boolean;
 }
 
@@ -29,10 +31,26 @@ function mapCliError(error: CliToolError, args: MittwaldBackupDeleteCliArgs): st
   return error.message;
 }
 
-export const handleBackupDeleteCli: MittwaldCliToolHandler<MittwaldBackupDeleteCliArgs> = async (args) => {
+export const handleBackupDeleteCli: MittwaldCliToolHandler<MittwaldBackupDeleteCliArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   if (!args.backupId) {
     return formatToolResponse('error', 'Backup ID is required. Please provide the backupId parameter.');
   }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'Backup deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[BackupDelete] Destructive operation attempted', {
+    backupId: args.backupId,
+    force: Boolean(args.force),
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+  });
 
   const argv = buildCliArgs(args);
 

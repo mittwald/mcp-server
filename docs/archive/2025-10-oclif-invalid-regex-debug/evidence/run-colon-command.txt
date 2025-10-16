@@ -1,0 +1,43 @@
+API CLIENT ERROR
+
+An error occurred while communicating with the API: Request failed with status code 403
+
+Request      GET v2/customer-invites
+Response     403 Forbidden
+Error Type   PermissionDenied
+Message      access denied; verdict: abstain
+Trace ID     not set
+
+{
+  "type": "PermissionDenied",
+  "message": "access denied; verdict: abstain"
+}
+
+  ERROR STACK TRACE
+
+  Please provide this when opening a bug report.
+
+  AxiosError: Request failed with status code 403
+      at settle (file:///Users/robert/Code/mittwald-mcp/node_modules/axios/lib
+  /core/settle.js:19:12)
+      at IncomingMessage.handleStreamEnd (file:///Users/robert/Code/mittwald-m
+  cp/node_modules/axios/lib/adapters/http.js:617:11)
+      at IncomingMessage.emit (node:events:530:35)
+      at endReadableNT (node:internal/streams/readable:1696:12)
+      at process.processTicksAndRejections
+  (node:internal/process/task_queues:82:21)
+      at Axios.request (file:///Users/robert/Code/mittwald-mcp/node_modules/ax
+  ios/lib/core/Axios.js:45:41)
+      at process.processTicksAndRejections
+  (node:internal/process/task_queues:95:5)
+      at async List.getData (file:///Users/robert/Code/mittwald-mcp/node_modul
+  es/@mittwald/cli/dist/commands/org/invite/list-own.js:10:16)
+      at async List.run (file:///Users/robert/Code/mittwald-mcp/node_modules/@
+  mittwald/cli/dist/lib/basecommands/ListBaseCommand.js:24:26)
+      at async List._run (/Users/robert/Code/mittwald-mcp/node_modules/@oclif/
+  core/lib/command.js:181:22)
+      at async Config.runCommand (/Users/robert/Code/mittwald-mcp/node_modules
+  /@oclif/core/lib/config/config.js:456:25)
+      at async Object.run
+  (/Users/robert/Code/mittwald-mcp/node_modules/@oclif/core/lib/main.js:97:16)
+

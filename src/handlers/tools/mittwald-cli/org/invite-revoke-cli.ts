@@ -1,9 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 export interface MittwaldOrgInviteRevokeArgs {
   inviteId: string;
+  confirm?: boolean;
 }
 
 function buildCliArgs(args: MittwaldOrgInviteRevokeArgs): string[] {
@@ -27,10 +29,23 @@ function mapCliError(error: CliToolError, inviteId: string): string {
   return `Failed to revoke organization invite: ${errorMessage}`;
 }
 
-export const handleOrgInviteRevokeCli: MittwaldToolHandler<MittwaldOrgInviteRevokeArgs> = async (args) => {
+export const handleOrgInviteRevokeCli: MittwaldToolHandler<MittwaldOrgInviteRevokeArgs> = async (args, context) => {
   if (!args.inviteId) {
     return formatToolResponse('error', 'Invite ID is required for revoking an organization invitation.');
   }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'Organization invite revocation requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[OrgInviteRevoke] Destructive operation attempted', {
+    inviteId: args.inviteId,
+    sessionId: context?.sessionId,
+    userId: context?.userId,
+  });
 
   const argv = buildCliArgs(args);
 

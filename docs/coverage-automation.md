@@ -13,7 +13,7 @@ The generator reads the installed `@mittwald/cli`, scans MCP tool registrations,
 
 ## Maintainer Commands
 
-- `npm run coverage:generate` – Rebuild both artifacts. Run after modifying tools, exclusions, or updating the CLI.
+- `npm run coverage:generate` – Rebuild both artifacts. Run after modifying tools, exclusions, or updating the CLI; no need to run for unrelated commits.
 - `npm run check:cli-version` – Warn when Dockerfiles pin an older CLI than the npm registry. (CI treats this as non-blocking.)
 
 ## Allowlist Management
@@ -34,7 +34,7 @@ The generator annotates excluded commands in the Markdown table (`Allowed missin
 
 The `Coverage Check` workflow (`.github/workflows/coverage-check.yml`) enforces three gates:
 1. `npm run coverage:generate` must leave no uncommitted changes (`git diff --exit-code`).
-2. `missingCount` must equal `excludedCount`; otherwise the job fails with guidance to update wrappers or the exclusion config.
+2. `stats.missingCount` must remain zero; any uncovered commands need a wrapper or an explicit exclusion update before merging.
 3. `npm run check:cli-version` runs in warning mode to highlight Docker version drift.
 
 ## When to Update the Allowlist vs. Add Coverage

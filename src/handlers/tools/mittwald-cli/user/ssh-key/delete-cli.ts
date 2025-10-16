@@ -1,9 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
+import { logger } from '../../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 
 interface MittwaldUserSshKeyDeleteArgs {
   keyId: string;
+  confirm?: boolean;
   force?: boolean;
 }
 
@@ -27,10 +29,26 @@ function mapCliError(error: CliToolError, args: MittwaldUserSshKeyDeleteArgs): s
   return `Failed to delete SSH key: ${rawMessage}`;
 }
 
-export const handleUserSshKeyDeleteCli: MittwaldCliToolHandler<MittwaldUserSshKeyDeleteArgs> = async (args) => {
+export const handleUserSshKeyDeleteCli: MittwaldCliToolHandler<MittwaldUserSshKeyDeleteArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   if (!args.keyId || !args.keyId.trim()) {
     return formatToolResponse('error', 'SSH key ID is required.');
   }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'SSH key deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[UserSshKeyDelete] Destructive operation attempted', {
+    keyId: args.keyId,
+    force: Boolean(args.force),
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+  });
 
   const argv = buildCliArgs(args);
 

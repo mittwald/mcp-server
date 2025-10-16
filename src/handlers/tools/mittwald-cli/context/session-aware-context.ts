@@ -5,8 +5,10 @@ import { sessionManager, type UserSession } from '../../../../server/session-man
 import { logger } from '../../../../utils/logger.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
-function resolveSessionId(provided?: string): string | undefined {
-  return provided ?? getCurrentSessionId();
+function resolveSessionId(provided?: string | { sessionId?: string }): string | undefined {
+  if (!provided) return getCurrentSessionId();
+  if (typeof provided === 'string') return provided;
+  return provided.sessionId ?? getCurrentSessionId();
 }
 
 interface SessionAwareContextGetArgs {

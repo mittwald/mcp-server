@@ -3,6 +3,8 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import globals from "globals";
 
+import noCredentialLeakRule from "./eslint-rules/no-credential-leak.js";
+
 export default [
   eslint.configs.recommended,
   {
@@ -40,6 +42,11 @@ export default [
     },
     plugins: {
       "@typescript-eslint": tseslint,
+      local: {
+        rules: {
+          "no-credential-leak": noCredentialLeakRule,
+        },
+      },
     },
     rules: {
       ...tseslint.configs.recommended.rules,
@@ -97,6 +104,13 @@ export default [
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "no-unused-vars": "off",
+      "local/no-credential-leak": "off",
+    },
+  },
+  {
+    files: ["src/handlers/tools/**/*.{ts,js}", "src/handlers/**/*-cli.ts"],
+    rules: {
+      "local/no-credential-leak": "error",
     },
   },
 ];

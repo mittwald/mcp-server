@@ -18,6 +18,9 @@
     "LICENSE",
     ".env.example"
   ],
+  "workspaces": [
+    "packages/*"
+  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -26,6 +29,7 @@
     "build": "tsc && tsc-alias && chmod +x build/index.js && echo \"export * from './config.js';\nexport * from './oauth.js';\nexport * from './mcp.js';\nexport * from './auth-store.js';\nexport * from './types.js';\" > build/server/index.js",
     "watch": "tsc --watch",
     "lint": "eslint .",
+    "lint:credential-leak": "eslint src/handlers packages/oauth-bridge/src --config ./eslint.credential.config.js",
     "type-check": "tsc --noEmit",
     "docker": "docker-compose build && docker-compose up -d",
     "test": "vitest run",
@@ -34,9 +38,10 @@
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
-    "test:bridge": "pnpm --filter @mittwald/oauth-bridge test",
+    "test:bridge": "vitest run --root packages/oauth-bridge --config ./vitest.config.ts",
     "test:session": "vitest run tests/integration/cli-session.integration.test.ts",
     "test:smoke": "vitest run tests/smoke",
+    "test:security": "vitest run tests/security",
     "test:functional": "vitest run tests/functional --reporter=verbose --no-file-parallelism",
     "test:functional:watch": "vitest tests/functional --reporter=verbose --no-file-parallelism",
     "test:cleanup": "vitest run tests/functional/full-lifecycle.test.ts -t 'Manual Cleanup'",
@@ -51,7 +56,7 @@
     "test:e2e": "vitest run tests/e2e",
     "test:e2e:mcp": "tsx scripts/e2e-mcp-oauth.ts",
     "test:oauth:coverage": "vitest run tests/unit/auth tests/integration --coverage --reporter=verbose",
-    "test:all": "pnpm test:unit && pnpm test:bridge && pnpm test:session && pnpm test:integration && pnpm test:e2e",
+    "test:all": "npm run test:unit && npm run test:bridge && npm run test:session && npm run test:integration && npm run test:e2e",
     "inspector": "npx @modelcontextprotocol/inspector",
     "logs:registration": "bash scripts/tail-registration-logs.sh",
     "coverage:generate": "tsx scripts/generate-mw-coverage.ts",
@@ -63,39 +68,35 @@
   },
   "dependencies": {
     "@mittwald/api-client": "^4.169.0",
-    "@koa/router": "^14.0.0",
     "@modelcontextprotocol/sdk": "^1.13.0",
-    "@robertdouglass/mcp-tester": "^1.0.3",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/redis": "^4.0.10",
-    "ajv-formats": "^3.0.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "koa": "^3.0.1",
-    "koa-bodyparser": "^4.4.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "helmet": "^8.1.0",
     "ioredis": "^5.7.0",
     "jose": "^6.0.11",
+    "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "openid-client": "^6.6.2",
-    "pino": "^9.11.0",
-    "redis": "^5.7.0",
+    "semver": "^7.6.3",
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@mittwald/cli": "1.11.2",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/js-yaml": "^4.0.9",
     "@types/json-schema": "^7.0.15",
     "@types/node": "^22.15.33",
+    "@types/semver": "^7.7.1",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
+    "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "axios": "^1.12.2",
-    "c8": "^10.1.3",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
@@ -105,8 +106,8 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4",
-    "@mittwald/cli": "1.11.2"
+    "vite": "^7.1.9",
+    "vitest": "^3.2.4"
   },
   "keywords": [
     "mittwald",
@@ -127,7 +128,8 @@
     "url": "https://github.com/systempromptio/systemprompt-mcp-server/issues"
   },
   "homepage": "https://systemprompt.io",
+  "license": "UNLICENSED",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.12.0"
   }
 }

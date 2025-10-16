@@ -13,12 +13,16 @@ const tool: Tool = {
         type: "string",
         description: "The ID or name of the database",
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       force: {
         type: "boolean",
         description: "Do not ask for confirmation",
       },
     },
-    required: ["databaseId"],
+    required: ["databaseId", "confirm"],
   },
 };
 

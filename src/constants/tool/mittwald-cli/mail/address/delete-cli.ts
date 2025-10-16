@@ -18,12 +18,16 @@ const tool: Tool = {
         type: 'string',
         description: 'ID of the mail address to delete'
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       force: {
         type: 'boolean',
         description: 'Do not ask for confirmation'
       }
     },
-    required: ['id']
+    required: ['id', 'confirm']
   }
 };
 

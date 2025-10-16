@@ -1,7 +1,7 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
-import { parseJsonOutput as parseJsonOutputLegacy } from '../../../../../utils/cli-wrapper.js';
+import { invokeCliTool, CliToolError } from '@/tools/index.js';
+import { parseJsonOutput } from '@/utils/cli-output.js';
 
 interface MittwaldDatabaseMysqlVersionsArgs {
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
@@ -52,7 +52,7 @@ export const handleDatabaseMysqlVersionsCli: MittwaldCliToolHandler<MittwaldData
 
     if (outputFormat === 'json') {
       try {
-        const versions = parseJsonOutputLegacy(stdout);
+        const versions = parseJsonOutput(stdout);
         const count = Array.isArray(versions) ? versions.length : 'MySQL';
         return formatToolResponse(
           'success',

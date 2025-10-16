@@ -1,10 +1,12 @@
 {
   "interactive": [
     "app exec",
-    "container exec",
-    "container ssh",
-    "container port-forward",
     "container cp",
+    "container exec",
+    "container port-forward",
+    "container ssh",
+    "database mysql phpmyadmin",
+    "database mysql shell",
     "database redis shell"
   ],
   "intentional": [
@@ -36,16 +38,12 @@
     "registry delete",
     "registry list",
     "registry update",
-    "stack delete",
-    "stack deploy",
-    "stack list",
-    "stack ps",
     "volume create",
     "volume delete",
     "volume list"
   ],
   "rationale": {
-    "interactive": "Requires MCP streaming transport; pending SDK evaluation and security review (see Workstream D)",
+    "interactive": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details.",
     "intentional": {
       "login status": "MCP server uses per-command token injection; CLI login state not applicable",
       "app dependency list": "Workstream C1 will implement dependency inspection wrappers; CLI command temporarily excluded.",
@@ -75,13 +73,16 @@
       "registry delete": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment.",
       "registry list": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment.",
       "registry update": "Workstream B1: Registry tool rename/implementation tracked with taxonomy alignment.",
-      "stack delete": "Workstream B2: Stack command renaming pending alignment with CLI topic.",
-      "stack deploy": "Workstream B2: Stack command renaming pending alignment with CLI topic.",
-      "stack list": "Workstream B2: Stack command renaming pending alignment with CLI topic.",
-      "stack ps": "Workstream B2: Stack command renaming pending alignment with CLI topic.",
       "volume create": "Workstream C5: Volume management wrappers awaiting context scaffolding.",
       "volume delete": "Workstream C5: Volume management wrappers awaiting context scaffolding.",
       "volume list": "Workstream C5: Volume management wrappers awaiting context scaffolding."
     }
+  },
+  "technicalDecision": {
+    "date": "2025-10-04",
+    "assessedBy": "Agent E3 (Interactive Command Assessment)",
+    "mcpStreamingSupport": false,
+    "securityApproval": "N/A - streaming infeasible",
+    "documentationLink": "docs/interactive-commands-decision.md"
   }
 }

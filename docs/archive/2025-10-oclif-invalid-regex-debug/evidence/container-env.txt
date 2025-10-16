@@ -1,0 +1,8 @@
+HOME=/root
+HOSTNAME=afa762e0903b
+NODE_VERSION=20.19.5
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/workspace
+SHLVL=0
+YARN_VERSION=1.22.22
+_=/usr/bin/env

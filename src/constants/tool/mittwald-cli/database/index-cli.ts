@@ -18,3 +18,14 @@ export { mittwald_database_mysql_phpmyadmin_cli } from './mysql/phpmyadmin-cli.j
 export { mittwald_database_mysql_port_forward_cli } from './mysql/port-forward-cli.js';
 export { mittwald_database_mysql_charsets_cli } from './mysql/charsets-cli.js';
 export { mittwald_database_mysql_versions_cli } from './mysql/versions-cli.js';
+export { mittwald_database_mysql_user_create_cli } from './mysql/user-create-cli.js';
+export { mittwald_database_mysql_user_delete_cli } from './mysql/user-delete-cli.js';
+export { mittwald_database_mysql_user_get_cli } from './mysql/user-get-cli.js';
+export { mittwald_database_mysql_user_list_cli } from './mysql/user-list-cli.js';
+export { mittwald_database_mysql_user_update_cli } from './mysql/user-update-cli.js';
+
+// Redis CLI tools
+export { mittwald_database_redis_create_cli } from './redis/create-cli.js';
+export { mittwald_database_redis_get_cli } from './redis/get-cli.js';
+export { mittwald_database_redis_list_cli } from './redis/list-cli.js';
+export { mittwald_database_redis_versions_cli } from './redis/versions-cli.js';

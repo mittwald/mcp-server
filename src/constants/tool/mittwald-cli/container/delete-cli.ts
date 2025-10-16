@@ -17,12 +17,16 @@ const tool: Tool = {
         type: 'string',
         description: 'ID or short ID of a project (optional if default project is set in context)'
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       force: {
         type: 'boolean',
         description: 'Do not ask for confirmation'
       }
     },
-    required: ["containerId", "projectId"]
+    required: ["containerId", "projectId", "confirm"]
   }
 };
 

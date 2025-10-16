@@ -1,10 +1,10 @@
-import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import type { MittwaldCliToolHandler } from "../../../../../types/mittwald/conversation.js";
+import { CliToolError, invokeCliTool } from "../../../../../tools/index.js";
+import { buildSecureToolResponse } from "../../../../../utils/credential-response.js";
 
 interface MittwaldUserApiTokenCreateArgs {
   description: string;
-  roles: ("api_read" | "api_write")[];
+  roles: ('api_read' | 'api_write')[];
   expires?: string;
 }
 
@@ -28,11 +28,9 @@ function extractToken(output: string): string | undefined {
 
   try {
     const parsed = JSON.parse(trimmed);
-    if (parsed && typeof parsed === 'object' && 'token' in parsed) {
-      const tokenValue = (parsed as Record<string, unknown>).token;
-      if (typeof tokenValue === 'string' && tokenValue) {
-        return tokenValue;
-      }
+    const tokenValue = (parsed as Record<string, unknown>).token;
+    if (typeof tokenValue === 'string' && tokenValue) {
+      return tokenValue;
     }
   } catch (error) {
     // ignore JSON parsing failures, fallback to regex extraction
@@ -42,52 +40,61 @@ function extractToken(output: string): string | undefined {
   return tokenMatch ? tokenMatch[1] : undefined;
 }
 
-export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApiTokenCreateArgs> = async (args) => {
+export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApiTokenCreateArgs> = async (
+  args,
+  sessionId,
+) => {
+  if (!args.description) {
+    return buildSecureToolResponse('error', 'Description is required to create an API token.');
+  }
+
+  if (!Array.isArray(args.roles) || args.roles.length === 0) {
+    return buildSecureToolResponse('error', 'At least one role must be specified to create an API token.');
+  }
+
+  const argv = buildCliArgs(args);
+
   try {
-    if (!args.description) {
-      return formatToolResponse('error', 'Description is required to create an API token.');
-    }
-
-    if (!Array.isArray(args.roles) || args.roles.length === 0) {
-      return formatToolResponse('error', 'At least one role must be specified to create an API token.');
-    }
-
-    const argv = buildCliArgs(args);
-
     const result = await invokeCliTool({
-      toolName: 'mittwald_user_api_token_create',
+      toolName: "mittwald_user_api_token_create",
       argv,
-      parser: (stdout) => stdout,
+      sessionId,
+      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
     });
 
-    const commandMeta = {
-      command: result.meta.command,
-      durationMs: result.meta.durationMs,
-    };
-
-    const stdout = result.result ?? '';
-
+    const stdout = result.result.stdout ?? "";
     const token = extractToken(stdout);
+
     if (!token) {
-      return formatToolResponse('error', 'Failed to create API token - no token in output.');
+      return buildSecureToolResponse(
+        "error",
+        "Failed to create API token - no token returned by CLI.",
+        {
+          rawOutput: stdout,
+        },
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        },
+      );
     }
 
-    return formatToolResponse(
-      'success',
-      'API token created successfully',
-      {
-        token,
-        description: args.description,
-        roles: args.roles,
-        expires: args.expires,
-        rawOutput: stdout,
-      },
-      commandMeta
-    );
+    const data = {
+      description: args.description,
+      roles: args.roles,
+      expires: args.expires,
+      generatedToken: token,
+      tokenGenerated: true,
+    };
+
+    return buildSecureToolResponse("success", "API token created successfully", data, {
+      command: result.meta.command,
+      durationMs: result.meta.durationMs,
+    });
   } catch (error) {
     if (error instanceof CliToolError) {
       const message = mapCliError(error);
-      return formatToolResponse('error', message, {
+      return buildSecureToolResponse('error', message, {
         exitCode: error.exitCode,
         stderr: error.stderr,
         stdout: error.stdout,
@@ -95,6 +102,9 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    return buildSecureToolResponse(
+      'error',
+      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 };

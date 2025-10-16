@@ -1,9 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldSshUserDeleteArgs {
   sshUserId: string;
+  confirm?: boolean;
   force?: boolean;
 }
 
@@ -48,10 +50,26 @@ function buildSuccessPayload(stdout: string, args: MittwaldSshUserDeleteArgs) {
   };
 }
 
-export const handleSshUserDeleteCli: MittwaldCliToolHandler<MittwaldSshUserDeleteArgs> = async (args) => {
+export const handleSshUserDeleteCli: MittwaldCliToolHandler<MittwaldSshUserDeleteArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   if (!args.sshUserId) {
     return formatToolResponse('error', 'SSH user ID is required to delete an SSH user');
   }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'SSH user deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[SshUserDelete] Destructive operation attempted', {
+    sshUserId: args.sshUserId,
+    force: Boolean(args.force),
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+  });
 
   const argv = buildCliArgs(args);
 

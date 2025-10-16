@@ -78,3 +78,7 @@ run-*.sh
 .swarm
 
 !scripts/check-cli-version.ts
+
+# pnpm (project uses npm)
+pnpm-lock.yaml
+pnpm-workspace.yaml

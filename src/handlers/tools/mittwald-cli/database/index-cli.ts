@@ -18,3 +18,14 @@ export { handleDatabaseMysqlPhpmyadminCli } from './mysql/phpmyadmin-cli.js';
 export { handleDatabaseMysqlPortForwardCli } from './mysql/port-forward-cli.js';
 export { handleDatabaseMysqlCharsetsCli } from './mysql/charsets-cli.js';
 export { handleDatabaseMysqlVersionsCli } from './mysql/versions-cli.js';
+export { handleDatabaseMysqlUserCreateCli } from './mysql/user-create-cli.js';
+export { handleDatabaseMysqlUserDeleteCli } from './mysql/user-delete-cli.js';
+export { handleDatabaseMysqlUserGetCli } from './mysql/user-get-cli.js';
+export { handleDatabaseMysqlUserListCli } from './mysql/user-list-cli.js';
+export { handleDatabaseMysqlUserUpdateCli } from './mysql/user-update-cli.js';
+
+// Redis CLI handlers
+export { handleDatabaseRedisCreateCli } from './redis/create-cli.js';
+export { handleDatabaseRedisGetCli } from './redis/get-cli.js';
+export { handleDatabaseRedisListCli } from './redis/list-cli.js';
+export { handleDatabaseRedisVersionsCli } from './redis/versions-cli.js';

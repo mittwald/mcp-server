@@ -1,9 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldBackupScheduleDeleteCliArgs {
   backupScheduleId: string;
+  confirm?: boolean;
   force?: boolean;
 }
 
@@ -29,10 +31,26 @@ function mapCliError(error: CliToolError, args: MittwaldBackupScheduleDeleteCliA
   return error.message;
 }
 
-export const handleBackupScheduleDeleteCli: MittwaldCliToolHandler<MittwaldBackupScheduleDeleteCliArgs> = async (args) => {
+export const handleBackupScheduleDeleteCli: MittwaldCliToolHandler<MittwaldBackupScheduleDeleteCliArgs> = async (args, sessionId) => {
+  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   if (!args.backupScheduleId) {
     return formatToolResponse('error', 'Backup schedule ID is required. Please provide the backupScheduleId parameter.');
   }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'Backup schedule deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  logger.warn('[BackupScheduleDelete] Destructive operation attempted', {
+    backupScheduleId: args.backupScheduleId,
+    force: Boolean(args.force),
+    sessionId: resolvedSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+  });
 
   const argv = buildCliArgs(args);
 

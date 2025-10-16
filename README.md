@@ -23,6 +23,8 @@ docs/               # Supplemental documentation
 
 ## Development Setup
 
+> **Prerequisite**: Node.js 20.12.2 (see `.nvmrc` / `.node-version`). Earlier LTS releases (e.g. Node 18) cannot run `@mittwald/cli@1.11.2` because its dependencies require the new `/v` regular-expression flag.
+
 1. Install dependencies:
    ```bash
    pnpm install
@@ -64,13 +66,13 @@ Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` f
 
 - `mw-cli-coverage.json` contains machine-readable coverage stats for the Mittwald CLI.
 - Validate the artifact with `config/mw-cli-coverage.schema.json` (e.g. `npx ajv validate -s config/mw-cli-coverage.schema.json -d mw-cli-coverage.json`).
-- Regeneration is automated via the Workstream A script (`npm run coverage:generate`); commit both the JSON and `docs/mittwald-cli-coverage.md` after running it.
-- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` and `stats.excludedCount` diverge.
+- Regeneration is automated via the Workstream A script (`npm run coverage:generate`); commit both the JSON and `docs/mittwald-cli-coverage.md` after running it. Only rerun when tool metadata, exclusion lists, or the Mittwald CLI version change—routine commits that don’t touch those inputs can skip regeneration.
+- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` is greater than zero.
 - Quick commands:
-  - `npm run coverage:generate` – rebuild artifacts.
+  - `npm run coverage:generate` – rebuild artifacts when coverage inputs change.
   - `npm run check:cli-version` – warn when Dockerfile pins drift from npm.
 - See `docs/coverage-automation.md` for the full runbook covering CI guards and allowlist policy.
-- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` and `stats.excludedCount` diverge.
+- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` is greater than zero.
 
 ---
 

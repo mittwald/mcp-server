@@ -38,10 +38,25 @@ import { createOAuthMiddleware } from './server/oauth-middleware.js';
 import { responseLoggerMiddleware } from './server/response-logger.js';
 import { initializeToolHandlers } from './handlers/tool-handlers.js';
 import { OAuthMetadataRoutes } from './routes/oauth-metadata-routes.js';
+import { logger } from './utils/logger.js';
+import { checkRedisHealth } from './utils/redis-client.js';
 
 // Polyfill for jose library
 if (typeof globalThis.crypto === 'undefined') {
   globalThis.crypto = crypto.webcrypto as unknown as typeof globalThis.crypto;
+}
+
+let shuttingDown = false;
+
+export function markServerShuttingDown(): void {
+  if (!shuttingDown) {
+    logger.info('Server marked for graceful shutdown');
+  }
+  shuttingDown = true;
+}
+
+export function isServerShuttingDown(): boolean {
+  return shuttingDown;
 }
 
 /**
@@ -58,11 +73,48 @@ export async function createApp(): Promise<express.Application> {
   const app = express();
 
   // Early health endpoint (defined before any middleware) to validate external routing quickly
-  app.get('/health', (req, res) => {
+  app.get('/health', async (req, res) => {
+    if (isServerShuttingDown()) {
+      res.status(503).json({
+        status: 'shutting_down',
+        service: 'mcp-server',
+        path: '/health',
+        ts: Date.now(),
+        checks: {
+          redis: 'unknown',
+        },
+      });
+      return;
+    }
+
+    const redisHealthy = await checkRedisHealth();
+    const transport = process.env.ENABLE_HTTPS === 'true' ? 'https' : 'http';
+    const statusCode = redisHealthy ? 200 : 503;
+    const payload = {
+      status: redisHealthy ? 'healthy' : 'unhealthy',
+      service: 'mcp-server',
+      path: '/health',
+      ts: Date.now(),
+      transport,
+      capabilities: {
+        oauth: true,
+        mcp: true,
+      },
+      checks: {
+        redis: redisHealthy ? 'up' : 'down',
+      },
+    } as const;
+
     const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const ua = req.get('User-Agent') || 'unknown';
-    console.log(`❤️  HEALTH early responder → 200 from ${ip} ua=${ua}`);
-    res.json({ status: 'ok', service: 'mcp-server', path: '/health', ts: Date.now() });
+    if (redisHealthy) {
+      console.log(`❤️  HEALTH → 200 from ${ip} ua=${ua}`);
+      res.status(statusCode).json(payload);
+      return;
+    }
+
+    logger.error('Redis health check failed during /health probe', { ip, userAgent: ua });
+    res.status(statusCode).json(payload);
   });
 
   // Root route is intentionally not used; health endpoint should be used for reachability
@@ -162,14 +214,35 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
   app.use('', oauthMetadataRoutes.getRouter());
 
   // Health check
-  app.get('/health', (_, res) => {
-    res.json({
-      status: 'ok',
+  app.get('/health', async (_, res) => {
+    if (isServerShuttingDown()) {
+      res.status(503).json({
+        status: 'shutting_down',
+        service: 'mcp-server',
+        transport: process.env.ENABLE_HTTPS === 'true' ? 'https' : 'http',
+        checks: {
+          redis: 'unknown',
+        },
+      });
+      return;
+    }
+
+    const redisHealthy = await checkRedisHealth();
+    const transport = process.env.ENABLE_HTTPS === 'true' ? 'https' : 'http';
+    const statusCode = redisHealthy ? 200 : 503;
+
+    res.status(statusCode).json({
+      status: redisHealthy ? 'healthy' : 'unhealthy',
       service: 'mcp-server',
-      transport: process.env.ENABLE_HTTPS === 'true' ? 'https' : 'http',
+      path: '/health',
+      ts: Date.now(),
+      transport,
       capabilities: {
         oauth: true,
         mcp: true,
+      },
+      checks: {
+        redis: redisHealthy ? 'up' : 'down',
       },
     });
   });
@@ -314,17 +387,6 @@ export async function startServer(port?: number): Promise<ReturnType<express.App
       console.error(`🚨 [HTTP:${serverPort}] Server error:`, error);
     });
     
-    return httpServer
+    return httpServer;
   }
 }
-
-// Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');  
-  process.exit(0);
-});

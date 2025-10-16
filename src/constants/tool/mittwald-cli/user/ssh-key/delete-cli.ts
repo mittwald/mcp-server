@@ -13,12 +13,16 @@ const tool: Tool = {
         type: 'string',
         description: 'ID of the SSH key to be deleted'
       },
+      confirm: {
+        type: 'boolean',
+        description: 'Must be set to true to confirm deletion (DESTRUCTIVE OPERATION - cannot be undone).'
+      },
       force: {
         type: 'boolean',
         description: 'Do not ask for confirmation'
       }
     },
-    required: ['keyId'],
+    required: ['keyId', 'confirm'],
     additionalProperties: false
   }
 };

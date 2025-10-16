@@ -29,7 +29,7 @@ export class OAuthMetadataRoutes {
     
     // OAuth 2.0 Protected Resource Metadata (for MCP)
     this.router.get('/.well-known/oauth-protected-resource', this.handleProtectedResourceMetadata.bind(this));
-    // Alias endpoint with /mcp suffix that Inspector tries to access
+    // Alias endpoint with /mcp suffix that Inspector tries to access.
     this.router.get('/.well-known/oauth-protected-resource/mcp', this.handleProtectedResourceMetadata.bind(this));
   }
 
