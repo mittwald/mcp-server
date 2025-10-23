@@ -23,10 +23,13 @@ export function createOAuthMiddleware() {
     res: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
+    console.log('[OAuth Middleware DEBUG] Headers:', JSON.stringify(req.headers, null, 2));
+
     logger.info(`[OAuth Middleware] Request received: ${req.method} ${req.path}`, {
       hasAuth: !!req.headers.authorization,
       authHeader: req.headers.authorization,
       authLength: req.headers.authorization?.length,
+      allHeaderKeys: Object.keys(req.headers),
       directTokensEnabled,
     });
 
