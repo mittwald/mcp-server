@@ -314,17 +314,26 @@ export async function startServer(port?: number): Promise<ReturnType<express.App
   const isProduction = process.env.NODE_ENV === 'production';
   // On Fly.io or when behind a proxy, TLS terminates at the edge; always serve HTTP internally.
   const runningOnFly = !!(process.env.FLY_ALLOC_ID || process.env.FLY_APP_NAME);
-  const useHTTPS = (process.env.ENABLE_HTTPS === 'true' || isProduction) && !runningOnFly;
+  const httpsFlag = (process.env.ENABLE_HTTPS || '').toLowerCase();
+  let useHTTPS: boolean;
+
+  if (httpsFlag === 'true') {
+    useHTTPS = true;
+  } else if (httpsFlag === 'false') {
+    useHTTPS = false;
+  } else {
+    useHTTPS = isProduction && !runningOnFly;
+  }
   const sslKeyPath = process.env.SSL_KEY_PATH || '/app/ssl/localhost+2-key.pem';
   const sslCertPath = process.env.SSL_CERT_PATH || '/app/ssl/localhost+2.pem';
   
   // SECURITY: HTTPS is mandatory in production for OAuth
-  if (isProduction && !useHTTPS && !runningOnFly) {
+  if (isProduction && !useHTTPS && !runningOnFly && httpsFlag !== 'false') {
     console.error('🚨 SECURITY ERROR: HTTPS is mandatory in production environments for OAuth security');
-    console.error('🚨 Set ENABLE_HTTPS=true and provide SSL certificates');
+    console.error('🚨 Set ENABLE_HTTPS=true and provide SSL certificates, or explicitly set ENABLE_HTTPS=false if TLS terminates upstream.');
     process.exit(1);
   }
-  
+
     if (useHTTPS && fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath)) {
     // Start both HTTP and HTTPS servers for Claude Desktop compatibility
     const httpsOptions = {
