@@ -15,12 +15,14 @@ import { directTokenValidator, DirectTokenValidationError } from "./direct-token
  * 3. Setting auth info on request for authenticated requests
  */
 export function createOAuthMiddleware() {
+  const directTokensEnabled = CONFIG.DIRECT_TOKENS?.ENABLED === true;
+  logger.info(`OAuth middleware initialized - Direct tokens: ${directTokensEnabled ? 'ENABLED' : 'DISABLED'}`);
+
   return async (
     req: AuthenticatedRequest,
     res: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
-    const directTokensEnabled = CONFIG.DIRECT_TOKENS?.ENABLED === true;
     try {
       // Check for Authorization header
       const authHeader = req.headers.authorization;
@@ -31,15 +33,17 @@ export function createOAuthMiddleware() {
       }
 
       const token = authHeader.substring(7).trim(); // Remove 'Bearer ' prefix
-      
+
       try {
         const handled = await handleJwtToken(token, req, next);
         if (handled) {
+          logger.debug('JWT token handled successfully');
           return;
         }
       } catch (error) {
         logger.warn('JWT verification failed', {
           error: error instanceof Error ? error.message : String(error),
+          directTokensEnabled,
         });
         if (!directTokensEnabled) {
           return sendOAuthChallenge(res);
@@ -47,9 +51,11 @@ export function createOAuthMiddleware() {
       }
 
       if (directTokensEnabled) {
+        logger.info('Attempting direct bearer token validation');
         try {
           const handled = await handleDirectToken(token, req, next);
           if (handled) {
+            logger.info('Direct bearer token handled successfully');
             return;
           }
         } catch (error) {
