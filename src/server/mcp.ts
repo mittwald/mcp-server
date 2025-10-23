@@ -265,12 +265,7 @@ export class MCPHandler implements IMCPHandler {
         }
 
         const server = this.createServer(sessionId, sessionAuth);
-        const transport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: () => sessionId!,
-          onsessioninitialized: (sid) => {
-            logger.info(`🔗 [${clientAddr}] Session initialized: ${sid}`);
-          },
-        });
+        const transport = this.createTransport(sessionId, clientAddr);
         
         try {
           await server.connect(transport);
@@ -427,10 +422,31 @@ export class MCPHandler implements IMCPHandler {
 
         if (requiresServerRecreate || tokensPersistedFromRequest) {
           logger.debug(`🔄 [${sessionId}] Updating server authentication context`);
-          const newServer = this.createServer(sessionId, sessionInfo.auth);
-          await newServer.connect(sessionInfo.transport);
-          sessionInfo.server = newServer;
-          logger.debug(`✅ [${sessionId}] Server authentication context refreshed`);
+          logger.debug(`🔄 [${sessionId}] Recreating session transport and server`);
+
+          try {
+            sessionInfo.server.close();
+          } catch (error) {
+            logger.warn(`⚠️ [${sessionId}] Failed to close existing server before recreation`, {
+              error: error instanceof Error ? error.message : String(error),
+            });
+          }
+
+          try {
+            sessionInfo.transport.close();
+          } catch (error) {
+            logger.warn(`⚠️ [${sessionId}] Failed to close existing transport before recreation`, {
+              error: error instanceof Error ? error.message : String(error),
+            });
+          }
+
+          const recreatedServer = this.createServer(sessionId, sessionInfo.auth);
+          const recreatedTransport = this.createTransport(sessionId, clientAddr);
+          await recreatedServer.connect(recreatedTransport);
+
+          sessionInfo.server = recreatedServer;
+          sessionInfo.transport = recreatedTransport;
+          logger.debug(`✅ [${sessionId}] Session transport recreated successfully`);
         }
 
         // Let the session's transport handle the request
@@ -493,6 +509,15 @@ export class MCPHandler implements IMCPHandler {
     if (cleaned > 0) {
       logger.info(`🧹 Cleaned up ${cleaned} old sessions. Active: ${this.sessions.size} (${sessionSummary.join(', ')})`);
     }
+  }
+
+  private createTransport(sessionId: string, clientAddr: string): StreamableHTTPServerTransport {
+    return new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => sessionId,
+      onsessioninitialized: (sid) => {
+        logger.info(`🔗 [${clientAddr}] Session initialized: ${sid}`);
+      },
+    });
   }
 
   /**
