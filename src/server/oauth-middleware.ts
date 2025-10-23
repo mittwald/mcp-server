@@ -25,7 +25,8 @@ export function createOAuthMiddleware() {
   ): Promise<void> => {
     logger.info(`[OAuth Middleware] Request received: ${req.method} ${req.path}`, {
       hasAuth: !!req.headers.authorization,
-      authPrefix: req.headers.authorization?.substring(0, 10),
+      authHeader: req.headers.authorization,
+      authLength: req.headers.authorization?.length,
       directTokensEnabled,
     });
 
