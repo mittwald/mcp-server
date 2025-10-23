@@ -39,6 +39,7 @@ interface SessionAuth {
   accessToken: string;
   refreshToken?: string;
   username: string;
+  authenticationMode?: 'bridge' | 'direct-token';
   /** Original OAuth JWT issued by the proxy */
   oauthToken?: string;
   scope?: string;
@@ -230,11 +231,15 @@ export class MCPHandler implements IMCPHandler {
           ? req.auth.extra.resource
           : undefined;
 
+        const requestAuthMode =
+          req.auth?.extra?.authenticationMode === 'direct-bearer' ? 'direct-token' : 'bridge';
+
         const sessionAuth = mittwaldAccessToken
           ? {
               accessToken: mittwaldAccessToken,
               refreshToken: mittwaldRefreshToken,
               username: String(req.auth?.extra?.userId || req.auth?.clientId || "unknown"),
+              authenticationMode: requestAuthMode,
               oauthToken: req.auth?.token,
               scope: mittwaldScope,
               resource: mittwaldResource,
@@ -338,6 +343,7 @@ export class MCPHandler implements IMCPHandler {
             accessToken: persistedSession.mittwaldAccessToken,
             refreshToken: persistedSession.mittwaldRefreshToken,
             username: persistedSession.userId,
+            authenticationMode: (persistedSession.authenticationMode as SessionAuth['authenticationMode']) ?? sessionInfo?.auth?.authenticationMode,
             oauthToken: req.auth?.token,
             scope: persistedSession.scope,
             resource: persistedSession.resource,
@@ -351,6 +357,9 @@ export class MCPHandler implements IMCPHandler {
           sessionInfo.auth.resource = persistedSession.resource ?? sessionInfo.auth.resource;
           sessionInfo.auth.accessTokenExpiresAt = persistedSession.mittwaldAccessTokenExpiresAt ?? sessionInfo.auth.accessTokenExpiresAt;
           sessionInfo.auth.username = persistedSession.userId ?? sessionInfo.auth.username;
+          sessionInfo.auth.authenticationMode =
+            (persistedSession.authenticationMode as SessionAuth['authenticationMode']) ??
+            sessionInfo.auth.authenticationMode;
           if (req.auth?.token) {
             sessionInfo.auth.oauthToken = req.auth.token;
           }
@@ -570,6 +579,7 @@ export class MCPHandler implements IMCPHandler {
         mittwaldRefreshTokenExpiresAt: refreshTokenExpiresAt,
         currentContext: existing?.currentContext || {},
         accessibleProjects: existing?.accessibleProjects,
+        authenticationMode: sessionAuth.authenticationMode ?? existing?.authenticationMode,
       }, { ttlSeconds });
     } catch (error) {
       logger.error(`💾 [${sessionId}] Failed to persist session auth`, {

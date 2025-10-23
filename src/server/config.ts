@@ -48,6 +48,17 @@ export interface MittwaldOAuthConfig {
   CLIENT_ID?: string;
 }
 
+export interface DirectTokenConfig {
+  /** Enable direct bearer token acceptance */
+  ENABLED: boolean;
+  /** Milliseconds to cache validation results */
+  CACHE_TTL_MS: number;
+  /** Seconds to keep sessions alive without fresh validation */
+  SESSION_TTL_SECONDS: number;
+  /** Timeout for CLI validation calls */
+  VALIDATION_TIMEOUT_MS: number;
+}
+
 export interface ServerConfig {
   /** Secret key for JWT token signing */
   JWT_SECRET?: string;
@@ -61,6 +72,8 @@ export interface ServerConfig {
   PORT: string;
   /** Mittwald OAuth configuration (used for refresh tokens) */
   MITTWALD: MittwaldOAuthConfig;
+  /** Direct token authentication configuration */
+  DIRECT_TOKENS: DirectTokenConfig;
   /** Reserved for future flags (no OAuth bypass) */
   // no-op
   /** Test server ID for running tests */
@@ -124,6 +137,13 @@ function resolveRedirectUrl(issuer: string): string {
 }
 
 const resolvedIssuer = resolveOauthIssuer();
+const directTokenEnabled = process.env.ENABLE_DIRECT_BEARER_TOKENS === 'true';
+const directTokenCacheTtl =
+  Number.parseInt(process.env.DIRECT_TOKEN_CACHE_TTL_MS || '', 10) || 60_000;
+const directTokenSessionTtlSeconds =
+  Number.parseInt(process.env.DIRECT_TOKEN_SESSION_TTL_SECONDS || '', 10) || 1_800;
+const directTokenValidationTimeout =
+  Number.parseInt(process.env.DIRECT_TOKEN_VALIDATION_TIMEOUT_MS || '', 10) || 15_000;
 
 export const CONFIG: ServerConfig = {
   JWT_SECRET: resolvedJwtSecret,
@@ -141,6 +161,12 @@ export const CONFIG: ServerConfig = {
   MITTWALD: {
     TOKEN_URL: process.env.MITTWALD_TOKEN_URL,
     CLIENT_ID: process.env.MITTWALD_CLIENT_ID,
+  },
+  DIRECT_TOKENS: {
+    ENABLED: directTokenEnabled,
+    CACHE_TTL_MS: Math.max(1000, directTokenCacheTtl),
+    SESSION_TTL_SECONDS: Math.max(60, directTokenSessionTtlSeconds),
+    VALIDATION_TIMEOUT_MS: Math.max(1000, directTokenValidationTimeout),
   },
   // no OAuth bypass
   TEST_SERVER_ID: process.env.TEST_SERVER_ID,
