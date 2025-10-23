@@ -332,7 +332,7 @@ export class MCPHandler implements IMCPHandler {
           return;
         }
 
-        let requiresServerRecreate = false;
+        let needsServerRecreate = false;
         if (!sessionInfo.auth) {
           sessionInfo.auth = {
             accessToken: persistedSession.mittwaldAccessToken,
@@ -344,7 +344,7 @@ export class MCPHandler implements IMCPHandler {
             resource: persistedSession.resource,
             accessTokenExpiresAt: persistedSession.mittwaldAccessTokenExpiresAt,
           };
-          requiresServerRecreate = true;
+          needsServerRecreate = true;
         } else {
           sessionInfo.auth.accessToken = persistedSession.mittwaldAccessToken;
           sessionInfo.auth.refreshToken = persistedSession.mittwaldRefreshToken;
@@ -360,7 +360,7 @@ export class MCPHandler implements IMCPHandler {
           }
         }
 
-        let tokensPersistedFromRequest = false;
+        let authUpdatedFromRequest = false;
         if (req.auth && req.auth.token) {
           const mittwaldAccessToken = typeof req.auth.extra?.mittwaldAccessToken === 'string'
             ? req.auth.extra.mittwaldAccessToken
@@ -379,50 +379,52 @@ export class MCPHandler implements IMCPHandler {
             : undefined;
 
           if (mittwaldAccessToken && sessionInfo.auth) {
-            let tokensChanged = false;
+            let credentialsChanged = false;
 
             if (sessionInfo.auth.accessToken !== mittwaldAccessToken) {
               sessionInfo.auth.accessToken = mittwaldAccessToken;
-              tokensChanged = true;
+              credentialsChanged = true;
             }
 
             if (mittwaldRefreshToken && sessionInfo.auth.refreshToken !== mittwaldRefreshToken) {
               sessionInfo.auth.refreshToken = mittwaldRefreshToken;
-              tokensChanged = true;
+              credentialsChanged = true;
             }
 
             if (mittwaldScope && sessionInfo.auth.scope !== mittwaldScope) {
               sessionInfo.auth.scope = mittwaldScope;
-              tokensChanged = true;
+              credentialsChanged = true;
             }
 
             if (mittwaldResource && sessionInfo.auth.resource !== mittwaldResource) {
               sessionInfo.auth.resource = mittwaldResource;
-              tokensChanged = true;
+              credentialsChanged = true;
             }
 
             if (mittwaldAccessExpiresAtSeconds) {
               const expiresAtDate = new Date(mittwaldAccessExpiresAtSeconds * 1000);
               if (!sessionInfo.auth.accessTokenExpiresAt || sessionInfo.auth.accessTokenExpiresAt.getTime() !== expiresAtDate.getTime()) {
                 sessionInfo.auth.accessTokenExpiresAt = expiresAtDate;
-                tokensChanged = true;
+                authUpdatedFromRequest = true;
               }
             }
 
             sessionInfo.auth.oauthToken = req.auth.token;
             sessionInfo.auth.username = String(req.auth.extra?.userId || req.auth.clientId || sessionInfo.auth.username || 'unknown');
 
-            if (tokensChanged) {
-              await this.persistSessionAuth(sessionId, sessionInfo.auth, req.auth);
-              tokensPersistedFromRequest = true;
-              requiresServerRecreate = true;
+            if (credentialsChanged) {
+              needsServerRecreate = true;
+              authUpdatedFromRequest = true;
             }
           }
         }
 
-        if (requiresServerRecreate || tokensPersistedFromRequest) {
+        if (authUpdatedFromRequest && sessionInfo.auth) {
+          await this.persistSessionAuth(sessionId, sessionInfo.auth, req.auth);
+        }
+
+        if (needsServerRecreate) {
           logger.debug(`🔄 [${sessionId}] Updating server authentication context`);
-          logger.debug(`🔄 [${sessionId}] Recreating session transport and server`);
 
           try {
             sessionInfo.server.close();
@@ -432,20 +434,15 @@ export class MCPHandler implements IMCPHandler {
             });
           }
 
-          try {
-            sessionInfo.transport.close();
-          } catch (error) {
-            logger.warn(`⚠️ [${sessionId}] Failed to close existing transport before recreation`, {
-              error: error instanceof Error ? error.message : String(error),
-            });
+          const recreatedServer = this.createServer(sessionId, sessionInfo.auth);
+          const existingTransport = sessionInfo.transport;
+
+          if (typeof (existingTransport as any)._started === 'boolean') {
+            (existingTransport as any)._started = false;
           }
 
-          const recreatedServer = this.createServer(sessionId, sessionInfo.auth);
-          const recreatedTransport = this.createTransport(sessionId, clientAddr);
-          await recreatedServer.connect(recreatedTransport);
-
+          await recreatedServer.connect(existingTransport);
           sessionInfo.server = recreatedServer;
-          sessionInfo.transport = recreatedTransport;
           logger.debug(`✅ [${sessionId}] Session transport recreated successfully`);
         }
 
