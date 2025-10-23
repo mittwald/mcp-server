@@ -231,7 +231,7 @@ export class MCPHandler implements IMCPHandler {
           ? req.auth.extra.resource
           : undefined;
 
-        const requestAuthMode =
+        const requestAuthMode: SessionAuth['authenticationMode'] =
           req.auth?.extra?.authenticationMode === 'direct-bearer' ? 'direct-token' : 'bridge';
 
         const sessionAuth = mittwaldAccessToken
@@ -343,7 +343,7 @@ export class MCPHandler implements IMCPHandler {
             accessToken: persistedSession.mittwaldAccessToken,
             refreshToken: persistedSession.mittwaldRefreshToken,
             username: persistedSession.userId,
-            authenticationMode: (persistedSession.authenticationMode as SessionAuth['authenticationMode']) ?? sessionInfo?.auth?.authenticationMode,
+            authenticationMode: (persistedSession.authenticationMode as SessionAuth['authenticationMode']) ?? 'bridge',
             oauthToken: req.auth?.token,
             scope: persistedSession.scope,
             resource: persistedSession.resource,
