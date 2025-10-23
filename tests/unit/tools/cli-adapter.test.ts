@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterAll, describe, expect, it, vi } from 'vitest';
 
 import { invokeCliTool } from '../../../src/tools/cli-adapter.js';
 import type { CliExecuteResult } from '../../../src/utils/cli-wrapper.js';
@@ -57,11 +57,18 @@ const buildExecutionResult = (overrides: Partial<CliExecuteResult> = {}): CliExe
   ...overrides,
 });
 
+const ORIGINAL_ENV = {
+  MCP_TOOL_MAX_PAYLOAD_MB: process.env.MCP_TOOL_MAX_PAYLOAD_MB,
+  MCP_CLI_MAX_BUFFER_MB: process.env.MCP_CLI_MAX_BUFFER_MB,
+};
+
 describe('invokeCliTool', () => {
   beforeEach(() => {
     executeWithSession.mockReset();
     getCurrentSessionId.mockReset();
     getCurrentSessionId.mockReturnValue(undefined);
+    process.env.MCP_TOOL_MAX_PAYLOAD_MB = undefined;
+    process.env.MCP_CLI_MAX_BUFFER_MB = undefined;
   });
 
   it('returns parsed result when CLI succeeds', async () => {
@@ -155,4 +162,26 @@ describe('invokeCliTool', () => {
 
     expect(executeWithSession).toHaveBeenCalledWith('npx mw', ['project', 'list'], 'session-1', { timeout: 10_000 });
   });
+
+  it('fails with OUTPUT_LIMIT when stdout exceeds configured cap', async () => {
+    process.env.MCP_TOOL_MAX_PAYLOAD_MB = '1';
+    executeWithSession.mockResolvedValue(
+      buildExecutionResult({ stdout: 'x'.repeat(2 * 1024 * 1024) })
+    );
+
+    await expect(
+      invokeCliTool({
+        toolName: 'mittwald_project_list',
+        argv: ['project', 'list'],
+        sessionId: 'session-1',
+      })
+    ).rejects.toMatchObject({
+      kind: 'OUTPUT_LIMIT',
+    });
+  });
+});
+
+afterAll(() => {
+  process.env.MCP_TOOL_MAX_PAYLOAD_MB = ORIGINAL_ENV.MCP_TOOL_MAX_PAYLOAD_MB;
+  process.env.MCP_CLI_MAX_BUFFER_MB = ORIGINAL_ENV.MCP_CLI_MAX_BUFFER_MB;
 });

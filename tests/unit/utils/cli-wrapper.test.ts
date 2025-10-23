@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { execMock, resetExecMock } from '../../helpers/child-process-exec-mock.ts';
 
 vi.mock('../../../src/server/session-manager.js', () => ({
@@ -28,11 +28,22 @@ const mockSession = {
   scopes: ['profile'],
 };
 
+const ORIGINAL_ENV = {
+  NODE_OPTIONS: process.env.NODE_OPTIONS,
+  MCP_CLI_MAX_HEAP_MB: process.env.MCP_CLI_MAX_HEAP_MB,
+  MCP_CLI_MAX_BUFFER_MB: process.env.MCP_CLI_MAX_BUFFER_MB,
+  MCP_CLI_NODE_OPTIONS: process.env.MCP_CLI_NODE_OPTIONS,
+};
+
 describe('executeCli', () => {
   beforeEach(() => {
     resetExecMock();
     (sessionManager.getSession as any).mockReset();
     (getCurrentSessionId as any).mockReset();
+    process.env.NODE_OPTIONS = undefined;
+    process.env.MCP_CLI_MAX_HEAP_MB = undefined;
+    process.env.MCP_CLI_MAX_BUFFER_MB = undefined;
+    process.env.MCP_CLI_NODE_OPTIONS = undefined;
   });
 
   it('injects session token when no token flag present', async () => {
@@ -42,6 +53,10 @@ describe('executeCli', () => {
     execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
       const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
       expect(command).toContain('--token mock-access-token');
+      if (typeof optionsOrCallback !== 'function') {
+        expect(optionsOrCallback?.maxBuffer).toBe(20 * 1024 * 1024);
+        expect(optionsOrCallback?.env?.NODE_OPTIONS).toContain('--max-old-space-size=384');
+      }
       callback?.(null, 'command output', '');
       return {} as any;
     });
@@ -96,4 +111,53 @@ describe('executeCli', () => {
     expect(result.stderr).toContain('--token [REDACTED]');
     expect(result.durationMs).toBeGreaterThanOrEqual(0);
   });
+
+  it('respects custom heap and additional Node options', async () => {
+    (getCurrentSessionId as any).mockReturnValue('session-123');
+    (sessionManager.getSession as any).mockResolvedValue(mockSession);
+    process.env.NODE_OPTIONS = '--trace-warnings';
+    process.env.MCP_CLI_MAX_HEAP_MB = '512';
+    process.env.MCP_CLI_NODE_OPTIONS = '--no-deprecation';
+
+    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
+      const options = typeof optionsOrCallback === 'function' ? undefined : optionsOrCallback;
+      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
+      expect(options?.env?.NODE_OPTIONS).toContain('--trace-warnings');
+      expect(options?.env?.NODE_OPTIONS).toContain('--no-deprecation');
+      expect(options?.env?.NODE_OPTIONS).toContain('--max-old-space-size=512');
+      callback?.(null, 'ok', '');
+      return {} as any;
+    });
+
+    const result = await executeCli('mw', ['status', '--json']);
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('returns friendly message when stdout exceeds buffer', async () => {
+    (getCurrentSessionId as any).mockReturnValue('session-123');
+    (sessionManager.getSession as any).mockResolvedValue(mockSession);
+
+    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
+      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
+      const error: any = new Error('stdout maxBuffer exceeded');
+      error.code = 1;
+      error.stdout = '';
+      error.stderr = '';
+      callback?.(error, '', '');
+      return {} as any;
+    });
+
+    const result = await executeCli('mw', ['project', 'list']);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('Command output exceeded the configured 20 MB limit');
+    expect(result.stderr).toContain('MCP_CLI_MAX_BUFFER_MB');
+  });
+});
+
+afterAll(() => {
+  process.env.NODE_OPTIONS = ORIGINAL_ENV.NODE_OPTIONS;
+  process.env.MCP_CLI_MAX_HEAP_MB = ORIGINAL_ENV.MCP_CLI_MAX_HEAP_MB;
+  process.env.MCP_CLI_MAX_BUFFER_MB = ORIGINAL_ENV.MCP_CLI_MAX_BUFFER_MB;
+  process.env.MCP_CLI_NODE_OPTIONS = ORIGINAL_ENV.MCP_CLI_NODE_OPTIONS;
 });

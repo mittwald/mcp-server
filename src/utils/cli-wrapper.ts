@@ -5,6 +5,99 @@ import { sessionManager } from '../server/session-manager.js';
 
 const execAsync = promisify(exec);
 
+const DEFAULT_MAX_BUFFER_BYTES = 20 * 1024 * 1024; // 20MB cap for stdout buffering
+const DEFAULT_MAX_HEAP_MB = 384; // Keep below Fly machine memory ceiling
+
+function parsePositiveInteger(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return undefined;
+  }
+  return parsed;
+}
+
+function resolveMaxBufferBytes(explicit?: number): number {
+  if (typeof explicit === 'number' && explicit > 0) {
+    return explicit;
+  }
+  const fromEnvMb = parsePositiveInteger(process.env.MCP_CLI_MAX_BUFFER_MB);
+  if (typeof fromEnvMb === 'number') {
+    return fromEnvMb * 1024 * 1024;
+  }
+  return DEFAULT_MAX_BUFFER_BYTES;
+}
+
+function resolveMaxOldSpaceMb(): number | undefined {
+  const raw = process.env.MCP_CLI_MAX_HEAP_MB;
+  if (raw?.trim() === '0') {
+    return undefined;
+  }
+  const fromEnv = parsePositiveInteger(raw);
+  if (typeof fromEnv === 'number') {
+    return fromEnv;
+  }
+  return DEFAULT_MAX_HEAP_MB;
+}
+
+function containsMaxOldSpaceFlag(value?: string): boolean {
+  if (!value) {
+    return false;
+  }
+  return /--max-old-space-size(=\S+)?/.test(value);
+}
+
+function combineNodeOptions(
+  existing: string | undefined,
+  additional: string | undefined,
+  maxOldSpaceMb?: number
+): string | undefined {
+  const parts: string[] = [];
+
+  const normalizedExisting = existing?.trim();
+  if (normalizedExisting) {
+    parts.push(normalizedExisting);
+  }
+
+  const normalizedAdditional = additional?.trim();
+  if (normalizedAdditional) {
+    parts.push(normalizedAdditional);
+  }
+
+  const alreadyHasHeapFlag = parts.some(containsMaxOldSpaceFlag);
+  if (!alreadyHasHeapFlag && typeof maxOldSpaceMb === 'number' && maxOldSpaceMb > 0) {
+    parts.push(`--max-old-space-size=${maxOldSpaceMb}`);
+  }
+
+  if (parts.length === 0) {
+    return undefined;
+  }
+
+  return parts.join(' ').trim();
+}
+
+function formatMegabytes(bytes: number): string {
+  const mb = bytes / (1024 * 1024);
+  if (mb >= 10) {
+    return `${Math.round(mb)} MB`;
+  }
+  return `${mb.toFixed(1).replace(/\.0$/, '')} MB`;
+}
+
+function stdoutBufferExceeded(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+  const message = (error as { message?: string }).message;
+  if (typeof message === 'string' && message.includes('stdout maxBuffer exceeded')) {
+    return true;
+  }
+  const stderr = (error as { stderr?: string }).stderr;
+  return typeof stderr === 'string' && stderr.includes('maxBuffer exceeded');
+}
+
 export interface CliExecuteOptions {
   timeout?: number;
   maxBuffer?: number;
@@ -28,10 +121,12 @@ export async function executeCli(
 ): Promise<CliExecuteResult> {
   const {
     timeout = 30000,
-    maxBuffer = 1024 * 1024 * 10, // 10MB
+    maxBuffer,
     env = {},
     token,
   } = options;
+  const resolvedMaxBuffer = resolveMaxBufferBytes(maxBuffer);
+  const maxOldSpaceMb = resolveMaxOldSpaceMb();
 
   // Compute token to inject if not already present in args
   let effectiveArgs = [...args];
@@ -70,19 +165,29 @@ export async function executeCli(
   const fullCommand = `${command} ${escapedArgs.join(' ')}`;
   
   const startedAt = Date.now();
+  const mergedEnv: NodeJS.ProcessEnv = {
+    ...process.env,
+    ...env,
+  };
+  mergedEnv.MITTWALD_NONINTERACTIVE = '1';
+  mergedEnv.CI = '1';
+
+  const nodeOptions = combineNodeOptions(
+    mergedEnv.NODE_OPTIONS,
+    process.env.MCP_CLI_NODE_OPTIONS,
+    maxOldSpaceMb
+  );
+  if (nodeOptions) {
+    mergedEnv.NODE_OPTIONS = nodeOptions;
+  } else {
+    delete mergedEnv.NODE_OPTIONS;
+  }
 
   try {
     const { stdout, stderr } = await execAsync(fullCommand, {
       timeout,
-      maxBuffer,
-      env: {
-        ...process.env,
-        // Do not pass token via environment; always via --token
-        ...env,
-        // Ensure non-interactive mode
-        MITTWALD_NONINTERACTIVE: '1',
-        CI: '1'
-      }
+      maxBuffer: resolvedMaxBuffer,
+      env: mergedEnv,
     });
 
     return {
@@ -93,16 +198,23 @@ export async function executeCli(
     };
   } catch (error: any) {
     // exec throws an error if the command exits with non-zero
-    let stderr = error.stderr?.trim() || '';
+    let stderr = error?.stderr?.trim() || '';
     
     // If stderr is empty but we have an error message, use that
-    if (!stderr && error.message) {
+    if (!stderr && error?.message) {
       stderr = error.message;
+    }
+
+    if (stdoutBufferExceeded(error)) {
+      const limitText = formatMegabytes(resolvedMaxBuffer);
+      const hint = `Command output exceeded the configured ${limitText} limit. Narrow the request or raise MCP_CLI_MAX_BUFFER_MB.`;
+      stderr = stderr ? `${hint}\n${stderr}` : hint;
     }
     
     // If we have a signal (like timeout), include that information
-    if (error.signal) {
-      stderr = `Command killed with signal ${error.signal}. ${stderr}`.trim();
+    if (error?.signal) {
+      const signalLine = `Command killed with signal ${error.signal}.`;
+      stderr = stderr ? `${signalLine} ${stderr}` : signalLine;
     }
     
     // Include the full command in error output for debugging (redact token)

@@ -4,6 +4,7 @@ export type CliToolErrorKind =
   | 'EXECUTION'
   | 'PARSING'
   | 'TIMEOUT'
+  | 'OUTPUT_LIMIT'
   | 'UNKNOWN';
 
 export interface CliToolErrorOptions {

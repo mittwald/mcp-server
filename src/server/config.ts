@@ -88,6 +88,43 @@ export interface ServerConfig {
  */
 const resolvedJwtSecret = process.env.OAUTH_BRIDGE_JWT_SECRET || process.env.JWT_SECRET;
 
+function normalizeBaseUrl(url: string | undefined): string {
+  const value = url && url.trim().length > 0 ? url.trim() : undefined;
+  if (!value) {
+    return '';
+  }
+  return value.endsWith('/') ? value.slice(0, -1) : value;
+}
+
+function resolveOauthIssuer(): string {
+  const explicitIssuer = normalizeBaseUrl(process.env.OAUTH_ISSUER);
+  if (explicitIssuer) {
+    return explicitIssuer;
+  }
+
+  const publicBase = normalizeBaseUrl(process.env.MCP_PUBLIC_BASE);
+  if (publicBase) {
+    return publicBase;
+  }
+
+  if ((process.env.NODE_ENV || '').toLowerCase() === 'production') {
+    return 'https://mittwald-mcp-fly2.fly.dev';
+  }
+
+  const port = process.env.PORT || '3000';
+  return `http://localhost:${port}`;
+}
+
+function resolveRedirectUrl(issuer: string): string {
+  const explicitRedirect = process.env.REDIRECT_URL?.trim();
+  if (explicitRedirect) {
+    return explicitRedirect;
+  }
+  return `${issuer}/oauth/callback`;
+}
+
+const resolvedIssuer = resolveOauthIssuer();
+
 export const CONFIG: ServerConfig = {
   JWT_SECRET: resolvedJwtSecret,
   OAUTH_BRIDGE: {
@@ -98,12 +135,8 @@ export const CONFIG: ServerConfig = {
     AUTHORIZATION_URL: process.env.OAUTH_BRIDGE_AUTHORIZATION_URL,
     TOKEN_URL: process.env.OAUTH_BRIDGE_TOKEN_URL
   },
-  OAUTH_ISSUER: process.env.OAUTH_ISSUER || 
-    (process.env.NODE_ENV === "production" 
-      ? "https://mittwald-mcp.example.com"
-      : `http://localhost:${process.env.PORT || "3000"}`),
-  REDIRECT_URL: process.env.REDIRECT_URL || 
-    `${process.env.OAUTH_ISSUER || `http://localhost:${process.env.PORT || "3000"}`}/oauth/callback`,
+  OAUTH_ISSUER: resolvedIssuer,
+  REDIRECT_URL: resolveRedirectUrl(resolvedIssuer),
   PORT: process.env.PORT || "3000",
   MITTWALD: {
     TOKEN_URL: process.env.MITTWALD_TOKEN_URL,
