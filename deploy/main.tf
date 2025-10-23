@@ -57,9 +57,29 @@ resource "mittwald_container_stack" "mcp_stack" {
 
       environment = {
         NODE_ENV = "production"
-        PORT     = "8080"
+
+        # HTTPs needs to be disabled, because the mittwald ingress controller handles TLS termination
+        PORT         = "8080"
+        ENABLE_HTTPS = "false"
+        FLY_APP_NAME = "mock" # FLY_APP_NAME is required to trick the server into disabling TLS
+
         MCP_PUBLIC_BASE = "https://${local.base_domain}"
         MITTWALD_AUTHORIZATION_URL = "https://studio.mittwald.de/oauth2/authorize"
+        MITTWALD_CLIENT_ID = "mittwald-mcp-server"
+        MITTWALD_CLIENT_SECRET = "mock-client-secret"
+
+        REDIRECT_URL = "https://auth.${local.base_domain}/auth/callback"
+
+        OAUTH_BRIDGE_BASE_URL = "https://auth.${local.base_domain}"
+        OAUTH_BRIDGE_JWT_SECRET = random_string.random.result
+        OAUTH_BRIDGE_ISSUER = "auth.${local.base_domain}"
+        OAUTH_BRIDGE_AUDIENCE = "https://${local.base_domain}"
+        OAUTH_BRIDGE_AUTHORIZATION_URL = "https://auth.${local.base_domain}/authorize"
+        OAUTH_BRIDGE_TOKEN_URL = "https://auth.${local.base_domain}/token"
+
+        # unclear; these are both in the .env.example
+        OAUTH_BRIDGE_REDIS_URL = "redis://${mittwald_redis_database.mcp_redis.hostname}:6379"
+        REDIS_URL = "redis://${mittwald_redis_database.mcp_redis.hostname}:6379"
       }
     }
 
@@ -77,12 +97,18 @@ resource "mittwald_container_stack" "mcp_stack" {
 
       environment = {
         NODE_ENV = "production"
-        PORT     = "3000"
+
+        PORT         = "3000"
+        ENABLE_HTTPS = "false"
+        FLY_APP_NAME = "mock" # FLY_APP_NAME is required to trick the server into disabling TLS
 
         BRIDGE_ISSUER = "auth.${local.base_domain}"
         BRIDGE_BASE_URL = "https://auth.${local.base_domain}"
         BRIDGE_JWT_SECRET = random_string.random.result
-        BRIDGE_REDIRECT_URIS = "https://auth.${local.base_domain}/auth/callback"
+        BRIDGE_REDIRECT_URIS = "https://chatgpt.com/connector_platform_oauth_redirect,https://claude.ai/api/mcp/auth_callback"
+
+        BRDIGE_STATE_STORE = "redis"
+        BRIDGE_REDIS_URL = "redis://${mittwald_redis_database.mcp_redis.hostname}:6379"
 
         MITTWALD_AUTHORIZATION_URL = "https://studio.mittwald.de/oauth2/authorize"
         MITTWALD_TOKEN_URL = "https://studio.mittwald.de/oauth2/token"
@@ -92,6 +118,18 @@ resource "mittwald_container_stack" "mcp_stack" {
 
       }
     }
+  }
+}
+
+resource "mittwald_redis_database" "mcp_redis" {
+  version = "7.2"
+  project_id = mittwald_project.mcp_project.id
+  description = "MCP server"
+
+  configuration = {
+    max_memory_mb = 512
+    max_memory_policy = "allkeys-lru"
+    persistent = true
   }
 }
 
