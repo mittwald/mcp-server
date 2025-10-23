@@ -23,11 +23,18 @@ export function createOAuthMiddleware() {
     res: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
+    logger.info(`[OAuth Middleware] Request received: ${req.method} ${req.path}`, {
+      hasAuth: !!req.headers.authorization,
+      authPrefix: req.headers.authorization?.substring(0, 10),
+      directTokensEnabled,
+    });
+
     try {
       // Check for Authorization header
       const authHeader = req.headers.authorization;
-      
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        logger.warn('[OAuth Middleware] No Bearer token found, sending challenge');
         // No auth provided - return 401 with OAuth metadata
         return sendOAuthChallenge(res);
       }
@@ -75,10 +82,14 @@ export function createOAuthMiddleware() {
       }
 
       // Invalid token and no direct token support available
+      logger.warn('[OAuth Middleware] Invalid token, no direct token support');
       return sendOAuthChallenge(res);
-      
+
     } catch (error) {
-      console.error('OAuth middleware error:', error);
+      logger.error('[OAuth Middleware] Unexpected error', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       res.status(500).json({
         error: 'internal_server_error',
         message: 'Authentication system error'
@@ -92,13 +103,22 @@ async function handleJwtToken(
   req: AuthenticatedRequest,
   next: express.NextFunction
 ): Promise<boolean> {
+  logger.debug('[handleJwtToken] Attempting JWT validation', {
+    tokenLength: token.length,
+    tokenPrefix: token.substring(0, 20),
+  });
+
   const bridgeSecret = CONFIG.OAUTH_BRIDGE.JWT_SECRET;
   if (!bridgeSecret) {
+    logger.debug('[handleJwtToken] No bridge secret configured, skipping JWT');
     return false;
   }
 
   const isLikelyJwt = token.split('.').length === 3;
   if (!isLikelyJwt) {
+    logger.debug('[handleJwtToken] Token does not look like JWT (not 3 parts)', {
+      parts: token.split('.').length,
+    });
     return false;
   }
 
@@ -202,6 +222,11 @@ async function handleDirectToken(
   req: AuthenticatedRequest,
   next: express.NextFunction
 ): Promise<boolean> {
+  logger.info('[handleDirectToken] Starting direct token validation', {
+    tokenLength: token.length,
+    tokenPrefix: token.substring(0, 30),
+  });
+
   const validation = await directTokenValidator.validate(token);
   const nowSeconds = Math.floor(Date.now() / 1000);
   const accessTokenExpiresAtSeconds =
