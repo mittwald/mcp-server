@@ -39,6 +39,7 @@ interface SessionAuth {
   accessToken: string;
   refreshToken?: string;
   username: string;
+  authenticationMode?: 'bridge' | 'direct-token';
   /** Original OAuth JWT issued by the proxy */
   oauthToken?: string;
   scope?: string;
@@ -230,11 +231,15 @@ export class MCPHandler implements IMCPHandler {
           ? req.auth.extra.resource
           : undefined;
 
+        const requestAuthMode: SessionAuth['authenticationMode'] =
+          req.auth?.extra?.authenticationMode === 'direct-bearer' ? 'direct-token' : 'bridge';
+
         const sessionAuth = mittwaldAccessToken
           ? {
               accessToken: mittwaldAccessToken,
               refreshToken: mittwaldRefreshToken,
               username: String(req.auth?.extra?.userId || req.auth?.clientId || "unknown"),
+              authenticationMode: requestAuthMode,
               oauthToken: req.auth?.token,
               scope: mittwaldScope,
               resource: mittwaldResource,
@@ -260,12 +265,7 @@ export class MCPHandler implements IMCPHandler {
         }
 
         const server = this.createServer(sessionId, sessionAuth);
-        const transport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: () => sessionId!,
-          onsessioninitialized: (sid) => {
-            logger.info(`🔗 [${clientAddr}] Session initialized: ${sid}`);
-          },
-        });
+        const transport = this.createTransport(sessionId, clientAddr);
         
         try {
           await server.connect(transport);
@@ -332,18 +332,19 @@ export class MCPHandler implements IMCPHandler {
           return;
         }
 
-        let requiresServerRecreate = false;
+        let needsServerRecreate = false;
         if (!sessionInfo.auth) {
           sessionInfo.auth = {
             accessToken: persistedSession.mittwaldAccessToken,
             refreshToken: persistedSession.mittwaldRefreshToken,
             username: persistedSession.userId,
+            authenticationMode: (persistedSession.authenticationMode as SessionAuth['authenticationMode']) ?? 'bridge',
             oauthToken: req.auth?.token,
             scope: persistedSession.scope,
             resource: persistedSession.resource,
             accessTokenExpiresAt: persistedSession.mittwaldAccessTokenExpiresAt,
           };
-          requiresServerRecreate = true;
+          needsServerRecreate = true;
         } else {
           sessionInfo.auth.accessToken = persistedSession.mittwaldAccessToken;
           sessionInfo.auth.refreshToken = persistedSession.mittwaldRefreshToken;
@@ -351,12 +352,15 @@ export class MCPHandler implements IMCPHandler {
           sessionInfo.auth.resource = persistedSession.resource ?? sessionInfo.auth.resource;
           sessionInfo.auth.accessTokenExpiresAt = persistedSession.mittwaldAccessTokenExpiresAt ?? sessionInfo.auth.accessTokenExpiresAt;
           sessionInfo.auth.username = persistedSession.userId ?? sessionInfo.auth.username;
+          sessionInfo.auth.authenticationMode =
+            (persistedSession.authenticationMode as SessionAuth['authenticationMode']) ??
+            sessionInfo.auth.authenticationMode;
           if (req.auth?.token) {
             sessionInfo.auth.oauthToken = req.auth.token;
           }
         }
 
-        let tokensPersistedFromRequest = false;
+        let authUpdatedFromRequest = false;
         if (req.auth && req.auth.token) {
           const mittwaldAccessToken = typeof req.auth.extra?.mittwaldAccessToken === 'string'
             ? req.auth.extra.mittwaldAccessToken
@@ -375,53 +379,71 @@ export class MCPHandler implements IMCPHandler {
             : undefined;
 
           if (mittwaldAccessToken && sessionInfo.auth) {
-            let tokensChanged = false;
+            let credentialsChanged = false;
 
             if (sessionInfo.auth.accessToken !== mittwaldAccessToken) {
               sessionInfo.auth.accessToken = mittwaldAccessToken;
-              tokensChanged = true;
+              credentialsChanged = true;
             }
 
             if (mittwaldRefreshToken && sessionInfo.auth.refreshToken !== mittwaldRefreshToken) {
               sessionInfo.auth.refreshToken = mittwaldRefreshToken;
-              tokensChanged = true;
+              credentialsChanged = true;
             }
 
             if (mittwaldScope && sessionInfo.auth.scope !== mittwaldScope) {
               sessionInfo.auth.scope = mittwaldScope;
-              tokensChanged = true;
+              credentialsChanged = true;
             }
 
             if (mittwaldResource && sessionInfo.auth.resource !== mittwaldResource) {
               sessionInfo.auth.resource = mittwaldResource;
-              tokensChanged = true;
+              credentialsChanged = true;
             }
 
             if (mittwaldAccessExpiresAtSeconds) {
               const expiresAtDate = new Date(mittwaldAccessExpiresAtSeconds * 1000);
               if (!sessionInfo.auth.accessTokenExpiresAt || sessionInfo.auth.accessTokenExpiresAt.getTime() !== expiresAtDate.getTime()) {
                 sessionInfo.auth.accessTokenExpiresAt = expiresAtDate;
-                tokensChanged = true;
+                authUpdatedFromRequest = true;
               }
             }
 
             sessionInfo.auth.oauthToken = req.auth.token;
             sessionInfo.auth.username = String(req.auth.extra?.userId || req.auth.clientId || sessionInfo.auth.username || 'unknown');
 
-            if (tokensChanged) {
-              await this.persistSessionAuth(sessionId, sessionInfo.auth, req.auth);
-              tokensPersistedFromRequest = true;
-              requiresServerRecreate = true;
+            if (credentialsChanged) {
+              needsServerRecreate = true;
+              authUpdatedFromRequest = true;
             }
           }
         }
 
-        if (requiresServerRecreate || tokensPersistedFromRequest) {
+        if (authUpdatedFromRequest && sessionInfo.auth) {
+          await this.persistSessionAuth(sessionId, sessionInfo.auth, req.auth);
+        }
+
+        if (needsServerRecreate) {
           logger.debug(`🔄 [${sessionId}] Updating server authentication context`);
-          const newServer = this.createServer(sessionId, sessionInfo.auth);
-          await newServer.connect(sessionInfo.transport);
-          sessionInfo.server = newServer;
-          logger.debug(`✅ [${sessionId}] Server authentication context refreshed`);
+
+          try {
+            sessionInfo.server.close();
+          } catch (error) {
+            logger.warn(`⚠️ [${sessionId}] Failed to close existing server before recreation`, {
+              error: error instanceof Error ? error.message : String(error),
+            });
+          }
+
+          const recreatedServer = this.createServer(sessionId, sessionInfo.auth);
+          const existingTransport = sessionInfo.transport;
+
+          if (typeof (existingTransport as any)._started === 'boolean') {
+            (existingTransport as any)._started = false;
+          }
+
+          await recreatedServer.connect(existingTransport);
+          sessionInfo.server = recreatedServer;
+          logger.debug(`✅ [${sessionId}] Session transport recreated successfully`);
         }
 
         // Let the session's transport handle the request
@@ -484,6 +506,15 @@ export class MCPHandler implements IMCPHandler {
     if (cleaned > 0) {
       logger.info(`🧹 Cleaned up ${cleaned} old sessions. Active: ${this.sessions.size} (${sessionSummary.join(', ')})`);
     }
+  }
+
+  private createTransport(sessionId: string, clientAddr: string): StreamableHTTPServerTransport {
+    return new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => sessionId,
+      onsessioninitialized: (sid) => {
+        logger.info(`🔗 [${clientAddr}] Session initialized: ${sid}`);
+      },
+    });
   }
 
   /**
@@ -570,6 +601,7 @@ export class MCPHandler implements IMCPHandler {
         mittwaldRefreshTokenExpiresAt: refreshTokenExpiresAt,
         currentContext: existing?.currentContext || {},
         accessibleProjects: existing?.accessibleProjects,
+        authenticationMode: sessionAuth.authenticationMode ?? existing?.authenticationMode,
       }, { ttlSeconds });
     } catch (error) {
       logger.error(`💾 [${sessionId}] Failed to persist session auth`, {

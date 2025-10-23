@@ -22,6 +22,54 @@ export interface InvokeCliToolOptions<T> {
 }
 
 const DEFAULT_PARSER: CliOutputParser<string> = (stdout) => stdout;
+const DEFAULT_TOOL_PAYLOAD_LIMIT_MB = 12;
+
+function parsePositiveInteger(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return undefined;
+  }
+  return parsed;
+}
+
+function getToolPayloadLimitBytes(): number | undefined {
+  const raw = process.env.MCP_TOOL_MAX_PAYLOAD_MB?.trim();
+  if (raw === '0') {
+    return undefined;
+  }
+
+  const explicitMb = parsePositiveInteger(raw);
+  const bufferMb = parsePositiveInteger(process.env.MCP_CLI_MAX_BUFFER_MB);
+  let limitMb = explicitMb ?? DEFAULT_TOOL_PAYLOAD_LIMIT_MB;
+
+  if (typeof bufferMb === 'number' && (!explicitMb || limitMb > bufferMb)) {
+    limitMb = bufferMb;
+  }
+
+  if (!Number.isFinite(limitMb) || limitMb <= 0) {
+    return undefined;
+  }
+
+  return limitMb * 1024 * 1024;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes >= 1024 * 1024) {
+    const mb = bytes / (1024 * 1024);
+    if (mb >= 10) {
+      return `${Math.round(mb)} MB`;
+    }
+    return `${mb.toFixed(1).replace(/\.0$/, '')} MB`;
+  }
+  if (bytes >= 1024) {
+    const kb = bytes / 1024;
+    return `${kb.toFixed(1).replace(/\.0$/, '')} KB`;
+  }
+  return `${bytes} bytes`;
+}
 
 export async function invokeCliTool<T = string>(
   options: InvokeCliToolOptions<T>
@@ -60,6 +108,30 @@ export async function invokeCliTool<T = string>(
 
   if (execution.exitCode !== 0) {
     throw buildExecutionError(execution, toolName, commandString);
+  }
+
+  const payloadLimitBytes = getToolPayloadLimitBytes();
+  if (payloadLimitBytes) {
+    const outputBytes = Buffer.byteLength(execution.stdout, 'utf8');
+    if (outputBytes > payloadLimitBytes) {
+      const limitText = formatBytes(payloadLimitBytes);
+      const outputText = formatBytes(outputBytes);
+      logger.warn('[CliAdapter] CLI response exceeded payload limit', {
+        toolName,
+        command: commandString,
+        outputBytes,
+        limitBytes: payloadLimitBytes,
+      });
+      throw new CliToolError(
+        `Mittwald CLI response is ${outputText}, exceeding the ${limitText} payload limit.`,
+        {
+          kind: 'OUTPUT_LIMIT',
+          toolName,
+          command: commandString,
+          suggestedAction: 'Reduce the scope of your request or increase MCP_TOOL_MAX_PAYLOAD_MB.',
+        }
+      );
+    }
   }
 
   try {

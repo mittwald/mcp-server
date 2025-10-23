@@ -25,6 +25,7 @@ export interface UserSession {
   };
   accessibleProjects?: string[];
   lastAccessed: Date;
+  authenticationMode?: 'bridge' | 'direct-token';
 }
 
 export interface SessionCreateOptions {
@@ -144,6 +145,14 @@ export class SessionManager {
 
     const timeUntilExpiry = accessExpiryMs - now;
 
+    if (session.authenticationMode === 'direct-token') {
+      if (timeUntilExpiry <= 0) {
+        await this.destroySession(sessionId);
+        return null;
+      }
+      return session;
+    }
+
     if (timeUntilExpiry <= -TOKEN_REFRESH_SKEW_MS) {
       return await this.refreshSessionTokens(sessionId, session);
     }
@@ -209,6 +218,7 @@ export class SessionManager {
         expiresAt: accessExpiresAt ?? new Date(now + this.DEFAULT_TTL * 1000),
         mittwaldAccessTokenExpiresAt: accessExpiresAt ?? session.mittwaldAccessTokenExpiresAt,
         mittwaldRefreshTokenExpiresAt: refreshExpiresAt,
+        authenticationMode: session.authenticationMode,
       };
 
       const ttlSeconds = this.calculateTtl(updatedSession.expiresAt) ?? this.DEFAULT_TTL;
@@ -227,6 +237,7 @@ export class SessionManager {
         mittwaldRefreshTokenExpiresAt: updatedSession.mittwaldRefreshTokenExpiresAt,
         currentContext: updatedSession.currentContext,
         accessibleProjects: updatedSession.accessibleProjects,
+        authenticationMode: updatedSession.authenticationMode,
       }, { ttlSeconds });
 
       return updatedSession;

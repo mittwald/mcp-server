@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { jwtVerify } from 'jose';
 import { createOAuthMiddleware } from '../../../src/server/oauth-middleware.js';
 import { CONFIG } from '../../../src/server/config.js';
+import { directTokenValidator, DirectTokenValidationError } from '../../../src/server/direct-token-validator.js';
 
 vi.mock('jose', () => ({
   jwtVerify: vi.fn()
@@ -19,11 +20,31 @@ vi.mock('../../../src/server/config.js', () => ({
       TOKEN_URL: 'https://mittwald.example.com/oauth/token',
       CLIENT_ID: 'mittwald-client',
       CLIENT_SECRET: 'mittwald-secret'
-    }
+    },
+    DIRECT_TOKENS: {
+      ENABLED: false,
+      CACHE_TTL_MS: 60_000,
+      SESSION_TTL_SECONDS: 1_800,
+      VALIDATION_TIMEOUT_MS: 15_000,
+    },
   }
 }));
+vi.mock('../../../src/server/direct-token-validator.js', () => {
+  const validate = vi.fn();
+  class MockDirectTokenValidationError extends Error {
+    constructor(message?: string) {
+      super(message);
+      this.name = 'DirectTokenValidationError';
+    }
+  }
+  return {
+    directTokenValidator: { validate },
+    DirectTokenValidationError: MockDirectTokenValidationError,
+  };
+});
 
 const mockJwtVerify = vi.mocked(jwtVerify);
+const mockDirectValidator = vi.mocked(directTokenValidator.validate);
 const originalEnv = {
   NODE_ENV: process.env.NODE_ENV,
   MCP_PUBLIC_BASE: process.env.MCP_PUBLIC_BASE,
@@ -39,9 +60,11 @@ describe('OAuth Middleware', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockJwtVerify.mockReset();
+    mockDirectValidator.mockReset();
     process.env.OAUTH_AS_BASE = 'https://mittwald-oauth-server.fly.dev';
     process.env.MCP_PUBLIC_BASE = 'https://localhost:3000';
     process.env.NODE_ENV = 'test';
+    CONFIG.DIRECT_TOKENS.ENABLED = false;
     
     mockRequest = {
       headers: {},
@@ -63,12 +86,13 @@ describe('OAuth Middleware', () => {
     process.env.NODE_ENV = originalEnv.NODE_ENV;
     process.env.MCP_PUBLIC_BASE = originalEnv.MCP_PUBLIC_BASE;
     process.env.OAUTH_AS_BASE = originalEnv.OAUTH_AS_BASE;
+    CONFIG.DIRECT_TOKENS.ENABLED = false;
   });
 
   describe('Authentication Success', () => {
     it('should authenticate valid JWT token', async () => {
       // Arrange
-      const validToken = 'valid-jwt-token';
+      const validToken = 'header.payload.signature';
       const issuedAt = 1_700_000_000;
       const expiresIn = 3600;
       const decodedToken = {
@@ -126,7 +150,7 @@ describe('OAuth Middleware', () => {
     });
 
     it('should handle token without audience claim', async () => {
-      const validToken = 'valid-jwt-token';
+      const validToken = 'header.payload.signature';
       const decodedToken = {
         sub: 'user-123',
         client_id: 'custom-client-id',
@@ -150,7 +174,7 @@ describe('OAuth Middleware', () => {
     });
 
     it('should use default client ID when none provided', async () => {
-      const validToken = 'valid-jwt-token';
+      const validToken = 'header.payload.signature';
       const decodedToken = {
         sub: 'user-123',
         exp: Math.floor(Date.now() / 1000) + 3600
@@ -165,6 +189,40 @@ describe('OAuth Middleware', () => {
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockRequest.auth?.clientId).toBe('mittwald-mcp-server');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should accept direct bearer token when enabled', async () => {
+      CONFIG.DIRECT_TOKENS.ENABLED = true;
+      const directToken = 'mwat_token_example';
+      mockRequest.headers = {
+        authorization: `Bearer ${directToken}`,
+      };
+
+      mockDirectValidator.mockResolvedValue({
+        userId: 'user-456',
+        email: 'test@example.com',
+        name: 'Test User',
+        rawOutput: 'Login status',
+      });
+
+      await middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockJwtVerify).not.toHaveBeenCalled();
+      expect(mockDirectValidator).toHaveBeenCalledWith(directToken);
+      expect(mockRequest.auth).toEqual(
+        expect.objectContaining({
+          token: directToken,
+          clientId: 'mittwald-direct-token',
+          scopes: [],
+          extra: expect.objectContaining({
+            userId: 'user-456',
+            userEmail: 'test@example.com',
+            authenticationMode: 'direct-bearer',
+            mittwaldAccessToken: directToken,
+          }),
+        })
+      );
       expect(mockNext).toHaveBeenCalled();
     });
   });
@@ -201,7 +259,7 @@ describe('OAuth Middleware', () => {
     });
 
     it('should return 401 when JWT verification fails', async () => {
-      const invalidToken = 'invalid-jwt-token';
+      const invalidToken = 'header.payload.invalid';
       mockRequest.headers = {
         authorization: `Bearer ${invalidToken}`
       };
@@ -214,8 +272,35 @@ describe('OAuth Middleware', () => {
       expect(mockNext).not.toHaveBeenCalled();
     });
 
+    it('should return invalid_token when direct validation fails', async () => {
+      CONFIG.DIRECT_TOKENS.ENABLED = true;
+      const invalidToken = 'mwat_invalid';
+      mockRequest.headers = {
+        authorization: `Bearer ${invalidToken}`,
+      };
+
+      mockJwtVerify.mockImplementation(() => {
+        throw new Error('JWT not valid');
+      });
+      mockDirectValidator.mockRejectedValue(new DirectTokenValidationError('Token invalid'));
+
+      await middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockDirectValidator).toHaveBeenCalledWith(invalidToken);
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.set).toHaveBeenCalledWith(
+        'WWW-Authenticate',
+        'Bearer error="invalid_token", error_description="Token invalid"'
+      );
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'invalid_token',
+        message: 'Token invalid',
+      });
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
     it('should return 401 when JWT_SECRET is not configured', async () => {
-      const validToken = 'valid-jwt-token';
+      const validToken = 'header.payload.signature';
       mockRequest.headers = {
         authorization: `Bearer ${validToken}`
       };
@@ -276,7 +361,7 @@ describe('OAuth Middleware', () => {
 
   describe('Error Handling', () => {
     it('should handle unexpected errors gracefully', async () => {
-      const validToken = 'valid-jwt-token';
+      const validToken = 'header.payload.signature';
       mockRequest.headers = {
         authorization: `Bearer ${validToken}`
       };
@@ -296,7 +381,7 @@ describe('OAuth Middleware', () => {
     });
 
     it('should handle JWT verification throwing non-Error objects', async () => {
-      const validToken = 'valid-jwt-token';
+      const validToken = 'header.payload.signature';
       mockRequest.headers = {
         authorization: `Bearer ${validToken}`
       };
@@ -312,7 +397,7 @@ describe('OAuth Middleware', () => {
 
   describe('Token Parsing', () => {
     it('should handle missing scopes in token', async () => {
-      const validToken = 'valid-jwt-token';
+      const validToken = 'header.payload.signature';
       const decodedToken = {
         sub: 'user-123',
         aud: 'mittwald-mcp-server',
@@ -332,7 +417,7 @@ describe('OAuth Middleware', () => {
     });
 
     it('should parse scopes correctly', async () => {
-      const validToken = 'valid-jwt-token';
+      const validToken = 'header.payload.signature';
       const decodedToken = {
         sub: 'user-123',
         aud: 'mittwald-mcp-server',

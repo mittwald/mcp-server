@@ -4,6 +4,7 @@ import type { AuthenticatedRequest } from "./auth-types.js";
 import { CONFIG } from "./config.js";
 import { logger } from "../utils/logger.js";
 import { getPublicBaseUrl } from "../utils/public-base.js";
+import { directTokenValidator, DirectTokenValidationError } from "./direct-token-validator.js";
 
 /**
  * OAuth authentication middleware for MCP server
@@ -14,135 +15,261 @@ import { getPublicBaseUrl } from "../utils/public-base.js";
  * 3. Setting auth info on request for authenticated requests
  */
 export function createOAuthMiddleware() {
+  const directTokensEnabled = CONFIG.DIRECT_TOKENS?.ENABLED === true;
+  logger.info(`OAuth middleware initialized - Direct tokens: ${directTokensEnabled ? 'ENABLED' : 'DISABLED'}`);
+
   return async (
     req: AuthenticatedRequest,
     res: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
+    console.log('[OAuth Middleware DEBUG] Headers:', JSON.stringify(req.headers, null, 2));
+
+    logger.info(`[OAuth Middleware] Request received: ${req.method} ${req.path}`, {
+      hasAuth: !!req.headers.authorization,
+      authHeader: req.headers.authorization,
+      authLength: req.headers.authorization?.length,
+      allHeaderKeys: Object.keys(req.headers),
+      directTokensEnabled,
+    });
+
     try {
       // Check for Authorization header
       const authHeader = req.headers.authorization;
-      
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        logger.warn('[OAuth Middleware] No Bearer token found, sending challenge');
         // No auth provided - return 401 with OAuth metadata
         return sendOAuthChallenge(res);
       }
 
-      const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-      
+      const token = authHeader.substring(7).trim(); // Remove 'Bearer ' prefix
+
       try {
-        const bridgeSecret = CONFIG.OAUTH_BRIDGE.JWT_SECRET;
-
-        if (!bridgeSecret) {
-          throw new Error('OAUTH_BRIDGE_JWT_SECRET not configured');
+        const handled = await handleJwtToken(token, req, next);
+        if (handled) {
+          logger.debug('JWT token handled successfully');
+          return;
         }
-
-        const verifyOptions: Record<string, unknown> = {};
-        if (CONFIG.OAUTH_BRIDGE.ISSUER) {
-          verifyOptions.issuer = CONFIG.OAUTH_BRIDGE.ISSUER;
-        }
-        if (CONFIG.OAUTH_BRIDGE.AUDIENCE) {
-          verifyOptions.audience = CONFIG.OAUTH_BRIDGE.AUDIENCE;
-        }
-
-        const verification = await jwtVerify(token, new TextEncoder().encode(bridgeSecret), verifyOptions);
-        const payload = verification.payload as Record<string, unknown>;
-
-        const mittwaldPayload = typeof payload.mittwald === 'object' && payload.mittwald !== null
-          ? payload.mittwald as Record<string, unknown>
-          : undefined;
-
-        const nowSeconds = Math.floor(Date.now() / 1000);
-        const issuedAtSecondsRaw = payload.iat;
-        const issuedAtSeconds = typeof issuedAtSecondsRaw === 'number'
-          ? issuedAtSecondsRaw
-          : (typeof issuedAtSecondsRaw === 'string' ? Number(issuedAtSecondsRaw) : undefined);
-        const baseIssuedAt = Number.isFinite(issuedAtSeconds) ? Number(issuedAtSeconds) : nowSeconds;
-
-        const mittwaldExpiresInRaw = mittwaldPayload?.expires_in;
-        const mittwaldExpiresIn = typeof mittwaldExpiresInRaw === 'number'
-          ? mittwaldExpiresInRaw
-          : (typeof mittwaldExpiresInRaw === 'string' ? Number(mittwaldExpiresInRaw) : undefined);
-
-        const mittwaldExpiresAtFromPayload = mittwaldExpiresIn
-          ? baseIssuedAt + mittwaldExpiresIn
-          : (typeof mittwaldPayload?.expires_at === 'number'
-              ? mittwaldPayload.expires_at
-              : (typeof payload.exp === 'number' ? payload.exp : undefined));
-
-        const mittwaldRefreshExpiresInCandidate = (mittwaldPayload as Record<string, unknown> | undefined)?.refresh_token_expires_in
-          ?? (mittwaldPayload as Record<string, unknown> | undefined)?.refresh_expires_in;
-        const mittwaldRefreshTokenExpiresAt = typeof mittwaldRefreshExpiresInCandidate === 'number'
-          ? baseIssuedAt + mittwaldRefreshExpiresInCandidate
-          : (typeof mittwaldRefreshExpiresInCandidate === 'string'
-              ? baseIssuedAt + Number(mittwaldRefreshExpiresInCandidate)
-              : undefined);
-
-        const mittwaldAccessToken = typeof mittwaldPayload?.access_token === 'string'
-          ? mittwaldPayload.access_token
-          : undefined;
-        const mittwaldRefreshToken = typeof mittwaldPayload?.refresh_token === 'string'
-          ? mittwaldPayload.refresh_token
-          : undefined;
-        const mittwaldScope = typeof mittwaldPayload?.scope === 'string'
-          ? mittwaldPayload.scope
-          : (typeof payload.scope === 'string' ? payload.scope : undefined);
-        const resource = typeof mittwaldPayload?.resource === 'string'
-          ? mittwaldPayload.resource
-          : (typeof payload.resource === 'string' ? payload.resource : undefined);
-
-        const scopeString = typeof payload.scope === 'string'
-          ? payload.scope
-          : (typeof mittwaldScope === 'string' ? mittwaldScope : '');
-        const scopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
-
-        // Set auth info on request matching MCP SDK AuthInfo interface
-        req.auth = {
-          token: token, // The JWT token itself
-          clientId: typeof payload.client_id === 'string'
-            ? payload.client_id
-            : (typeof payload.aud === 'string' ? payload.aud : 'mittwald-mcp-server'),
-          scopes,
-          expiresAt: typeof payload.exp === 'number' ? payload.exp : undefined,
-          extra: {
-            userId: typeof payload.sub === 'string' ? payload.sub : undefined,
-            mittwaldAccessToken,
-            mittwaldRefreshToken,
-            mittwaldScope,
-            mittwaldScopeSource: 'mittwald',
-            mittwaldRequestedScope: mittwaldScope,
-            issuer: typeof payload.iss === 'string' ? payload.iss : undefined,
-            audience: payload.aud,
-            resource,
-            mittwaldAccessTokenExpiresAt: mittwaldExpiresAtFromPayload,
-            mittwaldRefreshTokenExpiresAt,
-            mittwaldIssuedAt: baseIssuedAt,
-            mittwaldExpiresIn: mittwaldExpiresIn,
-          }
-        };
-
-        logger.info('JWT VALIDATION: Token accepted', {
-          clientId: req.auth.clientId,
-          userId: req.auth.extra?.userId,
-          expiresAt: req.auth.expiresAt,
-          hasMittwaldToken: !!mittwaldAccessToken
-        });
-        
-        next();
       } catch (error) {
-        console.warn('JWT verification failed', error);
-        // Invalid token - return 401 with OAuth metadata
-        return sendOAuthChallenge(res);
+        logger.warn('JWT verification failed', {
+          error: error instanceof Error ? error.message : String(error),
+          directTokensEnabled,
+        });
+        if (!directTokensEnabled) {
+          return sendOAuthChallenge(res);
+        }
       }
-      
+
+      if (directTokensEnabled) {
+        logger.info('Attempting direct bearer token validation');
+        try {
+          const handled = await handleDirectToken(token, req, next);
+          if (handled) {
+            logger.info('Direct bearer token handled successfully');
+            return;
+          }
+        } catch (error) {
+          const message =
+            error instanceof DirectTokenValidationError
+              ? error.message
+              : 'Mittwald token validation failed';
+
+          logger.warn('Direct bearer token rejected', {
+            message,
+            error: error instanceof Error ? error.message : String(error),
+          });
+
+          setInvalidTokenResponse(res, message);
+          return;
+        }
+      }
+
+      // Invalid token and no direct token support available
+      logger.warn('[OAuth Middleware] Invalid token, no direct token support');
+      return sendOAuthChallenge(res);
+
     } catch (error) {
-      console.error('OAuth middleware error:', error);
+      logger.error('[OAuth Middleware] Unexpected error', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       res.status(500).json({
         error: 'internal_server_error',
         message: 'Authentication system error'
       });
     }
   };
+}
+
+async function handleJwtToken(
+  token: string,
+  req: AuthenticatedRequest,
+  next: express.NextFunction
+): Promise<boolean> {
+  logger.debug('[handleJwtToken] Attempting JWT validation', {
+    tokenLength: token.length,
+    tokenPrefix: token.substring(0, 20),
+  });
+
+  const bridgeSecret = CONFIG.OAUTH_BRIDGE.JWT_SECRET;
+  if (!bridgeSecret) {
+    logger.debug('[handleJwtToken] No bridge secret configured, skipping JWT');
+    return false;
+  }
+
+  const isLikelyJwt = token.split('.').length === 3;
+  if (!isLikelyJwt) {
+    logger.debug('[handleJwtToken] Token does not look like JWT (not 3 parts)', {
+      parts: token.split('.').length,
+    });
+    return false;
+  }
+
+  const verifyOptions: Record<string, unknown> = {};
+  if (CONFIG.OAUTH_BRIDGE.ISSUER) {
+    verifyOptions.issuer = CONFIG.OAUTH_BRIDGE.ISSUER;
+  }
+  if (CONFIG.OAUTH_BRIDGE.AUDIENCE) {
+    verifyOptions.audience = CONFIG.OAUTH_BRIDGE.AUDIENCE;
+  }
+
+  const verification = await jwtVerify(token, new TextEncoder().encode(bridgeSecret), verifyOptions);
+  const payload = verification.payload as Record<string, unknown>;
+
+  const mittwaldPayload = typeof payload.mittwald === 'object' && payload.mittwald !== null
+    ? payload.mittwald as Record<string, unknown>
+    : undefined;
+
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const issuedAtSecondsRaw = payload.iat;
+  const issuedAtSeconds = typeof issuedAtSecondsRaw === 'number'
+    ? issuedAtSecondsRaw
+    : (typeof issuedAtSecondsRaw === 'string' ? Number(issuedAtSecondsRaw) : undefined);
+  const baseIssuedAt = Number.isFinite(issuedAtSeconds) ? Number(issuedAtSeconds) : nowSeconds;
+
+  const mittwaldExpiresInRaw = mittwaldPayload?.expires_in;
+  const mittwaldExpiresIn = typeof mittwaldExpiresInRaw === 'number'
+    ? mittwaldExpiresInRaw
+    : (typeof mittwaldExpiresInRaw === 'string' ? Number(mittwaldExpiresInRaw) : undefined);
+
+  const mittwaldExpiresAtFromPayload = mittwaldExpiresIn
+    ? baseIssuedAt + mittwaldExpiresIn
+    : (typeof mittwaldPayload?.expires_at === 'number'
+        ? mittwaldPayload.expires_at
+        : (typeof payload.exp === 'number' ? payload.exp : undefined));
+
+  const mittwaldRefreshExpiresInCandidate = (mittwaldPayload as Record<string, unknown> | undefined)?.refresh_token_expires_in
+    ?? (mittwaldPayload as Record<string, unknown> | undefined)?.refresh_expires_in;
+  const mittwaldRefreshTokenExpiresAt = typeof mittwaldRefreshExpiresInCandidate === 'number'
+    ? baseIssuedAt + mittwaldRefreshExpiresInCandidate
+    : (typeof mittwaldRefreshExpiresInCandidate === 'string'
+        ? baseIssuedAt + Number(mittwaldRefreshExpiresInCandidate)
+        : undefined);
+
+  const mittwaldAccessToken = typeof mittwaldPayload?.access_token === 'string'
+    ? mittwaldPayload.access_token
+    : undefined;
+  const mittwaldRefreshToken = typeof mittwaldPayload?.refresh_token === 'string'
+    ? mittwaldPayload.refresh_token
+    : undefined;
+  const mittwaldScope = typeof mittwaldPayload?.scope === 'string'
+    ? mittwaldPayload.scope
+    : (typeof payload.scope === 'string' ? payload.scope : undefined);
+  const resource = typeof mittwaldPayload?.resource === 'string'
+    ? mittwaldPayload.resource
+    : (typeof payload.resource === 'string' ? payload.resource : undefined);
+
+  const scopeString = typeof payload.scope === 'string'
+    ? payload.scope
+    : (typeof mittwaldScope === 'string' ? mittwaldScope : '');
+  const scopes = scopeString ? scopeString.split(' ').filter(Boolean) : [];
+
+  req.auth = {
+    token, // The JWT token itself
+    clientId: typeof payload.client_id === 'string'
+      ? payload.client_id
+      : (typeof payload.aud === 'string' ? payload.aud : 'mittwald-mcp-server'),
+    scopes,
+    expiresAt: typeof payload.exp === 'number' ? payload.exp : undefined,
+    extra: {
+      userId: typeof payload.sub === 'string' ? payload.sub : undefined,
+      mittwaldAccessToken,
+      mittwaldRefreshToken,
+      mittwaldScope,
+      mittwaldScopeSource: 'mittwald',
+      mittwaldRequestedScope: mittwaldScope,
+      issuer: typeof payload.iss === 'string' ? payload.iss : undefined,
+      audience: payload.aud,
+      resource,
+      mittwaldAccessTokenExpiresAt: mittwaldExpiresAtFromPayload,
+      mittwaldRefreshTokenExpiresAt,
+      mittwaldIssuedAt: baseIssuedAt,
+      mittwaldExpiresIn: mittwaldExpiresIn,
+    }
+  };
+
+  logger.info('JWT VALIDATION: Token accepted', {
+    clientId: req.auth.clientId,
+    userId: req.auth.extra?.userId,
+    expiresAt: req.auth.expiresAt,
+    hasMittwaldToken: !!mittwaldAccessToken,
+    mode: 'bridge'
+  });
+
+  next();
+  return true;
+}
+
+async function handleDirectToken(
+  token: string,
+  req: AuthenticatedRequest,
+  next: express.NextFunction
+): Promise<boolean> {
+  logger.info('[handleDirectToken] Starting direct token validation', {
+    tokenLength: token.length,
+    tokenPrefix: token.substring(0, 30),
+  });
+
+  const validation = await directTokenValidator.validate(token);
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const accessTokenExpiresAtSeconds =
+    nowSeconds + CONFIG.DIRECT_TOKENS.SESSION_TTL_SECONDS;
+
+  req.auth = {
+    token,
+    clientId: 'mittwald-direct-token',
+    scopes: [],
+    expiresAt: accessTokenExpiresAtSeconds,
+    extra: {
+      userId: validation.userId,
+      userEmail: validation.email,
+      userName: validation.name,
+      mittwaldAccessToken: token,
+      mittwaldScopeSource: 'direct-bearer',
+      mittwaldAccessTokenExpiresAt: accessTokenExpiresAtSeconds,
+      mittwaldIssuedAt: nowSeconds,
+      authenticationMode: 'direct-bearer',
+    },
+  };
+
+  logger.info('Direct bearer token accepted', {
+    userId: validation.userId,
+    hasEmail: Boolean(validation.email),
+  });
+
+  next();
+  return true;
+}
+
+function setInvalidTokenResponse(res: express.Response, message: string): void {
+  res
+    .status(401)
+    .set('WWW-Authenticate', `Bearer error="invalid_token", error_description="${message}"`)
+    .json({
+      error: 'invalid_token',
+      message,
+    });
 }
 
 /**

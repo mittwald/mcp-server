@@ -31,7 +31,7 @@ import type { Implementation, ServerCapabilities } from "@modelcontextprotocol/s
  */
 export const serverConfig: Implementation = {
   name: "mittwald-mstudio-mcp",
-  version: "1.0.0",
+  version: "1.0.1",
   title: "mittwald mStudio MCP server",
 };
 
