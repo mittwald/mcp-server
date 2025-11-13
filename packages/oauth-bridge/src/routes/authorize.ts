@@ -30,6 +30,16 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
       resource
     } = ctx.query as Record<string, string | undefined>;
 
+    ctx.logger.debug({
+      clientId,
+      redirectUri,
+      scope,
+      state: state ? `${state.substring(0, 8)}...` : undefined,
+      responseType,
+      codeChallenge: codeChallenge ? 'present' : 'missing',
+      resource
+    }, 'Incoming authorization request');
+
     const requestedScopes = parseScopeParameter(scope);
     const effectiveScopes = requestedScopes.length > 0 ? requestedScopes : DEFAULT_SCOPES;
     const scopeValidation = validateRequestedScopes(effectiveScopes);
@@ -74,6 +84,12 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
 
     const internalState = randomUUID();
 
+    ctx.logger.debug({
+      clientState: state ? `${state.substring(0, 8)}...` : undefined,
+      internalState: `${internalState.substring(0, 8)}...`,
+      clientId
+    }, 'Generated internal state for authorization');
+
     try {
       await stateStore.storeAuthorizationRequest({
         state: state!,
@@ -108,6 +124,12 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     if (resource) {
       mittwaldRedirect.searchParams.set('resource', resource);
     }
+
+    ctx.logger.debug({
+      clientId,
+      mittwaldUrl: mittwaldRedirect.toString(),
+      internalState: `${internalState.substring(0, 8)}...`
+    }, 'Redirecting to Mittwald OAuth');
 
     ctx.logger.info({
       clientId,

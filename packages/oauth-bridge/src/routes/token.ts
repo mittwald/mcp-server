@@ -24,6 +24,14 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
 
     const clientSecretFromBody = body['client_secret'];
 
+    ctx.logger.debug({
+      grantType,
+      clientId,
+      redirectUri,
+      hasCode: !!code,
+      hasCodeVerifier: !!codeVerifier
+    }, 'Incoming token exchange request');
+
     const validationError = validateTokenRequest({ grantType, code, redirectUri, clientId, codeVerifier });
     if (validationError) {
       ctx.logger.warn({ error: validationError.body.error, description: validationError.body.error_description, clientId }, 'Token request validation failed');
@@ -69,6 +77,21 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
     let grant;
     try {
       grant = await stateStore.getAuthorizationGrant(code!);
+
+      if (grant) {
+        ctx.logger.debug({
+          authCode: code ? `${code.substring(0, 8)}...` : undefined,
+          grantClientId: grant.clientId,
+          grantRedirectUri: grant.redirectUri,
+          requestRedirectUri: redirectUri,
+          used: grant.used
+        }, 'Authorization grant retrieved');
+      } else {
+        ctx.logger.warn({
+          authCode: code ? `${code.substring(0, 8)}...` : undefined,
+          clientId
+        }, 'Authorization grant not found');
+      }
     } catch (err) {
       ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to read authorization grant');
       ctx.status = 500;
@@ -95,6 +118,13 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
     }
 
     if (grant.redirectUri !== redirectUri) {
+      ctx.logger.warn({
+        clientId,
+        expectedRedirectUri: grant.redirectUri,
+        providedRedirectUri: redirectUri,
+        authCode: code ? `${code.substring(0, 8)}...` : undefined
+      }, 'Token exchange failed: redirect_uri mismatch');
+
       ctx.status = 400;
       ctx.body = { error: 'invalid_grant', error_description: 'redirect_uri mismatch' };
       return;

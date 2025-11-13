@@ -14,6 +14,13 @@ export function createMittwaldCallbackRouter({ config: _config, stateStore }: Mi
   router.get('/mittwald/callback', async (ctx) => {
     const { state, code, error, error_description: errorDescription } = ctx.query as Record<string, string | undefined>;
 
+    ctx.logger.debug({
+      hasState: !!state,
+      hasCode: !!code,
+      hasError: !!error,
+      internalState: state ? `${state.substring(0, 8)}...` : undefined
+    }, 'Incoming Mittwald callback');
+
     if (error) {
       ctx.logger.warn({ error, errorDescription }, 'Mittwald callback returned an error');
       ctx.status = 400;
@@ -30,6 +37,19 @@ export function createMittwaldCallbackRouter({ config: _config, stateStore }: Mi
     let storedRequest;
     try {
       storedRequest = await stateStore.getAuthorizationRequestByInternalState(state);
+
+      if (storedRequest) {
+        ctx.logger.debug({
+          internalState: `${state.substring(0, 8)}...`,
+          clientId: storedRequest.clientId,
+          redirectUri: storedRequest.redirectUri,
+          clientState: storedRequest.state ? `${storedRequest.state.substring(0, 8)}...` : undefined
+        }, 'Authorization request found in state store');
+      } else {
+        ctx.logger.warn({
+          internalState: `${state.substring(0, 8)}...`
+        }, 'Authorization request not found or expired in state store');
+      }
     } catch (err) {
       ctx.logger.error({ error: err instanceof Error ? err.message : String(err), state }, 'Failed to read authorization request');
       ctx.status = 500;
@@ -78,6 +98,13 @@ export function createMittwaldCallbackRouter({ config: _config, stateStore }: Mi
     const redirect = new URL(storedRequest.redirectUri);
     redirect.searchParams.set('code', authorizationCode);
     redirect.searchParams.set('state', storedRequest.state);
+
+    ctx.logger.debug({
+      clientId: storedRequest.clientId,
+      redirectUri: storedRequest.redirectUri,
+      redirectUrl: redirect.toString(),
+      authCodeIssued: `${authorizationCode.substring(0, 8)}...`
+    }, 'Redirecting back to client with authorization code');
 
     ctx.logger.info({ clientId: storedRequest.clientId, redirectUri: storedRequest.redirectUri }, 'Authorization code issued to client');
 
