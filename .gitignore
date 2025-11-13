@@ -34,7 +34,13 @@ lerna-debug.log*
 *.swo
 *~
 .DS_Store
+.claude
+.codex
+.kittify
+kitty-specs
 
+
+.worktrees/
 # Testing
 coverage/
 .nyc_output/
