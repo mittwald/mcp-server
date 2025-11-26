@@ -23,7 +23,7 @@ docs/               # Supplemental documentation
 
 ## Development Setup
 
-> **Prerequisite**: Node.js 20.12.2 (see `.nvmrc` / `.node-version`). Earlier LTS releases (e.g. Node 18) cannot run `@mittwald/cli@1.11.2` because its dependencies require the new `/v` regular-expression flag.
+> **Prerequisite**: Node.js 20.12.2 (see `.nvmrc` / `.node-version`). Earlier LTS releases (e.g. Node 18) cannot run `@mittwald/cli@1.12.0` because its dependencies require the new `/v` regular-expression flag.
 
 1. Install dependencies:
    ```bash
