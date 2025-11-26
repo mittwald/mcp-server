@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apk add --no-cache openssh-client
 
 # Optional: global Mittwald CLI for any runtime hooks (kept from root Dockerfile)
-RUN npm install -g @mittwald/cli@1.11.2
+RUN npm install -g @mittwald/cli@1.12.0
 
 # Install deps
 COPY package*.json ./

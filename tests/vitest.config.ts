@@ -15,7 +15,8 @@ export default defineConfig({
     exclude: [
       'node_modules/**',
       'dist/**',
-      'build/**'
+      'build/**',
+      '.worktrees/**'
     ],
     coverage: {
       provider: 'v8',

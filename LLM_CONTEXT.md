@@ -147,7 +147,7 @@ Result Parsing → MCP Response
 
 **Docker Setup**:
 - Base: `node:20.12.2-alpine`
-- Mittwald CLI: `@mittwald/cli@1.11.2` installed globally
+- Mittwald CLI: `@mittwald/cli@1.12.0` installed globally
 - SSH client for SFTP operations
 - Build: TypeScript compilation + tsc-alias for path resolution
 
@@ -433,7 +433,7 @@ Sub-workstreams by domain:
 - Pino v9.11.0 (logging)
 
 **CLI Integration**:
-- `@mittwald/cli@1.11.2` (installed globally in Docker)
+- `@mittwald/cli@1.12.0` (installed globally in Docker)
 - Child process execution (`child_process.spawn`)
 - JSON output parsing
 
