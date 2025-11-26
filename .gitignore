@@ -88,3 +88,16 @@ run-*.sh
 # pnpm (project uses npm)
 pnpm-lock.yaml
 pnpm-workspace.yaml
+
+# Added by Spec Kitty CLI (auto-managed)
+.claude/
+.codex/
+.opencode/
+.windsurf/
+.gemini/
+.cursor/
+.qwen/
+.kilocode/
+.augment/
+.roo/
+.amazonq/
