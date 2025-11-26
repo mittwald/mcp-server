@@ -7,7 +7,7 @@
 
 **Organization**: Fine-grained subtasks (`Txxx`) roll up into work packages (`WPxx`). Each work package produces one deliverable markdown file.
 
-**Prompt Files**: Each work package references a matching prompt file in `tasks/planned/`.
+**Prompt Files**: Each work package references a matching prompt file in `tasks/done/`.
 
 ## Subtask Format: `[Txxx] [P?] Description`
 - **[P]** indicates the subtask can proceed in parallel (different sections).
@@ -21,10 +21,10 @@
 **Prompt**: `tasks/planned/WP01-oauth-scope-caching.md`
 
 ### Included Subtasks
-- [ ] T001 Create docs/ directory structure if needed
-- [ ] T002 Write overview section explaining what scope caching is
-- [ ] T003 [P] Write "Why This Behavior Exists" section (security/UX tradeoff)
-- [ ] T004 [P] Write troubleshooting FAQ section ("why don't I see new permissions?")
+- [x] T001 Create docs/ directory structure if needed
+- [x] T002 Write overview section explaining what scope caching is
+- [x] T003 [P] Write "Why This Behavior Exists" section (security/UX tradeoff)
+- [x] T004 [P] Write troubleshooting FAQ section ("why don't I see new permissions?")
 
 ### Implementation Notes
 1. Create file at `docs/oauth-scope-caching.md`
@@ -50,10 +50,10 @@
 **Prompt**: `tasks/planned/WP02-tool-concurrency.md`
 
 ### Included Subtasks
-- [ ] T005 Write summary section (82 safe, 91 racy overview)
-- [ ] T006 [P] Write safe tools categorized list (by domain: App, Backup, Container, etc.)
-- [ ] T007 [P] Write racy tools categorized list (by domain)
-- [ ] T008 [P] Write MCP client recommendations section
+- [x] T005 Write summary section (82 safe, 91 racy overview)
+- [x] T006 [P] Write safe tools categorized list (by domain: App, Backup, Container, etc.)
+- [x] T007 [P] Write racy tools categorized list (by domain)
+- [x] T008 [P] Write MCP client recommendations section
 
 ### Implementation Notes
 1. Create file at `docs/tool-concurrency.md`
@@ -79,10 +79,10 @@
 **Prompt**: `tasks/planned/WP03-claude-desktop-guide.md`
 
 ### Included Subtasks
-- [ ] T009 Write prerequisites and configuration file location section
-- [ ] T010 [P] Write authentication methods section (env vars, mcp-remote proxy)
-- [ ] T011 [P] Write mittwald-specific configuration examples
-- [ ] T012 [P] Write troubleshooting and limitations section
+- [x] T009 Write prerequisites and configuration file location section
+- [x] T010 [P] Write authentication methods section (env vars, mcp-remote proxy)
+- [x] T011 [P] Write mittwald-specific configuration examples
+- [x] T012 [P] Write troubleshooting and limitations section
 
 ### Implementation Notes
 1. Create `docs/guides/` directory
@@ -109,10 +109,10 @@
 **Prompt**: `tasks/planned/WP04-chatgpt-guide.md`
 
 ### Included Subtasks
-- [ ] T013 Write prerequisites and Developer Mode setup section
-- [ ] T014 [P] Write OAuth requirements section (endpoints, DCR, PKCE)
-- [ ] T015 [P] Write mittwald-specific setup and limitations
-- [ ] T016 [P] Write troubleshooting and platform limitations section
+- [x] T013 Write prerequisites and Developer Mode setup section
+- [x] T014 [P] Write OAuth requirements section (endpoints, DCR, PKCE)
+- [x] T015 [P] Write mittwald-specific setup and limitations
+- [x] T016 [P] Write troubleshooting and platform limitations section
 
 ### Implementation Notes
 1. Create file at `docs/guides/chatgpt.md`
@@ -139,10 +139,10 @@
 **Prompt**: `tasks/planned/WP05-cursor-guide.md`
 
 ### Included Subtasks
-- [ ] T017 Write prerequisites and configuration file locations section
-- [ ] T018 [P] Write authentication methods section (env vars, headers, OAuth)
-- [ ] T019 [P] Write mittwald-specific configuration examples
-- [ ] T020 [P] Write quirks, limitations, and troubleshooting section
+- [x] T017 Write prerequisites and configuration file locations section
+- [x] T018 [P] Write authentication methods section (env vars, headers, OAuth)
+- [x] T019 [P] Write mittwald-specific configuration examples
+- [x] T020 [P] Write quirks, limitations, and troubleshooting section
 
 ### Implementation Notes
 1. Create file at `docs/guides/cursor.md`
