@@ -7,16 +7,21 @@ subtasks:
   - "T004"
 title: "OAuth Scope Caching Documentation"
 phase: "Phase 1 - Core Documentation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "implement-session"
 history:
   - timestamp: "2025-11-26T00:00:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-11-26T17:15:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "implement-session"
+    action: "Started implementation - all WPs straight through"
 ---
 
 # Work Package Prompt: WP01 – OAuth Scope Caching Documentation
