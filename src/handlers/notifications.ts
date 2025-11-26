@@ -26,9 +26,11 @@ export async function sendOperationNotification(operation: string, message: stri
     method: "notifications/message",
     params: {
       _meta: {},
-      message: `Operation ${operation}: ${message}`,
       level: "info",
-      timestamp: new Date().toISOString(),
+      data: {
+        message: `Operation ${operation}: ${message}`,
+        timestamp: new Date().toISOString(),
+      },
     },
   };
   await sendNotification(notification, sessionId);
@@ -39,9 +41,11 @@ export async function sendJsonResultNotification(message: string): Promise<void>
     method: "notifications/message",
     params: {
       _meta: {},
-      message: message,
       level: "info",
-      timestamp: new Date().toISOString(),
+      data: {
+        message: message,
+        timestamp: new Date().toISOString(),
+      },
     },
   };
   await sendNotification(notification);

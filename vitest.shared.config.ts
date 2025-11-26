@@ -36,6 +36,10 @@ export function createSharedVitestConfig(options: SharedVitestOptions): UserConf
       setupFiles,
       testTimeout: 15_000,
       hookTimeout: 5_000,
+      exclude: [
+        'node_modules/**',
+        '.worktrees/**'
+      ],
       silent: process.env.CI ? true : false,
       reporter: process.env.CI ? 'basic' : 'default',
       coverage: {

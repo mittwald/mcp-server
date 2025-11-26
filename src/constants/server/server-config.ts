@@ -53,7 +53,6 @@ export const serverConfig: Implementation = {
 export const serverCapabilities: { capabilities: ServerCapabilities } = {
   capabilities: {
     tools: {},      // Full tool support with type-safe handlers
-    sampling: {},   // Complete sampling implementation with callbacks
     prompts: {},    // Dynamic prompt generation
     resources: {},  // Resource listing and reading
     logging: {},    // Client-requested logging support
