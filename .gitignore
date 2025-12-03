@@ -89,6 +89,13 @@ run-*.sh
 pnpm-lock.yaml
 pnpm-workspace.yaml
 
+# Local session/config files
+auth.json
+config.toml
+history.jsonl
+sessions/
+version.json
+
 # Added by Spec Kitty CLI (auto-managed)
 .claude/
 .codex/
