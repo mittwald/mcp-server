@@ -134,12 +134,25 @@ export async function createApp(): Promise<express.Application> {
 
   // Configure CORS (expose WWW-Authenticate so browsers can read challenge)
   // In production, CORS_ORIGIN must be set to specific origins (startup validator enforces this)
+  const isProduction = process.env.NODE_ENV === 'production';
   const corsOrigin = process.env.CORS_ORIGIN;
-  const corsOriginConfig: cors.CorsOptions['origin'] = corsOrigin
-    ? corsOrigin === '*'
-      ? true // Development only - startup validator blocks '*' in production
-      : corsOrigin.split(',').map(o => o.trim())
-    : true; // Default to permissive for development
+
+  const corsOriginConfig: cors.CorsOptions['origin'] = (() => {
+    if (isProduction) {
+      // Startup validation guarantees CORS_ORIGIN is set and not '*'
+      return corsOrigin!.split(',').map(o => o.trim());
+    }
+
+    if (!corsOrigin) {
+      return true; // permissive in development
+    }
+
+    if (corsOrigin === '*') {
+      return true; // dev-only wildcard
+    }
+
+    return corsOrigin.split(',').map(o => o.trim());
+  })();
 
   app.use(
     cors({

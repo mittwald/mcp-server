@@ -93,10 +93,21 @@ export class RedisStateStore implements StateStore {
       throw new Error('codeChallenge is required and cannot be empty');
     }
 
+    // mittwaldCodeVerifier must be present and within RFC 7636 length bounds
+    if (!record.mittwaldCodeVerifier || record.mittwaldCodeVerifier.trim() === '') {
+      throw new Error('mittwaldCodeVerifier is required and cannot be empty (FR-005)');
+    }
+    if (record.mittwaldCodeVerifier.length < 43 || record.mittwaldCodeVerifier.length > 128) {
+      throw new Error('mittwaldCodeVerifier must be 43-128 characters');
+    }
+    if (!/^[A-Za-z0-9._~-]+$/.test(record.mittwaldCodeVerifier)) {
+      throw new Error('mittwaldCodeVerifier must be base64url encoded');
+    }
+
     // For S256, code_challenge must be exactly 43 characters (base64url of 32-byte SHA-256)
     if (record.codeChallengeMethod === 'S256') {
       if (record.codeChallenge.length !== 43) {
-        throw new Error(`code_challenge for S256 must be 43 characters (got ${record.codeChallenge.length})`);
+        throw new Error('code_challenge for S256 must be 43 characters');
       }
 
       // Validate base64url characters (A-Z, a-z, 0-9, -, _)
