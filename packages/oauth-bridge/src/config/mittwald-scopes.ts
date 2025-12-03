@@ -24,8 +24,14 @@ export const UPSTREAM_SCOPES = configuration.upstreamScopes;
 export const DEFAULT_SCOPES = configuration.defaultScopes;
 export const DEFAULT_SCOPE_STRING = DEFAULT_SCOPES.join(' ');
 
-// Mittwald requires this exact scope format - mittwald:api is a passthrough covering all APIs
-export const MITTWALD_SCOPE_STRING = 'openid profile email mittwald:api';
+// Mittwald accepts these scope formats (from /v2/scopes):
+// - app:read, app:write, app:delete
+// - user:read, user:write
+// - project:read, project:write, project:delete
+// - etc.
+// There is NO "mittwald:api" passthrough scope!
+// OIDC scopes (openid, profile, email) are also not supported.
+export const MITTWALD_SCOPE_STRING = DEFAULT_SCOPE_STRING;
 
 export function validateRequestedScopes(scopes: Iterable<string>) {
   const uniqueScopes = new Set(scopes);

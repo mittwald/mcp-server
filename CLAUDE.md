@@ -28,24 +28,24 @@ Follow standard TypeScript conventions.
 
 ## Mittwald OAuth Scopes - CRITICAL
 
-**Mittwald's OAuth server requires the scope format: `'openid profile email mittwald:api'`**
+**Mittwald accepts scopes in `resource:action` format ONLY:**
+- `app:read`, `app:write`, `app:delete`
+- `user:read`, `user:write`
+- `project:read`, `project:write`, `project:delete`
+- etc. (see https://api.mittwald.de/v2/scopes for full list)
 
-- `mittwald:api` is a **passthrough scope** that covers ALL Mittwald API access
-- Individual granular scopes like `user:read`, `app:read`, `project:read` are **NOT accepted** by Mittwald's OAuth server
-- Sending individual scopes results in: `invalid_scope: No existing and allowed scopes were provided`
+**What Mittwald does NOT accept:**
+- `mittwald:api` - There is NO passthrough scope!
+- `openid`, `profile`, `email` - OIDC scopes are NOT supported
+- Any scope not in the /v2/scopes list
 
 **The oauth-bridge flow:**
-1. Clients request individual scopes (e.g., `user:read customer:read`)
-2. Bridge validates these against `config/mittwald-scopes.json` (for our own authorization)
-3. When redirecting to Mittwald: **ALWAYS send `'openid profile email mittwald:api'`**
-4. The `mittwald:api` scope grants access to all APIs; Mittwald manages permissions internally
+1. Clients request scopes (e.g., `user:read customer:read app:read`)
+2. Bridge validates these against `config/mittwald-scopes.json`
+3. When redirecting to Mittwald: Send actual scopes from the `upstreamScopes` list
+4. Default scopes: `user:read customer:read project:read app:read`
 
-**DO NOT:**
-- Send individual scopes like `user:read`, `app:read` to Mittwald
-- Try to filter/map granular scopes to Mittwald - it doesn't work
-- Assume Mittwald accepts the same scope format as our internal validation
-
-**Location:** `packages/oauth-bridge/src/routes/authorize.ts` - the `mittwaldScopeString` variable
+**Location:** `packages/oauth-bridge/src/config/mittwald-scopes.ts` - `MITTWALD_SCOPE_STRING`
 
 ## OAuth Bridge DCR Architecture - CRITICAL
 
