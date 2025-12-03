@@ -9,7 +9,7 @@ subtasks:
   - "T015"
 title: "OAuth State Replay Prevention"
 phase: "Phase 2 - Security Hardening (P1)"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
 agent: "claude"
 shell_pid: "81842"
@@ -207,12 +207,12 @@ npm run test:unit -- redis-state-store
 
 ## Definition of Done Checklist
 
-- [ ] AuthorizationRequestRecord has consumed flag (optional, for interface completeness)
-- [ ] getAndConsumeState() implemented with delete-on-read
-- [ ] PKCE validation rejects empty strings and short verifiers
-- [ ] OAuth callback uses getAndConsumeState()
-- [ ] Unit tests pass
-- [ ] Existing OAuth flows still work
+- [x] AuthorizationRequestRecord has consumed flag (optional, for interface completeness)
+- [x] getAndConsumeState() implemented with delete-on-read
+- [x] PKCE validation rejects empty strings and short verifiers
+- [x] OAuth callback uses getAndConsumeState()
+- [x] Unit tests pass
+- [x] Existing OAuth flows still work
 
 ## Review Guidance
 
@@ -231,3 +231,8 @@ npm run test:unit -- redis-state-store
   - `packages/oauth-bridge/src/state/memory-state-store.ts` - Implemented getAndConsumeState, PKCE validation
   - `packages/oauth-bridge/src/routes/mittwald-callback.ts` - Updated to use getAndConsumeState
   - `packages/oauth-bridge/tests/unit/state-store.test.ts` - 15 new unit tests for single-use enforcement
+- 2025-12-03T15:28:00Z – claude – lane=done – Review complete. All criteria verified:
+  - Delete-on-read: ✓ (GET + DEL with atomicity note)
+  - Error messages: ✓ (OAuth-compliant invalid_request)
+  - Backward compat: ✓ (consumed? optional)
+  - OAuth flows: ✓ (61/61 tests pass)
