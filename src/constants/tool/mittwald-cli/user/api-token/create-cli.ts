@@ -16,10 +16,9 @@ const tool: Tool = {
       roles: {
         type: 'array',
         items: {
-          type: 'string',
-          enum: ['api_read', 'api_write']
+          type: 'string'
         },
-        description: 'Roles of the API token (at least one required: api_read, api_write)'
+        description: 'Roles of the API token. Valid values: api_read, api_write. At least one required.'
       },
       quiet: {
         type: 'boolean',
