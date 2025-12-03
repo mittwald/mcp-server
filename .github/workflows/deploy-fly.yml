@@ -113,7 +113,7 @@ jobs:
           echo "Fly status for $APP:";
           flyctl status -a "$APP" --json | jq '.' || flyctl status -a "$APP" || true
           echo "\nLast 100 lines of logs:";
-          flyctl logs -a "$APP" --max-lines 100 || true
+          flyctl logs -a "$APP" --no-tail 2>&1 | tail -100 || true
 
       - name: Cleanup stopped/stale machines (best-effort)
         continue-on-error: true
