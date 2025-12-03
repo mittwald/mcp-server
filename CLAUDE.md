@@ -74,5 +74,38 @@ This means the client did NOT use DCR first. They must call `POST /register` bef
 
 **Location:** `packages/oauth-bridge/src/routes/authorize.ts` - DCR lookup via `stateStore.getClientRegistration()`
 
+## Operations Checklist
+
+### JWT Secret Synchronization - CRITICAL
+The OAuth bridge and MCP server must share the same JWT signing secret:
+- **OAuth Server**: `BRIDGE_JWT_SECRET`
+- **MCP Server**: `OAUTH_BRIDGE_JWT_SECRET`
+
+These MUST be identical! If they differ, JWT signature verification fails and the MCP server falls back to Mittwald CLI validation, which causes OOM errors.
+
+**To verify:**
+```bash
+flyctl ssh console -a mittwald-oauth-server -C "printenv BRIDGE_JWT_SECRET"
+flyctl ssh console -a mittwald-mcp-fly2 -C "printenv OAUTH_BRIDGE_JWT_SECRET"
+```
+
+**To sync (if different):**
+```bash
+# Get the OAuth server's secret
+SECRET=$(flyctl ssh console -a mittwald-oauth-server -C "printenv BRIDGE_JWT_SECRET" 2>/dev/null | tail -1)
+# Set it on the MCP server
+flyctl secrets set OAUTH_BRIDGE_JWT_SECRET="$SECRET" -a mittwald-mcp-fly2
+```
+
+### Health Check URLs
+- OAuth Server: https://mittwald-oauth-server.fly.dev/health
+- MCP Server: https://mittwald-mcp-fly2.fly.dev/health
+
+### Logs
+```bash
+flyctl logs -a mittwald-oauth-server --no-tail | tail -50
+flyctl logs -a mittwald-mcp-fly2 --no-tail | tail -50
+```
+
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
