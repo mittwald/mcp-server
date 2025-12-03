@@ -67,8 +67,7 @@ const tool: Tool = {
       },
       waitTimeout: {
         type: "number",
-        description: "Maximum time to wait in seconds",
-        default: 600
+        description: "Maximum time to wait in seconds"
       }
     },
     required: ["projectId"]

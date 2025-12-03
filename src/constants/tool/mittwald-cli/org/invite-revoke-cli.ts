@@ -19,8 +19,7 @@ const tool: Tool = {
       },
       quiet: {
         type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
-        default: false
+        description: "Suppress process output and only display a machine-readable summary"
       }
     },
     required: ["inviteId", "confirm"]

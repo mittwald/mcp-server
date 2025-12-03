@@ -16,34 +16,28 @@ const tool: Tool = {
       output: {
         type: "string",
         enum: ["txt", "json", "yaml", "csv", "tsv"],
-        description: "Output in a more machine friendly format",
-        default: "txt"
+        description: "Output in a more machine friendly format"
       },
       extended: {
         type: "boolean",
-        description: "Show extended information",
-        default: false
+        description: "Show extended information"
       },
       noHeader: {
         type: "boolean",
-        description: "Hide table header",
-        default: false
+        description: "Hide table header"
       },
       noTruncate: {
         type: "boolean",
-        description: "Do not truncate output (only relevant for txt output)",
-        default: false
+        description: "Do not truncate output (only relevant for txt output)"
       },
       noRelativeDates: {
         type: "boolean",
-        description: "Show dates in absolute format, not relative (only relevant for txt output)",
-        default: false
+        description: "Show dates in absolute format, not relative (only relevant for txt output)"
       },
       csvSeparator: {
         type: "string",
         enum: [",", ";"],
-        description: "Separator for CSV output (only relevant for CSV output)",
-        default: ","
+        description: "Separator for CSV output (only relevant for CSV output)"
       }
     },
     required: ["projectId"]

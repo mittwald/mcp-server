@@ -11,7 +11,7 @@ const tool: Tool = {
     properties: {
       databaseId: {
         type: "string",
-        description: "The ID or name of the database",
+        description: "The ID or name of the database"
       },
       confirm: {
         type: 'boolean',
@@ -19,15 +19,15 @@ const tool: Tool = {
       },
       quiet: {
         type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
+        description: "Suppress process output and only display a machine-readable summary"
       },
       force: {
         type: "boolean",
-        description: "Do not ask for confirmation",
-      },
+        description: "Do not ask for confirmation"
+      }
     },
-    required: ["databaseId", "confirm"],
-  },
+    required: ["databaseId", "confirm"]
+  }
 };
 
 // Export the tool registration

@@ -16,8 +16,7 @@ const tool: Tool = {
       outputFormat: {
         type: 'string',
         enum: ['json', 'yaml', 'txt', 'csv', 'tsv'],
-        description: 'Preferred CLI output format. JSON enables structured responses.',
-        default: 'json'
+        description: 'Preferred CLI output format. JSON enables structured responses.'
       },
       extended: {
         type: 'boolean',

@@ -11,43 +11,43 @@ const tool: Tool = {
     properties: {
       databaseId: {
         type: "string",
-        description: "The ID or name of the database",
+        description: "The ID or name of the database"
       },
       output: {
         type: "string",
-        description: "The output file to write the dump to ('-' for stdout)",
+        description: "The output file to write the dump to ('-' for stdout)"
       },
       quiet: {
         type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
+        description: "Suppress process output and only display a machine-readable summary"
       },
       mysqlPassword: {
         type: "string",
-        description: "The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD)",
+        description: "The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD)"
       },
       mysqlCharset: {
         type: "string",
-        description: "The character set to use for the MySQL connection",
+        description: "The character set to use for the MySQL connection"
       },
       temporaryUser: {
         type: "boolean",
-        description: "Create a temporary user for the dump (recommended for security)",
+        description: "Create a temporary user for the dump (recommended for security)"
       },
       sshUser: {
         type: "string",
-        description: "Override the SSH user to connect with",
+        description: "Override the SSH user to connect with"
       },
       sshIdentityFile: {
         type: "string",
-        description: "The SSH identity file (private key) to use for public key authentication",
+        description: "The SSH identity file (private key) to use for public key authentication"
       },
       gzip: {
         type: "boolean",
-        description: "Compress the dump with gzip (recommended for large databases)",
-      },
+        description: "Compress the dump with gzip (recommended for large databases)"
+      }
     },
-    required: ["databaseId", "output"],
-  },
+    required: ["databaseId", "output"]
+  }
 };
 
 // Export the tool registration

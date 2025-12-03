@@ -24,8 +24,7 @@ const tool: Tool = {
       accessLevel: {
         type: 'string',
         enum: ['readonly', 'full'],
-        description: 'Access permissions for the MySQL user (defaults to full).',
-        default: 'full'
+        description: 'Access permissions for the MySQL user (defaults to full).'
       },
       password: {
         type: 'string',
@@ -41,8 +40,7 @@ const tool: Tool = {
       },
       quiet: {
         type: 'boolean',
-        description: 'Request quiet CLI output (recommended for machine-readable responses).',
-        default: true
+        description: 'Request quiet CLI output (recommended for machine-readable responses).'
       }
     },
     required: ['databaseId']

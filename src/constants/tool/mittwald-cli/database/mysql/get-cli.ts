@@ -11,17 +11,16 @@ const tool: Tool = {
     properties: {
       databaseId: {
         type: "string",
-        description: "The ID or name of the database",
+        description: "The ID or name of the database"
       },
       output: {
         type: "string",
         enum: ["txt", "json", "yaml"],
-        description: "Output format (default: json for structured data)",
-        default: "json",
-      },
+        description: "Output format (default: json for structured data)"
+      }
     },
-    required: ["databaseId"],
-  },
+    required: ["databaseId"]
+  }
 };
 
 // Export the tool registration

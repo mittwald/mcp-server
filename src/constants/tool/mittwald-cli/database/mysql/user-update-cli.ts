@@ -40,8 +40,7 @@ const tool: Tool = {
       },
       quiet: {
         type: 'boolean',
-        description: 'Suppress CLI output for machine-friendly responses.',
-        default: true
+        description: 'Suppress CLI output for machine-friendly responses.'
       }
     },
     required: ['userId']

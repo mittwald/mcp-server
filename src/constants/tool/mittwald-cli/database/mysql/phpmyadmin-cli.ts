@@ -11,11 +11,11 @@ const tool: Tool = {
     properties: {
       databaseId: {
         type: "string",
-        description: "The ID or name of the database",
-      },
+        description: "The ID or name of the database"
+      }
     },
-    required: ["databaseId"],
-  },
+    required: ["databaseId"]
+  }
 };
 
 // Export the tool registration

@@ -16,7 +16,6 @@ const tool: Tool = {
       output: {
         type: "string",
         enum: ["txt", "json", "yaml"],
-        default: "json",
         description: 'The output format to use; use "txt" for a human readable text representation, "json" for a machine-readable JSON representation, or "yaml" for YAML format'
       }
     },

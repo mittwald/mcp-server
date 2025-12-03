@@ -11,31 +11,31 @@ const tool: Tool = {
     properties: {
       databaseId: {
         type: "string",
-        description: "The ID or name of the database",
+        description: "The ID or name of the database"
       },
       quiet: {
         type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
+        description: "Suppress process output and only display a machine-readable summary"
       },
       sshUser: {
         type: "string",
-        description: "Override the SSH user to connect with",
+        description: "Override the SSH user to connect with"
       },
       sshIdentityFile: {
         type: "string",
-        description: "The SSH identity file (private key) to use for public key authentication",
+        description: "The SSH identity file (private key) to use for public key authentication"
       },
       mysqlPassword: {
         type: "string",
-        description: "The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD)",
+        description: "The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD)"
       },
       mysqlCharset: {
         type: "string",
-        description: "The character set to use for the MySQL connection",
-      },
+        description: "The character set to use for the MySQL connection"
+      }
     },
-    required: ["databaseId"],
-  },
+    required: ["databaseId"]
+  }
 };
 
 // Export the tool registration

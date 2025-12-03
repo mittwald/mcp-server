@@ -11,28 +11,27 @@ const tool: Tool = {
     properties: {
       databaseId: {
         type: "string",
-        description: "The ID or name of the database",
+        description: "The ID or name of the database"
       },
       quiet: {
         type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary",
+        description: "Suppress process output and only display a machine-readable summary"
       },
       sshUser: {
         type: "string",
-        description: "Override the SSH user to connect with",
+        description: "Override the SSH user to connect with"
       },
       sshIdentityFile: {
         type: "string",
-        description: "The SSH identity file (private key) to use for public key authentication",
+        description: "The SSH identity file (private key) to use for public key authentication"
       },
       port: {
         type: "number",
-        description: "The local TCP port to forward to (default: 3306)",
-        default: 3306,
-      },
+        description: "The local TCP port to forward to (default: 3306)"
+      }
     },
-    required: ["databaseId"],
-  },
+    required: ["databaseId"]
+  }
 };
 
 // Export the tool registration

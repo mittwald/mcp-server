@@ -35,8 +35,7 @@ const tool: Tool = {
       },
       waitTimeout: {
         type: 'string',
-        description: 'The duration to wait for the resource to be ready (common units like ms, s, m are accepted)',
-        default: '600s'
+        description: 'The duration to wait for the resource to be ready (common units like ms, s, m are accepted)'
       }
     },
     required: ['projectId', 'installationId']

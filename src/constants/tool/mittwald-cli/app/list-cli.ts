@@ -16,8 +16,7 @@ const tool: Tool = {
       output: {
         type: 'string',
         enum: ['txt', 'json', 'yaml', 'csv', 'tsv'],
-        description: 'Output format',
-        default: 'txt'
+        description: 'Output format'
       },
       extended: {
         type: 'boolean',
@@ -38,8 +37,7 @@ const tool: Tool = {
       csvSeparator: {
         type: 'string',
         enum: [',', ';'],
-        description: 'Separator for CSV output (only relevant for CSV output)',
-        default: ','
+        description: 'Separator for CSV output (only relevant for CSV output)'
       }
     },
     required: ['projectId']

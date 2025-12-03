@@ -21,7 +21,6 @@ const tool: Tool = {
       output: {
         type: 'string',
         enum: ['txt', 'json', 'yaml', 'csv', 'tsv'],
-        default: 'txt',
         description: 'Output format'
       },
       extended: {
@@ -43,7 +42,6 @@ const tool: Tool = {
       csvSeparator: {
         type: 'string',
         enum: [',', ';'],
-        default: ',',
         description: 'Separator for CSV output (only relevant for CSV output)'
       }
     },

@@ -16,8 +16,7 @@ const tool: Tool = {
       output: {
         type: 'string',
         enum: ['txt', 'json', 'yaml'],
-        description: 'Output format',
-        default: 'txt'
+        description: 'Output format'
       }
     },
     required: ['installationId']

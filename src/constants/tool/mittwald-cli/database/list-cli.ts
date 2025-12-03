@@ -11,38 +11,37 @@ const tool: Tool = {
     properties: {
       projectId: {
         type: "string",
-        description: "Optional project ID to filter databases by project",
+        description: "Optional project ID to filter databases by project"
       },
       output: {
         type: "string",
         enum: ["txt", "json", "yaml", "csv", "tsv"],
-        description: "Output format (default: json for structured data)",
-        default: "json",
+        description: "Output format (default: json for structured data)"
       },
       extended: {
         type: "boolean",
-        description: "Show extended information",
+        description: "Show extended information"
       },
       noHeader: {
         type: "boolean",
-        description: "Omit header row",
+        description: "Omit header row"
       },
       noTruncate: {
         type: "boolean",
-        description: "Do not truncate output",
+        description: "Do not truncate output"
       },
       noRelativeDates: {
         type: "boolean",
-        description: "Show absolute dates instead of relative dates",
+        description: "Show absolute dates instead of relative dates"
       },
       csvSeparator: {
         type: "string",
         enum: [",", ";"],
-        description: "CSV separator character",
-      },
+        description: "CSV separator character"
+      }
     },
-    required: ["projectId"],
-  },
+    required: ["projectId"]
+  }
 };
 
 // Export the tool registration

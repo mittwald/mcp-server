@@ -21,7 +21,6 @@ const tool: Tool = {
       output: {
         type: 'string',
         enum: ['txt', 'json', 'yaml'],
-        default: 'txt',
         description: 'Output format'
       }
     },

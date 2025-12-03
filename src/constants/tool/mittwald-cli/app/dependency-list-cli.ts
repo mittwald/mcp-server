@@ -11,26 +11,25 @@ const tool: Tool = {
     properties: {
       appType: {
         type: 'string',
-        description: "Optional filter by application type tag (for example 'wordpress', 'nodejs', 'php').",
+        description: "Optional filter by application type tag (for example 'wordpress', 'nodejs', 'php')."
       },
       appId: {
         type: 'string',
-        description: 'Optional app installation ID (format: a-XXXXX) used to enrich results with current versions.',
+        description: 'Optional app installation ID (format: a-XXXXX) used to enrich results with current versions.'
       },
       includeMetadata: {
         type: 'boolean',
-        description: 'Include metadata returned by the CLI in the response payload.',
-        default: false,
-      },
+        description: 'Include metadata returned by the CLI in the response payload.'
+      }
     },
-    required: [],
-  },
+    required: []
+  }
 };
 
 const registration: ToolRegistration = {
   tool,
   handler: handleAppDependencyListCli,
-  schema: tool.inputSchema,
+  schema: tool.inputSchema
 };
 
 export default registration;

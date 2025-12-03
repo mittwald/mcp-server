@@ -16,8 +16,7 @@ const tool: Tool = {
       outputFormat: {
         type: 'string',
         enum: ['json', 'yaml', 'txt'],
-        description: 'Preferred CLI output format. JSON enables structured responses.',
-        default: 'json'
+        description: 'Preferred CLI output format. JSON enables structured responses.'
       }
     },
     required: ['redisId']

@@ -11,15 +11,15 @@ const tool: Tool = {
     properties: {
       appId: {
         type: 'string',
-        description: 'App installation ID (format: a-XXXXX).',
+        description: 'App installation ID (format: a-XXXXX).'
       },
       dependency: {
         type: 'string',
-        description: 'Name of a dependency to update (e.g., php, node). Use together with the version field.',
+        description: 'Name of a dependency to update (e.g., php, node). Use together with the version field.'
       },
       version: {
         type: 'string',
-        description: 'Target version or version range for the dependency specified in the dependency field.',
+        description: 'Target version or version range for the dependency specified in the dependency field.'
       },
       updates: {
         type: 'array',
@@ -29,36 +29,34 @@ const tool: Tool = {
           properties: {
             dependency: {
               type: 'string',
-              description: 'Dependency name (e.g., php, node, composer).',
+              description: 'Dependency name (e.g., php, node, composer).'
             },
             version: {
               type: 'string',
-              description: 'Target version or semver constraint.',
-            },
+              description: 'Target version or semver constraint.'
+            }
           },
-          required: ['dependency', 'version'],
-        },
+          required: ['dependency', 'version']
+        }
       },
       updatePolicy: {
         type: 'string',
         description: 'Update policy to apply after updating the dependency set.',
-        enum: ['none', 'inheritedFromApp', 'patchLevel', 'all'],
-        default: 'patchLevel',
+        enum: ['none', 'inheritedFromApp', 'patchLevel', 'all']
       },
       quiet: {
         type: 'boolean',
-        description: 'Suppress progress output and only return a summary from the CLI.',
-        default: false,
-      },
+        description: 'Suppress progress output and only return a summary from the CLI.'
+      }
     },
-    required: ['appId'],
-  },
+    required: ['appId']
+  }
 };
 
 const registration: ToolRegistration = {
   tool,
   handler: handleAppDependencyUpdateCli,
-  schema: tool.inputSchema,
+  schema: tool.inputSchema
 };
 
 export default registration;

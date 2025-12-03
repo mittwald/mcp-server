@@ -23,8 +23,7 @@ const tool: Tool = {
       },
       persistent: {
         type: 'boolean',
-        description: 'Enable persistent storage. Defaults to true.',
-        default: true
+        description: 'Enable persistent storage. Defaults to true.'
       },
       maxMemory: {
         type: 'string',
@@ -46,8 +45,7 @@ const tool: Tool = {
       },
       quiet: {
         type: 'boolean',
-        description: 'Suppress CLI output for machine-friendly responses.',
-        default: true
+        description: 'Suppress CLI output for machine-friendly responses.'
       }
     },
     required: ['projectId', 'description', 'version']
