@@ -184,7 +184,7 @@ export function createRegisterRouter({ config, stateStore }: RegisterRouterDeps)
 
 function validateRegistrationRequest(
   body: RegistrationRequest,
-  allowedRedirectUris: string[],
+  _allowedRedirectUris: string[], // Unused - DCR accepts ANY redirect_uri
   parsedMethod: TokenEndpointAuthMethod | null
 ):
   { status: number; body: Record<string, string> } | null {
@@ -198,6 +198,10 @@ function validateRegistrationRequest(
     };
   }
 
+  // DCR accepts ANY redirect_uri - this is the whole point!
+  // Mittwald's redirect list is immutable, so we use DCR to allow clients
+  // to register their own redirect URIs with our bridge.
+  // The authorize endpoint validates against these DCR-registered URIs.
   const redirectUris = body.redirect_uris as unknown[];
   for (const uri of redirectUris) {
     if (typeof uri !== 'string') {
@@ -209,12 +213,15 @@ function validateRegistrationRequest(
         }
       };
     }
-    if (!allowedRedirectUris.includes(uri)) {
+    // Validate URI format only, not against an allowlist
+    try {
+      new URL(uri);
+    } catch {
       return {
         status: 400,
         body: {
           error: 'invalid_redirect_uri',
-          error_description: 'redirect_uri is not registered'
+          error_description: `Invalid redirect_uri format: ${uri}`
         }
       };
     }
