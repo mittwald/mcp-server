@@ -35,10 +35,8 @@ const tool: Tool = {
         description: 'Suppress CLI progress output and return only the deleted volume name.'
       }
     },
-    anyOf: [
-      { required: ['volumeId', 'projectId', 'confirm'] },
-      { required: ['name', 'projectId', 'confirm'] }
-    ]
+    required: ['projectId', 'confirm'],
+    additionalProperties: false
   }
 };
 

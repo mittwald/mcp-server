@@ -39,13 +39,7 @@ const tool: Tool = {
       }
     },
     required: [],
-    anyOf: [
-      { required: ["projectId"] },
-      { required: ["serverId"] },
-      { required: ["orgId"] },
-      { required: ["installationId"] },
-      { required: ["stackId"] }
-    ]
+    additionalProperties: false
   }
 };
 
