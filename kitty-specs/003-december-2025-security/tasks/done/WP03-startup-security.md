@@ -9,7 +9,7 @@ subtasks:
   - "T021"
 title: "Startup Security Guards"
 phase: "Phase 2 - Security Hardening (P1)"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
 agent: "claude"
 shell_pid: "82591"
@@ -303,13 +303,13 @@ npm run test:security -- placeholder-detection
 
 ## Definition of Done Checklist
 
-- [ ] startup-validator.ts created with validateSecrets()
-- [ ] Placeholder allowlist covers known example values
-- [ ] CORS wildcard check implemented
-- [ ] Development mode logs warnings
-- [ ] Production mode throws and exits
-- [ ] index.ts calls validateSecrets() early in startup
-- [ ] Tests pass
+- [x] startup-validator.ts created with validateSecrets()
+- [x] Placeholder allowlist covers known example values
+- [x] CORS wildcard check implemented
+- [x] Development mode logs warnings
+- [x] Production mode throws and exits
+- [x] server.ts calls validateSecrets() early in startup
+- [x] Tests pass
 
 ## Review Guidance
 
@@ -326,3 +326,8 @@ npm run test:security -- placeholder-detection
   - `packages/oauth-bridge/src/startup-validator.ts` - validateSecrets(), isPlaceholder(), StartupValidationError
   - `packages/oauth-bridge/tests/unit/startup-validator.test.ts` - 56 unit tests for placeholder detection
   - Modified `packages/oauth-bridge/src/server.ts` - integrated runStartupValidation() at startup
+- 2025-12-03T15:40:00Z – claude – lane=done – Review complete. All criteria verified:
+  - Placeholder list: ✓ (11 known values + 7 patterns)
+  - Error messages: ✓ (actionable guidance)
+  - Exit code: ✓ (process.exit(1))
+  - Tests: ✓ (117/117 pass)
