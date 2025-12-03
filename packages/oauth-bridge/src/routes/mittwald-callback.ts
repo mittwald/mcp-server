@@ -77,6 +77,7 @@ export function createMittwaldCallbackRouter({ config: _config, stateStore }: Mi
         redirectUri: storedRequest.redirectUri,
         codeChallenge: storedRequest.codeChallenge,
         codeChallengeMethod: storedRequest.codeChallengeMethod,
+        mittwaldCodeVerifier: storedRequest.mittwaldCodeVerifier, // Transfer bridge's verifier to grant
         scope: storedRequest.scope,
         resource: storedRequest.resource,
         mittwaldAuthorizationCode: code,

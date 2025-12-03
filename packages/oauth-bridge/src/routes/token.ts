@@ -156,10 +156,12 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
 
     let mittwaldTokens;
     try {
+      // Use the bridge's stored code_verifier for Mittwald (NOT the client's verifier)
+      // The client's verifier was already validated above against grant.codeChallenge
       mittwaldTokens = await exchangeMittwaldAuthorizationCode({
         config,
         authorizationCode: grant.mittwaldAuthorizationCode,
-        codeVerifier,
+        codeVerifier: grant.mittwaldCodeVerifier,
         logger: ctx.logger
       });
     } catch (err) {

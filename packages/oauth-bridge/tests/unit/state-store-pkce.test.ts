@@ -20,9 +20,21 @@ function generateValidCodeChallenge(verifier: string): string {
     .digest('base64url');
 }
 
+/**
+ * Generates a valid code_verifier per RFC 7636 (43-128 chars, base64url)
+ */
+function generateValidCodeVerifier(): string {
+  return randomBytes(48)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
 function createAuthorizationRequest(overrides: Partial<AuthorizationRequestRecord> = {}): AuthorizationRequestRecord {
   const validVerifier = 'a'.repeat(43) + randomBytes(8).toString('hex');
   const validChallenge = generateValidCodeChallenge(validVerifier);
+  const validMittwaldCodeVerifier = generateValidCodeVerifier();
 
   return {
     state: `state-${randomBytes(8).toString('hex')}`,
@@ -31,6 +43,7 @@ function createAuthorizationRequest(overrides: Partial<AuthorizationRequestRecor
     redirectUri: 'https://example.com/callback',
     codeChallenge: validChallenge,
     codeChallengeMethod: 'S256',
+    mittwaldCodeVerifier: validMittwaldCodeVerifier,
     scope: 'openid',
     createdAt: Date.now(),
     expiresAt: Date.now() + 600000,
@@ -133,6 +146,96 @@ describe('State Store PKCE Validation', () => {
       // Verify nothing was stored
       const retrieved = await store.getAuthorizationRequestByInternalState(record.internalState);
       expect(retrieved).toBeNull();
+    });
+  });
+
+  describe('mittwaldCodeVerifier validation on storage (FR-005)', () => {
+    it('accepts valid mittwaldCodeVerifier (64 chars)', async () => {
+      const verifier = generateValidCodeVerifier();
+      expect(verifier.length).toBeGreaterThanOrEqual(43);
+      expect(verifier.length).toBeLessThanOrEqual(128);
+
+      const record = createAuthorizationRequest({
+        mittwaldCodeVerifier: verifier,
+      });
+
+      await expect(store.storeAuthorizationRequest(record)).resolves.not.toThrow();
+    });
+
+    it('rejects empty mittwaldCodeVerifier', async () => {
+      const record = createAuthorizationRequest({
+        mittwaldCodeVerifier: '',
+      });
+
+      await expect(store.storeAuthorizationRequest(record)).rejects.toThrow(
+        'mittwaldCodeVerifier is required and cannot be empty (FR-005)'
+      );
+    });
+
+    it('rejects undefined mittwaldCodeVerifier', async () => {
+      const record = createAuthorizationRequest();
+      // @ts-expect-error - Testing runtime validation
+      record.mittwaldCodeVerifier = undefined;
+
+      await expect(store.storeAuthorizationRequest(record)).rejects.toThrow(
+        'mittwaldCodeVerifier is required and cannot be empty (FR-005)'
+      );
+    });
+
+    it('rejects mittwaldCodeVerifier shorter than 43 chars', async () => {
+      const record = createAuthorizationRequest({
+        mittwaldCodeVerifier: 'a'.repeat(42), // Too short
+      });
+
+      await expect(store.storeAuthorizationRequest(record)).rejects.toThrow(
+        'mittwaldCodeVerifier must be 43-128 characters'
+      );
+    });
+
+    it('rejects mittwaldCodeVerifier longer than 128 chars', async () => {
+      const record = createAuthorizationRequest({
+        mittwaldCodeVerifier: 'a'.repeat(129), // Too long
+      });
+
+      await expect(store.storeAuthorizationRequest(record)).rejects.toThrow(
+        'mittwaldCodeVerifier must be 43-128 characters'
+      );
+    });
+
+    it('accepts mittwaldCodeVerifier with exactly 43 chars (minimum)', async () => {
+      const record = createAuthorizationRequest({
+        mittwaldCodeVerifier: 'a'.repeat(43),
+      });
+
+      await expect(store.storeAuthorizationRequest(record)).resolves.not.toThrow();
+    });
+
+    it('accepts mittwaldCodeVerifier with exactly 128 chars (maximum)', async () => {
+      const record = createAuthorizationRequest({
+        mittwaldCodeVerifier: 'a'.repeat(128),
+      });
+
+      await expect(store.storeAuthorizationRequest(record)).resolves.not.toThrow();
+    });
+
+    it('rejects mittwaldCodeVerifier with invalid base64url chars', async () => {
+      const record = createAuthorizationRequest({
+        mittwaldCodeVerifier: 'a'.repeat(40) + '+/=', // Invalid chars (regular base64, not base64url)
+      });
+
+      await expect(store.storeAuthorizationRequest(record)).rejects.toThrow(
+        'mittwaldCodeVerifier must be base64url encoded'
+      );
+    });
+
+    it('rejects mittwaldCodeVerifier with spaces', async () => {
+      const record = createAuthorizationRequest({
+        mittwaldCodeVerifier: 'a'.repeat(40) + ' b ',
+      });
+
+      await expect(store.storeAuthorizationRequest(record)).rejects.toThrow(
+        'mittwaldCodeVerifier must be base64url encoded'
+      );
     });
   });
 

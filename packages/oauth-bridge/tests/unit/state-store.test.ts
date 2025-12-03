@@ -9,17 +9,43 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { createHash, randomBytes } from 'node:crypto';
 import { MemoryStateStore } from '../../src/state/memory-state-store.js';
 import type { AuthorizationRequestRecord } from '../../src/state/state-store.js';
 
+/**
+ * Generates a valid code_verifier per RFC 7636 (43-128 chars, base64url)
+ */
+function generateValidCodeVerifier(): string {
+  return randomBytes(48)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
+/**
+ * Generates a valid S256 code_challenge from a verifier
+ */
+function generateValidCodeChallenge(verifier: string): string {
+  return createHash('sha256')
+    .update(verifier)
+    .digest('base64url');
+}
+
 function createValidAuthRequest(overrides: Partial<AuthorizationRequestRecord> = {}): AuthorizationRequestRecord {
+  const clientVerifier = generateValidCodeVerifier();
+  const validCodeChallenge = generateValidCodeChallenge(clientVerifier);
+  const mittwaldCodeVerifier = generateValidCodeVerifier();
+
   return {
     state: 'external-state-123',
     internalState: 'internal-state-' + Math.random().toString(36).substring(7),
     clientId: 'test-client',
     redirectUri: 'https://example.com/callback',
-    codeChallenge: 'valid-code-challenge-base64url-encoded-value',
+    codeChallenge: validCodeChallenge,
     codeChallengeMethod: 'S256',
+    mittwaldCodeVerifier: mittwaldCodeVerifier,
     scope: 'openid profile',
     createdAt: Date.now(),
     expiresAt: Date.now() + 600000, // 10 minutes

@@ -76,14 +76,16 @@ export class RedisStateStore implements StateStore {
   }
 
   /**
-   * Validates PKCE parameters per RFC 7636 requirements.
+   * Validates PKCE parameters per RFC 7636 and FR-005 requirements.
    *
    * For S256 method:
    * - code_challenge = BASE64URL(SHA256(code_verifier))
    * - SHA-256 produces 32 bytes, which base64url encodes to 43 characters
-   * - code_verifier must be 43-128 characters (validated at /token endpoint)
+   * - code_verifier must be 43-128 characters
    *
-   * @throws Error if codeChallenge is invalid
+   * Per FR-005: System MUST store non-empty PKCE code_verifier and code_challenge with state
+   *
+   * @throws Error if codeChallenge or mittwaldCodeVerifier is invalid
    */
   private validatePkceParameters(record: AuthorizationRequestRecord): void {
     // codeChallenge must not be empty
@@ -101,6 +103,21 @@ export class RedisStateStore implements StateStore {
       if (!/^[A-Za-z0-9_-]+$/.test(record.codeChallenge)) {
         throw new Error('code_challenge must be base64url encoded');
       }
+    }
+
+    // Per FR-005: mittwaldCodeVerifier must be non-empty and valid per RFC 7636
+    if (!record.mittwaldCodeVerifier || record.mittwaldCodeVerifier === '') {
+      throw new Error('mittwaldCodeVerifier is required and cannot be empty (FR-005)');
+    }
+
+    // RFC 7636 Section 4.1: code_verifier must be 43-128 characters
+    if (record.mittwaldCodeVerifier.length < 43 || record.mittwaldCodeVerifier.length > 128) {
+      throw new Error(`mittwaldCodeVerifier must be 43-128 characters (got ${record.mittwaldCodeVerifier.length})`);
+    }
+
+    // Validate base64url characters for verifier
+    if (!/^[A-Za-z0-9_-]+$/.test(record.mittwaldCodeVerifier)) {
+      throw new Error('mittwaldCodeVerifier must be base64url encoded');
     }
   }
 

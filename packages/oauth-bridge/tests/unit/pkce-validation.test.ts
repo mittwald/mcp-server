@@ -9,11 +9,11 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import request from 'supertest';
+import { createHash, randomBytes } from 'node:crypto';
 import { createApp } from '../../src/app.js';
 import { loadConfigFromEnv } from '../../src/config.js';
 import { MemoryStateStore } from '../../src/state/memory-state-store.js';
 import { createMockTokenStore } from '../helpers/mock-token-store.js';
-import { createHash } from 'node:crypto';
 
 const BASE_URL = 'https://bridge.example.com';
 
@@ -41,6 +41,15 @@ function generateCodeVerifier(length: number): string {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
+}
+
+// Generate a valid PKCE verifier for bridge->Mittwald (64 chars base64url)
+function generateValidMittwaldVerifier(): string {
+  return randomBytes(48)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
 }
 
 describe('PKCE code_verifier length validation', () => {
@@ -75,12 +84,14 @@ describe('PKCE code_verifier length validation', () => {
 
       // Store a grant with the corresponding code_challenge
       const grantCode = 'test-grant-code-' + Math.random();
+      const mittwaldCodeVerifier = generateValidMittwaldVerifier();
       await stateStore.storeAuthorizationGrant({
         authorizationCode: grantCode,
         clientId,
         redirectUri: 'https://example.com/callback',
         codeChallenge,
         codeChallengeMethod: 'S256',
+        mittwaldCodeVerifier, // Bridge's verifier for Mittwald
         scope: 'openid',
         mittwaldAuthorizationCode: 'mittwald-code',
         createdAt: Date.now(),
