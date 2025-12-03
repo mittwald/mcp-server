@@ -2,6 +2,53 @@
 
 This guide walks an LLM assistant through a full end-to-end validation of the Mittwald OAuth proxy using the [`oauth2c`](https://github.com/cloudentity/oauth2c) CLI. The sequence covers dynamic client registration, authorization (with PKCE and resource indicators), token exchange, refresh, and optional cleanup. Follow each step verbatim; keep terminal output for later troubleshooting.
 
+## Critical Architecture: Why DCR is Required
+
+**Mittwald's OAuth redirect list is STRICTLY IMMUTABLE.** This is a fundamental constraint that drives the entire OAuth bridge architecture:
+
+### The Problem
+- Mittwald only allows redirect URIs that are pre-registered in their OAuth application config
+- We cannot add arbitrary redirect URIs for each new client (ChatGPT, Claude.ai, oauth2c, etc.)
+- Without a solution, each new client would require Mittwald configuration changes
+
+### The Solution: OAuth Bridge with DCR
+The OAuth bridge acts as a **proxy** between clients and Mittwald:
+
+```
+┌─────────────────┐     ┌──────────────────────┐     ┌─────────────────┐
+│  Client         │     │  OAuth Bridge        │     │  Mittwald       │
+│  (Claude.ai,    │────▶│  (mittwald-oauth-    │────▶│  OAuth Server   │
+│   ChatGPT,      │     │   server.fly.dev)    │     │                 │
+│   oauth2c)      │◀────│                      │◀────│                 │
+└─────────────────┘     └──────────────────────┘     └─────────────────┘
+        │                         │                          │
+        │ 1. DCR: Register        │                          │
+        │    any redirect_uri     │                          │
+        │─────────────────────────▶                          │
+        │                         │                          │
+        │ 2. /authorize with      │ 3. Forward to Mittwald   │
+        │    client's redirect_uri│    using BRIDGE's fixed  │
+        │─────────────────────────▶    redirect_uri          │
+        │                         │─────────────────────────▶│
+        │                         │                          │
+        │                         │ 4. Mittwald callback     │
+        │                         │◀─────────────────────────│
+        │ 5. Redirect to client's │                          │
+        │    DCR-registered URI   │                          │
+        │◀─────────────────────────                          │
+```
+
+### Key Points
+1. **Clients MUST use DCR first** - Call `POST /register` before `/authorize`
+2. **The bridge has ONE fixed redirect_uri with Mittwald**: `{BRIDGE_BASE_URL}/mittwald/callback`
+3. **Clients can register ANY redirect_uri** with the bridge via DCR
+4. **The bridge stores the client's redirect_uri** and uses it after Mittwald authenticates
+
+### Error: "redirect_uri is not registered"
+If you see this error, the client did NOT use DCR to register their redirect_uri first.
+
+**Solution**: Call `POST /register` with the client's redirect_uri before calling `/authorize`.
+
 ## 1. Prerequisites
 - Local shell access with `curl`, `jq`, and a browser available (desktop or headless).
 - Mittwald account credentials that can complete the Mittwald login flow.

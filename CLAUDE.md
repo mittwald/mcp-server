@@ -47,5 +47,32 @@ Follow standard TypeScript conventions.
 
 **Location:** `packages/oauth-bridge/src/routes/authorize.ts` - the `mittwaldScopeString` variable
 
+## OAuth Bridge DCR Architecture - CRITICAL
+
+**Mittwald's OAuth redirect list is STRICTLY IMMUTABLE.** This drives the entire OAuth bridge design.
+
+### Why DCR (Dynamic Client Registration) is Required
+- Mittwald pre-registers allowed redirect URIs - we CANNOT add arbitrary ones
+- The bridge has ONE fixed redirect_uri with Mittwald: `{BRIDGE_BASE_URL}/mittwald/callback`
+- Clients (Claude.ai, ChatGPT, etc.) register their redirect_uri via DCR with our bridge
+- The bridge proxies the OAuth flow, using its own redirect_uri with Mittwald
+
+### Flow
+1. Client calls `POST /register` with their `redirect_uri` (DCR)
+2. Client calls `/authorize` - bridge validates against DCR-registered URIs
+3. Bridge redirects to Mittwald using the bridge's fixed redirect_uri
+4. Mittwald authenticates and redirects back to bridge
+5. Bridge redirects to the client's DCR-registered redirect_uri
+
+### Error: "redirect_uri is not registered"
+This means the client did NOT use DCR first. They must call `POST /register` before `/authorize`.
+
+**DO NOT:**
+- Try to add client redirect URIs to a static config list
+- Bypass DCR validation in the authorize route
+- Assume redirect_uri validation happens elsewhere
+
+**Location:** `packages/oauth-bridge/src/routes/authorize.ts` - DCR lookup via `stateStore.getClientRegistration()`
+
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

@@ -217,6 +217,9 @@ describe('OAuth bridge flow', () => {
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
     const app = createApp(config, stateStore);
 
+    // Must seed client via DCR first - Mittwald's redirect list is immutable
+    await seedChatgptClient(stateStore);
+
     const authorizeResponse = await request(app.callback())
       .get('/authorize')
       .query({
@@ -237,6 +240,9 @@ describe('OAuth bridge flow', () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
     const app = createApp(config, stateStore);
+
+    // Must seed client via DCR first - Mittwald's redirect list is immutable
+    await seedChatgptClient(stateStore);
 
     const response = await request(app.callback())
       .get('/authorize')

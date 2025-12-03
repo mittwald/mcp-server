@@ -39,6 +39,43 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
       resource
     }, 'Incoming authorization request');
 
+    // Validate basic request parameters first
+    const basicError = validateBasicRequest({ responseType, clientId, redirectUri, state, codeChallenge, codeChallengeMethod });
+    if (basicError) {
+      ctx.logger.warn({ error: basicError.error, description: basicError.error_description, clientId, redirectUri }, 'Authorization request validation failed');
+      ctx.status = 400;
+      ctx.body = basicError;
+      return;
+    }
+
+    // Look up DCR-registered client to validate redirect_uri
+    // This is critical: Mittwald's redirect list is IMMUTABLE, so we use DCR
+    // to allow clients to register their own redirect URIs with our bridge
+    let clientRegistration;
+    try {
+      clientRegistration = await stateStore.getClientRegistration(clientId!);
+    } catch (err) {
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to load client registration');
+      ctx.status = 500;
+      ctx.body = { error: 'server_error', error_description: 'Failed to load client registration' };
+      return;
+    }
+
+    if (!clientRegistration) {
+      ctx.logger.warn({ clientId }, 'Authorization request for unregistered client - must use DCR first');
+      ctx.status = 400;
+      ctx.body = { error: 'invalid_client', error_description: 'Client not registered. Use Dynamic Client Registration (POST /register) first.' };
+      return;
+    }
+
+    // Validate redirect_uri against DCR-registered URIs
+    if (!clientRegistration.redirectUris.includes(redirectUri!)) {
+      ctx.logger.warn({ clientId, redirectUri, registeredUris: clientRegistration.redirectUris }, 'redirect_uri not in DCR-registered list');
+      ctx.status = 400;
+      ctx.body = { error: 'invalid_request', error_description: 'redirect_uri is not registered for this client' };
+      return;
+    }
+
     const requestedScopes = parseScopeParameter(scope);
     const effectiveScopes = requestedScopes.length > 0 ? requestedScopes : DEFAULT_SCOPES;
     const scopeValidation = validateRequestedScopes(effectiveScopes);
@@ -60,24 +97,6 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     const scopedRequest = buildScopeString(effectiveScopes);
     // Use the Mittwald-specific scope format (see mittwald-scopes.ts for documentation)
     const mittwaldScopeString = MITTWALD_SCOPE_STRING;
-
-    const error = validateRequest({
-      responseType,
-      clientId,
-      redirectUri,
-      scope: scopedRequest,
-      state,
-      codeChallenge,
-      codeChallengeMethod,
-      allowedRedirectUris: config.redirectUris
-    });
-
-    if (error) {
-      ctx.logger.warn({ error: error.error, description: error.error_description, clientId, redirectUri }, 'Authorization request validation failed');
-      ctx.status = 400;
-      ctx.body = error;
-      return;
-    }
 
     const internalState = randomUUID();
 
@@ -143,18 +162,20 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
   return router;
 }
 
-interface ValidationInput {
+interface BasicValidationInput {
   responseType?: string;
   clientId?: string;
   redirectUri?: string;
-  scope?: string;
   state?: string;
   codeChallenge?: string;
   codeChallengeMethod?: string;
-  allowedRedirectUris: string[];
 }
 
-function validateRequest(input: ValidationInput): Record<string, string> | null {
+/**
+ * Validates basic OAuth request parameters (before DCR lookup).
+ * redirect_uri validation against DCR-registered URIs happens separately.
+ */
+function validateBasicRequest(input: BasicValidationInput): Record<string, string> | null {
   if (input.responseType !== 'code') {
     return { error: 'unsupported_response_type', error_description: 'Only response_type=code is supported' };
   }
@@ -165,10 +186,6 @@ function validateRequest(input: ValidationInput): Record<string, string> | null 
 
   if (!input.redirectUri) {
     return { error: 'invalid_request', error_description: 'redirect_uri is required' };
-  }
-
-  if (!input.allowedRedirectUris.includes(input.redirectUri)) {
-    return { error: 'invalid_request', error_description: 'redirect_uri is not registered' };
   }
 
   if (!input.state) {
