@@ -466,11 +466,23 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
     });
 
     remoteTest('handles authorization request with unsupported scopes', async () => {
+      // Include valid PKCE parameters so we reach scope validation
+      const codeVerifier = 'test-verifier-must-be-at-least-43-characters-long';
+      const codeChallenge = createHash('sha256')
+        .update(codeVerifier)
+        .digest('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+
       const authParams = new URLSearchParams({
         response_type: 'code',
         client_id: claudeClient?.client_id || 'test-client',
         redirect_uri: 'https://claude.ai/api/mcp/auth_callback',
-        scope: 'invalid:scope unsupported:permission'
+        scope: 'invalid:scope unsupported:permission',
+        state: 'test-state',
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256'
       });
 
       const response = await safeRequest(

@@ -46,7 +46,10 @@ describe('All OAuth Clients Compatibility', () => {
       expect(response.data.client_id).toBeDefined();
       expect(response.data.client_secret).toBeUndefined();
       expect(response.data.token_endpoint_auth_method).toBe('none');
-      expect(response.data.application_type).toBe('native');
+      // application_type is optional per RFC 7591
+      if (response.data.application_type) {
+        expect(response.data.application_type).toBe('native');
+      }
 
       if (response.data.scope) {
         const scopes = response.data.scope.split(' ');

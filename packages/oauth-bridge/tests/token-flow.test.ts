@@ -57,7 +57,8 @@ describe('OAuth bridge flow', () => {
 
     await seedChatgptClient(stateStore, tokenStore);
 
-    const codeVerifier = 'verifier-123';
+    // RFC 7636 requires code_verifier to be 43-128 characters
+    const codeVerifier = 'verifier-123-must-be-at-least-43-characters-long';
     const codeChallenge = pkceChallenge(codeVerifier);
 
     const authorizeResponse = await request(app.callback())
@@ -232,7 +233,7 @@ describe('OAuth bridge flow', () => {
     const app = createApp(config, stateStore, tokenStore);
 
     // Must seed client via DCR first - Mittwald's redirect list is immutable
-    await seedChatgptClient(stateStore);
+    await seedChatgptClient(stateStore, tokenStore);
 
     const authorizeResponse = await request(app.callback())
       .get('/authorize')
@@ -257,7 +258,7 @@ describe('OAuth bridge flow', () => {
     const app = createApp(config, stateStore, tokenStore);
 
     // Must seed client via DCR first - Mittwald's redirect list is immutable
-    await seedChatgptClient(stateStore);
+    await seedChatgptClient(stateStore, tokenStore);
 
     const response = await request(app.callback())
       .get('/authorize')
