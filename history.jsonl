@@ -1,0 +1,5 @@
+{"session_id":"019ae4a8-5aba-7c31-9422-a66bacf54934","ts":1764772896,"text":"the spec-kitty WPs in \"done\" need reviewing (despite them being marked as done. Give them each a critical review and follow the /spec-kitty.review protocol for capturing your feedback (in the prompt file) then move it either to \"planned\" or leave in \"done\" as appropriate."}
+{"session_id":"019ae4a8-5aba-7c31-9422-a66bacf54934","ts":1764774280,"text":"are there wps in the review status?"}
+{"session_id":"019ae4a8-5aba-7c31-9422-a66bacf54934","ts":1764775418,"text":"review the changes made based on your feedback"}
+{"session_id":"019ae4a8-5aba-7c31-9422-a66bacf54934","ts":1764776646,"text":"Check the new fixes"}
+{"session_id":"019ae4a8-5aba-7c31-9422-a66bacf54934","ts":1764776700,"text":"no I want you to review the implementation that was just committed."}

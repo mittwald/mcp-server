@@ -19,8 +19,7 @@ const tool: Tool = {
           type: 'string',
           enum: ['api_read', 'api_write']
         },
-        description: 'Roles of the API token',
-        minItems: 1
+        description: 'Roles of the API token (at least one required: api_read, api_write)'
       },
       quiet: {
         type: 'boolean',
