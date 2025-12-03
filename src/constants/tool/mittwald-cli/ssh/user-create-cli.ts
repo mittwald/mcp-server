@@ -16,7 +16,6 @@ const tool: Tool = {
       description: {
         type: "string",
         description: "Set description for SSH user",
-        required: true
       },
       quiet: {
         type: "boolean",

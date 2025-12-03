@@ -16,7 +16,6 @@ const tool: Tool = {
       description: {
         type: "string",
         description: "Set description for SFTP user",
-        required: true
       },
       directories: {
         type: "array",
@@ -24,7 +23,6 @@ const tool: Tool = {
           type: "string"
         },
         description: "Specify directories to restrict this SFTP user's access to",
-        required: true
       },
       quiet: {
         type: "boolean",

@@ -12,7 +12,6 @@ const tool: Tool = {
       sftpUserId: {
         type: "string",
         description: "The ID of the SFTP user to update",
-        required: true
       },
       quiet: {
         type: "boolean",

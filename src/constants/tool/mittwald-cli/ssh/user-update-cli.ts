@@ -12,7 +12,6 @@ const tool: Tool = {
       sshUserId: {
         type: "string",
         description: "The ID of the SSH user to update",
-        required: true
       },
       quiet: {
         type: "boolean",

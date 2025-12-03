@@ -12,7 +12,6 @@ const tool: Tool = {
       sshUserId: {
         type: "string",
         description: "The ID of the SSH user to delete",
-        required: true
       },
       confirm: {
         type: "boolean",

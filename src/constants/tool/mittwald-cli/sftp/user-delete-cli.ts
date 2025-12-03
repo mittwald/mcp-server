@@ -12,7 +12,6 @@ const tool: Tool = {
       sftpUserId: {
         type: "string",
         description: "The ID of the SFTP user to delete",
-        required: true
       },
       confirm: {
         type: "boolean",
