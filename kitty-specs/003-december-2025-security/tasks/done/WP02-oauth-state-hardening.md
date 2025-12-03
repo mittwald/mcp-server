@@ -9,7 +9,7 @@ subtasks:
   - "T015"
 title: "OAuth State Replay Prevention"
 phase: "Phase 2 - Security Hardening (P1)"
-lane: "done"
+lane: "planned"
 assignee: "claude"
 agent: "claude"
 shell_pid: "81842"
@@ -24,6 +24,11 @@ history:
     agent: "claude"
     shell_pid: "81842"
     action: "Started implementation - OAuth State Replay Prevention"
+  - timestamp: "2025-12-03T14:50:55Z"
+    lane: "planned"
+    agent: "chatgpt"
+    shell_pid: ""
+    action: "Review rejected via /spec-kitty.review – PKCE verifier not persisted/validated per FR-005; re-opened"
 ---
 
 # Work Package Prompt: WP02 – OAuth State Replay Prevention
@@ -236,3 +241,15 @@ npm run test:unit -- redis-state-store
   - Error messages: ✓ (OAuth-compliant invalid_request)
   - Backward compat: ✓ (consumed? optional)
   - OAuth flows: ✓ (61/61 tests pass)
+
+## Review Report (2025-12-03T14:50:55Z by chatgpt)
+
+**Outcome**: REJECTED (moved to planned)
+
+### Findings
+- FR-005 not met: the state record does not persist `code_verifier` at all; `AuthorizationRequestRecord` omits the field and `storeAuthorizationRequest` only validates `codeChallenge` (see `packages/oauth-bridge/src/state/state-store.ts:3-20` and `packages/oauth-bridge/src/state/redis-state-store.ts:46-69`). The spec requires storing non-empty code_verifier alongside the state.
+- PKCE validation is incomplete: there is no length enforcement (43-128 chars) and empty verifier values are never rejected at the state stage.
+- No regression tests cover empty/short `code_verifier` inputs or ensuring the verifier is persisted, so the gap is unguarded.
+
+### Decision
+- Lane reset to `planned`. Rework must add `codeVerifier` to the stored state shape, enforce non-empty/length per RFC 7636 when storing, and add unit tests for empty/short verifier cases and persistence.

@@ -33,7 +33,7 @@ export interface RegistrationTokenRecord {
  */
 export type TokenValidationResult =
   | { valid: true; record: RegistrationTokenRecord }
-  | { valid: false; reason: 'not_found' | 'invalid' | 'expired' | 'revoked' };
+  | { valid: false; reason: 'not_found' | 'invalid' | 'expired' | 'revoked' | 'wrong_client'; actualClientId?: string };
 
 /**
  * Options for token creation.
@@ -277,5 +277,44 @@ export class RegistrationTokenStore {
     const key = this.getKey(clientId);
     const result = await this.redis.del(key);
     return result > 0;
+  }
+
+  /**
+   * Finds which client (if any) owns a given token by scanning all registrations.
+   *
+   * This is used to detect when a valid token is used against the wrong client,
+   * allowing us to return 403 Forbidden (wrong client) instead of 401 Unauthorized.
+   *
+   * @param providedToken - The plaintext token to find
+   * @returns The clientId that owns this token, or null if not found
+   */
+  async findTokenOwner(providedToken: string): Promise<string | null> {
+    const providedHash = hashToken(providedToken);
+
+    // Scan all registration tokens
+    const pattern = `${KEY_PREFIX}*`;
+    let cursor = '0';
+    do {
+      const [nextCursor, keys] = await this.redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+      cursor = nextCursor;
+
+      for (const key of keys) {
+        const data = await this.redis.get(key);
+        if (!data) continue;
+
+        try {
+          const record = JSON.parse(data) as RegistrationTokenRecord;
+          if (compareHashesSafely(providedHash, record.tokenHash)) {
+            // Found the owner - extract clientId from key
+            return record.clientId;
+          }
+        } catch {
+          // Skip corrupted records
+          continue;
+        }
+      }
+    } while (cursor !== '0');
+
+    return null;
   }
 }

@@ -12,7 +12,7 @@ subtasks:
   - "T009"
 title: "DCR Access Token Enforcement"
 phase: "Phase 1 - Critical Security (P0)"
-lane: "done"
+lane: "planned"
 assignee: "claude"
 agent: "claude"
 shell_pid: "76276"
@@ -29,6 +29,11 @@ history:
     agent: "claude"
     shell_pid: "76276"
     action: "Started implementation - DCR Access Token Enforcement"
+  - timestamp: "2025-12-03T14:50:55Z"
+    lane: "planned"
+    agent: "chatgpt"
+    shell_pid: ""
+    action: "Review rejected via /spec-kitty.review – wrong-client tokens return 401 instead of required 403; re-opened"
 ---
 
 # Work Package Prompt: WP01 – DCR Access Token Enforcement
@@ -342,3 +347,14 @@ Tests: 46 passed (46)
 ### No Issues Found
 
 The implementation meets all security requirements and follows RFC 7592. The code is well-documented, properly tested, and maintains backward compatibility with existing OAuth flows.
+
+## Review Report (2025-12-03T14:50:55Z by chatgpt)
+
+**Outcome**: REJECTED (moved to planned)
+
+### Findings
+- Wrong-client behavior violates FR-001: `createDcrAuthMiddleware` calls `tokenStore.validateToken(clientId, token)` and maps `not_found` to 401 (see `packages/oauth-bridge/src/middleware/dcr-auth.ts:63-88`). A token issued for client A used against client B will be treated as missing, not "wrong client", so the endpoint returns 401 instead of the required 403 Forbidden.
+- No automated coverage for the wrong-client path to prevent regression.
+
+### Decision
+- Lane reset to `planned`. Rework needed to detect when a presented token exists but belongs to another client (and respond 403) and to add regression tests for this path.

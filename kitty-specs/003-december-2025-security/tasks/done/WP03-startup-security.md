@@ -9,7 +9,7 @@ subtasks:
   - "T021"
 title: "Startup Security Guards"
 phase: "Phase 2 - Security Hardening (P1)"
-lane: "done"
+lane: "planned"
 assignee: "claude"
 agent: "claude"
 shell_pid: "82591"
@@ -24,6 +24,11 @@ history:
     agent: "claude"
     shell_pid: "82591"
     action: "Started implementation - Startup Security Guards"
+  - timestamp: "2025-12-03T14:50:55Z"
+    lane: "planned"
+    agent: "chatgpt"
+    shell_pid: ""
+    action: "Review rejected via /spec-kitty.review – startup validation not wired into main server; re-opened"
 ---
 
 # Work Package Prompt: WP03 – Startup Security Guards
@@ -331,3 +336,15 @@ npm run test:security -- placeholder-detection
   - Error messages: ✓ (actionable guidance)
   - Exit code: ✓ (process.exit(1))
   - Tests: ✓ (117/117 pass)
+
+## Review Report (2025-12-03T14:50:55Z by chatgpt)
+
+**Outcome**: REJECTED (moved to planned)
+
+### Findings
+- FR-006/FR-007 unmet for the main MCP server: `src/index.ts` never invokes any startup validation, so the primary server can still boot in production with placeholder secrets or `CORS_ORIGIN='*'`. The validator only runs inside `packages/oauth-bridge/src/server.ts`.
+- Validation coverage misaligned with actual config: the checks are detached from `src/server/config.ts` where JWT and CORS settings are sourced, so the guard does not protect the real runtime configuration.
+- No integration/regression tests covering the main entrypoint wiring or verifying process exit on invalid production config for the MCP server.
+
+### Decision
+- Lane reset to `planned`. Rework needed to share/start validation from `src/index.ts`, enforce CORS wildcard/placeholder secrets for the MCP server, and add tests around the entrypoint behavior.

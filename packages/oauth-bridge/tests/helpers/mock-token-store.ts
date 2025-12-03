@@ -117,6 +117,22 @@ export class MockRegistrationTokenStore implements RegistrationTokenStore {
     return this.store.delete(clientId);
   }
 
+  /**
+   * Finds which client owns a given token by scanning all registrations.
+   * Used to detect wrong-client scenarios for 403 Forbidden responses.
+   */
+  async findTokenOwner(providedToken: string): Promise<string | null> {
+    const providedHash = this.hashToken(providedToken);
+
+    for (const [clientId, stored] of this.store.entries()) {
+      if (this.compareHashesSafely(providedHash, stored.record.tokenHash)) {
+        return clientId;
+      }
+    }
+
+    return null;
+  }
+
   // Test helper to clear all stored tokens
   clear(): void {
     this.store.clear();

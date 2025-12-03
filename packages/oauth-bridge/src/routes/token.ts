@@ -136,6 +136,17 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
       return;
     }
 
+    // RFC 7636 Section 4.1: code_verifier must be 43-128 characters
+    if (codeVerifier.length < 43 || codeVerifier.length > 128) {
+      ctx.logger.warn({
+        clientId,
+        codeVerifierLength: codeVerifier.length
+      }, 'Token exchange failed: code_verifier length out of range (43-128)');
+      ctx.status = 400;
+      ctx.body = { error: 'invalid_request', error_description: 'code_verifier must be between 43 and 128 characters per RFC 7636' };
+      return;
+    }
+
     const expectedChallenge = sha256ToBase64Url(codeVerifier);
     if (expectedChallenge !== grant.codeChallenge) {
       ctx.status = 400;

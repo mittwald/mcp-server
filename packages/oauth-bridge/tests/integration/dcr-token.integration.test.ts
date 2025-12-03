@@ -5,7 +5,7 @@
  * - POST /register returns registration_access_token and expiry
  * - GET /register/:id with valid token returns 200
  * - GET /register/:id with invalid token returns 401
- * - GET /register/:id with wrong client's token returns 401 (not found for that client)
+ * - GET /register/:id with wrong client's token returns 403 Forbidden (per RFC 7592)
  * - DELETE /register/:id with valid token succeeds
  *
  * These tests verify the security hardening per RFC 7592 requirements.
@@ -213,13 +213,15 @@ describe('DCR Token Integration Tests', () => {
       const { registration_access_token: client2Token } = client2Response.body;
 
       // Try to GET client1 using client2's token
+      // Per RFC 7592: valid token for wrong client returns 403 Forbidden
       const getResponse = await request(app.callback())
         .get(`/register/${client1Id}`)
         .set('Authorization', `Bearer ${client2Token}`)
-        .expect(401);
+        .expect(403);
 
-      // Token is valid but for wrong client - treated as "not found"
-      expect(getResponse.body.error).toBe('invalid_token');
+      // Token is valid but for wrong client - 403 Forbidden
+      expect(getResponse.body.error).toBe('access_denied');
+      expect(getResponse.body.error_description).toContain('different client');
     });
 
     test('does not return registration_access_token in GET response', async () => {

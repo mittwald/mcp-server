@@ -96,6 +96,10 @@ function handleValidationFailure(
       // Token was explicitly revoked
       setUnauthorized(ctx, 'Registration access token has been revoked');
       break;
+    case 'wrong_client':
+      // Token is valid but belongs to a different client - 403 Forbidden
+      setForbidden(ctx, 'Registration access token was issued for a different client');
+      break;
     default:
       setUnauthorized(ctx, 'Invalid registration access token');
   }
@@ -148,6 +152,20 @@ export function createDcrAuthMiddleware(tokenStore: RegistrationTokenStore) {
     const result = await tokenStore.validateToken(clientId, token);
 
     if (!result.valid) {
+      // If token was not found for this client, check if it belongs to another client
+      // This distinguishes between "invalid token" (401) and "wrong client" (403)
+      if (result.reason === 'not_found' || result.reason === 'invalid') {
+        const actualOwner = await tokenStore.findTokenOwner(token);
+        if (actualOwner && actualOwner !== clientId) {
+          ctx.logger?.warn?.(
+            { clientId, actualOwner },
+            'DCR token used against wrong client - 403 Forbidden'
+          );
+          handleValidationFailure(ctx, { valid: false, reason: 'wrong_client', actualClientId: actualOwner });
+          return;
+        }
+      }
+
       ctx.logger?.warn?.(
         { clientId, reason: result.reason },
         'DCR token validation failed'

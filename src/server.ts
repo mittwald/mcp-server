@@ -133,9 +133,17 @@ export async function createApp(): Promise<express.Application> {
   setMCPHandlerInstance(mcpHandler);
 
   // Configure CORS (expose WWW-Authenticate so browsers can read challenge)
+  // In production, CORS_ORIGIN must be set to specific origins (startup validator enforces this)
+  const corsOrigin = process.env.CORS_ORIGIN;
+  const corsOriginConfig: cors.CorsOptions['origin'] = corsOrigin
+    ? corsOrigin === '*'
+      ? true // Development only - startup validator blocks '*' in production
+      : corsOrigin.split(',').map(o => o.trim())
+    : true; // Default to permissive for development
+
   app.use(
     cors({
-      origin: true,
+      origin: corsOriginConfig,
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Accept', 'mcp-protocol-version'],
       exposedHeaders: ['mcp-session-id', 'x-session-id', 'WWW-Authenticate'],

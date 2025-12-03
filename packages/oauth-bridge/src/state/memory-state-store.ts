@@ -27,11 +27,30 @@ export class MemoryStateStore implements StateStore {
 
   /**
    * Validates PKCE parameters per RFC 7636 requirements.
-   * @throws Error if codeChallenge is empty
+   *
+   * For S256 method:
+   * - code_challenge = BASE64URL(SHA256(code_verifier))
+   * - SHA-256 produces 32 bytes, which base64url encodes to 43 characters
+   * - code_verifier must be 43-128 characters (validated at /token endpoint)
+   *
+   * @throws Error if codeChallenge is invalid
    */
   private validatePkceParameters(record: AuthorizationRequestRecord): void {
+    // codeChallenge must not be empty
     if (!record.codeChallenge || record.codeChallenge === '') {
       throw new Error('codeChallenge is required and cannot be empty');
+    }
+
+    // For S256, code_challenge must be exactly 43 characters (base64url of 32-byte SHA-256)
+    if (record.codeChallengeMethod === 'S256') {
+      if (record.codeChallenge.length !== 43) {
+        throw new Error(`code_challenge for S256 must be 43 characters (got ${record.codeChallenge.length})`);
+      }
+
+      // Validate base64url characters (A-Z, a-z, 0-9, -, _)
+      if (!/^[A-Za-z0-9_-]+$/.test(record.codeChallenge)) {
+        throw new Error('code_challenge must be base64url encoded');
+      }
     }
   }
 
