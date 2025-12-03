@@ -194,6 +194,7 @@ describe('OAuth Middleware', () => {
 
     it('should accept direct bearer token when enabled', async () => {
       CONFIG.DIRECT_TOKENS.ENABLED = true;
+      middleware = createOAuthMiddleware(); // Recreate middleware with direct tokens enabled
       const directToken = 'mwat_token_example';
       mockRequest.headers = {
         authorization: `Bearer ${directToken}`,
@@ -274,6 +275,7 @@ describe('OAuth Middleware', () => {
 
     it('should return invalid_token when direct validation fails', async () => {
       CONFIG.DIRECT_TOKENS.ENABLED = true;
+      middleware = createOAuthMiddleware(); // Recreate middleware with direct tokens enabled
       const invalidToken = 'mwat_invalid';
       mockRequest.headers = {
         authorization: `Bearer ${invalidToken}`,
