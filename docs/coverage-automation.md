@@ -1,5 +1,7 @@
 # Coverage Automation Runbook
 
+> Canonical overview now lives in `docs/coverage.md`. Keep this file for historical detail on automation steps.
+
 This document explains how to maintain the Mittwald CLI coverage artifacts and the CI checks that enforce them.
 
 ## Generated Artifacts

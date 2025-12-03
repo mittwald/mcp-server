@@ -76,4 +76,4 @@ Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` f
 
 ---
 
-For questions or onboarding guidance, start with `ARCHITECTURE.md`.
+For questions or onboarding guidance, start with `ARCHITECTURE.md` and `docs/INDEX.md` (docs navigation). LLM/agent operators should read `docs/LLM-AGENTS.md`.

@@ -62,7 +62,7 @@ export interface MarkdownMetadata {
  */
 export const MARKDOWN_REGISTRY: MarkdownMetadata[] = [
   {
-    filename: 'virtualhost-help.md',
+    filename: 'docs/guides/virtualhost.md',
     name: 'Virtual Host Configuration Guide',
     description: 'Comprehensive guide for working with virtual hosts, domains, and document roots in Mittwald',
     uri: 'mittwald://help/virtualhost'
