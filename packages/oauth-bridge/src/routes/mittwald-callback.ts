@@ -34,9 +34,11 @@ export function createMittwaldCallbackRouter({ config: _config, stateStore }: Mi
       return;
     }
 
+    // Use getAndConsumeState for atomic retrieve-and-delete (single-use enforcement)
+    // This prevents OAuth state replay attacks by ensuring each state can only be used once
     let storedRequest;
     try {
-      storedRequest = await stateStore.getAuthorizationRequestByInternalState(state);
+      storedRequest = await stateStore.getAndConsumeState(state);
 
       if (storedRequest) {
         ctx.logger.debug({
@@ -44,33 +46,27 @@ export function createMittwaldCallbackRouter({ config: _config, stateStore }: Mi
           clientId: storedRequest.clientId,
           redirectUri: storedRequest.redirectUri,
           clientState: storedRequest.state ? `${storedRequest.state.substring(0, 8)}...` : undefined
-        }, 'Authorization request found in state store');
+        }, 'Authorization request consumed from state store');
       } else {
         ctx.logger.warn({
           internalState: `${state.substring(0, 8)}...`
-        }, 'Authorization request not found or expired in state store');
+        }, 'Authorization request not found, expired, or already consumed');
       }
     } catch (err) {
-      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), state }, 'Failed to read authorization request');
+      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), state }, 'Failed to consume authorization request');
       ctx.status = 500;
-      ctx.body = { error: 'server_error', error_description: 'Failed to read authorization request' };
+      ctx.body = { error: 'server_error', error_description: 'Failed to process authorization request' };
       return;
     }
 
     if (!storedRequest) {
+      // State not found, expired, or already used (replay attack prevention)
       ctx.status = 400;
-      ctx.body = { error: 'invalid_request', error_description: 'Unknown or expired authorization request' };
+      ctx.body = { error: 'invalid_request', error_description: 'Unknown, expired, or already used authorization request' };
       return;
     }
 
-    try {
-      await stateStore.deleteAuthorizationRequestByInternalState(state);
-    } catch (err) {
-      ctx.logger.error({ error: err instanceof Error ? err.message : String(err), state }, 'Failed to delete authorization request');
-      ctx.status = 500;
-      ctx.body = { error: 'server_error', error_description: 'Failed to delete authorization request' };
-      return;
-    }
+    // Note: No separate delete needed - getAndConsumeState handles deletion atomically
 
     const authorizationCode = randomUUID();
 

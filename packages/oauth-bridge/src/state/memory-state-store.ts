@@ -25,12 +25,26 @@ export class MemoryStateStore implements StateStore {
     setInterval(() => this.reapExpired(), Math.max(1000, this.ttlMs / 2)).unref();
   }
 
+  /**
+   * Validates PKCE parameters per RFC 7636 requirements.
+   * @throws Error if codeChallenge is empty
+   */
+  private validatePkceParameters(record: AuthorizationRequestRecord): void {
+    if (!record.codeChallenge || record.codeChallenge === '') {
+      throw new Error('codeChallenge is required and cannot be empty');
+    }
+  }
+
   async storeAuthorizationRequest(record: AuthorizationRequestRecord): Promise<void> {
+    // Validate PKCE parameters before storing
+    this.validatePkceParameters(record);
+
     const now = Date.now();
     this.requestsByInternalState.set(record.internalState, {
       ...record,
       createdAt: now,
-      expiresAt: now + this.ttlMs
+      expiresAt: now + this.ttlMs,
+      consumed: false
     });
   }
 
@@ -40,6 +54,28 @@ export class MemoryStateStore implements StateStore {
     if (!record) {
       return null;
     }
+    return { ...record };
+  }
+
+  /**
+   * Atomically retrieves and consumes the authorization request (delete-on-read).
+   * Implements single-use enforcement per OAuth 2.0 security best practices.
+   */
+  async getAndConsumeState(internalState: string): Promise<AuthorizationRequestRecord | null> {
+    this.reapExpired();
+    const record = this.requestsByInternalState.get(internalState);
+    if (!record) {
+      return null;
+    }
+
+    // Delete immediately (single-use enforcement)
+    this.requestsByInternalState.delete(internalState);
+
+    // Check if already consumed (belt-and-suspenders)
+    if (record.consumed) {
+      return null;
+    }
+
     return { ...record };
   }
 

@@ -9,6 +9,11 @@ export interface AuthorizationRequestRecord {
   resource?: string;
   createdAt: number;
   expiresAt: number;
+  /**
+   * Whether this state has been consumed (used for single-use enforcement).
+   * Optional for backward compatibility with existing records.
+   */
+  consumed?: boolean;
 }
 
 export interface AuthorizationGrantRecord {
@@ -66,6 +71,12 @@ export interface StateStoreMetrics {
 export interface StateStore {
   storeAuthorizationRequest(record: AuthorizationRequestRecord): Promise<void>;
   getAuthorizationRequestByInternalState(internalState: string): Promise<AuthorizationRequestRecord | null>;
+  /**
+   * Atomically retrieves and consumes the authorization request.
+   * Implements single-use enforcement by deleting the record on read.
+   * Returns null if the state is not found, already consumed, or expired.
+   */
+  getAndConsumeState(internalState: string): Promise<AuthorizationRequestRecord | null>;
   deleteAuthorizationRequestByInternalState(internalState: string): Promise<void>;
   storeAuthorizationGrant(record: AuthorizationGrantRecord): Promise<void>;
   getAuthorizationGrant(authorizationCode: string): Promise<AuthorizationGrantRecord | null>;

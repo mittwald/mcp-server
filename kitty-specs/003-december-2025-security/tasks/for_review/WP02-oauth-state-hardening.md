@@ -9,7 +9,7 @@ subtasks:
   - "T015"
 title: "OAuth State Replay Prevention"
 phase: "Phase 2 - Security Hardening (P1)"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "81842"
@@ -224,3 +224,10 @@ npm run test:unit -- redis-state-store
 ## Activity Log
 
 - 2025-12-03T14:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
+- 2025-12-03T15:20:00Z – claude – lane=doing – Started implementation
+- 2025-12-03T15:25:00Z – claude – lane=for_review – Implementation complete. All 61 tests pass. Modified:
+  - `packages/oauth-bridge/src/state/state-store.ts` - Added consumed flag and getAndConsumeState interface
+  - `packages/oauth-bridge/src/state/redis-state-store.ts` - Implemented getAndConsumeState, PKCE validation
+  - `packages/oauth-bridge/src/state/memory-state-store.ts` - Implemented getAndConsumeState, PKCE validation
+  - `packages/oauth-bridge/src/routes/mittwald-callback.ts` - Updated to use getAndConsumeState
+  - `packages/oauth-bridge/tests/unit/state-store.test.ts` - 15 new unit tests for single-use enforcement
