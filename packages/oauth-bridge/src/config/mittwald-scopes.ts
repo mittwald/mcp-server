@@ -24,6 +24,9 @@ export const UPSTREAM_SCOPES = configuration.upstreamScopes;
 export const DEFAULT_SCOPES = configuration.defaultScopes;
 export const DEFAULT_SCOPE_STRING = DEFAULT_SCOPES.join(' ');
 
+// Mittwald requires this exact scope format - mittwald:api is a passthrough covering all APIs
+export const MITTWALD_SCOPE_STRING = 'openid profile email mittwald:api';
+
 export function validateRequestedScopes(scopes: Iterable<string>) {
   const uniqueScopes = new Set(scopes);
   const valid: string[] = [];
