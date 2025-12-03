@@ -26,16 +26,20 @@ import { CONFIG, validateConfig } from './server/config.js';
 import { redisClient } from './utils/redis-client.js';
 import { logger } from './utils/logger.js';
 import { getMCPHandlerInstance } from './server/mcp.js';
+import { runStartupValidation } from './server/startup-validator.js';
+
+// Run security validation first - blocks startup in production with placeholder secrets or wildcard CORS
+runStartupValidation();
 
 // Validate configuration and warn about missing .env
 try {
   validateConfig();
 } catch (error) {
-  console.warn('⚠️  Configuration Warning:', error instanceof Error ? error.message : String(error));
-  console.warn('📝 Make sure you have a .env file with required environment variables:');
+  console.warn('Configuration Warning:', error instanceof Error ? error.message : String(error));
+  console.warn('Make sure you have a .env file with required environment variables:');
   console.warn('   - JWT_SECRET=your_jwt_secret');
-  console.warn('📋 See .env.example for a template');
-  console.warn('🚀 Server will start but API calls may fail without proper configuration\n');
+  console.warn('See .env.example for a template');
+  console.warn('Server will start but API calls may fail without proper configuration\n');
 }
 
 // Start the server

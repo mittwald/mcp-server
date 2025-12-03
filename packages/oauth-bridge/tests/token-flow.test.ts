@@ -5,19 +5,24 @@ import { createApp } from '../src/app.js';
 import { loadConfigFromEnv } from '../src/config.js';
 import { MITTWALD_SCOPE_STRING } from '../src/config/mittwald-scopes.js';
 import { MemoryStateStore } from '../src/state/memory-state-store.js';
+import { createMockTokenStore, type MockRegistrationTokenStore } from './helpers/mock-token-store.js';
 
 const BASE_URL = 'https://bridge.example.com';
 
-async function seedChatgptClient(stateStore: MemoryStateStore) {
+async function seedChatgptClient(stateStore: MemoryStateStore, tokenStore: MockRegistrationTokenStore) {
+  // Create the client registration with a placeholder token
   await stateStore.storeClientRegistration({
     clientId: 'chatgpt-client',
     tokenEndpointAuthMethod: 'none',
     redirectUris: ['https://chatgpt.com/connector_platform_oauth_redirect'],
-    registrationAccessToken: 'test-access-token',
+    registrationAccessToken: '[HASHED]', // Token is now managed by tokenStore
     registrationClientUri: `${BASE_URL}/register/chatgpt-client`,
     clientIdIssuedAt: Math.floor(Date.now() / 1000),
     clientName: 'ChatGPT Connector'
   });
+
+  // Create the actual token in the token store
+  return await tokenStore.createToken('chatgpt-client');
 }
 
 function setupEnv() {
@@ -47,9 +52,10 @@ describe('OAuth bridge flow', () => {
   test('completes authorization code flow', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
-    await seedChatgptClient(stateStore);
+    await seedChatgptClient(stateStore, tokenStore);
 
     const codeVerifier = 'verifier-123';
     const codeChallenge = pkceChallenge(codeVerifier);
@@ -123,9 +129,10 @@ describe('OAuth bridge flow', () => {
   test('register endpoint accepts dynamic client registration', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
-    await seedChatgptClient(stateStore);
+    await seedChatgptClient(stateStore, tokenStore);
 
     const response = await request(app.callback())
       .post('/register')
@@ -150,9 +157,10 @@ describe('OAuth bridge flow', () => {
   test('registration management endpoints enforce registration access token', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
-    await seedChatgptClient(stateStore);
+    await seedChatgptClient(stateStore, tokenStore);
 
     const postResponse = await request(app.callback())
       .post('/register')
@@ -175,7 +183,9 @@ describe('OAuth bridge flow', () => {
       .expect(200);
 
     expect(getResponse.body.client_id).toBe(clientId);
-    expect(getResponse.body.registration_access_token).toBe(accessToken);
+    // Note: registration_access_token is NOT returned on GET requests per RFC 7592
+    // It's only shown once during initial POST /register
+    expect(getResponse.body.registration_access_token).toBeUndefined();
 
     await request(app.callback())
       .delete(`/register/${clientId}`)
@@ -186,16 +196,19 @@ describe('OAuth bridge flow', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(204);
 
+    // After deletion, the token is also deleted, so we get 401 (not 404)
+    // This is correct per RFC 7592 - the token is invalidated
     await request(app.callback())
       .get(`/register/${clientId}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .expect(404);
+      .expect(401);
   });
 
   test('metadata exposes MCP extensions', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
     const metadataResponse = await request(app.callback())
       .get('/.well-known/oauth-authorization-server')
@@ -215,7 +228,8 @@ describe('OAuth bridge flow', () => {
   test('defaults scopes when none provided', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
     // Must seed client via DCR first - Mittwald's redirect list is immutable
     await seedChatgptClient(stateStore);
@@ -239,7 +253,8 @@ describe('OAuth bridge flow', () => {
   test('rejects unsupported scopes', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
     // Must seed client via DCR first - Mittwald's redirect list is immutable
     await seedChatgptClient(stateStore);
@@ -263,7 +278,8 @@ describe('OAuth bridge flow', () => {
   test('health endpoint reports state store metrics', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
     const response = await request(app.callback())
       .get('/health')
@@ -285,7 +301,8 @@ describe('OAuth bridge flow', () => {
   test('version endpoint returns deployment metadata', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
     process.env.GIT_SHA = 'test-sha';
     process.env.BUILD_TIME = '2025-09-27T00:00:00Z';
@@ -303,7 +320,8 @@ describe('OAuth bridge flow', () => {
   test('jwks endpoints return empty key set', async () => {
     const config = loadConfigFromEnv();
     const stateStore = new MemoryStateStore({ ttlMs: 60 * 1000 });
-    const app = createApp(config, stateStore);
+    const tokenStore = createMockTokenStore();
+    const app = createApp(config, stateStore, tokenStore);
 
     const paths = ['/.well-known/jwks.json', '/.well-known/jwks', '/jwks'];
 

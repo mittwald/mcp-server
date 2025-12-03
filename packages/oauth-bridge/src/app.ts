@@ -12,8 +12,13 @@ import { createMittwaldCallbackRouter } from './routes/mittwald-callback.js';
 import { createTokenRouter } from './routes/token.js';
 import { createRegisterRouter } from './routes/register.js';
 import { createMetadataRouter } from './routes/metadata.js';
+import type { RegistrationTokenStore } from './registration-token-store.js';
 
-export function createApp(config: BridgeConfig, stateStore: StateStore) {
+export function createApp(
+  config: BridgeConfig,
+  stateStore: StateStore,
+  registrationTokenStore: RegistrationTokenStore
+) {
   const app = new Koa();
   const router = new Router({ prefix: '/health' });
   const versionRouter = new Router();
@@ -83,7 +88,7 @@ export function createApp(config: BridgeConfig, stateStore: StateStore) {
   const authorizeRouter = createAuthorizeRouter({ config, stateStore });
   const mittwaldCallbackRouter = createMittwaldCallbackRouter({ config, stateStore });
   const tokenRouter = createTokenRouter({ config, stateStore });
-  const registerRouter = createRegisterRouter({ config, stateStore });
+  const registerRouter = createRegisterRouter({ config, stateStore, registrationTokenStore });
   const metadataRouter = createMetadataRouter({ config });
 
   app.use(authorizeRouter.routes()).use(authorizeRouter.allowedMethods());

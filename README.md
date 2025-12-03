@@ -62,6 +62,20 @@ Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` f
 - `pnpm test:e2e:mcp` (when available) drives a full OAuth + MCP tool cycle against the mock stack.
 - See `tests/README.md` for the complete matrix and environment requirements.
 
+## Security
+
+This repository uses GitHub's native security features:
+
+- **Dependabot**: Automatically creates PRs for vulnerable dependencies (configured in `.github/dependabot.yml`)
+- **CodeQL**: Static analysis for security vulnerabilities on PRs and weekly scans (`.github/workflows/codeql.yml`)
+- **Secret Scanning**: Prevents accidental commit of secrets (enable in repository Settings → Security)
+
+### Responding to Security Alerts
+
+1. **Dependabot alerts**: Review and merge dependency update PRs promptly. Security updates are grouped and labeled for easy identification.
+2. **CodeQL findings**: Address issues before merging PRs. The workflow blocks PRs with HIGH/CRITICAL severity findings.
+3. **Secret scanning alerts**: Rotate any compromised secrets immediately and revoke associated access.
+
 ## Coverage Reports
 
 - `mw-cli-coverage.json` contains machine-readable coverage stats for the Mittwald CLI.

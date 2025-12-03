@@ -1,7 +1,35 @@
 import Router from '@koa/router';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, randomBytes, createHash } from 'node:crypto';
 import type { BridgeConfig } from '../config.js';
 import type { StateStore } from '../state/state-store.js';
+
+/**
+ * Generates a cryptographically random code_verifier for PKCE.
+ * Per RFC 7636 Section 4.1: 43-128 characters, base64url alphabet.
+ * We generate 64 characters (48 bytes base64url encoded).
+ */
+function generateCodeVerifier(): string {
+  // 48 bytes = 64 base64url characters (after removing padding)
+  return randomBytes(48)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
+/**
+ * Computes code_challenge from code_verifier using S256 method.
+ * Per RFC 7636: code_challenge = BASE64URL(SHA256(code_verifier))
+ */
+function computeCodeChallenge(verifier: string): string {
+  return createHash('sha256')
+    .update(verifier)
+    .digest()
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
 import {
   DEFAULT_SCOPES,
   MITTWALD_SCOPE_STRING,
@@ -100,11 +128,17 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
 
     const internalState = randomUUID();
 
+    // Generate bridge's own PKCE pair for the Mittwald relationship
+    // Per FR-005: We store the verifier to use at token exchange, and send the challenge to Mittwald
+    const mittwaldCodeVerifier = generateCodeVerifier();
+    const mittwaldCodeChallenge = computeCodeChallenge(mittwaldCodeVerifier);
+
     ctx.logger.debug({
       clientState: state ? `${state.substring(0, 8)}...` : undefined,
       internalState: `${internalState.substring(0, 8)}...`,
-      clientId
-    }, 'Generated internal state for authorization');
+      clientId,
+      mittwaldCodeVerifierLength: mittwaldCodeVerifier.length
+    }, 'Generated internal state and bridge PKCE pair for authorization');
 
     try {
       await stateStore.storeAuthorizationRequest({
@@ -112,8 +146,9 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
         internalState,
         clientId: clientId!,
         redirectUri: redirectUri!,
-        codeChallenge: codeChallenge!,
+        codeChallenge: codeChallenge!, // Client's challenge - to verify client at /token
         codeChallengeMethod: 'S256',
+        mittwaldCodeVerifier, // Bridge's verifier - to use with Mittwald at token exchange
         scope: scopedRequest,
         resource,
         createdAt: 0,
@@ -134,7 +169,8 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     mittwaldRedirect.searchParams.set('client_id', config.mittwald.clientId);
     mittwaldRedirect.searchParams.set('redirect_uri', `${config.bridge.baseUrl}/mittwald/callback`);
     mittwaldRedirect.searchParams.set('scope', mittwaldScopeString);
-    mittwaldRedirect.searchParams.set('code_challenge', codeChallenge!);
+    // Send bridge's challenge to Mittwald (NOT the client's challenge)
+    mittwaldRedirect.searchParams.set('code_challenge', mittwaldCodeChallenge);
     mittwaldRedirect.searchParams.set('code_challenge_method', 'S256');
     mittwaldRedirect.searchParams.set('state', internalState);
     if (resource) {

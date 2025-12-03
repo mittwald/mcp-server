@@ -75,12 +75,73 @@ export class RedisStateStore implements StateStore {
     }
   }
 
+  /**
+   * Validates PKCE parameters per RFC 7636 and FR-005 requirements.
+   *
+   * For S256 method:
+   * - code_challenge = BASE64URL(SHA256(code_verifier))
+   * - SHA-256 produces 32 bytes, which base64url encodes to 43 characters
+   * - code_verifier must be 43-128 characters
+   *
+   * Per FR-005: System MUST store non-empty PKCE code_verifier and code_challenge with state
+   *
+   * @throws Error if codeChallenge or mittwaldCodeVerifier is invalid
+   */
+  private validatePkceParameters(record: AuthorizationRequestRecord): void {
+    // codeChallenge must not be empty
+    if (!record.codeChallenge || record.codeChallenge === '') {
+      throw new Error('codeChallenge is required and cannot be empty');
+    }
+
+    // mittwaldCodeVerifier must be present and within RFC 7636 length bounds
+    if (!record.mittwaldCodeVerifier || record.mittwaldCodeVerifier.trim() === '') {
+      throw new Error('mittwaldCodeVerifier is required and cannot be empty (FR-005)');
+    }
+    if (record.mittwaldCodeVerifier.length < 43 || record.mittwaldCodeVerifier.length > 128) {
+      throw new Error('mittwaldCodeVerifier must be 43-128 characters');
+    }
+    if (!/^[A-Za-z0-9._~-]+$/.test(record.mittwaldCodeVerifier)) {
+      throw new Error('mittwaldCodeVerifier must be base64url encoded');
+    }
+
+    // For S256, code_challenge must be exactly 43 characters (base64url of 32-byte SHA-256)
+    if (record.codeChallengeMethod === 'S256') {
+      if (record.codeChallenge.length !== 43) {
+        throw new Error('code_challenge for S256 must be 43 characters');
+      }
+
+      // Validate base64url characters (A-Z, a-z, 0-9, -, _)
+      if (!/^[A-Za-z0-9_-]+$/.test(record.codeChallenge)) {
+        throw new Error('code_challenge must be base64url encoded');
+      }
+    }
+
+    // Per FR-005: mittwaldCodeVerifier must be non-empty and valid per RFC 7636
+    if (!record.mittwaldCodeVerifier || record.mittwaldCodeVerifier === '') {
+      throw new Error('mittwaldCodeVerifier is required and cannot be empty (FR-005)');
+    }
+
+    // RFC 7636 Section 4.1: code_verifier must be 43-128 characters
+    if (record.mittwaldCodeVerifier.length < 43 || record.mittwaldCodeVerifier.length > 128) {
+      throw new Error(`mittwaldCodeVerifier must be 43-128 characters (got ${record.mittwaldCodeVerifier.length})`);
+    }
+
+    // Validate base64url characters for verifier
+    if (!/^[A-Za-z0-9_-]+$/.test(record.mittwaldCodeVerifier)) {
+      throw new Error('mittwaldCodeVerifier must be base64url encoded');
+    }
+  }
+
   async storeAuthorizationRequest(record: AuthorizationRequestRecord): Promise<void> {
+    // Validate PKCE parameters before storing
+    this.validatePkceParameters(record);
+
     const now = Date.now();
     const withTimestamps = {
       ...record,
       createdAt: now,
-      expiresAt: now + this.ttlSeconds * 1000
+      expiresAt: now + this.ttlSeconds * 1000,
+      consumed: false
     } satisfies AuthorizationRequestRecord;
 
     await this.setJson(this.authRequestKey(record.internalState), withTimestamps, this.ttlSeconds);
@@ -95,6 +156,51 @@ export class RedisStateStore implements StateStore {
       await this.deleteAuthorizationRequestByInternalState(internalState);
       return null;
     }
+    return record;
+  }
+
+  /**
+   * Atomically retrieves and consumes the authorization request (delete-on-read).
+   * Implements single-use enforcement per OAuth 2.0 security best practices.
+   *
+   * The record is deleted immediately after successful retrieval, ensuring
+   * that the state parameter can only be used once. This prevents replay attacks.
+   *
+   * @param internalState - The internal state identifier
+   * @returns The authorization request record if valid, null if not found/expired/consumed
+   */
+  async getAndConsumeState(internalState: string): Promise<AuthorizationRequestRecord | null> {
+    const key = this.authRequestKey(internalState);
+
+    // Get the record first
+    const payload = await this.redis.get(key);
+    if (!payload) {
+      return null;
+    }
+
+    // Delete immediately after read (single-use enforcement)
+    // Note: This is not perfectly atomic, but provides strong practical protection.
+    // For true atomicity, Redis 6.2+ GETDEL could be used.
+    await this.redis.del(key);
+
+    let record: AuthorizationRequestRecord;
+    try {
+      record = JSON.parse(payload) as AuthorizationRequestRecord;
+    } catch {
+      // Corrupted data - already deleted, return null
+      return null;
+    }
+
+    // Check expiration
+    if (record.expiresAt && record.expiresAt <= Date.now()) {
+      return null;
+    }
+
+    // Check if already consumed (belt-and-suspenders with delete-on-read)
+    if (record.consumed) {
+      return null;
+    }
+
     return record;
   }
 

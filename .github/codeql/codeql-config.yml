@@ -1,0 +1,33 @@
+# CodeQL Configuration
+# Customizes CodeQL analysis to reduce noise and focus on security issues
+# https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/customizing-code-scanning
+
+name: "CodeQL Config"
+
+# Exclude test files and build artifacts from analysis
+paths-ignore:
+  - "tests/fixtures/**"
+  - "tests/mocks/**"
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "**/test/**"
+  - "**/tests/**"
+  - "node_modules/**"
+  - "build/**"
+  - "dist/**"
+  - ".worktrees/**"
+  - "kitty-specs/**"
+
+# Use security-focused query suites
+queries:
+  - uses: security-and-quality
+  - uses: security-extended
+
+# Filter out noisy queries that aren't security-relevant
+query-filters:
+  - exclude:
+      id: js/unused-local-variable
+  - exclude:
+      id: js/useless-expression
+  - exclude:
+      id: js/redundant-operation

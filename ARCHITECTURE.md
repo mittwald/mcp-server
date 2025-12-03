@@ -128,6 +128,56 @@ See also:
 - [Agent C4 Review (Safety Pattern)](./docs/agent-reviews/AGENT-C4-REVIEW.md)
 - [Destructive Operations Safety Guide](./docs/tool-safety/destructive-operations.md)
 
+## Security Architecture (December 2025 Hardening)
+
+### Authentication Flow
+
+```
+User → MCP Client → OAuth Bridge → Mittwald ID
+                         ↓
+                     Redis (sessions, state, tokens)
+                         ↓
+                     MCP Server → Mittwald API
+```
+
+### Security Controls
+
+#### OAuth Security
+- **PKCE**: Required for all authorization flows (RFC 7636)
+- **State**: Single-use with delete-on-read semantics (prevents replay attacks)
+- **Registration Tokens**: DCR endpoints protected by registration_access_token (RFC 7592)
+- **Token Storage**: Registration tokens stored as SHA-256 hashes with timing-safe comparison
+
+#### Runtime Security
+- **Startup Validation**: Placeholder secrets blocked in production mode
+- **CORS**: Wildcard origins blocked in production mode
+- **Shell Execution**: `execFile()` with argument arrays (no shell interpretation, prevents injection)
+- **Non-interactive Mode**: CLI runs with `MITTWALD_NONINTERACTIVE=1` and `CI=1`
+
+#### Infrastructure Security
+- **Redis Persistence**: AOF (Append Only File) with 1-second sync interval
+- **Memory Policy**: `volatile-lru` - only TTL keys evictable under memory pressure
+- **Secret Storage**: Tokens stored as SHA-256 hashes, never plaintext
+- **Key TTLs**: Sessions 24h, OAuth state 10min, registration tokens 30 days
+
+### Security Testing
+
+| Layer | Tests | Location |
+|-------|-------|----------|
+| Unit | Token validation, placeholder detection, shell injection | `tests/unit/`, `packages/oauth-bridge/tests/unit/` |
+| Integration | DCR token flow, OAuth state handling | `packages/oauth-bridge/tests/` |
+| E2E | Full OAuth flow, MCP tool execution | `tests/e2e/` |
+
+### CI Security Pipeline
+
+- **Dependabot**: Weekly dependency vulnerability scans
+- **CodeQL**: SAST analysis on PRs and weekly
+- **Secret Scanning**: Prevents accidental credential commits
+
+### Risk Register
+
+See `docs/security/risk-register.md` for the full list of identified, remediated, and accepted risks.
+
 ## Remaining Work / Considerations
 - Token refresh orchestration (optional) – bridge currently mints refresh tokens; MCP server may use Mittwald refresh tokens in future.
 - Enterprise IdPs without DCR – may require a separate onboarding flow.

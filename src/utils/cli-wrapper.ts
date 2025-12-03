@@ -1,9 +1,14 @@
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { getCurrentSessionId } from './execution-context.js';
 import { sessionManager } from '../server/session-manager.js';
 
-const execAsync = promisify(exec);
+/**
+ * Use execFile instead of exec to prevent shell injection attacks.
+ * execFile does NOT invoke a shell - it passes arguments directly to the executable.
+ * This means shell metacharacters are treated as literal strings, not interpreted.
+ */
+const execFileAsync = promisify(execFile);
 
 const DEFAULT_MAX_BUFFER_BYTES = 20 * 1024 * 1024; // 20MB cap for stdout buffering
 const DEFAULT_MAX_HEAP_MB = 384; // Keep below Fly machine memory ceiling
@@ -151,19 +156,10 @@ export async function executeCli(
     }
   }
 
-  // Escape arguments to prevent shell injection and handle Unicode
-  const escapedArgs = effectiveArgs.map(arg => {
-    // Always quote arguments that contain spaces, special chars, or non-ASCII characters
-    if (/[\s"'\\$`!@#%&*(){}[\]|;:<>?~`]/.test(arg) || /[^\p{ASCII}]/u.test(arg)) {
-      // Escape quotes, backslashes, and dollar signs within quoted strings
-      const escaped = arg.replace(/["\\$`]/g, '\\$&');
-      return `"${escaped}"`;
-    }
-    return arg;
-  });
+  // No need to escape arguments - execFile passes them directly to the executable
+  // without shell interpretation. Shell metacharacters are treated as literal strings.
+  // This eliminates shell injection vulnerabilities.
 
-  const fullCommand = `${command} ${escapedArgs.join(' ')}`;
-  
   const startedAt = Date.now();
   const mergedEnv: NodeJS.ProcessEnv = {
     ...process.env,
@@ -183,8 +179,17 @@ export async function executeCli(
     delete mergedEnv.NODE_OPTIONS;
   }
 
+  // Build redacted command for error messages (redact token value)
+  const redactedArgs = effectiveArgs.map((arg, i) => {
+    if (effectiveArgs[i - 1] === '--token') {
+      return '[REDACTED]';
+    }
+    return arg;
+  });
+  const redactedCommand = `${command} ${redactedArgs.join(' ')}`;
+
   try {
-    const { stdout, stderr } = await execAsync(fullCommand, {
+    const { stdout, stderr } = await execFileAsync(command, effectiveArgs, {
       timeout,
       maxBuffer: resolvedMaxBuffer,
       env: mergedEnv,
@@ -197,9 +202,9 @@ export async function executeCli(
       durationMs: Date.now() - startedAt
     };
   } catch (error: any) {
-    // exec throws an error if the command exits with non-zero
+    // execFile throws an error if the command exits with non-zero
     let stderr = error?.stderr?.trim() || '';
-    
+
     // If stderr is empty but we have an error message, use that
     if (!stderr && error?.message) {
       stderr = error.message;
@@ -210,19 +215,18 @@ export async function executeCli(
       const hint = `Command output exceeded the configured ${limitText} limit. Narrow the request or raise MCP_CLI_MAX_BUFFER_MB.`;
       stderr = stderr ? `${hint}\n${stderr}` : hint;
     }
-    
+
     // If we have a signal (like timeout), include that information
     if (error?.signal) {
       const signalLine = `Command killed with signal ${error.signal}.`;
       stderr = stderr ? `${signalLine} ${stderr}` : signalLine;
     }
-    
-    // Include the full command in error output for debugging (redact token)
-    const redactedCommand = fullCommand.replace(/--token\s+\S+/g, '--token [REDACTED]');
+
+    // Include the command in error output for debugging
     if (!stderr.includes(redactedCommand)) {
       stderr = `Command: ${redactedCommand}\nError: ${stderr}`.trim();
     }
-    
+
     return {
       stdout: error.stdout?.trim() || '',
       stderr,

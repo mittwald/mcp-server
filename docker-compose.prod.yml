@@ -37,7 +37,12 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
-    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy volatile-lru
+      --appendonly yes
+      --appendfsync everysec
     restart: unless-stopped
 
 volumes:
