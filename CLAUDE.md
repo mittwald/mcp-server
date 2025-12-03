@@ -1,9 +1,15 @@
 # mittwald-mcp Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2025-11-26
+## Fly.io Infrastructure
 
-## Active Technologies
-- Markdown documentation (no code changes) + N/A (documentation only) (002-mcp-documentation-sprint)
+There are 2 Fly.io apps for the Mittwald ecosystem:
+- `mittwald-oauth-server` - OAuth 2.1 server with DCR support (https://mittwald-oauth-server.fly.dev)
+- `mittwald-mcp-fly2` - MCP server for Claude Code integration
+
+### Add MCP Server to Claude Code
+```bash
+claude mcp add --transport http mittwald https://mittwald-mcp-fly2.fly.dev/mcp
+```
 
 ## Project Structure
 ```
@@ -12,13 +18,13 @@ tests/
 ```
 
 ## Commands
-# Add commands for Markdown documentation (no code changes)
+```bash
+npm run build    # Build the project
+npm run test     # Run tests
+```
 
 ## Code Style
-Markdown documentation (no code changes): Follow standard conventions
-
-## Recent Changes
-- 002-mcp-documentation-sprint: Added Markdown documentation (no code changes) + N/A (documentation only)
+Follow standard TypeScript conventions.
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
