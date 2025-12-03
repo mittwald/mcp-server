@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
-import { execMock, resetExecMock } from '../../helpers/child-process-exec-mock.ts';
+import { execFileMock, resetExecMock } from '../../helpers/child-process-exec-mock.ts';
 
 vi.mock('../../../src/server/session-manager.js', () => ({
   sessionManager: {
@@ -50,13 +50,13 @@ describe('executeCli', () => {
     (getCurrentSessionId as any).mockReturnValue('session-123');
     (sessionManager.getSession as any).mockResolvedValue(mockSession);
 
-    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
-      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
-      expect(command).toContain('--token mock-access-token');
-      if (typeof optionsOrCallback !== 'function') {
-        expect(optionsOrCallback?.maxBuffer).toBe(20 * 1024 * 1024);
-        expect(optionsOrCallback?.env?.NODE_OPTIONS).toContain('--max-old-space-size=384');
-      }
+    execFileMock.mockImplementation((file: string, args: string[], options: any, callback: any) => {
+      // execFile receives args as array, not concatenated command string
+      expect(file).toBe('mw');
+      expect(args).toContain('--token');
+      expect(args).toContain('mock-access-token');
+      expect(options?.maxBuffer).toBe(20 * 1024 * 1024);
+      expect(options?.env?.NODE_OPTIONS).toContain('--max-old-space-size=384');
       callback?.(null, 'command output', '');
       return {} as any;
     });
@@ -69,18 +69,17 @@ describe('executeCli', () => {
       exitCode: 0,
     });
     expect(result.durationMs).toBeGreaterThanOrEqual(0);
-    expect(execMock).toHaveBeenCalledTimes(1);
+    expect(execFileMock).toHaveBeenCalledTimes(1);
   });
 
   it('does not duplicate token flag when already provided', async () => {
     (getCurrentSessionId as any).mockReturnValue('session-123');
     (sessionManager.getSession as any).mockResolvedValue(mockSession);
 
-    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
-      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
-      const occurrences = (command.match(/--token/g) || []).length;
-      expect(occurrences).toBe(1);
-      expect(command).toContain('--token provided-token');
+    execFileMock.mockImplementation((file: string, args: string[], options: any, callback: any) => {
+      const tokenCount = args.filter(a => a === '--token').length;
+      expect(tokenCount).toBe(1);
+      expect(args).toContain('provided-token');
       callback?.(null, 'ok', '');
       return {} as any;
     });
@@ -95,8 +94,7 @@ describe('executeCli', () => {
     (getCurrentSessionId as any).mockReturnValue('session-123');
     (sessionManager.getSession as any).mockResolvedValue(mockSession);
 
-    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
-      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
+    execFileMock.mockImplementation((file: string, args: string[], options: any, callback: any) => {
       const error: any = new Error('execution failed');
       error.code = 127;
       error.stdout = '';
@@ -119,9 +117,7 @@ describe('executeCli', () => {
     process.env.MCP_CLI_MAX_HEAP_MB = '512';
     process.env.MCP_CLI_NODE_OPTIONS = '--no-deprecation';
 
-    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
-      const options = typeof optionsOrCallback === 'function' ? undefined : optionsOrCallback;
-      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
+    execFileMock.mockImplementation((file: string, args: string[], options: any, callback: any) => {
       expect(options?.env?.NODE_OPTIONS).toContain('--trace-warnings');
       expect(options?.env?.NODE_OPTIONS).toContain('--no-deprecation');
       expect(options?.env?.NODE_OPTIONS).toContain('--max-old-space-size=512');
@@ -137,8 +133,7 @@ describe('executeCli', () => {
     (getCurrentSessionId as any).mockReturnValue('session-123');
     (sessionManager.getSession as any).mockResolvedValue(mockSession);
 
-    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
-      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
+    execFileMock.mockImplementation((file: string, args: string[], options: any, callback: any) => {
       const error: any = new Error('stdout maxBuffer exceeded');
       error.code = 1;
       error.stdout = '';
