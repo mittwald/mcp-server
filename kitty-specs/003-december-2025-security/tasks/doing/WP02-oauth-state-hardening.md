@@ -9,16 +9,21 @@ subtasks:
   - "T015"
 title: "OAuth State Replay Prevention"
 phase: "Phase 2 - Security Hardening (P1)"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "81842"
 history:
   - timestamp: "2025-12-03T14:00:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-03T15:20:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "81842"
+    action: "Started implementation - OAuth State Replay Prevention"
 ---
 
 # Work Package Prompt: WP02 – OAuth State Replay Prevention
