@@ -4,9 +4,7 @@ import type { BridgeConfig } from '../config.js';
 import type { StateStore } from '../state/state-store.js';
 import {
   DEFAULT_SCOPES,
-  DEFAULT_SCOPE_STRING,
   buildScopeString,
-  filterUpstreamScopes,
   validateRequestedScopes
 } from '../config/mittwald-scopes.js';
 
@@ -59,10 +57,9 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     }
 
     const scopedRequest = buildScopeString(effectiveScopes);
-    const upstreamScopes = filterUpstreamScopes(effectiveScopes);
-    const mittwaldScopeString = upstreamScopes.length > 0
-      ? buildScopeString(upstreamScopes)
-      : DEFAULT_SCOPE_STRING;
+    // Mittwald requires 'openid profile email mittwald:api' format
+    // mittwald:api is a passthrough scope that covers all APIs
+    const mittwaldScopeString = 'openid profile email mittwald:api';
 
     const error = validateRequest({
       responseType,
