@@ -175,10 +175,13 @@ describe('Post-deploy OAuth smoke', () => {
       expect(deleteResponse.status).toBe(204);
     });
 
-    test('registration rejects unapproved redirect URIs', async () => {
+    test('registration accepts any valid redirect URI (DCR accepts any URI)', async () => {
+      // DCR must accept ANY redirect_uri - this is the whole point!
+      // Mittwald's redirect list is immutable, so we use DCR to let clients
+      // register their own redirect URIs.
       const registrationPayload = {
-        client_name: 'CI Invalid Redirect',
-        redirect_uris: ['https://example.com/not-allowed'],
+        client_name: 'CI Any Redirect',
+        redirect_uris: ['https://example.com/any-uri-works'],
         grant_types: ['authorization_code'],
         response_types: ['code'],
         token_endpoint_auth_method: 'none'
@@ -190,8 +193,19 @@ describe('Post-deploy OAuth smoke', () => {
         }
       });
 
-      expect(response.status).toBe(400);
-      expect(response.data?.error).toBe('invalid_redirect_uri');
+      expect(response.status).toBe(201);
+      expect(response.data?.client_id).toBeDefined();
+      expect(response.data?.redirect_uris).toContain('https://example.com/any-uri-works');
+
+      // Clean up
+      if (response.data?.client_id && response.data?.registration_access_token) {
+        await http.delete(
+          `${OAUTH_SERVER}/register/${response.data.client_id}`,
+          {
+            headers: { Authorization: `Bearer ${response.data.registration_access_token}` }
+          }
+        );
+      }
     });
   });
 
