@@ -37,8 +37,6 @@ lerna-debug.log*
 .claude
 .codex
 .kittify
-kitty-specs
-
 
 .worktrees/
 # Testing
