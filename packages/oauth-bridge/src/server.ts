@@ -2,6 +2,11 @@ import { createApp } from './app.js';
 import { loadConfigFromEnv } from './config.js';
 import { createStateStore } from './state/state-store-factory.js';
 import { createRegistrationTokenStore } from './registration-token-store-factory.js';
+import { runStartupValidation } from './startup-validator.js';
+
+// Run security validation before any other initialization
+// This prevents the server from starting with placeholder secrets in production
+runStartupValidation();
 
 const config = loadConfigFromEnv();
 const ttlSeconds = Number(process.env.BRIDGE_STATE_TTL_SECONDS ?? 300);

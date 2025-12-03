@@ -9,7 +9,7 @@ subtasks:
   - "T021"
 title: "Startup Security Guards"
 phase: "Phase 2 - Security Hardening (P1)"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "82591"
@@ -321,3 +321,8 @@ npm run test:security -- placeholder-detection
 ## Activity Log
 
 - 2025-12-03T14:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
+- 2025-12-03T15:32:00Z – claude – lane=doing – Started implementation
+- 2025-12-03T15:38:00Z – claude – lane=for_review – Implementation complete. All 117 tests pass. Created:
+  - `packages/oauth-bridge/src/startup-validator.ts` - validateSecrets(), isPlaceholder(), StartupValidationError
+  - `packages/oauth-bridge/tests/unit/startup-validator.test.ts` - 56 unit tests for placeholder detection
+  - Modified `packages/oauth-bridge/src/server.ts` - integrated runStartupValidation() at startup
