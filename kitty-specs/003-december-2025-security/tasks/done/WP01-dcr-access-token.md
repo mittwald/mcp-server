@@ -12,7 +12,7 @@ subtasks:
   - "T009"
 title: "DCR Access Token Enforcement"
 phase: "Phase 1 - Critical Security (P0)"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
 agent: "claude"
 shell_pid: "76276"
@@ -244,13 +244,13 @@ npm run test:integration -- dcr-token
 
 ## Definition of Done Checklist
 
-- [ ] registration-token-store.ts created and passes unit tests
-- [ ] dcr-auth.ts middleware created
-- [ ] GET/PUT/DELETE /register/:client_id require valid token
-- [ ] POST /register returns registration_access_token
-- [ ] Integration tests pass
-- [ ] No plaintext tokens in logs
-- [ ] Documentation updated (if applicable)
+- [x] registration-token-store.ts created and passes unit tests
+- [x] dcr-auth.ts middleware created
+- [x] GET/PUT/DELETE /register/:client_id require valid token
+- [x] POST /register returns registration_access_token
+- [x] Integration tests pass
+- [x] No plaintext tokens in logs
+- [x] Documentation updated (if applicable)
 
 ## Review Guidance
 
@@ -272,3 +272,9 @@ npm run test:integration -- dcr-token
   - `packages/oauth-bridge/tests/helpers/mock-token-store.ts` (test helper)
   - `packages/oauth-bridge/tests/integration/dcr-token.integration.test.ts` (14 integration tests)
   - Modified `register.ts`, `app.ts`, `server.ts`, `index.ts`, `token-flow.test.ts`
+- 2025-12-03T15:15:00Z – claude – lane=done – Review complete. All criteria verified:
+  - 256-bit entropy: ✓ (randomBytes(32))
+  - Timing-safe comparison: ✓ (crypto.timingSafeEqual)
+  - RFC 7592 errors: ✓ (invalid_token, access_denied)
+  - Redis TTL: ✓ (setex with calculated seconds)
+  - OAuth flows: ✓ (46/46 tests pass)
