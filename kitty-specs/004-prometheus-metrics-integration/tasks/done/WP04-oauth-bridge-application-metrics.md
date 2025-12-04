@@ -23,6 +23,11 @@ history:
     agent: "chatgpt"
     shell_pid: ""
     action: "Review rejected via /spec-kitty.review – FR-010 oauth_state_store_size missing; metrics not gated by METRICS_ENABLED"
+  - timestamp: "2025-12-04T10:14:59Z"
+    lane: "done"
+    agent: "chatgpt"
+    shell_pid: ""
+    action: "Review accepted via /spec-kitty.review – FR-010 added and METRICS_ENABLED gating verified"
 ---
 
 # Work Package Prompt: WP04 – OAuth Bridge Application Metrics
@@ -312,6 +317,7 @@ curl http://localhost:3001/metrics | grep oauth_
 - 2025-12-04T13:30:00Z – claude – lane=done – Completed all subtasks (T013-T017). Created oauth-metrics.ts with 6 metrics (3 counters + 3 gauges). Instrumented authorize, token, and register routes. State store gauges updated on /metrics scrape using existing stateStore.getMetrics(). Committed as 7f1b45a.
 - 2025-12-04T09:53:44Z – chatgpt – lane=planned – Review rejected via /spec-kitty.review – FR-010 oauth_state_store_size missing; metrics not gated by METRICS_ENABLED
 - 2025-12-04T11:12:00Z – claude – lane=done – Added oauth_state_store_size gauge (FR-010) and METRICS_ENABLED toggle (FR-013). All fixes verified, resubmitting for review.
+- 2025-12-04T10:14:59Z – chatgpt – lane=done – Review accepted via /spec-kitty.review – FR-010 gauge present; metrics gated by METRICS_ENABLED
 
 ## Review Report (2025-12-04T09:53:44Z by chatgpt)
 
@@ -323,3 +329,15 @@ curl http://localhost:3001/metrics | grep oauth_
 
 ### Decision
 - Lane reset to `planned`. Add the required `oauth_state_store_size` gauge (with graceful handling on Redis errors), keep or drop the additional gauges as needed, and gate metrics collection/exposure behind `METRICS_ENABLED` before re-submitting for review.
+
+## Review Report (2025-12-04T10:14:59Z by chatgpt)
+
+**Outcome**: ACCEPTED (remains in done)
+
+### Findings
+- FR-010 satisfied: `oauth_state_store_size` gauge added in `packages/oauth-bridge/src/metrics/oauth-metrics.ts` and set during `/metrics` scrape from `stateStore.getMetrics()`, with graceful fallback to 0 on errors.
+- FR-013 satisfied: `METRICS_ENABLED` guards registry initialization and `/metrics` route registration in `packages/oauth-bridge/src/app.ts`; when disabled, metrics are not collected or exposed.
+- Existing counters/gauges remain intact; Basic Auth still optional and composes with the flag.
+
+### Decision
+- Accepted. No further changes required for WP04.
