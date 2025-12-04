@@ -11,7 +11,7 @@ subtasks:
   - "T034"
 title: "Resource Management & Cleanup"
 phase: "Phase 2 - Core Features"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "72358"
@@ -26,6 +26,11 @@ history:
     agent: "claude"
     shell_pid: "72358"
     action: "Started implementation"
+  - timestamp: "2025-12-04T14:30:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "72358"
+    action: "Completed T027-T034: tracker.ts, naming.ts, cleanup.ts"
 ---
 
 # Work Package Prompt: WP05 – Resource Management & Cleanup
