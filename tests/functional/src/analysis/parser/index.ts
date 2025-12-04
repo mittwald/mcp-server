@@ -5,7 +5,7 @@
  * Implements T004: JSONL Parser and T006: Domain Grouping Integration.
  */
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import type { Session, Event, EventType, ToolCall, ToolResult, TokenUsage, SessionOutcome } from '../types.js';
 import type { TestDomain } from '../../types/index.js';
@@ -33,20 +33,44 @@ const TARGET_TOOL_PATTERN = /testing the MCP tool "([^"]+)"/;
 // =============================================================================
 
 /**
+ * Result of parsing a session file, including error bookkeeping.
+ */
+export interface ParseSessionResult {
+  session: Session;
+  stats: {
+    totalLines: number;
+    parsedLines: number;
+    errors: Array<{ line: number; error: string }>;
+  };
+}
+
+/**
  * Parse a single JSONL session file into a Session object.
  *
  * @param filePath Absolute path to the JSONL file
  * @returns Parsed Session object
  */
 export async function parseSessionFile(filePath: string): Promise<Session> {
+  const { session } = await parseSessionFileWithStats(filePath);
+  return session;
+}
+
+/**
+ * Parse a single JSONL session file and return parse stats.
+ *
+ * Errors are collected (file:line:message) so the caller can surface error rates.
+ */
+export async function parseSessionFileWithStats(filePath: string): Promise<ParseSessionResult> {
   const content = readFileSync(filePath, 'utf-8');
-  const lines = content.split('\n').filter(line => line.trim());
+  const rawLines = content.split('\n');
+  const lines = rawLines.filter(line => line.trim());
 
   const events: Event[] = [];
   const errors: Array<{ line: number; error: string }> = [];
   let sessionId = '';
   let targetTool = '';
   let parentSessionId: string | undefined;
+  let parentEventUuid: string | undefined;
   let isSubAgent = false;
 
   // Parse each line
@@ -69,10 +93,9 @@ export async function parseSessionFile(filePath: string): Promise<Session> {
         }
       }
 
-      // Look for parent session link in sub-agent logs
-      if (isSubAgent && !parentSessionId && rawEvent.parentUuid) {
-        // The parent session ID is in the linked session
-        // We'll resolve this in the indexer
+      // Capture parent event UUID if present (used to resolve orphaned sub-agents)
+      if (!parentEventUuid && rawEvent.parentUuid) {
+        parentEventUuid = rawEvent.parentUuid;
       }
 
       // Parse the event
@@ -114,6 +137,7 @@ export async function parseSessionFile(filePath: string): Promise<Session> {
     events,
     subAgents: [],
     parentSessionId,
+    parentEventUuid,
     startTime: metrics.startTime,
     endTime: metrics.endTime,
     durationMs: metrics.durationMs,
@@ -123,7 +147,19 @@ export async function parseSessionFile(filePath: string): Promise<Session> {
     outcome,
   };
 
-  return session;
+  // Warn on parse errors for visibility
+  if (errors.length > 0) {
+    console.warn(`[parser] ${basename(filePath)} had ${errors.length} parse errors`);
+  }
+
+  return {
+    session,
+    stats: {
+      totalLines: lines.length,
+      parsedLines: events.length,
+      errors,
+    },
+  };
 }
 
 /**
@@ -141,21 +177,28 @@ export async function parseDirectory(inputDir: string): Promise<{
     .map(f => join(inputDir, f));
 
   const sessions: Session[] = [];
-  const errors: Array<{ line: number; error: string }> = [];
+  const errors: Array<{ filePath?: string; line: number; error: string }> = [];
   let totalLines = 0;
   let parsedLines = 0;
+  let errorLines = 0;
 
   for (const file of files) {
     try {
-      const session = await parseSessionFile(file);
-      sessions.push(session);
-      totalLines += session.events.length;
-      parsedLines += session.events.length;
+      const result = await parseSessionFileWithStats(file);
+      sessions.push(result.session);
+      totalLines += result.stats.totalLines;
+      parsedLines += result.stats.parsedLines;
+      errorLines += result.stats.errors.length;
+      for (const err of result.stats.errors) {
+        errors.push({ ...err, filePath: basename(file) });
+      }
     } catch (err) {
       errors.push({
         line: 0,
+        filePath: basename(file),
         error: `Failed to parse ${basename(file)}: ${err instanceof Error ? err.message : String(err)}`,
       });
+      errorLines++;
     }
   }
 
@@ -164,7 +207,7 @@ export async function parseDirectory(inputDir: string): Promise<{
     stats: {
       totalLines,
       parsedLines,
-      errorLines: errors.length,
+      errorLines,
       errors,
     },
   };
@@ -249,11 +292,22 @@ function parseEvent(raw: RawEvent, index: number): Event | null {
           ? firstResult.content
           : JSON.stringify(firstResult.content);
 
+        const toolUseResult = userEvent.toolUseResult && typeof userEvent.toolUseResult === 'object'
+          ? userEvent.toolUseResult
+          : undefined;
+
         event.toolResult = {
           callId: firstResult.tool_use_id,
           isError: firstResult.is_error || false,
           content,
-          durationMs: userEvent.toolUseResult?.durationMs,
+          durationMs: toolUseResult?.durationMs,
+          stdout: toolUseResult?.stdout,
+          stderr: toolUseResult?.stderr,
+          interrupted: toolUseResult?.interrupted,
+          filenames: toolUseResult?.filenames,
+          totalTokens: toolUseResult?.totalTokens,
+          totalToolUseCount: toolUseResult?.totalToolUseCount,
+          agentId: toolUseResult?.agentId,
         };
         event.type = 'tool_result';
       }
@@ -427,4 +481,4 @@ function determineOutcome(events: Event[]): SessionOutcome {
 // =============================================================================
 
 export { parseToolName };
-export type { ParseStats };
+export type { ParseStats, ParseSessionResult };

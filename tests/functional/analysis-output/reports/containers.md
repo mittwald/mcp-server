@@ -45,7 +45,7 @@ No dependencies detected for this domain.
 |--------|-------|
 | Average tokens per session | 333 |
 | Success rate | 100% |
-| Most problematic tool | unknown |
+| Most problematic tool | stack/delete |
 | Incident count | 26 |
 | Average session duration | 22.7s |
 
@@ -54,7 +54,7 @@ No dependencies detected for this domain.
 - Improve tool descriptions for containers domain tools to reduce wrong tool selection (18 incidents)
 - Add error recovery guidance for containers tools to reduce retry loops (4 incidents)
 - Document model requirements for containers tools with capability mismatches (3 incidents)
-- Focus attention on unknown - most frequent incident source
+- Focus attention on stack/delete - most frequent incident source
 
 ---
 *Generated on 2025-12-04*

@@ -34,7 +34,7 @@ Dependencies involving Organization tools:
 |--------|-------|
 | Average tokens per session | 163 |
 | Success rate | 93% |
-| Most problematic tool | unknown |
+| Most problematic tool | org/delete |
 | Incident count | 1 |
 | Average session duration | 56.7s |
 

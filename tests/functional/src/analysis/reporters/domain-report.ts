@@ -181,11 +181,13 @@ export function filterDependencies(
  *
  * @param sessions Sessions in this domain
  * @param incidents Incidents for these sessions
+ * @param corpus Corpus index to look up session targetTool
  * @returns Efficiency metrics
  */
 export function calculateMetrics(
   sessions: Session[],
-  incidents: Incident[]
+  incidents: Incident[],
+  corpus: CorpusIndex
 ): EfficiencyMetrics {
   if (sessions.length === 0) {
     return {
@@ -210,12 +212,14 @@ export function calculateMetrics(
   const successfulSessions = sessions.filter(s => !sessionsWithHighSeverity.has(s.id));
   const successRate = Math.round((successfulSessions.length / sessions.length) * 100);
 
-  // Most problematic tool - use toolAttempted (what LLM tried) or toolNeeded (what it should have used)
+  // Most problematic tool - use session's targetTool (the MCP tool being tested)
   const incidentsByTool: Record<string, number> = {};
   for (const inc of incidents) {
-    const tool = inc.toolAttempted || inc.toolNeeded || 'unknown';
-    // Parse to short name if it's an MCP tool
-    const toolName = tool.startsWith('mcp__') ? parseToolName(tool) : tool;
+    const session = corpus.sessions[inc.sessionId];
+    const mcpTool = session?.targetTool;
+    // Only count incidents with an associated MCP tool
+    if (!mcpTool) continue;
+    const toolName = parseToolName(mcpTool);
     incidentsByTool[toolName] = (incidentsByTool[toolName] || 0) + 1;
   }
   let mostProblematicTool = 'N/A';
@@ -363,7 +367,7 @@ export function generateDomainReport(
 
   // Calculate metrics
   const domainIncidents = incidents.filter(i => sessionIds.has(i.sessionId));
-  const metrics = calculateMetrics(sessions, domainIncidents);
+  const metrics = calculateMetrics(sessions, domainIncidents, corpus);
 
   // Generate overview
   const overview: DomainOverview = {

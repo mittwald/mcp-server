@@ -113,9 +113,13 @@ export function rankPatterns(
 // =============================================================================
 
 /**
- * Identify tools with most incidents.
+ * Identify MCP tools with most incidents.
+ * Uses session's targetTool (the MCP tool being tested) not the Claude tool that was misused.
  */
-export function findProblematicTools(incidents: Incident[]): ProblematicTool[] {
+export function findProblematicTools(
+  incidents: Incident[],
+  corpus: CorpusIndex
+): ProblematicTool[] {
   const toolStats = new Map<string, {
     count: number;
     tokenWaste: number;
@@ -123,9 +127,14 @@ export function findProblematicTools(incidents: Incident[]): ProblematicTool[] {
   }>();
 
   for (const inc of incidents) {
-    // Use the tool that was attempted or needed
-    const tool = inc.toolAttempted || inc.toolNeeded || 'unknown';
-    const displayName = tool.startsWith('mcp__') ? parseToolName(tool) : tool;
+    // Use the session's targetTool (the MCP tool being tested)
+    const session = corpus.sessions[inc.sessionId];
+    const mcpTool = session?.targetTool;
+
+    // Skip incidents that don't have an associated MCP tool
+    if (!mcpTool) continue;
+
+    const displayName = parseToolName(mcpTool);
 
     if (!toolStats.has(displayName)) {
       toolStats.set(displayName, {
@@ -241,7 +250,7 @@ export function generateSummary(
 ): Summary {
   const corpusStats = aggregateStats(corpus);
   const patternRanking = rankPatterns(incidents, corpus);
-  const problematicTools = findProblematicTools(incidents);
+  const problematicTools = findProblematicTools(incidents, corpus);
   const domainHealth = calculateDomainHealth(corpus, incidents);
 
   return {

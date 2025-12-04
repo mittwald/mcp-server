@@ -23,6 +23,8 @@ interface SessionJson {
   targetTool: string;
   domain: TestDomain;
   parentSessionId?: string;
+  parentEventUuid?: string;
+  orphaned?: boolean;
   subAgents: string[];
   metrics: {
     startTime: string;
@@ -111,6 +113,8 @@ function sessionToJson(session: Session): SessionJson {
     targetTool: session.targetTool,
     domain: session.domain,
     parentSessionId: session.parentSessionId,
+    parentEventUuid: session.parentEventUuid,
+    orphaned: session.orphaned,
     subAgents: session.subAgents,
     metrics: {
       startTime: session.startTime.toISOString(),

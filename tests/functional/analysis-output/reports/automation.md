@@ -43,7 +43,7 @@ No dependencies detected for this domain.
 |--------|-------|
 | Average tokens per session | 357 |
 | Success rate | 77% |
-| Most problematic tool | unknown |
+| Most problematic tool | cronjob/execution/get |
 | Incident count | 18 |
 | Average session duration | 30.2s |
 
@@ -53,7 +53,7 @@ No dependencies detected for this domain.
 - Document model requirements for automation tools with capability mismatches (4 incidents)
 - Investigate high token waste in automation domain (106,920 tokens)
 - Address 4 high-severity incidents in automation domain
-- Focus attention on unknown - most frequent incident source
+- Focus attention on cronjob/execution/get - most frequent incident source
 
 ---
 *Generated on 2025-12-04*

@@ -45,7 +45,7 @@ No dependencies detected for this domain.
 |--------|-------|
 | Average tokens per session | 966 |
 | Success rate | 77% |
-| Most problematic tool | unknown |
+| Most problematic tool | domain/virtualhost/list |
 | Incident count | 40 |
 | Average session duration | 1.0m |
 
@@ -56,7 +56,7 @@ No dependencies detected for this domain.
 - Document model requirements for domains-mail tools with capability mismatches (6 incidents)
 - Investigate high token waste in domains-mail domain (134,494 tokens)
 - Address 5 high-severity incidents in domains-mail domain
-- Focus attention on unknown - most frequent incident source
+- Focus attention on domain/virtualhost/list - most frequent incident source
 
 ---
 *Generated on 2025-12-04*

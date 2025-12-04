@@ -22,6 +22,8 @@ export interface Session {
   events: Event[];               // Parsed log events
   subAgents: string[];           // IDs of child agent sessions
   parentSessionId?: string;      // If this is a sub-agent, link to parent
+  parentEventUuid?: string;      // UUID of parent event if provided
+  orphaned?: boolean;            // True if parent could not be resolved
 
   // Metrics
   startTime: Date;
@@ -68,6 +70,13 @@ export interface ToolResult {
   isError: boolean;
   content: string;
   durationMs?: number;
+  stdout?: string;
+  stderr?: string;
+  interrupted?: boolean;
+  filenames?: string[];
+  totalTokens?: number;
+  totalToolUseCount?: number;
+  agentId?: string;
 }
 
 export interface Message {

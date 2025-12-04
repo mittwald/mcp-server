@@ -13,10 +13,10 @@ subtasks:
   - "T018"
 title: "Confusion Pattern Detectors"
 phase: "Phase 1 - Foundation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "codex"
+agent: "codex"
+shell_pid: "70994"
 history:
   - timestamp: "2025-12-04T18:30:00Z"
     lane: "planned"
@@ -33,6 +33,11 @@ history:
     agent: "codex"
     shell_pid: "50769"
     action: "Returned for review fixes (severity scoring gaps, stuck indicator false positives, exploration coverage)"
+  - timestamp: "2025-12-04T19:40:46Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "70994"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP02 – Confusion Pattern Detectors

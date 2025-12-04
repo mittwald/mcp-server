@@ -50,7 +50,7 @@ Dependencies involving Project Foundation tools:
 |--------|-------|
 | Average tokens per session | 264 |
 | Success rate | 88% |
-| Most problematic tool | unknown |
+| Most problematic tool | project/membership/get |
 | Incident count | 27 |
 | Average session duration | 38.3s |
 
@@ -61,7 +61,7 @@ Dependencies involving Project Foundation tools:
 - Document model requirements for project-foundation tools with capability mismatches (4 incidents)
 - Investigate high token waste in project-foundation domain (73,487 tokens)
 - Address 3 high-severity incidents in project-foundation domain
-- Focus attention on unknown - most frequent incident source
+- Focus attention on project/membership/get - most frequent incident source
 
 ---
 *Generated on 2025-12-04*

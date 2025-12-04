@@ -27,14 +27,14 @@
 **Prompt**: `tasks/planned/WP01-parser-and-indexer.md`
 
 ### Included Subtasks
-- [ ] T001 Create analysis module directory structure
-- [ ] T002 Define shared analysis types in `src/analysis/types.ts`
-- [ ] T003 [P] Implement event type definitions in `src/analysis/parser/types.ts`
-- [ ] T004 Implement JSONL parser in `src/analysis/parser/index.ts`
-- [ ] T005 Implement session indexer in `src/analysis/parser/indexer.ts`
-- [ ] T006 Integrate domain grouping from `src/inventory/grouping.ts`
-- [ ] T007 Handle sub-agent log linking via parentUuid
-- [ ] T008 Export corpus-index.json with session/tool/domain mappings
+- [X] T001 Create analysis module directory structure
+- [X] T002 Define shared analysis types in `src/analysis/types.ts`
+- [X] T003 [P] Implement event type definitions in `src/analysis/parser/types.ts`
+- [X] T004 Implement JSONL parser in `src/analysis/parser/index.ts`
+- [X] T005 Implement session indexer in `src/analysis/parser/indexer.ts`
+- [X] T006 Integrate domain grouping from `src/inventory/grouping.ts`
+- [X] T007 Handle sub-agent log linking via parentUuid
+- [X] T008 Export corpus-index.json with session/tool/domain mappings
 
 ### Implementation Notes
 1. Create directory: `tests/functional/src/analysis/parser/`

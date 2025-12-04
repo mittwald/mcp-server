@@ -44,7 +44,7 @@ No dependencies detected for this domain.
 |--------|-------|
 | Average tokens per session | 198 |
 | Success rate | 90% |
-| Most problematic tool | unknown |
+| Most problematic tool | backup/get |
 | Incident count | 19 |
 | Average session duration | 35.2s |
 
@@ -54,7 +54,7 @@ No dependencies detected for this domain.
 - Document model requirements for backups tools with capability mismatches (3 incidents)
 - Investigate high token waste in backups domain (89,238 tokens)
 - Address 2 high-severity incidents in backups domain
-- Focus attention on unknown - most frequent incident source
+- Focus attention on backup/get - most frequent incident source
 
 ---
 *Generated on 2025-12-04*

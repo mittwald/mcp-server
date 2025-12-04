@@ -32,7 +32,7 @@ Dependencies involving Access Users tools:
 |--------|-------|
 | Average tokens per session | 352 |
 | Success rate | 100% |
-| Most problematic tool | unknown |
+| Most problematic tool | ssh/user/delete |
 | Incident count | 2 |
 | Average session duration | 1.9m |
 

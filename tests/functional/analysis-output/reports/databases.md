@@ -45,7 +45,7 @@ No dependencies detected for this domain.
 |--------|-------|
 | Average tokens per session | 319 |
 | Success rate | 86% |
-| Most problematic tool | unknown |
+| Most problematic tool | database/mysql/shell |
 | Incident count | 31 |
 | Average session duration | 20.7s |
 
@@ -56,7 +56,7 @@ No dependencies detected for this domain.
 - Document model requirements for databases tools with capability mismatches (7 incidents)
 - Investigate high token waste in databases domain (85,043 tokens)
 - Address 3 high-severity incidents in databases domain
-- Focus attention on unknown - most frequent incident source
+- Focus attention on database/mysql/shell - most frequent incident source
 
 ---
 *Generated on 2025-12-04*

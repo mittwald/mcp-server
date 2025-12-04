@@ -104,6 +104,7 @@
       "severity": "low",
       "severityScore": 9.700000000000001,
       "sessionId": "0616a506-15b4-466f-9793-44ceebe2a82f",
+      "toolAttempted": "Task",
       "tokenWaste": 10,
       "timeWasteMs": 97043,
       "context": {
@@ -280,6 +281,7 @@
       "severity": "low",
       "severityScore": 19.700000000000003,
       "sessionId": "0f400ad1-5b69-4e04-876c-7d9b16ee39a4",
+      "toolAttempted": "Task",
       "tokenWaste": 20,
       "timeWasteMs": 197230,
       "context": {
@@ -335,6 +337,7 @@
       "severity": "low",
       "severityScore": 12.200000000000001,
       "sessionId": "15c53b2e-3aa8-4573-8c88-29ca6fdd01b8",
+      "toolAttempted": "Bash",
       "tokenWaste": 12,
       "timeWasteMs": 122066,
       "context": {
@@ -490,6 +493,7 @@
       "severity": "low",
       "severityScore": 20.5,
       "sessionId": "2150991f-0425-45f5-a325-586052c383dd",
+      "toolAttempted": "mcp__mittwald__mittwald_user_api_token_get",
       "tokenWaste": 21,
       "timeWasteMs": 204791,
       "context": {
@@ -668,6 +672,7 @@
       "severity": "low",
       "severityScore": 12.100000000000001,
       "sessionId": "3122a045-95e2-4bf3-b771-ebd03263b05a",
+      "toolAttempted": "Bash",
       "tokenWaste": 12,
       "timeWasteMs": 120937,
       "context": {
@@ -705,6 +710,7 @@
       "severity": "low",
       "severityScore": 12.100000000000001,
       "sessionId": "3a06595c-88ba-4421-8894-0d4e29fbfc5e",
+      "toolAttempted": "Bash",
       "tokenWaste": 12,
       "timeWasteMs": 121348,
       "context": {
@@ -880,6 +886,7 @@
       "severity": "low",
       "severityScore": 6.300000000000001,
       "sessionId": "43f46315-ef5a-4b53-b308-578ce788ed5e",
+      "toolAttempted": "Task",
       "tokenWaste": 6,
       "timeWasteMs": 63254,
       "context": {
@@ -994,6 +1001,7 @@
       "severity": "low",
       "severityScore": 6.7,
       "sessionId": "47c1eaca-372d-4f0b-b03e-c4704aa1c213",
+      "toolAttempted": "Task",
       "tokenWaste": 7,
       "timeWasteMs": 66865,
       "context": {
@@ -1011,6 +1019,7 @@
       "severity": "low",
       "severityScore": 17.3,
       "sessionId": "47c1eaca-372d-4f0b-b03e-c4704aa1c213",
+      "toolAttempted": "Task",
       "tokenWaste": 17,
       "timeWasteMs": 172650,
       "context": {
@@ -1028,6 +1037,7 @@
       "severity": "low",
       "severityScore": 7.7,
       "sessionId": "48d821f7-fc21-4117-84a5-9ab62754466e",
+      "toolAttempted": "Task",
       "tokenWaste": 8,
       "timeWasteMs": 76859,
       "context": {
@@ -1819,6 +1829,7 @@
       "severity": "low",
       "severityScore": 13.4,
       "sessionId": "7cd39a72-a235-4c05-afaf-fb31ec35e90d",
+      "toolAttempted": "Task",
       "tokenWaste": 13,
       "timeWasteMs": 133597,
       "context": {
@@ -2056,6 +2067,7 @@
       "severity": "low",
       "severityScore": 21.400000000000002,
       "sessionId": "9722ee37-1bed-46e2-9ff2-15ad7ae30fbc",
+      "toolAttempted": "mcp__mittwald__mittwald_context_get",
       "tokenWaste": 21,
       "timeWasteMs": 214217,
       "context": {
@@ -2195,6 +2207,7 @@
       "severity": "low",
       "severityScore": 6.1000000000000005,
       "sessionId": "1f8f94d8",
+      "toolAttempted": "Bash",
       "tokenWaste": 6,
       "timeWasteMs": 61099,
       "context": {
@@ -2443,6 +2456,7 @@
       "severity": "low",
       "severityScore": 12.8,
       "sessionId": "b0819c37-88b0-4c1d-821c-2012575bc736",
+      "toolAttempted": "mcp__mittwald__mittwald_app_dependency_update",
       "tokenWaste": 13,
       "timeWasteMs": 128152,
       "context": {
@@ -2540,6 +2554,7 @@
       "severity": "low",
       "severityScore": 21.3,
       "sessionId": "bcbf7373-6c34-439a-b951-2982045e52cc",
+      "toolAttempted": "mcp__mittwald__mittwald_user_api_token_create",
       "tokenWaste": 21,
       "timeWasteMs": 213114,
       "context": {
@@ -2711,6 +2726,7 @@
       "severity": "low",
       "severityScore": 12.200000000000001,
       "sessionId": "c798e098-5f4b-464d-85fb-ad0e4b9a6494",
+      "toolAttempted": "Bash",
       "tokenWaste": 12,
       "timeWasteMs": 122092,
       "context": {
@@ -2841,6 +2857,7 @@
       "severity": "low",
       "severityScore": 22.5,
       "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "Task",
       "tokenWaste": 23,
       "timeWasteMs": 225456,
       "context": {
@@ -3149,6 +3166,7 @@
       "severity": "low",
       "severityScore": 21.400000000000002,
       "sessionId": "d243bb5f-8e4f-4df3-8580-7189c7584b33",
+      "toolAttempted": "mcp__mittwald__mittwald_context_set_session",
       "tokenWaste": 21,
       "timeWasteMs": 213539,
       "context": {
@@ -3185,6 +3203,7 @@
       "severity": "low",
       "severityScore": 6.1000000000000005,
       "sessionId": "d417bc74-c952-4f9e-9451-e629ccc88b8d",
+      "toolAttempted": "Task",
       "tokenWaste": 6,
       "timeWasteMs": 60659,
       "context": {
@@ -3673,6 +3692,7 @@
       "severity": "low",
       "severityScore": 21.400000000000002,
       "sessionId": "e2b19dfa-ccf9-4e66-ac6f-c76dee6d88d0",
+      "toolAttempted": "mcp__mittwald__mittwald_user_accessible_projects",
       "tokenWaste": 21,
       "timeWasteMs": 214004,
       "context": {
@@ -3731,6 +3751,7 @@
       "severity": "low",
       "severityScore": 12.200000000000001,
       "sessionId": "e6c8c23f-6fcb-4891-9310-840bd69159ed",
+      "toolAttempted": "Bash",
       "tokenWaste": 12,
       "timeWasteMs": 121743,
       "context": {
@@ -3748,6 +3769,7 @@
       "severity": "low",
       "severityScore": 12.200000000000001,
       "sessionId": "e6c8c23f-6fcb-4891-9310-840bd69159ed",
+      "toolAttempted": "Bash",
       "tokenWaste": 12,
       "timeWasteMs": 121643,
       "context": {
@@ -4373,5 +4395,5 @@
     "low": 116
   },
   "totalTokenWaste": 692273,
-  "generatedAt": "2025-12-04T19:14:24.567Z"
+  "generatedAt": "2025-12-04T19:51:17.692Z"
 }

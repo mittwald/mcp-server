@@ -47,7 +47,7 @@ Dependencies involving Apps tools:
 |--------|-------|
 | Average tokens per session | 644 |
 | Success rate | 90% |
-| Most problematic tool | unknown |
+| Most problematic tool | app/upgrade |
 | Incident count | 34 |
 | Average session duration | 1.1m |
 
@@ -58,7 +58,7 @@ Dependencies involving Apps tools:
 - Document model requirements for apps tools with capability mismatches (7 incidents)
 - Investigate high token waste in apps domain (162,007 tokens)
 - Address 4 high-severity incidents in apps domain
-- Focus attention on unknown - most frequent incident source
+- Focus attention on app/upgrade - most frequent incident source
 
 ---
 *Generated on 2025-12-04*

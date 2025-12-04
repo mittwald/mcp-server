@@ -27,13 +27,16 @@
 
 | Rank | Tool | Incidents | Token Waste | Primary Pattern |
 |------|------|-----------|-------------|-----------------|
-| 1 | Bash | 106 | 23,030 | wrong-tool-selection |
-| 2 | WebSearch | 37 | 1,639 | capability-mismatch |
-| 3 | Task | 35 | 665,966 | unnecessary-delegation |
-| 4 | unknown | 22 | 306 | stuck-indicator |
-| 5 | Skill | 12 | 835 | retry-loop |
-| 6 | SlashCommand | 11 | 457 | wrong-tool-selection |
-| 7 | WebFetch | 1 | 40 | capability-mismatch |
+| 1 | domain/virtualhost/list | 15 | 36,584 | wrong-tool-selection |
+| 2 | cronjob/execution/get | 9 | 87,878 | unnecessary-delegation |
+| 3 | backup/get | 9 | 88,737 | wrong-tool-selection |
+| 4 | app/upgrade | 8 | 19,181 | wrong-tool-selection |
+| 5 | project/membership/get | 7 | 25,918 | wrong-tool-selection |
+| 6 | user/get | 6 | 196 | capability-mismatch |
+| 7 | app/list | 5 | 119,183 | unnecessary-delegation |
+| 8 | stack/delete | 5 | 410 | wrong-tool-selection |
+| 9 | mail/deliverybox/get | 5 | 12,591 | wrong-tool-selection |
+| 10 | app/list/upgrade/candidates | 4 | 229 | wrong-tool-selection |
 
 ## Domain Health
 
@@ -55,4 +58,4 @@
 See `manifest.json` for complete list of generated files.
 
 ---
-*Analysis generated on 2025-12-04T19:28:31.241Z*
+*Analysis generated on 2025-12-04T19:51:17.727Z*

@@ -208,7 +208,7 @@ export interface ParseStats {
   totalLines: number;
   parsedLines: number;
   errorLines: number;
-  errors: Array<{ line: number; error: string }>;
+  errors: Array<{ filePath?: string; line: number; error: string }>;
 }
 
 /**

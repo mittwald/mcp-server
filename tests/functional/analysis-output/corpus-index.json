@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-12-04T19:10:06.261Z",
+  "generatedAt": "2025-12-04T19:51:17.670Z",
   "inputDirectory": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test",
   "sessions": {
     "10126609": {
@@ -8,6 +8,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "parentEventUuid": "cba3e876-6e40-457e-a6b4-e743f208bca1",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:57:31.613Z",
@@ -26,6 +27,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "6c0d57f0-77cf-4242-97b5-90baa16b7376",
+      "parentEventUuid": "a895ed88-2f76-478f-992d-f61865769279",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:58:58.400Z",
@@ -44,6 +46,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "parentEventUuid": "ead1abac-9ae4-4e1d-ae78-8cb88aca5be9",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:59:13.244Z",
@@ -169,6 +172,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/009148fb-965f-41ee-bc6d-72346a14f3eb.jsonl",
       "targetTool": "mcp__mittwald__mittwald_registry_create",
       "domain": "containers",
+      "parentEventUuid": "6acb7d20-0ad5-4398-85c4-d070cbf50ae8",
       "subAgents": [
         "3cd077ce",
         "ec0c473f"
@@ -189,6 +193,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/03442cc3-8045-45f9-b51a-42a62056293a.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_membership_list_own",
       "domain": "organization",
+      "parentEventUuid": "aa5315d1-cec0-4287-99e1-7492349bb23d",
       "subAgents": [
         "77b7cd02",
         "d61c3fe7"
@@ -209,6 +214,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/055d78fd-4c31-41d3-b0ef-2da201b88e81.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_get",
       "domain": "automation",
+      "parentEventUuid": "4a0cc402-8ff6-4f17-b5ad-4c5f4f445d76",
       "subAgents": [
         "347a2be8",
         "ad39734a"
@@ -229,6 +235,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/0616a506-15b4-466f-9793-44ceebe2a82f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_execution_get",
       "domain": "automation",
+      "parentEventUuid": "9c4d5f84-757f-415d-959a-5aa5d6caa86a",
       "subAgents": [
         "1604c833",
         "24732a41",
@@ -251,6 +258,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/06ac936e-0ba6-41b6-8e2a-611ec19ddaea.jsonl",
       "targetTool": "mcp__mittwald__mittwald_ssh_user_update",
       "domain": "access-users",
+      "parentEventUuid": "d23d9fb0-c57e-4f3a-ba13-9504d9b06ff4",
       "subAgents": [
         "86a3f552",
         "eab95638"
@@ -271,6 +279,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/06f28e51-7172-488a-b3d1-d16eaeb12ed6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_shell",
       "domain": "databases",
+      "parentEventUuid": "885d539c-ccba-437c-86a5-be8b74d184a0",
       "subAgents": [
         "23b0ab24",
         "a8d93de8"
@@ -291,6 +300,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/07df6218-f756-43da-b41a-2ec15440810d.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_delete",
       "domain": "automation",
+      "parentEventUuid": "66c35d1c-7528-401a-91b9-97a060642892",
       "subAgents": [
         "008f4167",
         "a96b1bf5",
@@ -312,6 +322,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/08d4d1e2-d12d-4b63-9be5-0120dd578a8c.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_create_python",
       "domain": "apps",
+      "parentEventUuid": "0919749b-7907-47ff-91af-7a955126096a",
       "subAgents": [
         "a9b87b1e",
         "d669fe64"
@@ -332,6 +343,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/0db0944e-efcc-406f-8928-bb245d112078.jsonl",
       "targetTool": "mcp__mittwald__mittwald_server_get",
       "domain": "project-foundation",
+      "parentEventUuid": "ec378771-1763-4d6b-beef-a4a06466f621",
       "subAgents": [
         "3c74b23b",
         "e22d02f6"
@@ -352,6 +364,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/0e3e24d0-7a49-4fa3-ba27-59d6f8bae28a.jsonl",
       "targetTool": "mcp__mittwald__mittwald_volume_delete",
       "domain": "containers",
+      "parentEventUuid": "c4b35b8c-d780-44d3-baa7-c4c52ee05b10",
       "subAgents": [
         "b8fcaa00",
         "d1bc526a"
@@ -372,6 +385,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/0f400ad1-5b69-4e04-876c-7d9b16ee39a4.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_shopware6",
       "domain": "apps",
+      "parentEventUuid": "7e397a8e-bf66-44b2-811e-d52640fbe6c9",
       "subAgents": [
         "1b771f96",
         "cfc5c311",
@@ -393,6 +407,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/120e1620-4b93-463a-88cc-da2e76dc7ddc.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_address_get",
       "domain": "domains-mail",
+      "parentEventUuid": "775826d0-4aa0-48ec-a70f-6bef68f15dbd",
       "subAgents": [
         "176db376",
         "30db869d"
@@ -413,6 +428,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/1264d91b-03b5-45b2-880c-02d4096aa355.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_user_update",
       "domain": "databases",
+      "parentEventUuid": "f7383dd0-1587-4a01-9f37-b396cfae4687",
       "subAgents": [
         "2a7165dd",
         "3ba5b2d1"
@@ -433,6 +449,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/1462d560-bc23-49e3-b9dc-d410a92eecc3.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_list",
       "domain": "apps",
+      "parentEventUuid": "a818bad0-a2e5-4aa1-acb4-19eb1acbe788",
       "subAgents": [
         "82014691",
         "c2db3dd2"
@@ -453,6 +470,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/14c93128-7173-462d-82d6-16d50635a273.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_list",
       "domain": "containers",
+      "parentEventUuid": "a7b4c398-3e88-46a0-a88d-e869c1118239",
       "subAgents": [
         "3b2a522b",
         "c450d74d"
@@ -473,6 +491,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/15c53b2e-3aa8-4573-8c88-29ca6fdd01b8.jsonl",
       "targetTool": "mcp__mittwald__mittwald_volume_list",
       "domain": "containers",
+      "parentEventUuid": "a51c0f1b-84b0-4722-afb9-b4aa7a4920d6",
       "subAgents": [
         "73355122",
         "8c23c826"
@@ -493,6 +512,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/15d9f85a-8fe0-4afb-b774-50ebca5c0756.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_dump",
       "domain": "databases",
+      "parentEventUuid": "56094668-286d-4140-ae25-992f629d29b7",
       "subAgents": [
         "a4d7abfa",
         "ea7163c3"
@@ -513,6 +533,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/16b6f9be-4f8a-4659-9c88-4373d25e8c7b.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_joomla",
       "domain": "apps",
+      "parentEventUuid": "3c390a42-f14c-4a5a-bda7-893631dd33d5",
       "subAgents": [
         "4a0505b4",
         "a4aee0c3"
@@ -533,6 +554,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/1715f3c0-769d-4fb6-ba9f-6870a4d62b12.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_versions",
       "domain": "apps",
+      "parentEventUuid": "2341c64a-1d8b-410d-9ddf-1a22474fb9ed",
       "subAgents": [
         "4604a2e2",
         "f373b2b0"
@@ -553,6 +575,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/198be46b-e240-48a3-80b0-b7c24283c80e.jsonl",
       "targetTool": "mcp__mittwald__mittwald_ddev_init",
       "domain": "project-foundation",
+      "parentEventUuid": "04b5760f-fb30-41f1-b693-9a193c1d998f",
       "subAgents": [
         "57ca38df",
         "641065bf"
@@ -573,6 +596,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/1a9ee2cd-25a0-40f6-83ed-62c10133c057.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_shopware5",
       "domain": "apps",
+      "parentEventUuid": "1fb0d55a-03bd-40e5-b994-d1d55bd65cb7",
       "subAgents": [
         "71affd6d",
         "a810e79e"
@@ -593,6 +617,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/1cdbe0b0-21f5-4125-a6c7-39caba9401c1.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_address_update",
       "domain": "domains-mail",
+      "parentEventUuid": "f9318542-0fee-45d6-8a89-76791e425e25",
       "subAgents": [
         "178cc4cc",
         "23fc5fd6"
@@ -613,6 +638,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/1d40896e-050e-4c52-9f74-c017ade0a061.jsonl",
       "targetTool": "mcp__mittwald__mittwald_stack_ps",
       "domain": "containers",
+      "parentEventUuid": "0b7a7d27-ccde-4de0-b2fc-a3af39492965",
       "subAgents": [
         "88aa1108",
         "ee4a9c97"
@@ -633,6 +659,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/1d66102f-acc6-47f1-baaa-5645f3a125a2.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_get",
       "domain": "databases",
+      "parentEventUuid": "c6fdf49b-2196-4da1-95f1-559587a10d4e",
       "subAgents": [
         "20d88ea5",
         "8030cbaf"
@@ -653,6 +680,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/1e35750f-7025-4546-8a5e-700767a79438.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_open",
       "domain": "apps",
+      "parentEventUuid": "372814c0-f544-4b80-b77d-204b4dcfacd2",
       "subAgents": [
         "c4ef8df6",
         "fd0036ec"
@@ -673,6 +701,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/20458553-c275-4358-9bce-c81e428ce9df.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_shopware6",
       "domain": "apps",
+      "parentEventUuid": "ee96bf1f-8ff6-4204-9f93-5db6958258fc",
       "subAgents": [
         "1724637f",
         "d492ac27"
@@ -693,6 +722,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/20665f4a-e288-4edd-ae1a-12ee97af243f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_dnszone_get",
       "domain": "domains-mail",
+      "parentEventUuid": "344b9d82-67df-4092-9946-45d629fa88fd",
       "subAgents": [
         "5edf8c30",
         "c8dc10f5"
@@ -713,6 +743,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/2150991f-0425-45f5-a325-586052c383dd.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_api_token_get",
       "domain": "identity",
+      "parentEventUuid": "b44e5910-7483-4511-afd3-4d679ef39abc",
       "subAgents": [
         "11ef3b74",
         "89336754"
@@ -733,6 +764,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/257dafcf-5e2f-4af1-91ef-4bcfcc0db208.jsonl",
       "targetTool": "mcp__mittwald__mittwald_conversation_reply",
       "domain": "project-foundation",
+      "parentEventUuid": "42104205-97c6-459c-8d39-9919e192b9c8",
       "subAgents": [
         "09f0d5f1",
         "4b4ccd47"
@@ -753,6 +785,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/270715c6-ff1b-46f3-88d2-77b6bbf4df8b.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_virtualhost_list",
       "domain": "domains-mail",
+      "parentEventUuid": "b6bf515b-ef3c-425c-b0f3-6f34b1d1c94d",
       "subAgents": [
         "a8346eae",
         "d22cb95a"
@@ -773,6 +806,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/2a17848d-7f9d-4b5b-9a62-a4cddf509da7.jsonl",
       "targetTool": "mcp__mittwald__mittwald_context_reset",
       "domain": "identity",
+      "parentEventUuid": "c6c7c1de-5584-4324-b51d-ac8b52a3bf1a",
       "subAgents": [
         "461028ff",
         "f34a2322"
@@ -793,6 +827,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/2aa758bd-765e-4f66-b4f7-5ba96c6d2cf2.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_user_get",
       "domain": "databases",
+      "parentEventUuid": "6e313ad1-7ec9-4636-814e-0c066fa05242",
       "subAgents": [
         "4e497e58",
         "b8b3b4c9"
@@ -813,6 +848,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/2d36178c-eb06-47b7-a6f5-061d8735e6b3.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_deliverybox_update",
       "domain": "domains-mail",
+      "parentEventUuid": "42c369f1-f681-481f-95a8-33f516ff758c",
       "subAgents": [
         "3869a926",
         "3b119537",
@@ -834,6 +870,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/2d6c2db1-1509-4c89-af43-538184b26d67.jsonl",
       "targetTool": "mcp__mittwald__mittwald_sftp_user_delete",
       "domain": "access-users",
+      "parentEventUuid": "13a56061-8d08-43c2-aef9-b5f351023beb",
       "subAgents": [
         "2766f6c7",
         "7e599e19"
@@ -854,6 +891,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/2f3430bb-35f0-42a0-9f22-cf96b3d5ef74.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_schedule_list",
       "domain": "backups",
+      "parentEventUuid": "e5e1f197-1d5d-4cf7-8c28-90ecac64fa7d",
       "subAgents": [
         "3b8c22f7",
         "4165b395"
@@ -874,6 +912,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/2f4b80f3-8cb4-47aa-bdf3-a2cbbc1a5744.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_invite_list",
       "domain": "organization",
+      "parentEventUuid": "a7fc4fb8-13a6-4188-b57a-2f3a796a5df6",
       "subAgents": [
         "bb60d098",
         "e2118b66"
@@ -894,6 +933,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/3012c306-3007-42e0-8f60-04cc94e079c4.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_versions",
       "domain": "databases",
+      "parentEventUuid": "26ab87e4-4fbf-497b-8880-917d4b26b0f3",
       "subAgents": [
         "035ac375",
         "4f240ad5"
@@ -914,6 +954,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/30c02c11-d1e1-4e42-be5e-73cbf08321b6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_list",
       "domain": "organization",
+      "parentEventUuid": "b14073e8-7b54-4f91-81bf-03ca8790ed72",
       "subAgents": [
         "afa42359",
         "c8dbc13e"
@@ -934,6 +975,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/3122a045-95e2-4bf3-b771-ebd03263b05a.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_api_token_list",
       "domain": "identity",
+      "parentEventUuid": "25133d91-7330-4017-89b4-5c3302084de7",
       "subAgents": [
         "cbf24dfa",
         "e3cb72c0"
@@ -954,6 +996,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/314b8d7e-916c-4fc6-b122-ce2fd2a819f4.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_ssh_key_import",
       "domain": "identity",
+      "parentEventUuid": "cdef044b-336e-497c-bb25-d816f16aa17f",
       "subAgents": [
         "24156b34",
         "83b68b47"
@@ -974,6 +1017,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/318dc0f8-4a60-4c59-8e79-c673a1041ef7.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_execute",
       "domain": "automation",
+      "parentEventUuid": "2991eb96-c6de-463d-a279-64b055568444",
       "subAgents": [
         "0ff6db16",
         "dcae8af4"
@@ -994,6 +1038,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/37334531-8585-493b-b97c-11a91f39ee2c.jsonl",
       "targetTool": "mcp__mittwald__mittwald_context_reset_session",
       "domain": "identity",
+      "parentEventUuid": "b5263144-1c63-4b3f-a1fb-53b0470230a5",
       "subAgents": [
         "5e333fe5",
         "ae43187c"
@@ -1014,6 +1059,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/37dfc27d-81a4-4dc0-9f10-d267106f8772.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_create",
       "domain": "automation",
+      "parentEventUuid": "938a68f6-d965-400c-8083-9cb91791bc63",
       "subAgents": [
         "1e67dde9",
         "a0564f50"
@@ -1034,6 +1080,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/3a06595c-88ba-4421-8894-0d4e29fbfc5e.jsonl",
       "targetTool": "mcp__mittwald__mittwald_ssh_user_delete",
       "domain": "access-users",
+      "parentEventUuid": "75ac03de-db59-4716-95af-b2c4e8d75342",
       "subAgents": [
         "0fec15eb",
         "f0fcbfa7"
@@ -1054,6 +1101,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/3a8d085a-4b5d-4d31-a101-31d472cc70df.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_deliverybox_delete",
       "domain": "domains-mail",
+      "parentEventUuid": "a021e895-378f-412b-a395-9e29a4ff56c1",
       "subAgents": [
         "5862f035",
         "82121e64"
@@ -1074,6 +1122,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/3cb62353-78ec-4c2e-8261-e2658a8f6ae2.jsonl",
       "targetTool": "mcp__mittwald__mittwald_context_get_session",
       "domain": "identity",
+      "parentEventUuid": "e6758041-e26a-497d-bb0f-25b70b3fe4a9",
       "subAgents": [
         "05f462c3",
         "e8cdc2ca"
@@ -1094,6 +1143,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/3ed52749-f7a7-4c17-8fed-31c05d70199a.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_stop",
       "domain": "containers",
+      "parentEventUuid": "7c4e8eb5-a6dd-4053-bd3e-858e49dacf62",
       "subAgents": [
         "98da3120",
         "df6b1182"
@@ -1114,6 +1164,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/40055c74-806a-48dd-858d-6fb29cb01d3c.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_invite_revoke",
       "domain": "organization",
+      "parentEventUuid": "27567b18-b360-4845-8261-802150dc2ad2",
       "subAgents": [
         "45806465",
         "ce589126"
@@ -1134,6 +1185,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/4065c495-3887-444d-b9c2-7f5f0122907c.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_redis_create",
       "domain": "databases",
+      "parentEventUuid": "d4bbed5b-29c9-4142-8693-7ef8cd0ce880",
       "subAgents": [
         "819f9a24",
         "fc1023dc"
@@ -1154,6 +1206,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/43027c07-f00e-43d1-86b5-ffa1e42e3278.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_membership_revoke",
       "domain": "organization",
+      "parentEventUuid": "efbd9188-fb47-4f50-8f21-8a0e3a78d6bf",
       "subAgents": [
         "09ae974e",
         "b9e6fed3"
@@ -1174,6 +1227,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/43e15c86-d4e4-4397-9853-7e659841e71b.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_get",
       "domain": "identity",
+      "parentEventUuid": "6c9170b1-cdfa-4249-a850-d902d93d8d39",
       "subAgents": [
         "6b34498b",
         "7c39cfca"
@@ -1194,6 +1248,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/43f46315-ef5a-4b53-b308-578ce788ed5e.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_deliverybox_list",
       "domain": "domains-mail",
+      "parentEventUuid": "d9b58376-8cf5-4a01-9107-a80e2036eca5",
       "subAgents": [
         "72c503c6",
         "b81eb371",
@@ -1215,6 +1270,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/456e9108-c7c2-4b78-b731-15092a1ac862.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_create",
       "domain": "databases",
+      "parentEventUuid": "24bfa241-fff5-478a-882d-f338af6604ee",
       "subAgents": [
         "9e118df6",
         "acebc53c",
@@ -1236,6 +1292,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/45742f0e-9b0d-4795-bd3d-dbb4563e1b2b.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_copy",
       "domain": "apps",
+      "parentEventUuid": "d1d68664-d12b-48ba-8f86-a909cf38dfe1",
       "subAgents": [
         "0394a2a7",
         "601cd320"
@@ -1256,6 +1313,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/47c1eaca-372d-4f0b-b03e-c4704aa1c213.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_list",
       "domain": "apps",
+      "parentEventUuid": "62c38ea7-f5ff-4713-9c09-a34864555f1c",
       "subAgents": [
         "1f53d971",
         "1f8f94d8",
@@ -1278,6 +1336,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/48d821f7-fc21-4117-84a5-9ab62754466e.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_list",
       "domain": "project-foundation",
+      "parentEventUuid": "0e92d098-cc4f-435d-9086-aea7583796df",
       "subAgents": [
         "1ae52ee1",
         "460f7b8e",
@@ -1299,6 +1358,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/4b2f4cc6-f563-488f-906c-3985e622dafc.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_session_get",
       "domain": "identity",
+      "parentEventUuid": "ea40d2fe-a91e-40d4-882a-f426055eb25b",
       "subAgents": [
         "66be5029",
         "e9b14918"
@@ -1319,6 +1379,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/4b469a0f-7bde-4182-9df1-9178cc915386.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_ssh_key_delete",
       "domain": "identity",
+      "parentEventUuid": "2495a152-237c-4b97-bcae-08782ecde481",
       "subAgents": [
         "5684e0e0",
         "d721ba1b"
@@ -1339,6 +1400,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/4c314cc1-fa64-4980-9245-a63815217d9d.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_list",
       "domain": "databases",
+      "parentEventUuid": "70c08c49-a94b-4273-b0d2-aaeb064a4037",
       "subAgents": [
         "3f7e5f76",
         "74aae951"
@@ -1359,6 +1421,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/4e2c7147-4f6c-490e-b2cc-64a810700216.jsonl",
       "targetTool": "mcp__mittwald__mittwald_ssh_user_create",
       "domain": "access-users",
+      "parentEventUuid": "830c95e6-735d-444e-9c1d-8d721eb26169",
       "subAgents": [
         "1a5bb43d",
         "a5e65e45"
@@ -1379,6 +1442,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/4ec1f00e-b024-4b2f-945a-b49b7106d5b4.jsonl",
       "targetTool": "mcp__mittwald__mittwald_stack_deploy",
       "domain": "containers",
+      "parentEventUuid": "8c0b2136-f32a-4951-9812-48a4af05da5a",
       "subAgents": [
         "b901fdaf",
         "bd53436a"
@@ -1399,6 +1463,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/4f32a5e6-d042-4cf9-847c-0f60a09dd88f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_create_php",
       "domain": "apps",
+      "parentEventUuid": "8c2f17c9-392f-4d4a-8e5e-92732c4176b9",
       "subAgents": [
         "5960f8da",
         "99a6e3ad"
@@ -1419,6 +1484,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/4ffeab44-5563-4f66-82ff-6fd4704ba917.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_deliverybox_list",
       "domain": "domains-mail",
+      "parentEventUuid": "a839d43b-aa2e-46b5-842e-ec35eb066553",
       "subAgents": [
         "0c5ea54e",
         "3015bee5"
@@ -1439,6 +1505,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/520f7774-a7a8-4494-8cb2-74a9d45991b1.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_membership_list",
       "domain": "project-foundation",
+      "parentEventUuid": "79a92d31-48bb-49f7-8eae-263c02dc3444",
       "subAgents": [
         "2ce1b8ee",
         "d6d36d4f"
@@ -1459,6 +1526,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/53619bd8-a12d-49b7-8a6a-8a57258d2d34.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_schedule_update",
       "domain": "backups",
+      "parentEventUuid": "42564e70-78b4-4701-b00e-165a8531b303",
       "subAgents": [
         "0cc63dfb",
         "d8e988e6"
@@ -1479,6 +1547,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/5711ac59-8680-467d-a3df-61e25f5a43e0.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_restart",
       "domain": "containers",
+      "parentEventUuid": "051de75c-976f-4205-8f53-e5a67fe48dae",
       "subAgents": [
         "148f54b2",
         "dd980dfd"
@@ -1499,6 +1568,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/57588020-6803-4f77-bdd6-2df3075de567.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_get",
       "domain": "identity",
+      "parentEventUuid": "17788849-c843-40ec-a5ad-d49e00cb1080",
       "subAgents": [
         "952c09e0",
         "c605d001"
@@ -1519,6 +1589,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/576d4d19-e7de-4b2a-969a-dfcf8152e60f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_execution_get",
       "domain": "automation",
+      "parentEventUuid": "e63f9f52-c822-4a26-92e6-bbc67a8b14bf",
       "subAgents": [
         "0516a2d7",
         "4025962b",
@@ -1542,6 +1613,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/5894fbfa-709b-485a-b445-8f3c7c1835c1.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_typo3",
       "domain": "apps",
+      "parentEventUuid": "b653e5c9-de2f-4b74-b208-c7c80e0ead5b",
       "subAgents": [
         "651d7f3e",
         "f67f144a"
@@ -1562,6 +1634,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/59044bf3-9a5a-4a14-9bff-ffeedc762c9c.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_charsets",
       "domain": "databases",
+      "parentEventUuid": "4877fae8-0087-435a-ab0c-c633f1542f56",
       "subAgents": [
         "12853a80",
         "56759bba",
@@ -1583,6 +1656,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/5ab5d87e-ee32-478b-9a9d-04355c7a0482.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_api_token_revoke",
       "domain": "identity",
+      "parentEventUuid": "af4ab3ac-6a4d-4478-8d44-e9a0b62c3cf6",
       "subAgents": [
         "104658a3",
         "e7a9a90e"
@@ -1603,6 +1677,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/5b3e92c8-5bd0-4e0b-810e-d2340165460f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_get",
       "domain": "identity",
+      "parentEventUuid": "c4ea7ec4-f971-43be-8d0d-8b416281c00e",
       "subAgents": [
         "05cb6bbd",
         "fee6495d"
@@ -1623,6 +1698,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/5c466c0e-77ee-4108-88cd-7ebf62fa5413.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_delete",
       "domain": "organization",
+      "parentEventUuid": "3d122bdc-c9d0-4a54-a655-f457b448a1a5",
       "subAgents": [
         "7823eb64",
         "c0403e3d",
@@ -1644,6 +1720,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/5cdcf93b-92df-4995-ba70-5601633da091.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_list",
       "domain": "databases",
+      "parentEventUuid": "0d965ad7-1d86-430c-b7cd-39b7740974e8",
       "subAgents": [
         "488727a4"
       ],
@@ -1663,6 +1740,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/60c8ae26-b579-447a-ac5e-1b2733ac275d.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_execution_get",
       "domain": "automation",
+      "parentEventUuid": "45d5758c-b426-4fe6-abe3-540365982fb4",
       "subAgents": [
         "96988bf1",
         "cdc046ab"
@@ -1683,6 +1761,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/6135c5e5-fb57-42c9-b766-d416f44cb93c.jsonl",
       "targetTool": "",
       "domain": "project-foundation",
+      "parentEventUuid": "23414dd8-0115-435d-8441-09150da492d1",
       "subAgents": [
         "790e4b48",
         "ff12d815"
@@ -1703,6 +1782,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/62c19ca1-ebaa-42a5-a34e-e997b827d679.jsonl",
       "targetTool": "mcp__mittwald__mittwald_ssh_user_list",
       "domain": "access-users",
+      "parentEventUuid": "0a6965cd-ae16-486e-bd60-ca6d1b5091a0",
       "subAgents": [
         "38bc9668",
         "94b3d9d9"
@@ -1723,6 +1803,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/65225b79-98f6-443b-9f6e-859d27d03ca1.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_schedule_create",
       "domain": "backups",
+      "parentEventUuid": "7af983f7-3703-45f2-a0f2-3f9f6999eae0",
       "subAgents": [
         "0ab5976a",
         "2658428b"
@@ -1743,6 +1824,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/65deff6d-6464-44a2-8372-832c3b427861.jsonl",
       "targetTool": "mcp__mittwald__mittwald_stack_delete",
       "domain": "containers",
+      "parentEventUuid": "bddaece3-66ea-4d78-8e37-9212ad7cd2ee",
       "subAgents": [
         "19fdca7c",
         "72b58d02"
@@ -1763,6 +1845,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/682bcdc3-5de3-4be2-bfa0-00a76c3ffc66.jsonl",
       "targetTool": "mcp__mittwald__mittwald_sftp_user_list",
       "domain": "access-users",
+      "parentEventUuid": "1d7e83a5-f6f7-42f8-8948-05959ef5fac7",
       "subAgents": [
         "7021eaa8",
         "b5710217"
@@ -1783,6 +1866,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/698f73d2-ff2b-4db4-88b9-2525d2b74a27.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_virtualhost_get",
       "domain": "domains-mail",
+      "parentEventUuid": "b67da1dd-531f-4a03-87a1-73c0db27ac6e",
       "subAgents": [
         "41516e87",
         "c5203afb"
@@ -1803,6 +1887,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/6b7257c5-9e28-4c21-ad4f-76a60e86fefc.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_dnszone_update",
       "domain": "domains-mail",
+      "parentEventUuid": "22042da2-7dbc-4e8f-ace8-960927c35445",
       "subAgents": [
         "7c9c555d",
         "ef16a244"
@@ -1823,6 +1908,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/6c0d57f0-77cf-4242-97b5-90baa16b7376.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_address_create",
       "domain": "domains-mail",
+      "parentEventUuid": "5a5b7734-573b-4e77-9cee-7838661644a5",
       "subAgents": [
         "33098795",
         "5102866f",
@@ -1844,6 +1930,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/6d5349c0-c801-413e-b10d-f53980f2f701.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_invite",
       "domain": "organization",
+      "parentEventUuid": "b9e65151-f87a-430b-aac0-b27852a71ef1",
       "subAgents": [
         "13b7be3c",
         "8e845f5b"
@@ -1864,6 +1951,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/6f86191a-1742-4e6f-b43a-f947fcf0c499.jsonl",
       "targetTool": "mcp__mittwald__mittwald_sftp_user_update",
       "domain": "access-users",
+      "parentEventUuid": "58ea6c3c-ae09-4867-8854-bfba305018ac",
       "subAgents": [
         "0463a504",
         "cdfa799b"
@@ -1884,6 +1972,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/752044b9-9105-4ae9-a497-22fce3d3d011.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_get",
       "domain": "project-foundation",
+      "parentEventUuid": "41a08d5e-3887-4635-9067-9da9ff888f49",
       "subAgents": [
         "4bece23b",
         "d1943e2e"
@@ -1904,6 +1993,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/77879fc5-2f95-434f-9b8e-7e023bb34313.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_invite_get",
       "domain": "project-foundation",
+      "parentEventUuid": "72d9b04c-7f7e-42db-a464-92fac21b1284",
       "subAgents": [
         "5d7633a5",
         "d4d142f5"
@@ -1924,6 +2014,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/7a247f34-821c-42b8-a8e9-b1377310f194.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_start",
       "domain": "containers",
+      "parentEventUuid": "4c2c088d-7206-44c6-8fff-d7f8d8893779",
       "subAgents": [
         "01c1a307"
       ],
@@ -1943,6 +2034,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/7ab00b93-3342-4b6e-ac47-281b7bf7a38d.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_recreate",
       "domain": "containers",
+      "parentEventUuid": "3c4ba5cb-ee2c-4d55-a4e7-ea80f6ce17ba",
       "subAgents": [
         "7993cc2b",
         "e1656ea6"
@@ -1963,6 +2055,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/7b9ed591-90b7-4cad-87b4-d8eb2c7602e6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_ssh_key_list",
       "domain": "identity",
+      "parentEventUuid": "4e523396-f237-4d7f-8c12-e4dc22460cfe",
       "subAgents": [
         "0ca3a3bc",
         "d54f228f"
@@ -1983,6 +2076,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/7c856626-22ad-459a-82be-ffe46a6e1a4b.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_upgrade",
       "domain": "apps",
+      "parentEventUuid": "ed532abd-cc82-4f52-8396-cba5801c1da8",
       "subAgents": [
         "4a5abd56",
         "50a09d5d",
@@ -2004,6 +2098,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/7cd39a72-a235-4c05-afaf-fb31ec35e90d.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_membership_get_own",
       "domain": "project-foundation",
+      "parentEventUuid": "b3d83a34-4e2d-4f8f-8589-cdd23ec5e526",
       "subAgents": [
         "2079b610",
         "58be221e",
@@ -2025,6 +2120,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/7e40a376-f34b-42c6-81f7-1f32e903579c.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_create_node",
       "domain": "apps",
+      "parentEventUuid": "3d1b492f-48ec-4138-b602-95b4d545c938",
       "subAgents": [
         "2e839b1a",
         "3db01bad"
@@ -2045,6 +2141,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/82fe3a46-322e-4a7e-ad82-7aed8474985b.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_membership_get",
       "domain": "project-foundation",
+      "parentEventUuid": "846a04e0-ea00-47b6-8b87-82d6770a04a0",
       "subAgents": [
         "1b701d2c",
         "2fd27155",
@@ -2067,6 +2164,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/84776991-6ac4-4a7c-94e2-2640f19202b4.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_execution_logs",
       "domain": "automation",
+      "parentEventUuid": "5d83000c-438a-4832-b6c8-563291abf83c",
       "subAgents": [
         "3fdb8a8f",
         "e6b58a9a"
@@ -2087,6 +2185,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/856e23a7-483f-4f58-b14a-bfb4eec339f3.jsonl",
       "targetTool": "mcp__mittwald__mittwald_conversation_list",
       "domain": "project-foundation",
+      "parentEventUuid": "f756e401-14a8-47ff-955c-981e38bc789e",
       "subAgents": [
         "9793b3e0",
         "cbfa48fb"
@@ -2107,6 +2206,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/87220f29-2c3d-4c1b-9640-e92d62b2038c.jsonl",
       "targetTool": "mcp__mittwald__mittwald_registry_update",
       "domain": "containers",
+      "parentEventUuid": "49feb539-8a7b-4ee7-8398-7a18cbc60b67",
       "subAgents": [
         "318a71a1",
         "8eae9b8a"
@@ -2127,6 +2227,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/878dde8c-8461-4e6c-a5df-afefb08a4cd6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_conversation_close",
       "domain": "project-foundation",
+      "parentEventUuid": "76aae639-0a79-458b-bf97-d4cf9488eb22",
       "subAgents": [
         "85fb8b57",
         "ef8b0f93"
@@ -2147,6 +2248,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/87f44ba9-cbba-4fe7-980e-d17ce2eae8e9.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_membership_get",
       "domain": "project-foundation",
+      "parentEventUuid": "437d893a-44ff-4c66-a11f-c705d8ff9c49",
       "subAgents": [
         "04122a1b",
         "9a0613b6"
@@ -2167,6 +2269,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/8b43d51f-5492-4e78-a3ee-e1f9696dc8fa.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_delete",
       "domain": "containers",
+      "parentEventUuid": "5dee938e-c502-44ac-9375-926ddfad0f3b",
       "subAgents": [
         "9c8e7d9d",
         "a87b8c27"
@@ -2187,6 +2290,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/8c2a30cf-26ac-42ca-a34a-f1e4ad710582.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_get",
       "domain": "domains-mail",
+      "parentEventUuid": "3aec473b-5e89-470d-ae5b-83a20f9d5e65",
       "subAgents": [
         "c1f5aada",
         "f73e80d6"
@@ -2207,6 +2311,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/9074dd3c-efcf-4307-8925-6e7e18a109fd.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_list",
       "domain": "automation",
+      "parentEventUuid": "1398b894-e0f4-4e8c-b842-b27ef931fd85",
       "subAgents": [
         "9fcd711e",
         "e3a66806"
@@ -2227,6 +2332,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/9102cd0e-8794-4efd-94f3-2720dca58d62.jsonl",
       "targetTool": "mcp__mittwald__mittwald_context_set",
       "domain": "identity",
+      "parentEventUuid": "7b237d4f-e5be-4de8-a7f0-20c746f22be1",
       "subAgents": [
         "03e8ce93",
         "4edb503b"
@@ -2247,6 +2353,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/9356ebe2-eaa3-4b8a-873e-463ab442ac59.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_get",
       "domain": "apps",
+      "parentEventUuid": "cb2c096c-e529-4a52-834a-40789d22c941",
       "subAgents": [
         "31b65c31",
         "6e38d7ce"
@@ -2267,6 +2374,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/9722ee37-1bed-46e2-9ff2-15ad7ae30fbc.jsonl",
       "targetTool": "mcp__mittwald__mittwald_context_get",
       "domain": "identity",
+      "parentEventUuid": "f6b7921c-098f-4ade-b543-1f9f95a959ea",
       "subAgents": [
         "bab8b94c",
         "caeda3c9"
@@ -2287,6 +2395,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/9a40cbff-790d-4084-84f7-73d1bed9a0ef.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_create",
       "domain": "project-foundation",
+      "parentEventUuid": "76c27555-66e0-48a6-a404-63aa7f692522",
       "subAgents": [
         "a1ce61ce",
         "b8b1a04d"
@@ -2307,6 +2416,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/9c74ac04-b593-486a-862e-403b4d32accb.jsonl",
       "targetTool": "mcp__mittwald__mittwald_extension_install",
       "domain": "organization",
+      "parentEventUuid": "6e065e93-a220-41ab-9963-a625f4095e6c",
       "subAgents": [
         "2175d407",
         "d569432d"
@@ -2327,6 +2437,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/9dfd8924-a2c3-468f-a4db-55b7aa75cc89.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_delete",
       "domain": "backups",
+      "parentEventUuid": "d62dbe18-a0d5-4811-a410-03dc01232566",
       "subAgents": [
         "43ff00d3",
         "bf6c4d78"
@@ -2347,6 +2458,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/a5b9314d-d480-44b6-be22-19989e508d41.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_accessible_projects",
       "domain": "identity",
+      "parentEventUuid": "2bd4b57d-add4-41b7-be30-6768b0d183f2",
       "subAgents": [
         "be2b6439",
         "fb330d1e"
@@ -2367,6 +2479,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/a658ca5f-06f0-491a-8152-e67db72467fa.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_get",
       "domain": "identity",
+      "parentEventUuid": "58d3c7e7-074c-4256-9e27-6b3df3edbedf",
       "subAgents": [
         "4ca09a55",
         "a51df5ce"
@@ -2387,6 +2500,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/a6859c6f-94af-4413-a237-8636fc18bf6e.jsonl",
       "targetTool": "mcp__mittwald__mittwald_stack_list",
       "domain": "containers",
+      "parentEventUuid": "e8217048-3d2d-4482-9876-b45830244a35",
       "subAgents": [
         "23f0952a",
         "e1b2460c"
@@ -2407,6 +2521,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/abea9f47-2b3d-4bb9-ba86-205f3a7aa185.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_get",
       "domain": "organization",
+      "parentEventUuid": "9e69a6fe-ea59-4182-80df-dbbb4d0cdbff",
       "subAgents": [
         "1a44a913",
         "d3bceae5"
@@ -2427,6 +2542,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/ad2ded16-807b-48b9-b236-00c928de02d6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_ssh_key_get",
       "domain": "identity",
+      "parentEventUuid": "d3d8ca10-899e-431b-8b88-2d8debb51aa8",
       "subAgents": [
         "2029603c",
         "bd6a749c"
@@ -2447,6 +2563,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/adb890a5-d747-4599-9db8-78fcab34c372.jsonl",
       "targetTool": "mcp__mittwald__mittwald_ddev_render_config",
       "domain": "project-foundation",
+      "parentEventUuid": "35b17d53-2719-4338-a4dd-214b15619470",
       "subAgents": [
         "3d9e114f",
         "b1d41a02"
@@ -2467,6 +2584,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/ae419bef-e6a6-4ff2-a351-a231685b1fa5.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_execution_abort",
       "domain": "automation",
+      "parentEventUuid": "5477c9ec-0621-4ca6-9b43-31fb8e7104e2",
       "subAgents": [
         "3fb450fc",
         "efa4ceaa"
@@ -2542,6 +2660,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "d84db770-68da-4e74-af83-8fc859c61461",
+      "parentEventUuid": "a509d3dd-d388-47cf-bb3c-2f4a6f33abdb",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:51:04.472Z",
@@ -2704,6 +2823,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "576d4d19-e7de-4b2a-969a-dfcf8152e60f",
+      "parentEventUuid": "b2a60dc4-bf60-481a-857d-3cfedd5bbfd3",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:24:25.742Z",
@@ -3118,6 +3238,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "59044bf3-9a5a-4a14-9bff-ffeedc762c9c",
+      "parentEventUuid": "c293556b-bcd1-4076-bf7c-ab9ae467300d",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:56:10.564Z",
@@ -3190,6 +3311,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "0616a506-15b4-466f-9793-44ceebe2a82f",
+      "parentEventUuid": "1b240b19-0bc7-4f5e-82e4-07ede59c6f0d",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:54:19.849Z",
@@ -3298,6 +3420,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "dbc873fc-c4ba-4cf2-9aaf-a14f69890ee9",
+      "parentEventUuid": "06654e64-2b21-48ab-b3f2-ee0185d613a3",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:59:58.488Z",
@@ -3406,6 +3529,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "82fe3a46-322e-4a7e-ad82-7aed8474985b",
+      "parentEventUuid": "c6f97e19-99ae-4a7f-a2a9-1a367ea7d3dd",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:04:21.556Z",
@@ -3514,6 +3638,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "47c1eaca-372d-4f0b-b03e-c4704aa1c213",
+      "parentEventUuid": "47d2f95e-d810-4340-acdf-19eabfc971ea",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:34:03.503Z",
@@ -3874,6 +3999,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "f2bce107-8450-4775-86ab-c7ceb77850c8",
+      "parentEventUuid": "591bf03e-534a-45b2-bb7a-5f55df330579",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:00:43.037Z",
@@ -3982,6 +4108,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "82fe3a46-322e-4a7e-ad82-7aed8474985b",
+      "parentEventUuid": "b702a426-8772-4bec-b86b-ececa1c39fb4",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:05:07.317Z",
@@ -4108,6 +4235,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "parentEventUuid": "4498b0e4-f096-4bd5-80d8-5ed68f771ca1",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:53:34.382Z",
@@ -4216,6 +4344,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "0616a506-15b4-466f-9793-44ceebe2a82f",
+      "parentEventUuid": "3c4a7f2e-fdcc-421a-b7fa-ac3e4f267565",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:52:27.072Z",
@@ -4252,6 +4381,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "2d36178c-eb06-47b7-a6f5-061d8735e6b3",
+      "parentEventUuid": "2d3c4cac-cfe1-495e-aa0b-955bd4a3027d",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:01:53.149Z",
@@ -4504,6 +4634,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "576d4d19-e7de-4b2a-969a-dfcf8152e60f",
+      "parentEventUuid": "da44659e-6410-4a3b-a11f-dea84d9092b1",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:25:19.423Z",
@@ -4684,6 +4815,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "48d821f7-fc21-4117-84a5-9ab62754466e",
+      "parentEventUuid": "be9f884d-9010-4ef5-b79b-5c03820f7a4a",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:43:18.189Z",
@@ -4972,6 +5104,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "parentEventUuid": "21a7494b-12fb-4c4d-95a1-3eb168767e4f",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:50:37.710Z",
@@ -5008,6 +5141,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "d417bc74-c952-4f9e-9451-e629ccc88b8d",
+      "parentEventUuid": "f9af6127-9867-4122-87c2-efa27387c1d0",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:50:52.705Z",
@@ -5854,6 +5988,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "5c466c0e-77ee-4108-88cd-7ebf62fa5413",
+      "parentEventUuid": "3b66c878-1360-4f7d-9774-4eb726d6a279",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:40:23.980Z",
@@ -6088,6 +6223,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "47c1eaca-372d-4f0b-b03e-c4704aa1c213",
+      "parentEventUuid": "52a1e0b3-a881-4b9b-bc40-1ec20084a5a8",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:32:47.181Z",
@@ -6286,6 +6422,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "bdcea2fd-b9d4-4c71-b767-89787932335b",
+      "parentEventUuid": "fb028f0d-b49d-428e-85ff-5d3378d3b01b",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:57:40.908Z",
@@ -6592,6 +6729,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "456e9108-c7c2-4b78-b731-15092a1ac862",
+      "parentEventUuid": "c0f6c145-3abe-4faa-9ec0-20f7e9b0bae2",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:56:30.883Z",
@@ -7006,6 +7144,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "07df6218-f756-43da-b41a-2ec15440810d",
+      "parentEventUuid": "320766f6-daa1-430a-91ba-89af8fb41069",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:51:55.944Z",
@@ -7114,6 +7253,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "dc91c8b5-663d-4bcc-953c-c8e9e8cd4a9f",
+      "parentEventUuid": "0033fc9f-535d-404d-bdad-d871d1e09f0c",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:03:59.947Z",
@@ -7276,6 +7416,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "7cd39a72-a235-4c05-afaf-fb31ec35e90d",
+      "parentEventUuid": "803eb899-5770-4b37-a28c-5e6727b8d290",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:04:19.320Z",
@@ -7330,6 +7471,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "576d4d19-e7de-4b2a-969a-dfcf8152e60f",
+      "parentEventUuid": "638162e6-120a-43ad-aa9d-0cc41d078b79",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:25:49.601Z",
@@ -8788,6 +8930,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "0f400ad1-5b69-4e04-876c-7d9b16ee39a4",
+      "parentEventUuid": "b6c4637a-e3d3-470d-9dc6-e3fed7de371f",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:49:21.341Z",
@@ -8860,6 +9003,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "43f46315-ef5a-4b53-b308-578ce788ed5e",
+      "parentEventUuid": "4546fb12-73e7-4191-97fd-f0721966cfc5",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:42:19.094Z",
@@ -8932,6 +9076,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "parentEventUuid": "5bed5e5c-c809-4fb5-933f-99a164967fc3",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T15:53:10.754Z",
@@ -9202,6 +9347,7 @@
       "targetTool": "",
       "domain": "project-foundation",
       "parentSessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "parentEventUuid": "9021c2f2-e565-4aff-a675-39ed43a8c4a0",
       "subAgents": [],
       "metrics": {
         "startTime": "2025-12-04T16:00:06.916Z",
@@ -9615,6 +9761,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/b0174440-23ad-4020-97f5-4c206da66ba6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_nextcloud",
       "domain": "apps",
+      "parentEventUuid": "5d56daaa-3679-4e29-ad34-fa8911d5c8b0",
       "subAgents": [
         "1117a198",
         "a5fa4b93"
@@ -9635,6 +9782,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/b0819c37-88b0-4c1d-821c-2012575bc736.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_dependency_update",
       "domain": "apps",
+      "parentEventUuid": "d2943a9a-1cb0-4a41-9fe2-f71c1fcb8d92",
       "subAgents": [
         "16fd1d68",
         "de40df6a"
@@ -9655,6 +9803,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/b2ad78a4-b130-4635-9c9f-b10ab2cad850.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_redis_get",
       "domain": "databases",
+      "parentEventUuid": "90394a7c-c35a-4871-ba7e-9d4dd509f191",
       "subAgents": [
         "2dc76059",
         "f95f2a30"
@@ -9675,6 +9824,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/b2e5c0df-5467-40ec-99b4-e79c14d61cc4.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
       "domain": "apps",
+      "parentEventUuid": "728a5fa2-8627-482a-b812-f70805cd1205",
       "subAgents": [
         "027dd509",
         "2160647b"
@@ -9695,6 +9845,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/b57a6f23-8fcd-4fc5-be75-2cf82dfeb267.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_create_php_worker",
       "domain": "apps",
+      "parentEventUuid": "1c2a3178-9e6c-470e-9ac2-6f9d12881dd7",
       "subAgents": [
         "5749fdd9",
         "d016215e"
@@ -9715,6 +9866,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/b7afc3b1-5aa2-4c5f-8372-a3b8d676ad74.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_create_static",
       "domain": "apps",
+      "parentEventUuid": "1751f2a3-7afd-4357-9e85-b71f8c64a93a",
       "subAgents": [
         "2eccb707",
         "5c43959b"
@@ -9735,6 +9887,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/b86d7c54-8503-4011-a489-047e9acffb08.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_delete",
       "domain": "databases",
+      "parentEventUuid": "48f24da3-90e2-414b-bfd4-e13c87257cad",
       "subAgents": [
         "6c906205",
         "a1722fc0"
@@ -9755,6 +9908,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/b8aec25d-e4cc-48fa-9cbe-78c45a103986.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_get",
       "domain": "identity",
+      "parentEventUuid": "59b1d5af-16e3-4a1b-9b3a-2c7d339ac09e",
       "subAgents": [
         "b1c21ee3",
         "cc655f9d"
@@ -9775,6 +9929,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/bb94f665-421b-48fc-b7cd-8a42dc57f26a.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_virtualhost_delete",
       "domain": "domains-mail",
+      "parentEventUuid": "a1153dc9-eb5c-4a5c-a128-060d289d027b",
       "subAgents": [
         "4393d9c1"
       ],
@@ -9794,6 +9949,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/bc886aeb-ef7c-4fba-86e4-7bbadbefa889.jsonl",
       "targetTool": "mcp__mittwald__mittwald_sftp_user_create",
       "domain": "access-users",
+      "parentEventUuid": "20907ad0-2fd2-4bdf-b1a5-88292b86a62c",
       "subAgents": [
         "4b554be7",
         "582aecc3"
@@ -9814,6 +9970,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/bcac999e-6e62-4b4c-881d-a6ae19678945.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_download",
       "domain": "apps",
+      "parentEventUuid": "35830eb5-fe3a-462d-baf8-f37beef80b17",
       "subAgents": [
         "1ad457a7",
         "8d957819"
@@ -9834,6 +9991,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/bcbf7373-6c34-439a-b951-2982045e52cc.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_api_token_create",
       "domain": "identity",
+      "parentEventUuid": "58910843-7bc8-4c60-80fa-dabf0d6f8ed6",
       "subAgents": [
         "2ec515b0",
         "8b6bf3f4"
@@ -9854,6 +10012,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/bd8e59a8-5c46-49f1-aaaf-ff7ed27756bb.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_membership_list",
       "domain": "organization",
+      "parentEventUuid": "08989aa8-d014-4208-9be9-bf64b4a95277",
       "subAgents": [
         "766d437f",
         "a482de12"
@@ -9874,6 +10033,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/bdcea2fd-b9d4-4c71-b767-89787932335b.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_port_forward",
       "domain": "databases",
+      "parentEventUuid": "da80ee41-f7ac-4a42-b991-f124094a6526",
       "subAgents": [
         "8e42b303",
         "c1f4d521",
@@ -9895,6 +10055,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/be930e30-1394-4eb6-8275-67ccc23d7001.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_address_delete",
       "domain": "domains-mail",
+      "parentEventUuid": "65132592-02c2-454e-aa39-56f0aad4be7a",
       "subAgents": [
         "61e7029e",
         "dd6f5ff9"
@@ -9915,6 +10076,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/bfc8d12d-c893-4c06-a986-4e6c7a26e6f9.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_import",
       "domain": "databases",
+      "parentEventUuid": "ff58a6a9-7546-42df-9224-62cf6bca45f3",
       "subAgents": [
         "7d0d0f53",
         "a96e34d2"
@@ -9935,6 +10097,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/c0633582-05ec-4258-953b-2ec2cc9a60c6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_conversation_create",
       "domain": "project-foundation",
+      "parentEventUuid": "7029a316-3f3c-442e-9db4-679e3a2b4a19",
       "subAgents": [
         "111e97eb",
         "67f48b47"
@@ -9955,6 +10118,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/c5cbcb6b-b888-47e1-8e3d-21d8b906121f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_download",
       "domain": "backups",
+      "parentEventUuid": "83ea8366-e540-4e7c-9269-96c2def33263",
       "subAgents": [
         "9f005376",
         "f68db601"
@@ -9975,6 +10139,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/c798e098-5f4b-464d-85fb-ad0e4b9a6494.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_address_list",
       "domain": "domains-mail",
+      "parentEventUuid": "198c16c4-7bd3-4d2f-b505-96f3e7cac99c",
       "subAgents": [
         "716e6ae3",
         "b9c602b0"
@@ -9995,6 +10160,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/c891cafa-b300-4813-a588-3ee4fbaf44b5.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_get",
       "domain": "backups",
+      "parentEventUuid": "9cfae241-09e7-44e3-81f3-08888034f1b3",
       "subAgents": [
         "10126609",
         "350b5c1c",
@@ -10018,6 +10184,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/c96ab91b-6247-49dd-9650-adb7e3d65e24.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_membership_list_own",
       "domain": "project-foundation",
+      "parentEventUuid": "84d8fb6b-f524-4e15-9267-9d00f580b0dd",
       "subAgents": [
         "2862d3db",
         "9ab3fbac"
@@ -10038,6 +10205,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/c9726c6e-0dce-4ddf-a108-77d5832bc6c5.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_virtualhost_list",
       "domain": "domains-mail",
+      "parentEventUuid": "efbfb722-8e2c-4d15-9b70-3ea02165dcf0",
       "subAgents": [
         "0e5d3691",
         "39522064",
@@ -10060,6 +10228,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/cc448b85-8a4d-4b16-873c-1ad59883aa0b.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_user_list",
       "domain": "databases",
+      "parentEventUuid": "c31555d1-b3a4-4239-8cf0-2d2564a32b5d",
       "subAgents": [
         "66ac3007",
         "fb4d1206"
@@ -10080,6 +10249,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/cca0345f-449b-4474-b985-7bb5cb6fcd50.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_update",
       "domain": "automation",
+      "parentEventUuid": "af3027b9-6fd6-4da4-8635-7e266c3b2fae",
       "subAgents": [
         "4f314da5",
         "74c4abf1"
@@ -10100,6 +10270,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/cd9c9736-7493-4e6a-8d9b-435227b4d13f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_uninstall",
       "domain": "apps",
+      "parentEventUuid": "c09d2441-fc3d-43a7-8f12-dd846a4e4649",
       "subAgents": [
         "b50ce645",
         "d73806e5"
@@ -10120,6 +10291,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/cfdc8f40-14f5-4576-bb4e-fa59fd6f8fd0.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_matomo",
       "domain": "apps",
+      "parentEventUuid": "d4007993-e46f-454a-8c77-52bd0fd91a9d",
       "subAgents": [
         "49286a84",
         "af0a9aa9"
@@ -10140,6 +10312,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d06ffe75-2adc-480a-8363-27257ac7974d.jsonl",
       "targetTool": "mcp__mittwald__mittwald_volume_create",
       "domain": "containers",
+      "parentEventUuid": "9f60994f-f2f1-46a5-89fb-b3f1456f4a1e",
       "subAgents": [
         "3c048e7a",
         "5406c2f4"
@@ -10160,6 +10333,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d243bb5f-8e4f-4df3-8580-7189c7584b33.jsonl",
       "targetTool": "mcp__mittwald__mittwald_context_set_session",
       "domain": "identity",
+      "parentEventUuid": "2891c187-5307-4ec2-9e32-9345512e3087",
       "subAgents": [
         "1110fa70",
         "3a59cb3c"
@@ -10180,6 +10354,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d26dc921-b6f9-4bc5-9a5e-c5f8f4678466.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_create",
       "domain": "backups",
+      "parentEventUuid": "a0200398-65cc-4ce1-91aa-5b729e5912cf",
       "subAgents": [
         "8bfec2fd"
       ],
@@ -10199,6 +10374,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d417bc74-c952-4f9e-9451-e629ccc88b8d.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_update",
       "domain": "apps",
+      "parentEventUuid": "fd2bd567-0eeb-4cd8-ac86-c601447cbaa8",
       "subAgents": [
         "062f3e9d",
         "52ffd4c5",
@@ -10220,6 +10396,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d55c114c-7d77-42d7-8d65-01161bc5fd84.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_session_list",
       "domain": "identity",
+      "parentEventUuid": "0e4b33f6-4a50-406c-b630-d870609410be",
       "subAgents": [
         "101f3492",
         "a2a177f1"
@@ -10240,6 +10417,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d632e97f-2265-46c4-a90a-a24c4e1929c6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_run",
       "domain": "containers",
+      "parentEventUuid": "1b2c1d39-a544-4dd5-a4f4-5878f286fa88",
       "subAgents": [
         "9e073216",
         "9fb7c425"
@@ -10260,6 +10438,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d64ce7a5-ef65-49c8-8140-bf7e20ce28a1.jsonl",
       "targetTool": "mcp__mittwald__mittwald_conversation_categories",
       "domain": "project-foundation",
+      "parentEventUuid": "325906e7-2bba-4717-86df-80a7ba7c8168",
       "subAgents": [
         "366e7b0b",
         "eec7673f"
@@ -10280,6 +10459,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d67809ea-5da8-49a1-bd13-770286d23522.jsonl",
       "targetTool": "mcp__mittwald__mittwald_conversation_show",
       "domain": "project-foundation",
+      "parentEventUuid": "ad6e8cdc-09b0-4c0b-9db1-9ca9aef5a26b",
       "subAgents": [
         "cd8add85"
       ],
@@ -10299,6 +10479,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d84db770-68da-4e74-af83-8fc859c61461.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_upload",
       "domain": "apps",
+      "parentEventUuid": "2502b303-8632-48e4-966a-e695d2340fbb",
       "subAgents": [
         "01e806ef",
         "635e4909",
@@ -10320,6 +10501,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d99478df-32b8-4abb-a6ea-50ac411f3192.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_get",
       "domain": "identity",
+      "parentEventUuid": "a9510829-2765-423e-90f2-d0d24682f793",
       "subAgents": [
         "70996095",
         "f43aa2b3"
@@ -10340,6 +10522,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/d9dd91f8-fb1f-4707-be70-bd3b3ce77e9f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_schedule_delete",
       "domain": "backups",
+      "parentEventUuid": "d390254b-c937-4b75-8f7c-72050521de7d",
       "subAgents": [
         "a4d106d0",
         "e728fe95"
@@ -10360,6 +10543,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/da5d1c60-41f2-4570-a9cb-beabf0ca9f11.jsonl",
       "targetTool": "mcp__mittwald__mittwald_extension_list",
       "domain": "organization",
+      "parentEventUuid": "c23eca5d-cd50-4764-bc95-581fc7e61ec4",
       "subAgents": [
         "3bf5bb46",
         "60034d21"
@@ -10380,6 +10564,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/db847b63-5226-4b65-acc1-c9b4f80738c9.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_dependency_list",
       "domain": "apps",
+      "parentEventUuid": "24797d00-c626-43c7-ac4f-ff6f35db7a51",
       "subAgents": [
         "0cfb46d3",
         "5ce7c3fa"
@@ -10400,6 +10585,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/dbc873fc-c4ba-4cf2-9aaf-a14f69890ee9.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_deliverybox_create",
       "domain": "domains-mail",
+      "parentEventUuid": "cf6cfe84-2733-4748-a465-58c93abb3913",
       "subAgents": [
         "18ab4598",
         "6624f5e9",
@@ -10421,6 +10607,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/dbfef0d5-d852-45b1-aa01-b459cdcbc917.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_ssh",
       "domain": "apps",
+      "parentEventUuid": "02094586-34ad-4ed5-a3a7-493a86b1d376",
       "subAgents": [
         "07575e39",
         "4069f5f1"
@@ -10441,6 +10628,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/dc91c8b5-663d-4bcc-953c-c8e9e8cd4a9f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_invite_list",
       "domain": "project-foundation",
+      "parentEventUuid": "5f8ce4ac-4612-4f07-9611-3c1c1d7283fd",
       "subAgents": [
         "56a0d776",
         "ac6d0b1f",
@@ -10462,6 +10650,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/dd2f9c4c-4a00-41bf-b022-a14606e7b7f6.jsonl",
       "targetTool": "mcp__mittwald__mittwald_extension_list_installed",
       "domain": "organization",
+      "parentEventUuid": "9dd79be9-566c-4aa1-b341-bcfc832e0224",
       "subAgents": [
         "019cc258",
         "1cdeb3e2"
@@ -10482,6 +10671,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/dd3d3ee6-390d-485d-8350-39a9a21fd668.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_wordpress",
       "domain": "apps",
+      "parentEventUuid": "acbd4064-979c-4f37-98bc-1afcd0920f28",
       "subAgents": [
         "c2605b87",
         "dadc1a30"
@@ -10502,6 +10692,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/de8710d8-0c9d-48d4-95b9-50dd66caee74.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_filesystem_usage",
       "domain": "project-foundation",
+      "parentEventUuid": "d8777809-316e-4781-a236-bf68b05fc410",
       "subAgents": [
         "74f7675b",
         "fd164718"
@@ -10522,6 +10713,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/df73af67-9b67-4137-adf9-ca6a7d0de906.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_dnszone_list",
       "domain": "domains-mail",
+      "parentEventUuid": "50b90564-bc15-49e3-b771-fda0164756b1",
       "subAgents": [
         "868cb262",
         "b4123045"
@@ -10542,6 +10734,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/df9642ef-64ee-45a3-a0be-9f451151694f.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_virtualhost_list",
       "domain": "domains-mail",
+      "parentEventUuid": "a4015da1-3574-46e0-9749-02b75ce37e86",
       "subAgents": [
         "409151fc",
         "9220c0d1"
@@ -10562,6 +10755,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/dfc41deb-46fc-4752-aec8-fc6e399ede4d.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_virtualhost_create",
       "domain": "domains-mail",
+      "parentEventUuid": "d6eed74d-01f0-4bc5-bf53-c146eaae63c1",
       "subAgents": [
         "0888d469",
         "bee20663"
@@ -10582,6 +10776,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e007ebd1-2ff0-4071-967f-a2fa1b63f97a.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_redis_list",
       "domain": "databases",
+      "parentEventUuid": "e8ee577e-7c75-4de5-b9ad-047782e217ff",
       "subAgents": [
         "6e812f94",
         "732d97c2"
@@ -10602,6 +10797,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e2b19dfa-ccf9-4e66-ac6f-c76dee6d88d0.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_accessible_projects",
       "domain": "identity",
+      "parentEventUuid": "4d1989ac-16e6-4030-9825-720babba1a69",
       "subAgents": [
         "4af429dd",
         "da5ae616"
@@ -10622,6 +10818,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e30bb1d3-06d7-43ab-878f-1d7c13672ca1.jsonl",
       "targetTool": "mcp__mittwald__mittwald_org_invite_list_own",
       "domain": "organization",
+      "parentEventUuid": "9be44444-cad7-42cd-a79c-ab80cdde5c8b",
       "subAgents": [
         "3422f896",
         "cd44bcc7"
@@ -10642,6 +10839,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e34a44f6-aeec-4201-a215-a864776729bf.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_update",
       "domain": "project-foundation",
+      "parentEventUuid": "ca805acf-0c05-48eb-adbb-4e55971f0d54",
       "subAgents": [
         "2817dec2",
         "7be3053e"
@@ -10662,6 +10860,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e36145ae-d89d-4792-ac96-23acca84a9e5.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_invite_list_own",
       "domain": "project-foundation",
+      "parentEventUuid": "7b063d21-b6ee-4c4f-9471-e49d8c93a1c7",
       "subAgents": [
         "28ab882f",
         "4f0644ff"
@@ -10682,6 +10881,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e6c8c23f-6fcb-4891-9310-840bd69159ed.jsonl",
       "targetTool": "mcp__mittwald__mittwald_domain_list",
       "domain": "domains-mail",
+      "parentEventUuid": "a93cd354-54bf-4ff3-afe5-328bafbbd280",
       "subAgents": [
         "5f582598",
         "dd14f47b"
@@ -10702,6 +10902,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e744990e-a02a-4939-9259-acd970114172.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_dependency_versions",
       "domain": "apps",
+      "parentEventUuid": "4659add1-0ec3-43b1-a049-897e6091d36d",
       "subAgents": [
         "a120b4c4",
         "aa645505"
@@ -10722,6 +10923,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e9213524-e821-4005-b70d-dcd6f1f185cd.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_ssh_key_create",
       "domain": "identity",
+      "parentEventUuid": "4f696b76-f745-4d99-806d-356c90103ce6",
       "subAgents": [
         "1beee6ca",
         "ff396018"
@@ -10742,6 +10944,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e9bd881b-637f-47e6-bc1f-c209d7302680.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_logs",
       "domain": "containers",
+      "parentEventUuid": "9890a35f-c4dd-45a7-983d-764755192e1a",
       "subAgents": [
         "eef2727e",
         "f5ae1373"
@@ -10762,6 +10965,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/e9e2600a-0c3e-4992-b735-d8d459d1fd96.jsonl",
       "targetTool": "mcp__mittwald__mittwald_registry_delete",
       "domain": "containers",
+      "parentEventUuid": "bba35f5d-f3f9-44a9-8b76-eaa981524840",
       "subAgents": [
         "0aae112c",
         "cea6b2fe"
@@ -10782,6 +10986,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/ec3ebe11-2747-4f11-98ed-fc52097c40cc.jsonl",
       "targetTool": "mcp__mittwald__mittwald_user_get",
       "domain": "identity",
+      "parentEventUuid": "95a50455-afbf-4961-846d-54c236ea729b",
       "subAgents": [
         "368e798c",
         "d668f6af"
@@ -10802,6 +11007,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/eed3b116-4d4d-4787-ba2e-54850ef31436.jsonl",
       "targetTool": "mcp__mittwald__mittwald_extension_uninstall",
       "domain": "organization",
+      "parentEventUuid": "8e8bb71a-db0e-4de5-8091-d3486f22db18",
       "subAgents": [
         "02e13578",
         "b0b7fc9f"
@@ -10822,6 +11028,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/ef9e0bfa-fa56-47ab-ad37-7273e181474e.jsonl",
       "targetTool": "mcp__mittwald__mittwald_app_install_contao",
       "domain": "apps",
+      "parentEventUuid": "d167533e-1a9d-4e5a-8c60-e333131c278c",
       "subAgents": [
         "ab8ee365",
         "bb8e43a0"
@@ -10842,6 +11049,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/f1c6a998-1f1d-4e6f-916e-4d8ebe8bcf93.jsonl",
       "targetTool": "mcp__mittwald__mittwald_server_list",
       "domain": "project-foundation",
+      "parentEventUuid": "f051f625-8e6b-40d0-b67a-6e80319cddc6",
       "subAgents": [
         "ade7949b",
         "f08fb198"
@@ -10862,6 +11070,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/f1f5185b-938b-4c42-8a17-32519aea7f6c.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_execution_get",
       "domain": "automation",
+      "parentEventUuid": "44ff0ae9-45c3-4040-a4dc-5ac92989439d",
       "subAgents": [
         "2174a281",
         "fedbf8c5"
@@ -10882,6 +11091,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/f2bce107-8450-4775-86ab-c7ceb77850c8.jsonl",
       "targetTool": "mcp__mittwald__mittwald_mail_deliverybox_get",
       "domain": "domains-mail",
+      "parentEventUuid": "da1c5008-38ac-44db-a118-88931c74d913",
       "subAgents": [
         "2b05045e",
         "93a17414",
@@ -10903,6 +11113,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/f4116491-bd09-4469-9884-89c428792072.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_get",
       "domain": "backups",
+      "parentEventUuid": "cadd43a3-4ea8-43fa-8585-048e05816ae9",
       "subAgents": [
         "28057c53",
         "a312fd3f"
@@ -10923,6 +11134,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/f6b2c15c-5033-4bc4-856e-e286fba1bc49.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_redis_versions",
       "domain": "databases",
+      "parentEventUuid": "9d2f5dbb-7fed-47cf-9a4f-2765a60b8f5b",
       "subAgents": [
         "3d32054a",
         "459b7b84"
@@ -10943,6 +11155,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/f70cd36b-e02a-48d9-ab20-ed5035c00c87.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_phpmyadmin",
       "domain": "databases",
+      "parentEventUuid": "d87dd9cb-ecd0-4038-8d3c-ab36b9c1abb3",
       "subAgents": [
         "15bbc416"
       ],
@@ -10962,6 +11175,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/f7c69fde-ab32-4854-a367-465c868949c7.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_ssh",
       "domain": "project-foundation",
+      "parentEventUuid": "ca5c6336-12ce-42cf-a040-3e8547b18d1a",
       "subAgents": [
         "bb1b19c2",
         "ca6ebdfc"
@@ -10982,6 +11196,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/f7fdc336-bfd2-450f-b3b4-0ad85bcc171e.jsonl",
       "targetTool": "mcp__mittwald__mittwald_backup_list",
       "domain": "backups",
+      "parentEventUuid": "80bed6f2-3d02-4de0-a787-0129ccb34632",
       "subAgents": [
         "aa972cc0",
         "d0e47249"
@@ -11002,6 +11217,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/faa23269-bade-4393-87c2-f33ba9f177db.jsonl",
       "targetTool": "mcp__mittwald__mittwald_project_delete",
       "domain": "project-foundation",
+      "parentEventUuid": "1f7fc799-9fb6-4388-9e30-9ee7e1c613c4",
       "subAgents": [
         "73d2e361",
         "f6842d97"
@@ -11022,6 +11238,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/faa92e8f-136b-4c58-bd94-d33db1b5290a.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_user_delete",
       "domain": "databases",
+      "parentEventUuid": "4f96fbd9-97e9-40fe-a7d5-507e57ce526c",
       "subAgents": [
         "798a3012",
         "ff02f2e3"
@@ -11042,6 +11259,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/fb558295-0c77-4a9e-9a1c-3913c91fc592.jsonl",
       "targetTool": "mcp__mittwald__mittwald_cronjob_execution_list",
       "domain": "automation",
+      "parentEventUuid": "cc234236-40c5-406b-b3c5-867b2205ec8c",
       "subAgents": [
         "38bbb87a",
         "df6f9d47"
@@ -11062,6 +11280,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/fdd7e079-9d83-4a8c-b25c-ade83fe29bd0.jsonl",
       "targetTool": "mcp__mittwald__mittwald_database_mysql_user_create",
       "domain": "databases",
+      "parentEventUuid": "42a45307-6971-408e-81b8-c5eb0604a176",
       "subAgents": [
         "2460fcc7",
         "b09c9948"
@@ -11082,6 +11301,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/fddfebd2-952c-40b9-8b8d-9eb06a12a273.jsonl",
       "targetTool": "mcp__mittwald__mittwald_container_update",
       "domain": "containers",
+      "parentEventUuid": "ed9a88c7-11e0-419a-acc1-db2711b0e26f",
       "subAgents": [
         "0407fe09",
         "17a3dfca"
@@ -11102,6 +11322,7 @@
       "filePath": "/Users/robert/Code/mittwald-mcp/.worktrees/006-session-log-analysis/tests/functional/session-logs/005-mcp-functional-test/ff98bc8f-d16a-4cb1-a101-4daadffd18a8.jsonl",
       "targetTool": "mcp__mittwald__mittwald_registry_list",
       "domain": "containers",
+      "parentEventUuid": "b26b5298-c8f8-4952-9250-55d209061def",
       "subAgents": [
         "4199e455",
         "b8acb9bd"

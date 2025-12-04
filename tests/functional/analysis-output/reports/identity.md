@@ -43,14 +43,14 @@ Dependencies involving Identity tools:
 |--------|-------|
 | Average tokens per session | 101 |
 | Success rate | 100% |
-| Most problematic tool | unknown |
+| Most problematic tool | user/get |
 | Incident count | 13 |
 | Average session duration | 1.5m |
 
 ## Recommendations
 
 - Document model requirements for identity tools with capability mismatches (5 incidents)
-- Focus attention on unknown - most frequent incident source
+- Focus attention on user/get - most frequent incident source
 
 ---
 *Generated on 2025-12-04*

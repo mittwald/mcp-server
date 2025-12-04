@@ -79,6 +79,17 @@ export function indexCorpus(sessions: Session[], inputDirectory: string): Corpus
  * the parent's subAgents list.
  */
 function linkSubAgents(sessions: Session[], sessionsById: Record<string, Session>): void {
+  // Map event UUIDs to their parent session IDs (for parentUuid fallbacks)
+  const eventUuidToSessionId: Record<string, string> = {};
+  for (const session of sessions) {
+    for (const event of session.events) {
+      const raw = event.raw as { uuid?: unknown };
+      if (raw && typeof raw.uuid === 'string') {
+        eventUuidToSessionId[raw.uuid] = session.id;
+      }
+    }
+  }
+
   // Separate main sessions and sub-agent sessions
   const mainSessions: Session[] = [];
   const subAgentSessions: Session[] = [];
@@ -94,14 +105,27 @@ function linkSubAgents(sessions: Session[], sessionsById: Record<string, Session
   // For each sub-agent, add to parent's subAgents list
   // parentSessionId is already set during parsing
   for (const subAgent of subAgentSessions) {
-    const parentId = subAgent.parentSessionId;
+    let parentId = subAgent.parentSessionId;
+
+    // Fallback: resolve parent using parentEventUuid if provided
+    if (!parentId && subAgent.parentEventUuid) {
+      parentId = eventUuidToSessionId[subAgent.parentEventUuid];
+      if (parentId) {
+        subAgent.parentSessionId = parentId;
+      }
+    }
 
     if (parentId) {
       // Add to parent's subAgents list
       const parent = sessionsById[parentId];
       if (parent && !parent.subAgents.includes(subAgent.id)) {
         parent.subAgents.push(subAgent.id);
+      } else if (!parent) {
+        subAgent.orphaned = true;
       }
+    } else {
+      // No parent information available
+      subAgent.orphaned = true;
     }
   }
 }
@@ -196,5 +220,5 @@ export function getAllSessions(index: CorpusIndex): Session[] {
  * Check if session is a sub-agent.
  */
 export function isOrphanSubAgent(session: Session): boolean {
-  return isSubAgentSession(session) && !session.parentSessionId;
+  return isSubAgentSession(session) && (!!session.orphaned || !session.parentSessionId);
 }
