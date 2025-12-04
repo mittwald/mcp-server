@@ -28,11 +28,11 @@
 
 ### Included Subtasks
 - [X] T001 Create `tests/functional/` directory structure per plan.md
-- [ ] T002 Initialize `package.json` with TypeScript, @anthropic-ai/sdk dependencies
-- [ ] T003 [P] Configure `tsconfig.json` for Node.js 20+ ES modules
-- [ ] T004 [P] Create `tests/functional/src/types/index.ts` with all shared types from data-model.md
-- [ ] T005 [P] Create `tests/functional/config/mcp-server.json` configuration template
-- [ ] T006 Create main entry point `tests/functional/src/harness/index.ts` (stub)
+- [X] T002 Initialize `package.json` with TypeScript, @anthropic-ai/sdk dependencies
+- [X] T003 [P] Configure `tsconfig.json` for Node.js 20+ ES modules
+- [X] T004 [P] Create `tests/functional/src/types/index.ts` with all shared types from data-model.md
+- [X] T005 [P] Create `tests/functional/config/mcp-server.json` configuration template
+- [X] T006 Create main entry point `tests/functional/src/harness/index.ts` (stub)
 
 ### Implementation Notes
 - Use ES modules (type: "module" in package.json)
