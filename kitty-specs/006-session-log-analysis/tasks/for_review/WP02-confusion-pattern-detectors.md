@@ -13,10 +13,10 @@ subtasks:
   - "T018"
 title: "Confusion Pattern Detectors"
 phase: "Phase 1 - Foundation"
-lane: "for_review"
-assignee: "claude"
-agent: "claude"
-shell_pid: "29594"
+lane: "planned"
+assignee: ""
+agent: ""
+shell_pid: ""
 history:
   - timestamp: "2025-12-04T18:30:00Z"
     lane: "planned"
@@ -28,6 +28,11 @@ history:
     agent: "claude"
     shell_pid: "29594"
     action: "Started implementation"
+  - timestamp: "2025-12-04T19:19:33Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "50769"
+    action: "Returned for review fixes (severity scoring gaps, stuck indicator false positives, exploration coverage)"
 ---
 
 # Work Package Prompt: WP02 – Confusion Pattern Detectors
@@ -243,8 +248,15 @@ Session `0616a506-15b4-466f-9793-44ceebe2a82f.jsonl` exhibits:
 - Verify severity distribution looks reasonable (not all high or all low)
 - Check token waste calculations are plausible
 
+## Review Feedback
+
+- tests/functional/src/analysis/detectors/index.ts:72-115 plus per-detector files – Severity scoring ignores FR-028: scores come solely from per-detector tokenWaste (with small multipliers) and never factor timeWasteMs or corpus frequency. `calculateSeverity` (which includes time) is not applied, and no frequency weighting exists, so severity levels are systematically understated and non-compliant.
+- tests/functional/src/analysis/detectors/stuck-indicator.ts:17-55 – Stuck detection measures any >60s gap between arbitrary events (including user→assistant), not “between tool calls without user input” (FR-024). This flags user think-time as LLM stuck. Please constrain gaps to consecutive tool events and explicitly skip user-driven pauses.
+- tests/functional/src/analysis/detectors/exploration-waste.ts:14-89 – Exploration waste never fires (0 incidents) and only counts a narrow tool list. The dataset uses exploration via Task/Task agents and repeated Read/Grep; detector should tolerate interleaved non-MCP tool uses and consider task-spawned exploration so coverage criterion (“all 6 types detect real incidents”) is met.
+
 ## Activity Log
 
 - 2025-12-04T18:30:00Z – system – lane=planned – Prompt created.
 - 2025-12-04T20:12:00Z – claude – shell_pid=29594 – lane=doing – Started implementation
 - 2025-12-04T20:30:00Z – claude – shell_pid=29594 – lane=doing – Completed: 224 incidents detected, 4 patterns found in confusing session
+- 2025-12-04T19:19:33Z – codex – shell_pid=50769 – lane=planned – Returned with review feedback (severity formula, stuck detector scope, exploration coverage)
