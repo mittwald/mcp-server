@@ -13,6 +13,7 @@ import { createTokenRouter } from './routes/token.js';
 import { createRegisterRouter } from './routes/register.js';
 import { createMetadataRouter } from './routes/metadata.js';
 import type { RegistrationTokenStore } from './registration-token-store.js';
+import { register } from './metrics/index.js';
 
 export function createApp(
   config: BridgeConfig,
@@ -74,6 +75,19 @@ export function createApp(
   });
 
   app.use(versionRouter.routes()).use(versionRouter.allowedMethods());
+
+  // Prometheus metrics endpoint
+  const metricsRouter = new Router();
+  metricsRouter.get('/metrics', async (ctx) => {
+    try {
+      ctx.set('Content-Type', register.contentType);
+      ctx.body = await register.metrics();
+    } catch (error) {
+      ctx.status = 500;
+      ctx.body = error instanceof Error ? error.message : 'Unknown error';
+    }
+  });
+  app.use(metricsRouter.routes()).use(metricsRouter.allowedMethods());
 
   jwksRouter.get('/jwks', (ctx) => {
     ctx.set('Cache-Control', 'no-cache, no-store, must-revalidate');

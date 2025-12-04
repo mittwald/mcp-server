@@ -7,7 +7,7 @@ subtasks:
   - "T008"
 title: "MCP Server Application Metrics"
 phase: "Phase 2 - Application Metrics (P1)"
-lane: "doing"
+lane: "done"
 assignee: "claude"
 agent: "claude"
 shell_pid: "36921"
@@ -222,11 +222,11 @@ curl http://localhost:3000/metrics | grep mcp_
 
 ## Definition of Done Checklist
 
-- [ ] `mcp-metrics.ts` created with all four metrics
-- [ ] Tool handler instrumented with counter and histogram
-- [ ] CLI wrapper instrumented with counter
-- [ ] Connection tracking implemented with gauge
-- [ ] All metrics visible in `/metrics` output after usage
+- [x] `mcp-metrics.ts` created with all four metrics
+- [x] Tool handler instrumented with counter and histogram
+- [x] CLI wrapper instrumented with counter
+- [x] Connection tracking implemented with gauge
+- [x] All metrics visible in `/metrics` output after usage
 
 ## Review Guidance
 
@@ -238,3 +238,5 @@ curl http://localhost:3000/metrics | grep mcp_
 ## Activity Log
 
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
+- 2025-12-04T09:35:00Z – claude – lane=doing – Started implementation
+- 2025-12-04T09:40:00Z – claude – lane=done – Completed all subtasks (T005-T008), committed 890ca4a

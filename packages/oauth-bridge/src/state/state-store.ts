@@ -14,11 +14,6 @@ export interface AuthorizationRequestRecord {
   mittwaldCodeVerifier: string;
   scope: string;
   resource?: string;
-  /**
-   * Bridge-generated PKCE verifier used for the Mittwald leg of the flow.
-   * Must be non-empty and 43-128 characters (RFC 7636).
-   */
-  mittwaldCodeVerifier: string;
   createdAt: number;
   expiresAt: number;
   /**
@@ -43,11 +38,6 @@ export interface AuthorizationGrantRecord {
   scope: string;
   resource?: string;
   mittwaldAuthorizationCode: string;
-  /**
-   * Bridge-generated PKCE verifier to complete the Mittwald token exchange.
-   * Copied from the authorization request for use during code exchange.
-   */
-  mittwaldCodeVerifier: string;
   mittwaldTokens?: MittwaldTokenResponse;
   createdAt: number;
   expiresAt: number;
