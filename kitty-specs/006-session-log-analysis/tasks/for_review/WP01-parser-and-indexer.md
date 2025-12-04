@@ -11,7 +11,7 @@ subtasks:
   - "T008"
 title: "Parser & Indexer"
 phase: "Phase 1 - Foundation"
-lane: "doing"
+lane: "for_review"
 assignee: "codex"
 agent: "codex"
 shell_pid: "55235"
@@ -36,6 +36,11 @@ history:
     agent: "codex"
     shell_pid: "55235"
     action: "Started implementation"
+  - timestamp: "2025-12-04T19:29:04Z"
+    lane: "for_review"
+    agent: "codex"
+    shell_pid: "55235"
+    action: "Completed implementation and ready for review"
 ---
 
 # Work Package Prompt: WP01 – Parser & Indexer
