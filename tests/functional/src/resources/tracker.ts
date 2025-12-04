@@ -240,6 +240,61 @@ export class ResourceTracker implements IResourceTracker {
       ...resources,
     };
   }
+
+  /**
+   * Get all resources (for CLI display)
+   */
+  getAllResources(): Array<{
+    resourceId: string;
+    resourceType: string;
+    name: string;
+    domain: string;
+    status: string;
+  }> {
+    return this.state.resources.map((r) => ({
+      resourceId: r.resourceId,
+      resourceType: r.resourceType,
+      name: r.name,
+      domain: r.domain,
+      status: r.status,
+    }));
+  }
+
+  /**
+   * Get tracker status summary (for CLI display)
+   */
+  getStatus(): {
+    total: number;
+    active: number;
+    cleaned: number;
+    failed: number;
+    byType: Record<string, number>;
+    byDomain: Record<string, number>;
+  } {
+    const status = {
+      total: this.state.resources.length,
+      active: 0,
+      cleaned: 0,
+      failed: 0,
+      byType: {} as Record<string, number>,
+      byDomain: {} as Record<string, number>,
+    };
+
+    for (const r of this.state.resources) {
+      // Count by status
+      if (r.status === 'active') status.active++;
+      else if (r.status === 'cleaned') status.cleaned++;
+      else if (r.status === 'cleanup-failed') status.failed++;
+
+      // Count active by type
+      if (r.status === 'active') {
+        status.byType[r.resourceType] = (status.byType[r.resourceType] || 0) + 1;
+        status.byDomain[r.domain] = (status.byDomain[r.domain] || 0) + 1;
+      }
+    }
+
+    return status;
+  }
 }
 
 /**

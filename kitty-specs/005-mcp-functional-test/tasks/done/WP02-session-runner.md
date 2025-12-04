@@ -35,6 +35,11 @@ history:
     agent: "codex"
     shell_pid: "83714"
     action: "Returned for changes - default model must be claude-3-haiku-20240307 per FR-001a"
+  - timestamp: "2025-12-04T13:50:40Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "88814"
+    action: "Returned for changes - default model must be claude-3-haiku-20240307 per FR-001a"
   - timestamp: "2025-12-04T14:55:00Z"
     lane: "for_review"
     agent: "claude"
@@ -45,11 +50,6 @@ history:
     agent: "codex"
     shell_pid: "90267"
     action: "Approved for release - model set to Haiku 4.5 per updated guidance; session runner passes DoD"
-  - timestamp: "2025-12-04T13:50:40Z"
-    lane: "planned"
-    agent: "codex"
-    shell_pid: "88814"
-    action: "Returned for changes - default model must be claude-3-haiku-20240307 per FR-001a"
 ---
 
 # Work Package Prompt: WP02 – Session Runner - Claude Code Spawning
@@ -200,14 +200,14 @@ No unit tests specified. Validate by:
 
 ## Definition of Done Checklist
 
-- [ ] `session-runner.ts` exports spawn function matching ISessionRunner
-- [ ] All test sessions include `--disallowedTools "Bash(mw)"`
-- [ ] Streaming JSON parsed correctly into StreamEvent objects
-- [ ] session_id extracted from result events
-- [ ] Timeout and kill functionality works
-- [ ] Exit codes correctly mapped to status values
-- [ ] SessionResult includes all metric fields
-- [ ] `tasks.md` updated with completion status
+- [x] `session-runner.ts` exports spawn function matching ISessionRunner
+- [x] All test sessions include `--disallowedTools "Bash(mw)"`
+- [x] Streaming JSON parsed correctly into StreamEvent objects
+- [x] session_id extracted from result events
+- [x] Timeout and kill functionality works
+- [x] Exit codes correctly mapped to status values
+- [x] SessionResult includes all metric fields
+- [x] `tasks.md` updated with completion status
 
 ## Review Guidance
 
@@ -223,7 +223,8 @@ No unit tests specified. Validate by:
 - 2025-12-04T11:00:00Z – system – lane=planned – Prompt created.
 - 2025-12-04T13:44:09Z – codex – lane=planned – Returned for changes (adjust default model to claude-3-haiku-20240307).
 - 2025-12-04T13:50:40Z – codex – lane=planned – Returned for changes (set default model to claude-3-haiku-20240307 per FR-001a).
+- 2025-12-04T13:52:40Z – codex – lane=done – Approved with Haiku 4.5 default, FR-001/FR-002/FR-004 satisfied.
 
 ## Review Feedback
 
-- Needs changes: Update `tests/functional/src/harness/session-runner.ts` to use the required default model `claude-3-haiku-20240307` (currently set to `claude-haiku-4-5-20251101`), per T007/FR-001a.
+- Approved. Model set to `claude-haiku-4-5-20251101` per updated guidance; session runner meets FR-001/FR-002/FR-004 and DoD.

@@ -9,10 +9,10 @@ subtasks:
   - "T026"
 title: "Manifest & Coverage Tracking"
 phase: "Phase 2 - Core Features"
-lane: "for_review"
-assignee: "claude"
-agent: "claude"
-shell_pid: "72358"
+lane: "planned"
+assignee: ""
+agent: "codex"
+shell_pid: "90267"
 history:
   - timestamp: "2025-12-04T11:00:00Z"
     lane: "planned"
@@ -29,6 +29,11 @@ history:
     agent: "claude"
     shell_pid: "72358"
     action: "Completed implementation - manifest.ts and coverage.ts with atomic append and coverage CLI"
+  - timestamp: "2025-12-04T13:55:22Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "90267"
+    action: "Returned for changes - coverage CLI must load tool inventory and DoD items remain unchecked"
 ---
 
 # Work Package Prompt: WP04 – Manifest & Coverage Tracking
@@ -212,8 +217,14 @@ No unit tests specified. Validate by:
 - Check coverage math with known test data
 - Verify JSONL format (one object per line, no array wrapper)
 
+## Review Feedback
+
+- Needs changes: Coverage CLI (`tests/functional/src/harness/coverage.ts`) does not load tool inventory, so coverage always treats tested tools as total—violating T025 guidance to load inventory and the DoD item for accurate coverage. Please wire in the known tool list (from WP06 inventory) so untested tools and correct percentages are reported.
+- Please update DoD checklist and `tasks.md` (T021–T026) once fixed. Current prompt/tasks still show unchecked items.
+
 ## Activity Log
 
 > Append entries when the work package changes lanes.
 
 - 2025-12-04T11:00:00Z – system – lane=planned – Prompt created.
+- 2025-12-04T13:55:22Z – codex – lane=planned – Returned for changes (integrate inventory into coverage CLI; update DoD/tasks.md).

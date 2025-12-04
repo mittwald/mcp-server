@@ -16,15 +16,25 @@ npm install
 
 ## Configuration
 
-### 1. Claude Code Log Retention
+### 1. Claude Code Log Retention (Required)
 
-Extend log retention to preserve session data:
+**Important**: Claude Code automatically cleans up old session logs. To preserve test session data for analysis, extend the retention period:
 
 ```bash
-# Edit ~/.claude/settings.json
+# Create or edit ~/.claude/settings.json
+mkdir -p ~/.claude
+cat > ~/.claude/settings.json << 'EOF'
 {
   "cleanupPeriodDays": 99999
 }
+EOF
+```
+
+The harness checks this setting on startup and warns if not configured.
+
+To verify configuration:
+```bash
+cat ~/.claude/settings.json
 ```
 
 ### 2. MCP Server Configuration
@@ -181,6 +191,41 @@ Check server logs:
 ```bash
 flyctl logs -a mittwald-mcp-fly2 --no-tail | tail -50
 ```
+
+### Log Retention Warning
+
+If you see this warning on startup:
+
+```
+[config] ⚠ Could not read Claude settings from: ~/.claude/settings.json
+[config] Session logs may be cleaned up automatically.
+```
+
+Fix by creating the settings file:
+
+```bash
+mkdir -p ~/.claude
+echo '{"cleanupPeriodDays": 99999}' > ~/.claude/settings.json
+```
+
+### Build Errors
+
+If you encounter TypeScript errors:
+
+```bash
+cd tests/functional
+rm -rf dist node_modules
+npm install
+npm run build
+```
+
+### Session Not Found
+
+If `findSessionLog` returns null:
+
+1. Verify the session ID is correct
+2. Check if log retention was configured before the test ran
+3. Search manually: `find ~/.claude/projects -name "*.jsonl" | xargs grep -l "<session-id>"`
 
 ## Architecture Overview
 

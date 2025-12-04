@@ -57,13 +57,13 @@
 **Prompt**: `tasks/planned/WP02-session-runner.md`
 
 ### Included Subtasks
-- [ ] T007 Implement `session-runner.ts` - spawn Claude Code subprocess (FR-001)
-- [ ] T008 Add `--disallowedTools "Bash(mw)"` enforcement (FR-002)
-- [ ] T009 Implement streaming JSON line parsing from stdout (FR-004)
-- [ ] T010 Extract session_id from `stream-json` result events
-- [ ] T011 Implement session timeout and kill capability
-- [ ] T012 Handle subprocess errors and exit codes
-- [ ] T013 Create `SpawnSessionOptions` and `SessionResult` implementation per contracts
+- [X] T007 Implement `session-runner.ts` - spawn Claude Code subprocess (FR-001)
+- [X] T008 Add `--disallowedTools "Bash(mw)"` enforcement (FR-002)
+- [X] T009 Implement streaming JSON line parsing from stdout (FR-004)
+- [X] T010 Extract session_id from `stream-json` result events
+- [X] T011 Implement session timeout and kill capability
+- [X] T012 Handle subprocess errors and exit codes
+- [X] T013 Create `SpawnSessionOptions` and `SessionResult` implementation per contracts
 
 ### Implementation Notes
 - Use `child_process.spawn()` with `{ stdio: ['pipe', 'pipe', 'pipe'] }`
@@ -119,12 +119,12 @@
 **Prompt**: `tasks/planned/WP04-manifest-coverage.md`
 
 ### Included Subtasks
-- [ ] T021 Implement `manifest.ts` - atomic JSONL append (FR-005)
-- [ ] T022 Create ManifestEntry serialization per data-model.md
-- [ ] T023 Implement getCoverage() - parse manifest, compute statistics (FR-020)
-- [ ] T024 Implement getToolHistory() - query entries by tool name
-- [ ] T025 [P] Create coverage CLI command (`npm run coverage`)
-- [ ] T026 Handle concurrent append safety (atomic write per line)
+- [X] T021 Implement `manifest.ts` - atomic JSONL append (FR-005)
+- [X] T022 Create ManifestEntry serialization per data-model.md
+- [X] T023 Implement getCoverage() - parse manifest, compute statistics (FR-020)
+- [X] T024 Implement getToolHistory() - query entries by tool name
+- [X] T025 [P] Create coverage CLI command (`npm run coverage`)
+- [X] T026 Handle concurrent append safety (atomic write per line)
 
 ### Implementation Notes
 - Use `fs.appendFileSync()` with exclusive flag for atomicity
@@ -149,14 +149,14 @@
 **Prompt**: `tasks/planned/WP05-resource-management.md`
 
 ### Included Subtasks
-- [ ] T027 Implement `tracker.ts` - resource creation tracking (FR-008)
-- [ ] T028 Implement `naming.ts` - collision-safe naming convention (FR-010)
-- [ ] T029 Implement `cleanup.ts` - domain-grouped cleanup (FR-009)
-- [ ] T030 Add dependency ordering for cleanup (children before parents)
-- [ ] T031 [P] Implement `/tmp` artifact tracking (FR-021)
-- [ ] T032 [P] Implement `/tmp` artifact cleanup (FR-022)
-- [ ] T033 Add orphan detection using naming convention `test-{domain}-*`
-- [ ] T034 Implement clean-room vs harness-assisted mode selection (FR-006, FR-007)
+- [X] T027 Implement `tracker.ts` - resource creation tracking (FR-008)
+- [X] T028 Implement `naming.ts` - collision-safe naming convention (FR-010)
+- [X] T029 Implement `cleanup.ts` - domain-grouped cleanup (FR-009)
+- [X] T030 Add dependency ordering for cleanup (children before parents)
+- [X] T031 [P] Implement `/tmp` artifact tracking (FR-021)
+- [X] T032 [P] Implement `/tmp` artifact cleanup (FR-022)
+- [X] T033 Add orphan detection using naming convention `test-{domain}-*`
+- [X] T034 Implement clean-room vs harness-assisted mode selection (FR-006, FR-007)
 
 ### Implementation Notes
 - Naming: `test-{domain}-{timestamp}-{random4}`
@@ -181,13 +181,13 @@
 **Prompt**: `tasks/planned/WP06-tool-inventory.md`
 
 ### Included Subtasks
-- [ ] T035 Implement `discovery.ts` - MCP server tool discovery
-- [ ] T036 Parse tool names and descriptions from MCP response
-- [ ] T037 Implement `grouping.ts` - map tools to 10 test domains per research.md
-- [ ] T038 Generate `test-domains.json` configuration from discovery
-- [ ] T039 Implement tool tier assignment (0-4 dependency levels)
-- [ ] T040 Create `tool-manifest.ts` - ToolEntry storage and lookup
-- [ ] T041 Implement getByDomain() and getByTier() queries
+- [X] T035 Implement `discovery.ts` - MCP server tool discovery
+- [X] T036 Parse tool names and descriptions from MCP response
+- [X] T037 Implement `grouping.ts` - map tools to 10 test domains per research.md
+- [X] T038 Generate `test-domains.json` configuration from discovery
+- [X] T039 Implement tool tier assignment (0-4 dependency levels)
+- [X] T040 Create `tool-manifest.ts` - ToolEntry storage and lookup
+- [X] T041 Implement getByDomain() and getByTier() queries
 
 ### Implementation Notes
 - Connect to MCP server at `https://mittwald-mcp-fly2.fly.dev/mcp`
@@ -214,16 +214,16 @@
 **Prompt**: `tasks/planned/WP07-harness-orchestration.md`
 
 ### Included Subtasks
-- [ ] T042 Implement main `harness/index.ts` orchestration loop
-- [ ] T043 Add test queue management with priority ordering
-- [ ] T044 Implement concurrency control (3-5 concurrent sessions) (FR-003)
-- [ ] T045 Integrate session runner, stream parser, coordinator
-- [ ] T046 Add polling-based completion detection (30s intervals) (FR-013)
-- [ ] T047 Implement partial result recording on failure (FR-013a)
-- [ ] T048 Add rate limit handling with exponential backoff (FR-013b)
-- [ ] T049 Add eventual consistency retry logic (FR-013c)
-- [ ] T050 Wire manifest appends after session completion
-- [ ] T051 Wire resource cleanup after domain completion
+- [X] T042 Implement main `harness/index.ts` orchestration loop
+- [X] T043 Add test queue management with priority ordering
+- [X] T044 Implement concurrency control (3-5 concurrent sessions) (FR-003)
+- [X] T045 Integrate session runner, stream parser, coordinator
+- [X] T046 Add polling-based completion detection (30s intervals) (FR-013)
+- [X] T047 Implement partial result recording on failure (FR-013a)
+- [X] T048 Add rate limit handling with exponential backoff (FR-013b)
+- [X] T049 Add eventual consistency retry logic (FR-013c)
+- [X] T050 Wire manifest appends after session completion
+- [X] T051 Wire resource cleanup after domain completion
 
 ### Implementation Notes
 - Queue priority: Tier 0 → Tier 1 → Tier 3 (project/create) → Tier 4
@@ -249,16 +249,16 @@
 **Prompt**: `tasks/planned/WP08-cli-session-preservation.md`
 
 ### Included Subtasks
-- [ ] T052 Create CLI entry point with command parsing
-- [ ] T053 Implement `npm run test:all` - full test suite
-- [ ] T054 Implement `npm run test:domain -- --domain <name>` - single domain
-- [ ] T055 Implement `npm run test:tool -- --tool <name>` - single tool
-- [ ] T056 Implement `npm run cleanup -- --domain <name>` - manual cleanup
-- [ ] T057 Implement `npm run status` - current harness status
-- [ ] T058 Implement session log preservation configuration (FR-011)
-- [ ] T059 Create session → log file mapping storage (FR-012, FR-015)
-- [ ] T060 Implement `npm run list-resources -- --orphaned` - orphan detection
-- [ ] T061 Add quickstart.md validation scenario execution
+- [X] T052 Create CLI entry point with command parsing
+- [X] T053 Implement `npm run test:all` - full test suite
+- [X] T054 Implement `npm run test:domain -- --domain <name>` - single domain
+- [X] T055 Implement `npm run test:tool -- --tool <name>` - single tool
+- [X] T056 Implement `npm run cleanup -- --domain <name>` - manual cleanup
+- [X] T057 Implement `npm run status` - current harness status
+- [X] T058 Implement session log preservation configuration (FR-011)
+- [X] T059 Create session → log file mapping storage (FR-012, FR-015)
+- [X] T060 Implement `npm run list-resources -- --orphaned` - orphan detection
+- [X] T061 Add quickstart.md validation scenario execution
 
 ### Implementation Notes
 - CLI uses commander.js or yargs

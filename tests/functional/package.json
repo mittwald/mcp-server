@@ -6,12 +6,14 @@
   "main": "dist/harness/index.js",
   "scripts": {
     "build": "tsc",
-    "test:all": "node dist/harness/index.js --all",
-    "test:domain": "node dist/harness/index.js --domain",
-    "test:tool": "node dist/harness/index.js --tool",
-    "coverage": "node dist/harness/coverage.js",
-    "cleanup": "node dist/harness/cleanup.js",
-    "status": "node dist/harness/status.js"
+    "test:all": "node dist/harness/index.js test:all",
+    "test:domain": "node dist/harness/index.js test:domain",
+    "test:tool": "node dist/harness/index.js test:tool",
+    "coverage": "node dist/harness/index.js coverage",
+    "cleanup": "node dist/harness/index.js cleanup",
+    "status": "node dist/harness/index.js status",
+    "list-resources": "node dist/harness/index.js list-resources",
+    "help": "node dist/harness/index.js --help"
   },
   "keywords": [
     "mcp",

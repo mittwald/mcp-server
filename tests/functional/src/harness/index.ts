@@ -444,14 +444,16 @@ async function runTest(
     pool.untrackSession(sessionId);
     pool.release();
 
-    // Append to manifest (T050)
+    const endTime = new Date();
     const durationMs = Date.now() - startTime;
+
+    // Append to manifest (T050)
     const entry: ManifestEntry = {
       toolName: test.tool.name,
       sessionId: sessionId || 'unknown',
       testId,
       status,
-      timestamp: new Date().toISOString(),
+      timestamp: endTime.toISOString(),
       durationMs,
       toolCallCount: 0,
       errorMessage,
@@ -463,6 +465,18 @@ async function runTest(
       await manifest.append(entry);
     } catch (appendErr) {
       console.error(`[harness] Failed to append manifest entry:`, appendErr);
+    }
+
+    // Save session mapping (T059)
+    if (sessionId) {
+      await saveSessionMapping({
+        sessionId,
+        testId,
+        toolName: test.tool.name,
+        logPath: `~/.claude/projects/mcp-functional-tests/sessions/${sessionId}`,
+        startTime: new Date(startTime).toISOString(),
+        endTime: endTime.toISOString(),
+      });
     }
   }
 }
@@ -679,74 +693,618 @@ export async function stop(): Promise<void> {
   // In a real implementation, would signal all sessions to stop
 }
 
+// ============================================================================
+// CLI Commands (T052-T060)
+// ============================================================================
+
 /**
- * CLI entry point
+ * CLI options parsed from command line
  */
-async function main(): Promise<void> {
-  const args = process.argv.slice(2);
+interface CLIOptions {
+  command: 'test' | 'coverage' | 'cleanup' | 'status' | 'list-resources' | 'help';
+  domain?: string;
+  tool?: string;
+  cleanRoom?: boolean;
+  concurrency?: number;
+  skipCleanup?: boolean;
+  orphaned?: boolean;
+  all?: boolean;
+}
 
-  console.log('MCP Functional Test Harness');
-  console.log('===========================');
+/**
+ * Valid domains for validation
+ */
+const VALID_DOMAINS: TestDomain[] = [
+  'identity',
+  'organization',
+  'project-foundation',
+  'apps',
+  'containers',
+  'databases',
+  'domains-mail',
+  'access-users',
+  'automation',
+  'backups',
+];
 
-  if (args.includes('--help') || args.includes('-h')) {
-    console.log(`
-Usage:
-  npm run test:all              Run all tests
-  npm run test:domain -- <name> Run tests for a specific domain
-  npm run test:tool -- <name>   Run test for a specific tool
-  npm run coverage              Show coverage report
-  npm run cleanup -- <domain>   Run cleanup for a domain
-  npm run status                Show harness status
-
-Options:
-  --concurrency <n>    Max concurrent sessions (default: 5)
-  --clean-room         Run in clean-room mode (no harness setup)
-  --skip-cleanup       Skip cleanup after tests
-`);
-    return;
-  }
-
-  if (args.includes('--status')) {
-    const status = getStatus();
-    console.log('Status:', JSON.stringify(status, null, 2));
-    return;
-  }
-
-  // Parse options from args
-  const options: TestExecutionOptions = {
-    concurrency: DEFAULT_CONCURRENCY,
-    cleanRoom: args.includes('--clean-room'),
-    skipCleanup: args.includes('--skip-cleanup'),
+/**
+ * Parse CLI arguments (T052)
+ */
+function parseArgs(args: string[]): CLIOptions {
+  const options: CLIOptions = {
+    command: 'help',
   };
 
-  // Handle domain filter
-  const domainIdx = args.indexOf('--domain');
-  if (domainIdx !== -1 && args[domainIdx + 1]) {
-    options.domains = [args[domainIdx + 1]];
+  // Determine command
+  if (args.includes('--help') || args.includes('-h') || args.length === 0) {
+    options.command = 'help';
+  } else if (args.includes('--all') || args[0] === 'test:all') {
+    options.command = 'test';
+    options.all = true;
+  } else if (args.includes('--domain') || args[0] === 'test:domain') {
+    options.command = 'test';
+    const domainIdx = args.indexOf('--domain');
+    if (domainIdx !== -1 && args[domainIdx + 1]) {
+      options.domain = args[domainIdx + 1];
+    } else if (args[1]) {
+      options.domain = args[1];
+    }
+  } else if (args.includes('--tool') || args[0] === 'test:tool') {
+    options.command = 'test';
+    const toolIdx = args.indexOf('--tool');
+    if (toolIdx !== -1 && args[toolIdx + 1]) {
+      options.tool = args[toolIdx + 1];
+    } else if (args[1]) {
+      options.tool = args[1];
+    }
+  } else if (args[0] === 'coverage') {
+    options.command = 'coverage';
+  } else if (args[0] === 'cleanup') {
+    options.command = 'cleanup';
+    if (args.includes('--all')) {
+      options.all = true;
+    } else if (args.includes('--domain')) {
+      const domainIdx = args.indexOf('--domain');
+      if (domainIdx !== -1 && args[domainIdx + 1]) {
+        options.domain = args[domainIdx + 1];
+      }
+    } else if (args[1] && !args[1].startsWith('--')) {
+      options.domain = args[1];
+    }
+  } else if (args[0] === 'status') {
+    options.command = 'status';
+  } else if (args[0] === 'list-resources') {
+    options.command = 'list-resources';
+    options.orphaned = args.includes('--orphaned');
   }
 
-  // Handle tool filter
-  const toolIdx = args.indexOf('--tool');
-  if (toolIdx !== -1 && args[toolIdx + 1]) {
-    options.tools = [args[toolIdx + 1]];
-  }
+  // Parse common options
+  options.cleanRoom = args.includes('--clean-room');
+  options.skipCleanup = args.includes('--skip-cleanup');
 
-  // Handle concurrency
   const concurrencyIdx = args.indexOf('--concurrency');
   if (concurrencyIdx !== -1 && args[concurrencyIdx + 1]) {
     options.concurrency = parseInt(args[concurrencyIdx + 1], 10);
   }
 
+  return options;
+}
+
+/**
+ * Display help message
+ */
+function showHelp(): void {
+  console.log(`
+MCP Functional Test Harness v${HARNESS_VERSION}
+==========================================
+
+Commands:
+  test:all                      Run complete test suite across all domains
+  test:domain <domain>          Run tests for a specific domain
+  test:tool <tool> [--clean-room]  Run test for a single tool
+  coverage                      Show coverage report
+  cleanup [--domain <d>] [--all] Run cleanup for domain or all resources
+  status                        Show current harness status
+  list-resources [--orphaned]   List tracked or orphaned test resources
+
+Options:
+  --concurrency <n>             Max concurrent sessions (default: 5)
+  --clean-room                  Run in clean-room mode (no harness setup)
+  --skip-cleanup                Skip cleanup after tests
+  --orphaned                    Show orphaned resources only (for list-resources)
+  --all                         Apply to all domains/resources
+
+Domains:
+  ${VALID_DOMAINS.join(', ')}
+
+Examples:
+  npm run test:all
+  npm run test:domain -- apps
+  npm run test:tool -- mittwald_project_create --clean-room
+  npm run cleanup -- --domain apps
+  npm run list-resources -- --orphaned
+`);
+}
+
+/**
+ * Check Claude Code log retention settings (T058)
+ */
+async function checkLogRetentionConfig(): Promise<boolean> {
+  const os = await import('os');
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
+
   try {
-    const result = await runTestSuite(options);
-    console.log('Test suite completed');
-    console.log('Coverage:', result.coverage.coverage.toFixed(1) + '%');
-    console.log('Passed:', result.coverage.passedTools);
-    console.log('Failed:', result.coverage.failedTools);
-  } catch (err) {
-    console.error('Test suite failed:', err);
-    process.exit(1);
+    const content = await fs.readFile(settingsPath, 'utf-8');
+    const settings = JSON.parse(content);
+
+    if (settings.cleanupPeriodDays && settings.cleanupPeriodDays >= 99999) {
+      console.log('[config] Log retention: ✓ configured (cleanupPeriodDays >= 99999)');
+      return true;
+    } else {
+      console.warn('[config] ⚠ Log retention not configured optimally');
+      console.warn(`[config] Current cleanupPeriodDays: ${settings.cleanupPeriodDays || 'not set'}`);
+      console.warn('[config] Recommended: Add "cleanupPeriodDays": 99999 to ~/.claude/settings.json');
+      return false;
+    }
+  } catch {
+    console.warn('[config] ⚠ Could not read Claude settings from:', settingsPath);
+    console.warn('[config] Session logs may be cleaned up automatically.');
+    console.warn('[config] Recommended: Create ~/.claude/settings.json with:');
+    console.warn('[config]   { "cleanupPeriodDays": 99999 }');
+    return false;
   }
+}
+
+/**
+ * Session log reference for mapping (T059)
+ */
+interface SessionLogMapping {
+  sessionId: string;
+  testId: string;
+  toolName: string;
+  logPath: string;
+  startTime: string;
+  endTime: string;
+}
+
+/**
+ * Save session to log mapping (T059)
+ */
+async function saveSessionMapping(mapping: SessionLogMapping): Promise<void> {
+  const fs = await import('fs/promises');
+  const path = await import('path');
+
+  const outputDir = path.join(process.cwd(), 'output', 'sessions');
+
+  try {
+    await fs.mkdir(outputDir, { recursive: true });
+    const filePath = path.join(outputDir, `${mapping.sessionId}.json`);
+    await fs.writeFile(filePath, JSON.stringify(mapping, null, 2));
+  } catch (err) {
+    console.error('[sessions] Failed to save session mapping:', err);
+  }
+}
+
+/**
+ * Find session log by ID (T059)
+ */
+async function findSessionLog(sessionId: string): Promise<SessionLogMapping | null> {
+  const fs = await import('fs/promises');
+  const path = await import('path');
+  const os = await import('os');
+
+  // First check our mapping file
+  const mappingPath = path.join(process.cwd(), 'output', 'sessions', `${sessionId}.json`);
+  try {
+    const content = await fs.readFile(mappingPath, 'utf-8');
+    return JSON.parse(content);
+  } catch {
+    // Not in mapping, search Claude's log directory
+  }
+
+  // Search ~/.claude/projects/ for the session
+  const claudeProjectsDir = path.join(os.homedir(), '.claude', 'projects');
+  try {
+    const projects = await fs.readdir(claudeProjectsDir);
+    for (const project of projects) {
+      const projectDir = path.join(claudeProjectsDir, project);
+      const stat = await fs.stat(projectDir);
+      if (!stat.isDirectory()) continue;
+
+      // Look for session files
+      const files = await fs.readdir(projectDir);
+      for (const file of files) {
+        if (file.includes(sessionId) || file === 'session.jsonl') {
+          const filePath = path.join(projectDir, file);
+          // Check if this is the right session
+          const content = await fs.readFile(filePath, 'utf-8');
+          if (content.includes(sessionId)) {
+            return {
+              sessionId,
+              testId: 'unknown',
+              toolName: 'unknown',
+              logPath: filePath,
+              startTime: '',
+              endTime: '',
+            };
+          }
+        }
+      }
+    }
+  } catch {
+    // Claude directory not accessible
+  }
+
+  return null;
+}
+
+/**
+ * Run test:all command (T053)
+ */
+async function cmdTestAll(options: CLIOptions): Promise<number> {
+  console.log('');
+  console.log('Test Suite: ALL TOOLS');
+  console.log('=====================');
+  console.log('');
+
+  await checkLogRetentionConfig();
+  console.log('');
+
+  const execOptions: TestExecutionOptions = {
+    concurrency: options.concurrency ?? DEFAULT_CONCURRENCY,
+    cleanRoom: options.cleanRoom,
+    skipCleanup: options.skipCleanup,
+  };
+
+  const result = await runTestSuite(execOptions);
+
+  // Summary display
+  console.log('');
+  console.log('Test Suite Complete');
+  console.log('===================');
+  console.log(`Total:    ${result.coverage.totalTools}`);
+  console.log(`Passed:   ${result.coverage.passedTools}`);
+  console.log(`Failed:   ${result.coverage.failedTools}`);
+  console.log(`Duration: ${formatDuration(result.durationMs)}`);
+  console.log('');
+
+  return result.coverage.failedTools > 0 ? 1 : 0;
+}
+
+/**
+ * Run test:domain command (T054)
+ */
+async function cmdTestDomain(options: CLIOptions): Promise<number> {
+  if (!options.domain) {
+    console.error('Error: Domain name required');
+    console.error(`Valid domains: ${VALID_DOMAINS.join(', ')}`);
+    return 1;
+  }
+
+  // Validate domain name
+  if (!VALID_DOMAINS.includes(options.domain as TestDomain)) {
+    console.error(`Error: Invalid domain "${options.domain}"`);
+    console.error(`Valid domains: ${VALID_DOMAINS.join(', ')}`);
+    return 1;
+  }
+
+  console.log('');
+  console.log(`Test Suite: DOMAIN "${options.domain}"`);
+  console.log('='.repeat(30));
+  console.log('');
+
+  const execOptions: TestExecutionOptions = {
+    domains: [options.domain],
+    concurrency: options.concurrency ?? DEFAULT_CONCURRENCY,
+    cleanRoom: options.cleanRoom,
+    skipCleanup: options.skipCleanup,
+  };
+
+  const result = await runTestSuite(execOptions);
+
+  console.log('');
+  console.log(`Domain "${options.domain}" Complete`);
+  console.log(`Passed: ${result.coverage.passedTools}`);
+  console.log(`Failed: ${result.coverage.failedTools}`);
+  console.log(`Duration: ${formatDuration(result.durationMs)}`);
+  console.log('');
+
+  return result.coverage.failedTools > 0 ? 1 : 0;
+}
+
+/**
+ * Run test:tool command (T055)
+ */
+async function cmdTestTool(options: CLIOptions): Promise<number> {
+  if (!options.tool) {
+    console.error('Error: Tool name required');
+    return 1;
+  }
+
+  console.log('');
+  console.log(`Test: SINGLE TOOL "${options.tool}"`);
+  console.log('='.repeat(40));
+  console.log(`Mode: ${options.cleanRoom ? 'CLEAN-ROOM' : 'HARNESS-ASSISTED'}`);
+  console.log('');
+
+  try {
+    const result = await runSingleTool(options.tool, options.cleanRoom);
+
+    console.log('');
+    console.log('Test Result');
+    console.log('-----------');
+    console.log(`Status:     ${result.status}`);
+    console.log(`Session ID: ${result.sessionId}`);
+    console.log(`Duration:   ${formatDuration(result.metrics.durationMs)}`);
+    console.log(`Cost:       $${result.metrics.totalCostUsd.toFixed(4)}`);
+    console.log('');
+
+    return result.status === 'passed' ? 0 : 1;
+  } catch (err) {
+    console.error('Test failed:', err instanceof Error ? err.message : err);
+    return 1;
+  }
+}
+
+/**
+ * Run coverage command
+ */
+async function cmdCoverage(): Promise<number> {
+  console.log('');
+  console.log('Coverage Report');
+  console.log('===============');
+  console.log('');
+
+  const manifest = new ManifestManager();
+  const coverage = await manifest.getCoverage();
+
+  console.log(`Total Tools:    ${coverage.totalTools}`);
+  console.log(`Tested:         ${coverage.testedTools}`);
+  console.log(`Passed:         ${coverage.passedTools}`);
+  console.log(`Failed:         ${coverage.failedTools}`);
+  console.log(`Coverage:       ${coverage.coverage.toFixed(1)}%`);
+  console.log('');
+
+  if (coverage.untestedTools.length > 0) {
+    console.log('Untested Tools:');
+    for (const tool of coverage.untestedTools.slice(0, 20)) {
+      console.log(`  - ${tool}`);
+    }
+    if (coverage.untestedTools.length > 20) {
+      console.log(`  ... and ${coverage.untestedTools.length - 20} more`);
+    }
+  }
+
+  return 0;
+}
+
+/**
+ * Run cleanup command (T056)
+ */
+async function cmdCleanup(options: CLIOptions): Promise<number> {
+  console.log('');
+  console.log('Resource Cleanup');
+  console.log('================');
+  console.log('');
+
+  const tracker = createResourceTracker();
+
+  if (options.all) {
+    console.log('Cleaning up ALL tracked resources...');
+    let totalCleaned = 0;
+    let totalFailed = 0;
+
+    for (const domain of getDomainsInOrder().reverse()) {
+      console.log(`\nDomain: ${domain}`);
+      const result = await cleanupDomain(tracker, domain);
+      console.log(`  Cleaned: ${result.cleaned}/${result.total}`);
+      if (result.failed > 0) {
+        console.log(`  Failed:  ${result.failed}`);
+        for (const failure of result.failures) {
+          console.log(`    - ${failure.resourceId}: ${failure.error}`);
+        }
+      }
+      totalCleaned += result.cleaned;
+      totalFailed += result.failed;
+    }
+
+    console.log('');
+    console.log(`Total cleaned: ${totalCleaned}`);
+    console.log(`Total failed:  ${totalFailed}`);
+    return totalFailed > 0 ? 1 : 0;
+  }
+
+  if (options.domain) {
+    if (!VALID_DOMAINS.includes(options.domain as TestDomain)) {
+      console.error(`Error: Invalid domain "${options.domain}"`);
+      return 1;
+    }
+
+    console.log(`Cleaning up domain: ${options.domain}`);
+    const result = await cleanupDomain(tracker, options.domain as TestDomain);
+
+    console.log(`Cleaned: ${result.cleaned}/${result.total}`);
+    if (result.failed > 0) {
+      console.log(`Failed:  ${result.failed}`);
+      for (const failure of result.failures) {
+        console.log(`  - ${failure.resourceId}: ${failure.error}`);
+      }
+    }
+
+    return result.failed > 0 ? 1 : 0;
+  }
+
+  console.error('Error: Specify --domain <name> or --all');
+  return 1;
+}
+
+/**
+ * Run status command (T057)
+ */
+async function cmdStatus(): Promise<number> {
+  console.log('');
+  console.log('MCP Functional Test Harness Status');
+  console.log('===================================');
+  console.log('');
+
+  const status = getStatus();
+  const tracker = createResourceTracker();
+  const manifest = new ManifestManager();
+
+  console.log(`Active Sessions: ${status.activeSessions}`);
+  console.log(`Queued Tests:    ${status.queuedTests}`);
+  console.log(`Completed:       ${status.completedTests}`);
+  console.log(`Failed:          ${status.failedTests}`);
+  console.log('');
+  console.log(`Current Phase:   ${status.currentPhase}`);
+
+  if (status.queuedTests > 0) {
+    const total = status.completedTests + status.failedTests + status.queuedTests;
+    const progress = ((status.completedTests + status.failedTests) / total) * 100;
+    console.log(`Progress:        ${status.completedTests + status.failedTests}/${total} (${progress.toFixed(1)}%)`);
+  }
+
+  console.log('');
+  console.log('Resource Tracker:');
+
+  const trackerStatus = tracker.getStatus();
+  for (const [type, count] of Object.entries(trackerStatus.byType)) {
+    if (count > 0) {
+      console.log(`  - ${type}: ${count} active`);
+    }
+  }
+
+  if (status.currentPhase === 'idle') {
+    console.log('');
+    console.log('Last Run Summary:');
+    const coverage = await manifest.getCoverage();
+    console.log(`  Coverage: ${coverage.coverage.toFixed(1)}%`);
+    console.log(`  Passed:   ${coverage.passedTools}`);
+    console.log(`  Failed:   ${coverage.failedTools}`);
+  }
+
+  return 0;
+}
+
+/**
+ * Run list-resources command (T060)
+ */
+async function cmdListResources(options: CLIOptions): Promise<number> {
+  console.log('');
+
+  if (options.orphaned) {
+    console.log('Orphaned Test Resources');
+    console.log('=======================');
+    console.log('');
+    console.log('Searching for resources matching "test-*" pattern...');
+    console.log('');
+
+    // This would need MCP server access to list resources
+    // For now, show guidance
+    console.log('To find orphaned resources, use the Mittwald CLI:');
+    console.log('');
+    console.log('  mw project list | grep test-');
+    console.log('  mw app list --project-id <id> | grep test-');
+    console.log('  mw database mysql list --project-id <id> | grep test-');
+    console.log('');
+    console.log('To cleanup orphaned resources:');
+    console.log('  mw project delete <project-id>');
+    console.log('  mw app uninstall <app-id>');
+    console.log('');
+  } else {
+    console.log('Tracked Test Resources');
+    console.log('======================');
+    console.log('');
+
+    const tracker = createResourceTracker();
+    const resources = tracker.getAllResources();
+
+    if (resources.length === 0) {
+      console.log('No tracked resources.');
+    } else {
+      // Group by domain
+      const byDomain = new Map<string, typeof resources>();
+      for (const r of resources) {
+        const domain = r.domain;
+        if (!byDomain.has(domain)) {
+          byDomain.set(domain, []);
+        }
+        byDomain.get(domain)!.push(r);
+      }
+
+      for (const [domain, domainResources] of byDomain) {
+        console.log(`Domain: ${domain}`);
+        for (const r of domainResources) {
+          console.log(`  - ${r.resourceType}: ${r.name} (${r.resourceId}) [${r.status}]`);
+        }
+        console.log('');
+      }
+    }
+  }
+
+  return 0;
+}
+
+/**
+ * Format duration in human-readable form
+ */
+function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${minutes}m ${seconds}s`;
+}
+
+/**
+ * CLI entry point (T052)
+ */
+async function main(): Promise<void> {
+  const args = process.argv.slice(2);
+
+  console.log('MCP Functional Test Harness v' + HARNESS_VERSION);
+  console.log('');
+
+  const options = parseArgs(args);
+  let exitCode = 0;
+
+  switch (options.command) {
+    case 'help':
+      showHelp();
+      break;
+    case 'test':
+      if (options.all) {
+        exitCode = await cmdTestAll(options);
+      } else if (options.domain) {
+        exitCode = await cmdTestDomain(options);
+      } else if (options.tool) {
+        exitCode = await cmdTestTool(options);
+      } else {
+        console.error('Error: Specify --all, --domain <name>, or --tool <name>');
+        exitCode = 1;
+      }
+      break;
+    case 'coverage':
+      exitCode = await cmdCoverage();
+      break;
+    case 'cleanup':
+      exitCode = await cmdCleanup(options);
+      break;
+    case 'status':
+      exitCode = await cmdStatus();
+      break;
+    case 'list-resources':
+      exitCode = await cmdListResources(options);
+      break;
+    default:
+      showHelp();
+  }
+
+  process.exit(exitCode);
 }
 
 // Run if executed directly
@@ -759,4 +1317,13 @@ if (isMain) {
 }
 
 // Export utilities for testing
-export { SessionPool, buildTestQueue, pollForCompletion, withRateLimitRetry, withConsistencyRetry };
+export {
+  SessionPool,
+  buildTestQueue,
+  pollForCompletion,
+  withRateLimitRetry,
+  withConsistencyRetry,
+  checkLogRetentionConfig,
+  saveSessionMapping,
+  findSessionLog,
+};
