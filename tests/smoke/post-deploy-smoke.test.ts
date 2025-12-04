@@ -122,7 +122,9 @@ describe('Post-deploy OAuth smoke', () => {
           authorization: `Bearer ${registrationAccessToken}`
         }
       });
-      expect(postDeleteResponse.status).toBe(404);
+      // After deletion, server may return 401 (token invalidated) or 404 (not found)
+      // Both are valid per RFC 7592 - the important thing is it's not 200
+      expect([401, 404]).toContain(postDeleteResponse.status);
     });
 
     test('dynamic client registration supports client_secret_post confidential clients', async () => {
