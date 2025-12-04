@@ -1,0 +1,164 @@
+{
+  "corpusStats": {
+    "totalSessions": 595,
+    "totalEvents": 5666,
+    "totalTokens": 338050,
+    "avgTokensPerSession": 568,
+    "avgEventsPerSession": 9.5,
+    "analysisDate": "2025-12-04"
+  },
+  "patternRanking": [
+    {
+      "type": "unnecessary-delegation",
+      "count": 31,
+      "totalTokenWaste": 665940,
+      "avgSeverityScore": 21481.94,
+      "mostAffectedDomain": "domains-mail"
+    },
+    {
+      "type": "wrong-tool-selection",
+      "count": 94,
+      "totalTokenWaste": 18645,
+      "avgSeverityScore": 396.7,
+      "mostAffectedDomain": "containers"
+    },
+    {
+      "type": "retry-loop",
+      "count": 35,
+      "totalTokenWaste": 5677,
+      "avgSeverityScore": 243.3,
+      "mostAffectedDomain": "project-foundation"
+    },
+    {
+      "type": "capability-mismatch",
+      "count": 42,
+      "totalTokenWaste": 1705,
+      "avgSeverityScore": 40.6,
+      "mostAffectedDomain": "databases"
+    },
+    {
+      "type": "stuck-indicator",
+      "count": 22,
+      "totalTokenWaste": 306,
+      "avgSeverityScore": 13.97,
+      "mostAffectedDomain": "identity"
+    }
+  ],
+  "problematicTools": [
+    {
+      "tool": "Bash",
+      "incidentCount": 106,
+      "tokenWaste": 23030,
+      "primaryPattern": "wrong-tool-selection"
+    },
+    {
+      "tool": "WebSearch",
+      "incidentCount": 37,
+      "tokenWaste": 1639,
+      "primaryPattern": "capability-mismatch"
+    },
+    {
+      "tool": "Task",
+      "incidentCount": 35,
+      "tokenWaste": 665966,
+      "primaryPattern": "unnecessary-delegation"
+    },
+    {
+      "tool": "unknown",
+      "incidentCount": 22,
+      "tokenWaste": 306,
+      "primaryPattern": "stuck-indicator"
+    },
+    {
+      "tool": "Skill",
+      "incidentCount": 12,
+      "tokenWaste": 835,
+      "primaryPattern": "retry-loop"
+    },
+    {
+      "tool": "SlashCommand",
+      "incidentCount": 11,
+      "tokenWaste": 457,
+      "primaryPattern": "wrong-tool-selection"
+    },
+    {
+      "tool": "WebFetch",
+      "incidentCount": 1,
+      "tokenWaste": 40,
+      "primaryPattern": "capability-mismatch"
+    }
+  ],
+  "domainHealth": [
+    {
+      "domain": "apps",
+      "sessionsCount": 30,
+      "incidentCount": 34,
+      "healthScore": 0,
+      "status": "critical"
+    },
+    {
+      "domain": "containers",
+      "sessionsCount": 20,
+      "incidentCount": 26,
+      "healthScore": 0,
+      "status": "critical"
+    },
+    {
+      "domain": "databases",
+      "sessionsCount": 21,
+      "incidentCount": 31,
+      "healthScore": 0,
+      "status": "critical"
+    },
+    {
+      "domain": "domains-mail",
+      "sessionsCount": 22,
+      "incidentCount": 40,
+      "healthScore": 0,
+      "status": "critical"
+    },
+    {
+      "domain": "automation",
+      "sessionsCount": 13,
+      "incidentCount": 18,
+      "healthScore": 0,
+      "status": "critical"
+    },
+    {
+      "domain": "backups",
+      "sessionsCount": 10,
+      "incidentCount": 19,
+      "healthScore": 0,
+      "status": "critical"
+    },
+    {
+      "domain": "identity",
+      "sessionsCount": 26,
+      "incidentCount": 13,
+      "healthScore": 0.5,
+      "status": "critical"
+    },
+    {
+      "domain": "access-users",
+      "sessionsCount": 8,
+      "incidentCount": 2,
+      "healthScore": 0.75,
+      "status": "warning"
+    },
+    {
+      "domain": "project-foundation",
+      "sessionsCount": 431,
+      "incidentCount": 40,
+      "healthScore": 0.91,
+      "status": "healthy"
+    },
+    {
+      "domain": "organization",
+      "sessionsCount": 14,
+      "incidentCount": 1,
+      "healthScore": 0.93,
+      "status": "healthy"
+    }
+  ],
+  "generatedAt": "2025-12-04T19:28:31.241Z"
+}

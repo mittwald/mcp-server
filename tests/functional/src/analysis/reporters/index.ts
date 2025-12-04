@@ -117,5 +117,34 @@ export {
   aggregateIncidents,
   filterDependencies,
   calculateMetrics,
-  generateRecommendations,
+  generateRecommendations as generateDomainRecommendations,
 } from './domain-report.js';
+
+// Summary report exports
+export {
+  generateSummary,
+  renderSummaryMarkdown,
+  aggregateStats,
+  rankPatterns,
+  findProblematicTools,
+  calculateDomainHealth,
+  exportSummary,
+  exportSummaryJson,
+} from './summary-report.js';
+
+// Recommendations exports
+export {
+  extractToolChains,
+  findPatterns,
+  rankByEfficiency,
+  generateRecommendations,
+  extractAndGenerateRecommendations,
+  exportRecommendationsJson,
+  exportRecommendationsMarkdown,
+} from './recommendations.js';
+
+// Manifest exports
+export {
+  generateManifest,
+  exportManifest,
+} from './manifest.js';
