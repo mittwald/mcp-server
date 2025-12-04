@@ -57,11 +57,10 @@ jobs:
             BUILD_TIME=${{ steps.meta.outputs.build_time }} \
             -a ${{ matrix.app }} --stage
 
-      - name: Deploy from source (remote builder)
+      - name: Deploy with local Docker build
         run: |
-          # Use Fly remote builder to build and deploy from source using app credentials.
-          # Secrets staged earlier (GIT_SHA, IMAGE_DIGEST, BUILD_TIME) become visible to the app.
-          flyctl deploy --config "${{ matrix.fly_config }}" --strategy immediate --detach --verbose \
+          # Build locally on GitHub runner (faster than Depot remote builder)
+          flyctl deploy --config "${{ matrix.fly_config }}" --local-only --strategy immediate --detach \
             --env ALLOW_FLY_RELEASE=true
 
 
