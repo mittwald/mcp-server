@@ -29,6 +29,7 @@ import { handleListPrompts, handleGetPrompt } from "../handlers/prompt-handlers.
 import { handleListResources, handleResourceCall } from "../handlers/resource-handlers.js";
 import { logger } from "../utils/logger.js";
 import { sessionManager } from "./session-manager.js";
+import { activeConnections } from "../metrics/index.js";
 import { rateLimitMiddleware, validateProtocolVersion, requestSizeLimit } from "./middleware.js";
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import type { AuthenticatedRequest } from "./auth-types.js";
@@ -283,6 +284,7 @@ export class MCPHandler implements IMCPHandler {
           lastAccessed: new Date(),
         };
         this.sessions.set(sessionId, sessionInfo);
+        activeConnections.inc(); // Track active MCP sessions
         logger.info(`📝 [${clientAddr}] Session ${sessionId} created successfully (Total: ${this.sessions.size})`);
         
         await transport.handleRequest(req, res);
@@ -493,6 +495,7 @@ export class MCPHandler implements IMCPHandler {
           sessionInfo.server.close();
           sessionInfo.transport.close();
           this.sessions.delete(sessionId);
+          activeConnections.dec(); // Decrement active sessions count
           cleaned++;
           logger.debug(`🧹 Cleaned up expired session: ${sessionId} (age: ${ageMinutes}min)`);
         } catch (error) {
@@ -619,6 +622,7 @@ export class MCPHandler implements IMCPHandler {
       sessionInfo.server.close();
       sessionInfo.transport.close();
       this.sessions.delete(sessionId);
+      activeConnections.dec(); // Decrement active sessions count
       logger.debug(`🧹 Cleaned up session: ${sessionId}`);
     }
   }
@@ -638,14 +642,16 @@ export class MCPHandler implements IMCPHandler {
       clearInterval(this.cleanupInterval);
     }
 
+    const sessionCount = this.sessions.size;
     // Close all sessions
     for (const sessionInfo of this.sessions.values()) {
       sessionInfo.server.close();
       sessionInfo.transport.close();
+      activeConnections.dec(); // Decrement for each closed session
     }
     this.sessions.clear();
 
-    logger.info(`🛑 MCP Handler shut down - closed ${this.sessions.size} sessions`);
+    logger.info(`🛑 MCP Handler shut down - closed ${sessionCount} sessions`);
   }
 }
 

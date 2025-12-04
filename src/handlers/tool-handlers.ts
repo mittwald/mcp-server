@@ -17,14 +17,15 @@ import type {
   ListToolsResult,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { 
-  TOOLS, 
-  TOOL_ERROR_MESSAGES, 
-  initializeTools, 
-  getToolHandler, 
-  getToolSchema 
+import {
+  TOOLS,
+  TOOL_ERROR_MESSAGES,
+  initializeTools,
+  getToolHandler,
+  getToolSchema
 } from '../constants/tools.js';
 import { logger } from '../utils/logger.js';
+import { toolCallsTotal, toolDuration } from '../metrics/index.js';
 import type { MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
 import { filterTools, getToolCategories, getToolCountByCategory } from '../utils/tool-filter.js';
@@ -113,7 +114,9 @@ export async function handleToolCall(
   request: CallToolRequest,
   context: MCPToolContext,
 ): Promise<CallToolResult> {
-  
+  const toolName = request.params.name;
+  const end = toolDuration.startTimer({ tool_name: toolName });
+
   try {
     // Ensure tools are loaded
     await ensureToolsInitialized();
@@ -213,13 +216,17 @@ export async function handleToolCall(
     
     let result: CallToolResult;
     result = await runWithSessionContext(context.sessionId, () => handler(request.params.arguments as any));
-    
+
+    toolCallsTotal.inc({ tool_name: toolName, status: 'success' });
+    end(); // Record duration
     logger.info(`✅ Tool ${request.params.name} executed successfully`);
     return result;
     
   } catch (error) {
+    toolCallsTotal.inc({ tool_name: toolName, status: 'error' });
+    end(); // Record duration even on error
     logger.error(`❌ Tool ${request.params.name} failed:`, error);
-    
+
     // Return error result instead of throwing
     return {
       content: [

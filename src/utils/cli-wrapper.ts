@@ -2,6 +2,7 @@ import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { getCurrentSessionId } from './execution-context.js';
 import { sessionManager } from '../server/session-manager.js';
+import { cliCallsTotal } from '../metrics/index.js';
 
 /**
  * Use execFile instead of exec to prevent shell injection attacks.
@@ -124,6 +125,9 @@ export async function executeCli(
   args: string[],
   options: CliExecuteOptions = {}
 ): Promise<CliExecuteResult> {
+  // Extract CLI subcommand for metrics (e.g., "app list" from args ["app", "list", ...])
+  const cliCommand = args.slice(0, 2).join(' ') || 'unknown';
+
   const {
     timeout = 30000,
     maxBuffer,
@@ -195,6 +199,7 @@ export async function executeCli(
       env: mergedEnv,
     });
 
+    cliCallsTotal.inc({ command: cliCommand, status: 'success' });
     return {
       stdout: stdout.trim(),
       stderr: stderr.trim(),
@@ -202,6 +207,7 @@ export async function executeCli(
       durationMs: Date.now() - startedAt
     };
   } catch (error: any) {
+    cliCallsTotal.inc({ command: cliCommand, status: 'error' });
     // execFile throws an error if the command exits with non-zero
     let stderr = error?.stderr?.trim() || '';
 

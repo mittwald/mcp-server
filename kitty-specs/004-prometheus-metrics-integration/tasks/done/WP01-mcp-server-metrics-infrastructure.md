@@ -7,7 +7,7 @@ subtasks:
   - "T004"
 title: "MCP Server Metrics Infrastructure"
 phase: "Phase 1 - Infrastructure (P1)"
-lane: "doing"
+lane: "done"
 assignee: "claude"
 agent: "claude"
 shell_pid: "36921"
@@ -157,12 +157,12 @@ curl http://localhost:3000/metrics
 
 ## Definition of Done Checklist
 
-- [ ] prom-client installed and in package.json
-- [ ] `src/metrics/registry.ts` created with default metrics
-- [ ] `src/metrics/index.ts` exports register
-- [ ] `/metrics` endpoint added to Express app
-- [ ] Endpoint returns valid Prometheus format
-- [ ] Service label appears on all metrics
+- [x] prom-client installed and in package.json
+- [x] `src/metrics/registry.ts` created with default metrics
+- [x] `src/metrics/index.ts` exports register
+- [x] `/metrics` endpoint added to Express app
+- [x] Endpoint returns valid Prometheus format
+- [x] Service label appears on all metrics
 
 ## Review Guidance
 
@@ -175,3 +175,4 @@ curl http://localhost:3000/metrics
 
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
 - 2025-12-04T10:20:00Z – claude – shell_pid=36921 – lane=doing – Started implementation
+- 2025-12-04T09:27:00Z – claude – lane=done – Completed all subtasks (T001-T004), committed 0f6ae3e
