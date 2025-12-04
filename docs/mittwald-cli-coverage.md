@@ -1,9 +1,5 @@
 # Mittwald CLI Coverage Matrix
 
-**Last Audit:** December 2025 Security Hardening Sprint
-**CLI Version:** 1.12.x
-**Audit Scope:** Full command inventory, alias mapping, security validation
-
 Total CLI commands: 178
 
 Covered by MCP tools: 168
@@ -11,21 +7,6 @@ Covered by MCP tools: 168
 Missing wrappers: 0
 
 Status legend: ✅ Covered, ⚠️ Missing, ➖ Not Applicable
-
-## Command Alias Handling
-
-The Mittwald CLI supports command aliases (e.g., `ls` → `list`, `rm` → `delete`). The MCP server uses **canonical command names only** and does not require separate wrappers for aliases because:
-
-1. **CLI Resolution**: The Mittwald CLI internally resolves aliases to their canonical forms
-2. **Single Implementation**: Each canonical command has one MCP tool wrapper
-3. **No Duplication**: Aliases are not duplicated in the MCP tool inventory
-
-Example mappings handled by the CLI:
-- `mw app ls` → `mw app list`
-- `mw backup rm` → `mw backup delete`
-- `mw project ls` → `mw project list`
-
-The MCP server always invokes the canonical form, ensuring consistent behavior regardless of which alias the CLI might support.
 
 ## app
 
