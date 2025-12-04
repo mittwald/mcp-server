@@ -1,0 +1,170 @@
+{
+  "dependencies": [
+    {
+      "from": "mcp__mittwald__mittwald_ssh_user_update",
+      "to": "mcp__mittwald__mittwald_ssh_user_get",
+      "confidence": 1,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "06ac936e-0ba6-41b6-8e2a-611ec19ddaea"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_server_list",
+      "to": "mcp__mittwald__mittwald_sftp_user_delete",
+      "confidence": 1,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "2d6c2db1-1509-4c89-af43-538184b26d67"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_server_list",
+      "to": "mcp__mittwald__mittwald_project_create",
+      "confidence": 1,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "9a40cbff-790d-4084-84f7-73d1bed9a0ef"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_org_invite_list",
+      "to": "mcp__mittwald__mittwald_org_invite_revoke",
+      "confidence": 1,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "40055c74-806a-48dd-858d-6fb29cb01d3c"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_org_get",
+      "to": "mcp__mittwald__mittwald_org_delete",
+      "confidence": 1,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "5c466c0e-77ee-4108-88cd-7ebf62fa5413"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_sftp_user_create",
+      "to": "mcp__mittwald__mittwald_server_get",
+      "confidence": 1,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "bc886aeb-ef7c-4fba-86e4-7bbadbefa889"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_context_reset_session",
+      "to": "mcp__mittwald__mittwald_org_membership_list",
+      "confidence": 1,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "bd8e59a8-5c46-49f1-aaaf-ff7ed27756bb"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_ssh_user_get",
+      "to": "mcp__mittwald__mittwald_ssh_user_list",
+      "confidence": 0.5,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "06ac936e-0ba6-41b6-8e2a-611ec19ddaea"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_org_invite_list",
+      "to": "mcp__mittwald__mittwald_org_invite_list_own",
+      "confidence": 0.5,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "2f4b80f3-8cb4-47aa-bdf3-a2cbbc1a5744"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_user_accessible_projects",
+      "to": "mcp__mittwald__mittwald_org_invite_list",
+      "confidence": 0.5,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "2f4b80f3-8cb4-47aa-bdf3-a2cbbc1a5744"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_user_accessible_projects",
+      "to": "mcp__mittwald__mittwald_org_list",
+      "confidence": 0.5,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "2f4b80f3-8cb4-47aa-bdf3-a2cbbc1a5744"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_app_list",
+      "to": "mcp__mittwald__mittwald_app_dependency_list",
+      "confidence": 0.5,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "47c1eaca-372d-4f0b-b03e-c4704aa1c213"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_org_membership_list",
+      "to": "mcp__mittwald__mittwald_project_list",
+      "confidence": 0.5,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "bd8e59a8-5c46-49f1-aaaf-ff7ed27756bb"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_context_get",
+      "to": "mcp__mittwald__mittwald_context_reset_session",
+      "confidence": 0.5,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "bd8e59a8-5c46-49f1-aaaf-ff7ed27756bb"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_user_accessible_projects",
+      "to": "mcp__mittwald__mittwald_context_get",
+      "confidence": 0.25,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "e2b19dfa-ccf9-4e66-ac6f-c76dee6d88d0"
+      ],
+      "type": "sequence"
+    },
+    {
+      "from": "mcp__mittwald__mittwald_org_list",
+      "to": "mcp__mittwald__mittwald_context_get",
+      "confidence": 0.25,
+      "evidenceCount": 1,
+      "evidenceSessions": [
+        "2f4b80f3-8cb4-47aa-bdf3-a2cbbc1a5744"
+      ],
+      "type": "sequence"
+    }
+  ],
+  "stats": {
+    "totalNodes": 54,
+    "totalEdges": 16,
+    "avgConfidence": 0.6875
+  },
+  "generatedAt": "2025-12-04T19:19:44.873Z"
+}

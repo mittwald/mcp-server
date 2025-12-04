@@ -32,6 +32,28 @@ export {
 } from './detectors/index.js';
 
 // =============================================================================
+// Mapper Exports
+// =============================================================================
+
+export {
+  mapDependencies,
+  extractToolSequences,
+  countSessionsWithTool,
+  buildDependencyGraph,
+  detectErrorRecoveryDependencies,
+  graphToDependencies,
+  calculateConfidence,
+  detectCycles,
+  breakCycles,
+} from './mapper/index.js';
+
+export {
+  exportToJson as exportDependenciesToJson,
+  exportToDot as exportDependenciesToDot,
+  exportDependencies,
+} from './mapper/export.js';
+
+// =============================================================================
 // Type Exports
 // =============================================================================
 
