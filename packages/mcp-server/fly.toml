@@ -17,8 +17,7 @@ kill_timeout = "30s" # Extended for graceful shutdown
   MCP_PUBLIC_BASE = "https://mittwald-mcp-fly2.fly.dev"
   # Authorization Server base (bridge)
   OAUTH_AS_BASE = "https://mittwald-oauth-server.fly.dev"
-  # JWT validation configuration (must match OAuth server)
-  JWT_SIGNING_KEY = "production-jwt-key-must-be-set-as-secret"
+  # NOTE: OAUTH_BRIDGE_JWT_SECRET must be set as a Fly secret (not here)
 
 [[services]]
   internal_port = 8080
