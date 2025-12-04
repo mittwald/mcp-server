@@ -5,6 +5,14 @@
 **Status**: Draft
 **Input**: Comprehensive functional testing framework for 170 MCP tools on Fly.io, using Claude Code headless mode with parallel execution, tool restrictions blocking mw CLI, stateless agent discovery of dependencies, resource reuse with grouped cleanup, session log capture and analysis, append-only JSONL coverage manifest, and detailed agent path analysis to identify MCP server improvements.
 
+## Clarifications
+
+### Session 2025-12-04
+- Q: How should the system detect completion of Mittwald async operations? → A: Polling-based detection with 30-second intervals to maximize velocity; no long arbitrary timeouts.
+- Q: What is the target completion time for the full test suite? → A: No time constraint; success is 100% tool coverage (all 170 tools tested).
+- Q: How should stuck agents be handled? → A: Harness uses streaming JSON output for real-time visibility; coordinator makes intelligent intervention decisions based on observed behavior, not blind heuristics.
+- Q: Who performs struggle analysis? → A: Out of scope for this sprint; focus on data capture and preservation for future analysis sprint.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Test Harness Executes Tool Tests (Priority: P1)
@@ -85,19 +93,19 @@ Every test session's ID is captured and stored. Session logs from `~/.claude/pro
 
 ---
 
-### User Story 6 - Agent Path Analysis (Priority: P2)
+### User Story 6 - Session Data Preservation (Priority: P2)
 
-After tests complete, session logs are analyzed to identify where agents struggled. Analysis produces concrete suggestions for MCP server improvements.
+Session logs are captured and preserved in a format suitable for future struggle analysis. Analysis itself is deferred to a future sprint.
 
-**Why this priority**: This delivers the secondary outcome - insights for improving the MCP server.
+**Why this priority**: Without preserved data, future analysis is impossible.
 
-**Independent Test**: Analyze a single session log and produce a structured report of agent struggles.
+**Independent Test**: Run a test, verify the session log is captured and accessible for later retrieval.
 
 **Acceptance Scenarios**:
 
-1. **Given** a session log contains failed attempts or retries, **When** analysis runs, **Then** each struggle point is identified with context (what the agent tried, what failed, what it tried next).
-2. **Given** agent struggles are identified, **When** the report is generated, **Then** it includes concrete suggestions (e.g., "Agent didn't know project ID format - add example to tool description").
-3. **Given** multiple sessions are analyzed, **When** results are aggregated, **Then** common struggle patterns are surfaced with frequency counts.
+1. **Given** a test session completes, **When** logs are stored, **Then** the full session transcript (all tool calls, responses, errors) is preserved.
+2. **Given** session logs exist, **When** retention is configured, **Then** logs remain available indefinitely (not deleted after 30 days).
+3. **Given** multiple sessions complete, **When** querying for a specific session_id, **Then** the corresponding log file can be located and read.
 
 ---
 
@@ -135,9 +143,9 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 ### Edge Cases
 
 - What happens when the MCP server is unavailable mid-test?
-- How does the system handle an agent that gets stuck in an infinite retry loop?
+- Stuck agents: Coordinator monitors streaming output and intervenes intelligently based on observed behavior patterns (not blind timeouts).
 - What if a test creates resources but crashes before recording them for cleanup?
-- How are partial test results handled if a session times out?
+- Interrupted sessions: Partial results are recorded (FR-013a).
 - What happens when parallel tests accidentally create conflicting resource names despite conventions?
 
 ## Requirements *(mandatory)*
@@ -145,11 +153,12 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 ### Functional Requirements
 
 **Test Harness Core:**
-- **FR-001**: System MUST spawn Claude Code sessions using headless mode (`claude -p --output-format json`)
+- **FR-001**: System MUST spawn Claude Code sessions using headless mode with streaming (`claude -p --output-format stream-json`)
 - **FR-002**: System MUST enforce tool restrictions via `--disallowedTools "Bash(mw)"` on all test sessions
 - **FR-003**: System MUST support parallel execution of 3-5 concurrent test sessions
 - **FR-004**: System MUST capture session_id from each test session's JSON output
 - **FR-005**: System MUST append test results to JSONL manifest (atomic append, no read-modify-write)
+- **FR-005a**: System MUST monitor agent activity in real-time via streaming output for intelligent coordination
 
 **Resource Management:**
 - **FR-006**: System MUST support "clean-room" mode for foundational tool tests (no pre-existing resources)
@@ -161,13 +170,14 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 **Session Management:**
 - **FR-011**: System MUST configure Claude Code log retention to preserve logs beyond 30 days
 - **FR-012**: System MUST store mapping of test -> session_id for later log retrieval
-- **FR-013**: System MUST handle session timeouts gracefully with partial result recording
+- **FR-013**: System MUST use polling-based completion detection with 30-second intervals for Mittwald async operations
+- **FR-013a**: System MUST record partial results if a session fails or is interrupted
 
-**Analysis:**
-- **FR-014**: System MUST parse session JSONL logs to identify agent decision points
-- **FR-015**: System MUST identify "struggle patterns" (retries, errors, backtracking)
-- **FR-016**: System MUST generate improvement suggestions for each identified struggle
-- **FR-017**: System MUST aggregate common struggles across all sessions with frequency counts
+**Data Preservation (for future analysis sprint):**
+- **FR-014**: System MUST preserve complete session logs (all tool calls, responses, errors) in accessible format
+- **FR-015**: System MUST provide a way to locate session logs by session_id
+- **FR-016**: *(DEFERRED)* Struggle pattern identification - future sprint
+- **FR-017**: *(DEFERRED)* Improvement suggestion generation - future sprint
 
 **Coverage:**
 - **FR-018**: System MUST maintain a manifest of all 170 MCP tools
@@ -184,8 +194,7 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 - **TestManifest**: Append-only JSONL file tracking all test executions (tool_name, session_id, status, timestamp, duration, error_message)
 - **ToolInventory**: List of all 170 MCP tools with metadata (name, category/domain, dependencies, clean_room_required)
 - **ResourceTracker**: Registry of created resources awaiting cleanup (resource_type, resource_id, domain, created_by_session, created_at)
-- **StruggleReport**: Analysis output for a session (session_id, struggle_points[], suggestions[], severity)
-- **AggregateAnalysis**: Combined insights across all sessions (common_struggles[], improvement_recommendations[], frequency_map)
+- **SessionLog**: Preserved Claude Code session transcript (JSONL format at ~/.claude/projects/), linked by session_id for future analysis
 
 ## Success Criteria *(mandatory)*
 
@@ -195,8 +204,7 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 - **SC-002**: Test harness can execute 3-5 tests concurrently without resource conflicts or data corruption
 - **SC-003**: Zero instances of agents using `mw` CLI directly (tool restriction 100% effective)
 - **SC-004**: Session logs are preserved and retrievable for all test executions
-- **SC-005**: Agent struggle analysis produces actionable suggestions for at least 80% of identified struggles
-- **SC-006**: Resource cleanup achieves 100% removal of test-created resources (no orphaned resources)
-- **SC-007**: Aggregate analysis identifies top 10 common agent struggle patterns across all sessions
-- **SC-008**: Test execution completes for all 170 tools within a reasonable operational window
-- **SC-009**: JSONL manifest maintains data integrity under concurrent append operations
+- **SC-005**: Resource cleanup achieves 100% removal of test-created resources (no orphaned resources)
+- **SC-006**: JSONL manifest maintains data integrity under concurrent append operations
+- **SC-007**: *(DEFERRED)* Agent struggle analysis - future sprint
+- **SC-008**: *(DEFERRED)* Aggregate pattern identification - future sprint
