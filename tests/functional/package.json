@@ -1,0 +1,35 @@
+{
+  "name": "mcp-functional-tests",
+  "version": "1.0.0",
+  "description": "Functional test harness for MCP tools",
+  "type": "module",
+  "main": "dist/harness/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test:all": "node dist/harness/index.js test:all",
+    "test:domain": "node dist/harness/index.js test:domain",
+    "test:tool": "node dist/harness/index.js test:tool",
+    "coverage": "node dist/harness/index.js coverage",
+    "cleanup": "node dist/harness/index.js cleanup",
+    "status": "node dist/harness/index.js status",
+    "list-resources": "node dist/harness/index.js list-resources",
+    "help": "node dist/harness/index.js --help"
+  },
+  "keywords": [
+    "mcp",
+    "functional-tests",
+    "mittwald"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
