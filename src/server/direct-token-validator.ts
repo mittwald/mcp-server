@@ -1,20 +1,28 @@
 import { createHash } from 'node:crypto';
-import { executeCli } from '../utils/cli-wrapper.js';
 import { logger } from '../utils/logger.js';
 import { CONFIG } from './config.js';
 
 const DIRECT_TOKEN_LOG_NAMESPACE = 'DirectTokenValidator';
+const MITTWALD_API_BASE = 'https://api.mittwald.de/v2';
 
 export interface DirectTokenValidationResult {
   userId: string;
   email?: string;
   name?: string;
-  rawOutput: string;
 }
 
 interface ValidationCacheEntry {
   result: DirectTokenValidationResult;
   expiresAt: number;
+}
+
+interface MittwaldUserResponse {
+  userId: string;
+  email?: string;
+  person?: {
+    firstName?: string;
+    lastName?: string;
+  };
 }
 
 export class DirectTokenValidationError extends Error {
@@ -34,10 +42,11 @@ class DirectTokenValidator {
     const cacheKey = this.hashToken(token);
     const cached = this.cache.get(cacheKey);
     if (cached && cached.expiresAt > now) {
+      logger.debug(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Cache hit for token`);
       return cached.result;
     }
 
-    const validation = await this.runCliValidation(token);
+    const validation = await this.validateViaRestApi(token);
     this.cache.set(cacheKey, {
       result: validation,
       expiresAt: now + CONFIG.DIRECT_TOKENS.CACHE_TTL_MS,
@@ -61,58 +70,82 @@ class DirectTokenValidator {
     return createHash('sha256').update(token).digest('hex');
   }
 
-  private async runCliValidation(token: string): Promise<DirectTokenValidationResult> {
-    try {
-      const execution = await executeCli(
-        'mw',
-        ['login', 'status', '--token', token],
-        {
-          timeout: CONFIG.DIRECT_TOKENS.VALIDATION_TIMEOUT_MS,
-        }
-      );
+  /**
+   * Validates a Mittwald API token by calling the /v2/users/self endpoint.
+   * This is much lighter than spawning the CLI and scales to concurrent validations.
+   */
+  private async validateViaRestApi(token: string): Promise<DirectTokenValidationResult> {
+    const controller = new AbortController();
+    const timeout = setTimeout(
+      () => controller.abort(),
+      CONFIG.DIRECT_TOKENS.VALIDATION_TIMEOUT_MS
+    );
 
-      if (execution.exitCode !== 0) {
-        logger.warn(`[${DIRECT_TOKEN_LOG_NAMESPACE}] CLI validation failed`, {
-          exitCode: execution.exitCode,
-          stderr: execution.stderr,
+    try {
+      logger.debug(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Validating token via REST API`);
+
+      const response = await fetch(`${MITTWALD_API_BASE}/users/self`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          logger.warn(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Token rejected by Mittwald API`, {
+            status: response.status,
+          });
+          throw new DirectTokenValidationError('Mittwald API rejected the supplied token');
+        }
+
+        logger.warn(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Mittwald API error`, {
+          status: response.status,
+          statusText: response.statusText,
         });
-        throw new DirectTokenValidationError('Mittwald CLI rejected the supplied token');
+        throw new DirectTokenValidationError(`Mittwald API returned ${response.status}`);
       }
 
-      const parsed = this.parseLoginStatus(execution.stdout.trim());
-      logger.debug(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Direct token validated`, {
-        userId: parsed.userId,
-        hasEmail: Boolean(parsed.email),
+      const user = await response.json() as MittwaldUserResponse;
+
+      if (!user.userId) {
+        logger.error(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Mittwald API response missing userId`);
+        throw new DirectTokenValidationError('Invalid response from Mittwald API');
+      }
+
+      const name = user.person
+        ? [user.person.firstName, user.person.lastName].filter(Boolean).join(' ')
+        : undefined;
+
+      logger.debug(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Token validated successfully`, {
+        userId: user.userId,
+        hasEmail: Boolean(user.email),
       });
+
       return {
-        ...parsed,
-        rawOutput: execution.stdout.trim(),
+        userId: user.userId,
+        email: user.email,
+        name: name || undefined,
       };
     } catch (error) {
       if (error instanceof DirectTokenValidationError) {
         throw error;
       }
-      logger.error(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Unexpected token validation error`, {
+
+      if (error instanceof Error && error.name === 'AbortError') {
+        logger.error(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Validation timeout`);
+        throw new DirectTokenValidationError('Token validation timed out');
+      }
+
+      logger.error(`[${DIRECT_TOKEN_LOG_NAMESPACE}] Unexpected validation error`, {
         error: error instanceof Error ? error.message : String(error),
       });
       throw new DirectTokenValidationError('Direct token validation failed');
+    } finally {
+      clearTimeout(timeout);
     }
-  }
-
-  private parseLoginStatus(output: string): Omit<DirectTokenValidationResult, 'rawOutput'> {
-    const idMatch = output.match(/Id\s+([0-9a-f-]{36})/i);
-    if (!idMatch) {
-      throw new DirectTokenValidationError('Unable to extract user id from CLI output');
-    }
-
-    const emailMatch = output.match(/Email\s+([^\s]+)/i);
-    const nameMatch = output.match(/Name\s+([^\n]+)/i);
-
-    return {
-      userId: idMatch[1],
-      email: emailMatch?.[1],
-      name: nameMatch?.[1]?.trim(),
-    };
   }
 }
 

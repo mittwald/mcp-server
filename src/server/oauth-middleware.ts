@@ -45,28 +45,34 @@ export function createOAuthMiddleware() {
 
       const token = authHeader.substring(7).trim(); // Remove 'Bearer ' prefix
 
-      try {
-        const handled = await handleJwtToken(token, req, next);
-        if (handled) {
-          logger.debug('JWT token handled successfully');
-          return;
-        }
-      } catch (error) {
-        logger.warn('JWT verification failed', {
-          error: error instanceof Error ? error.message : String(error),
-          directTokensEnabled,
-        });
-        if (!directTokensEnabled) {
+      // Determine if token looks like a JWT (3 dot-separated parts)
+      const isLikelyJwt = token.split('.').length === 3;
+
+      if (isLikelyJwt) {
+        // Token looks like a JWT - only try JWT validation
+        try {
+          const handled = await handleJwtToken(token, req, next);
+          if (handled) {
+            logger.debug('JWT token handled successfully');
+            return;
+          }
+        } catch (error) {
+          // JWT validation failed (expired, wrong signature, etc.)
+          // Do NOT fall back to direct token - we know it's a JWT, just invalid
+          logger.warn('JWT verification failed', {
+            error: error instanceof Error ? error.message : String(error),
+          });
           return sendOAuthChallenge(res);
         }
       }
 
+      // Token doesn't look like a JWT - try direct Mittwald API token validation
       if (directTokensEnabled) {
-        logger.info('Attempting direct bearer token validation');
+        logger.info('Attempting direct Mittwald API token validation');
         try {
           const handled = await handleDirectToken(token, req, next);
           if (handled) {
-            logger.info('Direct bearer token handled successfully');
+            logger.info('Direct Mittwald API token handled successfully');
             return;
           }
         } catch (error) {
@@ -75,7 +81,7 @@ export function createOAuthMiddleware() {
               ? error.message
               : 'Mittwald token validation failed';
 
-          logger.warn('Direct bearer token rejected', {
+          logger.warn('Direct Mittwald API token rejected', {
             message,
             error: error instanceof Error ? error.message : String(error),
           });
@@ -85,8 +91,8 @@ export function createOAuthMiddleware() {
         }
       }
 
-      // Invalid token and no direct token support available
-      logger.warn('[OAuth Middleware] Invalid token, no direct token support');
+      // Token is not a JWT and direct tokens are disabled
+      logger.warn('[OAuth Middleware] Non-JWT token rejected, direct tokens disabled');
       return sendOAuthChallenge(res);
 
     } catch (error) {
@@ -114,15 +120,7 @@ async function handleJwtToken(
 
   const bridgeSecret = CONFIG.OAUTH_BRIDGE.JWT_SECRET;
   if (!bridgeSecret) {
-    logger.debug('[handleJwtToken] No bridge secret configured, skipping JWT');
-    return false;
-  }
-
-  const isLikelyJwt = token.split('.').length === 3;
-  if (!isLikelyJwt) {
-    logger.debug('[handleJwtToken] Token does not look like JWT (not 3 parts)', {
-      parts: token.split('.').length,
-    });
+    logger.warn('[handleJwtToken] No bridge secret configured - cannot validate JWT');
     return false;
   }
 

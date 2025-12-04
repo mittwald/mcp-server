@@ -273,21 +273,20 @@ describe('OAuth Middleware', () => {
       expect(mockNext).not.toHaveBeenCalled();
     });
 
-    it('should return invalid_token when direct validation fails', async () => {
+    it('should return invalid_token when direct validation fails for non-JWT token', async () => {
       CONFIG.DIRECT_TOKENS.ENABLED = true;
       middleware = createOAuthMiddleware(); // Recreate middleware with direct tokens enabled
-      const invalidToken = 'mwat_invalid';
+      const invalidToken = 'mwat_invalid'; // Non-JWT format (no dots)
       mockRequest.headers = {
         authorization: `Bearer ${invalidToken}`,
       };
 
-      mockJwtVerify.mockImplementation(() => {
-        throw new Error('JWT not valid');
-      });
       mockDirectValidator.mockRejectedValue(new DirectTokenValidationError('Token invalid'));
 
       await middleware(mockRequest as Request, mockResponse as Response, mockNext);
 
+      // JWT verification should NOT be attempted for non-JWT tokens
+      expect(mockJwtVerify).not.toHaveBeenCalled();
       expect(mockDirectValidator).toHaveBeenCalledWith(invalidToken);
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockResponse.set).toHaveBeenCalledWith(
@@ -298,6 +297,27 @@ describe('OAuth Middleware', () => {
         error: 'invalid_token',
         message: 'Token invalid',
       });
+      expect(mockNext).not.toHaveBeenCalled();
+    });
+
+    it('should NOT fallback to direct validation for expired JWT tokens', async () => {
+      CONFIG.DIRECT_TOKENS.ENABLED = true;
+      middleware = createOAuthMiddleware();
+      const expiredJwt = 'header.payload.signature'; // JWT format (3 dots)
+      mockRequest.headers = {
+        authorization: `Bearer ${expiredJwt}`,
+      };
+
+      mockJwtVerify.mockRejectedValue(new Error('"exp" claim timestamp check failed'));
+
+      await middleware(mockRequest as Request, mockResponse as Response, mockNext);
+
+      // JWT verification should be attempted
+      expect(mockJwtVerify).toHaveBeenCalled();
+      // Direct validation should NOT be attempted for JWT-formatted tokens
+      expect(mockDirectValidator).not.toHaveBeenCalled();
+      // Should return 401 OAuth challenge, not fallback to direct validation
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockNext).not.toHaveBeenCalled();
     });
 

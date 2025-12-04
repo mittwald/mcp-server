@@ -1,10 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { executeCli } from '../../../src/utils/cli-wrapper.js';
 import { directTokenValidator, DirectTokenValidationError } from '../../../src/server/direct-token-validator.js';
 
-vi.mock('../../../src/utils/cli-wrapper.js', () => ({
-  executeCli: vi.fn(),
-}));
 vi.mock('../../../src/server/config.js', () => ({
   CONFIG: {
     DIRECT_TOKENS: {
@@ -16,11 +12,12 @@ vi.mock('../../../src/server/config.js', () => ({
   },
 }));
 
-const mockExecuteCli = vi.mocked(executeCli);
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
 
 describe('DirectTokenValidator', () => {
   beforeEach(() => {
-    mockExecuteCli.mockReset();
+    mockFetch.mockReset();
     directTokenValidator.clear();
   });
 
@@ -28,21 +25,20 @@ describe('DirectTokenValidator', () => {
     directTokenValidator.clear();
   });
 
-  it('validates token via CLI and returns parsed info', async () => {
-    const output = `
-Login status
+  it('validates token via REST API and returns parsed info', async () => {
+    const userResponse = {
+      userId: '0f452bff-81b5-496f-957f-ac30e4f37f9d',
+      email: 'rob@robshouse.net',
+      person: {
+        firstName: 'Robert',
+        lastName: 'Douglass',
+      },
+    };
 
-User identification    Id      0f452bff-81b5-496f-957f-ac30e4f37f9d
-                       Email   rob@robshouse.net
-Name                   Robert Douglass
-Last password change   5 months ago
-`.trim();
-
-    mockExecuteCli.mockResolvedValue({
-      stdout: output,
-      stderr: '',
-      exitCode: 0,
-      durationMs: 10,
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(userResponse),
     });
 
     const result = await directTokenValidator.validate('mwat_token');
@@ -51,42 +47,42 @@ Last password change   5 months ago
       userId: '0f452bff-81b5-496f-957f-ac30e4f37f9d',
       email: 'rob@robshouse.net',
       name: 'Robert Douglass',
-      rawOutput: output,
     });
-    expect(mockExecuteCli).toHaveBeenCalledWith(
-      'mw',
-      ['login', 'status', '--token', 'mwat_token'],
-      expect.objectContaining({ timeout: 5_000 }),
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://api.mittwald.de/v2/users/self',
+      expect.objectContaining({
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer mwat_token',
+          'Accept': 'application/json',
+        },
+      }),
     );
   });
 
   it('caches validation results for subsequent calls', async () => {
-    const output = `
-Login status
+    const userResponse = {
+      userId: '0f452bff-81b5-496f-957f-ac30e4f37f9d',
+      email: 'test@example.com',
+    };
 
-User identification    Id      0f452bff-81b5-496f-957f-ac30e4f37f9d
-Name                   Robert Douglass
-`.trim();
-
-    mockExecuteCli.mockResolvedValue({
-      stdout: output,
-      stderr: '',
-      exitCode: 0,
-      durationMs: 10,
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(userResponse),
     });
 
     await directTokenValidator.validate('token-123');
     await directTokenValidator.validate('token-123');
 
-    expect(mockExecuteCli).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 
-  it('throws DirectTokenValidationError when CLI exits non-zero', async () => {
-    mockExecuteCli.mockResolvedValue({
-      stdout: '',
-      stderr: 'Unauthorized',
-      exitCode: 1,
-      durationMs: 5,
+  it('throws DirectTokenValidationError when API returns 401', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 401,
+      statusText: 'Unauthorized',
     });
 
     await expect(directTokenValidator.validate('invalid-token')).rejects.toBeInstanceOf(
@@ -94,15 +90,67 @@ Name                   Robert Douglass
     );
   });
 
-  it('throws DirectTokenValidationError when CLI output is missing user id', async () => {
-    mockExecuteCli.mockResolvedValue({
-      stdout: 'Login status\nName Someone',
-      stderr: '',
-      exitCode: 0,
-      durationMs: 5,
+  it('throws DirectTokenValidationError when API returns 403', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: 'Forbidden',
+    });
+
+    await expect(directTokenValidator.validate('forbidden-token')).rejects.toBeInstanceOf(
+      DirectTokenValidationError,
+    );
+  });
+
+  it('throws DirectTokenValidationError when response is missing userId', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ email: 'test@example.com' }),
     });
 
     await expect(directTokenValidator.validate('token-without-id')).rejects.toBeInstanceOf(
+      DirectTokenValidationError,
+    );
+  });
+
+  it('handles user without person data', async () => {
+    const userResponse = {
+      userId: '0f452bff-81b5-496f-957f-ac30e4f37f9d',
+      email: 'test@example.com',
+    };
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(userResponse),
+    });
+
+    const result = await directTokenValidator.validate('token-no-person');
+
+    expect(result).toMatchObject({
+      userId: '0f452bff-81b5-496f-957f-ac30e4f37f9d',
+      email: 'test@example.com',
+    });
+    expect(result.name).toBeUndefined();
+  });
+
+  it('handles API errors gracefully', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+    });
+
+    await expect(directTokenValidator.validate('error-token')).rejects.toBeInstanceOf(
+      DirectTokenValidationError,
+    );
+  });
+
+  it('handles network errors gracefully', async () => {
+    mockFetch.mockRejectedValue(new Error('Network error'));
+
+    await expect(directTokenValidator.validate('network-error-token')).rejects.toBeInstanceOf(
       DirectTokenValidationError,
     );
   });
