@@ -40,6 +40,7 @@ import { initializeToolHandlers } from './handlers/tool-handlers.js';
 import { OAuthMetadataRoutes } from './routes/oauth-metadata-routes.js';
 import { logger } from './utils/logger.js';
 import { checkRedisHealth } from './utils/redis-client.js';
+import { register } from './metrics/index.js';
 
 // Polyfill for jose library
 if (typeof globalThis.crypto === 'undefined') {
@@ -266,6 +267,16 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
         redis: redisHealthy ? 'up' : 'down',
       },
     });
+  });
+
+  // Prometheus metrics endpoint
+  app.get('/metrics', async (req, res) => {
+    try {
+      res.set('Content-Type', register.contentType);
+      res.end(await register.metrics());
+    } catch (error) {
+      res.status(500).end(error instanceof Error ? error.message : 'Unknown error');
+    }
   });
 
   // Version info for CI/CD verification

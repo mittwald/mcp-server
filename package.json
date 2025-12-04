@@ -79,6 +79,7 @@
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "openid-client": "^6.6.2",
+    "prom-client": "^15.1.3",
     "semver": "^7.6.3",
     "zod": "^3.25.67"
   },
