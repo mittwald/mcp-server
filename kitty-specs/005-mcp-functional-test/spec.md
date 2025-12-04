@@ -3,14 +3,14 @@
 **Feature Branch**: `005-mcp-functional-test`
 **Created**: 2025-12-04
 **Status**: Draft
-**Input**: Comprehensive functional testing framework for 170 MCP tools on Fly.io, using Claude Code headless mode with parallel execution, tool restrictions blocking mw CLI, stateless agent discovery of dependencies, resource reuse with grouped cleanup, session log capture and analysis, append-only JSONL coverage manifest, and detailed agent path analysis to identify MCP server improvements.
+**Input**: Comprehensive functional testing framework for ~174 active MCP tools on Fly.io, using Claude Code headless mode with parallel execution, tool restrictions blocking mw CLI, stateless agent discovery of dependencies, resource reuse with grouped cleanup, session log capture and analysis, append-only JSONL coverage manifest, and detailed agent path analysis to identify MCP server improvements.
 
 ## Clarifications
 
 ### Session 2025-12-04
 - Q: How should the system detect completion of Mittwald async operations? → A: Polling-based detection with 30-second intervals to maximize velocity; no long arbitrary timeouts.
-- Q: What is the target completion time for the full test suite? → A: No time constraint; success is 100% tool coverage (all 170 tools tested).
-- Q: How should stuck agents be handled? → A: Harness uses streaming JSON output for real-time visibility; coordinator makes intelligent intervention decisions based on observed behavior, not blind heuristics.
+- Q: What is the target completion time for the full test suite? → A: No time constraint; success is 100% tool coverage (all ~174 active tools tested).
+- Q: How should stuck agents be handled? → A: Harness uses streaming JSON output for real-time visibility; Haiku coordinator intervenes when: (1) >3 consecutive tool errors, (2) >60s idle with no output, (3) same tool called >5 times without progress, or (4) agent explicitly reports being stuck.
 - Q: Who performs struggle analysis? → A: Out of scope for this sprint; focus on data capture and preservation for future analysis sprint.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -65,7 +65,7 @@ Test agents receive goal-oriented prompts without pre-built knowledge of depende
 
 After foundational tools are clean-room tested, the test harness uses `mw` CLI directly for efficient setup. Resources are cleaned up in grouped batches by functional domain.
 
-**Why this priority**: Enables efficient testing of 170 tools without repeated bootstrapping overhead.
+**Why this priority**: Enables efficient testing of ~174 tools without repeated bootstrapping overhead.
 
 **Independent Test**: Verify that after clean-room testing `project-create`, subsequent tests can use harness-created projects.
 
@@ -77,39 +77,24 @@ After foundational tools are clean-room tested, the test harness uses `mw` CLI d
 
 ---
 
-### User Story 5 - Session Log Capture and Tracking (Priority: P2)
+### User Story 5 - Session Log Capture and Preservation (Priority: P2)
 
-Every test session's ID is captured and stored. Session logs from `~/.claude/projects/` are preserved for post-analysis.
+Every test session's ID is captured and stored. Session logs from `~/.claude/projects/` are preserved indefinitely for future struggle analysis (analysis itself deferred to future sprint).
 
-**Why this priority**: Without session tracking, the agent struggle analysis cannot be performed.
+**Why this priority**: Without session tracking and preserved data, future analysis is impossible.
 
-**Independent Test**: Run a test, retrieve the session_id, and verify the corresponding JSONL log exists.
+**Independent Test**: Run a test, retrieve the session_id, verify the corresponding JSONL log exists and contains the full transcript.
 
 **Acceptance Scenarios**:
 
 1. **Given** a headless session completes, **When** JSON output is parsed, **Then** the session_id is extracted and recorded in the manifest.
-2. **Given** session logs are stored in `~/.claude/projects/`, **When** log retention is configured, **Then** logs are preserved beyond the default 30-day period.
-3. **Given** multiple parallel sessions run, **When** each completes, **Then** each session's log is independently accessible by session_id.
+2. **Given** a test session completes, **When** logs are stored, **Then** the full session transcript (all tool calls, responses, errors) is preserved.
+3. **Given** session logs are stored in `~/.claude/projects/`, **When** log retention is configured, **Then** logs remain available indefinitely (not deleted after 30 days).
+4. **Given** multiple sessions complete, **When** querying for a specific session_id, **Then** the corresponding log file can be located and read.
 
 ---
 
-### User Story 6 - Session Data Preservation (Priority: P2)
-
-Session logs are captured and preserved in a format suitable for future struggle analysis. Analysis itself is deferred to a future sprint.
-
-**Why this priority**: Without preserved data, future analysis is impossible.
-
-**Independent Test**: Run a test, verify the session log is captured and accessible for later retrieval.
-
-**Acceptance Scenarios**:
-
-1. **Given** a test session completes, **When** logs are stored, **Then** the full session transcript (all tool calls, responses, errors) is preserved.
-2. **Given** session logs exist, **When** retention is configured, **Then** logs remain available indefinitely (not deleted after 30 days).
-3. **Given** multiple sessions complete, **When** querying for a specific session_id, **Then** the corresponding log file can be located and read.
-
----
-
-### User Story 7 - Test Coverage Verification (Priority: P3)
+### User Story 6 - Test Coverage Verification (Priority: P3)
 
 The JSONL manifest tracks which tools have been tested. Operators can query coverage status at any time.
 
@@ -121,11 +106,11 @@ The JSONL manifest tracks which tools have been tested. Operators can query cove
 
 1. **Given** the manifest exists, **When** a test completes, **Then** a line is appended (not the whole file rewritten) with tool name, status, session_id, and timestamp.
 2. **Given** multiple agents run concurrently, **When** both append to the manifest simultaneously, **Then** no data is lost or corrupted (append-only JSONL is atomic per line).
-3. **Given** the manifest contains test results, **When** an operator queries coverage, **Then** they can see which of the 170 tools have been tested and which remain.
+3. **Given** the manifest contains test results, **When** an operator queries coverage, **Then** they can see which of the ~174 tools have been tested and which remain.
 
 ---
 
-### User Story 8 - Temporary Artifact Management (Priority: P3)
+### User Story 7 - Temporary Artifact Management (Priority: P3)
 
 Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracked and cleaned up with their associated test group.
 
@@ -142,11 +127,11 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 
 ### Edge Cases
 
-- What happens when the MCP server is unavailable mid-test?
-- Stuck agents: Coordinator monitors streaming output and intervenes intelligently based on observed behavior patterns (not blind timeouts).
-- What if a test creates resources but crashes before recording them for cleanup?
-- Interrupted sessions: Partial results are recorded (FR-013a).
-- What happens when parallel tests accidentally create conflicting resource names despite conventions?
+- **MCP server unavailable mid-test**: Mark test as `interrupted`, record partial results, log error, continue with other tests. Retry the specific test later if server recovers.
+- **Stuck agents**: Haiku coordinator monitors streaming output; intervenes on >3 consecutive errors, >60s idle, >5 repeated tool calls (see FR-005a).
+- **Resources created but crash before recording**: Run orphan detection at cleanup time using naming convention `test-{domain}-*`; delete any untracked test resources.
+- **Interrupted sessions**: Partial results are recorded (FR-013a).
+- **Conflicting resource names despite conventions**: Naming includes 4-char random suffix; if collision detected, retry with new suffix (max 3 attempts).
 
 ## Requirements *(mandatory)*
 
@@ -158,10 +143,10 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 - **FR-003**: System MUST support parallel execution of 3-5 concurrent test sessions
 - **FR-004**: System MUST capture session_id from each test session's JSON output
 - **FR-005**: System MUST append test results to JSONL manifest (atomic append, no read-modify-write)
-- **FR-005a**: System MUST monitor agent activity in real-time via streaming output for intelligent coordination
+- **FR-005a**: System MUST monitor agent activity in real-time via streaming output; Haiku coordinator intervenes on: >3 consecutive errors, >60s idle, >5 repeated tool calls, or explicit stuck signal
 
 **Resource Management:**
-- **FR-006**: System MUST support "clean-room" mode for foundational tool tests (no pre-existing resources)
+- **FR-006**: System MUST support "clean-room" mode for `project/create` test (the only tool requiring no pre-existing resources)
 - **FR-007**: System MUST support "harness-assisted" mode where `mw` CLI creates prerequisite resources
 - **FR-008**: System MUST track all resources created during testing for cleanup
 - **FR-009**: System MUST group resource cleanup by functional domain (not per-test)
@@ -172,6 +157,8 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 - **FR-012**: System MUST store mapping of test -> session_id for later log retrieval
 - **FR-013**: System MUST use polling-based completion detection with 30-second intervals for Mittwald async operations
 - **FR-013a**: System MUST record partial results if a session fails or is interrupted
+- **FR-013b**: System MUST handle Mittwald API rate limiting by respecting `X-RateLimit-*` headers and implementing exponential backoff
+- **FR-013c**: System MUST handle eventual consistency (404/403 during propagation) by retrying with backoff for up to 30 seconds after write operations
 
 **Data Preservation (for future analysis sprint):**
 - **FR-014**: System MUST preserve complete session logs (all tool calls, responses, errors) in accessible format
@@ -180,7 +167,7 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 - **FR-017**: *(DEFERRED)* Improvement suggestion generation - future sprint
 
 **Coverage:**
-- **FR-018**: System MUST maintain a manifest of all 170 MCP tools
+- **FR-018**: System MUST maintain a manifest of all ~174 active MCP tools
 - **FR-019**: System MUST track test status per tool (untested, passed, failed)
 - **FR-020**: System MUST support querying coverage statistics
 
@@ -190,17 +177,23 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 
 ### Key Entities
 
+*(See [data-model.md](./data-model.md) for full type definitions and terminology)*
+
 - **TestSession**: Represents a single Claude Code headless execution (session_id, tool_under_test, prompt, start_time, end_time, status, result)
-- **TestManifest**: Append-only JSONL file tracking all test executions (tool_name, session_id, status, timestamp, duration, error_message)
-- **ToolInventory**: List of all 170 MCP tools with metadata (name, category/domain, dependencies, clean_room_required)
+- **TestManifest** / **ManifestEntry**: Append-only JSONL file (TestManifest) containing records (ManifestEntry) tracking test executions
+- **ToolInventory**: List of all ~174 active MCP tools with metadata (name, category/domain, dependencies, clean_room_required)
 - **ResourceTracker**: Registry of created resources awaiting cleanup (resource_type, resource_id, domain, created_by_session, created_at)
-- **SessionLog**: Preserved Claude Code session transcript (JSONL format at ~/.claude/projects/), linked by session_id for future analysis
+- **SessionLogRef**: Reference to preserved Claude Code session transcript (JSONL format at ~/.claude/projects/), linked by session_id
+
+**Tool Name Formats**: MCP tools use `mcp__mittwald__project_create` format in code; displayed as `project/create` in user-facing output.
+
+**Status Values**: Terminal test states are `passed | failed | timeout | interrupted` (standardized across all components).
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: All 170 MCP tools have at least one functional test execution recorded in the manifest
+- **SC-001**: All ~174 active MCP tools have at least one functional test execution recorded in the manifest
 - **SC-002**: Test harness can execute 3-5 tests concurrently without resource conflicts or data corruption
 - **SC-003**: Zero instances of agents using `mw` CLI directly (tool restriction 100% effective)
 - **SC-004**: Session logs are preserved and retrievable for all test executions

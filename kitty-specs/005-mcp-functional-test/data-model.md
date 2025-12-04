@@ -3,6 +3,42 @@
 **Date**: 2025-12-04
 **Feature**: 005-mcp-functional-test
 
+## Terminology
+
+### Entity Naming Conventions
+
+| Term | Refers To | Context |
+|------|-----------|---------|
+| **TestManifest** | The append-only JSONL file | File-level concept |
+| **ManifestEntry** | A single line/record in the manifest | Record-level concept |
+| **TestSession** | Runtime execution state | In-memory during test |
+| **SessionLogRef** | Reference to preserved Claude logs | Post-execution |
+
+### Tool Name Formats
+
+MCP tools have two name formats used in different contexts:
+
+| Format | Example | Used In |
+|--------|---------|---------|
+| **MCP Name** | `mcp__mittwald__project_create` | Tool calls, manifest entries |
+| **Display Name** | `project/create` | User-facing output, logs |
+
+**Mapping**: `mcp__mittwald__project_create` ↔ `project/create`
+- MCP prefix: `mcp__mittwald__`
+- Path separator: `_` → `/`
+
+### Status Values (Standardized)
+
+**Test Terminal Status** (`passed | failed | timeout | interrupted`):
+- `passed`: Test completed successfully with verified outcome
+- `failed`: Test completed but failed verification or encountered errors
+- `timeout`: Test exceeded time limit
+- `interrupted`: Test stopped by coordinator or external signal
+
+**Test Internal Status** (additional for TestSession):
+- `pending`: Test queued but not started
+- `running`: Test currently executing
+
 ## Core Entities
 
 ### TestSession

@@ -34,13 +34,19 @@ export interface SpawnSessionOptions {
 
 /**
  * Result of a completed session
+ *
+ * Status values (standardized across all components):
+ * - 'passed': Test completed successfully with verified outcome
+ * - 'failed': Test completed but failed verification or encountered errors
+ * - 'timeout': Test exceeded time limit
+ * - 'interrupted': Test was interrupted by coordinator or external signal
  */
 export interface SessionResult {
   /** Claude's session ID */
   sessionId: string;
 
-  /** Exit status */
-  status: 'success' | 'error' | 'timeout' | 'interrupted';
+  /** Exit status (standardized: passed/failed/timeout/interrupted) */
+  status: 'passed' | 'failed' | 'timeout' | 'interrupted';
 
   /** Final result text */
   result?: string;
