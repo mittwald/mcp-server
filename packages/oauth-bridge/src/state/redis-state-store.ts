@@ -39,6 +39,10 @@ export class RedisStateStore implements StateStore {
     return `${this.prefix}:client:${clientId}`;
   }
 
+  private refreshTokenKey(refreshToken: string) {
+    return `${this.prefix}:refresh:${refreshToken}`;
+  }
+
   private scanCount(pattern: string): Promise<number> {
     const countPerScan = 500;
     const iterate = async (cursor: string, total: number): Promise<number> => {
@@ -231,10 +235,46 @@ export class RedisStateStore implements StateStore {
     return record;
   }
 
+  async getAuthorizationGrantByRefreshToken(refreshToken: string): Promise<AuthorizationGrantRecord | null> {
+    // Look up the authorization code from the refresh token index
+    const authorizationCode = await this.redis.get(this.refreshTokenKey(refreshToken));
+    if (!authorizationCode) {
+      return null;
+    }
+
+    // Retrieve the grant using the authorization code
+    const record = await this.getJson<AuthorizationGrantRecord>(this.grantKey(authorizationCode));
+    if (!record) {
+      // Index is stale, clean it up
+      await this.redis.del(this.refreshTokenKey(refreshToken));
+      return null;
+    }
+
+    // Verify refresh token matches and hasn't expired
+    if (record.refreshToken !== refreshToken) {
+      return null;
+    }
+
+    if (record.refreshTokenExpiresAt && record.refreshTokenExpiresAt <= Math.floor(Date.now() / 1000)) {
+      return null;
+    }
+
+    return record;
+  }
+
   async updateAuthorizationGrant(record: AuthorizationGrantRecord): Promise<void> {
     const ttl = await this.redis.ttl(this.grantKey(record.authorizationCode));
     const ttlSeconds = ttl > 0 ? ttl : this.ttlSeconds;
     await this.setJson(this.grantKey(record.authorizationCode), record, ttlSeconds);
+
+    // If the grant has a refresh token, create/update the refresh token index
+    if (record.refreshToken) {
+      // Use refresh token TTL if available, otherwise use grant TTL
+      const refreshTtl = record.refreshTokenExpiresAt
+        ? Math.max(1, record.refreshTokenExpiresAt - Math.floor(Date.now() / 1000))
+        : ttlSeconds;
+      await this.redis.set(this.refreshTokenKey(record.refreshToken), record.authorizationCode, 'EX', refreshTtl);
+    }
   }
 
   async deleteAuthorizationGrant(authorizationCode: string): Promise<void> {

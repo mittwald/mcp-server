@@ -93,6 +93,12 @@ export interface StateStore {
   deleteAuthorizationRequestByInternalState(internalState: string): Promise<void>;
   storeAuthorizationGrant(record: AuthorizationGrantRecord): Promise<void>;
   getAuthorizationGrant(authorizationCode: string): Promise<AuthorizationGrantRecord | null>;
+  /**
+   * Retrieves an authorization grant by its refresh token.
+   * Used for refresh_token grant type.
+   * Returns null if the refresh token is not found or expired.
+   */
+  getAuthorizationGrantByRefreshToken(refreshToken: string): Promise<AuthorizationGrantRecord | null>;
   updateAuthorizationGrant(record: AuthorizationGrantRecord): Promise<void>;
   deleteAuthorizationGrant(authorizationCode: string): Promise<void>;
   storeClientRegistration(record: ClientRegistrationRecord): Promise<void>;

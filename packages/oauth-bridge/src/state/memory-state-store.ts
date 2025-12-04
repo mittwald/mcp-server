@@ -18,6 +18,7 @@ export class MemoryStateStore implements StateStore {
   private readonly ttlMs: number;
   private readonly requestsByInternalState = new Map<string, StoredRequest>();
   private readonly grantsByCode = new Map<string, StoredGrant>();
+  private readonly refreshTokenToCode = new Map<string, string>();
   private readonly clientsById = new Map<string, ClientRegistrationRecord>();
 
   constructor(options: MemoryStateStoreOptions) {
@@ -148,11 +149,45 @@ export class MemoryStateStore implements StateStore {
     return { ...record };
   }
 
+  async getAuthorizationGrantByRefreshToken(refreshToken: string): Promise<AuthorizationGrantRecord | null> {
+    this.reapExpired();
+
+    // Look up the authorization code from the refresh token index
+    const authorizationCode = this.refreshTokenToCode.get(refreshToken);
+    if (!authorizationCode) {
+      return null;
+    }
+
+    // Retrieve the grant using the authorization code
+    const record = this.grantsByCode.get(authorizationCode);
+    if (!record) {
+      // Index is stale, clean it up
+      this.refreshTokenToCode.delete(refreshToken);
+      return null;
+    }
+
+    // Verify refresh token matches and hasn't expired
+    if (record.refreshToken !== refreshToken) {
+      return null;
+    }
+
+    if (record.refreshTokenExpiresAt && record.refreshTokenExpiresAt <= Math.floor(Date.now() / 1000)) {
+      return null;
+    }
+
+    return { ...record };
+  }
+
   async updateAuthorizationGrant(record: AuthorizationGrantRecord): Promise<void> {
     if (!this.grantsByCode.has(record.authorizationCode)) {
       throw new Error('authorization code not found');
     }
     this.grantsByCode.set(record.authorizationCode, { ...record });
+
+    // If the grant has a refresh token, create/update the refresh token index
+    if (record.refreshToken) {
+      this.refreshTokenToCode.set(record.refreshToken, record.authorizationCode);
+    }
   }
 
   async deleteAuthorizationGrant(authorizationCode: string): Promise<void> {
