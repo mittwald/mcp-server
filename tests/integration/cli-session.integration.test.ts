@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { execMock, resetExecMock } from '../helpers/child-process-exec-mock.ts';
+import { execFileMock, resetExecMock } from '../helpers/child-process-exec-mock.ts';
 import { resetRedisMock } from '../helpers/redis-mock.ts';
 
 import { runWithSessionContext } from '../../src/utils/execution-context.js';
@@ -29,9 +29,10 @@ describe('CLI execution with session context (integration)', () => {
     const manager = new SessionManager();
     const sessionId = await manager.createSession('user-1', buildSessionData());
 
-    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
-      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
-      expect(command).toContain('--token integration-access-token');
+    execFileMock.mockImplementation((file: string, args: string[], options: any, callback: any) => {
+      // execFile passes args as array, check that token is injected
+      expect(args).toContain('--token');
+      expect(args).toContain('integration-access-token');
       callback?.(null, 'ok', '');
       return {} as any;
     });
@@ -47,11 +48,13 @@ describe('CLI execution with session context (integration)', () => {
     const manager = new SessionManager();
     const sessionId = await manager.createSession('user-1', buildSessionData());
 
-    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
-      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
-      const matches = command.match(/--token/g) || [];
-      expect(matches).toHaveLength(1);
-      expect(command).toContain('--token cli-provided');
+    execFileMock.mockImplementation((file: string, args: string[], options: any, callback: any) => {
+      // Count --token occurrences in args
+      const tokenCount = args.filter(arg => arg === '--token').length;
+      expect(tokenCount).toBe(1);
+      // The explicit token should be preserved
+      const tokenIndex = args.indexOf('--token');
+      expect(args[tokenIndex + 1]).toBe('cli-provided');
       callback?.(null, 'ok', '');
       return {} as any;
     });
@@ -84,9 +87,10 @@ describe('CLI execution with session context (integration)', () => {
       scopes: ['profile'],
     });
 
-    execMock.mockImplementation((command: string, optionsOrCallback: any, maybeCallback?: any) => {
-      const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback;
-      expect(command).toContain('--token updated-access-token');
+    execFileMock.mockImplementation((file: string, args: string[], options: any, callback: any) => {
+      // Check that the updated token is used
+      expect(args).toContain('--token');
+      expect(args).toContain('updated-access-token');
       callback?.(null, 'ok', '');
       return {} as any;
     });
