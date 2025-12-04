@@ -13,7 +13,7 @@ import { createTokenRouter } from './routes/token.js';
 import { createRegisterRouter } from './routes/register.js';
 import { createMetadataRouter } from './routes/metadata.js';
 import type { RegistrationTokenStore } from './registration-token-store.js';
-import { register, pendingAuthorizations, pendingGrants, registeredClients } from './metrics/index.js';
+import { register, pendingAuthorizations, pendingGrants, registeredClients, metricsAuth } from './metrics/index.js';
 
 export function createApp(
   config: BridgeConfig,
@@ -76,9 +76,9 @@ export function createApp(
 
   app.use(versionRouter.routes()).use(versionRouter.allowedMethods());
 
-  // Prometheus metrics endpoint
+  // Prometheus metrics endpoint (with optional Basic Auth)
   const metricsRouter = new Router();
-  metricsRouter.get('/metrics', async (ctx) => {
+  metricsRouter.get('/metrics', metricsAuth, async (ctx) => {
     try {
       // Update state store gauges before returning metrics
       try {

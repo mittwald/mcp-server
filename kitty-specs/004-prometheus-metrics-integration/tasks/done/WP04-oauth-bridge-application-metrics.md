@@ -8,9 +8,9 @@ subtasks:
   - "T017"
 title: "OAuth Bridge Application Metrics"
 phase: "Phase 2 - Application Metrics (P1)"
-lane: "planned"
-assignee: ""
-agent: ""
+lane: "done"
+assignee: "claude"
+agent: "claude"
 shell_pid: ""
 history:
   - timestamp: "2025-12-04T00:00:00Z"
@@ -284,12 +284,12 @@ curl http://localhost:3001/metrics | grep oauth_
 
 ## Definition of Done Checklist
 
-- [ ] `oauth-metrics.ts` created with all four metrics
-- [ ] Authorize route instrumented with counter
-- [ ] Token route instrumented with counter
-- [ ] Register route instrumented with counter
-- [ ] State store size gauge updates (periodic or on change)
-- [ ] All metrics visible in `/metrics` output after OAuth operations
+- [x] `oauth-metrics.ts` created with all four metrics
+- [x] Authorize route instrumented with counter
+- [x] Token route instrumented with counter
+- [x] Register route instrumented with counter
+- [x] State store size gauge updates (periodic or on change)
+- [x] All metrics visible in `/metrics` output after OAuth operations
 
 ## Review Guidance
 
@@ -301,3 +301,5 @@ curl http://localhost:3001/metrics | grep oauth_
 ## Activity Log
 
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
+- 2025-12-04T13:00:00Z – claude – lane=doing – Started WP04 implementation
+- 2025-12-04T13:30:00Z – claude – lane=done – Completed all subtasks (T013-T017). Created oauth-metrics.ts with 6 metrics (3 counters + 3 gauges). Instrumented authorize, token, and register routes. State store gauges updated on /metrics scrape using existing stateStore.getMetrics(). Committed as 7f1b45a.
