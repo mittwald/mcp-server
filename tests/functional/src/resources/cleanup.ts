@@ -174,48 +174,138 @@ export async function cleanupDomain(tracker: ResourceTracker, domain: string): P
 }
 
 /**
- * Find orphaned test resources (T033)
- * Resources matching test-* pattern but not in tracker
+ * Orphan detection result with resource details
  */
-export async function findOrphans(_tracker: ResourceTracker): Promise<string[]> {
-  // This requires querying Mittwald API for all resources
-  // and comparing against tracker state
-  // For now, return empty - full implementation requires MCP queries
-
-  // TODO: Query each resource type via mw CLI:
-  // mw project list --output json
-  // mw app list --output json
-  // etc.
-
-  // Then filter by isTestResource(name) and check against tracker
-
-  console.warn('[cleanup] Orphan detection not yet implemented');
-  return [];
+export interface OrphanResource {
+  name: string;
+  resourceId: string;
+  resourceType: ResourceType;
 }
 
 /**
- * Cleanup orphaned resources by name pattern
+ * Query mw CLI and parse JSON output
  */
-export async function cleanupOrphans(resourceNames: string[]): Promise<CleanupResult> {
-  const orphanResources = resourceNames.filter(isTestResource);
+async function queryMwList(
+  command: string,
+  resourceType: ResourceType
+): Promise<Array<{ name: string; id: string }>> {
+  try {
+    const { stdout } = await execAsync(`mw ${command} --output json`);
+    const parsed = JSON.parse(stdout.trim());
 
+    // Handle different response formats
+    if (Array.isArray(parsed)) {
+      return parsed.map((item: { shortId?: string; id?: string; description?: string; hostname?: string; address?: string }) => ({
+        name: item.description || item.hostname || item.address || item.shortId || item.id || '',
+        id: item.shortId || item.id || '',
+      }));
+    }
+
+    return [];
+  } catch (err) {
+    // Command may fail if no access or empty list
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    if (!msg.includes('not found') && !msg.includes('No ')) {
+      console.warn(`[cleanup] Failed to query ${resourceType}: ${msg}`);
+    }
+    return [];
+  }
+}
+
+/**
+ * Find orphaned test resources (T033)
+ * Resources matching test-* pattern but not in tracker
+ */
+export async function findOrphans(tracker: ResourceTracker): Promise<OrphanResource[]> {
+  console.log('[cleanup] Scanning for orphaned test resources...');
+
+  // Get tracked resource IDs
+  const trackedIds = new Set(tracker.getAllResources().map((r) => r.resourceId));
+  const trackedNames = tracker.getAllNames();
+
+  const orphans: OrphanResource[] = [];
+
+  // Resource types to scan with their mw CLI commands
+  const scanCommands: Array<{ command: string; type: ResourceType }> = [
+    { command: 'project list', type: 'project' },
+    // Apps need project context, skip global scan
+    // { command: 'app list', type: 'app' },
+    // { command: 'database mysql list', type: 'database-mysql' },
+    // { command: 'container list', type: 'container' },
+  ];
+
+  for (const { command, type } of scanCommands) {
+    console.log(`[cleanup] Scanning ${type}...`);
+    const resources = await queryMwList(command, type);
+
+    for (const resource of resources) {
+      // Check if this is a test resource based on name pattern
+      if (isTestResource(resource.name)) {
+        // Check if it's tracked
+        const isTracked = trackedIds.has(resource.id) || trackedNames.has(resource.name);
+
+        if (!isTracked) {
+          orphans.push({
+            name: resource.name,
+            resourceId: resource.id,
+            resourceType: type,
+          });
+        }
+      }
+    }
+  }
+
+  console.log(`[cleanup] Found ${orphans.length} orphaned test resources`);
+  return orphans;
+}
+
+/**
+ * Cleanup orphaned resources
+ */
+export async function cleanupOrphans(orphans: OrphanResource[]): Promise<CleanupResult> {
   let cleaned = 0;
   let failed = 0;
   const failures: Array<{ resourceId: string; error: string }> = [];
 
-  for (const name of orphanResources) {
-    // Would need to look up resource ID by name
-    // For now, just log
-    console.log(`[cleanup] Would clean orphan: ${name}`);
-    // In full implementation:
-    // 1. Query resource by name
-    // 2. Get resource ID
-    // 3. Delete using deleteMittwaldResource
+  // Sort by cleanup order (children before parents)
+  const sorted = orphans.sort(
+    (a, b) => getCleanupPriority(a.resourceType) - getCleanupPriority(b.resourceType)
+  );
+
+  for (const orphan of sorted) {
+    console.log(`[cleanup] Deleting orphan: ${orphan.name} (${orphan.resourceType})`);
+
+    const resource: TrackedResource = {
+      resourceId: orphan.resourceId,
+      resourceType: orphan.resourceType,
+      name: orphan.name,
+      domain: 'orphans' as TestDomain,
+      createdBySession: 'unknown',
+      createdByTest: 'unknown',
+      createdAt: new Date(),
+      parentResourceId: undefined,
+      childResources: [],
+      status: 'active',
+    };
+
+    const result = await deleteMittwaldResource(resource);
+
+    if (result.success) {
+      cleaned++;
+      console.log(`[cleanup] ✓ Deleted ${orphan.name}`);
+    } else {
+      failed++;
+      failures.push({
+        resourceId: orphan.resourceId,
+        error: result.error || 'Unknown error',
+      });
+      console.warn(`[cleanup] ✗ Failed to delete ${orphan.name}: ${result.error}`);
+    }
   }
 
   return {
     domain: 'orphans',
-    total: orphanResources.length,
+    total: orphans.length,
     cleaned,
     failed,
     failures,

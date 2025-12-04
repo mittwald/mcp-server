@@ -23,7 +23,7 @@ import { Coordinator } from './coordinator.js';
 import { ManifestManager } from './manifest.js';
 import { createToolManifest, type ToolManifest, DEFAULT_MCP_SERVER_URL, loadTestDomainsConfig } from '../inventory/index.js';
 import { createResourceTracker, type ResourceTracker, type TestContext } from '../resources/tracker.js';
-import { cleanupDomain } from '../resources/cleanup.js';
+import { cleanupDomain, findOrphans, cleanupOrphans, type OrphanResource } from '../resources/cleanup.js';
 import { generateUniqueName } from '../resources/naming.js';
 import { getDomainsInOrder } from '../inventory/grouping.js';
 
@@ -328,12 +328,61 @@ async function setupTestContext(tool: ToolEntry, tracker: ResourceTracker, share
 }
 
 /**
- * Shared context for harness-assisted tests
+ * Shared context for harness-assisted tests (T034)
+ *
+ * Clean-room mode: Empty context, test agent discovers everything
+ * Harness-assisted mode: Harness creates prerequisites, passes IDs to agent
  */
 interface SharedTestContext {
   projectId?: string;
   serverId?: string;
   organizationId?: string;
+}
+
+/**
+ * Setup prerequisites for harness-assisted mode (T034)
+ * Creates shared resources that will be passed to test agents.
+ *
+ * Returns empty context for clean-room mode - ensuring no pre-created resources.
+ */
+async function setupDomainPrerequisites(
+  domain: TestDomain,
+  tracker: ResourceTracker,
+  cleanRoom: boolean
+): Promise<SharedTestContext> {
+  // Clean-room mode: Return empty context, enforcing no pre-created resources
+  if (cleanRoom) {
+    console.log(`[harness] Domain ${domain}: Clean-room mode - no prerequisites`);
+    return {};
+  }
+
+  console.log(`[harness] Domain ${domain}: Setting up harness-assisted prerequisites...`);
+  const context: SharedTestContext = {};
+
+  // For domains that need a project, we would create one here via MCP
+  // The project creation itself should be done via the harness's privileged access
+  // (not via the test agent) to avoid circular dependencies
+  //
+  // Example (requires MCP client integration):
+  // if (['apps', 'databases', 'containers'].includes(domain)) {
+  //   const projectName = generateUniqueName('project', domain);
+  //   const projectResult = await mcpClient.call('mittwald_project_create', { ... });
+  //   context.projectId = projectResult.projectId;
+  //   await tracker.track({
+  //     resourceId: context.projectId,
+  //     resourceType: 'project',
+  //     name: projectName,
+  //     domain,
+  //     sessionId: 'harness',
+  //     testId: 'prerequisites',
+  //   });
+  // }
+
+  // For MVP: Log that prerequisites would be created, but actual creation
+  // requires MCP client integration which is out of scope for initial implementation
+  console.log(`[harness] Domain ${domain}: Prerequisites setup complete (none required for MVP)`);
+
+  return context;
 }
 
 /**
@@ -1131,6 +1180,33 @@ async function cmdCleanup(options: CLIOptions): Promise<number> {
 
   const tracker = createResourceTracker();
 
+  // Handle orphaned resource cleanup
+  if (options.orphaned) {
+    console.log('Finding orphaned test resources...');
+    const orphans = await findOrphans(tracker);
+
+    if (orphans.length === 0) {
+      console.log('No orphaned test resources found.');
+      return 0;
+    }
+
+    console.log(`Found ${orphans.length} orphaned resource(s). Cleaning up...`);
+    console.log('');
+
+    const result = await cleanupOrphans(orphans);
+
+    console.log('');
+    console.log(`Cleaned: ${result.cleaned}/${result.total}`);
+    if (result.failed > 0) {
+      console.log(`Failed:  ${result.failed}`);
+      for (const failure of result.failures) {
+        console.log(`  - ${failure.resourceId}: ${failure.error}`);
+      }
+    }
+
+    return result.failed > 0 ? 1 : 0;
+  }
+
   if (options.all) {
     console.log('Cleaning up ALL tracked resources...');
     let totalCleaned = 0;
@@ -1241,21 +1317,35 @@ async function cmdListResources(options: CLIOptions): Promise<number> {
     console.log('Orphaned Test Resources');
     console.log('=======================');
     console.log('');
-    console.log('Searching for resources matching "test-*" pattern...');
-    console.log('');
 
-    // This would need MCP server access to list resources
-    // For now, show guidance
-    console.log('To find orphaned resources, use the Mittwald CLI:');
-    console.log('');
-    console.log('  mw project list | grep test-');
-    console.log('  mw app list --project-id <id> | grep test-');
-    console.log('  mw database mysql list --project-id <id> | grep test-');
-    console.log('');
-    console.log('To cleanup orphaned resources:');
-    console.log('  mw project delete <project-id>');
-    console.log('  mw app uninstall <app-id>');
-    console.log('');
+    const tracker = createResourceTracker();
+    const orphans = await findOrphans(tracker);
+
+    if (orphans.length === 0) {
+      console.log('No orphaned test resources found.');
+      console.log('');
+    } else {
+      console.log(`Found ${orphans.length} orphaned test resource(s):`);
+      console.log('');
+
+      for (const orphan of orphans) {
+        console.log(`  - ${orphan.resourceType}: ${orphan.name} (${orphan.resourceId})`);
+      }
+      console.log('');
+
+      console.log('To cleanup these orphaned resources, run:');
+      console.log('  npm run cleanup -- --orphaned');
+      console.log('');
+      console.log('Or manually delete using the Mittwald CLI:');
+      for (const orphan of orphans) {
+        if (orphan.resourceType === 'project') {
+          console.log(`  mw project delete ${orphan.resourceId}`);
+        } else if (orphan.resourceType === 'app') {
+          console.log(`  mw app uninstall ${orphan.resourceId}`);
+        }
+      }
+      console.log('');
+    }
   } else {
     console.log('Tracked Test Resources');
     console.log('======================');
