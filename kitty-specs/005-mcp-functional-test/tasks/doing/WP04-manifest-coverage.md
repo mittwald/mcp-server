@@ -9,16 +9,21 @@ subtasks:
   - "T026"
 title: "Manifest & Coverage Tracking"
 phase: "Phase 2 - Core Features"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "72358"
 history:
   - timestamp: "2025-12-04T11:00:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-04T13:45:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "72358"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP04 – Manifest & Coverage Tracking
