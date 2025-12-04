@@ -7,7 +7,7 @@ subtasks:
   - "T012"
 title: "OAuth Bridge Metrics Infrastructure"
 phase: "Phase 1 - Infrastructure (P1)"
-lane: "doing"
+lane: "done"
 assignee: "claude"
 agent: "claude"
 shell_pid: "36921"
@@ -160,12 +160,12 @@ curl http://localhost:3001/metrics
 
 ## Definition of Done Checklist
 
-- [ ] prom-client installed in OAuth Bridge package
-- [ ] `packages/oauth-bridge/src/metrics/registry.ts` created
-- [ ] `packages/oauth-bridge/src/metrics/index.ts` exports register
-- [ ] `/metrics` endpoint added to OAuth Bridge app
-- [ ] Endpoint returns valid Prometheus format
-- [ ] Service label `service="oauth-bridge"` on all metrics
+- [x] prom-client installed in OAuth Bridge package
+- [x] `packages/oauth-bridge/src/metrics/registry.ts` created
+- [x] `packages/oauth-bridge/src/metrics/index.ts` exports register
+- [x] `/metrics` endpoint added to OAuth Bridge app
+- [x] Endpoint returns valid Prometheus format
+- [x] Service label `service="oauth-bridge"` on all metrics
 
 ## Review Guidance
 
@@ -177,3 +177,5 @@ curl http://localhost:3001/metrics
 ## Activity Log
 
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
+- 2025-12-04T12:30:00Z – claude – lane=doing – Started WP03 implementation
+- 2025-12-04T12:45:00Z – claude – lane=done – Completed all subtasks (T009-T012). Note: OAuth Bridge uses Koa, not Express - adapted /metrics endpoint accordingly. Also fixed pre-existing duplicate mittwaldCodeVerifier field in state-store.ts. Verified with npm run build and type-check. Committed as a9b7c0d.

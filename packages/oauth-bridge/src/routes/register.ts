@@ -4,6 +4,7 @@ import type { BridgeConfig } from '../config.js';
 import type { StateStore, ClientRegistrationRecord } from '../state/state-store.js';
 import { RegistrationTokenStore } from '../registration-token-store.js';
 import { createDcrAuthMiddleware } from '../middleware/dcr-auth.js';
+import { dcrRegistrations } from '../metrics/index.js';
 
 interface RegisterRouterDeps {
   config: BridgeConfig;
@@ -37,6 +38,7 @@ export function createRegisterRouter({ config, stateStore, registrationTokenStor
     const validationError = validateRegistrationRequest(body, config.redirectUris, tokenEndpointAuthMethod);
     if (validationError) {
       ctx.logger.warn({ error: validationError.body.error, description: validationError.body.error_description }, 'Client registration validation failed');
+      dcrRegistrations.inc({ status: 'error' });
       ctx.status = validationError.status;
       ctx.body = validationError.body;
       return;
@@ -62,6 +64,7 @@ export function createRegisterRouter({ config, stateStore, registrationTokenStor
       registrationAccessTokenExpiresAt = Math.floor(tokenResult.expiresAt / 1000); // Convert to seconds
     } catch (error) {
       ctx.logger.error({ error: error instanceof Error ? error.message : String(error) }, 'Failed to create registration access token');
+      dcrRegistrations.inc({ status: 'error' });
       ctx.status = 500;
       ctx.body = {
         error: 'server_error',
@@ -95,6 +98,7 @@ export function createRegisterRouter({ config, stateStore, registrationTokenStor
       // Clean up the token if client registration fails
       await registrationTokenStore.deleteToken(clientId).catch(() => {});
       ctx.logger.error({ error: error instanceof Error ? error.message : String(error) }, 'Failed to persist client registration');
+      dcrRegistrations.inc({ status: 'error' });
       ctx.status = 500;
       ctx.body = {
         error: 'server_error',
@@ -105,6 +109,7 @@ export function createRegisterRouter({ config, stateStore, registrationTokenStor
 
     ctx.logger.info({ clientId, redirectUrisCount: redirectUris.length }, 'Client registration created');
 
+    dcrRegistrations.inc({ status: 'success' });
     ctx.status = 201;
     ctx.body = buildClientRegistrationResponse(clientRecord, {
       includeRegistrationAccessToken: true,

@@ -13,7 +13,7 @@ import { createTokenRouter } from './routes/token.js';
 import { createRegisterRouter } from './routes/register.js';
 import { createMetadataRouter } from './routes/metadata.js';
 import type { RegistrationTokenStore } from './registration-token-store.js';
-import { register } from './metrics/index.js';
+import { register, pendingAuthorizations, pendingGrants, registeredClients } from './metrics/index.js';
 
 export function createApp(
   config: BridgeConfig,
@@ -80,6 +80,20 @@ export function createApp(
   const metricsRouter = new Router();
   metricsRouter.get('/metrics', async (ctx) => {
     try {
+      // Update state store gauges before returning metrics
+      try {
+        const stateMetrics = await ctx.stateStore.getMetrics();
+        pendingAuthorizations.set(stateMetrics.pendingAuthorizations);
+        pendingGrants.set(stateMetrics.pendingGrants);
+        registeredClients.set(stateMetrics.registeredClients);
+      } catch (error) {
+        // If state store is unavailable, set gauges to 0 and log warning
+        ctx.logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'Failed to get state store metrics for Prometheus');
+        pendingAuthorizations.set(0);
+        pendingGrants.set(0);
+        registeredClients.set(0);
+      }
+
       ctx.set('Content-Type', register.contentType);
       ctx.body = await register.metrics();
     } catch (error) {

@@ -4,6 +4,7 @@ import type { BridgeConfig } from '../config.js';
 import type { ClientRegistrationRecord, StateStore } from '../state/state-store.js';
 import { exchangeMittwaldAuthorizationCode } from '../services/mittwald.js';
 import { issueBridgeTokens } from '../services/bridge-tokens.js';
+import { tokenRequests } from '../metrics/index.js';
 
 interface TokenRouterDeps {
   config: BridgeConfig;
@@ -35,6 +36,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
     const validationError = validateTokenRequest({ grantType, code, redirectUri, clientId, codeVerifier });
     if (validationError) {
       ctx.logger.warn({ error: validationError.body.error, description: validationError.body.error_description, clientId }, 'Token request validation failed');
+      tokenRequests.inc({ grant_type: grantType || 'unknown', status: 'error' });
       ctx.status = validationError.status;
       ctx.body = validationError.body;
       return;
@@ -45,6 +47,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
       clientRegistration = await stateStore.getClientRegistration(clientId!);
     } catch (err) {
       ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to load client registration');
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 500;
       ctx.body = { error: 'server_error', error_description: 'Failed to load client registration' };
       return;
@@ -52,6 +55,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
 
     if (!clientRegistration) {
       ctx.logger.warn({ clientId }, 'Token request for unknown client');
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 401;
       ctx.set('WWW-Authenticate', 'Basic realm="OAuth Bridge"');
       ctx.body = { error: 'invalid_client', error_description: 'Client not registered' };
@@ -66,6 +70,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
     });
     if (clientAuthError) {
       ctx.logger.warn({ clientId, reason: clientAuthError.body.error_description }, 'Token client authentication failed');
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = clientAuthError.status;
       if (clientAuthError.wwwAuthenticate) {
         ctx.set('WWW-Authenticate', clientAuthError.wwwAuthenticate);
@@ -94,24 +99,28 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
       }
     } catch (err) {
       ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to read authorization grant');
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 500;
       ctx.body = { error: 'server_error', error_description: 'Failed to read authorization grant' };
       return;
     }
 
     if (!grant) {
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_grant', error_description: 'Unknown authorization code' };
       return;
     }
 
     if (grant.used) {
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_grant', error_description: 'Authorization code has already been used' };
       return;
     }
 
     if (grant.clientId !== clientId) {
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_grant', error_description: 'Authorization code was issued to a different client' };
       return;
@@ -125,12 +134,14 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
         authCode: code ? `${code.substring(0, 8)}...` : undefined
       }, 'Token exchange failed: redirect_uri mismatch');
 
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_grant', error_description: 'redirect_uri mismatch' };
       return;
     }
 
     if (!codeVerifier) {
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_request', error_description: 'code_verifier is required' };
       return;
@@ -142,6 +153,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
         clientId,
         codeVerifierLength: codeVerifier.length
       }, 'Token exchange failed: code_verifier length out of range (43-128)');
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_request', error_description: 'code_verifier must be between 43 and 128 characters per RFC 7636' };
       return;
@@ -149,6 +161,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
 
     const expectedChallenge = sha256ToBase64Url(codeVerifier);
     if (expectedChallenge !== grant.codeChallenge) {
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_grant', error_description: 'PKCE verification failed' };
       return;
@@ -170,6 +183,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
         clientId,
         mittwaldAuthorizationCode: grant.mittwaldAuthorizationCode
       }, 'Mittwald authorization code exchange failed');
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 502;
       ctx.body = { error: 'temporarily_unavailable', error_description: 'Failed to exchange authorization code with Mittwald' };
       return;
@@ -180,6 +194,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
       bridgeTokens = await issueBridgeTokens({ config, grant, mittwaldTokens });
     } catch (err) {
       ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to issue bridge tokens');
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 500;
       ctx.body = { error: 'server_error', error_description: 'Failed to issue bridge tokens' };
       return;
@@ -196,6 +211,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
       await stateStore.updateAuthorizationGrant(updatedGrant);
     } catch (err) {
       ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to update authorization grant');
+      tokenRequests.inc({ grant_type: grantType!, status: 'error' });
       ctx.status = 500;
       ctx.body = { error: 'server_error', error_description: 'Failed to persist authorization grant state' };
       return;
@@ -203,6 +219,7 @@ export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
 
     ctx.logger.info({ clientId, scope: grant.scope }, 'Bridge tokens issued');
 
+    tokenRequests.inc({ grant_type: grantType!, status: 'success' });
     ctx.status = 200;
     ctx.body = {
       access_token: bridgeTokens.accessToken,

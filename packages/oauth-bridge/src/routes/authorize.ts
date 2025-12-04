@@ -2,6 +2,7 @@ import Router from '@koa/router';
 import { randomUUID, randomBytes, createHash } from 'node:crypto';
 import type { BridgeConfig } from '../config.js';
 import type { StateStore } from '../state/state-store.js';
+import { authorizationRequests } from '../metrics/index.js';
 
 /**
  * Generates a cryptographically random code_verifier for PKCE.
@@ -71,6 +72,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     const basicError = validateBasicRequest({ responseType, clientId, redirectUri, state, codeChallenge, codeChallengeMethod });
     if (basicError) {
       ctx.logger.warn({ error: basicError.error, description: basicError.error_description, clientId, redirectUri }, 'Authorization request validation failed');
+      authorizationRequests.inc({ client_id: clientId || 'unknown', status: 'error' });
       ctx.status = 400;
       ctx.body = basicError;
       return;
@@ -84,6 +86,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
       clientRegistration = await stateStore.getClientRegistration(clientId!);
     } catch (err) {
       ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to load client registration');
+      authorizationRequests.inc({ client_id: clientId!, status: 'error' });
       ctx.status = 500;
       ctx.body = { error: 'server_error', error_description: 'Failed to load client registration' };
       return;
@@ -91,6 +94,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
 
     if (!clientRegistration) {
       ctx.logger.warn({ clientId }, 'Authorization request for unregistered client - must use DCR first');
+      authorizationRequests.inc({ client_id: clientId!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_client', error_description: 'Client not registered. Use Dynamic Client Registration (POST /register) first.' };
       return;
@@ -99,6 +103,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     // Validate redirect_uri against DCR-registered URIs
     if (!clientRegistration.redirectUris.includes(redirectUri!)) {
       ctx.logger.warn({ clientId, redirectUri, registeredUris: clientRegistration.redirectUris }, 'redirect_uri not in DCR-registered list');
+      authorizationRequests.inc({ client_id: clientId!, status: 'error' });
       ctx.status = 400;
       ctx.body = { error: 'invalid_request', error_description: 'redirect_uri is not registered for this client' };
       return;
@@ -114,6 +119,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
         redirectUri,
         unsupportedScopes: scopeValidation.unsupported
       }, 'Authorization request rejected due to unsupported scopes');
+      authorizationRequests.inc({ client_id: clientId!, status: 'error' });
       ctx.status = 400;
       ctx.body = {
         error: 'invalid_scope',
@@ -156,6 +162,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
       });
     } catch (err) {
       ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId, redirectUri }, 'Failed to persist authorization request');
+      authorizationRequests.inc({ client_id: clientId!, status: 'error' });
       ctx.status = 500;
       ctx.body = {
         error: 'server_error',
@@ -191,6 +198,7 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
       resource
     }, 'Authorization request forwarded to Mittwald');
 
+    authorizationRequests.inc({ client_id: clientId!, status: 'success' });
     ctx.status = 303;
     ctx.redirect(mittwaldRedirect.toString());
   });
