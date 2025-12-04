@@ -153,6 +153,8 @@ export interface ToolEntry {
   // Identity
   name: string;
   displayName: string;
+  description?: string;
+  inputSchema?: unknown;
 
   // Categorization
   domain: TestDomain;
@@ -160,7 +162,7 @@ export interface ToolEntry {
 
   // Testing requirements
   cleanRoomRequired: boolean;
-  prerequisites: string[];
+  prerequisites?: string[];
 
   // Test execution
   testPrompt?: string;

@@ -88,13 +88,13 @@
 **Prompt**: `tasks/planned/WP03-stream-parser-coordinator.md`
 
 ### Included Subtasks
-- [ ] T014 Implement `stream-parser.ts` - parse stream-json events (message, tool_use, tool_result, error, result)
-- [ ] T015 Extract tool call patterns from streaming events
-- [ ] T016 Track consecutive errors, idle time, repeated tool calls
-- [ ] T017 Implement `coordinator.ts` - Haiku meta-agent interface
-- [ ] T018 Define coordinator analysis prompt template
-- [ ] T019 Implement intervention triggers (FR-005a): >3 errors, >60s idle, >5 repeats
-- [ ] T020 Add coordinator decision logging
+- [X] T014 Implement `stream-parser.ts` - parse stream-json events (message, tool_use, tool_result, error, result)
+- [X] T015 Extract tool call patterns from streaming events
+- [X] T016 Track consecutive errors, idle time, repeated tool calls
+- [X] T017 Implement `coordinator.ts` - Haiku meta-agent interface
+- [X] T018 Define coordinator analysis prompt template
+- [X] T019 Implement intervention triggers (FR-005a): >3 errors, >60s idle, >5 repeats
+- [X] T020 Add coordinator decision logging
 
 ### Implementation Notes
 - Use `@anthropic-ai/sdk` for Haiku calls

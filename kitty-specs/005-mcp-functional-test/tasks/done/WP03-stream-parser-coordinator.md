@@ -10,10 +10,10 @@ subtasks:
   - "T020"
 title: "Stream Parser & Haiku Coordinator"
 phase: "Phase 1 - Foundation"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
-agent: "claude"
-shell_pid: "72358"
+agent: "codex"
+shell_pid: "84918"
 history:
   - timestamp: "2025-12-04T11:00:00Z"
     lane: "planned"
@@ -30,6 +30,11 @@ history:
     agent: "claude"
     shell_pid: "72358"
     action: "Completed implementation - stream-parser.ts and coordinator.ts with Haiku integration"
+  - timestamp: "2025-12-04T13:45:51Z"
+    lane: "done"
+    agent: "codex"
+    shell_pid: "84918"
+    action: "Approved for release - parser & coordinator meet FR-005a thresholds; build passes"
 ---
 
 # Work Package Prompt: WP03 – Stream Parser & Haiku Coordinator
@@ -212,14 +217,14 @@ No unit tests specified. Validate by:
 
 ## Definition of Done Checklist
 
-- [ ] `stream-parser.ts` correctly parses all event types
-- [ ] Tool call patterns extracted and tracked
-- [ ] Error/idle/repeat metrics calculated correctly
-- [ ] Coordinator connects to Haiku API successfully
-- [ ] Prompt template produces valid decisions
-- [ ] Thresholds (>3 errors, >60s idle, >5 repeats) trigger correctly
-- [ ] All decisions logged to `coordinator.log`
-- [ ] `tasks.md` updated with completion status
+- [x] `stream-parser.ts` correctly parses all event types
+- [x] Tool call patterns extracted and tracked
+- [x] Error/idle/repeat metrics calculated correctly
+- [x] Coordinator connects to Haiku API successfully
+- [x] Prompt template produces valid decisions
+- [x] Thresholds (>3 errors, >60s idle, >5 repeats) trigger correctly
+- [x] All decisions logged to `coordinator.log`
+- [x] `tasks.md` updated with completion status
 
 ## Review Guidance
 
@@ -233,3 +238,4 @@ No unit tests specified. Validate by:
 > Append entries when the work package changes lanes.
 
 - 2025-12-04T11:00:00Z – system – lane=planned – Prompt created.
+- 2025-12-04T13:45:51Z – codex – lane=done – Approved after validating parser thresholds, coordinator logging, and Haiku integration.
