@@ -11,16 +11,21 @@ subtasks:
   - "T034"
 title: "Resource Management & Cleanup"
 phase: "Phase 2 - Core Features"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "72358"
 history:
   - timestamp: "2025-12-04T11:00:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-04T13:50:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "72358"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP05 – Resource Management & Cleanup

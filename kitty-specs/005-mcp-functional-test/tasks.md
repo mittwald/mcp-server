@@ -27,7 +27,7 @@
 **Prompt**: `tasks/planned/WP01-project-setup.md`
 
 ### Included Subtasks
-- [ ] T001 Create `tests/functional/` directory structure per plan.md
+- [X] T001 Create `tests/functional/` directory structure per plan.md
 - [ ] T002 Initialize `package.json` with TypeScript, @anthropic-ai/sdk dependencies
 - [ ] T003 [P] Configure `tsconfig.json` for Node.js 20+ ES modules
 - [ ] T004 [P] Create `tests/functional/src/types/index.ts` with all shared types from data-model.md
