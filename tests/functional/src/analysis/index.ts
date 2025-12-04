@@ -54,6 +54,24 @@ export {
 } from './mapper/export.js';
 
 // =============================================================================
+// Reporter Exports
+// =============================================================================
+
+export {
+  ALL_DOMAINS,
+  generateAndWriteDomainReport,
+  generateAllDomainReports,
+  generateDomainReport,
+  renderDomainReportMarkdown,
+  filterSessionsByDomain,
+  getToolsInDomain,
+  aggregateIncidents,
+  filterDependencies,
+  calculateMetrics,
+  generateRecommendations,
+} from './reporters/index.js';
+
+// =============================================================================
 // Type Exports
 // =============================================================================
 
@@ -105,3 +123,10 @@ export type {
 export type {
   ParseStats,
 } from './parser/index.js';
+
+export type {
+  DomainOverview,
+  IncidentSummary as DomainIncidentSummary,
+  IncidentRow,
+  DependencyRow,
+} from './reporters/types.js';
