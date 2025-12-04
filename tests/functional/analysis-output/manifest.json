@@ -1,0 +1,100 @@
+{
+  "generatedAt": "2025-12-04T19:59:41.997Z",
+  "artifacts": [
+    {
+      "file": "corpus-index.json",
+      "type": "index",
+      "size": 451288
+    },
+    {
+      "file": "dependencies.dot",
+      "type": "visualization",
+      "size": 2480
+    },
+    {
+      "file": "dependencies.json",
+      "type": "dependencies",
+      "size": 4697
+    },
+    {
+      "file": "incidents.json",
+      "type": "incidents",
+      "size": 134138
+    },
+    {
+      "file": "manifest.json",
+      "type": "manifest",
+      "size": 1927
+    },
+    {
+      "file": "recommendations.json",
+      "type": "recommendations",
+      "size": 114
+    },
+    {
+      "file": "recommendations.md",
+      "type": "report",
+      "size": 121
+    },
+    {
+      "file": "reports/access-users.md",
+      "type": "domain-report",
+      "size": 1344
+    },
+    {
+      "file": "reports/apps.md",
+      "type": "domain-report",
+      "size": 4030
+    },
+    {
+      "file": "reports/automation.md",
+      "type": "domain-report",
+      "size": 3319
+    },
+    {
+      "file": "reports/backups.md",
+      "type": "domain-report",
+      "size": 3498
+    },
+    {
+      "file": "reports/containers.md",
+      "type": "domain-report",
+      "size": 3653
+    },
+    {
+      "file": "reports/databases.md",
+      "type": "domain-report",
+      "size": 3943
+    },
+    {
+      "file": "reports/domains-mail.md",
+      "type": "domain-report",
+      "size": 4081
+    },
+    {
+      "file": "reports/identity.md",
+      "type": "domain-report",
+      "size": 2767
+    },
+    {
+      "file": "reports/organization.md",
+      "type": "domain-report",
+      "size": 1498
+    },
+    {
+      "file": "reports/project-foundation.md",
+      "type": "domain-report",
+      "size": 3916
+    },
+    {
+      "file": "summary.json",
+      "type": "summary-data",
+      "size": 3633
+    },
+    {
+      "file": "summary.md",
+      "type": "report",
+      "size": 2192
+    }
+  ]
+}

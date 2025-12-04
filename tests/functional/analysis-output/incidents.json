@@ -1,0 +1,4399 @@
+{
+  "incidents": [
+    {
+      "id": "inc-0001",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 230,
+      "sessionId": "009148fb-965f-41ee-bc6d-72346a14f3eb",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_registry_create",
+      "tokenWaste": 115,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_registry_create directly"
+      }
+    },
+    {
+      "id": "inc-0002",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 199.5,
+      "sessionId": "009148fb-965f-41ee-bc6d-72346a14f3eb",
+      "toolAttempted": "Bash",
+      "tokenWaste": 133,
+      "timeWasteMs": 7953,
+      "context": {
+        "eventRange": [
+          3,
+          10
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'run'",
+          "Error: Unknown skill: mcp__mittwald__mittwald_registry_create",
+          "Error: Unknown slash command: mcp-tools"
+        ],
+        "description": "3 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0003",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 228,
+      "sessionId": "0616a506-15b4-466f-9793-44ceebe2a82f",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_execution_get",
+      "tokenWaste": 114,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_cronjob_execution_get directly"
+      }
+    },
+    {
+      "id": "inc-0004",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 36609,
+      "sessionId": "0616a506-15b4-466f-9793-44ceebe2a82f",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_execution_get",
+      "tokenWaste": 36609,
+      "timeWasteMs": 97043,
+      "context": {
+        "eventRange": [
+          17,
+          18
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Investigate mcp__mittwald__mittwald_cronjob_execut\""
+      }
+    },
+    {
+      "id": "inc-0005",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "0616a506-15b4-466f-9793-44ceebe2a82f",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_execution_get",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          29,
+          29
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Test the mcp__mittwald__mittwald_cronjob_execution\""
+      }
+    },
+    {
+      "id": "inc-0006",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 9.700000000000001,
+      "sessionId": "0616a506-15b4-466f-9793-44ceebe2a82f",
+      "toolAttempted": "Task",
+      "tokenWaste": 10,
+      "timeWasteMs": 97043,
+      "context": {
+        "eventRange": [
+          17,
+          18
+        ],
+        "errorMessages": [],
+        "description": "97s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0007",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 95,
+      "sessionId": "0616a506-15b4-466f-9793-44ceebe2a82f",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 95,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp tool cronjob/execution/get\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support to"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0008",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 260,
+      "sessionId": "06f28e51-7172-488a-b3d1-d16eaeb12ed6",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_shell",
+      "tokenWaste": 130,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          3,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_shell directly"
+      }
+    },
+    {
+      "id": "inc-0009",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 22,
+      "sessionId": "06f28e51-7172-488a-b3d1-d16eaeb12ed6",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_shell",
+      "tokenWaste": 11,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          6,
+          6
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_database_mysql_shell directly"
+      }
+    },
+    {
+      "id": "inc-0010",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 343.5,
+      "sessionId": "06f28e51-7172-488a-b3d1-d16eaeb12ed6",
+      "toolAttempted": "Bash",
+      "tokenWaste": 229,
+      "timeWasteMs": 5242,
+      "context": {
+        "eventRange": [
+          4,
+          13
+        ],
+        "errorMessages": [
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────",
+          "Error: Unknown slash command: mcp-tool",
+          "Error: Slash command help is not a prompt-based command"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0011",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 753,
+      "sessionId": "07df6218-f756-43da-b41a-2ec15440810d",
+      "toolAttempted": "Bash",
+      "tokenWaste": 502,
+      "timeWasteMs": 13863,
+      "context": {
+        "eventRange": [
+          9,
+          19
+        ],
+        "errorMessages": [
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────",
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────",
+          "Error: Unknown slash command: mcp-delete-cronjob",
+          "Error: Exit code 1\nConnecting to fdaa:25:5240:a7b:51d:38ab:7488:2...\nexec: \"mcp\": executable file no"
+        ],
+        "description": "4 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0012",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 17754,
+      "sessionId": "07df6218-f756-43da-b41a-2ec15440810d",
+      "toolAttempted": "Task",
+      "tokenWaste": 17754,
+      "timeWasteMs": 23964,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find documentation for the cronjob/delete MCP tool\""
+      }
+    },
+    {
+      "id": "inc-0013",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "0e3e24d0-7a49-4fa3-ba27-59d6f8bae28a",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_volume_delete",
+      "tokenWaste": 3,
+      "timeWasteMs": 1502,
+      "context": {
+        "eventRange": [
+          2,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_volume_delete directly"
+      }
+    },
+    {
+      "id": "inc-0014",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 270,
+      "sessionId": "0e3e24d0-7a49-4fa3-ba27-59d6f8bae28a",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_volume_delete",
+      "tokenWaste": 135,
+      "timeWasteMs": 291,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_volume_delete directly"
+      }
+    },
+    {
+      "id": "inc-0015",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 19.700000000000003,
+      "sessionId": "0f400ad1-5b69-4e04-876c-7d9b16ee39a4",
+      "toolAttempted": "Task",
+      "tokenWaste": 20,
+      "timeWasteMs": 197230,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [],
+        "description": "197s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0016",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "1462d560-bc23-49e3-b9dc-d410a92eecc3",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_list",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_list directly"
+      }
+    },
+    {
+      "id": "inc-0017",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 18,
+      "sessionId": "14c93128-7173-462d-82d6-16d50635a273",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_container_list",
+      "tokenWaste": 9,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_container_list directly"
+      }
+    },
+    {
+      "id": "inc-0018",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 12.200000000000001,
+      "sessionId": "15c53b2e-3aa8-4573-8c88-29ca6fdd01b8",
+      "toolAttempted": "Bash",
+      "tokenWaste": 12,
+      "timeWasteMs": 122066,
+      "context": {
+        "eventRange": [
+          11,
+          12
+        ],
+        "errorMessages": [],
+        "description": "122s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0019",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "15d9f85a-8fe0-4afb-b774-50ebca5c0756",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_dump",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_dump directly"
+      }
+    },
+    {
+      "id": "inc-0020",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 11,
+      "sessionId": "15d9f85a-8fe0-4afb-b774-50ebca5c0756",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 11,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp tools mysql\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web_s"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0021",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 463.5,
+      "sessionId": "1cdbe0b0-21f5-4125-a6c7-39caba9401c1",
+      "toolAttempted": "Bash",
+      "tokenWaste": 309,
+      "timeWasteMs": 6379,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'call'",
+          "Error: Exit code 1\nerror: unknown command 'describe'",
+          "Error: Request failed with status code 404"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0022",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "1d66102f-acc6-47f1-baaa-5645f3a125a2",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_get",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_get directly"
+      }
+    },
+    {
+      "id": "inc-0023",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 350,
+      "sessionId": "1d66102f-acc6-47f1-baaa-5645f3a125a2",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_get",
+      "tokenWaste": 175,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          11
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_get directly"
+      }
+    },
+    {
+      "id": "inc-0024",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 340,
+      "sessionId": "1d66102f-acc6-47f1-baaa-5645f3a125a2",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_get",
+      "tokenWaste": 170,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          17,
+          17
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_get directly"
+      }
+    },
+    {
+      "id": "inc-0025",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 155,
+      "sessionId": "1e35750f-7025-4546-8a5e-700767a79438",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 155,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          15,
+          16
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp app open tool\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0026",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 20.5,
+      "sessionId": "2150991f-0425-45f5-a325-586052c383dd",
+      "toolAttempted": "mcp__mittwald__mittwald_user_api_token_get",
+      "tokenWaste": 21,
+      "timeWasteMs": 204791,
+      "context": {
+        "eventRange": [
+          7,
+          8
+        ],
+        "errorMessages": [],
+        "description": "205s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0027",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 30,
+      "sessionId": "257dafcf-5e2f-4af1-91ef-4bcfcc0db208",
+      "toolAttempted": "Skill",
+      "tokenWaste": 20,
+      "timeWasteMs": 9357,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_conversation_reply",
+          "Error: Request failed with status code 401",
+          "Error: Request failed with status code 404"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0028",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 127.5,
+      "sessionId": "270715c6-ff1b-46f3-88d2-77b6bbf4df8b",
+      "toolAttempted": "Skill",
+      "tokenWaste": 85,
+      "timeWasteMs": 15923,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_domain_virtualhost_list",
+          "Error: Exit code 1\nConnecting to fdaa:25:5240:a7b:51d:38ab:7488:2...\nexec: \"mcp\": executable file no",
+          "Error: Request failed with status code 404"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0029",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 206,
+      "sessionId": "2aa758bd-765e-4f66-b4f7-5ba96c6d2cf2",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_user_get",
+      "tokenWaste": 103,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_user_get directly"
+      }
+    },
+    {
+      "id": "inc-0030",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 12,
+      "sessionId": "2aa758bd-765e-4f66-b4f7-5ba96c6d2cf2",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_user_get",
+      "tokenWaste": 6,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          11
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_user_get directly"
+      }
+    },
+    {
+      "id": "inc-0031",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 40196,
+      "sessionId": "2d36178c-eb06-47b7-a6f5-061d8735e6b3",
+      "toolAttempted": "Task",
+      "tokenWaste": 40196,
+      "timeWasteMs": 30571,
+      "context": {
+        "eventRange": [
+          21,
+          22
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Investigate the \"mail/deliverybox/update\" MCP tool\""
+      }
+    },
+    {
+      "id": "inc-0032",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 7,
+      "sessionId": "2d36178c-eb06-47b7-a6f5-061d8735e6b3",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          9,
+          10
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp mittwald mail/deliverybox/update\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool "
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0033",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "2f3430bb-35f0-42a0-9f22-cf96b3d5ef74",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_schedule_list",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_schedule_list directly"
+      }
+    },
+    {
+      "id": "inc-0034",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 36,
+      "sessionId": "3012c306-3007-42e0-8f60-04cc94e079c4",
+      "toolAttempted": "Skill",
+      "tokenWaste": 24,
+      "timeWasteMs": 4805,
+      "context": {
+        "eventRange": [
+          4,
+          13
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_database_mysql_versions",
+          "Error: Unknown slash command: mcp-tool",
+          "Error: Unknown slash command: mcp-tools"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0035",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 12.100000000000001,
+      "sessionId": "3122a045-95e2-4bf3-b771-ebd03263b05a",
+      "toolAttempted": "Bash",
+      "tokenWaste": 12,
+      "timeWasteMs": 120937,
+      "context": {
+        "eventRange": [
+          26,
+          27
+        ],
+        "errorMessages": [],
+        "description": "121s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0036",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 7,
+      "sessionId": "37dfc27d-81a4-4dc0-9f10-d267106f8772",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp mittwald cronjob create tool\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool type"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0037",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 12.100000000000001,
+      "sessionId": "3a06595c-88ba-4421-8894-0d4e29fbfc5e",
+      "toolAttempted": "Bash",
+      "tokenWaste": 12,
+      "timeWasteMs": 121348,
+      "context": {
+        "eventRange": [
+          16,
+          17
+        ],
+        "errorMessages": [],
+        "description": "121s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0038",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 223.5,
+      "sessionId": "4065c495-3887-444d-b9c2-7f5f0122907c",
+      "toolAttempted": "Skill",
+      "tokenWaste": 149,
+      "timeWasteMs": 4502,
+      "context": {
+        "eventRange": [
+          3,
+          10
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_database_redis_create",
+          "Error: Unknown slash command: mcp-list",
+          "Error: Request failed with status code 401"
+        ],
+        "description": "3 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0039",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 130,
+      "sessionId": "43e15c86-d4e4-4397-9853-7e659841e71b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_user_get",
+      "tokenWaste": 65,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_user_get directly"
+      }
+    },
+    {
+      "id": "inc-0040",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 14,
+      "sessionId": "43e15c86-d4e4-4397-9853-7e659841e71b",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_user_get",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          8,
+          8
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_user_get directly"
+      }
+    },
+    {
+      "id": "inc-0041",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 108,
+      "sessionId": "43e15c86-d4e4-4397-9853-7e659841e71b",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 108,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_user_get\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool type"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0042",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 7,
+      "sessionId": "43e15c86-d4e4-4397-9853-7e659841e71b",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp server available commands\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support too"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0043",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 2,
+      "sessionId": "43e15c86-d4e4-4397-9853-7e659841e71b",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 2,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          26,
+          27
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp jwt secret synchronization\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support to"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0044",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 224,
+      "sessionId": "43f46315-ef5a-4b53-b308-578ce788ed5e",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_deliverybox_list",
+      "tokenWaste": 112,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_mail_deliverybox_list directly"
+      }
+    },
+    {
+      "id": "inc-0045",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 284,
+      "sessionId": "43f46315-ef5a-4b53-b308-578ce788ed5e",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_deliverybox_list",
+      "tokenWaste": 142,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_mail_deliverybox_list directly"
+      }
+    },
+    {
+      "id": "inc-0046",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 6.300000000000001,
+      "sessionId": "43f46315-ef5a-4b53-b308-578ce788ed5e",
+      "toolAttempted": "Task",
+      "tokenWaste": 6,
+      "timeWasteMs": 63254,
+      "context": {
+        "eventRange": [
+          17,
+          18
+        ],
+        "errorMessages": [],
+        "description": "63s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0047",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 801,
+      "sessionId": "456e9108-c7c2-4b78-b731-15092a1ac862",
+      "toolAttempted": "Bash",
+      "tokenWaste": 534,
+      "timeWasteMs": 9878,
+      "context": {
+        "eventRange": [
+          9,
+          19
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nError: accepts at most 1 arg(s), received 15\n\nUsage:\n  flyctl ssh console [flags]",
+          "Error: Exit code 1\nError: accepts at most 1 arg(s), received 4\n\nUsage:\n  flyctl ssh console [flags]\n",
+          "Error: Skill mcp is not a prompt-based skill",
+          "Error: Slash command mcp is not a prompt-based command"
+        ],
+        "description": "4 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0048",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 35449,
+      "sessionId": "456e9108-c7c2-4b78-b731-15092a1ac862",
+      "toolAttempted": "Task",
+      "tokenWaste": 35449,
+      "timeWasteMs": 38889,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find details on how to use the mcp mittwald databa\""
+      }
+    },
+    {
+      "id": "inc-0049",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 11,
+      "sessionId": "456e9108-c7c2-4b78-b731-15092a1ac862",
+      "toolAttempted": "Task",
+      "tokenWaste": 11,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "[{\"type\":\"text\",\"text\":\"Perfect! Now I have comprehensive information. Let me create a detailed guide for the user:\\n\\n## How to Use the mittwald `database/mysql/create` Tool\\n\\nI've investigated the "
+        ],
+        "description": "Model ve investigated the mittwald MCP server does not support Task"
+      }
+    },
+    {
+      "id": "inc-0050",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 52060,
+      "sessionId": "47c1eaca-372d-4f0b-b03e-c4704aa1c213",
+      "toolAttempted": "Task",
+      "tokenWaste": 52060,
+      "timeWasteMs": 66865,
+      "context": {
+        "eventRange": [
+          17,
+          18
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Identify the MCP tool for listing apps in a projec\""
+      }
+    },
+    {
+      "id": "inc-0051",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 67096,
+      "sessionId": "47c1eaca-372d-4f0b-b03e-c4704aa1c213",
+      "toolAttempted": "Task",
+      "tokenWaste": 67096,
+      "timeWasteMs": 172650,
+      "context": {
+        "eventRange": [
+          29,
+          30
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Identify the MCP tool for listing apps in a projec\""
+      }
+    },
+    {
+      "id": "inc-0052",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 6.7,
+      "sessionId": "47c1eaca-372d-4f0b-b03e-c4704aa1c213",
+      "toolAttempted": "Task",
+      "tokenWaste": 7,
+      "timeWasteMs": 66865,
+      "context": {
+        "eventRange": [
+          17,
+          18
+        ],
+        "errorMessages": [],
+        "description": "67s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0053",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 17.3,
+      "sessionId": "47c1eaca-372d-4f0b-b03e-c4704aa1c213",
+      "toolAttempted": "Task",
+      "tokenWaste": 17,
+      "timeWasteMs": 172650,
+      "context": {
+        "eventRange": [
+          29,
+          30
+        ],
+        "errorMessages": [],
+        "description": "173s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0054",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 7.7,
+      "sessionId": "48d821f7-fc21-4117-84a5-9ab62754466e",
+      "toolAttempted": "Task",
+      "tokenWaste": 8,
+      "timeWasteMs": 76859,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [],
+        "description": "77s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0055",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 5,
+      "sessionId": "48d821f7-fc21-4117-84a5-9ab62754466e",
+      "toolAttempted": "Task",
+      "tokenWaste": 5,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [
+          "[{\"type\":\"text\",\"text\":\"Perfect! Now I have a comprehensive understanding of the project. Let me create a detailed exploration report:\\n\\n## Project List Exploration Report: mittwald-mcp\\n\\n### Projec"
+        ],
+        "description": "Model unknown model does not support Task"
+      }
+    },
+    {
+      "id": "inc-0056",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 48,
+      "sessionId": "4c314cc1-fa64-4980-9245-a63815217d9d",
+      "toolAttempted": "Bash",
+      "tokenWaste": 32,
+      "timeWasteMs": 10550,
+      "context": {
+        "eventRange": [
+          3,
+          15
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'execute'",
+          "Error: Exit code 1\nerror: unknown command 'mittwald'",
+          "Error: Skill mcp is not a prompt-based skill",
+          "Error: Exit code 1\nerror: unknown command 'tool'"
+        ],
+        "description": "4 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0057",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 220,
+      "sessionId": "4e2c7147-4f6c-490e-b2cc-64a810700216",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_ssh_user_create",
+      "tokenWaste": 110,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_ssh_user_create directly"
+      }
+    },
+    {
+      "id": "inc-0058",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 31.5,
+      "sessionId": "4ec1f00e-b024-4b2f-945a-b49b7106d5b4",
+      "toolAttempted": "Skill",
+      "tokenWaste": 21,
+      "timeWasteMs": 5186,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_stack_deploy",
+          "Error: Skill mcp is not a prompt-based skill",
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0059",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 34.5,
+      "sessionId": "520f7774-a7a8-4494-8cb2-74a9d45991b1",
+      "toolAttempted": "Skill",
+      "tokenWaste": 23,
+      "timeWasteMs": 7243,
+      "context": {
+        "eventRange": [
+          4,
+          13
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_project_membership_list",
+          "Error: Exit code 1\nerror: unknown command 'invoke'",
+          "Error: Exit code 1\nerror: unknown command 'execute'"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0060",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 16,
+      "sessionId": "53619bd8-a12d-49b7-8a6a-8a57258d2d34",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_schedule_update",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          6,
+          6
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_backup_schedule_update directly"
+      }
+    },
+    {
+      "id": "inc-0061",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 7,
+      "sessionId": "57588020-6803-4f77-bdd6-2df3075de567",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          6,
+          7
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp tool user/get\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0062",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 23631,
+      "sessionId": "576d4d19-e7de-4b2a-969a-dfcf8152e60f",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_list",
+      "tokenWaste": 23631,
+      "timeWasteMs": 47105,
+      "context": {
+        "eventRange": [
+          3,
+          4
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Test mcp__mittwald__mittwald_cronjob_list\""
+      }
+    },
+    {
+      "id": "inc-0063",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 27135,
+      "sessionId": "576d4d19-e7de-4b2a-969a-dfcf8152e60f",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_list",
+      "tokenWaste": 27135,
+      "timeWasteMs": 28675,
+      "context": {
+        "eventRange": [
+          9,
+          10
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Test mcp__mittwald__mittwald_cronjob_list\""
+      }
+    },
+    {
+      "id": "inc-0064",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "576d4d19-e7de-4b2a-969a-dfcf8152e60f",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_list",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          12,
+          12
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Set up a functional test for the mcp__mittwald__mi\""
+      }
+    },
+    {
+      "id": "inc-0065",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 27093,
+      "sessionId": "59044bf3-9a5a-4a14-9bff-ffeedc762c9c",
+      "toolAttempted": "Task",
+      "tokenWaste": 27093,
+      "timeWasteMs": 34258,
+      "context": {
+        "eventRange": [
+          20,
+          21
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find available MCP tools\""
+      }
+    },
+    {
+      "id": "inc-0066",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 108,
+      "sessionId": "59044bf3-9a5a-4a14-9bff-ffeedc762c9c",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 108,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp tool list\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web_search_20250"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0067",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 26669,
+      "sessionId": "5c466c0e-77ee-4108-88cd-7ebf62fa5413",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_org_delete",
+      "tokenWaste": 26669,
+      "timeWasteMs": 16783,
+      "context": {
+        "eventRange": [
+          16,
+          17
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Review documentation for org/delete tool\""
+      }
+    },
+    {
+      "id": "inc-0068",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 192,
+      "sessionId": "5cdcf93b-92df-4995-ba70-5601633da091",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_list",
+      "tokenWaste": 96,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_list directly"
+      }
+    },
+    {
+      "id": "inc-0069",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 426,
+      "sessionId": "60c8ae26-b579-447a-ac5e-1b2733ac275d",
+      "toolAttempted": "Bash",
+      "tokenWaste": 284,
+      "timeWasteMs": 18745,
+      "context": {
+        "eventRange": [
+          3,
+          22
+        ],
+        "errorMessages": [
+          "Error: Exit code 127\n(eval):1: command not found: mcp_mittwald_mittwald_cronjob_list",
+          "Error: Skill mcp is not a prompt-based skill",
+          "Error: Unknown slash command: mcp.mittwald.cronjob.list",
+          "Error: Exit code 1\nConnecting to fdaa:25:5240:a7b:51d:38ab:7488:2...\nexec: \"mcp\": executable file no",
+          "Error: Request failed with status code 404"
+        ],
+        "description": "7 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0070",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 238,
+      "sessionId": "65225b79-98f6-443b-9f6e-859d27d03ca1",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_schedule_create",
+      "tokenWaste": 119,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_schedule_create directly"
+      }
+    },
+    {
+      "id": "inc-0071",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 204,
+      "sessionId": "65deff6d-6464-44a2-8372-832c3b427861",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_stack_delete",
+      "tokenWaste": 102,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_stack_delete directly"
+      }
+    },
+    {
+      "id": "inc-0072",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 262,
+      "sessionId": "65deff6d-6464-44a2-8372-832c3b427861",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_stack_delete",
+      "tokenWaste": 131,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_stack_delete directly"
+      }
+    },
+    {
+      "id": "inc-0073",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 14,
+      "sessionId": "65deff6d-6464-44a2-8372-832c3b427861",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_stack_delete",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          11
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_stack_delete directly"
+      }
+    },
+    {
+      "id": "inc-0074",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 16,
+      "sessionId": "65deff6d-6464-44a2-8372-832c3b427861",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_stack_delete",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          17,
+          17
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_stack_delete directly"
+      }
+    },
+    {
+      "id": "inc-0075",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 324,
+      "sessionId": "65deff6d-6464-44a2-8372-832c3b427861",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_stack_delete",
+      "tokenWaste": 162,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          23,
+          23
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_stack_delete directly"
+      }
+    },
+    {
+      "id": "inc-0076",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 212,
+      "sessionId": "698f73d2-ff2b-4db4-88b9-2525d2b74a27",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_get",
+      "tokenWaste": 106,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_get directly"
+      }
+    },
+    {
+      "id": "inc-0077",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 544.5,
+      "sessionId": "698f73d2-ff2b-4db4-88b9-2525d2b74a27",
+      "toolAttempted": "Bash",
+      "tokenWaste": 363,
+      "timeWasteMs": 10325,
+      "context": {
+        "eventRange": [
+          3,
+          13
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'call'",
+          "Error: Exit code 1\nerror: unknown option '--project'",
+          "Error: Exit code 1\nNo MCP server found with name: domain/virtualhost",
+          "Error: Skill mcp is not a prompt-based skill"
+        ],
+        "description": "4 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0078",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "6c0d57f0-77cf-4242-97b5-90baa16b7376",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_address_create",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find documentation for the mcp__mittwald__mittwald\""
+      }
+    },
+    {
+      "id": "inc-0079",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 14674,
+      "sessionId": "6c0d57f0-77cf-4242-97b5-90baa16b7376",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_address_create",
+      "tokenWaste": 14674,
+      "timeWasteMs": 16515,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find documentation for the mcp__mittwald__mittwald\""
+      }
+    },
+    {
+      "id": "inc-0080",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 36,
+      "sessionId": "77879fc5-2f95-434f-9b8e-7e023bb34313",
+      "toolAttempted": "Bash",
+      "tokenWaste": 24,
+      "timeWasteMs": 8191,
+      "context": {
+        "eventRange": [
+          18,
+          27
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nMCP server mittwald already exists in local config",
+          "Error: Exit code 1\nerror: unknown command 'invoke'",
+          "Error: Exit code 1\nerror: unknown command 'call'"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0081",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "77879fc5-2f95-434f-9b8e-7e023bb34313",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          26,
+          27
+        ],
+        "errorMessages": [
+          "Web search results for query: \"how to call mittwald mcp tools\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types:"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0082",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 34.5,
+      "sessionId": "7a247f34-821c-42b8-a8e9-b1377310f194",
+      "toolAttempted": "Skill",
+      "tokenWaste": 23,
+      "timeWasteMs": 4561,
+      "context": {
+        "eventRange": [
+          4,
+          13
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_container_start",
+          "Error: Unknown slash command: list-mcp-tools",
+          "Error: ECONNREFUSED"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0083",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 196,
+      "sessionId": "7ab00b93-3342-4b6e-ac47-281b7bf7a38d",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_container_recreate",
+      "tokenWaste": 98,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_container_recreate directly"
+      }
+    },
+    {
+      "id": "inc-0084",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 7,
+      "sessionId": "7ab00b93-3342-4b6e-ac47-281b7bf7a38d",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_container_recreate\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0085",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 332,
+      "sessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_upgrade",
+      "tokenWaste": 166,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          14
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_upgrade directly"
+      }
+    },
+    {
+      "id": "inc-0086",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 330,
+      "sessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_upgrade",
+      "tokenWaste": 165,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          17,
+          17
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_upgrade directly"
+      }
+    },
+    {
+      "id": "inc-0087",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 330,
+      "sessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_upgrade",
+      "tokenWaste": 165,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          20,
+          20
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_upgrade directly"
+      }
+    },
+    {
+      "id": "inc-0088",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 546,
+      "sessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_upgrade",
+      "tokenWaste": 273,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          26,
+          26
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_upgrade directly"
+      }
+    },
+    {
+      "id": "inc-0089",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 352,
+      "sessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_upgrade",
+      "tokenWaste": 176,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          32,
+          32
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_upgrade directly"
+      }
+    },
+    {
+      "id": "inc-0090",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 744,
+      "sessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "toolAttempted": "Bash",
+      "tokenWaste": 496,
+      "timeWasteMs": 9698,
+      "context": {
+        "eventRange": [
+          15,
+          24
+        ],
+        "errorMessages": [
+          "Error: Exit code 2\nUsage: mcp run [OPTIONS] FILE_SPEC\nTry 'mcp run --help' for help.\n╭─ Error ──────",
+          "Error: Exit code 2\nUsage: mcp run [OPTIONS] FILE_SPEC\nTry 'mcp run --help' for help.\n╭─ Error ──────",
+          "Error: Exit code 2\nUsage: mcp run [OPTIONS] FILE_SPEC\nTry 'mcp run --help' for help.\n╭─ Error ──────"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0091",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 17732,
+      "sessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_app_upgrade",
+      "tokenWaste": 17732,
+      "timeWasteMs": 14681,
+      "context": {
+        "eventRange": [
+          11,
+          12
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Look up documentation for mcp__mittwald__mittwald_\""
+      }
+    },
+    {
+      "id": "inc-0092",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "7c856626-22ad-459a-82be-ffe46a6e1a4b",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "Web search results for query: \"app/upgrade mcp tool mittwald\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: "
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0093",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 25472,
+      "sessionId": "7cd39a72-a235-4c05-afaf-fb31ec35e90d",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_project_membership_get_own",
+      "tokenWaste": 25472,
+      "timeWasteMs": 133597,
+      "context": {
+        "eventRange": [
+          2,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Test mcp__mittwald__mittwald_project_membership_ge\""
+      }
+    },
+    {
+      "id": "inc-0094",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 13.4,
+      "sessionId": "7cd39a72-a235-4c05-afaf-fb31ec35e90d",
+      "toolAttempted": "Task",
+      "tokenWaste": 13,
+      "timeWasteMs": 133597,
+      "context": {
+        "eventRange": [
+          2,
+          3
+        ],
+        "errorMessages": [],
+        "description": "134s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0095",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "82fe3a46-322e-4a7e-ad82-7aed8474985b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_project_membership_get",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_project_membership_get directly"
+      }
+    },
+    {
+      "id": "inc-0096",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 12,
+      "sessionId": "82fe3a46-322e-4a7e-ad82-7aed8474985b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_project_membership_get",
+      "tokenWaste": 6,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          17,
+          17
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_project_membership_get directly"
+      }
+    },
+    {
+      "id": "inc-0097",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 34.5,
+      "sessionId": "82fe3a46-322e-4a7e-ad82-7aed8474985b",
+      "toolAttempted": "Bash",
+      "tokenWaste": 23,
+      "timeWasteMs": 39597,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'call'",
+          "Error: Unknown skill: mcp__mittwald__mittwald_project_membership_get",
+          "Error: Invalid slash command format: /"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0098",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 25773,
+      "sessionId": "82fe3a46-322e-4a7e-ad82-7aed8474985b",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_project_membership_get",
+      "tokenWaste": 25773,
+      "timeWasteMs": 34314,
+      "context": {
+        "eventRange": [
+          11,
+          12
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find documentation for the mcp__mittwald__mittwald\""
+      }
+    },
+    {
+      "id": "inc-0099",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "82fe3a46-322e-4a7e-ad82-7aed8474985b",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_project_membership_get",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          23,
+          23
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Invoke the mcp__mittwald__mittwald_project_members\""
+      }
+    },
+    {
+      "id": "inc-0100",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 157.5,
+      "sessionId": "87f44ba9-cbba-4fe7-980e-d17ce2eae8e9",
+      "toolAttempted": "Skill",
+      "tokenWaste": 105,
+      "timeWasteMs": 7999,
+      "context": {
+        "eventRange": [
+          4,
+          13
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_project_membership_list",
+          "Error: Exit code 1\nerror: unknown option '--project-id'",
+          "Error: Exit code 1\nerror: unknown command 'list-memberships'"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0101",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "87f44ba9-cbba-4fe7-980e-d17ce2eae8e9",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          19,
+          20
+        ],
+        "errorMessages": [
+          "Web search results for query: \"how to list project memberships using claude code\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not "
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0102",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "8c2a30cf-26ac-42ca-a34a-f1e4ad710582",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_get",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_get directly"
+      }
+    },
+    {
+      "id": "inc-0103",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 12,
+      "sessionId": "8c2a30cf-26ac-42ca-a34a-f1e4ad710582",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_get",
+      "tokenWaste": 6,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          16,
+          16
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_domain_get directly"
+      }
+    },
+    {
+      "id": "inc-0104",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 397.5,
+      "sessionId": "9074dd3c-efcf-4307-8925-6e7e18a109fd",
+      "toolAttempted": "Bash",
+      "tokenWaste": 265,
+      "timeWasteMs": 8816,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────",
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────",
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0105",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 158,
+      "sessionId": "9074dd3c-efcf-4307-8925-6e7e18a109fd",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 158,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "Web search results for query: \"list mittwald cronjobs mcp\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0106",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 21.400000000000002,
+      "sessionId": "9722ee37-1bed-46e2-9ff2-15ad7ae30fbc",
+      "toolAttempted": "mcp__mittwald__mittwald_context_get",
+      "tokenWaste": 21,
+      "timeWasteMs": 214217,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [],
+        "description": "214s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0107",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 188,
+      "sessionId": "9dfd8924-a2c3-468f-a4db-55b7aa75cc89",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_delete",
+      "tokenWaste": 94,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_delete directly"
+      }
+    },
+    {
+      "id": "inc-0108",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 168,
+      "sessionId": "9dfd8924-a2c3-468f-a4db-55b7aa75cc89",
+      "toolAttempted": "Bash",
+      "tokenWaste": 112,
+      "timeWasteMs": 5214,
+      "context": {
+        "eventRange": [
+          3,
+          10
+        ],
+        "errorMessages": [
+          "Error: Exit code 127\n(eval):1: command not found: mcp__mittwald__mittwald_backup_delete",
+          "Error: Skill mcp is not a prompt-based skill",
+          "Error: Unknown slash command: mcp-help"
+        ],
+        "description": "3 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0109",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 11,
+      "sessionId": "a6859c6f-94af-4413-a237-8636fc18bf6e",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 11,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "Web search results for query: \"MCP namespaces\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web_search_2025"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0110",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 52.5,
+      "sessionId": "adb890a5-d747-4599-9db8-78fcab34c372",
+      "toolAttempted": "Bash",
+      "tokenWaste": 35,
+      "timeWasteMs": 13006,
+      "context": {
+        "eventRange": [
+          18,
+          28
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown option '--url'",
+          "Error: Exit code 1\nMCP server mittwald already exists in local config",
+          "Error: Exit code 1\nerror: unknown command 'mittwald'",
+          "Error: Exit code 1\nerror: unknown command 'run'"
+        ],
+        "description": "4 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0111",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 224,
+      "sessionId": "ae419bef-e6a6-4ff2-a351-a231685b1fa5",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_execution_abort",
+      "tokenWaste": 112,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_cronjob_execution_abort directly"
+      }
+    },
+    {
+      "id": "inc-0112",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 2,
+      "sessionId": "1604c833",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_execution_get",
+      "tokenWaste": 1,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          78,
+          78
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_cronjob_execution_get directly"
+      }
+    },
+    {
+      "id": "inc-0113",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 6.1000000000000005,
+      "sessionId": "1f8f94d8",
+      "toolAttempted": "Bash",
+      "tokenWaste": 6,
+      "timeWasteMs": 61099,
+      "context": {
+        "eventRange": [
+          97,
+          98
+        ],
+        "errorMessages": [],
+        "description": "61s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0114",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 40,
+      "sessionId": "2b05045e",
+      "toolAttempted": "WebFetch",
+      "tokenWaste": 40,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          17,
+          19
+        ],
+        "errorMessages": [
+          "Web search results for query: \"Claude Agent SDK MCP tools definition 2025\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebFetch"
+      }
+    },
+    {
+      "id": "inc-0115",
+      "type": "wrong-tool-selection",
+      "severity": "high",
+      "severityScore": 1910,
+      "sessionId": "2fd27155",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_project_membership_get",
+      "tokenWaste": 955,
+      "timeWasteMs": 60,
+      "context": {
+        "eventRange": [
+          69,
+          70
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_project_membership_get directly"
+      }
+    },
+    {
+      "id": "inc-0116",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 142,
+      "sessionId": "33098795",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 142,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          7
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald MCP mail address create tool documentation\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does no"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0117",
+      "type": "wrong-tool-selection",
+      "severity": "high",
+      "severityScore": 5844,
+      "sessionId": "350b5c1c",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_get",
+      "tokenWaste": 2922,
+      "timeWasteMs": 67,
+      "context": {
+        "eventRange": [
+          99,
+          100
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_get directly"
+      }
+    },
+    {
+      "id": "inc-0118",
+      "type": "wrong-tool-selection",
+      "severity": "high",
+      "severityScore": 6222,
+      "sessionId": "350b5c1c",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_get",
+      "tokenWaste": 3111,
+      "timeWasteMs": 105,
+      "context": {
+        "eventRange": [
+          102,
+          103
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_get directly"
+      }
+    },
+    {
+      "id": "inc-0119",
+      "type": "wrong-tool-selection",
+      "severity": "high",
+      "severityScore": 9080,
+      "sessionId": "350b5c1c",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_get",
+      "tokenWaste": 4540,
+      "timeWasteMs": 68,
+      "context": {
+        "eventRange": [
+          105,
+          106
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_get directly"
+      }
+    },
+    {
+      "id": "inc-0120",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 230,
+      "sessionId": "8e42b303",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 230,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          3,
+          4
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald MCP mysql port forward tool 2025\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support "
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0121",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 10,
+      "sessionId": "e24bd061",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_install_shopware6",
+      "tokenWaste": 5,
+      "timeWasteMs": 13033,
+      "context": {
+        "eventRange": [
+          31,
+          32
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_install_shopware6 directly"
+      }
+    },
+    {
+      "id": "inc-0122",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 12,
+      "sessionId": "efec42ee",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 6,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          1,
+          1
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0123",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 458,
+      "sessionId": "efec42ee",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 229,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0124",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "efec42ee",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 4,
+      "timeWasteMs": 27076,
+      "context": {
+        "eventRange": [
+          54,
+          55
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0125",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 196,
+      "sessionId": "b0174440-23ad-4020-97f5-4c206da66ba6",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_app_install_nextcloud",
+      "tokenWaste": 98,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          3,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_app_install_nextcloud directly"
+      }
+    },
+    {
+      "id": "inc-0126",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 12.8,
+      "sessionId": "b0819c37-88b0-4c1d-821c-2012575bc736",
+      "toolAttempted": "mcp__mittwald__mittwald_app_dependency_update",
+      "tokenWaste": 13,
+      "timeWasteMs": 128152,
+      "context": {
+        "eventRange": [
+          2,
+          3
+        ],
+        "errorMessages": [],
+        "description": "128s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0127",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "b2e5c0df-5467-40ec-99b4-e79c14d61cc4",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_list_upgrade_candidates directly"
+      }
+    },
+    {
+      "id": "inc-0128",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 168,
+      "sessionId": "b2e5c0df-5467-40ec-99b4-e79c14d61cc4",
+      "toolAttempted": "Bash",
+      "tokenWaste": 112,
+      "timeWasteMs": 5935,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'execute'",
+          "Error: Unknown skill: mcp__mittwald__mittwald_app_list_upgrade_candidates",
+          "Error: No transcript found for agent ID: null"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0129",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "b2e5c0df-5467-40ec-99b4-e79c14d61cc4",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          8,
+          8
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Execute the mcp__mittwald__mittwald_app_list_upgra\""
+      }
+    },
+    {
+      "id": "inc-0130",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 114,
+      "sessionId": "b2e5c0df-5467-40ec-99b4-e79c14d61cc4",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 114,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          12
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_app_list_upgrade_candidates documentation\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-202"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0131",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 21.3,
+      "sessionId": "bcbf7373-6c34-439a-b951-2982045e52cc",
+      "toolAttempted": "mcp__mittwald__mittwald_user_api_token_create",
+      "tokenWaste": 21,
+      "timeWasteMs": 213114,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [],
+        "description": "213s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0132",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 222,
+      "sessionId": "bdcea2fd-b9d4-4c71-b767-89787932335b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_port_forward",
+      "tokenWaste": 111,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_port_forward directly"
+      }
+    },
+    {
+      "id": "inc-0133",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 19730,
+      "sessionId": "bdcea2fd-b9d4-4c71-b767-89787932335b",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_port_forward",
+      "tokenWaste": 19730,
+      "timeWasteMs": 29478,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Look up information about the mcp__mittwald__mittw\""
+      }
+    },
+    {
+      "id": "inc-0134",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 114,
+      "sessionId": "bdcea2fd-b9d4-4c71-b767-89787932335b",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 114,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_database_mysql_port_forward\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does no"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0135",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "be930e30-1394-4eb6-8275-67ccc23d7001",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_address_delete",
+      "tokenWaste": 4,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          3,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_mail_address_delete directly"
+      }
+    },
+    {
+      "id": "inc-0136",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 176,
+      "sessionId": "bfc8d12d-c893-4c06-a986-4e6c7a26e6f9",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_import",
+      "tokenWaste": 88,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          3,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_database_mysql_import directly"
+      }
+    },
+    {
+      "id": "inc-0137",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 7,
+      "sessionId": "bfc8d12d-c893-4c06-a986-4e6c7a26e6f9",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          9,
+          10
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp database/mysql/import\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool ty"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0138",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "c5cbcb6b-b888-47e1-8e3d-21d8b906121f",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_download",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          3,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_download directly"
+      }
+    },
+    {
+      "id": "inc-0139",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 252,
+      "sessionId": "c5cbcb6b-b888-47e1-8e3d-21d8b906121f",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_download",
+      "tokenWaste": 126,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          6,
+          6
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_download directly"
+      }
+    },
+    {
+      "id": "inc-0140",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 12.200000000000001,
+      "sessionId": "c798e098-5f4b-464d-85fb-ad0e4b9a6494",
+      "toolAttempted": "Bash",
+      "tokenWaste": 12,
+      "timeWasteMs": 122092,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [],
+        "description": "122s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0141",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 200,
+      "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_get",
+      "tokenWaste": 100,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_get directly"
+      }
+    },
+    {
+      "id": "inc-0142",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 370,
+      "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_get",
+      "tokenWaste": 185,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          11
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_get directly"
+      }
+    },
+    {
+      "id": "inc-0143",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 408,
+      "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_get",
+      "tokenWaste": 204,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          17,
+          17
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_get directly"
+      }
+    },
+    {
+      "id": "inc-0144",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 17117,
+      "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_get",
+      "tokenWaste": 17117,
+      "timeWasteMs": 18240,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find documentation on the mcp__mittwald__mittwald_\""
+      }
+    },
+    {
+      "id": "inc-0145",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 71092,
+      "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_get",
+      "tokenWaste": 71092,
+      "timeWasteMs": 225456,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Test the mcp__mittwald__mittwald_backup_get MCP to\""
+      }
+    },
+    {
+      "id": "inc-0146",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "Task",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          29,
+          29
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find the MCP tool configuration for backup retriev\""
+      }
+    },
+    {
+      "id": "inc-0147",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 22.5,
+      "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "Task",
+      "tokenWaste": 23,
+      "timeWasteMs": 225456,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [],
+        "description": "225s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0148",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "c891cafa-b300-4813-a588-3ee4fbaf44b5",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp mittwald backup get\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web_se"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0149",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 214,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 107,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0150",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 16,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0151",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 18,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 9,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          8,
+          8
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0152",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 288,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 144,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          34,
+          34
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0153",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 201,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "Bash",
+      "tokenWaste": 134,
+      "timeWasteMs": 9456,
+      "context": {
+        "eventRange": [
+          3,
+          15
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'run'",
+          "Error: Exit code 1\nerror: unknown command 'call'",
+          "Error: Slash command mcp is not a prompt-based command",
+          "Error: Agent type 'explore' not found. Available agents: general-purpose, statusline-setup, Explore,"
+        ],
+        "description": "4 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0154",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          11
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Explore usage of mcp__mittwald__mittwald_domain_vi\""
+      }
+    },
+    {
+      "id": "inc-0155",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 35478,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 35478,
+      "timeWasteMs": 41397,
+      "context": {
+        "eventRange": [
+          28,
+          29
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Understand the usage of mcp__mittwald__mittwald_do\""
+      }
+    },
+    {
+      "id": "inc-0156",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          37,
+          37
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Test mcp__mittwald__mittwald_domain_virtualhost_li\""
+      }
+    },
+    {
+      "id": "inc-0157",
+      "type": "capability-mismatch",
+      "severity": "medium",
+      "severityScore": 116,
+      "sessionId": "c9726c6e-0dce-4ddf-a108-77d5832bc6c5",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 116,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          25,
+          26
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_domain_virtualhost_list tool\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does n"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0158",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "cc448b85-8a4d-4b16-873c-1ad59883aa0b",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_user_list",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_user_list directly"
+      }
+    },
+    {
+      "id": "inc-0159",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 250,
+      "sessionId": "cfdc8f40-14f5-4576-bb4e-fa59fd6f8fd0",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_install_matomo",
+      "tokenWaste": 125,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_install_matomo directly"
+      }
+    },
+    {
+      "id": "inc-0160",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 22,
+      "sessionId": "cfdc8f40-14f5-4576-bb4e-fa59fd6f8fd0",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_install_matomo",
+      "tokenWaste": 11,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_install_matomo directly"
+      }
+    },
+    {
+      "id": "inc-0161",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 364,
+      "sessionId": "cfdc8f40-14f5-4576-bb4e-fa59fd6f8fd0",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_install_matomo",
+      "tokenWaste": 182,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          11
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_install_matomo directly"
+      }
+    },
+    {
+      "id": "inc-0162",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 224,
+      "sessionId": "d06ffe75-2adc-480a-8363-27257ac7974d",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_volume_create",
+      "tokenWaste": 112,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_volume_create directly"
+      }
+    },
+    {
+      "id": "inc-0163",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 21.400000000000002,
+      "sessionId": "d243bb5f-8e4f-4df3-8580-7189c7584b33",
+      "toolAttempted": "mcp__mittwald__mittwald_context_set_session",
+      "tokenWaste": 21,
+      "timeWasteMs": 213539,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [],
+        "description": "214s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0164",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "d417bc74-c952-4f9e-9451-e629ccc88b8d",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_update",
+      "tokenWaste": 3,
+      "timeWasteMs": 2087,
+      "context": {
+        "eventRange": [
+          2,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_update directly"
+      }
+    },
+    {
+      "id": "inc-0165",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 6.1000000000000005,
+      "sessionId": "d417bc74-c952-4f9e-9451-e629ccc88b8d",
+      "toolAttempted": "Task",
+      "tokenWaste": 6,
+      "timeWasteMs": 60659,
+      "context": {
+        "eventRange": [
+          20,
+          21
+        ],
+        "errorMessages": [],
+        "description": "61s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0166",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 7,
+      "sessionId": "d417bc74-c952-4f9e-9451-e629ccc88b8d",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp documentation\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0167",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "d632e97f-2265-46c4-a90a-a24c4e1929c6",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_container_run",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_container_run directly"
+      }
+    },
+    {
+      "id": "inc-0168",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 260,
+      "sessionId": "d632e97f-2265-46c4-a90a-a24c4e1929c6",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_container_run",
+      "tokenWaste": 130,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_container_run directly"
+      }
+    },
+    {
+      "id": "inc-0169",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "d64ce7a5-ef65-49c8-8140-bf7e20ce28a1",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_conversation_categories",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_conversation_categories directly"
+      }
+    },
+    {
+      "id": "inc-0170",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 45,
+      "sessionId": "d67809ea-5da8-49a1-bd13-770286d23522",
+      "toolAttempted": "Bash",
+      "tokenWaste": 30,
+      "timeWasteMs": 6467,
+      "context": {
+        "eventRange": [
+          3,
+          15
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'call'",
+          "Error: Unknown skill: mcp__mittwald__mittwald_conversation_show",
+          "Error: Unknown slash command: mcp-tools",
+          "InputValidationError: [\n  {\n    \"code\": \"invalid_type\",\n    \"expected\": \"string\",\n    \"received\": \"u"
+        ],
+        "description": "4 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0171",
+      "type": "unnecessary-delegation",
+      "severity": "low",
+      "severityScore": 0,
+      "sessionId": "d67809ea-5da8-49a1-bd13-770286d23522",
+      "toolAttempted": "Task",
+      "tokenWaste": 0,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          11
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Find documentation on using the \"conversation/show\""
+      }
+    },
+    {
+      "id": "inc-0172",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "d67809ea-5da8-49a1-bd13-770286d23522",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp tool documentation\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0173",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 214,
+      "sessionId": "d84db770-68da-4e74-af83-8fc859c61461",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_app_upload",
+      "tokenWaste": 107,
+      "timeWasteMs": 62,
+      "context": {
+        "eventRange": [
+          2,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_app_upload directly"
+      }
+    },
+    {
+      "id": "inc-0174",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 22224,
+      "sessionId": "d84db770-68da-4e74-af83-8fc859c61461",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_app_upload",
+      "tokenWaste": 22224,
+      "timeWasteMs": 25079,
+      "context": {
+        "eventRange": [
+          10,
+          11
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Look up information about the mcp__mittwald__mittw\""
+      }
+    },
+    {
+      "id": "inc-0175",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "d84db770-68da-4e74-af83-8fc859c61461",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          7,
+          8
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_app_upload\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool ty"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0176",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "d84db770-68da-4e74-af83-8fc859c61461",
+      "toolAttempted": "Task",
+      "tokenWaste": 6,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          10,
+          11
+        ],
+        "errorMessages": [
+          "[{\"type\":\"text\",\"text\":\"Excellent! Now I have comprehensive information about the `mcp__mittwald__mittwald_app_upload` MCP tool. Let me provide you with a detailed overview.\\n\\n## mcp__mittwald__mittw"
+        ],
+        "description": "Model unknown model does not support Task"
+      }
+    },
+    {
+      "id": "inc-0177",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 11,
+      "sessionId": "d9dd91f8-fb1f-4707-be70-bd3b3ce77e9f",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 11,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          6,
+          7
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp backup schedule delete tool\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support t"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0178",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 336,
+      "sessionId": "dbc873fc-c4ba-4cf2-9aaf-a14f69890ee9",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_deliverybox_create",
+      "tokenWaste": 168,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_mail_deliverybox_create directly"
+      }
+    },
+    {
+      "id": "inc-0179",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 29182,
+      "sessionId": "dbc873fc-c4ba-4cf2-9aaf-a14f69890ee9",
+      "toolAttempted": "Task",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_deliverybox_create",
+      "tokenWaste": 29182,
+      "timeWasteMs": 44797,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Call the mcp__mittwald__mittwald_mail_deliverybox_\""
+      }
+    },
+    {
+      "id": "inc-0180",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "dc91c8b5-663d-4bcc-953c-c8e9e8cd4a9f",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_project_invite_list",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_project_invite_list directly"
+      }
+    },
+    {
+      "id": "inc-0181",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 36,
+      "sessionId": "dc91c8b5-663d-4bcc-953c-c8e9e8cd4a9f",
+      "toolAttempted": "Skill",
+      "tokenWaste": 24,
+      "timeWasteMs": 13104,
+      "context": {
+        "eventRange": [
+          12,
+          19
+        ],
+        "errorMessages": [
+          "Error: Skill mcp is not a prompt-based skill",
+          "Error: Exit code 1\nConnecting to fdaa:25:5240:a7b:51d:38ab:7488:2...\nexec: \"mcp\": executable file no",
+          "Error: Request failed with status code 404"
+        ],
+        "description": "3 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0182",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 21451,
+      "sessionId": "dc91c8b5-663d-4bcc-953c-c8e9e8cd4a9f",
+      "toolAttempted": "Task",
+      "tokenWaste": 21451,
+      "timeWasteMs": 19128,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Investigate how to use the \"project/invite/list\" M\""
+      }
+    },
+    {
+      "id": "inc-0183",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 7,
+      "sessionId": "dd3d3ee6-390d-485d-8350-39a9a21fd668",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_app_install_wordpress\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not supp"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0184",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "df9642ef-64ee-45a3-a0be-9f451151694f",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 4,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          3,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0185",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 304,
+      "sessionId": "df9642ef-64ee-45a3-a0be-9f451151694f",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 152,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          6,
+          6
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0186",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 374,
+      "sessionId": "df9642ef-64ee-45a3-a0be-9f451151694f",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 187,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          12,
+          12
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0187",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 304,
+      "sessionId": "df9642ef-64ee-45a3-a0be-9f451151694f",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "tokenWaste": 152,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          15,
+          15
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_virtualhost_list directly"
+      }
+    },
+    {
+      "id": "inc-0188",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "df9642ef-64ee-45a3-a0be-9f451151694f",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          18,
+          19
+        ],
+        "errorMessages": [
+          "Web search results for query: \"how to call mcp tools in claude code 2025\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support "
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0189",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 31.5,
+      "sessionId": "e007ebd1-2ff0-4071-967f-a2fa1b63f97a",
+      "toolAttempted": "Bash",
+      "tokenWaste": 21,
+      "timeWasteMs": 9616,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────",
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────",
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0190",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 21.400000000000002,
+      "sessionId": "e2b19dfa-ccf9-4e66-ac6f-c76dee6d88d0",
+      "toolAttempted": "mcp__mittwald__mittwald_user_accessible_projects",
+      "tokenWaste": 21,
+      "timeWasteMs": 214004,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [],
+        "description": "214s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0191",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 280.5,
+      "sessionId": "e36145ae-d89d-4792-ac96-23acca84a9e5",
+      "toolAttempted": "Skill",
+      "tokenWaste": 187,
+      "timeWasteMs": 5013,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_project_invite_list_own",
+          "Error: Slash command mcp is not a prompt-based command",
+          "Error: Slash command help is not a prompt-based command"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0192",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "e6c8c23f-6fcb-4891-9310-840bd69159ed",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_domain_list",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_domain_list directly"
+      }
+    },
+    {
+      "id": "inc-0193",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 12.200000000000001,
+      "sessionId": "e6c8c23f-6fcb-4891-9310-840bd69159ed",
+      "toolAttempted": "Bash",
+      "tokenWaste": 12,
+      "timeWasteMs": 121743,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [],
+        "description": "122s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0194",
+      "type": "stuck-indicator",
+      "severity": "low",
+      "severityScore": 12.200000000000001,
+      "sessionId": "e6c8c23f-6fcb-4891-9310-840bd69159ed",
+      "toolAttempted": "Bash",
+      "tokenWaste": 12,
+      "timeWasteMs": 121643,
+      "context": {
+        "eventRange": [
+          29,
+          30
+        ],
+        "errorMessages": [],
+        "description": "122s gap between events (possible stuck state)"
+      }
+    },
+    {
+      "id": "inc-0195",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 2,
+      "sessionId": "e6c8c23f-6fcb-4891-9310-840bd69159ed",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 2,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          20,
+          21
+        ],
+        "errorMessages": [
+          "Web search results for query: \"Mittwald OAuth server documentation\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool t"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0196",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 132,
+      "sessionId": "e744990e-a02a-4939-9259-acd970114172",
+      "toolAttempted": "Skill",
+      "tokenWaste": 88,
+      "timeWasteMs": 5617,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_app_dependency_versions",
+          "Error: Unknown slash command: mcp-mittwald-app-dependency-versions",
+          "Error: Exit code 1\nls: .claude/commands: No such file or directory"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0197",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 531,
+      "sessionId": "e744990e-a02a-4939-9259-acd970114172",
+      "toolAttempted": "Bash",
+      "tokenWaste": 354,
+      "timeWasteMs": 8171,
+      "context": {
+        "eventRange": [
+          98,
+          107
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nOn branch feat/app-dependency-list\nChanges not staged for commit:\n  (use \"git add",
+          "Error: Exit code 128\nfatal: pathspec 'src/constants/tool/mittwald-cli/app/dependency-list-cli.ts' di",
+          "Error: Exit code 1\nerror: pathspec 'src/constants/tool/mittwald-cli/app/dependency-list-cli.ts' did "
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0198",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 4,
+      "sessionId": "e9213524-e821-4005-b70d-dcd6f1f185cd",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 4,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald ssh key creation\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web_"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0199",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "e9bd881b-637f-47e6-bc1f-c209d7302680",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_container_logs",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_container_logs directly"
+      }
+    },
+    {
+      "id": "inc-0200",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 250,
+      "sessionId": "e9bd881b-637f-47e6-bc1f-c209d7302680",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_container_logs",
+      "tokenWaste": 125,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_container_logs directly"
+      }
+    },
+    {
+      "id": "inc-0201",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 318,
+      "sessionId": "f2bce107-8450-4775-86ab-c7ceb77850c8",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_deliverybox_get",
+      "tokenWaste": 159,
+      "timeWasteMs": 144,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_mail_deliverybox_get directly"
+      }
+    },
+    {
+      "id": "inc-0202",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 12,
+      "sessionId": "f2bce107-8450-4775-86ab-c7ceb77850c8",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_mail_deliverybox_get",
+      "tokenWaste": 6,
+      "timeWasteMs": 97,
+      "context": {
+        "eventRange": [
+          11,
+          12
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_mail_deliverybox_get directly"
+      }
+    },
+    {
+      "id": "inc-0203",
+      "type": "unnecessary-delegation",
+      "severity": "high",
+      "severityScore": 12323,
+      "sessionId": "f2bce107-8450-4775-86ab-c7ceb77850c8",
+      "toolAttempted": "Task",
+      "tokenWaste": 12323,
+      "timeWasteMs": 51698,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [],
+        "description": "Spawned Task agent for: \"Get information about MCP tools\""
+      }
+    },
+    {
+      "id": "inc-0204",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 99,
+      "sessionId": "f2bce107-8450-4775-86ab-c7ceb77850c8",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 99,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          8,
+          9
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_mail_deliverybox_get documentation\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' "
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0205",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 4,
+      "sessionId": "f2bce107-8450-4775-86ab-c7ceb77850c8",
+      "toolAttempted": "Task",
+      "tokenWaste": 4,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          14,
+          15
+        ],
+        "errorMessages": [
+          "[{\"type\":\"text\",\"text\":\"Based on the documentation I was able to retrieve, here's a comprehensive overview of MCP tools:\\n\\n## Overview of MCP Tools\\n\\n**Model Context Protocol (MCP)** is an open-sour"
+        ],
+        "description": "Model s a comprehensive overview of MCP tools:\\n\\n## Overview of MCP Tools\\n\\n**Model Context Protocol (MCP)** is an open-source standard that extends Claude does not support Task"
+      }
+    },
+    {
+      "id": "inc-0206",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "f4116491-bd09-4469-9884-89c428792072",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          9,
+          10
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp backup list\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web_s"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0207",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 11,
+      "sessionId": "f6b2c15c-5033-4bc4-856e-e286fba1bc49",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 11,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          6
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mittwald mcp database redis versions\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool "
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0208",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 16,
+      "sessionId": "f7c69fde-ab32-4854-a367-465c868949c7",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_project_ssh",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          6,
+          6
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_project_ssh directly"
+      }
+    },
+    {
+      "id": "inc-0209",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "f7fdc336-bfd2-450f-b3b4-0ad85bcc171e",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_backup_list",
+      "tokenWaste": 3,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_backup_list directly"
+      }
+    },
+    {
+      "id": "inc-0210",
+      "type": "retry-loop",
+      "severity": "low",
+      "severityScore": 33,
+      "sessionId": "f7fdc336-bfd2-450f-b3b4-0ad85bcc171e",
+      "toolAttempted": "Bash",
+      "tokenWaste": 22,
+      "timeWasteMs": 3902,
+      "context": {
+        "eventRange": [
+          3,
+          10
+        ],
+        "errorMessages": [
+          "Error: Exit code 127\n(eval):1: command not found: mcp__mittwald__mittwald_backup_list",
+          "Error: Slash command mcp is not a prompt-based command",
+          "Error: Skill mcp is not a prompt-based skill"
+        ],
+        "description": "3 consecutive errors, session ended without success"
+      }
+    },
+    {
+      "id": "inc-0211",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 220,
+      "sessionId": "faa23269-bade-4393-87c2-f33ba9f177db",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_project_delete",
+      "tokenWaste": 110,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_project_delete directly"
+      }
+    },
+    {
+      "id": "inc-0212",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 274,
+      "sessionId": "faa23269-bade-4393-87c2-f33ba9f177db",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_project_delete",
+      "tokenWaste": 137,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_project_delete directly"
+      }
+    },
+    {
+      "id": "inc-0213",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 129,
+      "sessionId": "faa92e8f-136b-4c58-bd94-d33db1b5290a",
+      "toolAttempted": "Skill",
+      "tokenWaste": 86,
+      "timeWasteMs": 5120,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Unknown skill: mcp__mittwald__mittwald_database_mysql_user_delete",
+          "Error: Unknown slash command: mcp-tool-list",
+          "Error: Request failed with status code 404"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0214",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 216,
+      "sessionId": "fb558295-0c77-4a9e-9a1c-3913c91fc592",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_cronjob_execution_list",
+      "tokenWaste": 108,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          2,
+          2
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_cronjob_execution_list directly"
+      }
+    },
+    {
+      "id": "inc-0215",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 190.5,
+      "sessionId": "fb558295-0c77-4a9e-9a1c-3913c91fc592",
+      "toolAttempted": "Bash",
+      "tokenWaste": 127,
+      "timeWasteMs": 4891,
+      "context": {
+        "eventRange": [
+          3,
+          12
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'call'",
+          "Error: Unknown skill: mcp__mittwald__mittwald_cronjob_execution_list",
+          "Error: Unknown slash command: mcp-list-tools"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0216",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 9,
+      "sessionId": "fb558295-0c77-4a9e-9a1c-3913c91fc592",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 9,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          11,
+          12
+        ],
+        "errorMessages": [
+          "Web search results for query: \"list mittwald mcp tools\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool types: web_se"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0217",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 272,
+      "sessionId": "fdd7e079-9d83-4a8c-b25c-ade83fe29bd0",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_database_mysql_user_create",
+      "tokenWaste": 136,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          3,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_database_mysql_user_create directly"
+      }
+    },
+    {
+      "id": "inc-0218",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 586.5,
+      "sessionId": "fdd7e079-9d83-4a8c-b25c-ade83fe29bd0",
+      "toolAttempted": "Bash",
+      "tokenWaste": 391,
+      "timeWasteMs": 6132,
+      "context": {
+        "eventRange": [
+          4,
+          13
+        ],
+        "errorMessages": [
+          "Error: Exit code 1\nerror: unknown command 'exec'",
+          "Error: Unknown skill: mcp__mittwald__mittwald_database_mysql_user_create",
+          "Error: ECONNREFUSED"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0219",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 8,
+      "sessionId": "fdd7e079-9d83-4a8c-b25c-ade83fe29bd0",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 8,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          12,
+          13
+        ],
+        "errorMessages": [
+          "Web search results for query: \"mcp__mittwald__mittwald_database_mysql_user_create tool documentation\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    },
+    {
+      "id": "inc-0220",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 6,
+      "sessionId": "fddfebd2-952c-40b9-8b8d-9eb06a12a273",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_container_update",
+      "tokenWaste": 3,
+      "timeWasteMs": 157,
+      "context": {
+        "eventRange": [
+          2,
+          3
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_container_update directly"
+      }
+    },
+    {
+      "id": "inc-0221",
+      "type": "wrong-tool-selection",
+      "severity": "low",
+      "severityScore": 14,
+      "sessionId": "fddfebd2-952c-40b9-8b8d-9eb06a12a273",
+      "toolAttempted": "Bash",
+      "toolNeeded": "mcp__mittwald__mittwald_container_update",
+      "tokenWaste": 7,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          5,
+          5
+        ],
+        "errorMessages": [],
+        "description": "Used Bash instead of calling mcp__mittwald__mittwald_container_update directly"
+      }
+    },
+    {
+      "id": "inc-0222",
+      "type": "wrong-tool-selection",
+      "severity": "medium",
+      "severityScore": 208,
+      "sessionId": "fddfebd2-952c-40b9-8b8d-9eb06a12a273",
+      "toolAttempted": "SlashCommand",
+      "toolNeeded": "mcp__mittwald__mittwald_container_update",
+      "tokenWaste": 104,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          8,
+          8
+        ],
+        "errorMessages": [],
+        "description": "Used SlashCommand instead of calling mcp__mittwald__mittwald_container_update directly"
+      }
+    },
+    {
+      "id": "inc-0223",
+      "type": "retry-loop",
+      "severity": "medium",
+      "severityScore": 465,
+      "sessionId": "fddfebd2-952c-40b9-8b8d-9eb06a12a273",
+      "toolAttempted": "Bash",
+      "tokenWaste": 310,
+      "timeWasteMs": 8482,
+      "context": {
+        "eventRange": [
+          6,
+          15
+        ],
+        "errorMessages": [
+          "Error: Exit code 127\n(eval):1: no such file or directory: /tasks",
+          "Error: Unknown slash command: mcp-schema",
+          "Error: Exit code 2\nUsage: mcp [OPTIONS] COMMAND [ARGS]...\nTry 'mcp --help' for help.\n╭─ Error ──────"
+        ],
+        "description": "3 consecutive errors before success"
+      }
+    },
+    {
+      "id": "inc-0224",
+      "type": "capability-mismatch",
+      "severity": "low",
+      "severityScore": 11,
+      "sessionId": "ff98bc8f-d16a-4cb1-a101-4daadffd18a8",
+      "toolAttempted": "WebSearch",
+      "tokenWaste": 11,
+      "timeWasteMs": 0,
+      "context": {
+        "eventRange": [
+          20,
+          21
+        ],
+        "errorMessages": [
+          "Web search results for query: \"how to list mittwald mcp registry\"\n\nAPI Error: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"'claude-3-haiku-20240307' does not support tool typ"
+        ],
+        "description": "Model claude-3-haiku-20240307 does not support WebSearch"
+      }
+    }
+  ],
+  "byType": {
+    "wrong-tool-selection": 94,
+    "retry-loop": 35,
+    "unnecessary-delegation": 31,
+    "stuck-indicator": 22,
+    "capability-mismatch": 42,
+    "exploration-waste": 0
+  },
+  "bySeverity": {
+    "high": 26,
+    "medium": 82,
+    "low": 116
+  },
+  "totalTokenWaste": 692273,
+  "generatedAt": "2025-12-04T19:59:41.962Z"
+}
