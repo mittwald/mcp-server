@@ -11,7 +11,7 @@ subtasks:
   - "T008"
 title: "Parser & Indexer"
 phase: "Phase 1 - Foundation"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "29594"
@@ -183,3 +183,5 @@ history:
 ## Activity Log
 
 - 2025-12-04T18:30:00Z – system – lane=planned – Prompt created.
+- 2025-12-04T20:03:00Z – claude – shell_pid=29594 – lane=doing – Started implementation
+- 2025-12-04T20:25:00Z – claude – shell_pid=29594 – lane=doing – Completed implementation: all 8 subtasks done, 595 sessions parsed, corpus-index.json exported
