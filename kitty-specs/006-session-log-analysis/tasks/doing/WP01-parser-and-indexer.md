@@ -11,16 +11,21 @@ subtasks:
   - "T008"
 title: "Parser & Indexer"
 phase: "Phase 1 - Foundation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "29594"
 history:
   - timestamp: "2025-12-04T18:30:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-04T20:03:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "29594"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP01 – Parser & Indexer
