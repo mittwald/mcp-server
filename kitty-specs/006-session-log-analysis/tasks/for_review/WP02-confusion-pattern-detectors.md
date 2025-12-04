@@ -13,7 +13,7 @@ subtasks:
   - "T018"
 title: "Confusion Pattern Detectors"
 phase: "Phase 1 - Foundation"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "29594"
@@ -246,3 +246,5 @@ Session `0616a506-15b4-466f-9793-44ceebe2a82f.jsonl` exhibits:
 ## Activity Log
 
 - 2025-12-04T18:30:00Z – system – lane=planned – Prompt created.
+- 2025-12-04T20:12:00Z – claude – shell_pid=29594 – lane=doing – Started implementation
+- 2025-12-04T20:30:00Z – claude – shell_pid=29594 – lane=doing – Completed: 224 incidents detected, 4 patterns found in confusing session
