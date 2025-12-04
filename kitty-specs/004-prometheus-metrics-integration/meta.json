@@ -1,0 +1,7 @@
+{
+  "feature_number": "004",
+  "slug": "004-prometheus-metrics-integration",
+  "friendly_name": "Prometheus Metrics Integration",
+  "source_description": "Add Prometheus-compatible /metrics endpoints to both MCP Server and OAuth Bridge using prom-client library with optional basic authentication",
+  "created_at": "2025-12-04T08:57:09Z"
+}
