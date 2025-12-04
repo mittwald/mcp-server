@@ -60,8 +60,8 @@ jobs:
       - name: Deploy with local Docker build
         run: |
           # Build locally on GitHub runner (faster than Depot remote builder)
-          flyctl deploy --config "${{ matrix.fly_config }}" --local-only --strategy immediate --detach \
-            --env ALLOW_FLY_RELEASE=true
+          flyctl deploy --config "${{ matrix.fly_config }}" --dockerfile "${{ matrix.dockerfile }}" \
+            --local-only --strategy immediate --detach --env ALLOW_FLY_RELEASE=true
 
 
       - name: Diagnostics on failure (status + recent logs)

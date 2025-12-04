@@ -7,8 +7,7 @@ kill_timeout = "30s" # Extended for graceful shutdown
 [deploy]
   release_command = "sh -lc 'if [ \"${ALLOW_FLY_RELEASE:-}\" != \"true\" ]; then echo Deployment blocked: use GitHub Actions >&2; exit 1; fi'"
 
-[build]
-  dockerfile = "Dockerfile"
+# NOTE: No [build] section - dockerfile is passed via CLI in deploy workflow
 
 [env]
   NODE_ENV = "production"
