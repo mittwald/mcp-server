@@ -1,0 +1,7 @@
+{
+  "feature_number": "006",
+  "slug": "006-session-log-analysis",
+  "friendly_name": "Session Log Analysis for LLM Efficiency",
+  "source_description": "Comprehensively analyze 595 session logs from the 005-mcp-functional-test sprint to identify LLM confusion patterns, tool dependencies, and optimization opportunities. The analysis will inform both MCP server improvements and user documentation. Two audiences: LLMs via MCP and human end users. LLM confusion is a proxy for human confusion.",
+  "created_at": "2025-12-04T17:15:24Z"
+}
