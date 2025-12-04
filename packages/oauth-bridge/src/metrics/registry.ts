@@ -1,12 +1,20 @@
 import { Registry, collectDefaultMetrics } from 'prom-client';
 
-// Create a custom registry for OAuth Bridge
+/**
+ * Check if metrics are enabled via METRICS_ENABLED env var.
+ * Defaults to true if not set (opt-out behavior).
+ */
+export const metricsEnabled = process.env.METRICS_ENABLED !== 'false';
+
+// Create a custom registry for OAuth Bridge (only if enabled)
 export const register = new Registry();
 
-// Add service-identifying label to all metrics
-register.setDefaultLabels({
-  service: 'oauth-bridge'
-});
+if (metricsEnabled) {
+  // Add service-identifying label to all metrics
+  register.setDefaultLabels({
+    service: 'oauth-bridge'
+  });
 
-// Collect default Node.js metrics
-collectDefaultMetrics({ register });
+  // Collect default Node.js metrics
+  collectDefaultMetrics({ register });
+}

@@ -13,7 +13,7 @@ import { createTokenRouter } from './routes/token.js';
 import { createRegisterRouter } from './routes/register.js';
 import { createMetadataRouter } from './routes/metadata.js';
 import type { RegistrationTokenStore } from './registration-token-store.js';
-import { register, pendingAuthorizations, pendingGrants, registeredClients, metricsAuth } from './metrics/index.js';
+import { register, metricsEnabled, pendingAuthorizations, pendingGrants, registeredClients, stateStoreSize, metricsAuth } from './metrics/index.js';
 
 export function createApp(
   config: BridgeConfig,
@@ -76,32 +76,41 @@ export function createApp(
 
   app.use(versionRouter.routes()).use(versionRouter.allowedMethods());
 
-  // Prometheus metrics endpoint (with optional Basic Auth)
-  const metricsRouter = new Router();
-  metricsRouter.get('/metrics', metricsAuth, async (ctx) => {
-    try {
-      // Update state store gauges before returning metrics
+  // Prometheus metrics endpoint (with optional Basic Auth) - only if enabled
+  if (metricsEnabled) {
+    const metricsRouter = new Router();
+    metricsRouter.get('/metrics', metricsAuth, async (ctx) => {
       try {
-        const stateMetrics = await ctx.stateStore.getMetrics();
-        pendingAuthorizations.set(stateMetrics.pendingAuthorizations);
-        pendingGrants.set(stateMetrics.pendingGrants);
-        registeredClients.set(stateMetrics.registeredClients);
-      } catch (error) {
-        // If state store is unavailable, set gauges to 0 and log warning
-        ctx.logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'Failed to get state store metrics for Prometheus');
-        pendingAuthorizations.set(0);
-        pendingGrants.set(0);
-        registeredClients.set(0);
-      }
+        // Update state store gauges before returning metrics
+        try {
+          const stateMetrics = await ctx.stateStore.getMetrics();
+          pendingAuthorizations.set(stateMetrics.pendingAuthorizations);
+          pendingGrants.set(stateMetrics.pendingGrants);
+          registeredClients.set(stateMetrics.registeredClients);
+          // Total state store size (FR-010)
+          stateStoreSize.set(
+            stateMetrics.pendingAuthorizations +
+            stateMetrics.pendingGrants +
+            stateMetrics.registeredClients
+          );
+        } catch (error) {
+          // If state store is unavailable, set gauges to 0 and log warning
+          ctx.logger.warn({ error: error instanceof Error ? error.message : String(error) }, 'Failed to get state store metrics for Prometheus');
+          pendingAuthorizations.set(0);
+          pendingGrants.set(0);
+          registeredClients.set(0);
+          stateStoreSize.set(0);
+        }
 
-      ctx.set('Content-Type', register.contentType);
-      ctx.body = await register.metrics();
-    } catch (error) {
-      ctx.status = 500;
-      ctx.body = error instanceof Error ? error.message : 'Unknown error';
-    }
-  });
-  app.use(metricsRouter.routes()).use(metricsRouter.allowedMethods());
+        ctx.set('Content-Type', register.contentType);
+        ctx.body = await register.metrics();
+      } catch (error) {
+        ctx.status = 500;
+        ctx.body = error instanceof Error ? error.message : 'Unknown error';
+      }
+    });
+    app.use(metricsRouter.routes()).use(metricsRouter.allowedMethods());
+  }
 
   jwksRouter.get('/jwks', (ctx) => {
     ctx.set('Cache-Control', 'no-cache, no-store, must-revalidate');

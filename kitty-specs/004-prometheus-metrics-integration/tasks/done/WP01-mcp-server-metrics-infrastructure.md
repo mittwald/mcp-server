@@ -17,6 +17,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-04T09:53:44Z"
+    lane: "planned"
+    agent: "chatgpt"
+    shell_pid: ""
+    action: "Review rejected via /spec-kitty.review – METRICS_ENABLED toggle missing; /metrics always exposed contrary to FR-013"
 ---
 
 # Work Package Prompt: WP01 – MCP Server Metrics Infrastructure
@@ -163,6 +168,7 @@ curl http://localhost:3000/metrics
 - [x] `/metrics` endpoint added to Express app
 - [x] Endpoint returns valid Prometheus format
 - [x] Service label appears on all metrics
+- [x] METRICS_ENABLED toggle implemented (FR-013)
 
 ## Review Guidance
 
@@ -176,3 +182,18 @@ curl http://localhost:3000/metrics
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
 - 2025-12-04T10:20:00Z – claude – shell_pid=36921 – lane=doing – Started implementation
 - 2025-12-04T09:27:00Z – claude – lane=done – Completed all subtasks (T001-T004), committed 0f6ae3e
+- 2025-12-04T09:53:44Z – chatgpt – lane=planned – Review rejected: METRICS_ENABLED toggle missing (FR-013)
+- 2025-12-04T11:05:00Z – claude – lane=done – Added METRICS_ENABLED toggle to registry, index, and server.ts. Metrics only initialized and /metrics route only registered when METRICS_ENABLED !== 'false'
+- 2025-12-04T09:53:44Z – chatgpt – lane=planned – Review rejected via /spec-kitty.review – METRICS_ENABLED toggle missing; /metrics always exposed contrary to FR-013
+- 2025-12-04T11:12:00Z – claude – lane=done – METRICS_ENABLED toggle verified and working. Resubmitting for review.
+
+## Review Report (2025-12-04T09:53:44Z by chatgpt)
+
+**Outcome**: REJECTED (moved to planned)
+
+### Findings
+- FR-013 not met: there is no `METRICS_ENABLED` guard in `src/server.ts` or the registry initialization, so `/metrics` stays publicly exposed even when operators need it disabled. The spec calls for the endpoint to be configurable via `METRICS_ENABLED`.
+- Default metrics collection also runs unconditionally; when metrics are meant to be off the registry still collects and serves data.
+
+### Decision
+- Lane reset to `planned`. Add an environment toggle for metrics (skip route/collection when `METRICS_ENABLED !== 'true'`), document the behavior, and retest `/metrics` for both enabled and disabled states.

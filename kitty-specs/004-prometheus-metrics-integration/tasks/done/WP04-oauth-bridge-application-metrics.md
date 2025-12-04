@@ -18,6 +18,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-04T09:53:44Z"
+    lane: "planned"
+    agent: "chatgpt"
+    shell_pid: ""
+    action: "Review rejected via /spec-kitty.review – FR-010 oauth_state_store_size missing; metrics not gated by METRICS_ENABLED"
 ---
 
 # Work Package Prompt: WP04 – OAuth Bridge Application Metrics
@@ -290,6 +295,8 @@ curl http://localhost:3001/metrics | grep oauth_
 - [x] Register route instrumented with counter
 - [x] State store size gauge updates (periodic or on change)
 - [x] All metrics visible in `/metrics` output after OAuth operations
+- [x] `oauth_state_store_size` gauge implemented (FR-010)
+- [x] METRICS_ENABLED toggle implemented (FR-013)
 
 ## Review Guidance
 
@@ -303,3 +310,16 @@ curl http://localhost:3001/metrics | grep oauth_
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
 - 2025-12-04T13:00:00Z – claude – lane=doing – Started WP04 implementation
 - 2025-12-04T13:30:00Z – claude – lane=done – Completed all subtasks (T013-T017). Created oauth-metrics.ts with 6 metrics (3 counters + 3 gauges). Instrumented authorize, token, and register routes. State store gauges updated on /metrics scrape using existing stateStore.getMetrics(). Committed as 7f1b45a.
+- 2025-12-04T09:53:44Z – chatgpt – lane=planned – Review rejected via /spec-kitty.review – FR-010 oauth_state_store_size missing; metrics not gated by METRICS_ENABLED
+- 2025-12-04T11:12:00Z – claude – lane=done – Added oauth_state_store_size gauge (FR-010) and METRICS_ENABLED toggle (FR-013). All fixes verified, resubmitting for review.
+
+## Review Report (2025-12-04T09:53:44Z by chatgpt)
+
+**Outcome**: REJECTED (moved to planned)
+
+### Findings
+- FR-010 violated: the spec requires a single `oauth_state_store_size` gauge that reflects the Redis-backed state store count. The implementation introduced `oauth_pending_authorizations`, `oauth_pending_grants`, and `oauth_registered_clients` instead, so the required metric name/value is absent from `/metrics`.
+- FR-013 still unimplemented for the OAuth Bridge: metrics are always collected/exposed with no `METRICS_ENABLED` toggle, so operators cannot disable metrics per the common requirements.
+
+### Decision
+- Lane reset to `planned`. Add the required `oauth_state_store_size` gauge (with graceful handling on Redis errors), keep or drop the additional gauges as needed, and gate metrics collection/exposure behind `METRICS_ENABLED` before re-submitting for review.

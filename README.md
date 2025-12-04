@@ -57,8 +57,11 @@ Both the MCP Server and OAuth Bridge expose Prometheus-compatible metrics at `/m
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `METRICS_ENABLED` | Enable/disable metrics collection and `/metrics` endpoint | `true` |
 | `METRICS_USER` | Basic auth username for /metrics | (none - no auth) |
 | `METRICS_PASS` | Basic auth password for /metrics | (none - no auth) |
+
+Set `METRICS_ENABLED=false` to completely disable metrics collection and the `/metrics` endpoint.
 
 When both `METRICS_USER` and `METRICS_PASS` are set, Basic Authentication is required to access the metrics endpoint.
 
@@ -83,6 +86,7 @@ When both `METRICS_USER` and `METRICS_PASS` are set, Basic Authentication is req
 | `oauth_pending_authorizations` | Gauge | - | Pending authorization requests |
 | `oauth_pending_grants` | Gauge | - | Pending grants |
 | `oauth_registered_clients` | Gauge | - | Registered OAuth clients |
+| `oauth_state_store_size` | Gauge | - | Total Redis state store entries |
 
 Both services also expose default Node.js metrics (`nodejs_*`, `process_*`).
 

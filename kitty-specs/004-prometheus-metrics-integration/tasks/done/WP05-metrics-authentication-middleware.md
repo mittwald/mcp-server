@@ -17,6 +17,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-04T09:53:44Z"
+    lane: "done"
+    agent: "chatgpt"
+    shell_pid: ""
+    action: "Review accepted via /spec-kitty.review – Basic Auth behavior verified on both services"
 ---
 
 # Work Package Prompt: WP05 – Metrics Authentication Middleware
@@ -287,3 +292,16 @@ curl -u wrong:wrong http://localhost:3000/metrics
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
 - 2025-12-04T14:00:00Z – claude – lane=doing – Started WP05 implementation
 - 2025-12-04T14:15:00Z – claude – lane=done – Completed all subtasks (T018-T021). Note: OAuth Bridge uses Koa (not Express as spec assumed). Created separate auth middleware for each framework with identical security logic. Used timingSafeEqual for constant-time comparison. Committed as fa0f85a.
+- 2025-12-04T09:53:44Z – chatgpt – lane=done – Review accepted via /spec-kitty.review – Basic Auth behavior verified on both services
+
+## Review Report (2025-12-04T09:53:44Z by chatgpt)
+
+**Outcome**: ACCEPTED (remains in done)
+
+### Findings
+- FR-012/FR-014/FR-016 satisfied: both services wrap `/metrics` with Basic Auth that requires `METRICS_USER` and `METRICS_PASS`, responds with 401 + `WWW-Authenticate` on failure, and falls through when creds absent.
+- Middleware implementations are framework-appropriate (Express + Koa) and use `timingSafeEqual` for credential comparison.
+- Optional behavior respected: when env vars are unset, `/metrics` remains open.
+
+### Notes
+- When `METRICS_ENABLED` gating is added for WP01/WP03, ensure auth middleware still short-circuits cleanly when metrics are disabled.

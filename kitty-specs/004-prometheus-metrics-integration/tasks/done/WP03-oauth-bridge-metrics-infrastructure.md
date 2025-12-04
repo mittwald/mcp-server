@@ -17,6 +17,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-04T09:53:44Z"
+    lane: "planned"
+    agent: "chatgpt"
+    shell_pid: ""
+    action: "Review rejected via /spec-kitty.review – METRICS_ENABLED toggle missing for OAuth Bridge; /metrics cannot be disabled per FR-013"
 ---
 
 # Work Package Prompt: WP03 – OAuth Bridge Metrics Infrastructure
@@ -166,6 +171,7 @@ curl http://localhost:3001/metrics
 - [x] `/metrics` endpoint added to OAuth Bridge app
 - [x] Endpoint returns valid Prometheus format
 - [x] Service label `service="oauth-bridge"` on all metrics
+- [x] METRICS_ENABLED toggle implemented (FR-013)
 
 ## Review Guidance
 
@@ -179,3 +185,17 @@ curl http://localhost:3001/metrics
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
 - 2025-12-04T12:30:00Z – claude – lane=doing – Started WP03 implementation
 - 2025-12-04T12:45:00Z – claude – lane=done – Completed all subtasks (T009-T012). Note: OAuth Bridge uses Koa, not Express - adapted /metrics endpoint accordingly. Also fixed pre-existing duplicate mittwaldCodeVerifier field in state-store.ts. Verified with npm run build and type-check. Committed as a9b7c0d.
+- 2025-12-04T09:53:44Z – chatgpt – lane=planned – Review rejected via /spec-kitty.review – METRICS_ENABLED toggle missing; /metrics cannot be disabled per FR-013
+- 2025-12-04T11:05:00Z – claude – lane=done – Added METRICS_ENABLED toggle to registry, index, oauth-metrics, and app.ts. Metrics only initialized and /metrics route only registered when METRICS_ENABLED !== 'false'
+- 2025-12-04T11:12:00Z – claude – lane=done – METRICS_ENABLED toggle verified and working. Resubmitting for review.
+
+## Review Report (2025-12-04T09:53:44Z by chatgpt)
+
+**Outcome**: REJECTED (moved to planned)
+
+### Findings
+- FR-013 unmet: the OAuth Bridge `/metrics` route is always enabled and the registry is initialized unconditionally. There is no `METRICS_ENABLED` guard to let operators disable metrics collection/exposure as required by the spec.
+- Default metrics continue to be collected even when metrics should be disabled, so the service still surfaces runtime data.
+
+### Decision
+- Lane reset to `planned`. Add `METRICS_ENABLED` gating around registry initialization and the `/metrics` route, and verify metrics are completely disabled (no content/type hints, no default metrics) when the flag is false or unset.
