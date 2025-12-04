@@ -11,10 +11,10 @@ subtasks:
   - "T008"
 title: "Parser & Indexer"
 phase: "Phase 1 - Foundation"
-lane: "for_review"
-assignee: "claude"
-agent: "claude"
-shell_pid: "29594"
+lane: "planned"
+assignee: ""
+agent: ""
+shell_pid: ""
 history:
   - timestamp: "2025-12-04T18:30:00Z"
     lane: "planned"
@@ -26,6 +26,11 @@ history:
     agent: "claude"
     shell_pid: "29594"
     action: "Started implementation"
+  - timestamp: "2025-12-04T21:15:45Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "47807"
+    action: "Returned for changes after review feedback"
 ---
 
 # Work Package Prompt: WP01 – Parser & Indexer
@@ -180,8 +185,15 @@ history:
 - Verify domain distribution looks reasonable across 10 domains
 - Check sub-agent sessions have parentSessionId set
 
+## Review Feedback
+
+- tests/functional/src/analysis/parser/index.ts:45-98,135-170 – Parse errors are collected but never logged or surfaced in `ParseStats`, so a bad line silently disappears and the <1% error-rate check cannot be validated. Please expose per-line errors (with file/line) and include them in the returned stats/logging.
+- tests/functional/src/analysis/parser/index.ts:241-275 – Tool results drop structured `toolUseResult` details (stdout/stderr, durations, token counts, filenames, etc.), leaving sessions without the actual tool outputs needed for downstream analysis. Map these fields into `toolResult` alongside the content.
+- tests/functional/src/analysis/parser/index.ts:72-76; tests/functional/src/analysis/parser/indexer.ts:81-123 – Sub-agent linking ignores `parentUuid` and never flags orphans when the parent pointer is missing. Add a parentUuid-based fallback and mark orphaned sub-agent sessions so missing relationships are visible.
+
 ## Activity Log
 
 - 2025-12-04T18:30:00Z – system – lane=planned – Prompt created.
 - 2025-12-04T20:03:00Z – claude – shell_pid=29594 – lane=doing – Started implementation
 - 2025-12-04T20:25:00Z – claude – shell_pid=29594 – lane=doing – Completed implementation: all 8 subtasks done, 595 sessions parsed, corpus-index.json exported
+- 2025-12-04T21:15:45Z – codex – shell_pid=47807 – lane=planned – Returned with review feedback (parse error surfacing, toolUseResult data, sub-agent orphan handling)
