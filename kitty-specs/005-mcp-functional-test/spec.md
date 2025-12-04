@@ -138,7 +138,8 @@ Tests that upload code or apps use `/tmp` filesystem. These artifacts are tracke
 ### Functional Requirements
 
 **Test Harness Core:**
-- **FR-001**: System MUST spawn Claude Code sessions using headless mode with streaming (`claude -p --output-format stream-json`)
+- **FR-001**: System MUST spawn Claude Code sessions using headless mode with streaming (`claude -p --output-format stream-json --model claude-3-haiku-20240307`)
+- **FR-001a**: System MUST use Claude Haiku model for all test agents (cost efficiency)
 - **FR-002**: System MUST enforce tool restrictions via `--disallowedTools "Bash(mw)"` on all test sessions
 - **FR-003**: System MUST support parallel execution of 3-5 concurrent test sessions
 - **FR-004**: System MUST capture session_id from each test session's JSON output
