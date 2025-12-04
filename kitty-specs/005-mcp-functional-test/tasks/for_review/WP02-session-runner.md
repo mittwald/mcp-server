@@ -10,10 +10,10 @@ subtasks:
   - "T013"
 title: "Session Runner - Claude Code Spawning"
 phase: "Phase 1 - Foundation"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
-agent: "claude"
-shell_pid: "72358"
+agent: "codex"
+shell_pid: "90267"
 history:
   - timestamp: "2025-12-04T11:00:00Z"
     lane: "planned"
@@ -40,6 +40,16 @@ history:
     agent: "claude"
     shell_pid: "72358"
     action: "Fixed model to claude-haiku-4-5-20251101 (Haiku 4.5)"
+  - timestamp: "2025-12-04T13:52:40Z"
+    lane: "done"
+    agent: "codex"
+    shell_pid: "90267"
+    action: "Approved for release - model set to Haiku 4.5 per updated guidance; session runner passes DoD"
+  - timestamp: "2025-12-04T13:50:40Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "88814"
+    action: "Returned for changes - default model must be claude-3-haiku-20240307 per FR-001a"
 ---
 
 # Work Package Prompt: WP02 – Session Runner - Claude Code Spawning
@@ -212,7 +222,8 @@ No unit tests specified. Validate by:
 
 - 2025-12-04T11:00:00Z – system – lane=planned – Prompt created.
 - 2025-12-04T13:44:09Z – codex – lane=planned – Returned for changes (adjust default model to claude-3-haiku-20240307).
+- 2025-12-04T13:50:40Z – codex – lane=planned – Returned for changes (set default model to claude-3-haiku-20240307 per FR-001a).
 
 ## Review Feedback
 
-- Needs changes: Update `tests/functional/src/harness/session-runner.ts` to use the required default model `claude-3-haiku-20240307` (currently set to `claude-sonnet-4-20250514`), per T007/FR-001a.
+- Needs changes: Update `tests/functional/src/harness/session-runner.ts` to use the required default model `claude-3-haiku-20240307` (currently set to `claude-haiku-4-5-20251101`), per T007/FR-001a.

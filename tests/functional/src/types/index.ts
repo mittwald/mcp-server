@@ -415,6 +415,7 @@ export interface TestExecutionOptions {
   concurrency?: number;
   cleanRoom?: boolean;
   skipCleanup?: boolean;
+  serverUrl?: string;
 }
 
 /**
