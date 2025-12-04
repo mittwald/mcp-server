@@ -296,3 +296,39 @@ Based on dependency analysis, tests should be grouped into these functional doma
 **Chosen**: `test-{domain}-{timestamp}-{random4}`
 **Example**: `test-apps-20251204-a3f9`
 **Rationale**: Prevents parallel test conflicts; enables cleanup identification
+
+### Decision 6: Test Prompt Strategy
+**Chosen**: Goal-oriented prompts with tool name hint
+**Rationale**: Agents should discover dependencies, but need clear success criteria
+
+**Prompt Template**:
+```
+You are testing the MCP tool: {tool_display_name}
+
+Goal: {goal_description}
+
+Context:
+{context_if_harness_assisted}
+
+Success Criteria:
+- The tool executes without errors
+- The expected outcome is achieved: {expected_outcome}
+- Report the result clearly
+
+Do NOT use the mw CLI. Use only MCP tools (mcp__mittwald__*).
+```
+
+**Example Prompts by Tier**:
+
+| Tier | Tool | Goal | Expected Outcome |
+|------|------|------|------------------|
+| 0 | user/get | Retrieve your user profile | User ID and email displayed |
+| 3 | project/create | Create a new project named test-{random} | Project ID returned |
+| 4 | app/create/node | Create a Node.js app in project {projectId} | App installation ID returned |
+| 4 | database/mysql/create | Create a MySQL database in project {projectId} | Database ID returned |
+
+**Generation Strategy**:
+1. Tool descriptions from MCP server provide action hints
+2. Goal derived from tool name pattern (e.g., `create` → "Create a new...")
+3. Expected outcome derived from typical API response (ID returned)
+4. Harness-assisted context injects prerequisite resource IDs

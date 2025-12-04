@@ -61,7 +61,8 @@ history:
        args.push('--mcp-config', options.mcpConfig);
      }
      ```
-  5. Return object with `stream`, `result` promise, and `kill` function
+  5. Add `--model claude-3-haiku-20240307` for cost-efficient test agents (FR-001a)
+  6. Return object with `stream`, `result` promise, and `kill` function
 - **Files**: `tests/functional/src/harness/session-runner.ts`
 - **Parallel?**: No (foundation for T008-T013)
 

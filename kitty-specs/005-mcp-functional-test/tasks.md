@@ -68,7 +68,7 @@
 ### Implementation Notes
 - Use `child_process.spawn()` with `{ stdio: ['pipe', 'pipe', 'pipe'] }`
 - Parse streaming JSONL format from `--output-format stream-json`
-- Command: `claude -p "<prompt>" --output-format stream-json --disallowedTools "Bash(mw)" --mcp-config <path>`
+- Command: `claude -p "<prompt>" --output-format stream-json --model claude-3-haiku-20240307 --disallowedTools "Bash(mw)" --mcp-config <path>`
 
 ### Parallel Opportunities
 - T007-T013 are sequential (building the session runner incrementally).
