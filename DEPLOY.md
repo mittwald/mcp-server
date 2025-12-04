@@ -46,6 +46,7 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 |----------|---------|-------|
 | `NODE_ENV` | Set to `production` for live deployments. | Determines logging + defaults. |
 | `PORT` | HTTP listen port (default `8080`). | Match container/ingress mapping. |
+| `CORS_ORIGIN` | Allowed CORS origins. | **Required in production**. E.g. `https://claude.ai,https://chatgpt.com`. |
 | `ENABLE_HTTPS` | `true` to terminate TLS in-container, `false` to serve HTTP. | Explicit `false` now respected. |
 | `SSL_CERT_PATH`, `SSL_KEY_PATH` | Paths to TLS cert/key when `ENABLE_HTTPS=true`. | Optional if TLS terminates upstream. |
 | `REDIS_URL` | Redis connection string. | Must match bridge’s Redis. |
@@ -58,6 +59,8 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 | `OAUTH_REDIRECT_URI` | Redirect URL registered with Mittwald. |
 | `ENABLE_DIRECT_BEARER_TOKENS` | `true` to allow direct bearer token validation. |
 | `DIRECT_TOKEN_*` | Optional tuning for direct-token caching & timeouts. |
+| `METRICS_ENABLED` | `true` (default) to enable `/metrics` endpoint. Set `false` to disable. |
+| `METRICS_USER`, `METRICS_PASS` | Basic auth credentials for `/metrics`. Optional; unprotected if not set. |
 
 ### 3.2 OAuth Bridge (`packages/oauth-bridge/.env.example`)
 
@@ -72,6 +75,8 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 | `BRIDGE_REDIS_URL` | Redis connection string, same instance as MCP server. |
 | `BRIDGE_SESSION_TTL`, `BRIDGE_RATE_LIMIT_*` | Optional tuning knobs. |
 | `ENABLE_REGISTRATION` | `true` if you allow dynamic client registration (Claude). |
+| `METRICS_ENABLED` | `true` (default) to enable `/metrics` endpoint. Set `false` to disable. |
+| `METRICS_USER`, `METRICS_PASS` | Basic auth credentials for `/metrics`. Optional; unprotected if not set. |
 
 ### 3.3 Shared / Operational
 
