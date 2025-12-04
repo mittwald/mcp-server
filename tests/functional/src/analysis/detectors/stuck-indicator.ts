@@ -41,12 +41,25 @@ export function detectStuckIndicator(session: Session): Incident[] {
 
       const severityScore = gapSeconds * config.multiplier;
 
+      // Find the most recent tool call before this gap, or use session's target tool
+      let toolAttempted: string | undefined;
+      for (let j = i - 1; j >= 0; j--) {
+        if (session.events[j].toolCall) {
+          toolAttempted = session.events[j].toolCall!.name;
+          break;
+        }
+      }
+      if (!toolAttempted) {
+        toolAttempted = session.targetTool;
+      }
+
       const incident: Incident = {
         id: generateIncidentId(),
         type: 'stuck-indicator',
         severity: calculateSeverityLevel(severityScore),
         severityScore,
         sessionId: session.id,
+        toolAttempted,
         tokenWaste,
         timeWasteMs: gapMs,
         context: {

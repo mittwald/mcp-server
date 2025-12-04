@@ -210,11 +210,13 @@ export function calculateMetrics(
   const successfulSessions = sessions.filter(s => !sessionsWithHighSeverity.has(s.id));
   const successRate = Math.round((successfulSessions.length / sessions.length) * 100);
 
-  // Most problematic tool
+  // Most problematic tool - use toolAttempted (what LLM tried) or toolNeeded (what it should have used)
   const incidentsByTool: Record<string, number> = {};
   for (const inc of incidents) {
-    const toolsInvolved = inc.context?.wrongTool || inc.context?.tool || 'unknown';
-    incidentsByTool[toolsInvolved] = (incidentsByTool[toolsInvolved] || 0) + 1;
+    const tool = inc.toolAttempted || inc.toolNeeded || 'unknown';
+    // Parse to short name if it's an MCP tool
+    const toolName = tool.startsWith('mcp__') ? parseToolName(tool) : tool;
+    incidentsByTool[toolName] = (incidentsByTool[toolName] || 0) + 1;
   }
   let mostProblematicTool = 'N/A';
   let maxIncidents = 0;
