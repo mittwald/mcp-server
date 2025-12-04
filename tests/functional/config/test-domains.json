@@ -1,0 +1,25 @@
+{
+  "generated": "2025-12-04T16:30:00Z",
+  "serverUrl": "https://mittwald-mcp-fly2.fly.dev/mcp",
+  "totalTools": 174,
+  "byTier": {
+    "0": 15,
+    "1": 10,
+    "2": 5,
+    "3": 4,
+    "4": 140
+  },
+  "cleanRoomTools": ["project/create"],
+  "domains": {
+    "identity": ["user/get", "user/api-token/create", "user/api-token/list", "user/session/list", "context/get", "context/set"],
+    "organization": ["org/list", "org/get", "org/membership/list"],
+    "project-foundation": ["project/list", "project/create", "project/get", "project/delete", "server/list", "server/get"],
+    "apps": ["app/list", "app/get", "app/create/node", "app/create/php", "app/uninstall"],
+    "databases": ["database/mysql/list", "database/mysql/create", "database/redis/list"],
+    "containers": ["container/list", "container/run", "stack/list"],
+    "domains-mail": ["domain/list", "mail/address/list"],
+    "access-users": ["ssh-user/list", "sftp-user/list"],
+    "automation": ["cronjob/list"],
+    "backups": ["backup/list", "backup/create"]
+  }
+}

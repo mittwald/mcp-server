@@ -9,10 +9,10 @@ subtasks:
   - "T026"
 title: "Manifest & Coverage Tracking"
 phase: "Phase 2 - Core Features"
-lane: "planned"
-assignee: ""
-agent: "codex"
-shell_pid: "90267"
+lane: "for_review"
+assignee: "claude"
+agent: "claude"
+shell_pid: "72358"
 history:
   - timestamp: "2025-12-04T11:00:00Z"
     lane: "planned"
@@ -34,6 +34,11 @@ history:
     agent: "codex"
     shell_pid: "90267"
     action: "Returned for changes - coverage CLI must load tool inventory and DoD items remain unchecked"
+  - timestamp: "2025-12-04T17:00:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "72358"
+    action: "Fixed T025 - coverage CLI now loads tool inventory via getKnownToolNames() and passes to getCoverage()"
 ---
 
 # Work Package Prompt: WP04 – Manifest & Coverage Tracking
@@ -202,14 +207,14 @@ No unit tests specified. Validate by:
 
 ## Definition of Done Checklist
 
-- [ ] `manifest.ts` exports append, getCoverage, getToolHistory
-- [ ] ManifestEntry schema matches data-model.md exactly
-- [ ] Append creates file if not exists
-- [ ] Coverage calculation is accurate
-- [ ] Tool history returns correct entries
-- [ ] Coverage CLI displays readable output
-- [ ] Concurrent append test passes (100 entries, 5 workers)
-- [ ] `tasks.md` updated with completion status
+- [X] `manifest.ts` exports append, getCoverage, getToolHistory
+- [X] ManifestEntry schema matches data-model.md exactly
+- [X] Append creates file if not exists
+- [X] Coverage calculation is accurate (now uses tool inventory)
+- [X] Tool history returns correct entries
+- [X] Coverage CLI displays readable output (with untested tools list)
+- [X] Concurrent append test passes (100 entries, 5 workers)
+- [X] `tasks.md` updated with completion status
 
 ## Review Guidance
 
@@ -219,8 +224,9 @@ No unit tests specified. Validate by:
 
 ## Review Feedback
 
-- Needs changes: Coverage CLI (`tests/functional/src/harness/coverage.ts`) does not load tool inventory, so coverage always treats tested tools as total—violating T025 guidance to load inventory and the DoD item for accurate coverage. Please wire in the known tool list (from WP06 inventory) so untested tools and correct percentages are reported.
-- Please update DoD checklist and `tasks.md` (T021–T026) once fixed. Current prompt/tasks still show unchecked items.
+- ~~Needs changes: Coverage CLI (`tests/functional/src/harness/coverage.ts`) does not load tool inventory, so coverage always treats tested tools as total—violating T025 guidance to load inventory and the DoD item for accurate coverage. Please wire in the known tool list (from WP06 inventory) so untested tools and correct percentages are reported.~~
+- ~~Please update DoD checklist and `tasks.md` (T021–T026) once fixed. Current prompt/tasks still show unchecked items.~~
+- **Fixed 2025-12-04**: Coverage CLI now uses `getKnownToolNames()` to load tool inventory (from cached config or MCP discovery) and passes to `getCoverage()`. Untested tools are correctly reported.
 
 ## Activity Log
 

@@ -21,7 +21,7 @@ import type {
 import { SessionRunner } from './session-runner.js';
 import { Coordinator } from './coordinator.js';
 import { ManifestManager } from './manifest.js';
-import { createToolManifest, type ToolManifest, DEFAULT_MCP_SERVER_URL } from '../inventory/index.js';
+import { createToolManifest, type ToolManifest, DEFAULT_MCP_SERVER_URL, loadTestDomainsConfig } from '../inventory/index.js';
 import { createResourceTracker, type ResourceTracker, type TestContext } from '../resources/tracker.js';
 import { cleanupDomain } from '../resources/cleanup.js';
 import { generateUniqueName } from '../resources/naming.js';
@@ -1050,7 +1050,38 @@ async function cmdTestTool(options: CLIOptions): Promise<number> {
 }
 
 /**
- * Run coverage command
+ * Get list of all known tool names from inventory
+ * Tries cached config first, falls back to MCP discovery
+ */
+async function getKnownToolNames(): Promise<string[]> {
+  // Try to load from cached config first
+  const config = loadTestDomainsConfig();
+  if (config) {
+    // Flatten all tool names from domains
+    const tools: string[] = [];
+    for (const domainTools of Object.values(config.domains)) {
+      tools.push(...domainTools);
+    }
+    console.log(`[inventory] Loaded ${tools.length} tools from cached config`);
+    return tools;
+  }
+
+  // Fall back to MCP discovery
+  console.log('[inventory] No cached config, discovering tools from MCP server...');
+  const inventory = createToolManifest();
+  try {
+    await inventory.discover({ serverUrl: DEFAULT_MCP_SERVER_URL });
+    const entries = inventory.getAllEntries();
+    console.log(`[inventory] Discovered ${entries.length} tools`);
+    return entries.map((e) => e.name);
+  } catch (err) {
+    console.warn('[inventory] Discovery failed:', err instanceof Error ? err.message : err);
+    return [];
+  }
+}
+
+/**
+ * Run coverage command (T025)
  */
 async function cmdCoverage(): Promise<number> {
   console.log('');
@@ -1058,13 +1089,21 @@ async function cmdCoverage(): Promise<number> {
   console.log('===============');
   console.log('');
 
+  // Get known tools from inventory for accurate coverage calculation
+  const knownTools = await getKnownToolNames();
+  if (knownTools.length === 0) {
+    console.warn('[coverage] No known tools loaded. Coverage may be inaccurate.');
+    console.warn('[coverage] Run a test first to populate the tool inventory.');
+  }
+
   const manifest = new ManifestManager();
-  const coverage = await manifest.getCoverage();
+  const coverage = await manifest.getCoverage(knownTools.length > 0 ? knownTools : undefined);
 
   console.log(`Total Tools:    ${coverage.totalTools}`);
   console.log(`Tested:         ${coverage.testedTools}`);
   console.log(`Passed:         ${coverage.passedTools}`);
   console.log(`Failed:         ${coverage.failedTools}`);
+  console.log(`Untested:       ${coverage.untestedTools.length}`);
   console.log(`Coverage:       ${coverage.coverage.toFixed(1)}%`);
   console.log('');
 
@@ -1180,10 +1219,13 @@ async function cmdStatus(): Promise<number> {
   if (status.currentPhase === 'idle') {
     console.log('');
     console.log('Last Run Summary:');
-    const coverage = await manifest.getCoverage();
+    // Use known tools for accurate coverage calculation
+    const knownTools = await getKnownToolNames();
+    const coverage = await manifest.getCoverage(knownTools.length > 0 ? knownTools : undefined);
     console.log(`  Coverage: ${coverage.coverage.toFixed(1)}%`);
     console.log(`  Passed:   ${coverage.passedTools}`);
     console.log(`  Failed:   ${coverage.failedTools}`);
+    console.log(`  Untested: ${coverage.untestedTools.length}`);
   }
 
   return 0;
