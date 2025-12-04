@@ -7,9 +7,9 @@ subtasks:
   - "T021"
 title: "Metrics Authentication Middleware"
 phase: "Phase 2 - Security (P2)"
-lane: "planned"
-assignee: ""
-agent: ""
+lane: "done"
+assignee: "claude"
+agent: "claude"
 shell_pid: ""
 history:
   - timestamp: "2025-12-04T00:00:00Z"
@@ -266,14 +266,14 @@ curl -u wrong:wrong http://localhost:3000/metrics
 
 ## Definition of Done Checklist
 
-- [ ] MCP Server auth middleware created
-- [ ] OAuth Bridge auth middleware created
-- [ ] MCP Server `/metrics` route uses middleware
-- [ ] OAuth Bridge `/metrics` route uses middleware
-- [ ] Returns 401 without credentials when auth enabled
-- [ ] Returns 401 with invalid credentials
-- [ ] Returns metrics with valid credentials
-- [ ] Allows access without auth when env vars not set
+- [x] MCP Server auth middleware created
+- [x] OAuth Bridge auth middleware created
+- [x] MCP Server `/metrics` route uses middleware
+- [x] OAuth Bridge `/metrics` route uses middleware
+- [x] Returns 401 without credentials when auth enabled
+- [x] Returns 401 with invalid credentials
+- [x] Returns metrics with valid credentials
+- [x] Allows access without auth when env vars not set
 
 ## Review Guidance
 
@@ -285,3 +285,5 @@ curl -u wrong:wrong http://localhost:3000/metrics
 ## Activity Log
 
 - 2025-12-04T00:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
+- 2025-12-04T14:00:00Z – claude – lane=doing – Started WP05 implementation
+- 2025-12-04T14:15:00Z – claude – lane=done – Completed all subtasks (T018-T021). Note: OAuth Bridge uses Koa (not Express as spec assumed). Created separate auth middleware for each framework with identical security logic. Used timingSafeEqual for constant-time comparison. Committed as fa0f85a.

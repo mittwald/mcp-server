@@ -49,6 +49,76 @@ docs/               # Supplemental documentation
 
 Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` for flow diagrams and environment specifics.
 
+## Prometheus Metrics
+
+Both the MCP Server and OAuth Bridge expose Prometheus-compatible metrics at `/metrics`.
+
+### Configuration
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `METRICS_USER` | Basic auth username for /metrics | (none - no auth) |
+| `METRICS_PASS` | Basic auth password for /metrics | (none - no auth) |
+
+When both `METRICS_USER` and `METRICS_PASS` are set, Basic Authentication is required to access the metrics endpoint.
+
+### Available Metrics
+
+#### MCP Server
+
+| Metric | Type | Labels | Description |
+|--------|------|--------|-------------|
+| `mcp_tool_calls_total` | Counter | `tool_name`, `status` | Total MCP tool invocations |
+| `mcp_tool_duration_seconds` | Histogram | `tool_name` | Tool execution duration |
+| `mcp_active_connections` | Gauge | - | Current active MCP connections |
+| `mittwald_cli_calls_total` | Counter | `command`, `status` | Mittwald CLI invocations |
+
+#### OAuth Bridge
+
+| Metric | Type | Labels | Description |
+|--------|------|--------|-------------|
+| `oauth_authorization_requests_total` | Counter | `client_id`, `status` | Authorization requests |
+| `oauth_token_requests_total` | Counter | `grant_type`, `status` | Token exchange requests |
+| `oauth_dcr_registrations_total` | Counter | `status` | DCR registrations |
+| `oauth_pending_authorizations` | Gauge | - | Pending authorization requests |
+| `oauth_pending_grants` | Gauge | - | Pending grants |
+| `oauth_registered_clients` | Gauge | - | Registered OAuth clients |
+
+Both services also expose default Node.js metrics (`nodejs_*`, `process_*`).
+
+### Prometheus Scrape Configuration
+
+```yaml
+scrape_configs:
+  - job_name: 'mittwald-mcp-server'
+    static_configs:
+      - targets: ['mcp-server:3000']
+    # Uncomment if authentication is enabled:
+    # basic_auth:
+    #   username: prometheus
+    #   password: your-secret
+
+  - job_name: 'mittwald-oauth-bridge'
+    static_configs:
+      - targets: ['oauth-bridge:3001']
+```
+
+### Example PromQL Queries
+
+```promql
+# Tool call rate per minute
+rate(mcp_tool_calls_total[1m])
+
+# Tool error rate
+sum(rate(mcp_tool_calls_total{status="error"}[5m])) / sum(rate(mcp_tool_calls_total[5m]))
+
+# 95th percentile tool latency
+histogram_quantile(0.95, rate(mcp_tool_duration_seconds_bucket[5m]))
+
+# OAuth token success rate
+sum(rate(oauth_token_requests_total{status="success"}[5m])) / sum(rate(oauth_token_requests_total[5m]))
+```
+
 ## Operational Notes
 - Revoke access in Mittwald Studio to force downstream clients to re-authorize.
 - The OAuth bridge logs the loaded scope configuration (counts, defaults, config file path). Any
