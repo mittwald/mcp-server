@@ -38,28 +38,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.11.1'
-          cache: 'npm'
-
-      - name: Verify Node version
-        run: node --version
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Install flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Fly auth
-        run: |
-          flyctl auth token || true
-          flyctl auth docker
-
-      - name: Docker login to Fly registry
-        run: echo "$FLY_API_TOKEN" | docker login registry.fly.io -u x --password-stdin
 
       - name: Compute build metadata
         id: meta
@@ -67,27 +47,8 @@ jobs:
           echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
           echo "build_time=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
 
-      - name: Pre-compile TypeScript (fail-fast)
-        run: |
-          set -e
-          CTX="${{ matrix.context }}"
-          if [ -f "$CTX/package.json" ]; then
-            echo "Pre-building in $CTX";
-            pushd "$CTX" >/dev/null
-            if [ -f package-lock.json ]; then
-              npm ci --no-audit --no-fund
-            else
-              npm install --no-audit --no-fund
-            fi
-            npm run build
-            popd >/dev/null
-          else
-            echo "No package.json in $CTX; skipping pre-compile"
-          fi
-
-
-      # Skip manual docker push. Fly remote builder will build + publish in deploy step.
-      # This avoids registry permission pitfalls and simplifies digest handling.
+      # NOTE: Pre-compile step removed - Dockerfile handles build.
+      # This saves ~2-3 minutes per deploy.
 
       - name: Set version secrets (sha, build time)
         run: |
