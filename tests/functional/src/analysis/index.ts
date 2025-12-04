@@ -14,6 +14,24 @@ export { indexCorpus, getToolNames, getSessionsByTool, getSessionsByDomain, getA
 export { exportCorpusIndex, loadCorpusIndex } from './parser/export.js';
 
 // =============================================================================
+// Detector Exports
+// =============================================================================
+
+export {
+  detectPatterns,
+  detectAllPatterns,
+  calculateSeverity,
+  exportIncidents,
+  detectWrongToolSelection,
+  detectRetryLoop,
+  detectUnnecessaryDelegation,
+  detectStuckIndicator,
+  detectCapabilityMismatch,
+  detectExplorationWaste,
+  resetIncidentCounter,
+} from './detectors/index.js';
+
+// =============================================================================
 // Type Exports
 // =============================================================================
 
