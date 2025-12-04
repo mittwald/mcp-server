@@ -68,7 +68,17 @@ export {
   aggregateIncidents,
   filterDependencies,
   calculateMetrics,
-  generateRecommendations,
+  generateDomainRecommendations,
+  // Summary
+  generateSummary,
+  exportSummary,
+  exportSummaryJson,
+  // Recommendations
+  extractAndGenerateRecommendations,
+  exportRecommendationsJson,
+  exportRecommendationsMarkdown,
+  // Manifest
+  exportManifest,
 } from './reporters/index.js';
 
 // =============================================================================
@@ -122,6 +132,7 @@ export type {
 
 export type {
   ParseStats,
+  ParseSessionResult,
 } from './parser/index.js';
 
 export type {

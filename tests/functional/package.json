@@ -13,7 +13,9 @@
     "cleanup": "node dist/harness/index.js cleanup",
     "status": "node dist/harness/index.js status",
     "list-resources": "node dist/harness/index.js list-resources",
-    "help": "node dist/harness/index.js --help"
+    "help": "node dist/harness/index.js --help",
+    "analyze": "npx tsx src/analysis/cli.ts",
+    "analyze:verbose": "npx tsx src/analysis/cli.ts --verbose"
   },
   "keywords": [
     "mcp",
