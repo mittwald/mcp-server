@@ -10,10 +10,10 @@ subtasks:
   - "T055"
 title: "Resource Tracking and Cleanup"
 phase: "Phase 2 - Core Infrastructure"
-lane: "for_review"
+lane: "doing"
 assignee: "codex"
 agent: "codex"
-shell_pid: "54032"
+shell_pid: "61363"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -30,6 +30,16 @@ history:
     agent: "codex"
     shell_pid: "54032"
     action: "Ready for review"
+  - timestamp: "2025-12-05T10:09:42Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "55120"
+    action: "Review feedback: missing wiring to parser/session, success/failure detection, idle/timeout enforcement, and controller tests"
+  - timestamp: "2025-12-05T10:15:00Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "61363"
+    action: "Started review"
 ---
 
 # Work Package Prompt: WP08 – Resource Tracking and Cleanup
@@ -372,3 +382,4 @@ Cleanup Summary:
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
 - 2025-12-05T10:05:37Z – codex – shell_pid=54032 – lane=doing – Started implementation
 - 2025-12-05T10:08:34Z – codex – shell_pid=54032 – lane=doing – Completed implementation
+- 2025-12-05T10:15:00Z – codex – shell_pid=61363 – lane=doing – Started review
