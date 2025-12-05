@@ -8,7 +8,7 @@ subtasks:
   - "T005"
 title: "Bidirectional Streaming Infrastructure"
 phase: "Phase 1 - Foundation"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
 agent: "claude"
 shell_pid: "63362"
@@ -43,6 +43,11 @@ history:
     agent: "claude"
     shell_pid: "63362"
     action: "Ready for review - all feedback addressed, test-mid-session-injection.ts passes"
+  - timestamp: "2025-12-05T11:45:00Z"
+    lane: "done"
+    agent: "claude"
+    shell_pid: "65689"
+    action: "APPROVED: All DoD criteria verified. test-mid-session-injection.ts passes (question detected, answer injected mid-session, acknowledgment received). WP01-specific files compile cleanly. Regression test (test-stdin-injection.ts) passes."
 ---
 
 # Work Package Prompt: WP01 – Bidirectional Streaming Infrastructure
