@@ -12,10 +12,10 @@ subtasks:
   - "T035"
 title: "Use Case Library - First 10 Scenarios"
 phase: "Phase 2 - Core Infrastructure"
-lane: "for_review"
-assignee: ""
-agent: "claude"
-shell_pid: "6568"
+lane: "done"
+assignee: "codex"
+agent: "codex"
+shell_pid: "29925"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -32,6 +32,11 @@ history:
     agent: "claude"
     shell_pid: "6568"
     action: "Completed implementation - 10 use cases ready for review"
+  - timestamp: "2025-12-05T09:50:15Z"
+    lane: "done"
+    agent: "codex"
+    shell_pid: "29925"
+    action: "Review accepted via /spec-kitty.review; tests: `npm run test -- tests/functional/src/use-cases/__tests__/loader.test.ts`"
 ---
 
 # Work Package Prompt: WP05 – Use Case Library - First 10 Scenarios
@@ -309,16 +314,22 @@ tests/functional/use-case-library/
 
 ## Definition of Done Checklist
 
-- [ ] T027: Documentation research completed
-- [ ] T028: 2 apps use cases created
-- [ ] T029: 2 databases use cases created
-- [ ] T030: 2 domains-mail use cases created
-- [ ] T031: 2 project-foundation use cases created
-- [ ] T032: 2 containers use cases created
-- [ ] T033: All prompts reviewed for tool hints
-- [ ] T034: Expected tools mapped for all 10
-- [ ] T035: Directory structure created
-- [ ] All JSON files validate against schema
+- [x] T027: Documentation research completed
+- [x] T028: 2 apps use cases created
+- [x] T029: 2 databases use cases created
+- [x] T030: 2 domains-mail use cases created
+- [x] T031: 2 project-foundation use cases created
+- [x] T032: 2 containers use cases created
+- [x] T033: All prompts reviewed for tool hints
+- [x] T034: Expected tools mapped for all 10
+- [x] T035: Directory structure created
+- [x] All JSON files validate against schema
+
+## Review Feedback
+
+- Approved. Confirmed 10 JSON use cases across 5 domains, prompts avoid tool/CLI hints, expectedTools mapped, and research documented in `tests/functional/use-case-library/README.md`.
+- Tests: `npm run test -- tests/functional/src/use-cases/__tests__/loader.test.ts` (17 passing) validating schemas and filters.
+- Note: Success criteria use log-patterns; OK for MVP. If Playwright/URL checks are added later, ensure schema supports template tokens or adjust URL validation.
 
 ## Review Guidance
 

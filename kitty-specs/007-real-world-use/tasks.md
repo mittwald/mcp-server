@@ -117,16 +117,17 @@
 **Goal**: Define TypeScript interfaces for use cases and executions.
 **Independent Test**: Type definitions compile and can represent sample use case JSON.
 **Prompt**: `tasks/planned/WP04-use-case-types.md`
+**Status**: [X] Done – see `tasks/done/phase-1-foundation/WP04-use-case-types.md`
 
 ### Included Subtasks
-- [ ] T019 [P] Create UseCase interface with all required fields
-- [ ] T020 [P] Create UseCaseExecution interface for runtime tracking
-- [ ] T021 [P] Create SuccessCriterion interface with verification config
-- [ ] T022 [P] Create CleanupRequirement interface
-- [ ] T023 [P] Create QuestionAnswer interface for predefined responses
-- [ ] T024 Define UseCaseDomain type (10 domains from spec)
-- [ ] T025 Add Zod validation schemas for JSON loading
-- [ ] T026 Create CoverageReport interface for tracking
+- [x] T019 [P] Create UseCase interface with all required fields
+- [x] T020 [P] Create UseCaseExecution interface for runtime tracking
+- [x] T021 [P] Create SuccessCriterion interface with verification config
+- [x] T022 [P] Create CleanupRequirement interface
+- [x] T023 [P] Create QuestionAnswer interface for predefined responses
+- [x] T024 Define UseCaseDomain type (10 domains from spec)
+- [x] T025 Add Zod validation schemas for JSON loading
+- [x] T026 Create CoverageReport interface for tracking
 
 ### Implementation Notes
 1. Follow data-model.md exactly for interface definitions
@@ -149,17 +150,18 @@
 **Goal**: Create initial 10 use cases covering key domains with naive prompts.
 **Independent Test**: 10 JSON files load and validate against schema.
 **Prompt**: `tasks/planned/WP05-initial-use-cases.md`
+**Status**: [X] Done – see `tasks/done/phase-2-core/WP05-initial-use-cases.md`
 
 ### Included Subtasks
-- [ ] T027 Research Mittwald documentation for common workflows
-- [ ] T028 [P] Create 2 apps domain use cases (deploy PHP, update Node.js)
-- [ ] T029 [P] Create 2 databases domain use cases (provision MySQL, create backup)
-- [ ] T030 [P] Create 2 domains-mail use cases (email forwarding, DNS config)
-- [ ] T031 [P] Create 2 project-foundation use cases (create project, configure settings)
-- [ ] T032 [P] Create 2 containers use cases (manage resources, scale)
-- [ ] T033 Write naive prompts without MCP tool hints for all 10
-- [ ] T034 Map expected tools per use case for coverage tracking
-- [ ] T035 Create use-case-library directory structure
+- [x] T027 Research Mittwald documentation for common workflows
+- [x] T028 [P] Create 2 apps domain use cases (deploy PHP, update Node.js)
+- [x] T029 [P] Create 2 databases domain use cases (provision MySQL, create backup)
+- [x] T030 [P] Create 2 domains-mail use cases (email forwarding, DNS config)
+- [x] T031 [P] Create 2 project-foundation use cases (create project, configure settings)
+- [x] T032 [P] Create 2 containers use cases (manage resources, scale)
+- [x] T033 Write naive prompts without MCP tool hints for all 10
+- [x] T034 Map expected tools per use case for coverage tracking
+- [x] T035 Create use-case-library directory structure
 
 ### Implementation Notes
 1. Study Mittwald tutorials but create ADJACENT scenarios, not copies
@@ -212,7 +214,7 @@
 
 **Goal**: Capture verification evidence for completed use cases.
 **Independent Test**: Can capture screenshots and verify HTTP responses for test URLs.
-**Prompt**: `tasks/planned/WP07-evidence-collection.md`
+**Prompt**: `tasks/planned/phase-2-core-infrastructure/WP07-evidence-collection.md`
 
 ### Included Subtasks
 - [ ] T042 [P] Create playwright-verifier.ts with screenshot capture

@@ -10,10 +10,10 @@ subtasks:
   - "T048"
 title: "Evidence Collection with Playwright"
 phase: "Phase 2 - Core Infrastructure"
-lane: "for_review"
-assignee: "codex"
-agent: "codex"
-shell_pid: "8766"
+lane: "doing"
+assignee: ""
+agent: "claude"
+shell_pid: "53821"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -30,6 +30,16 @@ history:
     agent: "codex"
     shell_pid: "8766"
     action: "Ready for review"
+  - timestamp: "2025-12-05T09:50:15Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "29925"
+    action: "Returned for changes via /spec-kitty.review – unsupported verification methods"
+  - timestamp: "2025-12-05T10:55:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "53821"
+    action: "Addressing review feedback"
 ---
 
 # Work Package Prompt: WP07 – Evidence Collection with Playwright
@@ -370,6 +380,12 @@ tests/functional/evidence/
 - [ ] T047: Manifest generation working
 - [ ] T048: Directory structure created
 - [ ] Can verify a test URL and generate evidence
+
+## Review Feedback
+
+- Needs changes: EvidenceCollector only supports `playwright` and `curl` methods; current use cases (WP05) rely on `log-pattern` criteria and schema allows `api`, so any run will mark those as unsupported/failed. Add support for `log-pattern` (at minimum) or ignore gracefully, and consider `api` per SuccessCriterion union.
+- Tests missing: no unit/functional coverage for verifiers/collector. Add targeted tests (e.g., mock fetch/page) and a manifest generation check.
+- Operational note: Curl verifier doesn’t retain body on status mismatch unless pattern provided; for debugging, we likely need body capture on failures too. Also no retry/backoff for propagation delays called out in constraints.
 
 ## Review Guidance
 
