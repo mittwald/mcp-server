@@ -19,7 +19,7 @@ import type {
 /**
  * Default model for cost-efficient test agents (FR-001a)
  */
-const DEFAULT_MODEL = 'claude-haiku-4-5-20251101';
+const DEFAULT_MODEL = 'haiku';
 
 /**
  * Always disallow the mw CLI to ensure agents use MCP tools (FR-002)
@@ -133,6 +133,7 @@ export class SessionRunner implements ISessionRunner {
     stream: AsyncIterable<StreamEvent>;
     result: Promise<SessionResult>;
     kill: () => void;
+    stdin: import('stream').Writable | null;
   }> {
     const startTime = Date.now();
     let sessionId: string = randomUUID(); // Fallback if not extracted
@@ -143,16 +144,31 @@ export class SessionRunner implements ISessionRunner {
     let isKilled = false;
     let isTimedOut = false;
 
-    // Build command arguments (T007, T008)
-    const args = [
-      '-p',
-      options.prompt,
+    // Determine mode:
+    // - interactive: keep stdin open for mid-session injection (WP01/WP03)
+    // - stdinOnly: pre-send all messages then close stdin
+    // - standard: use -p flag and close stdin immediately
+    const isInteractive = options.interactive === true;
+    const useStdinOnlyMode = !isInteractive && options.additionalMessages && options.additionalMessages.length > 0;
+
+    // Build command arguments (T007, T008, T004-007)
+    const args: string[] = [];
+
+    // Only use -p flag if NOT in stdin-only mode AND NOT interactive
+    // Interactive mode sends initial prompt via stdin to keep it open
+    if (!useStdinOnlyMode && !isInteractive) {
+      args.push('-p', options.prompt);
+    }
+
+    args.push(
       '--output-format',
       'stream-json',
-      '--print-cost',
+      '--input-format',
+      'stream-json',
+      '--verbose',
       '--model',
-      DEFAULT_MODEL,
-    ];
+      DEFAULT_MODEL
+    );
 
     // Add MCP config if provided
     if (options.mcpConfig) {
@@ -179,6 +195,40 @@ export class SessionRunner implements ISessionRunner {
         ...options.env,
       },
     });
+
+    // Handle stdin based on mode
+    if (isInteractive && childProcess.stdin) {
+      // Interactive mode: send initial prompt via stdin, but keep stdin OPEN
+      // The caller will inject additional messages and call stdin.end() when done
+      const initialMessage = {
+        type: 'user',
+        message: { role: 'user', content: options.prompt },
+      };
+      childProcess.stdin.write(JSON.stringify(initialMessage) + '\n');
+      // DO NOT close stdin - caller will inject more messages
+    } else if (useStdinOnlyMode && childProcess.stdin) {
+      // Pre-populated mode: send all messages upfront, then close stdin
+      const initialMessage = {
+        type: 'user',
+        message: { role: 'user', content: options.prompt },
+      };
+      childProcess.stdin.write(JSON.stringify(initialMessage) + '\n');
+
+      // Send additional messages
+      for (const content of options.additionalMessages!) {
+        const message = {
+          type: 'user',
+          message: { role: 'user', content },
+        };
+        childProcess.stdin.write(JSON.stringify(message) + '\n');
+      }
+
+      // Close stdin to trigger processing
+      childProcess.stdin.end();
+    } else if (childProcess.stdin) {
+      // Standard mode: close stdin immediately since we're using -p
+      childProcess.stdin.end();
+    }
 
     // Collect stderr for error reporting (T012)
     let stderrOutput = '';
@@ -314,6 +364,7 @@ export class SessionRunner implements ISessionRunner {
       stream,
       result,
       kill,
+      stdin: childProcess.stdin,
     };
   }
 }

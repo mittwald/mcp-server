@@ -1,0 +1,36 @@
+{
+  "id": "backups-002-create-manual-backup",
+  "title": "Create Manual Backup Before Major Update",
+  "description": "Developer wants to create a manual backup before deploying a major update, to have a restore point if something goes wrong.",
+  "domain": "backups",
+  "prompt": "I'm about to deploy a big update to our website and want to make sure we have a recent backup first. Can you create a manual backup of the entire project right now? Please label it 'pre-update-backup' so I can find it easily if I need to restore.",
+  "expectedDomains": ["backups", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "backup/create",
+    "backup/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Manual backup created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "backup/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "backup", "identificationMethod": "log-parse", "deletionTool": "backup/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "The production website" },
+    { "questionPattern": "description|label|name", "answer": "pre-update-backup" },
+    { "questionPattern": "include|what to backup", "answer": "Everything - files and databases" }
+  ],
+  "estimatedDuration": 5,
+  "timeout": 15,
+  "priority": "P1",
+  "tags": ["backups", "manual", "deployment", "safety"]
+}

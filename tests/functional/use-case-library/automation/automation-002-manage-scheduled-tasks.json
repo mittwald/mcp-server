@@ -1,0 +1,43 @@
+{
+  "id": "automation-002-manage-scheduled-tasks",
+  "title": "Review and Manage Scheduled Tasks",
+  "description": "Admin needs to review all scheduled cronjobs, check recent execution history, and manually trigger a job for testing.",
+  "domain": "automation",
+  "prompt": "I want to review all the scheduled tasks we have running. Can you list all cronjobs, show me the execution history of the main cleanup job, and trigger it manually so I can verify it works correctly?",
+  "expectedDomains": ["automation", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "cronjob/list",
+    "cronjob/get",
+    "cronjob/execution/list",
+    "cronjob/trigger"
+  ],
+  "successCriteria": [
+    {
+      "description": "Cronjobs listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "cronjob/list",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Execution history retrieved",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "execution",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "The production website" },
+    { "questionPattern": "which cronjob|which task", "answer": "The database cleanup job" },
+    { "questionPattern": "confirm|sure", "answer": "Yes, trigger it now" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P3",
+  "tags": ["automation", "cronjob", "monitoring", "execution"]
+}

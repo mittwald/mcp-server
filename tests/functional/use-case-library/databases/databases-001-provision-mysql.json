@@ -1,0 +1,36 @@
+{
+  "id": "databases-001-provision-mysql",
+  "title": "Provision MySQL Database for Existing Project",
+  "description": "Customer needs to add a MySQL database to their existing project for a new feature.",
+  "domain": "databases",
+  "prompt": "I have an existing web project and I need to add a database for a new feature I'm building. I need a MySQL database that my application can connect to. Can you set this up for me and give me the connection details?",
+  "expectedDomains": ["project-foundation", "databases"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "database/mysql/create",
+    "database/mysql/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Database is created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "database/mysql/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "database", "identificationMethod": "log-parse", "deletionTool": "database/mysql/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "The project called 'my-website'" },
+    { "questionPattern": "database name", "answer": "feature_db" },
+    { "questionPattern": "version", "answer": "The latest stable version" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P1",
+  "tags": ["mysql", "database", "provisioning"]
+}

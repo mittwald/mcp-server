@@ -1,0 +1,36 @@
+{
+  "id": "databases-002-create-backup",
+  "title": "Create Database Backup Before Changes",
+  "description": "Customer wants to create a backup of their production database before making schema changes.",
+  "domain": "databases",
+  "prompt": "I need to create a backup of my production database before I make some important changes. Can you help me create a backup that I can restore from if something goes wrong? I want to make sure my data is safe.",
+  "expectedDomains": ["project-foundation", "backups"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "backup/create",
+    "backup/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Backup is created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "backup/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "backup", "identificationMethod": "log-parse", "deletionTool": "backup/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "My production project" },
+    { "questionPattern": "description", "answer": "Pre-migration backup" },
+    { "questionPattern": "confirm", "answer": "Yes, create the backup" }
+  ],
+  "estimatedDuration": 5,
+  "timeout": 15,
+  "priority": "P1",
+  "tags": ["backup", "database", "safety"]
+}

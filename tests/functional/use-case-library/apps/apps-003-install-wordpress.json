@@ -1,0 +1,47 @@
+{
+  "id": "apps-003-install-wordpress",
+  "title": "Install WordPress for Client Blog",
+  "description": "Developer wants to install a fresh WordPress site for a client who needs a blog with standard plugins.",
+  "domain": "apps",
+  "prompt": "I need to set up a new WordPress site for a client's blog. Please install the latest WordPress version with a MySQL database. The site should be ready to use with the standard setup.",
+  "expectedDomains": ["apps", "databases", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "app/list",
+    "app/create",
+    "database/mysql/create",
+    "app/installation/status"
+  ],
+  "successCriteria": [
+    {
+      "description": "WordPress app created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "app/create",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "MySQL database created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "mysql/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "app", "identificationMethod": "log-parse", "deletionTool": "app/delete", "order": 1 },
+    { "resourceType": "database", "identificationMethod": "log-parse", "deletionTool": "database/mysql/delete", "order": 2 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "Create a new project for this" },
+    { "questionPattern": "WordPress version", "answer": "Latest stable version" },
+    { "questionPattern": "admin|username", "answer": "admin" },
+    { "questionPattern": "email", "answer": "admin@clientsite.com" }
+  ],
+  "estimatedDuration": 6,
+  "timeout": 15,
+  "priority": "P1",
+  "tags": ["apps", "wordpress", "cms", "installation"]
+}

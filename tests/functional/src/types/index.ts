@@ -274,6 +274,24 @@ export interface SpawnSessionOptions {
   disallowedTools: string[];
   env?: Record<string, string>;
   timeoutMs?: number;
+  /**
+   * Additional user messages to send after the initial prompt.
+   * These are sent via stdin in stream-json format.
+   * Useful for pre-populating answers to expected questions.
+   * When provided, uses stdin-only mode (no -p flag) for proper multi-turn support.
+   */
+  additionalMessages?: string[];
+  /**
+   * Keep stdin open for interactive mid-session message injection.
+   * When true:
+   * - Uses --input-format stream-json
+   * - Does NOT close stdin after spawn
+   * - Returns live stdin handle for writeUserMessage() calls
+   * - Caller is responsible for calling stdin.end() when done
+   *
+   * Required for WP03 Supervisory Controller question handling.
+   */
+  interactive?: boolean;
 }
 
 /**
@@ -449,6 +467,7 @@ export interface ISessionRunner {
     stream: AsyncIterable<StreamEvent>;
     result: Promise<SessionResult>;
     kill: () => void;
+    stdin: import('stream').Writable | null;
   }>;
 }
 

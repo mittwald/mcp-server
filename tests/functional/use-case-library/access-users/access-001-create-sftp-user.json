@@ -1,0 +1,37 @@
+{
+  "id": "access-001-create-sftp-user",
+  "title": "Create SFTP User for External Contractor",
+  "description": "Developer needs to create an SFTP user account for an external contractor who needs to upload files to a specific project directory.",
+  "domain": "access-users",
+  "prompt": "I need to set up file upload access for a contractor who's doing design work for us. Can you create an SFTP user for them on our project? They should only have access to the /uploads folder. Username should be 'contractor-design'.",
+  "expectedDomains": ["access-users", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "sftp-user/list",
+    "sftp-user/create"
+  ],
+  "successCriteria": [
+    {
+      "description": "SFTP user created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "sftp-user/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "ssh-key", "identificationMethod": "log-parse", "deletionTool": "sftp-user/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "Use my main website project" },
+    { "questionPattern": "password", "answer": "Generate a secure password" },
+    { "questionPattern": "directory|path|folder", "answer": "/uploads" },
+    { "questionPattern": "expire|duration", "answer": "30 days" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P2",
+  "tags": ["access", "sftp", "contractor", "file-upload"]
+}

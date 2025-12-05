@@ -1,0 +1,36 @@
+{
+  "id": "project-002-configure-ssh",
+  "title": "Configure SSH Access",
+  "description": "Customer needs to set up SSH access to their project for deployment and file management.",
+  "domain": "project-foundation",
+  "prompt": "I need to set up SSH access to my project so I can deploy code and manage files. Can you help me create an SSH user and configure access?",
+  "expectedDomains": ["project-foundation", "access-users"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "ssh/user/create",
+    "ssh/user/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "SSH user is created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "ssh/user/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "ssh-key", "identificationMethod": "log-parse", "deletionTool": "ssh/user/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "my-website" },
+    { "questionPattern": "username", "answer": "deploy" },
+    { "questionPattern": "ssh key", "answer": "I'll add my public key manually later" }
+  ],
+  "estimatedDuration": 2,
+  "timeout": 10,
+  "priority": "P1",
+  "tags": ["ssh", "access", "deployment"]
+}

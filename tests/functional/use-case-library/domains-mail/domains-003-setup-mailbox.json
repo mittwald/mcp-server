@@ -1,0 +1,45 @@
+{
+  "id": "domains-003-setup-mailbox",
+  "title": "Create Company Mailboxes",
+  "description": "Admin needs to set up email mailboxes for company employees using the business domain.",
+  "domain": "domains-mail",
+  "prompt": "We need to set up email for our company. Can you create mailboxes for info@, support@, and sales@ on our domain? Each should have 5GB storage. Also show me any existing mail addresses we have.",
+  "expectedDomains": ["domains-mail", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "mail/address/list",
+    "mail/address/create",
+    "mailbox/create",
+    "domain/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Mail addresses listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "mail/address",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Mailboxes created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "mailbox/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "mailbox", "identificationMethod": "log-parse", "deletionTool": "mailbox/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which domain", "answer": "Our main company domain" },
+    { "questionPattern": "password", "answer": "Generate secure passwords for each" },
+    { "questionPattern": "storage|quota", "answer": "5GB each" }
+  ],
+  "estimatedDuration": 5,
+  "timeout": 15,
+  "priority": "P2",
+  "tags": ["mail", "mailbox", "email", "business"]
+}

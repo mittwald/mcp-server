@@ -1,0 +1,31 @@
+{
+  "id": "containers-001-manage-resources",
+  "title": "View Container Resources",
+  "description": "Customer wants to check their container resources and understand current usage.",
+  "domain": "containers",
+  "prompt": "I'd like to see what container resources I'm currently using for my project. Can you show me the current allocation and usage of my containers?",
+  "expectedDomains": ["project-foundation", "containers"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "container/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Container information retrieved",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "container/list",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "my-production-site" }
+  ],
+  "estimatedDuration": 2,
+  "timeout": 10,
+  "priority": "P1",
+  "tags": ["containers", "resources", "monitoring"]
+}

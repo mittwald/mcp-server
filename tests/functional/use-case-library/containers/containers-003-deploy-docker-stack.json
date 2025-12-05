@@ -1,0 +1,37 @@
+{
+  "id": "containers-003-deploy-docker-stack",
+  "title": "Deploy Multi-Container Docker Stack",
+  "description": "Developer wants to deploy a Docker Compose stack with multiple services including a web app, API, and worker processes.",
+  "domain": "containers",
+  "prompt": "I have a docker-compose.yml file for my application that has a web frontend, API backend, and background worker. Can you help me deploy this as a container stack on mittwald? I need all three services running and connected.",
+  "expectedDomains": ["containers", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "stack/list",
+    "stack/create",
+    "container/list",
+    "volume/create"
+  ],
+  "successCriteria": [
+    {
+      "description": "Stack created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "stack/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "container", "identificationMethod": "log-parse", "deletionTool": "stack/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "My container project" },
+    { "questionPattern": "compose|docker-compose", "answer": "Use the docker-compose.yml from the repo" },
+    { "questionPattern": "environment|env", "answer": "Production environment" }
+  ],
+  "estimatedDuration": 8,
+  "timeout": 20,
+  "priority": "P2",
+  "tags": ["containers", "docker", "stack", "deployment"]
+}

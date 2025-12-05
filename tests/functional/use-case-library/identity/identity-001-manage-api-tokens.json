@@ -1,0 +1,41 @@
+{
+  "id": "identity-001-manage-api-tokens",
+  "title": "Manage API Tokens for CI/CD Integration",
+  "description": "Developer wants to create an API token for their CI/CD pipeline to automate deployments. They need to list existing tokens, create a new one with appropriate permissions, and verify it works.",
+  "domain": "identity",
+  "prompt": "I need to set up automated deployments from our GitLab CI pipeline. Can you help me create an API token that I can use for this? First, show me what tokens I already have, then create a new one called 'gitlab-deploy' that I can use for deployments.",
+  "expectedDomains": ["identity"],
+  "expectedTools": [
+    "user/self/api-tokens/list",
+    "user/self/api-tokens/create",
+    "user/self/get"
+  ],
+  "successCriteria": [
+    {
+      "description": "API tokens are listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "api-tokens/list",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "New API token is created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "api-tokens/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "description|purpose", "answer": "GitLab CI/CD deployment automation" },
+    { "questionPattern": "expir|duration", "answer": "No expiration needed" },
+    { "questionPattern": "permission|scope", "answer": "Project deployment permissions" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P2",
+  "tags": ["identity", "api-token", "ci-cd", "automation"]
+}

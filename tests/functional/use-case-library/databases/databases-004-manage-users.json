@@ -1,0 +1,34 @@
+{
+  "id": "databases-004-manage-users",
+  "title": "Create Database User with Limited Permissions",
+  "description": "Admin needs to create a read-only database user for a reporting application that should not have write access to production data.",
+  "domain": "databases",
+  "prompt": "I need to set up a database user for our reporting tool. It should only be able to read data, not modify it. Can you create a read-only MySQL user for our production database?",
+  "expectedDomains": ["databases", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "database/mysql/list",
+    "database/mysql/get",
+    "database/mysql/user/create"
+  ],
+  "successCriteria": [
+    {
+      "description": "Database user created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "mysql",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "which database", "answer": "The production MySQL database" },
+    { "questionPattern": "username", "answer": "reporting_readonly" },
+    { "questionPattern": "permission|access", "answer": "Read-only SELECT permissions" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P2",
+  "tags": ["databases", "mysql", "users", "security", "permissions"]
+}

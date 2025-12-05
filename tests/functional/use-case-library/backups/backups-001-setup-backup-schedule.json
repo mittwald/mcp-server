@@ -1,0 +1,43 @@
+{
+  "id": "backups-001-setup-backup-schedule",
+  "title": "Configure Automated Backup Schedule",
+  "description": "Admin wants to set up an automated daily backup schedule for their production project to ensure data protection.",
+  "domain": "backups",
+  "prompt": "I need to make sure our production site is properly backed up. Can you set up a daily automated backup schedule? I want backups to run every night and keep the last 14 days of backups. Also show me if there are any existing backup schedules.",
+  "expectedDomains": ["backups", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "backup/schedule/list",
+    "backup/schedule/create"
+  ],
+  "successCriteria": [
+    {
+      "description": "Backup schedules listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "backup/schedule",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "New schedule created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "schedule/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "backup", "identificationMethod": "log-parse", "deletionTool": "backup/schedule/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "The main production project" },
+    { "questionPattern": "time|when|schedule", "answer": "Every night at 2 AM" },
+    { "questionPattern": "retention|keep|days", "answer": "Keep 14 days of backups" }
+  ],
+  "estimatedDuration": 4,
+  "timeout": 12,
+  "priority": "P1",
+  "tags": ["backups", "schedule", "automation", "data-protection"]
+}

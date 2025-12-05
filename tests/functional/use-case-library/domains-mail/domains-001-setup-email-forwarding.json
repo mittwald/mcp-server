@@ -1,0 +1,36 @@
+{
+  "id": "domains-001-setup-email-forwarding",
+  "title": "Setup Email Forwarding",
+  "description": "Customer wants to set up email forwarding from their domain to a personal email address.",
+  "domain": "domains-mail",
+  "prompt": "I want to set up email forwarding so that any messages sent to contact@mydomain.com get forwarded to my personal Gmail address. Can you help me configure this?",
+  "expectedDomains": ["project-foundation", "domains-mail"],
+  "expectedTools": [
+    "project/list",
+    "domain/list",
+    "mail/address/create",
+    "mail/deliverybox/create"
+  ],
+  "successCriteria": [
+    {
+      "description": "Mail forwarding is configured",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "mail/address/create|mail/deliverybox/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "mailbox", "identificationMethod": "log-parse", "deletionTool": "mail/address/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which domain", "answer": "mydomain.com" },
+    { "questionPattern": "forward to", "answer": "myemail@gmail.com" },
+    { "questionPattern": "email address", "answer": "contact@mydomain.com" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P1",
+  "tags": ["email", "forwarding", "domain"]
+}

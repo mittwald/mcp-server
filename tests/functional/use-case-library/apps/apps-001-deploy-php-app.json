@@ -1,0 +1,50 @@
+{
+  "id": "apps-001-deploy-php-app",
+  "title": "Deploy PHP Application with Database",
+  "description": "Customer wants to deploy a PHP website that connects to a MySQL database. The site should be accessible at a subdomain.",
+  "domain": "apps",
+  "prompt": "I need to set up a new website for my client's business. It's a PHP application that needs a MySQL database for storing customer information. The website should be accessible at a subdomain of my main domain. Please create everything needed and let me know the URL when it's ready to test.",
+  "expectedDomains": ["project-foundation", "apps", "databases", "domains-mail"],
+  "expectedTools": [
+    "project/create",
+    "project/get",
+    "app/create",
+    "app/list",
+    "database/mysql/create",
+    "database/mysql/list",
+    "domain/virtualhost/create"
+  ],
+  "successCriteria": [
+    {
+      "description": "App deployment completes without errors",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "app/create",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Database is created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "database/mysql/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "app", "identificationMethod": "log-parse", "deletionTool": "app/delete", "order": 1 },
+    { "resourceType": "database", "identificationMethod": "log-parse", "deletionTool": "database/mysql/delete", "order": 2 },
+    { "resourceType": "project", "identificationMethod": "log-parse", "deletionTool": "project/delete", "order": 3 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "PHP version", "answer": "PHP 8.2 please" },
+    { "questionPattern": "database name", "answer": "clientsite_db" },
+    { "questionPattern": "which project", "answer": "Create a new project for this" },
+    { "questionPattern": "server", "answer": "Use the default server" }
+  ],
+  "estimatedDuration": 5,
+  "timeout": 15,
+  "priority": "P1",
+  "tags": ["deployment", "php", "mysql", "subdomain"]
+}

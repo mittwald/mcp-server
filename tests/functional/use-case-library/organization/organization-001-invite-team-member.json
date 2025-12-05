@@ -1,0 +1,42 @@
+{
+  "id": "organization-001-invite-team-member",
+  "title": "Invite Team Member to Organization",
+  "description": "Organization admin wants to invite a new developer to join their organization so they can collaborate on projects.",
+  "domain": "organization",
+  "prompt": "I need to invite a new developer to our organization. Their email is newdev@company.com. Can you send them an invitation to join our team? Also show me who else is already a member.",
+  "expectedDomains": ["organization", "identity"],
+  "expectedTools": [
+    "org/list",
+    "org/membership/list",
+    "org/invite/create",
+    "org/get"
+  ],
+  "successCriteria": [
+    {
+      "description": "Organization members listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "membership",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Invite created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "invite",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "role|permission", "answer": "Developer role with project access" },
+    { "questionPattern": "which organization", "answer": "Use my default organization" },
+    { "questionPattern": "message|note", "answer": "Welcome to the team!" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P2",
+  "tags": ["organization", "team", "invite", "collaboration"]
+}

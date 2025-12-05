@@ -1,0 +1,39 @@
+{
+  "id": "identity-003-check-account-settings",
+  "title": "Review Account Information and Sessions",
+  "description": "User wants to review their account details, check active sessions for security purposes, and update their profile information.",
+  "domain": "identity",
+  "prompt": "I'd like to do a security review of my account. Can you show me my account details, list all active sessions, and tell me when I last logged in? I want to make sure there are no suspicious sessions.",
+  "expectedDomains": ["identity"],
+  "expectedTools": [
+    "user/self/get",
+    "user/self/sessions/list",
+    "login/status"
+  ],
+  "successCriteria": [
+    {
+      "description": "User account info retrieved",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "user/self",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Sessions listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "sessions",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "terminate|revoke", "answer": "No, just reviewing for now" }
+  ],
+  "estimatedDuration": 2,
+  "timeout": 8,
+  "priority": "P3",
+  "tags": ["identity", "security", "sessions", "account"]
+}

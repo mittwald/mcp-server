@@ -1,0 +1,43 @@
+{
+  "id": "backups-003-restore-from-backup",
+  "title": "Restore Project from Backup After Incident",
+  "description": "Admin needs to restore a project from a previous backup after a failed deployment or accidental data loss.",
+  "domain": "backups",
+  "prompt": "Something went wrong with our last deployment and the site is broken. Can you show me the available backups for the project and help me restore from yesterday's backup? I need to get the site working again ASAP.",
+  "expectedDomains": ["backups", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "backup/list",
+    "backup/get",
+    "backup/restore"
+  ],
+  "successCriteria": [
+    {
+      "description": "Backups listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "backup/list",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Restore initiated",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "backup/restore",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "The production website" },
+    { "questionPattern": "which backup", "answer": "Yesterday's backup, the most recent one before today" },
+    { "questionPattern": "confirm|sure|proceed", "answer": "Yes, restore it" },
+    { "questionPattern": "what to restore|files|database", "answer": "Restore everything" }
+  ],
+  "estimatedDuration": 8,
+  "timeout": 20,
+  "priority": "P1",
+  "tags": ["backups", "restore", "disaster-recovery", "urgent"]
+}

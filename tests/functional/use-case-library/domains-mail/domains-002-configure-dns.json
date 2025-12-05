@@ -1,0 +1,35 @@
+{
+  "id": "domains-002-configure-dns",
+  "title": "Configure DNS Records",
+  "description": "Customer needs to add DNS records to their domain for a third-party service integration.",
+  "domain": "domains-mail",
+  "prompt": "I need to add some DNS records to my domain to verify ownership for a third-party service. They gave me a TXT record to add. Can you help me configure this?",
+  "expectedDomains": ["project-foundation", "domains-mail"],
+  "expectedTools": [
+    "project/list",
+    "domain/list",
+    "domain/dns/record/set"
+  ],
+  "successCriteria": [
+    {
+      "description": "DNS record is created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "domain/dns/record/set",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "domain", "identificationMethod": "log-parse", "deletionTool": "domain/dns/record/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which domain", "answer": "mydomain.com" },
+    { "questionPattern": "record type", "answer": "TXT record" },
+    { "questionPattern": "record value", "answer": "verification-token-12345" }
+  ],
+  "estimatedDuration": 2,
+  "timeout": 10,
+  "priority": "P1",
+  "tags": ["dns", "domain", "verification"]
+}

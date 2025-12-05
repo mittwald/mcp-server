@@ -1,0 +1,33 @@
+{
+  "id": "apps-002-update-nodejs-version",
+  "title": "Update Node.js Application Version",
+  "description": "Customer needs to update their existing Node.js application to a newer version of Node.js runtime.",
+  "domain": "apps",
+  "prompt": "My website is running on an older version of Node.js and I'd like to update it to the latest LTS version. Can you help me upgrade the Node.js runtime for my application? I want to make sure everything still works after the update.",
+  "expectedDomains": ["apps"],
+  "expectedTools": [
+    "app/list",
+    "app/get",
+    "app/update"
+  ],
+  "successCriteria": [
+    {
+      "description": "App update completes",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "app/update",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "which app", "answer": "The one called 'my-node-app'" },
+    { "questionPattern": "Node.js version", "answer": "Node.js 20 LTS" },
+    { "questionPattern": "confirm", "answer": "Yes, please proceed" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P1",
+  "tags": ["nodejs", "update", "runtime"]
+}

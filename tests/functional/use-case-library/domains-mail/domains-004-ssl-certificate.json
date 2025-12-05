@@ -1,0 +1,43 @@
+{
+  "id": "domains-004-ssl-certificate",
+  "title": "Set Up SSL Certificate for Domain",
+  "description": "Admin needs to configure SSL/TLS certificates for their domain to enable HTTPS.",
+  "domain": "domains-mail",
+  "prompt": "I need to enable HTTPS for my website. Can you help me set up an SSL certificate for my domain? I want to use Let's Encrypt for free automatic certificates.",
+  "expectedDomains": ["domains-mail", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "domain/list",
+    "domain/get",
+    "certificate/list",
+    "certificate/request"
+  ],
+  "successCriteria": [
+    {
+      "description": "Domain retrieved",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "domain",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Certificate requested",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "certificate",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "which domain", "answer": "Our main website domain" },
+    { "questionPattern": "certificate type|provider", "answer": "Let's Encrypt free certificate" },
+    { "questionPattern": "www|subdomain", "answer": "Yes, include www subdomain too" }
+  ],
+  "estimatedDuration": 4,
+  "timeout": 12,
+  "priority": "P1",
+  "tags": ["domains", "ssl", "https", "security", "certificate"]
+}
