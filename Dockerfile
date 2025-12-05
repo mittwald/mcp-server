@@ -1,4 +1,4 @@
-FROM node:20.12.2-alpine
+FROM node:24.11.0-alpine
 WORKDIR /app
 
 # Install required system dependencies including SSH client
