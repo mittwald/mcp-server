@@ -1,0 +1,41 @@
+{
+  "id": "organization-002-manage-memberships",
+  "title": "Review and Update Organization Memberships",
+  "description": "Organization admin needs to review current memberships, check pending invites, and update a member's role.",
+  "domain": "organization",
+  "prompt": "I need to do a review of our organization's access. Show me all current members and their roles, any pending invites, and our organization details. We may need to adjust some permissions.",
+  "expectedDomains": ["organization"],
+  "expectedTools": [
+    "org/list",
+    "org/get",
+    "org/membership/list",
+    "org/invite/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Organization details retrieved",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "org/get",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Memberships listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "membership/list",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "change|modify|update", "answer": "No changes needed right now, just reviewing" },
+    { "questionPattern": "which organization", "answer": "The main one" }
+  ],
+  "estimatedDuration": 2,
+  "timeout": 8,
+  "priority": "P3",
+  "tags": ["organization", "membership", "permissions", "review"]
+}

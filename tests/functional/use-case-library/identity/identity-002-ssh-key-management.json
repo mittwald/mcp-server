@@ -1,0 +1,32 @@
+{
+  "id": "identity-002-ssh-key-management",
+  "title": "Add SSH Key for Secure Server Access",
+  "description": "User wants to add their SSH public key to their account so they can securely access their projects via SSH without passwords.",
+  "domain": "identity",
+  "prompt": "I want to set up SSH key authentication for my mittwald account. I have my public key ready. Can you show me my current SSH keys and then add a new one? My public key is ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample... developer@laptop",
+  "expectedDomains": ["identity"],
+  "expectedTools": [
+    "user/self/ssh-keys/list",
+    "user/self/ssh-keys/create",
+    "user/self/get"
+  ],
+  "successCriteria": [
+    {
+      "description": "SSH keys are listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "ssh-keys",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "comment|label|name", "answer": "developer-laptop" },
+    { "questionPattern": "key type", "answer": "ed25519" }
+  ],
+  "estimatedDuration": 2,
+  "timeout": 8,
+  "priority": "P2",
+  "tags": ["identity", "ssh", "security", "authentication"]
+}

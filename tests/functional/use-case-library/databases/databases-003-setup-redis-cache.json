@@ -1,0 +1,36 @@
+{
+  "id": "databases-003-setup-redis-cache",
+  "title": "Add Redis Cache for Application Performance",
+  "description": "Developer wants to add Redis caching to their application to improve performance and reduce database load.",
+  "domain": "databases",
+  "prompt": "Our WordPress site is getting slow with traffic. I want to add Redis caching to speed it up. Can you set up a Redis database for our project and show me the connection details so I can configure the cache plugin?",
+  "expectedDomains": ["databases", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "database/redis/create",
+    "database/redis/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Redis database created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "redis/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "database", "identificationMethod": "log-parse", "deletionTool": "database/redis/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "The main WordPress project" },
+    { "questionPattern": "version", "answer": "Latest stable Redis version" },
+    { "questionPattern": "size|memory", "answer": "Standard size is fine" }
+  ],
+  "estimatedDuration": 4,
+  "timeout": 12,
+  "priority": "P2",
+  "tags": ["databases", "redis", "caching", "performance"]
+}

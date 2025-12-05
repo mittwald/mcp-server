@@ -1,0 +1,34 @@
+{
+  "id": "project-003-manage-environment",
+  "title": "Set Up Development Environment Variables",
+  "description": "Developer needs to configure environment variables for their application including API keys and database credentials.",
+  "domain": "project-foundation",
+  "prompt": "I need to set up environment variables for my Node.js application. I have API keys for Stripe and SendGrid that need to be configured. Can you help me set up the environment configuration for the project?",
+  "expectedDomains": ["project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "project/filesystem/list",
+    "app/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Project retrieved",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "project/get",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "The Node.js application project" },
+    { "questionPattern": "Stripe|API key", "answer": "sk_test_xxxxx" },
+    { "questionPattern": "SendGrid", "answer": "SG.xxxxx" }
+  ],
+  "estimatedDuration": 4,
+  "timeout": 12,
+  "priority": "P2",
+  "tags": ["project", "environment", "configuration", "nodejs"]
+}

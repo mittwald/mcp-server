@@ -1,0 +1,44 @@
+{
+  "id": "automation-001-setup-cronjob",
+  "title": "Set Up Daily Database Optimization Cronjob",
+  "description": "Developer wants to schedule a daily cronjob to run database optimization scripts for better application performance.",
+  "domain": "automation",
+  "prompt": "I need to set up a cronjob that runs every night at 3 AM to optimize our MySQL database. The script is located at /scripts/optimize-db.sh. Can you help me create this scheduled task and show me what cronjobs are already running?",
+  "expectedDomains": ["automation", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "cronjob/list",
+    "cronjob/create"
+  ],
+  "successCriteria": [
+    {
+      "description": "Existing cronjobs listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "cronjob/list",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "New cronjob created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "cronjob/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "cronjob", "identificationMethod": "log-parse", "deletionTool": "cronjob/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "My main website project" },
+    { "questionPattern": "schedule|time|frequency", "answer": "Every day at 3:00 AM" },
+    { "questionPattern": "email|notification", "answer": "Send email on failure only" },
+    { "questionPattern": "timeout", "answer": "30 minutes max" }
+  ],
+  "estimatedDuration": 4,
+  "timeout": 12,
+  "priority": "P2",
+  "tags": ["automation", "cronjob", "database", "maintenance"]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "apps-004-migrate-application",
+  "title": "Migrate Application Between Projects",
+  "description": "Developer needs to move an application from a staging project to production, including database migration.",
+  "domain": "apps",
+  "prompt": "I've finished testing my application on staging and now I need to move it to production. Can you help me migrate the app and its database from the staging project to the production project?",
+  "expectedDomains": ["apps", "databases", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "app/list",
+    "app/get",
+    "database/mysql/list",
+    "backup/create",
+    "backup/export"
+  ],
+  "successCriteria": [
+    {
+      "description": "Apps listed from source project",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "app/list",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "Backup created for migration",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "backup",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "source|staging", "answer": "The staging project" },
+    { "questionPattern": "destination|production", "answer": "The production project" },
+    { "questionPattern": "confirm|proceed", "answer": "Yes, proceed with the migration" }
+  ],
+  "estimatedDuration": 10,
+  "timeout": 25,
+  "priority": "P1",
+  "tags": ["apps", "migration", "staging", "production"]
+}

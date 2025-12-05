@@ -1,0 +1,36 @@
+{
+  "id": "containers-004-manage-volumes",
+  "title": "Create Persistent Storage Volumes",
+  "description": "Developer needs to create and manage persistent volumes for containerized applications to store data that survives container restarts.",
+  "domain": "containers",
+  "prompt": "My Docker application needs persistent storage for uploaded files. Can you create a volume that will persist data even when the container is restarted? I need about 10GB of storage.",
+  "expectedDomains": ["containers", "project-foundation"],
+  "expectedTools": [
+    "project/list",
+    "volume/list",
+    "volume/create",
+    "container/list"
+  ],
+  "successCriteria": [
+    {
+      "description": "Volume created",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "volume/create",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [
+    { "resourceType": "container", "identificationMethod": "log-parse", "deletionTool": "volume/delete", "order": 1 }
+  ],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "The container project" },
+    { "questionPattern": "size|storage", "answer": "10GB" },
+    { "questionPattern": "mount|path", "answer": "/data/uploads" }
+  ],
+  "estimatedDuration": 4,
+  "timeout": 12,
+  "priority": "P2",
+  "tags": ["containers", "volumes", "storage", "persistence"]
+}
