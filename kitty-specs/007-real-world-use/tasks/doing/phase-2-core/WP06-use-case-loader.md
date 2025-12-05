@@ -9,10 +9,10 @@ subtasks:
   - "T041"
 title: "Use Case Loader and Validator"
 phase: "Phase 2 - Core Infrastructure"
-lane: "for_review"
-assignee: ""
-agent: "claude"
-shell_pid: "6568"
+lane: "doing"
+assignee: "codex"
+agent: "codex"
+shell_pid: "39092"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -29,6 +29,11 @@ history:
     agent: "claude"
     shell_pid: "6568"
     action: "Completed implementation - ready for review"
+  - timestamp: "2025-12-05T09:50:42Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "39092"
+    action: "Started review"
 ---
 
 # Work Package Prompt: WP06 – Use Case Loader and Validator
@@ -310,3 +315,4 @@ export async function loadSingleUseCase(idOrPath: string): Promise<UseCase> {
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
 - 2025-12-05T10:48:00Z – claude – shell_pid=6568 – lane=doing – Started implementation
 - 2025-12-05T10:52:00Z – claude – shell_pid=6568 – lane=for_review – Completed: loader.ts with loadUseCases(), loadSingleUseCase(), filtering, error reporting; 17 unit tests passing
+- 2025-12-05T09:50:42Z – codex – shell_pid=39092 – lane=doing – Started review
