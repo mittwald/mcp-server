@@ -28,7 +28,7 @@ describe('loadUseCases', () => {
   it('filters by domain', async () => {
     const result = await loadUseCases({ libraryPath: LIBRARY_PATH, domain: 'apps' });
 
-    expect(result.useCases.length).toBe(2);
+    expect(result.useCases.length).toBe(4); // Updated for WP11 library expansion (31 total use cases)
     expect(result.useCases.every((uc) => uc.domain === 'apps')).toBe(true);
   });
 
@@ -165,7 +165,9 @@ describe('getUniqueDomains', () => {
     expect(domains).toContain('domains-mail');
     expect(domains).toContain('project-foundation');
     expect(domains).toContain('containers');
-    expect(domains.length).toBe(5);
+    // WP11 expanded library to 10 domains: apps, databases, domains-mail, project-foundation,
+    // containers, identity, organization, access-users, automation, backups
+    expect(domains.length).toBe(10);
   });
 });
 
