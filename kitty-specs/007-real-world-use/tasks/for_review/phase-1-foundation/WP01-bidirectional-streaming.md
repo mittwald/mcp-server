@@ -8,10 +8,10 @@ subtasks:
   - "T005"
 title: "Bidirectional Streaming Infrastructure"
 phase: "Phase 1 - Foundation"
-lane: "planned"
-assignee: "codex"
-agent: "codex"
-shell_pid: "50937"
+lane: "for_review"
+assignee: "claude"
+agent: "claude"
+shell_pid: "63362"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -33,6 +33,16 @@ history:
     agent: "codex"
     shell_pid: "62194"
     action: "Review rejected via /spec-kitty.review – stdin closes immediately, no mid-session injection possible; success metric unmet; tests not run"
+  - timestamp: "2025-12-05T10:25:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "63362"
+    action: "Addressing review feedback - implementing true mid-session injection"
+  - timestamp: "2025-12-05T10:35:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "63362"
+    action: "Ready for review - all feedback addressed, test-mid-session-injection.ts passes"
 ---
 
 # Work Package Prompt: WP01 – Bidirectional Streaming Infrastructure
@@ -242,3 +252,48 @@ Real-time question detection/injection is NOT possible. However, we CAN:
 
 ### Decision
 - Lane reset to `planned`. Keep stdin open for interactive sessions, ensure stream-json input works with `-p`, and add a reproducible test (script or automated) that proves mid-session injection and Claude acknowledgment. Re-run regression checks once fixed.
+
+## Implementation Update (2025-12-05T10:25:00Z by claude)
+
+**Addressed all review findings:**
+
+### Fix 1: Added `interactive` mode to SpawnSessionOptions
+Added new option `interactive?: boolean` in `src/types/index.ts`. When `interactive: true`:
+- Uses `--input-format stream-json` (no `-p` flag)
+- Does NOT close stdin after spawn
+- Caller controls when to close stdin via `stdin.end()`
+
+### Fix 2: SessionRunner keeps stdin open in interactive mode
+Modified `src/harness/session-runner.ts` lines 199-231:
+- **Interactive mode**: Sends initial prompt, keeps stdin OPEN
+- **Pre-populated mode**: Sends all messages, closes stdin
+- **Standard mode**: Uses -p flag, closes stdin immediately
+
+### Fix 3: New test script proves mid-session injection
+Created `scripts/test-mid-session-injection.ts` that demonstrates:
+1. Spawn with stdin kept open
+2. Wait for Claude to ask a question
+3. Inject answer AFTER question detected (500ms delay)
+4. Verify Claude acknowledges the answer
+
+**Test Results:**
+```
+Question detected by Claude: ✓ YES
+Answer injected mid-session: ✓ YES
+Claude acknowledged answer: ✓ YES
+
+WP01 SUCCESS METRIC: ✓ PASS
+```
+
+### Key Changes
+| File | Change |
+|------|--------|
+| `src/types/index.ts` | Added `interactive?: boolean` to SpawnSessionOptions |
+| `src/harness/session-runner.ts` | 3-mode stdin handling (interactive/prepopulated/standard) |
+| `scripts/test-mid-session-injection.ts` | NEW: Proves mid-session injection works |
+
+**SupervisoryController Integration**: With `interactive: true`, the controller can now:
+1. Spawn session with stdin open
+2. Detect questions in stdout
+3. Call `writeUserMessage()` to inject answers
+4. Call `stdin.end()` when execution complete

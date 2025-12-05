@@ -144,14 +144,19 @@ export class SessionRunner implements ISessionRunner {
     let isKilled = false;
     let isTimedOut = false;
 
-    // Determine if using stdin-only mode (for multi-turn with pre-populated answers)
-    const useStdinOnlyMode = options.additionalMessages && options.additionalMessages.length > 0;
+    // Determine mode:
+    // - interactive: keep stdin open for mid-session injection (WP01/WP03)
+    // - stdinOnly: pre-send all messages then close stdin
+    // - standard: use -p flag and close stdin immediately
+    const isInteractive = options.interactive === true;
+    const useStdinOnlyMode = !isInteractive && options.additionalMessages && options.additionalMessages.length > 0;
 
     // Build command arguments (T007, T008, T004-007)
     const args: string[] = [];
 
-    // Only use -p flag if NOT in stdin-only mode
-    if (!useStdinOnlyMode) {
+    // Only use -p flag if NOT in stdin-only mode AND NOT interactive
+    // Interactive mode sends initial prompt via stdin to keep it open
+    if (!useStdinOnlyMode && !isInteractive) {
       args.push('-p', options.prompt);
     }
 
@@ -191,9 +196,18 @@ export class SessionRunner implements ISessionRunner {
       },
     });
 
-    // Handle stdin mode: send messages and close stdin
-    if (useStdinOnlyMode && childProcess.stdin) {
-      // Send initial prompt
+    // Handle stdin based on mode
+    if (isInteractive && childProcess.stdin) {
+      // Interactive mode: send initial prompt via stdin, but keep stdin OPEN
+      // The caller will inject additional messages and call stdin.end() when done
+      const initialMessage = {
+        type: 'user',
+        message: { role: 'user', content: options.prompt },
+      };
+      childProcess.stdin.write(JSON.stringify(initialMessage) + '\n');
+      // DO NOT close stdin - caller will inject more messages
+    } else if (useStdinOnlyMode && childProcess.stdin) {
+      // Pre-populated mode: send all messages upfront, then close stdin
       const initialMessage = {
         type: 'user',
         message: { role: 'user', content: options.prompt },

@@ -281,6 +281,17 @@ export interface SpawnSessionOptions {
    * When provided, uses stdin-only mode (no -p flag) for proper multi-turn support.
    */
   additionalMessages?: string[];
+  /**
+   * Keep stdin open for interactive mid-session message injection.
+   * When true:
+   * - Uses --input-format stream-json
+   * - Does NOT close stdin after spawn
+   * - Returns live stdin handle for writeUserMessage() calls
+   * - Caller is responsible for calling stdin.end() when done
+   *
+   * Required for WP03 Supervisory Controller question handling.
+   */
+  interactive?: boolean;
 }
 
 /**
