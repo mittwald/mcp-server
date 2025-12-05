@@ -8,7 +8,7 @@ subtasks:
   - "T005"
 title: "Bidirectional Streaming Infrastructure"
 phase: "Phase 1 - Foundation"
-lane: "doing"
+lane: "planned"
 assignee: "codex"
 agent: "codex"
 shell_pid: "50937"
@@ -28,6 +28,11 @@ history:
     agent: "codex"
     shell_pid: "50937"
     action: "Started review"
+  - timestamp: "2025-12-05T10:12:34Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "62194"
+    action: "Review rejected via /spec-kitty.review – stdin closes immediately, no mid-session injection possible; success metric unmet; tests not run"
 ---
 
 # Work Package Prompt: WP01 – Bidirectional Streaming Infrastructure
@@ -225,3 +230,15 @@ Real-time question detection/injection is NOT possible. However, we CAN:
 - T005: Created test script demonstrating successful multi-turn conversation
 - Updated SpawnSessionOptions to support additionalMessages for pre-populated Q&A
 - SessionRunner now supports stdin-only mode when additionalMessages provided
+
+## Review Report (2025-12-05T10:12:34Z by codex)
+
+**Outcome**: REJECTED (moved to planned)
+
+### Findings
+- Mid-session injection impossible: `session-runner.ts` closes stdin immediately in both modes (`stdin.end()` at lines 194-217), so the returned handle cannot be used by the controller to inject answers while the session runs. This fails the objective and success metric ("inject a user message mid-session and observe Claude respond"). The added `additionalMessages` option only supports pre-seeded messages before execution starts.
+- Manual test does not cover the required behavior: `tests/functional/scripts/test-stdin-injection.ts` pre-sends all messages up front (lines 20-54) and never exercises runtime injection or question detection. There is no automated coverage for the DoD items (T001-T005).
+- Controller integration is blocked: `SupervisoryController.setStdin()`/`injectResponse()` exists but cannot succeed because stdin is closed on spawn, so question handling cannot function once WP03 wires it up.
+
+### Decision
+- Lane reset to `planned`. Keep stdin open for interactive sessions, ensure stream-json input works with `-p`, and add a reproducible test (script or automated) that proves mid-session injection and Claude acknowledgment. Re-run regression checks once fixed.

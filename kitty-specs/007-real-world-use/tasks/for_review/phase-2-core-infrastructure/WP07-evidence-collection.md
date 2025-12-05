@@ -10,7 +10,7 @@ subtasks:
   - "T048"
 title: "Evidence Collection with Playwright"
 phase: "Phase 2 - Core Infrastructure"
-lane: "doing"
+lane: "for_review"
 assignee: ""
 agent: "claude"
 shell_pid: "53821"
@@ -40,6 +40,11 @@ history:
     agent: "claude"
     shell_pid: "53821"
     action: "Addressing review feedback"
+  - timestamp: "2025-12-05T11:12:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "53821"
+    action: "Review feedback addressed - added log-pattern verifier, api verifier, retry/backoff, and 45 unit tests"
 ---
 
 # Work Package Prompt: WP07 – Evidence Collection with Playwright
