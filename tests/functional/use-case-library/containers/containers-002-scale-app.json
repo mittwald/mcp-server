@@ -1,0 +1,34 @@
+{
+  "id": "containers-002-scale-app",
+  "title": "Scale Application Resources",
+  "description": "Customer needs to increase container resources to handle more traffic.",
+  "domain": "containers",
+  "prompt": "My website is getting more traffic and I need to increase the resources. Can you help me scale up the container resources for better performance?",
+  "expectedDomains": ["project-foundation", "containers"],
+  "expectedTools": [
+    "project/list",
+    "project/get",
+    "container/list",
+    "container/update"
+  ],
+  "successCriteria": [
+    {
+      "description": "Container resources updated",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "container/update",
+        "minOccurrences": 1
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [
+    { "questionPattern": "which project", "answer": "my-website" },
+    { "questionPattern": "how much", "answer": "Double the current resources" },
+    { "questionPattern": "confirm", "answer": "Yes, please proceed" }
+  ],
+  "estimatedDuration": 3,
+  "timeout": 10,
+  "priority": "P1",
+  "tags": ["containers", "scaling", "performance"]
+}
