@@ -11,16 +11,21 @@ subtasks:
   - "T026"
 title: "Use Case Type Definitions"
 phase: "Phase 1 - Foundation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "codex"
+agent: "codex"
+shell_pid: "8721"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-05T09:39:28Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "8721"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP04 – Use Case Type Definitions
@@ -393,3 +398,4 @@ export interface CoverageRecommendation {
 ## Activity Log
 
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
+- 2025-12-05T09:39:28Z – codex – shell_pid=8721 – lane=doing – Started implementation
