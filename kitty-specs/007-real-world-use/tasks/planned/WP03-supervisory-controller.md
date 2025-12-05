@@ -11,8 +11,8 @@ subtasks:
   - "T018"
 title: "Supervisory Controller"
 phase: "Phase 1 - Foundation"
-lane: "doing"
-assignee: "codex"
+lane: "planned"
+assignee: ""
 agent: "codex"
 shell_pid: "55120"
 history:
@@ -31,6 +31,11 @@ history:
     agent: "codex"
     shell_pid: "55120"
     action: "Started review"
+  - timestamp: "2025-12-05T10:09:42Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "55120"
+    action: "Review feedback: missing wiring to parser/session, success/failure detection, idle/timeout enforcement, and controller tests"
 ---
 
 # Work Package Prompt: WP03 – Supervisory Controller
@@ -55,6 +60,13 @@ history:
 ### Key References
 - `kitty-specs/007-real-world-use/data-model.md` - SupervisoryState interface
 - `kitty-specs/007-real-world-use/spec.md` - FR-011 through FR-015
+
+## Review Feedback (2025-12-05)
+
+- No wiring to StreamParser or SessionRunner: question_detected events are not observed and stdin is not connected, so question handling cannot occur.
+- Success/failure detection incomplete: success criteria/log patterns are never evaluated; state machine cannot reach success/failure from real stream signals.
+- Timeout/idle enforcement not integrated: relies on manual checkIdleTimeout without a caller; timeout warning/transition never triggered from activity.
+- No tests for SupervisoryController covering transitions, timeouts, question handling (answer/skip/escalate), or tool/error thresholds.
 
 ### Constraints
 - Must integrate with existing SessionRunner/StreamParser
