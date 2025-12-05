@@ -9,9 +9,9 @@ subtasks:
 title: "Question Detection in Stream Parser"
 phase: "Phase 1 - Foundation"
 lane: "doing"
-assignee: ""
-agent: "claude"
-shell_pid: "6568"
+assignee: "codex"
+agent: "codex"
+shell_pid: "8721"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -22,6 +22,11 @@ history:
     lane: "doing"
     agent: "claude"
     shell_pid: "6568"
+    action: "Started implementation"
+  - timestamp: "2025-12-05T10:45:00Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "8721"
     action: "Started implementation"
 ---
 
@@ -228,3 +233,4 @@ describe('detectQuestion', () => {
 ## Activity Log
 
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
+- 2025-12-05T10:45:00Z – codex – shell_pid=8721 – lane=doing – Started implementation
