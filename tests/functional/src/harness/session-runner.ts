@@ -133,6 +133,7 @@ export class SessionRunner implements ISessionRunner {
     stream: AsyncIterable<StreamEvent>;
     result: Promise<SessionResult>;
     kill: () => void;
+    stdin: import('stream').Writable | null;
   }> {
     const startTime = Date.now();
     let sessionId: string = randomUUID(); // Fallback if not extracted
@@ -143,13 +144,15 @@ export class SessionRunner implements ISessionRunner {
     let isKilled = false;
     let isTimedOut = false;
 
-    // Build command arguments (T007, T008)
+    // Build command arguments (T007, T008, T004-007)
     const args = [
       '-p',
       options.prompt,
       '--output-format',
       'stream-json',
-      '--print-cost',
+      '--input-format',
+      'stream-json',
+      '--verbose',
       '--model',
       DEFAULT_MODEL,
     ];
@@ -314,6 +317,7 @@ export class SessionRunner implements ISessionRunner {
       stream,
       result,
       kill,
+      stdin: childProcess.stdin,
     };
   }
 }

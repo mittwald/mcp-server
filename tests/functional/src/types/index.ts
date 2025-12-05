@@ -449,6 +449,7 @@ export interface ISessionRunner {
     stream: AsyncIterable<StreamEvent>;
     result: Promise<SessionResult>;
     kill: () => void;
+    stdin: import('stream').Writable | null;
   }>;
 }
 

@@ -8,16 +8,21 @@ subtasks:
   - "T010"
 title: "Question Detection in Stream Parser"
 phase: "Phase 1 - Foundation"
-lane: "planned"
+lane: "doing"
 assignee: ""
-agent: ""
-shell_pid: ""
+agent: "claude"
+shell_pid: "6568"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-05T10:35:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "6568"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP02 – Question Detection in Stream Parser
