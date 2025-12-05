@@ -3,6 +3,9 @@
  *
  * Implements state machine: pending → running → (success | failure | timeout)
  * Handles timeouts, success/failure detection, and question answering.
+ *
+ * WP03 Review Fix: Now integrates with StreamParser for event-driven
+ * question handling and failure detection.
  */
 
 import { EventEmitter } from 'events';
@@ -15,6 +18,7 @@ import type {
   ExecutionStatus,
 } from '../use-cases/types.js';
 import { writeUserMessage } from './stdin-injector.js';
+import type { StreamParser, QuestionDetectedEvent, PatternState } from './stream-parser.js';
 
 // Thresholds from existing coordinator
 const MAX_CONSECUTIVE_ERRORS = 3;
@@ -22,6 +26,7 @@ const MAX_SAME_TOOL_REPEATS = 5;
 const MAX_IDLE_TIME_MS = 60000;
 const DEFAULT_TIMEOUT_MINUTES = 10;
 const MAX_TIMEOUT_MINUTES = 30;
+const IDLE_CHECK_INTERVAL_MS = 5000; // Check for idle every 5 seconds
 
 /**
  * State change event emitted on each transition
@@ -71,6 +76,10 @@ export interface ControllerOptions {
   skipUnknownQuestions?: boolean;
   /** Emit timeout warning at this percentage (default 80) */
   timeoutWarningPercent?: number;
+  /** Interval in ms for checking idle timeout (default 5000) */
+  idleCheckIntervalMs?: number;
+  /** Maximum idle time in ms before failure (default 60000) */
+  maxIdleTimeMs?: number;
 }
 
 /**
@@ -98,16 +107,21 @@ function isTerminalState(state: ExecutionStatus): boolean {
 export class SupervisoryController extends EventEmitter {
   private state: ExecutionStatus = 'pending';
   private readonly useCase: UseCase;
-  private readonly options: ControllerOptions;
+  private readonly options: Required<ControllerOptions>;
 
   // Timeout handling
   private timeoutHandle?: NodeJS.Timeout;
   private warningHandle?: NodeJS.Timeout;
+  private idleCheckHandle?: NodeJS.Timeout;
   private startTime?: Date;
   private readonly timeoutMs: number;
 
   // Stdin for response injection
   private stdin: Writable | null = null;
+
+  // StreamParser for event-driven operation (WP03 review fix)
+  private streamParser: StreamParser | null = null;
+  private boundQuestionHandler: ((event: QuestionDetectedEvent) => void) | null = null;
 
   // Failure detection state
   private consecutiveErrors = 0;
@@ -120,12 +134,17 @@ export class SupervisoryController extends EventEmitter {
   // Success detection state
   private successCriteriaMet = new Set<number>();
 
+  // Log patterns for success detection (WP03 review fix)
+  private logPatterns: Map<number, RegExp> = new Map();
+
   constructor(useCase: UseCase, options: ControllerOptions = {}) {
     super();
     this.useCase = useCase;
     this.options = {
       skipUnknownQuestions: false,
       timeoutWarningPercent: 80,
+      idleCheckIntervalMs: IDLE_CHECK_INTERVAL_MS,
+      maxIdleTimeMs: MAX_IDLE_TIME_MS,
       ...options,
     };
 
@@ -133,6 +152,27 @@ export class SupervisoryController extends EventEmitter {
     const requestedTimeout = useCase.timeout || DEFAULT_TIMEOUT_MINUTES;
     const clampedTimeout = Math.min(requestedTimeout, MAX_TIMEOUT_MINUTES);
     this.timeoutMs = clampedTimeout * 60 * 1000;
+
+    // Initialize log patterns from success criteria (WP03 review fix)
+    this.initLogPatterns();
+  }
+
+  /**
+   * Initialize log patterns from success criteria for success detection
+   */
+  private initLogPatterns(): void {
+    this.useCase.successCriteria.forEach((criterion, index) => {
+      if (criterion.method === 'log-pattern' && criterion.config) {
+        const config = criterion.config as { pattern: string };
+        if (config.pattern) {
+          try {
+            this.logPatterns.set(index, new RegExp(config.pattern, 'i'));
+          } catch {
+            console.warn(`[SupervisoryController] Invalid log pattern for criterion ${index}: ${config.pattern}`);
+          }
+        }
+      }
+    });
   }
 
   /**
@@ -168,20 +208,108 @@ export class SupervisoryController extends EventEmitter {
   }
 
   /**
+   * Attach to a StreamParser for event-driven operation (WP03 review fix)
+   *
+   * This wires up the controller to receive question_detected events
+   * from the parser and automatically handle them.
+   */
+  attachToParser(parser: StreamParser): void {
+    // Detach from any previous parser
+    this.detachFromParser();
+
+    this.streamParser = parser;
+
+    // Create bound handler to maintain 'this' context
+    this.boundQuestionHandler = (event: QuestionDetectedEvent) => {
+      this.handleQuestion(event.messageContent);
+    };
+
+    // Listen for question_detected events
+    parser.on('question_detected', this.boundQuestionHandler);
+  }
+
+  /**
+   * Detach from the current StreamParser (WP03 review fix)
+   */
+  detachFromParser(): void {
+    if (this.streamParser && this.boundQuestionHandler) {
+      this.streamParser.off('question_detected', this.boundQuestionHandler);
+    }
+    this.streamParser = null;
+    this.boundQuestionHandler = null;
+  }
+
+  /**
+   * Process output line against log patterns for success detection (WP03 review fix)
+   *
+   * Call this method with each line of session output to check for
+   * success criteria patterns.
+   */
+  processOutputLine(line: string): void {
+    if (this.state !== 'running') {
+      return;
+    }
+
+    // Update activity timestamp
+    this.lastActivityTime = Date.now();
+
+    // Check each log pattern
+    for (const [criterionIndex, pattern] of this.logPatterns) {
+      if (!this.successCriteriaMet.has(criterionIndex) && pattern.test(line)) {
+        this.markCriterionMet(criterionIndex);
+      }
+    }
+  }
+
+  /**
+   * Process pattern state from StreamParser for failure detection (WP03 review fix)
+   *
+   * Call this method periodically with the parser's pattern state to
+   * check for failure conditions like consecutive errors or stuck loops.
+   */
+  processPatternState(patternState: PatternState): void {
+    if (this.state !== 'running') {
+      return;
+    }
+
+    // Update activity time
+    this.lastActivityTime = patternState.lastActivityTime.getTime();
+
+    // Check consecutive errors
+    if (patternState.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+      this.markFailure(`${patternState.consecutiveErrors} consecutive errors detected`);
+      return;
+    }
+
+    // Check for stuck tool loop
+    if (patternState.sameToolRepeated >= MAX_SAME_TOOL_REPEATS) {
+      this.markFailure(`Tool ${patternState.lastToolName} repeated ${patternState.sameToolRepeated} times - possible stuck loop`);
+      return;
+    }
+
+    // Check idle time
+    if (patternState.idleTimeMs >= this.options.maxIdleTimeMs) {
+      this.markFailure(`Idle timeout: no activity for ${patternState.idleTimeMs}ms`);
+      return;
+    }
+  }
+
+  /**
    * Start execution - transitions from pending to running
    */
   start(): void {
     this.transition('running', 'Execution started');
     this.startTime = new Date();
+    this.lastActivityTime = Date.now();
 
-    // Set up timeout
+    // Set up execution timeout
     this.timeoutHandle = setTimeout(() => {
       this.transition('timeout', 'Execution timed out');
       this.cleanup();
     }, this.timeoutMs);
 
     // Set up warning at configured percentage
-    const warningMs = this.timeoutMs * (this.options.timeoutWarningPercent! / 100);
+    const warningMs = this.timeoutMs * (this.options.timeoutWarningPercent / 100);
     this.warningHandle = setTimeout(() => {
       const remaining = this.getRemainingTimeMs() || 0;
       this.emit('timeout_warning', {
@@ -190,6 +318,18 @@ export class SupervisoryController extends EventEmitter {
         timestamp: new Date(),
       } as TimeoutWarningEvent);
     }, warningMs);
+
+    // Set up idle check interval (WP03 review fix)
+    this.startIdleCheck();
+  }
+
+  /**
+   * Start the idle check interval (WP03 review fix)
+   */
+  private startIdleCheck(): void {
+    this.idleCheckHandle = setInterval(() => {
+      this.checkIdleTimeout();
+    }, this.options.idleCheckIntervalMs);
   }
 
   /**
@@ -292,7 +432,7 @@ export class SupervisoryController extends EventEmitter {
     }
 
     const idleTime = Date.now() - this.lastActivityTime;
-    if (idleTime >= MAX_IDLE_TIME_MS) {
+    if (idleTime >= this.options.maxIdleTimeMs) {
       this.markFailure(`Idle timeout: no activity for ${idleTime}ms`);
       return true;
     }
@@ -403,6 +543,29 @@ export class SupervisoryController extends EventEmitter {
       clearTimeout(this.warningHandle);
       this.warningHandle = undefined;
     }
+
+    // Clear idle check interval (WP03 review fix)
+    if (this.idleCheckHandle) {
+      clearInterval(this.idleCheckHandle);
+      this.idleCheckHandle = undefined;
+    }
+
+    // Detach from parser (WP03 review fix)
+    this.detachFromParser();
+  }
+
+  /**
+   * Get the use case being executed
+   */
+  getUseCase(): UseCase {
+    return this.useCase;
+  }
+
+  /**
+   * Update the last activity timestamp (call on any activity)
+   */
+  recordActivity(): void {
+    this.lastActivityTime = Date.now();
   }
 }
 

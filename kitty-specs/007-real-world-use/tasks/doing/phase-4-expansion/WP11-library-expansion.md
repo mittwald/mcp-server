@@ -12,10 +12,10 @@ subtasks:
   - "T079"
 title: "Use Case Library Expansion"
 phase: "Phase 4 - Expansion"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "68317"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -313,3 +313,4 @@ Round 4: 165/173 covered (95%)
 ## Activity Log
 
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
+- 2025-12-05T12:30:00Z – claude – shell_pid=68317 – lane=doing – Started implementation: T071 coverage gap analysis

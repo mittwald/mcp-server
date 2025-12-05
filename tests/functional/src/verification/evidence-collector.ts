@@ -3,11 +3,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PlaywrightVerifier } from './playwright-verifier.js';
 import { CurlVerifier } from './curl-verifier.js';
+import { LogPatternVerifier } from './log-pattern-verifier.js';
+import { ApiVerifier, type McpToolCaller } from './api-verifier.js';
 import type {
+  ApiVerification,
   CriterionResult,
   CurlVerificationConfig,
   EvidenceCollectionResult,
   EvidenceManifest,
+  LogPatternVerification,
   PlaywrightVerificationConfig,
   SuccessCriterion,
 } from './types.js';
@@ -19,18 +23,28 @@ export interface EvidenceCollectorOptions {
   useCaseId: string;
   evidenceRoot?: string;
   timestamp?: Date;
+  /** Path to session log for log-pattern verification */
+  sessionLogPath?: string;
+  /** MCP tool caller for api verification */
+  mcpToolCaller?: McpToolCaller;
 }
 
 export class EvidenceCollector {
   private readonly playwrightVerifier: PlaywrightVerifier;
   private readonly curlVerifier: CurlVerifier;
+  private readonly logPatternVerifier: LogPatternVerifier;
+  private readonly apiVerifier: ApiVerifier;
 
   constructor(
     playwrightVerifier?: PlaywrightVerifier,
-    curlVerifier?: CurlVerifier
+    curlVerifier?: CurlVerifier,
+    logPatternVerifier?: LogPatternVerifier,
+    apiVerifier?: ApiVerifier
   ) {
     this.playwrightVerifier = playwrightVerifier ?? new PlaywrightVerifier();
     this.curlVerifier = curlVerifier ?? new CurlVerifier();
+    this.logPatternVerifier = logPatternVerifier ?? new LogPatternVerifier();
+    this.apiVerifier = apiVerifier ?? new ApiVerifier();
   }
 
   async collect(
@@ -42,9 +56,19 @@ export class EvidenceCollector {
     const evidenceDir = path.join(evidenceRoot, this.buildExecutionDir(options.useCaseId, generatedAt));
     await mkdir(evidenceDir, { recursive: true });
 
+    // Configure API verifier if MCP tool caller provided
+    if (options.mcpToolCaller) {
+      this.apiVerifier.setToolCaller(options.mcpToolCaller);
+    }
+
     const criterionResults: CriterionResult[] = [];
     for (let index = 0; index < criteria.length; index++) {
-      const result = await this.evaluateCriterion(criteria[index], index, evidenceDir);
+      const result = await this.evaluateCriterion(
+        criteria[index],
+        index,
+        evidenceDir,
+        options.sessionLogPath
+      );
       criterionResults.push(result);
     }
 
@@ -68,7 +92,8 @@ export class EvidenceCollector {
   private async evaluateCriterion(
     criterion: SuccessCriterion,
     index: number,
-    evidenceDir: string
+    evidenceDir: string,
+    sessionLogPath?: string
   ): Promise<CriterionResult> {
     try {
       if (criterion.method === 'playwright') {
@@ -83,6 +108,25 @@ export class EvidenceCollector {
       if (criterion.method === 'curl') {
         return this.handleCurl(
           criterion.config as CurlVerificationConfig,
+          criterion,
+          index,
+          evidenceDir
+        );
+      }
+
+      if (criterion.method === 'log-pattern') {
+        return this.handleLogPattern(
+          criterion.config as LogPatternVerification,
+          criterion,
+          index,
+          evidenceDir,
+          sessionLogPath
+        );
+      }
+
+      if (criterion.method === 'api') {
+        return this.handleApi(
+          criterion.config as ApiVerification,
           criterion,
           index,
           evidenceDir
@@ -141,6 +185,62 @@ export class EvidenceCollector {
   ): Promise<CriterionResult> {
     const responsePath = path.join(evidenceDir, this.buildArtifactName(index, 'response', 'txt'));
     const result = await this.curlVerifier.verifyHttp(config, {
+      criterionIndex: index,
+      responsePath,
+    });
+
+    return {
+      index,
+      description: criterion.description,
+      method: criterion.method,
+      passed: result.success,
+      artifacts: result.artifacts,
+      error: result.error,
+    };
+  }
+
+  private async handleLogPattern(
+    config: LogPatternVerification,
+    criterion: SuccessCriterion,
+    index: number,
+    evidenceDir: string,
+    sessionLogPath?: string
+  ): Promise<CriterionResult> {
+    if (!sessionLogPath) {
+      return {
+        index,
+        description: criterion.description,
+        method: criterion.method,
+        passed: false,
+        artifacts: [],
+        error: 'Log pattern verification requires sessionLogPath in options',
+      };
+    }
+
+    const excerptPath = path.join(evidenceDir, this.buildArtifactName(index, 'log-excerpt', 'txt'));
+    const result = await this.logPatternVerifier.verifyLogPattern(sessionLogPath, config, {
+      criterionIndex: index,
+      excerptPath,
+    });
+
+    return {
+      index,
+      description: criterion.description,
+      method: criterion.method,
+      passed: result.success,
+      artifacts: result.artifacts,
+      error: result.error,
+    };
+  }
+
+  private async handleApi(
+    config: ApiVerification,
+    criterion: SuccessCriterion,
+    index: number,
+    evidenceDir: string
+  ): Promise<CriterionResult> {
+    const responsePath = path.join(evidenceDir, this.buildArtifactName(index, 'api-response', 'json'));
+    const result = await this.apiVerifier.verifyApi(config, {
       criterionIndex: index,
       responsePath,
     });

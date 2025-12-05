@@ -1,14 +1,20 @@
 import { writeFile } from 'node:fs/promises';
 import { setTimeout as delay } from 'node:timers/promises';
-import type { CurlVerificationConfig, EvidenceArtifact } from './types.js';
+import type { CurlVerificationConfig, EvidenceArtifact, RetryConfig } from './types.js';
 
 const DEFAULT_TIMEOUT_MS = 15000;
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_INITIAL_DELAY_MS = 1000;
+const DEFAULT_BACKOFF_MULTIPLIER = 2;
+const DEFAULT_MAX_DELAY_MS = 30000;
 
 export interface CurlVerificationResult {
   success: boolean;
   status?: number;
   artifacts: EvidenceArtifact[];
   error?: string;
+  /** Number of attempts made (1 = succeeded on first try) */
+  attempts?: number;
 }
 
 interface VerifyOptions {
@@ -18,6 +24,69 @@ interface VerifyOptions {
 
 export class CurlVerifier {
   async verifyHttp(
+    config: CurlVerificationConfig,
+    options: VerifyOptions
+  ): Promise<CurlVerificationResult> {
+    const retryConfig = config.retry;
+    const maxRetries = retryConfig?.maxRetries ?? DEFAULT_MAX_RETRIES;
+    const initialDelayMs = retryConfig?.initialDelayMs ?? DEFAULT_INITIAL_DELAY_MS;
+    const backoffMultiplier = retryConfig?.backoffMultiplier ?? DEFAULT_BACKOFF_MULTIPLIER;
+    const maxDelayMs = retryConfig?.maxDelayMs ?? DEFAULT_MAX_DELAY_MS;
+
+    let lastResult: CurlVerificationResult | null = null;
+    let attempt = 0;
+
+    while (attempt <= maxRetries) {
+      attempt++;
+      const result = await this.attemptVerify(config, options);
+      lastResult = result;
+
+      if (result.success) {
+        return { ...result, attempts: attempt };
+      }
+
+      // Don't retry if we've exhausted attempts
+      if (attempt > maxRetries) {
+        break;
+      }
+
+      // Only retry on potentially transient failures (network errors, 5xx, 404 for propagation)
+      if (!this.isRetryableError(result)) {
+        break;
+      }
+
+      // Calculate delay with exponential backoff
+      const delayMs = Math.min(
+        initialDelayMs * Math.pow(backoffMultiplier, attempt - 1),
+        maxDelayMs
+      );
+      await delay(delayMs);
+    }
+
+    return { ...lastResult!, attempts: attempt };
+  }
+
+  private isRetryableError(result: CurlVerificationResult): boolean {
+    // Network errors are retryable
+    if (!result.status) {
+      return true;
+    }
+    // 5xx server errors are retryable
+    if (result.status >= 500) {
+      return true;
+    }
+    // 404 might indicate propagation delay for new deployments
+    if (result.status === 404) {
+      return true;
+    }
+    // 503 Service Unavailable is retryable
+    if (result.status === 503) {
+      return true;
+    }
+    return false;
+  }
+
+  private async attemptVerify(
     config: CurlVerificationConfig,
     options: VerifyOptions
   ): Promise<CurlVerificationResult> {

@@ -10,10 +10,10 @@ subtasks:
   - "T086"
 title: "CLI Interface"
 phase: "Phase 4 - Expansion"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "done"
+assignee: "claude"
+agent: "claude"
+shell_pid: "68317"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -264,14 +264,14 @@ Report saved to: tests/functional/analysis-output/007-run-summary.json
 
 ## Definition of Done Checklist
 
-- [ ] T080: CLI entry point created
-- [ ] T081: --domain filter working
-- [ ] T082: --coverage-gaps filter working
-- [ ] T083: --single execution working
-- [ ] T084: Progress reporting clear
-- [ ] T085: Summary report generated
-- [ ] T086: npm script added
-- [ ] Can run: npm run use-cases -- --domain apps
+- [x] T080: CLI entry point created
+- [x] T081: --domain filter working
+- [x] T082: --coverage-gaps filter working
+- [x] T083: --single execution working
+- [x] T084: Progress reporting clear
+- [x] T085: Summary report generated
+- [x] T086: npm script added
+- [x] Can run: npm run use-cases -- --domain apps
 
 ## Review Guidance
 
@@ -283,3 +283,42 @@ Report saved to: tests/functional/analysis-output/007-run-summary.json
 ## Activity Log
 
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
+- 2025-12-05T12:15:00Z – claude – shell_pid=68317 – lane=for_review – Implementation complete
+- 2025-12-05T12:25:00Z – claude – shell_pid=74519 – lane=done – APPROVED: All T080-T086 subtasks verified. CLI runs with --help, --dry-run, --domain, --single options. npm scripts added to package.json. Progress reporting and summary generation implemented correctly.
+
+## Implementation Notes
+
+### Created Files
+- `tests/functional/src/cli/run-use-cases.ts` - Full CLI implementation (460 lines)
+
+### Implementation Details
+
+**CLI Options** using Node.js parseArgs:
+- `-d, --domain <domain>` - Filter by domain (apps, databases, etc.)
+- `-g, --coverage-gaps` - Run use cases targeting uncovered tools
+- `-s, --single <id>` - Run single use case by ID
+- `--dry-run` - List use cases without executing
+- `--json` - Output results as JSON
+- `-h, --help` - Show help message
+
+**Progress Reporting** shows:
+- Use case ID and timeout
+- Phase transitions (Executing, Verifying, Cleaning up)
+- Final status with duration
+- Unicode symbols for pass/fail/timeout
+
+**Summary Report** includes:
+- Pass/fail/timeout/cleanup-failed counts
+- Coverage impact (before/after percentages)
+- Failed use case details with errors
+- Session log and evidence paths
+
+**npm Scripts** added to package.json:
+- `use-cases` - Run all use cases
+- `use-cases:apps` - Run only apps domain
+- `use-cases:databases` - Run only databases domain
+- `use-cases:gaps` - Target uncovered tools
+
+**Exports**:
+- Main CLI entry point with shebang
+- Formats suitable for terminal and CI (--json)
