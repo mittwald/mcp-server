@@ -8,10 +8,10 @@ subtasks:
   - "T010"
 title: "Question Detection in Stream Parser"
 phase: "Phase 1 - Foundation"
-lane: "doing"
-assignee: "codex"
-agent: "codex"
-shell_pid: "8721"
+lane: "for_review"
+assignee: ""
+agent: "claude"
+shell_pid: "6568"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -28,6 +28,11 @@ history:
     agent: "codex"
     shell_pid: "8721"
     action: "Started implementation"
+  - timestamp: "2025-12-05T10:40:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "6568"
+    action: "Completed implementation - ready for review"
 ---
 
 # Work Package Prompt: WP02 – Question Detection in Stream Parser
@@ -233,4 +238,6 @@ describe('detectQuestion', () => {
 ## Activity Log
 
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
+- 2025-12-05T10:35:00Z – claude – shell_pid=6568 – lane=doing – Started implementation
 - 2025-12-05T10:45:00Z – codex – shell_pid=8721 – lane=doing – Started implementation
+- 2025-12-05T10:40:00Z – claude – shell_pid=6568 – lane=for_review – Completed implementation: QUESTION_PATTERNS, detectQuestion(), question_detected event, pending state tracking, 38 unit tests

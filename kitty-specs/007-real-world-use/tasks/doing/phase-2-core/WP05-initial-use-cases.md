@@ -12,16 +12,21 @@ subtasks:
   - "T035"
 title: "Use Case Library - First 10 Scenarios"
 phase: "Phase 2 - Core Infrastructure"
-lane: "planned"
+lane: "doing"
 assignee: ""
-agent: ""
-shell_pid: ""
+agent: "claude"
+shell_pid: "6568"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-05T10:38:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "6568"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP05 – Use Case Library - First 10 Scenarios

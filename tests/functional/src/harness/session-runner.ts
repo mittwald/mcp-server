@@ -19,7 +19,7 @@ import type {
 /**
  * Default model for cost-efficient test agents (FR-001a)
  */
-const DEFAULT_MODEL = 'claude-haiku-4-5-20251101';
+const DEFAULT_MODEL = 'haiku';
 
 /**
  * Always disallow the mw CLI to ensure agents use MCP tools (FR-002)
