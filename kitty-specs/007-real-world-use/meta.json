@@ -1,0 +1,7 @@
+{
+  "feature_number": "007",
+  "slug": "007-real-world-use",
+  "friendly_name": "Real-World Use Case Functional Testing",
+  "source_description": "A comprehensive functional testing system that validates Mittwald MCP tools through realistic, multi-step use cases. Includes: (1) Use case library of 30-50 real-world scenarios inspired by but not copying Mittwald docs - creating adjacent examples that exercise tools naturally; (2) Enhanced test harness building on 005 with supervisory controller, done/failure state detection, timeout enforcement, question-handling logic, and Playwright verification; (3) Self-contained execution with cleanup to avoid filling storage; (4) 100% coverage of 170+ MCP tools through natural workflows; (5) Session log analysis reusing 006 pipeline. Executes against real Mittwald infrastructure via MCP tools.",
+  "created_at": "2025-12-05T08:57:22Z"
+}
