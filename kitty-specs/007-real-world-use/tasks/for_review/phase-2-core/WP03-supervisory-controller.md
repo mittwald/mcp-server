@@ -11,16 +11,21 @@ subtasks:
   - "T018"
 title: "Supervisory Controller"
 phase: "Phase 1 - Foundation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "for_review"
+assignee: "claude"
+agent: "claude"
+shell_pid: "5620"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-05T13:00:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "5620"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP03 – Supervisory Controller
@@ -315,3 +320,23 @@ interface QuestionHandledEvent {
 ## Activity Log
 
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
+- 2025-12-05T13:00:00Z – claude – shell_pid=5620 – lane=doing – Started implementation
+- 2025-12-05T13:15:00Z – claude – shell_pid=5620 – lane=doing – Completed all subtasks
+
+## Implementation Notes
+
+Created `tests/functional/src/harness/supervisory-controller.ts` implementing:
+
+**T011**: SupervisoryController class extending EventEmitter
+**T012**: State machine with valid transitions (pending→running→success|failure|timeout)
+**T013**: Timeout enforcement with configurable duration (default 10min, max 30min)
+**T014**: Success detection via markCriterionMet() and automatic completion
+**T015**: Failure detection via:
+- Consecutive error tracking (max 3)
+- Same tool repeat detection (max 5)
+- Idle timeout (60s)
+**T016**: Question handling with pattern matching, skip, and escalate options
+**T017**: Stdin injection integration via setStdin() and writeUserMessage()
+**T018**: Event emitter for state_change, question_handled, timeout_warning, tool_invoked, error_detected
+
+**Note**: Pre-existing TypeScript errors in use-cases/types.ts (WP04) need to be addressed separately.
