@@ -53,13 +53,14 @@
 **Goal**: Detect when Claude asks questions requiring user input.
 **Independent Test**: Parser emits `question_detected` events when assistant messages contain question patterns.
 **Prompt**: `tasks/planned/WP02-question-detection.md`
+**Status**: [X] Done – see `tasks/done/phase-1-foundation/WP02-question-detection.md`
 
 ### Included Subtasks
-- [ ] T006 Define question patterns regex array (?, Could you, Would you like, etc.)
-- [ ] T007 Add detectQuestion() function to stream-parser.ts
-- [ ] T008 Emit `question_detected` event with message content and context
-- [ ] T009 Track pending question state in parser
-- [ ] T010 Add question detection unit tests
+- [x] T006 Define question patterns regex array (?, Could you, Would you like, etc.)
+- [x] T007 Add detectQuestion() function to stream-parser.ts
+- [x] T008 Emit `question_detected` event with message content and context
+- [x] T009 Track pending question state in parser
+- [x] T010 Add question detection unit tests
 
 ### Implementation Notes
 1. Patterns: `/\?/`, `/could you/i`, `/would you like/i`, `/please confirm/i`, `/shall i/i`

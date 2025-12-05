@@ -8,10 +8,10 @@ subtasks:
   - "T010"
 title: "Question Detection in Stream Parser"
 phase: "Phase 1 - Foundation"
-lane: "for_review"
-assignee: ""
-agent: "claude"
-shell_pid: "6568"
+lane: "done"
+assignee: "codex"
+agent: "codex"
+shell_pid: "20405"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -220,13 +220,18 @@ describe('detectQuestion', () => {
 
 ## Definition of Done Checklist
 
-- [ ] T006: Question patterns defined
-- [ ] T007: detectQuestion() function implemented
-- [ ] T008: question_detected event emitted
-- [ ] T009: Pending question state tracked
-- [ ] T010: Unit tests pass
-- [ ] All changes compile without TypeScript errors
-- [ ] Existing 005 tests still pass (no regression)
+- [x] T006: Question patterns defined
+- [x] T007: detectQuestion() function implemented
+- [x] T008: question_detected event emitted
+- [x] T009: Pending question state tracked
+- [x] T010: Unit tests pass
+- [x] All changes compile without TypeScript errors
+- [x] Existing 005 tests still pass (no regression)
+
+## Review Feedback
+
+- Approved. Verified question detection patterns, event emission, and pending-state tracking; ran `npm run test:functional` (question-detection suites in TS and compiled JS) and targeted `npm run test -- tests/functional/src/harness/__tests__/question-detection.test.ts` - all passing.
+- Note for follow-up tuning: the `let me know` pattern may flag conversational sign-offs; adjust if the controller observes spurious pending questions.
 
 ## Review Guidance
 
@@ -241,3 +246,4 @@ describe('detectQuestion', () => {
 - 2025-12-05T10:35:00Z – claude – shell_pid=6568 – lane=doing – Started implementation
 - 2025-12-05T10:45:00Z – codex – shell_pid=8721 – lane=doing – Started implementation
 - 2025-12-05T10:40:00Z – claude – shell_pid=6568 – lane=for_review – Completed implementation: QUESTION_PATTERNS, detectQuestion(), question_detected event, pending state tracking, 38 unit tests
+- 2025-12-05T10:42:00Z – codex – shell_pid=20405 – lane=done – Review accepted via /spec-kitty.review; tests: `npm run test:functional`, `npm run test -- tests/functional/src/harness/__tests__/question-detection.test.ts`
