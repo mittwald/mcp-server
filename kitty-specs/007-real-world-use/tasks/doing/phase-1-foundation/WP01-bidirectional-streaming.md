@@ -8,10 +8,10 @@ subtasks:
   - "T005"
 title: "Bidirectional Streaming Infrastructure"
 phase: "Phase 1 - Foundation"
-lane: "for_review"
-assignee: "claude"
-agent: "claude"
-shell_pid: "5620"
+lane: "doing"
+assignee: "codex"
+agent: "codex"
+shell_pid: "50937"
 history:
   - timestamp: "2025-12-05T10:15:00Z"
     lane: "planned"
@@ -23,6 +23,11 @@ history:
     agent: "claude"
     shell_pid: "5620"
     action: "Started implementation"
+  - timestamp: "2025-12-05T10:01:59Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "50937"
+    action: "Started review"
 ---
 
 # Work Package Prompt: WP01 – Bidirectional Streaming Infrastructure
