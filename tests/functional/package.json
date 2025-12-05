@@ -15,7 +15,11 @@
     "list-resources": "node dist/harness/index.js list-resources",
     "help": "node dist/harness/index.js --help",
     "analyze": "npx tsx src/analysis/cli.ts",
-    "analyze:verbose": "npx tsx src/analysis/cli.ts --verbose"
+    "analyze:verbose": "npx tsx src/analysis/cli.ts --verbose",
+    "use-cases": "npx tsx src/cli/run-use-cases.ts",
+    "use-cases:apps": "npx tsx src/cli/run-use-cases.ts --domain apps",
+    "use-cases:databases": "npx tsx src/cli/run-use-cases.ts --domain databases",
+    "use-cases:gaps": "npx tsx src/cli/run-use-cases.ts --coverage-gaps"
   },
   "keywords": [
     "mcp",
