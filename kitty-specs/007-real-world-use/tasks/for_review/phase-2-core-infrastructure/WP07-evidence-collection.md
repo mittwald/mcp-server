@@ -10,7 +10,7 @@ subtasks:
   - "T048"
 title: "Evidence Collection with Playwright"
 phase: "Phase 2 - Core Infrastructure"
-lane: "doing"
+lane: "for_review"
 assignee: "codex"
 agent: "codex"
 shell_pid: "8766"
@@ -25,6 +25,11 @@ history:
     agent: "codex"
     shell_pid: "8766"
     action: "Started implementation"
+  - timestamp: "2025-12-05T09:50:54Z"
+    lane: "for_review"
+    agent: "codex"
+    shell_pid: "8766"
+    action: "Ready for review"
 ---
 
 # Work Package Prompt: WP07 – Evidence Collection with Playwright
@@ -377,3 +382,4 @@ tests/functional/evidence/
 
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
 - 2025-12-05T09:40:04Z – codex – shell_pid=8766 – lane=doing – Started implementation
+- 2025-12-05T09:50:54Z – codex – shell_pid=8766 – lane=doing – Completed implementation

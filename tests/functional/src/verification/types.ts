@@ -1,44 +1,36 @@
 /**
  * Evidence collection types for real-world use cases.
- * Mirrors the data-model definitions so future executors can consume outputs directly.
+ * Verification primitives reuse the canonical use-case types to stay aligned.
  */
 
-export type VerificationMethod = 'playwright' | 'curl' | 'api' | 'log-pattern';
+import type {
+  ApiVerification,
+  CurlVerification,
+  LogPatternVerification,
+  PlaywrightVerification,
+  SuccessCriterion,
+  VerificationMethod,
+} from '../use-cases/types.js';
 
-export interface PlaywrightVerification {
-  url: string;
-  waitForSelector?: string;
-  expectedText?: string;
-  captureScreenshot?: boolean;
+export type {
+  ApiVerification,
+  CurlVerification,
+  LogPatternVerification,
+  PlaywrightVerification,
+  SuccessCriterion,
+  VerificationMethod,
+} from '../use-cases/types.js';
+
+export type PlaywrightVerificationConfig = PlaywrightVerification & {
   timeoutMs?: number;
-}
+};
 
-export interface CurlVerification {
-  url: string;
-  expectedStatus: number;
-  bodyPattern?: string;
+export type CurlVerificationConfig = CurlVerification & {
   timeoutMs?: number;
   headers?: Record<string, string>;
   method?: string;
   body?: string;
-}
-
-export interface ApiVerification {
-  tool: string;
-  params: Record<string, unknown>;
-  expectedPattern: string;
-}
-
-export interface LogPatternVerification {
-  pattern: string;
-  minOccurrences: number;
-}
-
-export interface SuccessCriterion {
-  description: string;
-  method: VerificationMethod;
-  config: PlaywrightVerification | CurlVerification | ApiVerification | LogPatternVerification;
-}
+};
 
 export type EvidenceArtifactType = 'screenshot' | 'response' | 'log-excerpt';
 
