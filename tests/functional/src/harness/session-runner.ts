@@ -144,18 +144,26 @@ export class SessionRunner implements ISessionRunner {
     let isKilled = false;
     let isTimedOut = false;
 
+    // Determine if using stdin-only mode (for multi-turn with pre-populated answers)
+    const useStdinOnlyMode = options.additionalMessages && options.additionalMessages.length > 0;
+
     // Build command arguments (T007, T008, T004-007)
-    const args = [
-      '-p',
-      options.prompt,
+    const args: string[] = [];
+
+    // Only use -p flag if NOT in stdin-only mode
+    if (!useStdinOnlyMode) {
+      args.push('-p', options.prompt);
+    }
+
+    args.push(
       '--output-format',
       'stream-json',
       '--input-format',
       'stream-json',
       '--verbose',
       '--model',
-      DEFAULT_MODEL,
-    ];
+      DEFAULT_MODEL
+    );
 
     // Add MCP config if provided
     if (options.mcpConfig) {
@@ -182,6 +190,31 @@ export class SessionRunner implements ISessionRunner {
         ...options.env,
       },
     });
+
+    // Handle stdin mode: send messages and close stdin
+    if (useStdinOnlyMode && childProcess.stdin) {
+      // Send initial prompt
+      const initialMessage = {
+        type: 'user',
+        message: { role: 'user', content: options.prompt },
+      };
+      childProcess.stdin.write(JSON.stringify(initialMessage) + '\n');
+
+      // Send additional messages
+      for (const content of options.additionalMessages!) {
+        const message = {
+          type: 'user',
+          message: { role: 'user', content },
+        };
+        childProcess.stdin.write(JSON.stringify(message) + '\n');
+      }
+
+      // Close stdin to trigger processing
+      childProcess.stdin.end();
+    } else if (childProcess.stdin) {
+      // Standard mode: close stdin immediately since we're using -p
+      childProcess.stdin.end();
+    }
 
     // Collect stderr for error reporting (T012)
     let stderrOutput = '';

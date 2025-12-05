@@ -274,6 +274,13 @@ export interface SpawnSessionOptions {
   disallowedTools: string[];
   env?: Record<string, string>;
   timeoutMs?: number;
+  /**
+   * Additional user messages to send after the initial prompt.
+   * These are sent via stdin in stream-json format.
+   * Useful for pre-populating answers to expected questions.
+   * When provided, uses stdin-only mode (no -p flag) for proper multi-turn support.
+   */
+  additionalMessages?: string[];
 }
 
 /**

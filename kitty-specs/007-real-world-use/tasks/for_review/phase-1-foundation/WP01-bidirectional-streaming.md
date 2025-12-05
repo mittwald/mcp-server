@@ -8,7 +8,7 @@ subtasks:
   - "T005"
 title: "Bidirectional Streaming Infrastructure"
 phase: "Phase 1 - Foundation"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "5620"
@@ -202,3 +202,21 @@ export function writeUserMessage(stdin: Writable, content: string): void {
 ## Activity Log
 
 - 2025-12-05T10:15:00Z – system – lane=planned – Prompt created.
+- 2025-12-05T11:00:00Z – claude – shell_pid=5620 – lane=doing – Started implementation
+- 2025-12-05T12:30:00Z – claude – shell_pid=5620 – lane=doing – Completed implementation
+
+## Implementation Notes
+
+**Key Discovery**: Claude CLI with `--input-format stream-json` buffers output until stdin closes.
+Real-time question detection/injection is NOT possible. However, we CAN:
+1. Pre-populate all user messages (prompt + answers) via stdin
+2. Close stdin
+3. Claude processes all messages as a multi-turn conversation
+
+**Changes Made**:
+- T001: SessionRunner.spawn() now returns stdin handle
+- T002-T003: Created stdin-injector.ts with typed message injection functions
+- T004: Added --input-format stream-json flag (but discovered -p flag must NOT be used with stdin mode)
+- T005: Created test script demonstrating successful multi-turn conversation
+- Updated SpawnSessionOptions to support additionalMessages for pre-populated Q&A
+- SessionRunner now supports stdin-only mode when additionalMessages provided
