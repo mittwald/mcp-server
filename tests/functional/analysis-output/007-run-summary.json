@@ -1,0 +1,205 @@
+{
+  "startTime": "2025-12-05T18:53:38.207Z",
+  "endTime": "2025-12-05T21:14:55.079Z",
+  "total": 31,
+  "passed": 24,
+  "failed": 7,
+  "timeout": 0,
+  "cleanupFailed": 0,
+  "results": [
+    {
+      "useCaseId": "access-001-create-sftp-user",
+      "status": "passed",
+      "duration": 130179,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "access-002-manage-ssh-access",
+      "status": "passed",
+      "duration": 207321,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "apps-001-deploy-php-app",
+      "status": "passed",
+      "duration": 393472,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "apps-002-update-nodejs-version",
+      "status": "passed",
+      "duration": 212247,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "apps-003-install-wordpress",
+      "status": "passed",
+      "duration": 61514,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "apps-004-migrate-application",
+      "status": "passed",
+      "duration": 105658,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "automation-001-setup-cronjob",
+      "status": "passed",
+      "duration": 95280,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "automation-002-manage-scheduled-tasks",
+      "status": "passed",
+      "duration": 149810,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "backups-001-setup-backup-schedule",
+      "status": "passed",
+      "duration": 82045,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "backups-002-create-manual-backup",
+      "status": "failed",
+      "duration": 278520,
+      "error": "Execution failed",
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "backups-003-restore-from-backup",
+      "status": "passed",
+      "duration": 120189,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "containers-001-manage-resources",
+      "status": "passed",
+      "duration": 233898,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "containers-002-scale-app",
+      "status": "passed",
+      "duration": 52573,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "containers-003-deploy-docker-stack",
+      "status": "passed",
+      "duration": 107604,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "containers-004-manage-volumes",
+      "status": "passed",
+      "duration": 123143,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "databases-001-provision-mysql",
+      "status": "failed",
+      "duration": 244095,
+      "error": "Execution failed",
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "databases-002-create-backup",
+      "status": "failed",
+      "duration": 720026,
+      "error": "Session timed out",
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "databases-003-setup-redis-cache",
+      "status": "passed",
+      "duration": 98750,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "databases-004-manage-users",
+      "status": "passed",
+      "duration": 73988,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "domains-001-setup-email-forwarding",
+      "status": "passed",
+      "duration": 84868,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "domains-002-configure-dns",
+      "status": "passed",
+      "duration": 86299,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "domains-003-setup-mailbox",
+      "status": "passed",
+      "duration": 193070,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "domains-004-ssl-certificate",
+      "status": "passed",
+      "duration": 60116,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "identity-001-manage-api-tokens",
+      "status": "passed",
+      "duration": 225054,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "identity-002-ssh-key-management",
+      "status": "passed",
+      "duration": 83972,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "identity-003-check-account-settings",
+      "status": "failed",
+      "duration": 1000521,
+      "error": "Session timed out",
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "organization-001-invite-team-member",
+      "status": "failed",
+      "duration": 1076316,
+      "error": "Session timed out",
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "organization-002-manage-memberships",
+      "status": "failed",
+      "duration": 974322,
+      "error": "Session timed out",
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "project-001-create-project",
+      "status": "failed",
+      "duration": 1047800,
+      "error": "Session timed out",
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "project-002-configure-ssh",
+      "status": "passed",
+      "duration": 55530,
+      "toolsCovered": []
+    },
+    {
+      "useCaseId": "project-003-manage-environment",
+      "status": "passed",
+      "duration": 98517,
+      "toolsCovered": []
+    }
+  ],
+  "coverageAfter": 14.5
+}

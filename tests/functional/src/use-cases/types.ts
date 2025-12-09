@@ -31,9 +31,9 @@ export const UseCaseDomainSchema = z.enum([
 /**
  * Verification methods supported for success criteria
  */
-export type VerificationMethod = 'playwright' | 'curl' | 'api' | 'log-pattern';
+export type VerificationMethod = 'playwright' | 'curl' | 'api' | 'log-pattern' | 'mcp-outcome' | 'resource-exists';
 
-export const VerificationMethodSchema = z.enum(['playwright', 'curl', 'api', 'log-pattern']);
+export const VerificationMethodSchema = z.enum(['playwright', 'curl', 'api', 'log-pattern', 'mcp-outcome', 'resource-exists']);
 
 export interface PlaywrightVerification {
   /** URL to visit */
@@ -95,13 +95,57 @@ export const LogPatternVerificationSchema: z.ZodType<LogPatternVerification> = z
   minOccurrences: z.number().int().nonnegative(),
 });
 
+/**
+ * MCP Outcome Verification - checks that a tool call succeeded with expected result
+ * This is outcome-based, not just invocation-based
+ */
+export interface McpOutcomeVerification {
+  /** MCP tool name to look for in logs */
+  toolName: string;
+  /** Pattern to match in the tool's result (indicates success) */
+  successPattern: string;
+  /** Pattern that indicates failure (optional - if found, criterion fails) */
+  failurePattern?: string;
+  /** Whether the result should NOT contain a certain pattern */
+  mustNotContain?: string;
+}
+
+export const McpOutcomeVerificationSchema: z.ZodType<McpOutcomeVerification> = z.object({
+  toolName: z.string(),
+  successPattern: z.string(),
+  failurePattern: z.string().optional(),
+  mustNotContain: z.string().optional(),
+});
+
+/**
+ * Resource Exists Verification - verifies a resource was created by querying for it
+ * Uses MCP tools to verify the resource exists post-execution
+ */
+export interface ResourceExistsVerification {
+  /** MCP tool to use for listing/getting resources */
+  queryTool: string;
+  /** Parameters for the query tool */
+  queryParams: Record<string, unknown>;
+  /** Pattern to match in the query result (proves resource exists) */
+  existsPattern: string;
+  /** Resource type being verified */
+  resourceType: string;
+}
+
+export const ResourceExistsVerificationSchema: z.ZodType<ResourceExistsVerification> = z.object({
+  queryTool: z.string(),
+  queryParams: z.record(z.unknown()),
+  existsPattern: z.string(),
+  resourceType: z.string(),
+});
+
 export interface SuccessCriterion {
   /** Description of what to verify */
   description: string;
   /** Verification method */
   method: VerificationMethod;
   /** Method-specific configuration */
-  config: PlaywrightVerification | CurlVerification | ApiVerification | LogPatternVerification;
+  config: PlaywrightVerification | CurlVerification | ApiVerification | LogPatternVerification | McpOutcomeVerification | ResourceExistsVerification;
 }
 
 const PlaywrightCriterionSchema = z.object({
@@ -128,12 +172,72 @@ const LogPatternCriterionSchema = z.object({
   config: LogPatternVerificationSchema,
 });
 
+const McpOutcomeCriterionSchema = z.object({
+  description: z.string(),
+  method: z.literal('mcp-outcome'),
+  config: McpOutcomeVerificationSchema,
+});
+
+const ResourceExistsCriterionSchema = z.object({
+  description: z.string(),
+  method: z.literal('resource-exists'),
+  config: ResourceExistsVerificationSchema,
+});
+
 export const SuccessCriterionSchema: z.ZodType<SuccessCriterion> = z.discriminatedUnion('method', [
   PlaywrightCriterionSchema,
   CurlCriterionSchema,
   ApiCriterionSchema,
   LogPatternCriterionSchema,
+  McpOutcomeCriterionSchema,
+  ResourceExistsCriterionSchema,
 ]);
+
+/**
+ * Fixture types that can be set up before execution
+ * (matches FixtureType from fixture-setup.ts)
+ */
+export type SetupFixtureType =
+  | 'php-app'
+  | 'node-app'
+  | 'static-app'
+  | 'mysql-database'
+  | 'redis-database'
+  | 'ssh-user'
+  | 'sftp-user'
+  | 'cronjob';
+
+export const SetupFixtureTypeSchema = z.enum([
+  'php-app',
+  'node-app',
+  'static-app',
+  'mysql-database',
+  'redis-database',
+  'ssh-user',
+  'sftp-user',
+  'cronjob',
+]);
+
+/**
+ * Setup requirement for a use case - resources to create before execution
+ */
+export interface SetupRequirement {
+  /** Type of fixture needed */
+  type: SetupFixtureType;
+  /** Configuration for the fixture */
+  config?: Record<string, unknown>;
+  /** Name/description for the fixture */
+  name?: string;
+  /** Reference key to use in prompt substitution (e.g., {{appId}}) */
+  referenceKey?: string;
+}
+
+export const SetupRequirementSchema: z.ZodType<SetupRequirement> = z.object({
+  type: SetupFixtureTypeSchema,
+  config: z.record(z.unknown()).optional(),
+  name: z.string().optional(),
+  referenceKey: z.string().optional(),
+});
 
 /**
  * Resource types that can be cleaned up after execution
@@ -348,6 +452,8 @@ export interface UseCase {
   expectedDomains: UseCaseDomain[];
   /** Specific MCP tools expected (for coverage mapping) */
   expectedTools: string[];
+  /** Resources to create BEFORE execution (fixtures) */
+  setupRequirements?: SetupRequirement[];
   /** Observable criteria to verify success */
   successCriteria: SuccessCriterion[];
   /** Resources that need cleanup */
@@ -372,6 +478,7 @@ export const UseCaseSchema: z.ZodType<UseCase> = z.object({
   prompt: z.string(),
   expectedDomains: z.array(UseCaseDomainSchema),
   expectedTools: z.array(z.string()),
+  setupRequirements: z.array(SetupRequirementSchema).optional(),
   successCriteria: z.array(SuccessCriterionSchema),
   cleanupRequirements: z.array(CleanupRequirementSchema),
   questionAnswers: z.array(QuestionAnswerSchema),

@@ -1,0 +1,25 @@
+{
+  "id": "domains-002-configure-dns-2025-12-05T19-53-13",
+  "useCaseId": "domains-002-configure-dns",
+  "startTime": "2025-12-05T19:53:13.547Z",
+  "status": "success",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/tests/functional/session-logs/007-real-world-use/domains-002-configure-dns-2025-12-05T19-53-13.jsonl",
+  "toolsInvoked": [],
+  "evidenceArtifacts": [
+    {
+      "type": "log-excerpt",
+      "path": "/Users/robert/Code/mittwald-mcp/tests/functional/evidence/domains-002-configure-dns-2025-12-05T19-54-39.844Z/criterion-0-log-excerpt.txt",
+      "criterionIndex": 0,
+      "timestamp": "2025-12-05T19:54:39.846Z",
+      "metadata": {}
+    }
+  ],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "endTime": "2025-12-05T19:54:39.846Z",
+  "durationMs": 86299
+}

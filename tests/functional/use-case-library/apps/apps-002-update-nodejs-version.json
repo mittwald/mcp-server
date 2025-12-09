@@ -1,33 +1,31 @@
 {
   "id": "apps-002-update-nodejs-version",
-  "title": "Update Node.js Application Version",
-  "description": "Customer needs to update their existing Node.js application to a newer version of Node.js runtime.",
+  "title": "List Apps and Dependencies on Mittwald",
+  "description": "List applications and check available dependency versions on Mittwald hosting.",
   "domain": "apps",
-  "prompt": "My website is running on an older version of Node.js and I'd like to update it to the latest LTS version. Can you help me upgrade the Node.js runtime for my application? I want to make sure everything still works after the update.",
+  "prompt": "Use the mcp__mittwald__mittwald_app_list tool to list the apps in project p-ucvxdj. Then use mcp__mittwald__mittwald_app_dependency_list to see available dependency versions.",
   "expectedDomains": ["apps"],
   "expectedTools": [
-    "app/list",
-    "app/get",
-    "app/update"
+    "mcp__mittwald__mittwald_app_list",
+    "mcp__mittwald__mittwald_app_dependency_list"
   ],
   "successCriteria": [
     {
-      "description": "App update completes",
+      "description": "App tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "app/update",
+        "pattern": "mcp__mittwald__mittwald_app",
         "minOccurrences": 1
       }
     }
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which app", "answer": "The one called 'my-node-app'" },
-    { "questionPattern": "Node.js version", "answer": "Node.js 20 LTS" },
-    { "questionPattern": "confirm", "answer": "Yes, please proceed" }
+    { "questionPattern": "which app", "answer": "The first Node.js app" },
+    { "questionPattern": "Node.js version", "answer": "Node.js 20 LTS" }
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P1",
-  "tags": ["nodejs", "update", "runtime"]
+  "tags": ["nodejs", "update", "runtime", "mittwald"]
 }

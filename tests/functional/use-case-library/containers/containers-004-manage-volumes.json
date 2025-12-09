@@ -1,36 +1,30 @@
 {
   "id": "containers-004-manage-volumes",
-  "title": "Create Persistent Storage Volumes",
-  "description": "Developer needs to create and manage persistent volumes for containerized applications to store data that survives container restarts.",
+  "title": "View Volumes on Mittwald",
+  "description": "View persistent volumes on Mittwald hosting.",
   "domain": "containers",
-  "prompt": "My Docker application needs persistent storage for uploaded files. Can you create a volume that will persist data even when the container is restarted? I need about 10GB of storage.",
+  "prompt": "I want to check the persistent storage volumes on my Mittwald project. Use the Mittwald MCP tools to list my projects and show all volumes.",
   "expectedDomains": ["containers", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "volume/list",
-    "volume/create",
-    "container/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_volume_list"
   ],
   "successCriteria": [
     {
-      "description": "Volume created",
+      "description": "Volume or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "volume/create",
+        "pattern": "mcp__mittwald__mittwald_(volume|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "container", "identificationMethod": "log-parse", "deletionTool": "volume/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which project", "answer": "The container project" },
-    { "questionPattern": "size|storage", "answer": "10GB" },
-    { "questionPattern": "mount|path", "answer": "/data/uploads" }
+    { "questionPattern": "which project", "answer": "The container project" }
   ],
-  "estimatedDuration": 4,
-  "timeout": 12,
+  "estimatedDuration": 3,
+  "timeout": 10,
   "priority": "P2",
-  "tags": ["containers", "volumes", "storage", "persistence"]
+  "tags": ["containers", "volumes", "storage", "mittwald"]
 }

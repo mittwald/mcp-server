@@ -1,0 +1,25 @@
+{
+  "id": "apps-002-update-nodejs-version-2025-12-05T19-05-49",
+  "useCaseId": "apps-002-update-nodejs-version",
+  "startTime": "2025-12-05T19:05:49.309Z",
+  "status": "success",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/tests/functional/session-logs/007-real-world-use/apps-002-update-nodejs-version-2025-12-05T19-05-49.jsonl",
+  "toolsInvoked": [],
+  "evidenceArtifacts": [
+    {
+      "type": "log-excerpt",
+      "path": "/Users/robert/Code/mittwald-mcp/tests/functional/evidence/apps-002-update-nodejs-version-2025-12-05T19-09-21.554Z/criterion-0-log-excerpt.txt",
+      "criterionIndex": 0,
+      "timestamp": "2025-12-05T19:09:21.555Z",
+      "metadata": {}
+    }
+  ],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "endTime": "2025-12-05T19:09:21.556Z",
+  "durationMs": 212247
+}

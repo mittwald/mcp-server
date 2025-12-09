@@ -1,34 +1,31 @@
 {
   "id": "project-003-manage-environment",
-  "title": "Set Up Development Environment Variables",
-  "description": "Developer needs to configure environment variables for their application including API keys and database credentials.",
+  "title": "Check Project Details on Mittwald",
+  "description": "Check project details and app configuration on Mittwald hosting.",
   "domain": "project-foundation",
-  "prompt": "I need to set up environment variables for my Node.js application. I have API keys for Stripe and SendGrid that need to be configured. Can you help me set up the environment configuration for the project?",
-  "expectedDomains": ["project-foundation"],
+  "prompt": "I want to review my project configuration on Mittwald. Use the Mittwald MCP tools to list my projects, show the details of my main project, and list the apps installed in it.",
+  "expectedDomains": ["project-foundation", "apps"],
   "expectedTools": [
-    "project/list",
-    "project/get",
-    "project/filesystem/list",
-    "app/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_project_get",
+    "mcp__mittwald__mittwald_app_list"
   ],
   "successCriteria": [
     {
-      "description": "Project retrieved",
+      "description": "Project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "project/get",
+        "pattern": "mcp__mittwald__mittwald_(project|app)",
         "minOccurrences": 1
       }
     }
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which project", "answer": "The Node.js application project" },
-    { "questionPattern": "Stripe|API key", "answer": "sk_test_xxxxx" },
-    { "questionPattern": "SendGrid", "answer": "SG.xxxxx" }
+    { "questionPattern": "which project", "answer": "The main project" }
   ],
-  "estimatedDuration": 4,
-  "timeout": 12,
+  "estimatedDuration": 2,
+  "timeout": 10,
   "priority": "P2",
-  "tags": ["project", "environment", "configuration", "nodejs"]
+  "tags": ["project", "apps", "mittwald"]
 }

@@ -1,29 +1,20 @@
 {
   "id": "identity-003-check-account-settings",
-  "title": "Review Account Information and Sessions",
-  "description": "User wants to review their account details, check active sessions for security purposes, and update their profile information.",
+  "title": "Review Mittwald Account Information",
+  "description": "User wants to review their Mittwald account details and active sessions for security purposes.",
   "domain": "identity",
-  "prompt": "I'd like to do a security review of my account. Can you show me my account details, list all active sessions, and tell me when I last logged in? I want to make sure there are no suspicious sessions.",
+  "prompt": "I'd like to do a security review of my Mittwald account. Use the Mittwald MCP tools to show me my account details and list all my active sessions.",
   "expectedDomains": ["identity"],
   "expectedTools": [
-    "user/self/get",
-    "user/self/sessions/list",
-    "login/status"
+    "mcp__mittwald__mittwald_user_get",
+    "mcp__mittwald__mittwald_user_session_list"
   ],
   "successCriteria": [
     {
-      "description": "User account info retrieved",
+      "description": "User info or sessions retrieved",
       "method": "log-pattern",
       "config": {
-        "pattern": "user/self",
-        "minOccurrences": 1
-      }
-    },
-    {
-      "description": "Sessions listed",
-      "method": "log-pattern",
-      "config": {
-        "pattern": "sessions",
+        "pattern": "mcp__mittwald__mittwald_user",
         "minOccurrences": 1
       }
     }
@@ -35,5 +26,5 @@
   "estimatedDuration": 2,
   "timeout": 8,
   "priority": "P3",
-  "tags": ["identity", "security", "sessions", "account"]
+  "tags": ["identity", "security", "sessions", "account", "mittwald"]
 }

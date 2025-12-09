@@ -1,0 +1,25 @@
+{
+  "id": "containers-004-manage-volumes-2025-12-05T19-30-48",
+  "useCaseId": "containers-004-manage-volumes",
+  "startTime": "2025-12-05T19:30:48.664Z",
+  "status": "success",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/tests/functional/session-logs/007-real-world-use/containers-004-manage-volumes-2025-12-05T19-30-48.jsonl",
+  "toolsInvoked": [],
+  "evidenceArtifacts": [
+    {
+      "type": "log-excerpt",
+      "path": "/Users/robert/Code/mittwald-mcp/tests/functional/evidence/containers-004-manage-volumes-2025-12-05T19-32-51.804Z/criterion-0-log-excerpt.txt",
+      "criterionIndex": 0,
+      "timestamp": "2025-12-05T19:32:51.807Z",
+      "metadata": {}
+    }
+  ],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "endTime": "2025-12-05T19:32:51.807Z",
+  "durationMs": 123143
+}

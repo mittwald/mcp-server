@@ -1,0 +1,25 @@
+{
+  "id": "backups-003-restore-from-backup-2025-12-05T19-22-14",
+  "useCaseId": "backups-003-restore-from-backup",
+  "startTime": "2025-12-05T19:22:14.393Z",
+  "status": "success",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/tests/functional/session-logs/007-real-world-use/backups-003-restore-from-backup-2025-12-05T19-22-14.jsonl",
+  "toolsInvoked": [],
+  "evidenceArtifacts": [
+    {
+      "type": "log-excerpt",
+      "path": "/Users/robert/Code/mittwald-mcp/tests/functional/evidence/backups-003-restore-from-backup-2025-12-05T19-24-14.581Z/criterion-0-log-excerpt.txt",
+      "criterionIndex": 0,
+      "timestamp": "2025-12-05T19:24:14.582Z",
+      "metadata": {}
+    }
+  ],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "endTime": "2025-12-05T19:24:14.582Z",
+  "durationMs": 120189
+}

@@ -1,38 +1,30 @@
 {
   "id": "project-001-create-project",
-  "title": "Create New Web Project",
-  "description": "Customer wants to set up a new hosting environment for a web project.",
+  "title": "List Projects and Servers on Mittwald",
+  "description": "Check available projects and servers on Mittwald hosting.",
   "domain": "project-foundation",
-  "prompt": "I'm starting a new web project and need to set up the hosting environment. I'll need a place to deploy my code with SSH access for deployments. Can you help me get this set up?",
-  "expectedDomains": ["organization", "project-foundation", "access-users"],
+  "prompt": "I want to see what projects I have on my Mittwald hosting account. Use the Mittwald MCP tools to list all my projects and show me the available servers.",
+  "expectedDomains": ["project-foundation"],
   "expectedTools": [
-    "org/list",
-    "server/list",
-    "project/create",
-    "project/get",
-    "ssh/user/create"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_server_list"
   ],
   "successCriteria": [
     {
-      "description": "Project is created",
+      "description": "Project or server tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "project/create",
+        "pattern": "mcp__mittwald__mittwald_(project|server)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "ssh-key", "identificationMethod": "log-parse", "deletionTool": "ssh/user/delete", "order": 1 },
-    { "resourceType": "project", "identificationMethod": "log-parse", "deletionTool": "project/delete", "order": 2 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "project name", "answer": "my-new-website" },
-    { "questionPattern": "description", "answer": "A new website project" },
-    { "questionPattern": "server", "answer": "Use the default server" }
+    { "questionPattern": "which server", "answer": "MCP Server Dev" }
   ],
-  "estimatedDuration": 3,
+  "estimatedDuration": 2,
   "timeout": 10,
   "priority": "P1",
-  "tags": ["project", "setup", "ssh"]
+  "tags": ["project", "server", "mittwald"]
 }

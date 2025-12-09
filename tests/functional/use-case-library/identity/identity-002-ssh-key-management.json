@@ -1,32 +1,30 @@
 {
   "id": "identity-002-ssh-key-management",
-  "title": "Add SSH Key for Secure Server Access",
-  "description": "User wants to add their SSH public key to their account so they can securely access their projects via SSH without passwords.",
+  "title": "Add SSH Key for Secure Mittwald Access",
+  "description": "User wants to add their SSH public key to their Mittwald account for secure server access.",
   "domain": "identity",
-  "prompt": "I want to set up SSH key authentication for my mittwald account. I have my public key ready. Can you show me my current SSH keys and then add a new one? My public key is ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample... developer@laptop",
+  "prompt": "I want to set up SSH key authentication for my Mittwald account. Use the Mittwald MCP tools to list my current SSH keys, then show me my user profile information.",
   "expectedDomains": ["identity"],
   "expectedTools": [
-    "user/self/ssh-keys/list",
-    "user/self/ssh-keys/create",
-    "user/self/get"
+    "mcp__mittwald__mittwald_user_ssh_key_list",
+    "mcp__mittwald__mittwald_user_get"
   ],
   "successCriteria": [
     {
-      "description": "SSH keys are listed",
+      "description": "SSH keys listed or user info retrieved",
       "method": "log-pattern",
       "config": {
-        "pattern": "ssh-keys",
+        "pattern": "mcp__mittwald__mittwald_user",
         "minOccurrences": 1
       }
     }
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "comment|label|name", "answer": "developer-laptop" },
-    { "questionPattern": "key type", "answer": "ed25519" }
+    { "questionPattern": "comment|label|name", "answer": "developer-laptop" }
   ],
   "estimatedDuration": 2,
   "timeout": 8,
   "priority": "P2",
-  "tags": ["identity", "ssh", "security", "authentication"]
+  "tags": ["identity", "ssh", "security", "authentication", "mittwald"]
 }

@@ -1,36 +1,30 @@
 {
   "id": "domains-001-setup-email-forwarding",
-  "title": "Setup Email Forwarding",
-  "description": "Customer wants to set up email forwarding from their domain to a personal email address.",
+  "title": "Check Email Configuration on Mittwald",
+  "description": "Check email configuration on Mittwald hosting.",
   "domain": "domains-mail",
-  "prompt": "I want to set up email forwarding so that any messages sent to contact@mydomain.com get forwarded to my personal Gmail address. Can you help me configure this?",
+  "prompt": "I want to check my email configuration on Mittwald. Use the Mittwald MCP tools to list my projects and show all mail addresses.",
   "expectedDomains": ["project-foundation", "domains-mail"],
   "expectedTools": [
-    "project/list",
-    "domain/list",
-    "mail/address/create",
-    "mail/deliverybox/create"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_mail_address_list"
   ],
   "successCriteria": [
     {
-      "description": "Mail forwarding is configured",
+      "description": "Mail or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "mail/address/create|mail/deliverybox/create",
+        "pattern": "mcp__mittwald__mittwald_(mail|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "mailbox", "identificationMethod": "log-parse", "deletionTool": "mail/address/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which domain", "answer": "mydomain.com" },
-    { "questionPattern": "forward to", "answer": "myemail@gmail.com" },
-    { "questionPattern": "email address", "answer": "contact@mydomain.com" }
+    { "questionPattern": "which domain", "answer": "mydomain.com" }
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P1",
-  "tags": ["email", "forwarding", "domain"]
+  "tags": ["email", "mail", "mittwald"]
 }

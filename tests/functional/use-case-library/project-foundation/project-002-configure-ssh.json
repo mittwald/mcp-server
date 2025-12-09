@@ -1,36 +1,30 @@
 {
   "id": "project-002-configure-ssh",
-  "title": "Configure SSH Access",
-  "description": "Customer needs to set up SSH access to their project for deployment and file management.",
+  "title": "Check SSH Users on Mittwald",
+  "description": "Check SSH user configuration on Mittwald hosting project.",
   "domain": "project-foundation",
-  "prompt": "I need to set up SSH access to my project so I can deploy code and manage files. Can you help me create an SSH user and configure access?",
+  "prompt": "I need to check the SSH access configuration on my Mittwald project. Use the Mittwald MCP tools to list my projects and show all SSH users configured for access.",
   "expectedDomains": ["project-foundation", "access-users"],
   "expectedTools": [
-    "project/list",
-    "project/get",
-    "ssh/user/create",
-    "ssh/user/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_ssh_user_list"
   ],
   "successCriteria": [
     {
-      "description": "SSH user is created",
+      "description": "SSH or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "ssh/user/create",
+        "pattern": "mcp__mittwald__mittwald_(ssh|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "ssh-key", "identificationMethod": "log-parse", "deletionTool": "ssh/user/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which project", "answer": "my-website" },
-    { "questionPattern": "username", "answer": "deploy" },
-    { "questionPattern": "ssh key", "answer": "I'll add my public key manually later" }
+    { "questionPattern": "which project", "answer": "The main web project" }
   ],
   "estimatedDuration": 2,
   "timeout": 10,
   "priority": "P1",
-  "tags": ["ssh", "access", "deployment"]
+  "tags": ["ssh", "access", "mittwald"]
 }

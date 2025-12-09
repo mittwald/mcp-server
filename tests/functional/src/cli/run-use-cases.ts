@@ -25,6 +25,7 @@ import { CoverageTracker } from '../use-cases/coverage-tracker.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_LIBRARY_ROOT = path.join(__dirname, '../../use-case-library');
 const DEFAULT_OUTPUT_ROOT = path.join(__dirname, '../../analysis-output');
+const DEFAULT_MCP_CONFIG = path.join(__dirname, '../../config/mcp-server.json');
 
 /**
  * Valid domains for --domain filter
@@ -342,8 +343,10 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  // Initialize executor
-  const executor = new UseCaseExecutor();
+  // Initialize executor with MCP config for Mittwald tools
+  const executor = new UseCaseExecutor({
+    mcpConfig: DEFAULT_MCP_CONFIG,
+  });
 
   // Track results
   const results: ExecutionResult[] = [];

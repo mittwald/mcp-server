@@ -1,35 +1,31 @@
 {
   "id": "domains-002-configure-dns",
-  "title": "Configure DNS Records",
-  "description": "Customer needs to add DNS records to their domain for a third-party service integration.",
+  "title": "Check DNS Configuration on Mittwald",
+  "description": "Check DNS configuration on Mittwald hosting.",
   "domain": "domains-mail",
-  "prompt": "I need to add some DNS records to my domain to verify ownership for a third-party service. They gave me a TXT record to add. Can you help me configure this?",
+  "prompt": "I need to check the DNS configuration for my domain on Mittwald. Use the Mittwald MCP tools to list my projects and show DNS zone information.",
   "expectedDomains": ["project-foundation", "domains-mail"],
   "expectedTools": [
-    "project/list",
-    "domain/list",
-    "domain/dns/record/set"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_domain_list",
+    "mcp__mittwald__mittwald_domain_dnszone_list"
   ],
   "successCriteria": [
     {
-      "description": "DNS record is created",
+      "description": "Domain or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "domain/dns/record/set",
+        "pattern": "mcp__mittwald__mittwald_(domain|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "domain", "identificationMethod": "log-parse", "deletionTool": "domain/dns/record/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which domain", "answer": "mydomain.com" },
-    { "questionPattern": "record type", "answer": "TXT record" },
-    { "questionPattern": "record value", "answer": "verification-token-12345" }
+    { "questionPattern": "which domain", "answer": "mydomain.com" }
   ],
   "estimatedDuration": 2,
   "timeout": 10,
   "priority": "P1",
-  "tags": ["dns", "domain", "verification"]
+  "tags": ["dns", "domain", "mittwald"]
 }

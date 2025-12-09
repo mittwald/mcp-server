@@ -167,7 +167,8 @@ export class SessionRunner implements ISessionRunner {
       'stream-json',
       '--verbose',
       '--model',
-      DEFAULT_MODEL
+      DEFAULT_MODEL,
+      '--dangerously-skip-permissions'  // Required for automated MCP tool usage
     );
 
     // Add MCP config if provided

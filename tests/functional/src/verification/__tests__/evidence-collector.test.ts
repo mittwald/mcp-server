@@ -102,6 +102,7 @@ describe('EvidenceCollector', () => {
             url: 'https://example.com',
             waitForSelector: 'body',
             expectedText: 'Welcome',
+            captureScreenshot: true,
           },
         },
       ];
@@ -305,7 +306,7 @@ describe('EvidenceCollector', () => {
         {
           description: 'Playwright check',
           method: 'playwright',
-          config: { url: 'https://example.com', expectedText: 'Hello' },
+          config: { url: 'https://example.com', expectedText: 'Hello', captureScreenshot: true },
         },
         {
           description: 'Curl check',

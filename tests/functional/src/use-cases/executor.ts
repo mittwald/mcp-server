@@ -20,7 +20,15 @@ import type {
   EvidenceArtifact,
   CleanupStatus,
   QuestionLogEntry,
+  SetupRequirement,
 } from './types.js';
+import {
+  FixtureManager,
+  createFixtureManager,
+  MITTWALD_CONFIG,
+  type CreatedFixture,
+  type SetupRequirement as FixtureSetupRequirement,
+} from './fixture-setup.js';
 import {
   SupervisoryController,
   type StateChangeEvent,
@@ -39,9 +47,57 @@ const DEFAULT_EVIDENCE_ROOT = path.join(__dirname, '../../evidence');
 const DEFAULT_EXECUTION_ROOT = path.join(__dirname, '../../executions');
 
 /**
+ * System prompt prefix for Mittwald MCP tool guidance
+ *
+ * This context ensures Claude understands it's working with Mittwald hosting
+ * and should use the available MCP tools rather than asking generic questions.
+ */
+const MITTWALD_SYSTEM_PROMPT = `You are a helpful assistant with access to Mittwald hosting platform MCP tools.
+
+IMPORTANT CONTEXT:
+- You have access to Mittwald MCP tools (prefixed with mcp__mittwald__) for managing hosting resources
+- The user's infrastructure is hosted on Mittwald - always use Mittwald MCP tools to complete their requests
+- DO NOT ask clarifying questions about which hosting provider - it's Mittwald
+- DO NOT suggest generic solutions - use the Mittwald MCP tools you have access to
+- If you need to list, create, or manage resources, use the appropriate mcp__mittwald__* tool
+- Always attempt to complete the task using the available tools before asking questions
+- Start by listing resources (projects, apps, etc.) to understand what's available
+
+SERVER & PROJECT ACCESS (CRITICAL):
+- There are two servers you may see:
+  1. "MCP Server Dev" (s-igc7dy) - FULL ACCESS - use this for creating resources
+  2. Other servers (like s-xcd77l) - READ ONLY - do not try to create resources here
+- The organization "mittwald MCP Server Dev" owns the test server - use this for operations
+- When creating resources (SSH users, SFTP users, apps, databases, etc.), ALWAYS use project "p-b3a3k3" or create a new project on server "s-igc7dy"
+- Project "p-ptwfms" (mStudio MCP server) is READ-ONLY - you cannot create resources there
+- If you get a 403 Permission Denied error, you're likely using the wrong project
+
+RESOURCE DEPENDENCIES:
+- Cronjobs require an app installation - create an app first, then create cronjobs on it
+- MySQL database users require a database - create the database first
+- Mail addresses require a configured domain - check domain list first
+- SSH/SFTP users can be created on any project you have write access to
+
+Available tool categories:
+- User/Identity: mcp__mittwald__mittwald_user_* (API tokens, SSH keys, profile)
+- Organizations: mcp__mittwald__mittwald_org_* (memberships, invites)
+- Projects: mcp__mittwald__mittwald_project_* (create, list, manage)
+- Apps: mcp__mittwald__mittwald_app_* (deploy, configure, manage)
+- Databases: mcp__mittwald__mittwald_database_* (MySQL, Redis)
+- Domains: mcp__mittwald__mittwald_domain_* (DNS, virtualhosts)
+- Mail: mcp__mittwald__mittwald_mail_* (addresses, delivery boxes)
+- Backups: mcp__mittwald__mittwald_backup_* (create, schedule, restore)
+- Containers: mcp__mittwald__mittwald_container_* (Docker workloads)
+- Cronjobs: mcp__mittwald__mittwald_cronjob_* (scheduled tasks)
+- SSH/SFTP: mcp__mittwald__mittwald_ssh_user_*, mcp__mittwald__mittwald_sftp_user_*
+
+USER REQUEST:
+`;
+
+/**
  * Execution phase for progress tracking
  */
-export type ExecutionPhase = 'init' | 'execute' | 'verify' | 'cleanup' | 'report' | 'complete';
+export type ExecutionPhase = 'init' | 'setup' | 'execute' | 'verify' | 'cleanup' | 'report' | 'complete';
 
 /**
  * Phase event emitted during execution
@@ -81,6 +137,8 @@ export class UseCaseExecutor extends EventEmitter {
     deletionInvoker?: DeletionInvoker;
     disallowedTools: string[];
   };
+  private fixtureManager: FixtureManager | null = null;
+  private createdFixtures: CreatedFixture[] = [];
 
   constructor(options: ExecutorOptions = {}) {
     super();
@@ -127,14 +185,32 @@ export class UseCaseExecutor extends EventEmitter {
     );
     execution.sessionLogPath = sessionLogPath;
 
+    // Track fixture context for prompt injection
+    let fixtureContext = '';
+
     try {
       // Phase 1: Init
       this.emitPhase('init', useCase.id, 'Initializing execution');
       execution.status = 'running';
 
-      // Phase 2: Execute
+      // Phase 2: Setup (create fixtures if needed)
+      if (useCase.setupRequirements && useCase.setupRequirements.length > 0) {
+        this.emitPhase('setup', useCase.id, `Setting up ${useCase.setupRequirements.length} fixture(s)`);
+        const setupResult = await this.setupPhase(useCase);
+        this.createdFixtures = setupResult.fixtures;
+        fixtureContext = setupResult.context;
+
+        if (!setupResult.success) {
+          execution.status = 'failure';
+          execution.errorMessage = 'Fixture setup failed: ' + setupResult.errorMessage;
+          // Skip to cleanup
+          throw new Error(execution.errorMessage);
+        }
+      }
+
+      // Phase 3: Execute
       this.emitPhase('execute', useCase.id, 'Starting Claude session');
-      const executeResult = await this.executePhase(useCase, execution, sessionLogPath);
+      const executeResult = await this.executePhase(useCase, execution, sessionLogPath, fixtureContext);
 
       if (executeResult.status === 'timeout') {
         execution.status = 'timeout';
@@ -143,7 +219,7 @@ export class UseCaseExecutor extends EventEmitter {
         execution.status = 'failure';
         execution.errorMessage = executeResult.errorMessage;
       } else {
-        // Phase 3: Verify (only if execution succeeded)
+        // Phase 4: Verify (only if execution succeeded)
         this.emitPhase('verify', useCase.id, 'Collecting evidence');
         const verifyResult = await this.verifyPhase(useCase, execution, sessionLogPath);
         execution.evidenceArtifacts = verifyResult.artifacts;
@@ -158,10 +234,24 @@ export class UseCaseExecutor extends EventEmitter {
       execution.errorMessage = error instanceof Error ? error.message : String(error);
     }
 
-    // Phase 4: Cleanup (always runs)
+    // Phase 5: Cleanup (always runs)
     try {
       this.emitPhase('cleanup', useCase.id, 'Cleaning up resources');
+
+      // First, clean up resources created during execution
       execution.cleanupStatus = await this.cleanupPhase(useCase, execution, sessionLogPath);
+
+      // Then, clean up fixtures created during setup
+      if (this.fixtureManager && this.createdFixtures.length > 0) {
+        console.log(`[Executor] Cleaning up ${this.createdFixtures.length} fixture(s)...`);
+        const fixtureCleanup = await this.fixtureManager.cleanup();
+        console.log(`[Executor] Fixture cleanup: ${fixtureCleanup.success} deleted, ${fixtureCleanup.failed} failed`);
+
+        // Merge fixture cleanup results
+        if (fixtureCleanup.failed > 0 && execution.cleanupStatus.status !== 'failed') {
+          execution.cleanupStatus.status = 'partial';
+        }
+      }
 
       if (execution.cleanupStatus.status === 'failed' && execution.status !== 'failure') {
         execution.status = 'cleanup-failed';
@@ -184,7 +274,7 @@ export class UseCaseExecutor extends EventEmitter {
       }
     }
 
-    // Phase 5: Report
+    // Phase 6: Report
     this.emitPhase('report', useCase.id, 'Generating execution report');
     execution.endTime = new Date();
 
@@ -202,12 +292,82 @@ export class UseCaseExecutor extends EventEmitter {
   }
 
   /**
+   * Set up fixtures before execution
+   */
+  private async setupPhase(useCase: UseCase): Promise<{
+    success: boolean;
+    fixtures: CreatedFixture[];
+    context: string;
+    errorMessage?: string;
+  }> {
+    if (!useCase.setupRequirements || useCase.setupRequirements.length === 0) {
+      return { success: true, fixtures: [], context: '' };
+    }
+
+    try {
+      // Create fixture manager for the writable project
+      this.fixtureManager = createFixtureManager(MITTWALD_CONFIG.writableProject.id);
+
+      // Convert types setup requirements to fixture setup requirements
+      const fixtureRequirements: FixtureSetupRequirement[] = useCase.setupRequirements.map((req) => ({
+        type: req.type as FixtureSetupRequirement['type'],
+        config: req.config,
+        name: req.name || `${useCase.id}-${req.type}-${Date.now()}`,
+      }));
+
+      // Create all fixtures
+      const fixtures = await this.fixtureManager.setupAll(fixtureRequirements);
+      console.log(`[Executor] Created ${fixtures.length} fixture(s)`);
+
+      // Build context string for prompt injection
+      let context = '\n\nPRE-CREATED TEST RESOURCES:\n';
+      context += `These resources were created for this test and are available for you to use:\n`;
+
+      for (const fixture of fixtures) {
+        context += `- ${fixture.type}: ${fixture.id}`;
+        if (fixture.shortId) {
+          context += ` (short ID: ${fixture.shortId})`;
+        }
+        if (fixture.name) {
+          context += ` - "${fixture.name}"`;
+        }
+        context += `\n`;
+
+        // Add metadata if relevant
+        if (fixture.type === 'mysql-database' && fixture.metadata.version) {
+          context += `  MySQL version: ${fixture.metadata.version}\n`;
+        }
+        if (fixture.type === 'php-app' && fixture.metadata.documentRoot) {
+          context += `  Document root: ${fixture.metadata.documentRoot}\n`;
+        }
+      }
+
+      context += `\nProject ID for all resources: ${this.fixtureManager.getProjectId()}\n`;
+
+      return {
+        success: true,
+        fixtures,
+        context,
+      };
+    } catch (error) {
+      console.error('[Executor] Fixture setup failed:', error);
+      return {
+        success: false,
+        fixtures: [],
+        context: '',
+        errorMessage: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /**
    * Execute the Claude session
    */
   private async executePhase(
     useCase: UseCase,
     execution: UseCaseExecution,
-    sessionLogPath: string
+    sessionLogPath: string,
+    fixtureContext: string = ''
   ): Promise<{ status: ExecutionStatus; errorMessage?: string }> {
     const sessionRunner = new SessionRunner();
     const streamParser = new StreamParser();
@@ -233,9 +393,11 @@ export class UseCaseExecutor extends EventEmitter {
     // Attach controller to parser for question detection
     controller.attachToParser(streamParser);
 
-    // Spawn interactive session
+    // Spawn interactive session with Mittwald system context
+    // Include fixture context if fixtures were created during setup phase
+    const fullPrompt = MITTWALD_SYSTEM_PROMPT + fixtureContext + useCase.prompt;
     const session = await sessionRunner.spawn({
-      prompt: useCase.prompt,
+      prompt: fullPrompt,
       workingDir: this.options.workingDir,
       mcpConfig: this.options.mcpConfig || undefined,
       disallowedTools: this.options.disallowedTools,
@@ -257,6 +419,9 @@ export class UseCaseExecutor extends EventEmitter {
 
         // Feed to stream parser
         streamParser.processEvent(event);
+
+        // Sync parser state to controller (fixes idle timeout detection)
+        controller.processPatternState(streamParser.getPatternState());
 
         // Track tools
         if (event.type === 'tool_use') {
@@ -287,6 +452,16 @@ export class UseCaseExecutor extends EventEmitter {
                 controller.processOutputLine(block.text);
               }
             }
+          }
+        }
+
+        // Detect session completion via result event
+        if (event.type === 'result') {
+          const content = event.content as Record<string, unknown>;
+          if (content.subtype === 'success' || content.is_error === false) {
+            controller.markSuccess('Session completed successfully');
+          } else if (content.is_error === true) {
+            controller.markFailure(String(content.result || 'Session failed'));
           }
         }
 

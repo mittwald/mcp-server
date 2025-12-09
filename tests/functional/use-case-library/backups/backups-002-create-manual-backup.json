@@ -1,36 +1,32 @@
 {
   "id": "backups-002-create-manual-backup",
-  "title": "Create Manual Backup Before Major Update",
-  "description": "Developer wants to create a manual backup before deploying a major update, to have a restore point if something goes wrong.",
+  "title": "Create Manual Backup on Mittwald",
+  "description": "Create a manual backup on Mittwald before a major update.",
   "domain": "backups",
-  "prompt": "I'm about to deploy a big update to our website and want to make sure we have a recent backup first. Can you create a manual backup of the entire project right now? Please label it 'pre-update-backup' so I can find it easily if I need to restore.",
+  "prompt": "I need to create a manual backup on my Mittwald project. Use the Mittwald MCP tools to list my projects and existing backups.",
   "expectedDomains": ["backups", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "project/get",
-    "backup/create",
-    "backup/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_backup_list",
+    "mcp__mittwald__mittwald_backup_create"
   ],
   "successCriteria": [
     {
-      "description": "Manual backup created",
+      "description": "Backup or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "backup/create",
+        "pattern": "mcp__mittwald__mittwald_(backup|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "backup", "identificationMethod": "log-parse", "deletionTool": "backup/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
     { "questionPattern": "which project", "answer": "The production website" },
-    { "questionPattern": "description|label|name", "answer": "pre-update-backup" },
-    { "questionPattern": "include|what to backup", "answer": "Everything - files and databases" }
+    { "questionPattern": "description|label", "answer": "pre-update-backup" }
   ],
   "estimatedDuration": 5,
   "timeout": 15,
   "priority": "P1",
-  "tags": ["backups", "manual", "deployment", "safety"]
+  "tags": ["backups", "manual", "mittwald"]
 }

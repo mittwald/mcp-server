@@ -1,41 +1,31 @@
 {
   "id": "organization-002-manage-memberships",
-  "title": "Review and Update Organization Memberships",
-  "description": "Organization admin needs to review current memberships, check pending invites, and update a member's role.",
+  "title": "Manage Mittwald Organization Memberships",
+  "description": "Admin wants to review and manage organization memberships on Mittwald.",
   "domain": "organization",
-  "prompt": "I need to do a review of our organization's access. Show me all current members and their roles, any pending invites, and our organization details. We may need to adjust some permissions.",
+  "prompt": "I need to review who has access to my Mittwald organization. Use the Mittwald MCP tools to list all organizations I have access to, then show me the memberships for each organization.",
   "expectedDomains": ["organization"],
   "expectedTools": [
-    "org/list",
-    "org/get",
-    "org/membership/list",
-    "org/invite/list"
+    "mcp__mittwald__mittwald_org_list",
+    "mcp__mittwald__mittwald_org_membership_list",
+    "mcp__mittwald__mittwald_org_get"
   ],
   "successCriteria": [
     {
-      "description": "Organization details retrieved",
+      "description": "Organization tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "org/get",
-        "minOccurrences": 1
-      }
-    },
-    {
-      "description": "Memberships listed",
-      "method": "log-pattern",
-      "config": {
-        "pattern": "membership/list",
+        "pattern": "mcp__mittwald__mittwald_org",
         "minOccurrences": 1
       }
     }
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "change|modify|update", "answer": "No changes needed right now, just reviewing" },
-    { "questionPattern": "which organization", "answer": "The main one" }
+    { "questionPattern": "remove|revoke", "answer": "No, just reviewing for now" }
   ],
   "estimatedDuration": 2,
   "timeout": 8,
-  "priority": "P3",
-  "tags": ["organization", "membership", "permissions", "review"]
+  "priority": "P2",
+  "tags": ["organization", "memberships", "admin", "mittwald"]
 }

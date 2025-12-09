@@ -1,36 +1,30 @@
 {
   "id": "databases-003-setup-redis-cache",
-  "title": "Add Redis Cache for Application Performance",
-  "description": "Developer wants to add Redis caching to their application to improve performance and reduce database load.",
+  "title": "Check Redis Databases on Mittwald",
+  "description": "Check Redis databases on Mittwald hosting.",
   "domain": "databases",
-  "prompt": "Our WordPress site is getting slow with traffic. I want to add Redis caching to speed it up. Can you set up a Redis database for our project and show me the connection details so I can configure the cache plugin?",
+  "prompt": "I want to check if I have any Redis databases on my Mittwald project. Use the Mittwald MCP tools to list my projects and show all Redis databases.",
   "expectedDomains": ["databases", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "project/get",
-    "database/redis/create",
-    "database/redis/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_database_redis_list"
   ],
   "successCriteria": [
     {
-      "description": "Redis database created",
+      "description": "Redis or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "redis/create",
+        "pattern": "mcp__mittwald__mittwald_(database|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "database", "identificationMethod": "log-parse", "deletionTool": "database/redis/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which project", "answer": "The main WordPress project" },
-    { "questionPattern": "version", "answer": "Latest stable Redis version" },
-    { "questionPattern": "size|memory", "answer": "Standard size is fine" }
+    { "questionPattern": "which project", "answer": "The main WordPress project" }
   ],
-  "estimatedDuration": 4,
-  "timeout": 12,
+  "estimatedDuration": 3,
+  "timeout": 10,
   "priority": "P2",
-  "tags": ["databases", "redis", "caching", "performance"]
+  "tags": ["databases", "redis", "mittwald"]
 }

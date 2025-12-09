@@ -1,44 +1,32 @@
 {
   "id": "access-002-manage-ssh-access",
-  "title": "Set Up SSH Access for Development Team",
-  "description": "Admin needs to create SSH user accounts for developers who need command-line access to the project server for debugging and deployment.",
+  "title": "Set Up SSH Access on Mittwald Project",
+  "description": "Admin needs to create SSH user accounts on their Mittwald project for development team access.",
   "domain": "access-users",
-  "prompt": "Our development team needs SSH access to our production server for debugging. Can you show me the current SSH users and then create a new SSH user account called 'dev-team' that they can use?",
+  "prompt": "Our development team needs SSH access to our Mittwald project server. Use the Mittwald MCP tools to show me the current SSH users on my project, then create a new SSH user called 'dev-team'.",
   "expectedDomains": ["access-users", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "ssh-user/list",
-    "ssh-user/create",
-    "ssh-user/get"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_ssh_user_list",
+    "mcp__mittwald__mittwald_ssh_user_create"
   ],
   "successCriteria": [
     {
-      "description": "SSH users listed",
+      "description": "SSH or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "ssh-user/list",
-        "minOccurrences": 1
-      }
-    },
-    {
-      "description": "SSH user created",
-      "method": "log-pattern",
-      "config": {
-        "pattern": "ssh-user/create",
+        "pattern": "mcp__mittwald__mittwald_(ssh|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "ssh-key", "identificationMethod": "log-parse", "deletionTool": "ssh-user/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
     { "questionPattern": "which project", "answer": "The main production project" },
-    { "questionPattern": "authentication|key|password", "answer": "Use SSH key authentication" },
-    { "questionPattern": "public key", "answer": "ssh-rsa AAAAB3Nza... dev@company.com" }
+    { "questionPattern": "authentication|key|password", "answer": "Use password authentication" }
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P2",
-  "tags": ["access", "ssh", "development", "server-access"]
+  "tags": ["access", "ssh", "development", "mittwald"]
 }

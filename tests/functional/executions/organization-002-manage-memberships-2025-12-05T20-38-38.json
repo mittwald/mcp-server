@@ -1,0 +1,18 @@
+{
+  "id": "organization-002-manage-memberships-2025-12-05T20-38-38",
+  "useCaseId": "organization-002-manage-memberships",
+  "startTime": "2025-12-05T20:38:38.904Z",
+  "status": "failure",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/tests/functional/session-logs/007-real-world-use/organization-002-manage-memberships-2025-12-05T20-38-38.jsonl",
+  "toolsInvoked": [],
+  "evidenceArtifacts": [],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "errorMessage": "Session timed out",
+  "endTime": "2025-12-05T20:54:53.226Z",
+  "durationMs": 974322
+}

@@ -4,7 +4,23 @@
  * Connects to MCP server and lists available tools.
  */
 
+import { readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import type { DiscoveredTool, DiscoveryOptions } from '../types/index.js';
+
+/**
+ * Get Mittwald API token from local CLI config
+ */
+function getMittwaldToken(): string | null {
+  try {
+    const tokenPath = join(homedir(), '.config', 'mw', 'token');
+    const token = readFileSync(tokenPath, 'utf-8').trim();
+    return token || null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Tools to exclude from inventory (security/multi-tenancy)
@@ -93,12 +109,19 @@ export async function discover(options: DiscoveryOptions): Promise<DiscoveredToo
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
+    // Get local Mittwald token for authentication
+    const token = getMittwaldToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json, text/event-stream',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(serverUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers,
       body: JSON.stringify(request),
       signal: controller.signal,
     });

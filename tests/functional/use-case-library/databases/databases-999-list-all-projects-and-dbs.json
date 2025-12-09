@@ -1,0 +1,28 @@
+{
+  "id": "databases-999-list-all-projects-and-dbs",
+  "title": "List All Projects and MySQL Databases",
+  "description": "List all Mittwald projects and all MySQL databases in each project",
+  "domain": "databases",
+  "prompt": "Show me all my Mittwald projects and all MySQL databases in each project. For each project, list: project name, project ID. For each database, list: database name, database ID, version, and status. Format the results clearly.",
+  "expectedDomains": ["project-foundation", "databases"],
+  "expectedTools": [
+    "mcp__mittwald__mittwald_project_list_projects",
+    "mcp__mittwald__mittwald_database_list_mysql_databases"
+  ],
+  "successCriteria": [
+    {
+      "description": "Projects and databases listed",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "mcp__mittwald__mittwald_(project|database)",
+        "minOccurrences": 2
+      }
+    }
+  ],
+  "cleanupRequirements": [],
+  "questionAnswers": [],
+  "estimatedDuration": 5,
+  "timeout": 10,
+  "priority": "P1",
+  "tags": ["mysql", "database", "mittwald", "projects", "list"]
+}

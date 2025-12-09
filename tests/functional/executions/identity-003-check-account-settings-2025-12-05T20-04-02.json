@@ -1,0 +1,18 @@
+{
+  "id": "identity-003-check-account-settings-2025-12-05T20-04-02",
+  "useCaseId": "identity-003-check-account-settings",
+  "startTime": "2025-12-05T20:04:02.064Z",
+  "status": "failure",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/tests/functional/session-logs/007-real-world-use/identity-003-check-account-settings-2025-12-05T20-04-02.jsonl",
+  "toolsInvoked": [],
+  "evidenceArtifacts": [],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "errorMessage": "Session timed out",
+  "endTime": "2025-12-05T20:20:42.585Z",
+  "durationMs": 1000521
+}

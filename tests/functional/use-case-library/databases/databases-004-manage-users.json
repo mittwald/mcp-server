@@ -1,34 +1,39 @@
 {
   "id": "databases-004-manage-users",
-  "title": "Create Database User with Limited Permissions",
-  "description": "Admin needs to create a read-only database user for a reporting application that should not have write access to production data.",
+  "title": "List MySQL Users on Mittwald",
+  "description": "List MySQL database users on Mittwald hosting.",
   "domain": "databases",
-  "prompt": "I need to set up a database user for our reporting tool. It should only be able to read data, not modify it. Can you create a read-only MySQL user for our production database?",
+  "prompt": "I need to check the database users on my Mittwald MySQL database. Use the Mittwald MCP tools to list the databases in project p-ucvxdj, then list the users for the 'PHP App Database' (mysql_u6ig4z).",
   "expectedDomains": ["databases", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "database/mysql/list",
-    "database/mysql/get",
-    "database/mysql/user/create"
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_user_list"
   ],
+  "setupRequirements": [],
   "successCriteria": [
     {
-      "description": "Database user created",
+      "description": "MySQL database list tool invoked",
       "method": "log-pattern",
       "config": {
-        "pattern": "mysql",
+        "pattern": "mcp__mittwald__mittwald_database_mysql_list",
+        "minOccurrences": 1
+      }
+    },
+    {
+      "description": "MySQL user list tool invoked",
+      "method": "log-pattern",
+      "config": {
+        "pattern": "mcp__mittwald__mittwald_database_mysql_user_list",
         "minOccurrences": 1
       }
     }
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which database", "answer": "The production MySQL database" },
-    { "questionPattern": "username", "answer": "reporting_readonly" },
-    { "questionPattern": "permission|access", "answer": "Read-only SELECT permissions" }
+    { "questionPattern": "which database", "answer": "Use the PHP App Database (mysql_u6ig4z) in project p-ucvxdj" }
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P2",
-  "tags": ["databases", "mysql", "users", "security", "permissions"]
+  "tags": ["databases", "mysql", "users", "mittwald"]
 }

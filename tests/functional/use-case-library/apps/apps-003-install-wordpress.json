@@ -1,47 +1,33 @@
 {
   "id": "apps-003-install-wordpress",
-  "title": "Install WordPress for Client Blog",
-  "description": "Developer wants to install a fresh WordPress site for a client who needs a blog with standard plugins.",
+  "title": "Install WordPress on Mittwald",
+  "description": "Install a WordPress site on Mittwald hosting.",
   "domain": "apps",
-  "prompt": "I need to set up a new WordPress site for a client's blog. Please install the latest WordPress version with a MySQL database. The site should be ready to use with the standard setup.",
-  "expectedDomains": ["apps", "databases", "project-foundation"],
+  "prompt": "I need to install WordPress on my Mittwald hosting. Use the Mittwald MCP tools to first list my projects, then check available app versions for WordPress.",
+  "expectedDomains": ["apps", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "app/list",
-    "app/create",
-    "database/mysql/create",
-    "app/installation/status"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_app_versions",
+    "mcp__mittwald__mittwald_app_install_wordpress"
   ],
   "successCriteria": [
     {
-      "description": "WordPress app created",
+      "description": "App or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "app/create",
-        "minOccurrences": 1
-      }
-    },
-    {
-      "description": "MySQL database created",
-      "method": "log-pattern",
-      "config": {
-        "pattern": "mysql/create",
+        "pattern": "mcp__mittwald__mittwald_(app|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "app", "identificationMethod": "log-parse", "deletionTool": "app/delete", "order": 1 },
-    { "resourceType": "database", "identificationMethod": "log-parse", "deletionTool": "database/mysql/delete", "order": 2 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which project", "answer": "Create a new project for this" },
+    { "questionPattern": "which project", "answer": "Use the first available project" },
     { "questionPattern": "WordPress version", "answer": "Latest stable version" },
-    { "questionPattern": "admin|username", "answer": "admin" },
-    { "questionPattern": "email", "answer": "admin@clientsite.com" }
+    { "questionPattern": "admin|username", "answer": "admin" }
   ],
   "estimatedDuration": 6,
   "timeout": 15,
   "priority": "P1",
-  "tags": ["apps", "wordpress", "cms", "installation"]
+  "tags": ["apps", "wordpress", "cms", "mittwald"]
 }

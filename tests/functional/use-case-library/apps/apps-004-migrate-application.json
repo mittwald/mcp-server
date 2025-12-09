@@ -1,32 +1,21 @@
 {
   "id": "apps-004-migrate-application",
-  "title": "Migrate Application Between Projects",
-  "description": "Developer needs to move an application from a staging project to production, including database migration.",
+  "title": "List Apps for Migration Planning on Mittwald",
+  "description": "Review apps and backups on Mittwald to plan a migration.",
   "domain": "apps",
-  "prompt": "I've finished testing my application on staging and now I need to move it to production. Can you help me migrate the app and its database from the staging project to the production project?",
-  "expectedDomains": ["apps", "databases", "project-foundation"],
+  "prompt": "I'm planning to migrate an app on my Mittwald hosting. Use the Mittwald MCP tools to list all my projects and the apps in each project, then list available backups.",
+  "expectedDomains": ["apps", "backups", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "app/list",
-    "app/get",
-    "database/mysql/list",
-    "backup/create",
-    "backup/export"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_app_list",
+    "mcp__mittwald__mittwald_backup_list"
   ],
   "successCriteria": [
     {
-      "description": "Apps listed from source project",
+      "description": "App or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "app/list",
-        "minOccurrences": 1
-      }
-    },
-    {
-      "description": "Backup created for migration",
-      "method": "log-pattern",
-      "config": {
-        "pattern": "backup",
+        "pattern": "mcp__mittwald__mittwald_(app|project|backup)",
         "minOccurrences": 1
       }
     }
@@ -34,11 +23,10 @@
   "cleanupRequirements": [],
   "questionAnswers": [
     { "questionPattern": "source|staging", "answer": "The staging project" },
-    { "questionPattern": "destination|production", "answer": "The production project" },
-    { "questionPattern": "confirm|proceed", "answer": "Yes, proceed with the migration" }
+    { "questionPattern": "destination|production", "answer": "The production project" }
   ],
-  "estimatedDuration": 10,
-  "timeout": 25,
+  "estimatedDuration": 5,
+  "timeout": 15,
   "priority": "P1",
-  "tags": ["apps", "migration", "staging", "production"]
+  "tags": ["apps", "migration", "planning", "mittwald"]
 }

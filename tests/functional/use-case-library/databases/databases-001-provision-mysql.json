@@ -1,36 +1,30 @@
 {
   "id": "databases-001-provision-mysql",
-  "title": "Provision MySQL Database for Existing Project",
-  "description": "Customer needs to add a MySQL database to their existing project for a new feature.",
+  "title": "List MySQL Databases on Mittwald",
+  "description": "List MySQL databases on Mittwald hosting.",
   "domain": "databases",
-  "prompt": "I have an existing web project and I need to add a database for a new feature I'm building. I need a MySQL database that my application can connect to. Can you set this up for me and give me the connection details?",
+  "prompt": "I need to check my MySQL databases on Mittwald. Use the Mittwald MCP tools to list my projects and show all MySQL databases.",
   "expectedDomains": ["project-foundation", "databases"],
   "expectedTools": [
-    "project/list",
-    "project/get",
-    "database/mysql/create",
-    "database/mysql/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_database_mysql_list"
   ],
   "successCriteria": [
     {
-      "description": "Database is created",
+      "description": "Database or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "database/mysql/create",
+        "pattern": "mcp__mittwald__mittwald_(database|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "database", "identificationMethod": "log-parse", "deletionTool": "database/mysql/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which project", "answer": "The project called 'my-website'" },
-    { "questionPattern": "database name", "answer": "feature_db" },
-    { "questionPattern": "version", "answer": "The latest stable version" }
+    { "questionPattern": "which project", "answer": "The project called 'my-website'" }
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P1",
-  "tags": ["mysql", "database", "provisioning"]
+  "tags": ["mysql", "database", "mittwald"]
 }

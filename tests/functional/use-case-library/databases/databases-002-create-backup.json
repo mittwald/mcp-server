@@ -1,36 +1,31 @@
 {
   "id": "databases-002-create-backup",
-  "title": "Create Database Backup Before Changes",
-  "description": "Customer wants to create a backup of their production database before making schema changes.",
+  "title": "Check Database Backup Status on Mittwald",
+  "description": "Check database backup status on Mittwald hosting.",
   "domain": "databases",
-  "prompt": "I need to create a backup of my production database before I make some important changes. Can you help me create a backup that I can restore from if something goes wrong? I want to make sure my data is safe.",
-  "expectedDomains": ["project-foundation", "backups"],
+  "prompt": "I need to check the backup status of my databases on Mittwald. Use the Mittwald MCP tools to list my projects, databases, and available backups.",
+  "expectedDomains": ["project-foundation", "databases", "backups"],
   "expectedTools": [
-    "project/list",
-    "project/get",
-    "backup/create",
-    "backup/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_backup_list"
   ],
   "successCriteria": [
     {
-      "description": "Backup is created",
+      "description": "Database or backup tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "backup/create",
+        "pattern": "mcp__mittwald__mittwald_(database|backup|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "backup", "identificationMethod": "log-parse", "deletionTool": "backup/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which project", "answer": "My production project" },
-    { "questionPattern": "description", "answer": "Pre-migration backup" },
-    { "questionPattern": "confirm", "answer": "Yes, create the backup" }
+    { "questionPattern": "which project", "answer": "My production project" }
   ],
-  "estimatedDuration": 5,
-  "timeout": 15,
+  "estimatedDuration": 4,
+  "timeout": 12,
   "priority": "P1",
-  "tags": ["backup", "database", "safety"]
+  "tags": ["backup", "database", "mittwald"]
 }

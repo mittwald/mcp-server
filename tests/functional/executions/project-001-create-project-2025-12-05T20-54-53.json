@@ -1,0 +1,18 @@
+{
+  "id": "project-001-create-project-2025-12-05T20-54-53",
+  "useCaseId": "project-001-create-project",
+  "startTime": "2025-12-05T20:54:53.228Z",
+  "status": "failure",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/tests/functional/session-logs/007-real-world-use/project-001-create-project-2025-12-05T20-54-53.jsonl",
+  "toolsInvoked": [],
+  "evidenceArtifacts": [],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "errorMessage": "Session timed out",
+  "endTime": "2025-12-05T21:12:21.028Z",
+  "durationMs": 1047800
+}

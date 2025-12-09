@@ -1,21 +1,20 @@
 {
   "id": "containers-001-manage-resources",
-  "title": "View Container Resources",
-  "description": "Customer wants to check their container resources and understand current usage.",
+  "title": "View Containers on Mittwald",
+  "description": "View container resources on Mittwald hosting.",
   "domain": "containers",
-  "prompt": "I'd like to see what container resources I'm currently using for my project. Can you show me the current allocation and usage of my containers?",
+  "prompt": "I'd like to see what containers I'm running on my Mittwald project. Use the Mittwald MCP tools to list my projects and show all containers.",
   "expectedDomains": ["project-foundation", "containers"],
   "expectedTools": [
-    "project/list",
-    "project/get",
-    "container/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_container_list"
   ],
   "successCriteria": [
     {
-      "description": "Container information retrieved",
+      "description": "Container or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "container/list",
+        "pattern": "mcp__mittwald__mittwald_(container|project)",
         "minOccurrences": 1
       }
     }
@@ -27,5 +26,5 @@
   "estimatedDuration": 2,
   "timeout": 10,
   "priority": "P1",
-  "tags": ["containers", "resources", "monitoring"]
+  "tags": ["containers", "resources", "mittwald"]
 }

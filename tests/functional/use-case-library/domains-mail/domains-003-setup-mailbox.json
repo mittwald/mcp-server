@@ -1,45 +1,31 @@
 {
   "id": "domains-003-setup-mailbox",
-  "title": "Create Company Mailboxes",
-  "description": "Admin needs to set up email mailboxes for company employees using the business domain.",
+  "title": "Check Mailboxes on Mittwald",
+  "description": "Check email mailboxes on Mittwald hosting.",
   "domain": "domains-mail",
-  "prompt": "We need to set up email for our company. Can you create mailboxes for info@, support@, and sales@ on our domain? Each should have 5GB storage. Also show me any existing mail addresses we have.",
+  "prompt": "I want to check the email mailboxes on my Mittwald project. Use the Mittwald MCP tools to list my projects and show all mail addresses and delivery boxes.",
   "expectedDomains": ["domains-mail", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "mail/address/list",
-    "mail/address/create",
-    "mailbox/create",
-    "domain/list"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_mail_address_list",
+    "mcp__mittwald__mittwald_mail_deliverybox_list"
   ],
   "successCriteria": [
     {
-      "description": "Mail addresses listed",
+      "description": "Mail tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "mail/address",
-        "minOccurrences": 1
-      }
-    },
-    {
-      "description": "Mailboxes created",
-      "method": "log-pattern",
-      "config": {
-        "pattern": "mailbox/create",
+        "pattern": "mcp__mittwald__mittwald_mail",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "mailbox", "identificationMethod": "log-parse", "deletionTool": "mailbox/delete", "order": 1 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which domain", "answer": "Our main company domain" },
-    { "questionPattern": "password", "answer": "Generate secure passwords for each" },
-    { "questionPattern": "storage|quota", "answer": "5GB each" }
+    { "questionPattern": "which domain", "answer": "Our main company domain" }
   ],
-  "estimatedDuration": 5,
-  "timeout": 15,
+  "estimatedDuration": 3,
+  "timeout": 10,
   "priority": "P2",
-  "tags": ["mail", "mailbox", "email", "business"]
+  "tags": ["mail", "mailbox", "mittwald"]
 }

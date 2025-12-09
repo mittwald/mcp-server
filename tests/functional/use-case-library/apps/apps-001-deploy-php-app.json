@@ -1,50 +1,33 @@
 {
   "id": "apps-001-deploy-php-app",
-  "title": "Deploy PHP Application with Database",
-  "description": "Customer wants to deploy a PHP website that connects to a MySQL database. The site should be accessible at a subdomain.",
+  "title": "Deploy PHP Application on Mittwald",
+  "description": "Deploy a PHP website with MySQL database on Mittwald hosting.",
   "domain": "apps",
-  "prompt": "I need to set up a new website for my client's business. It's a PHP application that needs a MySQL database for storing customer information. The website should be accessible at a subdomain of my main domain. Please create everything needed and let me know the URL when it's ready to test.",
-  "expectedDomains": ["project-foundation", "apps", "databases", "domains-mail"],
+  "prompt": "I need to deploy a PHP application on my Mittwald hosting. Use the Mittwald MCP tools to first list my available projects, then create a new PHP app with a MySQL database. Use PHP 8.2.",
+  "expectedDomains": ["project-foundation", "apps", "databases"],
   "expectedTools": [
-    "project/create",
-    "project/get",
-    "app/create",
-    "app/list",
-    "database/mysql/create",
-    "database/mysql/list",
-    "domain/virtualhost/create"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_app_create_php",
+    "mcp__mittwald__mittwald_database_mysql_create"
   ],
   "successCriteria": [
     {
-      "description": "App deployment completes without errors",
+      "description": "App or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "app/create",
-        "minOccurrences": 1
-      }
-    },
-    {
-      "description": "Database is created",
-      "method": "log-pattern",
-      "config": {
-        "pattern": "database/mysql/create",
+        "pattern": "mcp__mittwald__mittwald_(app|project)",
         "minOccurrences": 1
       }
     }
   ],
-  "cleanupRequirements": [
-    { "resourceType": "app", "identificationMethod": "log-parse", "deletionTool": "app/delete", "order": 1 },
-    { "resourceType": "database", "identificationMethod": "log-parse", "deletionTool": "database/mysql/delete", "order": 2 },
-    { "resourceType": "project", "identificationMethod": "log-parse", "deletionTool": "project/delete", "order": 3 }
-  ],
+  "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "PHP version", "answer": "PHP 8.2 please" },
-    { "questionPattern": "database name", "answer": "clientsite_db" },
-    { "questionPattern": "which project", "answer": "Create a new project for this" },
-    { "questionPattern": "server", "answer": "Use the default server" }
+    { "questionPattern": "PHP version", "answer": "PHP 8.2" },
+    { "questionPattern": "database name", "answer": "app_db" },
+    { "questionPattern": "which project", "answer": "Use the first available project" }
   ],
   "estimatedDuration": 5,
   "timeout": 15,
   "priority": "P1",
-  "tags": ["deployment", "php", "mysql", "subdomain"]
+  "tags": ["deployment", "php", "mysql", "mittwald"]
 }

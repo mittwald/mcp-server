@@ -1,43 +1,31 @@
 {
   "id": "domains-004-ssl-certificate",
-  "title": "Set Up SSL Certificate for Domain",
-  "description": "Admin needs to configure SSL/TLS certificates for their domain to enable HTTPS.",
+  "title": "Check Domain and Virtualhost on Mittwald",
+  "description": "Check domain and virtualhost configuration on Mittwald hosting.",
   "domain": "domains-mail",
-  "prompt": "I need to enable HTTPS for my website. Can you help me set up an SSL certificate for my domain? I want to use Let's Encrypt for free automatic certificates.",
+  "prompt": "I need to check my domain configuration on Mittwald including virtualhosts. Use the Mittwald MCP tools to list my projects, domains, and virtualhosts.",
   "expectedDomains": ["domains-mail", "project-foundation"],
   "expectedTools": [
-    "project/list",
-    "domain/list",
-    "domain/get",
-    "certificate/list",
-    "certificate/request"
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_domain_list",
+    "mcp__mittwald__mittwald_domain_virtualhost_list"
   ],
   "successCriteria": [
     {
-      "description": "Domain retrieved",
+      "description": "Domain or project tools used",
       "method": "log-pattern",
       "config": {
-        "pattern": "domain",
-        "minOccurrences": 1
-      }
-    },
-    {
-      "description": "Certificate requested",
-      "method": "log-pattern",
-      "config": {
-        "pattern": "certificate",
+        "pattern": "mcp__mittwald__mittwald_(domain|project)",
         "minOccurrences": 1
       }
     }
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which domain", "answer": "Our main website domain" },
-    { "questionPattern": "certificate type|provider", "answer": "Let's Encrypt free certificate" },
-    { "questionPattern": "www|subdomain", "answer": "Yes, include www subdomain too" }
+    { "questionPattern": "which domain", "answer": "Our main website domain" }
   ],
-  "estimatedDuration": 4,
-  "timeout": 12,
+  "estimatedDuration": 3,
+  "timeout": 10,
   "priority": "P1",
-  "tags": ["domains", "ssl", "https", "security", "certificate"]
+  "tags": ["domains", "virtualhost", "mittwald"]
 }
