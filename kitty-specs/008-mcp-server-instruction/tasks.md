@@ -27,9 +27,9 @@ This establishes valid test infrastructure for future improvements.
 
 ---
 
-## Phase 1: Data Extraction Infrastructure
+### Phase 1: Data Extraction Infrastructure
 
-### WP1: Fix Tool Call Extraction Bug (Priority: P1 CRITICAL)
+## Work Package WP01: Fix Tool Call Extraction Bug (Priority: P1 CRITICAL)
 
 **Goal**: Fix executor.ts to correctly extract tool calls from JSONL session logs, enabling population of `toolsInvoked[]`
 
@@ -94,7 +94,7 @@ This establishes valid test infrastructure for future improvements.
 
 ---
 
-### WP2: Generate Baseline Metrics Report (Priority: P1 HIGH)
+## Work Package WP02: Generate Baseline Metrics Report (Priority: P1 HIGH)
 
 **Goal**: Analyze extracted tool call data to establish baseline metrics for measuring LLM tool discovery
 
@@ -161,9 +161,9 @@ This establishes valid test infrastructure for future improvements.
 
 ---
 
-## Phase 2: Test Data Quality Fixes
+### Phase 2: Test Data Quality Fixes
 
-### WP3: Rewrite All 31 Use Case Prompts (Priority: P1 HIGH)
+## Work Package WP03: Rewrite All 31 Use Case Prompts (Priority: P1 HIGH)
 
 **Goal**: Convert prescriptive prompts to outcome-focused format, fixing test design flaw
 
@@ -246,7 +246,7 @@ This establishes valid test infrastructure for future improvements.
 
 ---
 
-### WP4: Prepare Test Infrastructure for Re-execution (Priority: P1 HIGH)
+## Work Package WP04: Prepare Test Infrastructure for Re-execution (Priority: P1 HIGH)
 
 **Goal**: Ensure test harness is ready for clean 007 re-execution with fixed infrastructure
 
@@ -293,9 +293,9 @@ This establishes valid test infrastructure for future improvements.
 
 ---
 
-## Phase 3: Validation & Analysis
+### Phase 3: Validation & Analysis
 
-### WP5: Execute 007 Test Suite Against Fixed Infrastructure (Priority: P1 CRITICAL)
+## Work Package WP05: Execute 007 Test Suite Against Fixed Infrastructure (Priority: P1 CRITICAL)
 
 **Goal**: Re-run all 31 use cases with fixed extraction and outcome-focused prompts, capture clean baseline data
 
@@ -358,7 +358,7 @@ This establishes valid test infrastructure for future improvements.
 
 ---
 
-### WP6: Validate Data Quality & Generate Final Report (Priority: P2)
+## Work Package WP06: Validate Data Quality & Generate Final Report (Priority: P2)
 
 **Goal**: Verify extracted tool call data accuracy, generate comprehensive analysis report, enable future MCP improvements
 
