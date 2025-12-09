@@ -1,0 +1,7 @@
+{
+  "feature_number": "008",
+  "slug": "008-mcp-server-instruction",
+  "friendly_name": "MCP Server Instruction Optimization & Tool Call Analysis",
+  "source_description": "We will implement comprehensive MCP server improvements to reduce LLM confusion on tool calls. Phase 1: Instrument 007 test suite to capture all MCP tool invocations (currently empty), re-run all 31 use cases with tracking enabled, and analyze logs to classify errors into: (A) wrong tool selection, (B) retry loops, (D) unnecessary prerequisites, and (C - separate) erroring calls. Phase 2: Improve Mittwald MCP server using December 2025 best practices: rewrite tool descriptions for explicit purpose/scope, add detailed parameter descriptions with constraints, implement Resources for reference data, implement Prompts for multi-tool workflows, use Completion suggestions for parameters, evaluate tool splitting/consolidation. Phase 3: Re-run 007 suite against improved server on Fly.io and measure tool call reduction across categories. Success is measured by: reduced superfluous/false tool calls in A/B/D categories, maintained or improved test pass rate, clear tool descriptions, Resources and Prompts documented.",
+  "created_at": "2025-12-09T14:51:11Z"
+}
