@@ -9,7 +9,7 @@ subtasks:
   - "T006"
 title: "Systematic Token Pipeline Investigation"
 phase: "Phase 1 - Investigation"
-lane: "doing"
+lane: "for_review"
 assignee: "Claude Sonnet 4.5"
 agent: "claude"
 shell_pid: "81162"
@@ -343,6 +343,7 @@ history:
 
 - 2025-12-10T08:35:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
 - 2025-12-10T16:30:00Z – claude – shell_pid=81162 – lane=doing – Started implementation
+- 2025-12-10T17:45:00Z – claude – shell_pid=81162 – lane=doing – Investigation complete: No truncation bug exists. Mittwald OAuth tokens use suffix `mittwald_o` by design per their API format. 403 errors caused by scope/permission issues, not malformed tokens. See SPRINT-009-TOKEN-INVESTIGATION-FINDINGS.md
 
 ---
 
