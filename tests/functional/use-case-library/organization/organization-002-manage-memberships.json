@@ -3,15 +3,10 @@
   "title": "Manage Mittwald Organization Memberships",
   "description": "Admin wants to review and manage organization memberships on Mittwald.",
   "domain": "organization",
-<<<<<<< HEAD
-  "prompt": "I need to review who has access to my Mittwald organization. Use the Mittwald MCP tools to list all organizations I have access to, then show me the memberships for each organization.",
-  "expectedDomains": ["organization"],
-=======
   "prompt": "I need to do a review of our organization's access. Show me all current members and their roles, any pending invites, and our organization details. We may need to adjust some permissions. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "organization"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_org_list",
     "mcp__mittwald__mittwald_org_membership_list",
@@ -29,14 +24,6 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-<<<<<<< HEAD
-    { "questionPattern": "remove|revoke", "answer": "No, just reviewing for now" }
-  ],
-  "estimatedDuration": 2,
-  "timeout": 8,
-  "priority": "P2",
-  "tags": ["organization", "memberships", "admin", "mittwald"]
-=======
     {
       "questionPattern": "change|modify|update",
       "answer": "No changes needed right now, just reviewing"
@@ -55,5 +42,4 @@
     "permissions",
     "review"
   ]
->>>>>>> 008-mcp-server-instruction
 }

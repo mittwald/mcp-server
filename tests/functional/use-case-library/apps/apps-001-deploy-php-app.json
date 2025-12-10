@@ -3,10 +3,6 @@
   "title": "Deploy PHP Application on Mittwald",
   "description": "Deploy a PHP website with MySQL database on Mittwald hosting.",
   "domain": "apps",
-<<<<<<< HEAD
-  "prompt": "I need to deploy a PHP application on my Mittwald hosting. Use the Mittwald MCP tools to first list my available projects, then create a new PHP app with a MySQL database. Use PHP 8.2.",
-  "expectedDomains": ["project-foundation", "apps", "databases"],
-=======
   "prompt": "I need to set up a new website for my client's business. It's a PHP application that needs a MySQL database for storing customer information. The website should be accessible at a subdomain of my main domain. Please create everything needed and let me know the URL when it's ready to test. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "project-foundation",
@@ -14,7 +10,6 @@
     "databases",
     "domains-mail"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_app_create_php",
@@ -30,13 +25,6 @@
       }
     }
   ],
-<<<<<<< HEAD
-  "cleanupRequirements": [],
-  "questionAnswers": [
-    { "questionPattern": "PHP version", "answer": "PHP 8.2" },
-    { "questionPattern": "database name", "answer": "app_db" },
-    { "questionPattern": "which project", "answer": "Use the first available project" }
-=======
   "cleanupRequirements": [
     {
       "resourceType": "app",
@@ -74,19 +62,14 @@
       "questionPattern": "server",
       "answer": "Use the default server"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 5,
   "timeout": 15,
   "priority": "P1",
-<<<<<<< HEAD
-  "tags": ["deployment", "php", "mysql", "mittwald"]
-=======
   "tags": [
     "deployment",
     "php",
     "mysql",
     "subdomain"
   ]
->>>>>>> 008-mcp-server-instruction
 }

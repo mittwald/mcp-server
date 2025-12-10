@@ -3,15 +3,10 @@
   "title": "List Apps and Dependencies on Mittwald",
   "description": "List applications and check available dependency versions on Mittwald hosting.",
   "domain": "apps",
-<<<<<<< HEAD
-  "prompt": "Use the mcp__mittwald__mittwald_app_list tool to list the apps in project p-ucvxdj. Then use mcp__mittwald__mittwald_app_dependency_list to see available dependency versions.",
-  "expectedDomains": ["apps"],
-=======
   "prompt": "My website is running on an older version of Node.js and I'd like to update it to the latest LTS version. Can you help me upgrade the Node.js runtime for my application? I want to make sure everything still works after the update. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "apps"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_app_list",
     "mcp__mittwald__mittwald_app_dependency_list"
@@ -28,10 +23,6 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-<<<<<<< HEAD
-    { "questionPattern": "which app", "answer": "The first Node.js app" },
-    { "questionPattern": "Node.js version", "answer": "Node.js 20 LTS" }
-=======
     {
       "questionPattern": "which app",
       "answer": "The one called 'my-node-app'"
@@ -44,18 +35,13 @@
       "questionPattern": "confirm",
       "answer": "Yes, please proceed"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P1",
-<<<<<<< HEAD
-  "tags": ["nodejs", "update", "runtime", "mittwald"]
-=======
   "tags": [
     "nodejs",
     "update",
     "runtime"
   ]
->>>>>>> 008-mcp-server-instruction
 }

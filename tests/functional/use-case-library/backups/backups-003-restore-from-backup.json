@@ -3,16 +3,11 @@
   "title": "List Backups for Restore on Mittwald",
   "description": "Review available backups on Mittwald for potential restore.",
   "domain": "backups",
-<<<<<<< HEAD
-  "prompt": "I need to check what backups are available on my Mittwald project in case I need to restore. Use the Mittwald MCP tools to list my projects and show all available backups with their details.",
-  "expectedDomains": ["backups", "project-foundation"],
-=======
   "prompt": "Something went wrong with our last deployment and the site is broken. Can you show me the available backups for the project and help me restore from yesterday's backup? I need to get the site working again ASAP. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "backups",
     "project-foundation"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_backup_list",
@@ -30,9 +25,6 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-<<<<<<< HEAD
-    { "questionPattern": "which project", "answer": "The production website" }
-=======
     {
       "questionPattern": "which project",
       "answer": "The production website"
@@ -49,19 +41,14 @@
       "questionPattern": "what to restore|files|database",
       "answer": "Restore everything"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 4,
   "timeout": 12,
   "priority": "P1",
-<<<<<<< HEAD
-  "tags": ["backups", "restore", "mittwald"]
-=======
   "tags": [
     "backups",
     "restore",
     "disaster-recovery",
     "urgent"
   ]
->>>>>>> 008-mcp-server-instruction
 }

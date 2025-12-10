@@ -3,17 +3,12 @@
   "title": "Install WordPress on Mittwald",
   "description": "Install a WordPress site on Mittwald hosting.",
   "domain": "apps",
-<<<<<<< HEAD
-  "prompt": "I need to install WordPress on my Mittwald hosting. Use the Mittwald MCP tools to first list my projects, then check available app versions for WordPress.",
-  "expectedDomains": ["apps", "project-foundation"],
-=======
   "prompt": "I need to set up a new WordPress site for a client's blog. Please install the latest WordPress version with a MySQL database. The site should be ready to use with the standard setup. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "apps",
     "databases",
     "project-foundation"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_app_versions",
@@ -29,13 +24,6 @@
       }
     }
   ],
-<<<<<<< HEAD
-  "cleanupRequirements": [],
-  "questionAnswers": [
-    { "questionPattern": "which project", "answer": "Use the first available project" },
-    { "questionPattern": "WordPress version", "answer": "Latest stable version" },
-    { "questionPattern": "admin|username", "answer": "admin" }
-=======
   "cleanupRequirements": [
     {
       "resourceType": "app",
@@ -67,19 +55,14 @@
       "questionPattern": "email",
       "answer": "admin@clientsite.com"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 6,
   "timeout": 15,
   "priority": "P1",
-<<<<<<< HEAD
-  "tags": ["apps", "wordpress", "cms", "mittwald"]
-=======
   "tags": [
     "apps",
     "wordpress",
     "cms",
     "installation"
   ]
->>>>>>> 008-mcp-server-instruction
 }

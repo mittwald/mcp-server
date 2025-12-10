@@ -3,11 +3,7 @@
   "title": "Create SFTP User on Mittwald Project",
   "description": "Developer needs to create an SFTP user account on their Mittwald project for file uploads.",
   "domain": "access-users",
-<<<<<<< HEAD
-  "prompt": "I need to set up file upload access for a contractor on my Mittwald project. Use the Mittwald MCP tools to first list my projects, then create an SFTP user called 'contractor-design' with access to the /uploads directory.",
-=======
   "prompt": "I need to set up file upload access for a contractor who's doing design work for us. Create an SFTP user named 'contractor-design' with access restricted to the /uploads folder. Use the available Mittwald MCP tools to complete this - discover the project information yourself and make reasonable choices for any parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
->>>>>>> 008-mcp-server-instruction
   "expectedDomains": ["access-users", "project-foundation"],
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",

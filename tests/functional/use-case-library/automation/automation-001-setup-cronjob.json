@@ -3,16 +3,11 @@
   "title": "Set Up Cronjob on Mittwald",
   "description": "Set up a scheduled cronjob on Mittwald hosting.",
   "domain": "automation",
-<<<<<<< HEAD
-  "prompt": "I need to set up a cronjob on my Mittwald project. Use the Mittwald MCP tools to first list my projects and existing cronjobs, then show me the cronjob details.",
-  "expectedDomains": ["automation", "project-foundation"],
-=======
   "prompt": "I need to set up a cronjob that runs every night at 3 AM to optimize our MySQL database. The script is located at /scripts/optimize-db.sh. Can you help me create this scheduled task and show me what cronjobs are already running? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "automation",
     "project-foundation"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_cronjob_list"
@@ -27,12 +22,6 @@
       }
     }
   ],
-<<<<<<< HEAD
-  "cleanupRequirements": [],
-  "questionAnswers": [
-    { "questionPattern": "which project", "answer": "My main website project" },
-    { "questionPattern": "schedule|time", "answer": "Every day at 3:00 AM" }
-=======
   "cleanupRequirements": [
     {
       "resourceType": "cronjob",
@@ -58,19 +47,14 @@
       "questionPattern": "timeout",
       "answer": "30 minutes max"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 4,
   "timeout": 12,
   "priority": "P2",
-<<<<<<< HEAD
-  "tags": ["automation", "cronjob", "mittwald"]
-=======
   "tags": [
     "automation",
     "cronjob",
     "database",
     "maintenance"
   ]
->>>>>>> 008-mcp-server-instruction
 }

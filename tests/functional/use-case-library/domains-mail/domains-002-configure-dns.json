@@ -3,16 +3,11 @@
   "title": "Check DNS Configuration on Mittwald",
   "description": "Check DNS configuration on Mittwald hosting.",
   "domain": "domains-mail",
-<<<<<<< HEAD
-  "prompt": "I need to check the DNS configuration for my domain on Mittwald. Use the Mittwald MCP tools to list my projects and show DNS zone information.",
-  "expectedDomains": ["project-foundation", "domains-mail"],
-=======
   "prompt": "I need to add some DNS records to my domain to verify ownership for a third-party service. They gave me a TXT record to add. Can you help me configure this? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "project-foundation",
     "domains-mail"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_domain_list",
@@ -28,11 +23,6 @@
       }
     }
   ],
-<<<<<<< HEAD
-  "cleanupRequirements": [],
-  "questionAnswers": [
-    { "questionPattern": "which domain", "answer": "mydomain.com" }
-=======
   "cleanupRequirements": [
     {
       "resourceType": "domain",
@@ -54,18 +44,13 @@
       "questionPattern": "record value",
       "answer": "verification-token-12345"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 2,
   "timeout": 10,
   "priority": "P1",
-<<<<<<< HEAD
-  "tags": ["dns", "domain", "mittwald"]
-=======
   "tags": [
     "dns",
     "domain",
     "verification"
   ]
->>>>>>> 008-mcp-server-instruction
 }

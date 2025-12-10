@@ -3,16 +3,11 @@
   "title": "Check Redis Databases on Mittwald",
   "description": "Check Redis databases on Mittwald hosting.",
   "domain": "databases",
-<<<<<<< HEAD
-  "prompt": "I want to check if I have any Redis databases on my Mittwald project. Use the Mittwald MCP tools to list my projects and show all Redis databases.",
-  "expectedDomains": ["databases", "project-foundation"],
-=======
   "prompt": "Our WordPress site is getting slow with traffic. I want to add Redis caching to speed it up. Can you set up a Redis database for our project and show me the connection details so I can configure the cache plugin? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "databases",
     "project-foundation"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_database_redis_list"
@@ -27,11 +22,6 @@
       }
     }
   ],
-<<<<<<< HEAD
-  "cleanupRequirements": [],
-  "questionAnswers": [
-    { "questionPattern": "which project", "answer": "The main WordPress project" }
-=======
   "cleanupRequirements": [
     {
       "resourceType": "database",
@@ -53,19 +43,14 @@
       "questionPattern": "size|memory",
       "answer": "Standard size is fine"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P2",
-<<<<<<< HEAD
-  "tags": ["databases", "redis", "mittwald"]
-=======
   "tags": [
     "databases",
     "redis",
     "caching",
     "performance"
   ]
->>>>>>> 008-mcp-server-instruction
 }

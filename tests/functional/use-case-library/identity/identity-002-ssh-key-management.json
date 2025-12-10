@@ -3,15 +3,10 @@
   "title": "Add SSH Key for Secure Mittwald Access",
   "description": "User wants to add their SSH public key to their Mittwald account for secure server access.",
   "domain": "identity",
-<<<<<<< HEAD
-  "prompt": "I want to set up SSH key authentication for my Mittwald account. Use the Mittwald MCP tools to list my current SSH keys, then show me my user profile information.",
-  "expectedDomains": ["identity"],
-=======
   "prompt": "I want to set up SSH key authentication for my mittwald account. I have my public key ready. Can you show me my current SSH keys and then add a new one? My public key is ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample... developer@laptop Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "identity"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_user_ssh_key_list",
     "mcp__mittwald__mittwald_user_get"
@@ -28,9 +23,6 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-<<<<<<< HEAD
-    { "questionPattern": "comment|label|name", "answer": "developer-laptop" }
-=======
     {
       "questionPattern": "comment|label|name",
       "answer": "developer-laptop"
@@ -39,19 +31,14 @@
       "questionPattern": "key type",
       "answer": "ed25519"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 2,
   "timeout": 8,
   "priority": "P2",
-<<<<<<< HEAD
-  "tags": ["identity", "ssh", "security", "authentication", "mittwald"]
-=======
   "tags": [
     "identity",
     "ssh",
     "security",
     "authentication"
   ]
->>>>>>> 008-mcp-server-instruction
 }

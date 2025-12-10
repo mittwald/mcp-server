@@ -3,16 +3,11 @@
   "title": "List Backup Schedules on Mittwald",
   "description": "List backup schedules on Mittwald hosting.",
   "domain": "backups",
-<<<<<<< HEAD
-  "prompt": "Use the mcp__mittwald__mittwald_project_list tool to list projects. Then use mcp__mittwald__mittwald_backup_schedule_list to list backup schedules for project p-ucvxdj.",
-  "expectedDomains": ["backups", "project-foundation"],
-=======
   "prompt": "I need to make sure our production site is properly backed up. Can you set up a daily automated backup schedule? I want backups to run every night and keep the last 14 days of backups. Also show me if there are any existing backup schedules. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
   "expectedDomains": [
     "backups",
     "project-foundation"
   ],
->>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_backup_schedule_list"
@@ -27,11 +22,6 @@
       }
     }
   ],
-<<<<<<< HEAD
-  "cleanupRequirements": [],
-  "questionAnswers": [
-    { "questionPattern": "which project", "answer": "The main production project" }
-=======
   "cleanupRequirements": [
     {
       "resourceType": "backup",
@@ -53,19 +43,14 @@
       "questionPattern": "retention|keep|days",
       "answer": "Keep 14 days of backups"
     }
->>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 4,
   "timeout": 12,
   "priority": "P1",
-<<<<<<< HEAD
-  "tags": ["backups", "schedule", "mittwald"]
-=======
   "tags": [
     "backups",
     "schedule",
     "automation",
     "data-protection"
   ]
->>>>>>> 008-mcp-server-instruction
 }
