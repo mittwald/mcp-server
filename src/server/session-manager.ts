@@ -76,11 +76,11 @@ export class SessionManager {
     if (session.mittwaldAccessToken) {
       const token = session.mittwaldAccessToken;
       const parts = token.split(':');
-      console.debug(`[TOKEN-DEBUG] session_storage_input: length=${token.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
+      console.error(`[TOKEN-DEBUG] session_storage_input: length=${token.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
       const redactedFormat = parts.length === 3
         ? `${parts[0]?.slice(0, 8)}...:[REDACTED]:${parts[2]}`
         : '[MALFORMED]';
-      console.debug(`[TOKEN-DEBUG] session_storage_input format: ${redactedFormat}`);
+      console.error(`[TOKEN-DEBUG] session_storage_input format: ${redactedFormat}`);
     }
 
     try {
@@ -114,11 +114,11 @@ export class SessionManager {
       if (hydrated.mittwaldAccessToken) {
         const token = hydrated.mittwaldAccessToken;
         const parts = token.split(':');
-        console.debug(`[TOKEN-DEBUG] session_storage_output: length=${token.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
+        console.error(`[TOKEN-DEBUG] session_storage_output: length=${token.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
         const redactedFormat = parts.length === 3
           ? `${parts[0]?.slice(0, 8)}...:[REDACTED]:${parts[2]}`
           : '[MALFORMED]';
-        console.debug(`[TOKEN-DEBUG] session_storage_output format: ${redactedFormat}`);
+        console.error(`[TOKEN-DEBUG] session_storage_output format: ${redactedFormat}`);
       }
 
       const updatedSession = await this.ensureSessionFresh(sessionId, hydrated);

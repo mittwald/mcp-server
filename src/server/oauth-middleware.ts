@@ -172,11 +172,11 @@ async function handleJwtToken(
   // [TOKEN-DEBUG] T003: Instrument OAuth Middleware Token Extraction
   if (mittwaldAccessToken) {
     const parts = mittwaldAccessToken.split(':');
-    console.debug(`[TOKEN-DEBUG] oauth_middleware: length=${mittwaldAccessToken.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
+    console.error(`[TOKEN-DEBUG] oauth_middleware: length=${mittwaldAccessToken.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
     const redactedFormat = parts.length === 3
       ? `${parts[0]?.slice(0, 8)}...:[REDACTED]:${parts[2]}`
       : '[MALFORMED]';
-    console.debug(`[TOKEN-DEBUG] oauth_middleware format: ${redactedFormat}`);
+    console.error(`[TOKEN-DEBUG] oauth_middleware format: ${redactedFormat}`);
   }
 
   const mittwaldRefreshToken = typeof mittwaldPayload?.refresh_token === 'string'
