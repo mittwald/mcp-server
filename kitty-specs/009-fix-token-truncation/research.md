@@ -284,44 +284,85 @@ payload = JSON.parse(text);          // Correct parsing
 
 **Fix Approach**: **NO FIX NEEDED for truncation** - tokens are correct format.
 
-**Real Issue**: The 403 "verdict: abstain" errors are likely caused by:
-1. **Scope insufficiency** - OAuth tokens may lack permissions for write operations
-2. **Token type mismatch** - `mw` CLI may expect different token type than OAuth provides
-3. **Client configuration** - Mittwald OAuth client may not have proper permissions configured
+**ACTUAL Root Cause Identified**: 🎯
+
+**The `mw` CLI rejects OAuth tokens (`mittwald_o`) - it only accepts API tokens (`mittwald_a`)!**
+
+**Evidence**:
+1. ✅ Manual `mw` CLI with `mittwald_a` token: **SUCCESS** (created SFTP user 0fa500a5-d742-4d40-8a78-5b6c26e1e8cc)
+2. ❌ MCP tools with `mittwald_o` token: **FAILS** (403 "verdict: abstain")
+3. ✅ Both token types are 91 chars with 10-char suffixes (format is identical)
+4. ✅ User has proper permissions (verified via successful CLI operations)
+
+**Conclusion**: Token format is correct, but **token TYPE is incompatible with CLI**.
 
 ## Surgical Fix Design
 
-*To be filled after root cause identified*
+### Fix Approaches (3 Options)
 
-### Fix Location
+**Option 1: Use Mittwald TypeScript SDK Instead of CLI** (RECOMMENDED)
+- **Location**: All MCP tool handlers in `src/handlers/tools/mittwald-cli/`
+- **Change**: Replace CLI invocations with direct SDK calls
+- **Benefit**: OAuth tokens work natively with SDK
+- **Effort**: Medium (rewrite ~170 tool handlers)
+- **Example**:
+  ```typescript
+  // Before: CLI-based
+  await executeCli('mw', ['sftp-user', 'create', '--project-id', projectId, ...]);
 
-**File**: [TBD]
-**Function**: [TBD]
-**Line**: [TBD]
+  // After: SDK-based
+  const client = new MittwaldAPIV2Client.newWithToken(oauthToken);
+  await client.sshsftpUser.createSftpUser({ projectId, ...});
+  ```
 
-### Fix Implementation
+**Option 2: Exchange OAuth Token for API Token**
+- **Location**: `src/server/session-manager.ts` or `src/utils/cli-wrapper.ts`
+- **Change**: Add token exchange before CLI invocation
+- **Benefit**: Minimal code changes, CLI tools work as-is
+- **Blocker**: **Mittwald may not provide OAuth-to-API token exchange endpoint**
+- **Requires**: Check if Mittwald API supports token exchange
 
-**Before**:
+**Option 3: Use Direct API Tokens Instead of OAuth**
+- **Location**: Authentication flow in MCP server
+- **Change**: Request API tokens during OAuth callback
+- **Benefit**: Simple, guaranteed to work
+- **Drawback**: May bypass OAuth security model
+- **Requires**: Mittwald OAuth flow to return `mittwald_a` tokens
+
+### Recommended Fix: Option 1 (SDK Migration)
+
+**File**: Start with `src/handlers/tools/mittwald-cli/sftp/user-create-cli.ts`
+
+**Current** (CLI-based):
 ```typescript
-[TBD - show problematic code]
+await invokeCliTool({
+  toolName: 'mittwald_sftp_user_create',
+  argv: ['sftp-user', 'create', '--description', desc, ...],
+  sessionId
+});
 ```
 
-**After**:
+**Fixed** (SDK-based):
 ```typescript
-[TBD - show fixed code]
+import { getMittwaldClient } from '@/services/mittwald/mittwald-client';
+
+const client = getMittwaldClient(session.mittwaldAccessToken); // OAuth token works!
+const result = await client.sshsftpUser.createSftpUser({
+  projectId,
+  description,
+  directories,
+  ...
+});
 ```
-
-### Fix Rationale
-
-[TBD - explain why this fix resolves the issue]
 
 ### Verification Plan
 
-1. Run failing test: `access-001-create-sftp-user`
-2. Verify token maintains full format
-3. Verify test passes (no 403 error)
-4. Run full test suite (31 tests)
-5. Verify pass rate improves from 19.4% to 40-50%
+1. ✅ Verify CLI requires `mittwald_a` tokens (CONFIRMED via testing)
+2. ✅ Verify OAuth returns `mittwald_o` tokens (CONFIRMED via instrumentation)
+3. ⏭️ Test SDK with OAuth tokens to confirm compatibility
+4. ⏭️ Migrate one tool handler (sftp-user-create) as proof of concept
+5. ⏭️ Verify migrated tool works with OAuth tokens
+6. ⏭️ Measure test pass rate improvement
 
 ## Alternative Causes Investigated
 
