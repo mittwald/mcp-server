@@ -177,11 +177,71 @@ tsx scripts/e2e-mcp-oauth.ts 2>&1 | grep "\[TOKEN-DEBUG\]"
 **Option 3: Check Existing Sessions**
 If there's an active OAuth session, trigger any MCP tool call and check server logs for `[TOKEN-DEBUG]` output.
 
+## Static Analysis Findings (2025-12-10)
+
+### Evidence Review
+
+**Source**: Session log `access-001-create-sftp-user-2025-12-09T21-33-52.jsonl`
+
+**Truncated Token Observed**:
+```
+c8e06919-aa0c-447e-b57f-c1508f64a76f:-AlM9BrYn9VzcyJB39tzWPr96IXP-GxQupdpYuPrioE:mittwald_o
+```
+
+**Token Structure**:
+- UUID: `c8e06919-aa0c-447e-b57f-c1508f64a76f` (36 chars)
+- Secret: `-AlM9BrYn9VzcyJB39tzWPr96IXP-GxQupdpYuPrioE` (44 chars)
+- Suffix: `mittwald_o` (10 chars)
+- **Total**: 92 visible chars (expected ~100 with full suffix)
+
+**Truncation Pattern**: Token consistently ends at `:mittwald_o` instead of full suffix like `:mittwald_oauth_xyz`
+
+### Static Code Analysis Results
+
+**Files Analyzed**:
+1. ✅ `packages/oauth-bridge/src/services/mittwald.ts` - No truncation found
+2. ✅ `packages/oauth-bridge/src/services/bridge-tokens.ts` - Full object embedded in JWT
+3. ✅ `src/server/oauth-middleware.ts` - No truncation in JWT extraction
+4. ✅ `src/server/session-manager.ts` - No truncation in Redis storage/retrieval
+5. ✅ `src/utils/cli-wrapper.ts` - No truncation before CLI invocation
+6. ✅ Separate oauth bridge repo `~/Code/mittwald-oauth/mittwald-oauth` - No explicit 100-char truncation found
+
+**Libraries Checked**:
+- `jose` (v6.1.2): No documented payload size limits
+- `ioredis`: No default string length limits found
+- `pino` / `winston`: No maxStringLength configuration found
+
+### Hypotheses Under Investigation
+
+**Hypothesis 1: Runtime Serialization Issue**
+- **Theory**: pino/winston logger serialization might have implicit limits affecting actual values
+- **Likelihood**: Low (loggers shouldn't mutate original objects)
+- **Test Needed**: Run instrumented code to capture actual token lengths at each stage
+
+**Hypothesis 2: JWT Payload Limit**
+- **Theory**: `jose` library or JWT spec might have undocumented limits
+- **Likelihood**: Low (JWTs can be several KB)
+- **Test Needed**: Decode actual JWT to check if Mittwald token inside is truncated
+
+**Hypothesis 3: Redis/ioredis Configuration**
+- **Theory**: Redis string value limit or ioredis default configuration
+- **Likelihood**: Medium (Redis has no default string limits, but could be configured)
+- **Test Needed**: Test session storage round-trip with long tokens
+
+**Hypothesis 4: Environment/Runtime Configuration**
+- **Theory**: Fly.io or Node.js environment variable affecting string serialization
+- **Likelihood**: Medium (could be util.inspect defaults or environment settings)
+- **Test Needed**: Deploy instrumented code to Fly.io and check runtime logs
+
 ## Findings
 
-*To be filled after test execution*
+*Requires test execution with instrumentation to pinpoint exact location*
 
 ### Truncation Point Identified
+
+**Status**: PENDING - Instrumentation in place, awaiting test execution
+
+**Next Action Required**: Deploy instrumented code to Fly.io OR run local OAuth flow with Redis to capture [TOKEN-DEBUG] logs
 
 **Stage**: [TBD - OAuth Bridge | Session Storage | Retrieval | CLI Wrapper]
 
@@ -193,7 +253,7 @@ If there's an active OAuth session, trigger any MCP tool call and check server l
 
 **Evidence**:
 ```
-[Paste relevant logs here]
+[Awaiting [TOKEN-DEBUG] logs from instrumented test run]
 ```
 
 ### Root Cause Analysis
