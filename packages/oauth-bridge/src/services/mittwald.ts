@@ -56,6 +56,15 @@ export async function exchangeMittwaldAuthorizationCode({
     throw new Error('Mittwald token response missing access_token');
   }
 
+  // [TOKEN-DEBUG] T001: Instrument OAuth Bridge Token Generation
+  const token = payload.access_token;
+  const parts = token.split(':');
+  console.debug(`[TOKEN-DEBUG] oauth_bridge_generation: length=${token.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
+  const redactedFormat = parts.length === 3
+    ? `${parts[0]?.slice(0, 8)}...:[REDACTED]:${parts[2]}`
+    : '[MALFORMED]';
+  console.debug(`[TOKEN-DEBUG] oauth_bridge format: ${redactedFormat}`);
+
   return payload;
 }
 
@@ -96,6 +105,15 @@ export async function refreshMittwaldTokens({
     logger.error({ payload }, 'Mittwald refresh token response missing access_token');
     throw new Error('Mittwald refresh token response missing access_token');
   }
+
+  // [TOKEN-DEBUG] T001: Instrument OAuth Bridge Token Refresh
+  const token = payload.access_token;
+  const parts = token.split(':');
+  console.debug(`[TOKEN-DEBUG] oauth_bridge_refresh: length=${token.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
+  const redactedFormat = parts.length === 3
+    ? `${parts[0]?.slice(0, 8)}...:[REDACTED]:${parts[2]}`
+    : '[MALFORMED]';
+  console.debug(`[TOKEN-DEBUG] oauth_bridge_refresh format: ${redactedFormat}`);
 
   return payload;
 }

@@ -156,6 +156,14 @@ export async function executeCli(
 
   if (!hasTokenArg) {
     if (effectiveToken) {
+      // [TOKEN-DEBUG] T004: Instrument CLI Wrapper - BEFORE adding to arguments
+      const parts = effectiveToken.split(':');
+      console.debug(`[TOKEN-DEBUG] cli_wrapper_input: length=${effectiveToken.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
+      const redactedFormat = parts.length === 3
+        ? `${parts[0]?.slice(0, 8)}...:[REDACTED]:${parts[2]}`
+        : '[MALFORMED]';
+      console.debug(`[TOKEN-DEBUG] cli_wrapper_input format: ${redactedFormat}`);
+
       effectiveArgs.push('--token', effectiveToken);
     }
   }
@@ -191,6 +199,20 @@ export async function executeCli(
     return arg;
   });
   const redactedCommand = `${command} ${redactedArgs.join(' ')}`;
+
+  // [TOKEN-DEBUG] T004: Instrument CLI Wrapper - FINAL command check
+  const tokenIndex = effectiveArgs.indexOf('--token');
+  if (tokenIndex >= 0 && tokenIndex + 1 < effectiveArgs.length) {
+    const tokenArg = effectiveArgs[tokenIndex + 1];
+    if (tokenArg) {
+      const parts = tokenArg.split(':');
+      console.debug(`[TOKEN-DEBUG] cli_wrapper_final: token_arg_length=${tokenArg.length}, parts=${parts.length}, suffix_len=${parts[2]?.length || 0}`);
+      const redactedFormat = parts.length === 3
+        ? `${parts[0]?.slice(0, 8)}...:[REDACTED]:${parts[2]}`
+        : '[MALFORMED]';
+      console.debug(`[TOKEN-DEBUG] cli_wrapper_final format: ${redactedFormat}`);
+    }
+  }
 
   try {
     const { stdout, stderr } = await execFileAsync(command, effectiveArgs, {
