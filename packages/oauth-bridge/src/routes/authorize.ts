@@ -35,7 +35,8 @@ import {
   DEFAULT_SCOPES,
   MITTWALD_SCOPE_STRING,
   buildScopeString,
-  validateRequestedScopes
+  validateRequestedScopes,
+  filterUpstreamScopes
 } from '../config/mittwald-scopes.js';
 
 interface AuthorizeRouterDeps {
