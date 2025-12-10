@@ -1,0 +1,7 @@
+{
+  "feature_number": "008",
+  "slug": "008-mcp-server-instruction",
+  "friendly_name": "Fix Sprint 007 Infrastructure & Validate LLM Tool Discovery",
+  "source_description": "Sprint 008 fixes critical Sprint 007 infrastructure issues: (1) Tool call tracking not implemented (toolsInvoked arrays empty) due to parser bug in executor.ts, (2) Use case prompts are prescriptive instead of outcome-focused, preventing valid LLM tool discovery measurement. Phase 1: Fix tool extraction pipeline to populate toolsInvoked[] from existing JSONL logs, generate baseline metrics. Phase 2: Rewrite all 31 use case prompts to outcome-focused format without tool prescriptions. Phase 3: Re-execute 007 suite with fixed infrastructure, validate tool call data (100% accuracy), establish clean baseline for future MCP improvements. Success: Extract 100% of tool calls, rewrite 31 prompts (zero tool references), maintain 77.4% pass rate, generate comprehensive analysis report. This sprint establishes valid baseline; Sprints 009+ will improve MCP server instructions.",
+  "created_at": "2025-12-09T14:51:11Z"
+}

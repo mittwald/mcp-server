@@ -3,8 +3,16 @@
   "title": "Scale Container on Mittwald",
   "description": "Scale container resources on Mittwald hosting.",
   "domain": "containers",
+<<<<<<< HEAD
   "prompt": "My website on Mittwald is getting more traffic and I need to check my container resources. Use the Mittwald MCP tools to list my projects and their containers.",
   "expectedDomains": ["project-foundation", "containers"],
+=======
+  "prompt": "My website is getting more traffic and I need to increase the resources. Can you help me scale up the container resources for better performance? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "project-foundation",
+    "containers"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_container_list"
@@ -21,10 +29,33 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
+<<<<<<< HEAD
     { "questionPattern": "which project", "answer": "my-website" }
+=======
+    {
+      "questionPattern": "which project",
+      "answer": "my-website"
+    },
+    {
+      "questionPattern": "how much",
+      "answer": "Double the current resources"
+    },
+    {
+      "questionPattern": "confirm",
+      "answer": "Yes, please proceed"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P1",
+<<<<<<< HEAD
   "tags": ["containers", "scaling", "mittwald"]
+=======
+  "tags": [
+    "containers",
+    "scaling",
+    "performance"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

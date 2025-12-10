@@ -3,8 +3,16 @@
   "title": "List MySQL Databases on Mittwald",
   "description": "List MySQL databases on Mittwald hosting.",
   "domain": "databases",
+<<<<<<< HEAD
   "prompt": "I need to check my MySQL databases on Mittwald. Use the Mittwald MCP tools to list my projects and show all MySQL databases.",
   "expectedDomains": ["project-foundation", "databases"],
+=======
+  "prompt": "I have an existing web project and I need to add a database for a new feature I'm building. I need a MySQL database that my application can connect to. Can you set this up for me and give me the connection details? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "project-foundation",
+    "databases"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_database_mysql_list"
@@ -19,12 +27,44 @@
       }
     }
   ],
+<<<<<<< HEAD
   "cleanupRequirements": [],
   "questionAnswers": [
     { "questionPattern": "which project", "answer": "The project called 'my-website'" }
+=======
+  "cleanupRequirements": [
+    {
+      "resourceType": "database",
+      "identificationMethod": "log-parse",
+      "deletionTool": "database/mysql/delete",
+      "order": 1
+    }
+  ],
+  "questionAnswers": [
+    {
+      "questionPattern": "which project",
+      "answer": "The project called 'my-website'"
+    },
+    {
+      "questionPattern": "database name",
+      "answer": "feature_db"
+    },
+    {
+      "questionPattern": "version",
+      "answer": "The latest stable version"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P1",
+<<<<<<< HEAD
   "tags": ["mysql", "database", "mittwald"]
+=======
+  "tags": [
+    "mysql",
+    "database",
+    "provisioning"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

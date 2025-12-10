@@ -61,14 +61,18 @@ function createTestUseCase(overrides: Partial<UseCase> = {}): UseCase {
   return {
     id: 'test-001',
     title: 'Test Use Case',
-    domain: 'test',
+    domain: 'apps',
     description: 'Test use case for unit testing',
     priority: 'P1',
     tags: ['test'],
     prompt: 'Test prompt',
     timeout: 1, // 1 minute for fast tests
+    estimatedDuration: 1, // 1 minute estimated
+    expectedDomains: ['apps'],
+    expectedTools: [],
     questionAnswers: [],
     successCriteria: [],
+    cleanupRequirements: [],
     ...overrides,
   };
 }

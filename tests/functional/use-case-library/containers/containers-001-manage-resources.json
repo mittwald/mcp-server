@@ -3,8 +3,16 @@
   "title": "View Containers on Mittwald",
   "description": "View container resources on Mittwald hosting.",
   "domain": "containers",
+<<<<<<< HEAD
   "prompt": "I'd like to see what containers I'm running on my Mittwald project. Use the Mittwald MCP tools to list my projects and show all containers.",
   "expectedDomains": ["project-foundation", "containers"],
+=======
+  "prompt": "I'd like to see what container resources I'm currently using for my project. Can you show me the current allocation and usage of my containers? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "project-foundation",
+    "containers"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_container_list"
@@ -21,10 +29,21 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "which project", "answer": "my-production-site" }
+    {
+      "questionPattern": "which project",
+      "answer": "my-production-site"
+    }
   ],
   "estimatedDuration": 2,
   "timeout": 10,
   "priority": "P1",
+<<<<<<< HEAD
   "tags": ["containers", "resources", "mittwald"]
+=======
+  "tags": [
+    "containers",
+    "resources",
+    "monitoring"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

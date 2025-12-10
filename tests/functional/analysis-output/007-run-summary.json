@@ -1,14 +1,23 @@
 {
+<<<<<<< HEAD
   "startTime": "2025-12-05T18:53:38.207Z",
   "endTime": "2025-12-05T21:14:55.079Z",
   "total": 31,
   "passed": 24,
   "failed": 7,
+=======
+  "startTime": "2025-12-09T21:33:51.946Z",
+  "endTime": "2025-12-09T23:33:52.082Z",
+  "total": 31,
+  "passed": 5,
+  "failed": 26,
+>>>>>>> 008-mcp-server-instruction
   "timeout": 0,
   "cleanupFailed": 0,
   "results": [
     {
       "useCaseId": "access-001-create-sftp-user",
+<<<<<<< HEAD
       "status": "passed",
       "duration": 130179,
       "toolsCovered": []
@@ -24,22 +33,74 @@
       "status": "passed",
       "duration": 393472,
       "toolsCovered": []
+=======
+      "status": "failed",
+      "duration": 497523,
+      "error": "Session killed by signal: SIGTERM",
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_sftp_user_create"
+      ]
+    },
+    {
+      "useCaseId": "access-002-manage-ssh-access",
+      "status": "failed",
+      "duration": 600013,
+      "error": "Session timed out",
+      "toolsCovered": [
+        "Task",
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_ssh_user_list",
+        "mcp__mittwald__mittwald_ssh_user_create",
+        "mcp__mittwald__mittwald_user_ssh_key_create"
+      ]
+    },
+    {
+      "useCaseId": "apps-001-deploy-php-app",
+      "status": "failed",
+      "duration": 25671,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_server_list",
+        "mcp__mittwald__mittwald_domain_list",
+        "mcp__mittwald__mittwald_project_create"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "apps-002-update-nodejs-version",
       "status": "passed",
+<<<<<<< HEAD
       "duration": 212247,
+=======
+      "duration": 1307,
+>>>>>>> 008-mcp-server-instruction
       "toolsCovered": []
     },
     {
       "useCaseId": "apps-003-install-wordpress",
+<<<<<<< HEAD
       "status": "passed",
       "duration": 61514,
       "toolsCovered": []
+=======
+      "status": "failed",
+      "duration": 47425,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "TodoWrite",
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_project_create",
+        "mcp__mittwald__mittwald_database_mysql_versions",
+        "mcp__mittwald__mittwald_database_mysql_create"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "apps-004-migrate-application",
       "status": "passed",
+<<<<<<< HEAD
       "duration": 105658,
       "toolsCovered": []
     },
@@ -60,17 +121,83 @@
       "status": "passed",
       "duration": 82045,
       "toolsCovered": []
+=======
+      "duration": 144797,
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_app_list",
+        "mcp__mittwald__mittwald_database_list",
+        "mcp__mittwald__mittwald_org_list",
+        "Task"
+      ]
+    },
+    {
+      "useCaseId": "automation-001-setup-cronjob",
+      "status": "failed",
+      "duration": 46062,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "Task",
+        "Bash",
+        "mcp__mittwald__mittwald_cronjob_create",
+        "mcp__mittwald__mittwald_cronjob_list"
+      ]
+    },
+    {
+      "useCaseId": "automation-002-manage-scheduled-tasks",
+      "status": "failed",
+      "duration": 152476,
+      "error": "Session killed by signal: SIGTERM",
+      "toolsCovered": [
+        "Task",
+        "Glob",
+        "Read",
+        "Bash",
+        "Grep",
+        "mcp__mittwald__mittwald_context_get",
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_cronjob_list",
+        "mcp__mittwald__mittwald_user_session_list",
+        "mcp__mittwald__mittwald_user_api_token_list",
+        "mcp__mittwald__mittwald_context_set_session"
+      ]
+    },
+    {
+      "useCaseId": "backups-001-setup-backup-schedule",
+      "status": "failed",
+      "duration": 202018,
+      "error": "Session killed by signal: SIGTERM",
+      "toolsCovered": [
+        "Task",
+        "mcp__mittwald__mittwald_user_accessible_projects",
+        "mcp__mittwald__mittwald_context_get_session",
+        "mcp__mittwald__mittwald_context_set_session",
+        "mcp__mittwald__mittwald_backup_schedule_list",
+        "mcp__mittwald__mittwald_backup_list"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "backups-002-create-manual-backup",
       "status": "failed",
+<<<<<<< HEAD
       "duration": 278520,
       "error": "Execution failed",
       "toolsCovered": []
+=======
+      "duration": 72607,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_context_get_session",
+        "mcp__mittwald__mittwald_user_accessible_projects"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "backups-003-restore-from-backup",
       "status": "passed",
+<<<<<<< HEAD
       "duration": 120189,
       "toolsCovered": []
     },
@@ -90,24 +217,86 @@
       "useCaseId": "containers-003-deploy-docker-stack",
       "status": "passed",
       "duration": 107604,
+=======
+      "duration": 132254,
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_user_accessible_projects",
+        "mcp__mittwald__mittwald_backup_list",
+        "TodoWrite"
+      ]
+    },
+    {
+      "useCaseId": "containers-001-manage-resources",
+      "status": "failed",
+      "duration": 66017,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_container_list",
+        "mcp__mittwald__mittwald_stack_list"
+      ]
+    },
+    {
+      "useCaseId": "containers-002-scale-app",
+      "status": "failed",
+      "duration": 137491,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "TodoWrite",
+        "mcp__mittwald__mittwald_user_accessible_projects",
+        "mcp__mittwald__mittwald_container_list",
+        "mcp__mittwald__mittwald_project_get"
+      ]
+    },
+    {
+      "useCaseId": "containers-003-deploy-docker-stack",
+      "status": "failed",
+      "duration": 1821,
+      "error": "Exit code: 143",
+>>>>>>> 008-mcp-server-instruction
       "toolsCovered": []
     },
     {
       "useCaseId": "containers-004-manage-volumes",
+<<<<<<< HEAD
       "status": "passed",
       "duration": 123143,
       "toolsCovered": []
+=======
+      "status": "failed",
+      "duration": 301366,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "Task",
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_volume_list",
+        "mcp__mittwald__mittwald_project_get"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "databases-001-provision-mysql",
       "status": "failed",
+<<<<<<< HEAD
       "duration": 244095,
       "error": "Execution failed",
       "toolsCovered": []
+=======
+      "duration": 37871,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_user_accessible_projects",
+        "mcp__mittwald__mittwald_context_get_session",
+        "mcp__mittwald__mittwald_context_set_session",
+        "mcp__mittwald__mittwald_database_mysql_versions",
+        "mcp__mittwald__mittwald_database_mysql_create"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "databases-002-create-backup",
       "status": "failed",
+<<<<<<< HEAD
       "duration": 720026,
       "error": "Session timed out",
       "toolsCovered": []
@@ -117,15 +306,42 @@
       "status": "passed",
       "duration": 98750,
       "toolsCovered": []
+=======
+      "duration": 17014,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_user_get",
+        "mcp__mittwald__mittwald_database_mysql_list"
+      ]
+    },
+    {
+      "useCaseId": "databases-003-setup-redis-cache",
+      "status": "failed",
+      "duration": 720001,
+      "error": "Session timed out",
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_user_accessible_projects",
+        "mcp__mittwald__mittwald_context_get_session",
+        "mcp__mittwald__mittwald_context_set_session",
+        "mcp__mittwald__mittwald_database_redis_versions",
+        "mcp__mittwald__mittwald_database_redis_create"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "databases-004-manage-users",
       "status": "passed",
+<<<<<<< HEAD
       "duration": 73988,
+=======
+      "duration": 16546,
+>>>>>>> 008-mcp-server-instruction
       "toolsCovered": []
     },
     {
       "useCaseId": "domains-001-setup-email-forwarding",
+<<<<<<< HEAD
       "status": "passed",
       "duration": 84868,
       "toolsCovered": []
@@ -141,15 +357,57 @@
       "status": "passed",
       "duration": 193070,
       "toolsCovered": []
+=======
+      "status": "failed",
+      "duration": 32517,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "TodoWrite",
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_user_get",
+        "mcp__mittwald__mittwald_domain_list",
+        "mcp__mittwald__mittwald_mail_address_list"
+      ]
+    },
+    {
+      "useCaseId": "domains-002-configure-dns",
+      "status": "failed",
+      "duration": 600013,
+      "error": "Session timed out",
+      "toolsCovered": [
+        "mcp__mittwald__mittwald_project_list",
+        "mcp__mittwald__mittwald_domain_list",
+        "mcp__mittwald__mittwald_org_list",
+        "Bash",
+        "mcp__mittwald__mittwald_domain_dnszone_list"
+      ]
+    },
+    {
+      "useCaseId": "domains-003-setup-mailbox",
+      "status": "failed",
+      "duration": 301208,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "Bash",
+        "Read",
+        "Task",
+        "TodoWrite"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "domains-004-ssl-certificate",
       "status": "passed",
+<<<<<<< HEAD
       "duration": 60116,
+=======
+      "duration": 296712,
+>>>>>>> 008-mcp-server-instruction
       "toolsCovered": []
     },
     {
       "useCaseId": "identity-001-manage-api-tokens",
+<<<<<<< HEAD
       "status": "passed",
       "duration": 225054,
       "toolsCovered": []
@@ -159,31 +417,92 @@
       "status": "passed",
       "duration": 83972,
       "toolsCovered": []
+=======
+      "status": "failed",
+      "duration": 152904,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "Bash",
+        "Glob",
+        "Read"
+      ]
+    },
+    {
+      "useCaseId": "identity-002-ssh-key-management",
+      "status": "failed",
+      "duration": 480072,
+      "error": "Session timed out",
+      "toolsCovered": [
+        "Task",
+        "Bash",
+        "Glob",
+        "Read",
+        "Write"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "identity-003-check-account-settings",
       "status": "failed",
+<<<<<<< HEAD
       "duration": 1000521,
       "error": "Session timed out",
       "toolsCovered": []
+=======
+      "duration": 100241,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "Task",
+        "Glob",
+        "Grep",
+        "Read",
+        "Bash"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "organization-001-invite-team-member",
       "status": "failed",
+<<<<<<< HEAD
       "duration": 1076316,
       "error": "Session timed out",
       "toolsCovered": []
+=======
+      "duration": 600029,
+      "error": "Session timed out",
+      "toolsCovered": [
+        "Task",
+        "Glob",
+        "Bash",
+        "Grep",
+        "Read"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "organization-002-manage-memberships",
       "status": "failed",
+<<<<<<< HEAD
       "duration": 974322,
       "error": "Session timed out",
       "toolsCovered": []
+=======
+      "duration": 480038,
+      "error": "Session timed out",
+      "toolsCovered": [
+        "Task",
+        "Glob",
+        "Bash",
+        "Grep",
+        "Read",
+        "Write"
+      ]
+>>>>>>> 008-mcp-server-instruction
     },
     {
       "useCaseId": "project-001-create-project",
       "status": "failed",
+<<<<<<< HEAD
       "duration": 1047800,
       "error": "Session timed out",
       "toolsCovered": []
@@ -202,4 +521,46 @@
     }
   ],
   "coverageAfter": 14.5
+=======
+      "duration": 229978,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "TodoWrite",
+        "Task",
+        "Bash",
+        "Glob",
+        "Read"
+      ]
+    },
+    {
+      "useCaseId": "project-002-configure-ssh",
+      "status": "failed",
+      "duration": 520003,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "TodoWrite",
+        "Task",
+        "Glob",
+        "Bash",
+        "Read"
+      ]
+    },
+    {
+      "useCaseId": "project-003-manage-environment",
+      "status": "failed",
+      "duration": 186003,
+      "error": "Execution failed",
+      "toolsCovered": [
+        "Task",
+        "Bash",
+        "Read",
+        "Glob",
+        "Grep",
+        "Edit",
+        "Write"
+      ]
+    }
+  ],
+  "coverageAfter": 53.9
+>>>>>>> 008-mcp-server-instruction
 }

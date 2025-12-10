@@ -154,8 +154,11 @@ export class Coordinator implements ICoordinator {
 
       // Extract text from response
       const responseText = message.content
-        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-        .map((block) => block.text)
+        .filter((block: unknown): block is Anthropic.TextBlock => {
+          const b = block as Record<string, unknown>;
+          return b.type === 'text';
+        })
+        .map((block: Anthropic.TextBlock) => block.text)
         .join('');
 
       const decision = parseDecision(responseText);

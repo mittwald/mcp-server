@@ -1,0 +1,22 @@
+{
+  "id": "identity-001-manage-api-tokens-2025-12-09T22-48-02",
+  "useCaseId": "identity-001-manage-api-tokens",
+  "startTime": "2025-12-09T22:48:02.788Z",
+  "status": "failure",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/.worktrees/008-mcp-server-instruction/tests/functional/session-logs/007-real-world-use/identity-001-manage-api-tokens-2025-12-09T22-48-02.jsonl",
+  "toolsInvoked": [
+    "Bash",
+    "Glob",
+    "Read"
+  ],
+  "evidenceArtifacts": [],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "errorMessage": "Execution failed",
+  "endTime": "2025-12-09T22:50:35.692Z",
+  "durationMs": 152904
+}

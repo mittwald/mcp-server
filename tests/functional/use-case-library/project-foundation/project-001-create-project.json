@@ -3,8 +3,17 @@
   "title": "List Projects and Servers on Mittwald",
   "description": "Check available projects and servers on Mittwald hosting.",
   "domain": "project-foundation",
+<<<<<<< HEAD
   "prompt": "I want to see what projects I have on my Mittwald hosting account. Use the Mittwald MCP tools to list all my projects and show me the available servers.",
   "expectedDomains": ["project-foundation"],
+=======
+  "prompt": "I'm starting a new web project and need to set up the hosting environment. I'll need a place to deploy my code with SSH access for deployments. Can you help me get this set up? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "organization",
+    "project-foundation",
+    "access-users"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_server_list"
@@ -19,12 +28,50 @@
       }
     }
   ],
+<<<<<<< HEAD
   "cleanupRequirements": [],
   "questionAnswers": [
     { "questionPattern": "which server", "answer": "MCP Server Dev" }
+=======
+  "cleanupRequirements": [
+    {
+      "resourceType": "ssh-key",
+      "identificationMethod": "log-parse",
+      "deletionTool": "ssh/user/delete",
+      "order": 1
+    },
+    {
+      "resourceType": "project",
+      "identificationMethod": "log-parse",
+      "deletionTool": "project/delete",
+      "order": 2
+    }
+  ],
+  "questionAnswers": [
+    {
+      "questionPattern": "project name",
+      "answer": "my-new-website"
+    },
+    {
+      "questionPattern": "description",
+      "answer": "A new website project"
+    },
+    {
+      "questionPattern": "server",
+      "answer": "Use the default server"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 2,
   "timeout": 10,
   "priority": "P1",
+<<<<<<< HEAD
   "tags": ["project", "server", "mittwald"]
+=======
+  "tags": [
+    "project",
+    "setup",
+    "ssh"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

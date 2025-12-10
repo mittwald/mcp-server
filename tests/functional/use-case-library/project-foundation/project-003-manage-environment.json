@@ -3,8 +3,15 @@
   "title": "Check Project Details on Mittwald",
   "description": "Check project details and app configuration on Mittwald hosting.",
   "domain": "project-foundation",
+<<<<<<< HEAD
   "prompt": "I want to review my project configuration on Mittwald. Use the Mittwald MCP tools to list my projects, show the details of my main project, and list the apps installed in it.",
   "expectedDomains": ["project-foundation", "apps"],
+=======
+  "prompt": "I need to set up environment variables for my Node.js application. I have API keys for Stripe and SendGrid that need to be configured. Can you help me set up the environment configuration for the project? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "project-foundation"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_project_get",
@@ -22,10 +29,34 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
+<<<<<<< HEAD
     { "questionPattern": "which project", "answer": "The main project" }
+=======
+    {
+      "questionPattern": "which project",
+      "answer": "The Node.js application project"
+    },
+    {
+      "questionPattern": "Stripe|API key",
+      "answer": "sk_test_xxxxx"
+    },
+    {
+      "questionPattern": "SendGrid",
+      "answer": "SG.xxxxx"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 2,
   "timeout": 10,
   "priority": "P2",
+<<<<<<< HEAD
   "tags": ["project", "apps", "mittwald"]
+=======
+  "tags": [
+    "project",
+    "environment",
+    "configuration",
+    "nodejs"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

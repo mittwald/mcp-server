@@ -3,8 +3,15 @@
   "title": "Manage API Tokens for CI/CD Integration",
   "description": "Developer wants to create an API token for their CI/CD pipeline to automate deployments on Mittwald.",
   "domain": "identity",
+<<<<<<< HEAD
   "prompt": "I need to set up automated deployments from our GitLab CI pipeline to my Mittwald hosting. Use the Mittwald MCP tools to first show me what API tokens I already have, then create a new one called 'gitlab-deploy' with both read and write permissions.",
   "expectedDomains": ["identity"],
+=======
+  "prompt": "I need to set up automated deployments from our GitLab CI pipeline. Can you help me create an API token that I can use for this? First, show me what tokens I already have, then create a new one called 'gitlab-deploy' that I can use for deployments. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "identity"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_user_api_token_list",
     "mcp__mittwald__mittwald_user_api_token_create"
@@ -30,12 +37,36 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
+<<<<<<< HEAD
     { "questionPattern": "description|purpose", "answer": "GitLab CI/CD deployment automation" },
     { "questionPattern": "expir|duration", "answer": "1 year" },
     { "questionPattern": "permission|scope|role", "answer": "api_read and api_write" }
+=======
+    {
+      "questionPattern": "description|purpose",
+      "answer": "GitLab CI/CD deployment automation"
+    },
+    {
+      "questionPattern": "expir|duration",
+      "answer": "No expiration needed"
+    },
+    {
+      "questionPattern": "permission|scope",
+      "answer": "Project deployment permissions"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P2",
+<<<<<<< HEAD
   "tags": ["identity", "api-token", "ci-cd", "automation", "mittwald"]
+=======
+  "tags": [
+    "identity",
+    "api-token",
+    "ci-cd",
+    "automation"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

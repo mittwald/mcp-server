@@ -3,8 +3,16 @@
   "title": "View Volumes on Mittwald",
   "description": "View persistent volumes on Mittwald hosting.",
   "domain": "containers",
+<<<<<<< HEAD
   "prompt": "I want to check the persistent storage volumes on my Mittwald project. Use the Mittwald MCP tools to list my projects and show all volumes.",
   "expectedDomains": ["containers", "project-foundation"],
+=======
+  "prompt": "My Docker application needs persistent storage for uploaded files. Can you create a volume that will persist data even when the container is restarted? I need about 10GB of storage. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "containers",
+    "project-foundation"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_volume_list"
@@ -19,12 +27,45 @@
       }
     }
   ],
+<<<<<<< HEAD
   "cleanupRequirements": [],
   "questionAnswers": [
     { "questionPattern": "which project", "answer": "The container project" }
+=======
+  "cleanupRequirements": [
+    {
+      "resourceType": "container",
+      "identificationMethod": "log-parse",
+      "deletionTool": "volume/delete",
+      "order": 1
+    }
+  ],
+  "questionAnswers": [
+    {
+      "questionPattern": "which project",
+      "answer": "The container project"
+    },
+    {
+      "questionPattern": "size|storage",
+      "answer": "10GB"
+    },
+    {
+      "questionPattern": "mount|path",
+      "answer": "/data/uploads"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P2",
+<<<<<<< HEAD
   "tags": ["containers", "volumes", "storage", "mittwald"]
+=======
+  "tags": [
+    "containers",
+    "volumes",
+    "storage",
+    "persistence"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

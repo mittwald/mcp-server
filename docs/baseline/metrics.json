@@ -1,0 +1,721 @@
+{
+  "totalExecutions": 31,
+  "totalToolCalls": 127,
+  "avgCallsPerExecution": 4.096774193548387,
+  "minCalls": 0,
+  "maxCalls": 7,
+  "domainMetrics": {
+    "apps": {
+      "domain": "apps",
+      "executionCount": 4,
+      "totalToolCalls": 21,
+      "avgToolsPerExecution": 5.25,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "project/list",
+          "count": 1
+        },
+        {
+          "tool": "app/list",
+          "count": 1
+        },
+        {
+          "tool": "app/get",
+          "count": 1
+        },
+        {
+          "tool": "database/mysql/list",
+          "count": 1
+        },
+        {
+          "tool": "backup/create",
+          "count": 1
+        }
+      ]
+    },
+    "databases": {
+      "domain": "databases",
+      "executionCount": 4,
+      "totalToolCalls": 16,
+      "avgToolsPerExecution": 4,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "project/list",
+          "count": 1
+        },
+        {
+          "tool": "database/mysql/list",
+          "count": 1
+        },
+        {
+          "tool": "database/mysql/get",
+          "count": 1
+        },
+        {
+          "tool": "database/mysql/user/create",
+          "count": 1
+        }
+      ]
+    },
+    "domains-mail": {
+      "domain": "domains-mail",
+      "executionCount": 4,
+      "totalToolCalls": 17,
+      "avgToolsPerExecution": 4.25,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "project/list",
+          "count": 1
+        },
+        {
+          "tool": "domain/list",
+          "count": 1
+        },
+        {
+          "tool": "domain/get",
+          "count": 1
+        },
+        {
+          "tool": "certificate/list",
+          "count": 1
+        },
+        {
+          "tool": "certificate/request",
+          "count": 1
+        }
+      ]
+    },
+    "containers": {
+      "domain": "containers",
+      "executionCount": 4,
+      "totalToolCalls": 16,
+      "avgToolsPerExecution": 4,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "project/list",
+          "count": 1
+        },
+        {
+          "tool": "volume/list",
+          "count": 1
+        },
+        {
+          "tool": "volume/create",
+          "count": 1
+        },
+        {
+          "tool": "container/list",
+          "count": 1
+        }
+      ]
+    },
+    "access-users": {
+      "domain": "access-users",
+      "executionCount": 2,
+      "totalToolCalls": 8,
+      "avgToolsPerExecution": 4,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "project/list",
+          "count": 1
+        },
+        {
+          "tool": "ssh-user/list",
+          "count": 1
+        },
+        {
+          "tool": "ssh-user/create",
+          "count": 1
+        },
+        {
+          "tool": "ssh-user/get",
+          "count": 1
+        }
+      ]
+    },
+    "automation": {
+      "domain": "automation",
+      "executionCount": 2,
+      "totalToolCalls": 8,
+      "avgToolsPerExecution": 4,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "project/list",
+          "count": 1
+        },
+        {
+          "tool": "cronjob/list",
+          "count": 1
+        },
+        {
+          "tool": "cronjob/get",
+          "count": 1
+        },
+        {
+          "tool": "cronjob/execution/list",
+          "count": 1
+        },
+        {
+          "tool": "cronjob/trigger",
+          "count": 1
+        }
+      ]
+    },
+    "backups": {
+      "domain": "backups",
+      "executionCount": 3,
+      "totalToolCalls": 11,
+      "avgToolsPerExecution": 3.6666666666666665,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "project/list",
+          "count": 1
+        },
+        {
+          "tool": "backup/list",
+          "count": 1
+        },
+        {
+          "tool": "backup/get",
+          "count": 1
+        },
+        {
+          "tool": "backup/restore",
+          "count": 1
+        }
+      ]
+    },
+    "identity": {
+      "domain": "identity",
+      "executionCount": 3,
+      "totalToolCalls": 9,
+      "avgToolsPerExecution": 3,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "user/self/get",
+          "count": 1
+        },
+        {
+          "tool": "user/self/sessions/list",
+          "count": 1
+        },
+        {
+          "tool": "login/status",
+          "count": 1
+        }
+      ]
+    },
+    "organization": {
+      "domain": "organization",
+      "executionCount": 2,
+      "totalToolCalls": 8,
+      "avgToolsPerExecution": 4,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "org/list",
+          "count": 1
+        },
+        {
+          "tool": "org/get",
+          "count": 1
+        },
+        {
+          "tool": "org/membership/list",
+          "count": 1
+        },
+        {
+          "tool": "org/invite/list",
+          "count": 1
+        }
+      ]
+    },
+    "project-foundation": {
+      "domain": "project-foundation",
+      "executionCount": 3,
+      "totalToolCalls": 13,
+      "avgToolsPerExecution": 4.333333333333333,
+      "successRate": 100,
+      "retryFrequency": 0,
+      "commonTools": [
+        {
+          "tool": "project/list",
+          "count": 1
+        },
+        {
+          "tool": "project/get",
+          "count": 1
+        },
+        {
+          "tool": "project/filesystem/list",
+          "count": 1
+        },
+        {
+          "tool": "app/list",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "retryPatterns": {
+    "calledTwice": 0,
+    "calledThreeTimes": 0,
+    "calledFourPlusTimes": 0
+  },
+  "executionDetails": [
+    {
+      "useCase": "apps-001-deploy-php-app",
+      "domain": "apps",
+      "toolsInvoked": [
+        "project/create",
+        "project/get",
+        "app/create",
+        "app/list",
+        "database/mysql/create",
+        "database/mysql/list",
+        "domain/virtualhost/create"
+      ],
+      "toolCount": 7,
+      "uniqueTools": 7,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "apps-002-update-nodejs-version",
+      "domain": "apps",
+      "toolsInvoked": [
+        "app/list",
+        "app/get",
+        "app/update"
+      ],
+      "toolCount": 3,
+      "uniqueTools": 3,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "apps-003-install-wordpress",
+      "domain": "apps",
+      "toolsInvoked": [
+        "project/list",
+        "app/list",
+        "app/create",
+        "database/mysql/create",
+        "app/installation/status"
+      ],
+      "toolCount": 5,
+      "uniqueTools": 5,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "apps-004-migrate-application",
+      "domain": "apps",
+      "toolsInvoked": [
+        "project/list",
+        "app/list",
+        "app/get",
+        "database/mysql/list",
+        "backup/create",
+        "backup/export"
+      ],
+      "toolCount": 6,
+      "uniqueTools": 6,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "databases-001-provision-mysql",
+      "domain": "databases",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "database/mysql/create",
+        "database/mysql/list"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "databases-002-create-backup",
+      "domain": "databases",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "backup/create",
+        "backup/list"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "databases-003-setup-redis-cache",
+      "domain": "databases",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "database/redis/create",
+        "database/redis/list"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "databases-004-manage-users",
+      "domain": "databases",
+      "toolsInvoked": [
+        "project/list",
+        "database/mysql/list",
+        "database/mysql/get",
+        "database/mysql/user/create"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "domains-001-setup-email-forwarding",
+      "domain": "domains-mail",
+      "toolsInvoked": [
+        "project/list",
+        "domain/list",
+        "mail/address/create",
+        "mail/deliverybox/create"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "domains-002-configure-dns",
+      "domain": "domains-mail",
+      "toolsInvoked": [
+        "project/list",
+        "domain/list",
+        "domain/dns/record/set"
+      ],
+      "toolCount": 3,
+      "uniqueTools": 3,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "domains-003-setup-mailbox",
+      "domain": "domains-mail",
+      "toolsInvoked": [
+        "project/list",
+        "mail/address/list",
+        "mail/address/create",
+        "mailbox/create",
+        "domain/list"
+      ],
+      "toolCount": 5,
+      "uniqueTools": 5,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "domains-004-ssl-certificate",
+      "domain": "domains-mail",
+      "toolsInvoked": [
+        "project/list",
+        "domain/list",
+        "domain/get",
+        "certificate/list",
+        "certificate/request"
+      ],
+      "toolCount": 5,
+      "uniqueTools": 5,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "containers-001-manage-resources",
+      "domain": "containers",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "container/list"
+      ],
+      "toolCount": 3,
+      "uniqueTools": 3,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "containers-002-scale-app",
+      "domain": "containers",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "container/list",
+        "container/update"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "containers-003-deploy-docker-stack",
+      "domain": "containers",
+      "toolsInvoked": [
+        "project/list",
+        "stack/list",
+        "stack/create",
+        "container/list",
+        "volume/create"
+      ],
+      "toolCount": 5,
+      "uniqueTools": 5,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "containers-004-manage-volumes",
+      "domain": "containers",
+      "toolsInvoked": [
+        "project/list",
+        "volume/list",
+        "volume/create",
+        "container/list"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "access-001-create-sftp-user",
+      "domain": "access-users",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "sftp-user/list",
+        "sftp-user/create"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "access-002-manage-ssh-access",
+      "domain": "access-users",
+      "toolsInvoked": [
+        "project/list",
+        "ssh-user/list",
+        "ssh-user/create",
+        "ssh-user/get"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "automation-001-setup-cronjob",
+      "domain": "automation",
+      "toolsInvoked": [
+        "project/list",
+        "cronjob/list",
+        "cronjob/create"
+      ],
+      "toolCount": 3,
+      "uniqueTools": 3,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "automation-002-manage-scheduled-tasks",
+      "domain": "automation",
+      "toolsInvoked": [
+        "project/list",
+        "cronjob/list",
+        "cronjob/get",
+        "cronjob/execution/list",
+        "cronjob/trigger"
+      ],
+      "toolCount": 5,
+      "uniqueTools": 5,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "backups-001-setup-backup-schedule",
+      "domain": "backups",
+      "toolsInvoked": [
+        "project/list",
+        "backup/schedule/list",
+        "backup/schedule/create"
+      ],
+      "toolCount": 3,
+      "uniqueTools": 3,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "backups-002-create-manual-backup",
+      "domain": "backups",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "backup/create",
+        "backup/list"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "backups-003-restore-from-backup",
+      "domain": "backups",
+      "toolsInvoked": [
+        "project/list",
+        "backup/list",
+        "backup/get",
+        "backup/restore"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "identity-001-manage-api-tokens",
+      "domain": "identity",
+      "toolsInvoked": [
+        "user/self/api-tokens/list",
+        "user/self/api-tokens/create",
+        "user/self/get"
+      ],
+      "toolCount": 3,
+      "uniqueTools": 3,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "identity-002-ssh-key-management",
+      "domain": "identity",
+      "toolsInvoked": [
+        "user/self/ssh-keys/list",
+        "user/self/ssh-keys/create",
+        "user/self/get"
+      ],
+      "toolCount": 3,
+      "uniqueTools": 3,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "identity-003-check-account-settings",
+      "domain": "identity",
+      "toolsInvoked": [
+        "user/self/get",
+        "user/self/sessions/list",
+        "login/status"
+      ],
+      "toolCount": 3,
+      "uniqueTools": 3,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "organization-001-invite-team-member",
+      "domain": "organization",
+      "toolsInvoked": [
+        "org/list",
+        "org/membership/list",
+        "org/invite/create",
+        "org/get"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "organization-002-manage-memberships",
+      "domain": "organization",
+      "toolsInvoked": [
+        "org/list",
+        "org/get",
+        "org/membership/list",
+        "org/invite/list"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "project-001-create-project",
+      "domain": "project-foundation",
+      "toolsInvoked": [
+        "org/list",
+        "server/list",
+        "project/create",
+        "project/get",
+        "ssh/user/create"
+      ],
+      "toolCount": 5,
+      "uniqueTools": 5,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "project-002-configure-ssh",
+      "domain": "project-foundation",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "ssh/user/create",
+        "ssh/user/list"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    },
+    {
+      "useCase": "project-003-manage-environment",
+      "domain": "project-foundation",
+      "toolsInvoked": [
+        "project/list",
+        "project/get",
+        "project/filesystem/list",
+        "app/list"
+      ],
+      "toolCount": 4,
+      "uniqueTools": 4,
+      "retryCount": 0,
+      "success": true
+    }
+  ]
+}

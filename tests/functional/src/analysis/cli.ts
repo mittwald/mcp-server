@@ -176,16 +176,16 @@ async function runAnalysis(options: CliOptions): Promise<void> {
   log('Parsing session logs...');
   const { sessions, stats: parseStats } = await parseDirectory(inputDir);
 
-  if (parseStats.errors > 0) {
-    const errorRate = parseStats.errors / (parseStats.errors + sessions.length);
+  if (parseStats.errors.length > 0) {
+    const errorRate = parseStats.errors.length / (parseStats.errors.length + sessions.length);
     if (errorRate > 0.1) {
-      console.error(`Error: Failed to parse ${parseStats.errors} of ${parseStats.errors + sessions.length} files (${(errorRate * 100).toFixed(1)}%)`);
+      console.error(`Error: Failed to parse ${parseStats.errors.length} of ${parseStats.errors.length + sessions.length} files (${(errorRate * 100).toFixed(1)}%)`);
       console.error('Hint: Check session log format. See errors above.');
       process.exit(3);
     }
   }
 
-  log(`Parsing complete (${sessions.length} sessions, ${parseStats.mainSessions} main, ${parseStats.subAgentSessions} sub-agents)`);
+  log(`Parsing complete (${sessions.length} sessions, ${parseStats.parsedLines} parsed, ${parseStats.errorLines} errors)`);
 
   // 2. Index the corpus
   logVerbose('Building corpus index...');

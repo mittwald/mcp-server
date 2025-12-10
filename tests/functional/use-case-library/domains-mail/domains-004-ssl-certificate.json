@@ -3,8 +3,16 @@
   "title": "Check Domain and Virtualhost on Mittwald",
   "description": "Check domain and virtualhost configuration on Mittwald hosting.",
   "domain": "domains-mail",
+<<<<<<< HEAD
   "prompt": "I need to check my domain configuration on Mittwald including virtualhosts. Use the Mittwald MCP tools to list my projects, domains, and virtualhosts.",
   "expectedDomains": ["domains-mail", "project-foundation"],
+=======
+  "prompt": "I need to enable HTTPS for my website. Can you help me set up an SSL certificate for my domain? I want to use Let's Encrypt for free automatic certificates. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "domains-mail",
+    "project-foundation"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_domain_list",
@@ -22,10 +30,35 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
+<<<<<<< HEAD
     { "questionPattern": "which domain", "answer": "Our main website domain" }
+=======
+    {
+      "questionPattern": "which domain",
+      "answer": "Our main website domain"
+    },
+    {
+      "questionPattern": "certificate type|provider",
+      "answer": "Let's Encrypt free certificate"
+    },
+    {
+      "questionPattern": "www|subdomain",
+      "answer": "Yes, include www subdomain too"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P1",
+<<<<<<< HEAD
   "tags": ["domains", "virtualhost", "mittwald"]
+=======
+  "tags": [
+    "domains",
+    "ssl",
+    "https",
+    "security",
+    "certificate"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

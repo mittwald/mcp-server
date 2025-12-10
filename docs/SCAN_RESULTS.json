@@ -1,0 +1,10 @@
+{
+  "scan_date": "",
+  "validation_criteria": "SC-002",
+  "total_prompts": 0,
+  "passed": 0,
+  "failed": 0,
+  "tool_name_violations": [],
+  "prescriptive_violations": [],
+  "summary": {}
+}

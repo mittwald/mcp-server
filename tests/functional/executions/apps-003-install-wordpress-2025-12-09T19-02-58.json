@@ -1,0 +1,38 @@
+{
+  "id": "apps-003-install-wordpress-2025-12-09T19-02-58",
+  "useCaseId": "apps-003-install-wordpress",
+  "startTime": "2025-12-09T19:02:58.243Z",
+  "status": "success",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/.worktrees/008-mcp-server-instruction/tests/functional/session-logs/007-real-world-use/apps-003-install-wordpress-2025-12-09T19-02-58.jsonl",
+  "toolsInvoked": [
+    "Bash",
+    "Glob",
+    "Read",
+    "TodoWrite",
+    "BashOutput"
+  ],
+  "evidenceArtifacts": [
+    {
+      "type": "log-excerpt",
+      "path": "/Users/robert/Code/mittwald-mcp/.worktrees/008-mcp-server-instruction/tests/functional/evidence/apps-003-install-wordpress-2025-12-09T19-05-21.155Z/criterion-0-log-excerpt.txt",
+      "criterionIndex": 0,
+      "timestamp": "2025-12-09T19:05:21.160Z",
+      "metadata": {}
+    },
+    {
+      "type": "log-excerpt",
+      "path": "/Users/robert/Code/mittwald-mcp/.worktrees/008-mcp-server-instruction/tests/functional/evidence/apps-003-install-wordpress-2025-12-09T19-05-21.155Z/criterion-1-log-excerpt.txt",
+      "criterionIndex": 1,
+      "timestamp": "2025-12-09T19:05:21.160Z",
+      "metadata": {}
+    }
+  ],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "endTime": "2025-12-09T19:05:21.162Z",
+  "durationMs": 142919
+}

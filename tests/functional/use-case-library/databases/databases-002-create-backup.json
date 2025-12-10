@@ -3,8 +3,16 @@
   "title": "Check Database Backup Status on Mittwald",
   "description": "Check database backup status on Mittwald hosting.",
   "domain": "databases",
+<<<<<<< HEAD
   "prompt": "I need to check the backup status of my databases on Mittwald. Use the Mittwald MCP tools to list my projects, databases, and available backups.",
   "expectedDomains": ["project-foundation", "databases", "backups"],
+=======
+  "prompt": "I need to create a backup of my production database before I make some important changes. Can you help me create a backup that I can restore from if something goes wrong? I want to make sure my data is safe. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "project-foundation",
+    "backups"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_database_mysql_list",
@@ -20,12 +28,44 @@
       }
     }
   ],
+<<<<<<< HEAD
   "cleanupRequirements": [],
   "questionAnswers": [
     { "questionPattern": "which project", "answer": "My production project" }
+=======
+  "cleanupRequirements": [
+    {
+      "resourceType": "backup",
+      "identificationMethod": "log-parse",
+      "deletionTool": "backup/delete",
+      "order": 1
+    }
+  ],
+  "questionAnswers": [
+    {
+      "questionPattern": "which project",
+      "answer": "My production project"
+    },
+    {
+      "questionPattern": "description",
+      "answer": "Pre-migration backup"
+    },
+    {
+      "questionPattern": "confirm",
+      "answer": "Yes, create the backup"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 4,
   "timeout": 12,
   "priority": "P1",
+<<<<<<< HEAD
   "tags": ["backup", "database", "mittwald"]
+=======
+  "tags": [
+    "backup",
+    "database",
+    "safety"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

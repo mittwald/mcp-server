@@ -313,7 +313,7 @@ export interface SessionResult {
  * Stream event from Claude Code headless mode
  */
 export interface StreamEvent {
-  type: 'message' | 'tool_use' | 'tool_result' | 'error' | 'result';
+  type: 'assistant' | 'user' | 'message' | 'tool_use' | 'tool_result' | 'error' | 'result';
   timestamp: Date;
   content: unknown;
 }

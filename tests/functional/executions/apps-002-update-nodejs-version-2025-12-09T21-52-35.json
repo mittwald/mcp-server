@@ -1,0 +1,17 @@
+{
+  "id": "apps-002-update-nodejs-version-2025-12-09T21-52-35",
+  "useCaseId": "apps-002-update-nodejs-version",
+  "startTime": "2025-12-09T21:52:35.247Z",
+  "status": "success",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/.worktrees/008-mcp-server-instruction/tests/functional/session-logs/007-real-world-use/apps-002-update-nodejs-version-2025-12-09T21-52-35.jsonl",
+  "toolsInvoked": [],
+  "evidenceArtifacts": [],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "endTime": "2025-12-09T21:52:36.554Z",
+  "durationMs": 1307
+}

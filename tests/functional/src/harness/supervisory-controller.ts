@@ -22,7 +22,7 @@ import type { StreamParser, QuestionDetectedEvent, PatternState } from './stream
 
 // Thresholds from existing coordinator
 const MAX_CONSECUTIVE_ERRORS = 3;
-const MAX_SAME_TOOL_REPEATS = 5;
+const MAX_SAME_TOOL_REPEATS = 20;
 const MAX_IDLE_TIME_MS = 60000;
 const DEFAULT_TIMEOUT_MINUTES = 10;
 const MAX_TIMEOUT_MINUTES = 30;

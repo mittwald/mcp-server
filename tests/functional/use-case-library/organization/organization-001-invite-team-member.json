@@ -3,8 +3,16 @@
   "title": "Invite Team Member to Mittwald Organization",
   "description": "Organization admin wants to invite a new developer to their Mittwald organization.",
   "domain": "organization",
+<<<<<<< HEAD
   "prompt": "I need to invite a new developer to my Mittwald organization. Use the Mittwald MCP tools to first list my organizations and their current members, then send an invitation to newdev@company.com with the member role.",
   "expectedDomains": ["organization"],
+=======
+  "prompt": "I need to invite a new developer to our organization. Their email is newdev@company.com. Can you send them an invitation to join our team? Also show me who else is already a member. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "organization",
+    "identity"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_org_list",
     "mcp__mittwald__mittwald_org_membership_list",
@@ -22,12 +30,36 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
+<<<<<<< HEAD
     { "questionPattern": "role|permission", "answer": "member role" },
     { "questionPattern": "which organization", "answer": "Use my default organization" },
     { "questionPattern": "message|note", "answer": "Welcome to the team!" }
+=======
+    {
+      "questionPattern": "role|permission",
+      "answer": "Developer role with project access"
+    },
+    {
+      "questionPattern": "which organization",
+      "answer": "Use my default organization"
+    },
+    {
+      "questionPattern": "message|note",
+      "answer": "Welcome to the team!"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P2",
+<<<<<<< HEAD
   "tags": ["organization", "team", "invite", "mittwald"]
+=======
+  "tags": [
+    "organization",
+    "team",
+    "invite",
+    "collaboration"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

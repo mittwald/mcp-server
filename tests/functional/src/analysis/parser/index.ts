@@ -227,7 +227,7 @@ function parseEvent(raw: RawEvent, index: number): Event | null {
   const event: Event = {
     type,
     timestamp,
-    raw: raw as Record<string, unknown>,
+    raw: (raw as unknown) as Record<string, unknown>,
   };
 
   // Parse type-specific content
@@ -481,4 +481,4 @@ function determineOutcome(events: Event[]): SessionOutcome {
 // =============================================================================
 
 export { parseToolName };
-export type { ParseStats, ParseSessionResult };
+export type { ParseStats };

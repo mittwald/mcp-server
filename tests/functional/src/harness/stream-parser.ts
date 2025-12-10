@@ -52,7 +52,7 @@ export interface QuestionDetectedEvent {
 /**
  * Event types from Claude Code stream-json format
  */
-export type StreamEventType = 'message' | 'tool_use' | 'tool_result' | 'error' | 'result';
+export type StreamEventType = 'assistant' | 'user' | 'message' | 'tool_use' | 'tool_result' | 'error' | 'result';
 
 /**
  * Parsed tool call from stream events
@@ -161,7 +161,7 @@ export class StreamParser extends EventEmitter {
     // Check explicit type field
     if (parsed.type && typeof parsed.type === 'string') {
       const type = parsed.type.toLowerCase();
-      if (['message', 'tool_use', 'tool_result', 'error', 'result'].includes(type)) {
+      if (['assistant', 'user', 'message', 'tool_use', 'tool_result', 'error', 'result'].includes(type)) {
         return type as StreamEventType;
       }
     }
@@ -199,6 +199,8 @@ export class StreamParser extends EventEmitter {
     }
 
     switch (event.type) {
+      case 'assistant':
+      case 'user':
       case 'message':
         this.processMessage(event);
         break;
@@ -381,8 +383,19 @@ export class StreamParser extends EventEmitter {
     const content = event.content as Record<string, unknown>;
 
     switch (event.type) {
-      case 'message':
-        return content.text ? `[message] ${String(content.text).substring(0, 200)}` : null;
+      case 'assistant':
+      case 'user':
+      case 'message': {
+        // Try to extract text from various message formats
+        let text = content.text as string | undefined;
+        if (!text) {
+          const message = (content.message || content) as Record<string, unknown>;
+          if (typeof message.content === 'string') {
+            text = message.content;
+          }
+        }
+        return text ? `[${event.type}] ${String(text).substring(0, 200)}` : null;
+      }
       case 'tool_use':
         return `[tool_use] ${content.tool_name || content.name}`;
       case 'tool_result':

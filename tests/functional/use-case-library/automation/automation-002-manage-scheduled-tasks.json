@@ -3,8 +3,16 @@
   "title": "Manage Scheduled Tasks on Mittwald",
   "description": "Review and manage cronjobs on Mittwald hosting.",
   "domain": "automation",
+<<<<<<< HEAD
   "prompt": "I want to review all the scheduled cronjobs on my Mittwald project. Use the Mittwald MCP tools to list all cronjobs and show their execution history.",
   "expectedDomains": ["automation", "project-foundation"],
+=======
+  "prompt": "I want to review all the scheduled tasks we have running. Can you list all cronjobs, show me the execution history of the main cleanup job, and trigger it manually so I can verify it works correctly? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "automation",
+    "project-foundation"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_cronjob_list",
@@ -22,10 +30,34 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
+<<<<<<< HEAD
     { "questionPattern": "which project", "answer": "The production website" }
+=======
+    {
+      "questionPattern": "which project",
+      "answer": "The production website"
+    },
+    {
+      "questionPattern": "which cronjob|which task",
+      "answer": "The database cleanup job"
+    },
+    {
+      "questionPattern": "confirm|sure",
+      "answer": "Yes, trigger it now"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 3,
   "timeout": 10,
   "priority": "P3",
+<<<<<<< HEAD
   "tags": ["automation", "cronjob", "monitoring", "mittwald"]
+=======
+  "tags": [
+    "automation",
+    "cronjob",
+    "monitoring",
+    "execution"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

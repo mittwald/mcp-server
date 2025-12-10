@@ -1,0 +1,23 @@
+{
+  "id": "apps-004-migrate-application-2025-12-09T19-05-21",
+  "useCaseId": "apps-004-migrate-application",
+  "startTime": "2025-12-09T19:05:21.164Z",
+  "status": "failure",
+  "sessionLogPath": "/Users/robert/Code/mittwald-mcp/.worktrees/008-mcp-server-instruction/tests/functional/session-logs/007-real-world-use/apps-004-migrate-application-2025-12-09T19-05-21.jsonl",
+  "toolsInvoked": [
+    "TodoWrite",
+    "Bash",
+    "Read",
+    "Task"
+  ],
+  "evidenceArtifacts": [],
+  "cleanupStatus": {
+    "status": "complete",
+    "deleted": [],
+    "failed": []
+  },
+  "questionLog": [],
+  "errorMessage": "Execution failed",
+  "endTime": "2025-12-09T19:10:55.901Z",
+  "durationMs": 334737
+}

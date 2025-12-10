@@ -3,8 +3,17 @@
   "title": "List Apps for Migration Planning on Mittwald",
   "description": "Review apps and backups on Mittwald to plan a migration.",
   "domain": "apps",
+<<<<<<< HEAD
   "prompt": "I'm planning to migrate an app on my Mittwald hosting. Use the Mittwald MCP tools to list all my projects and the apps in each project, then list available backups.",
   "expectedDomains": ["apps", "backups", "project-foundation"],
+=======
+  "prompt": "I've finished testing my application on staging and now I need to move it to production. Can you help me migrate the app and its database from the staging project to the production project? Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "apps",
+    "databases",
+    "project-foundation"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_project_list",
     "mcp__mittwald__mittwald_app_list",
@@ -22,11 +31,35 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
+<<<<<<< HEAD
     { "questionPattern": "source|staging", "answer": "The staging project" },
     { "questionPattern": "destination|production", "answer": "The production project" }
+=======
+    {
+      "questionPattern": "source|staging",
+      "answer": "The staging project"
+    },
+    {
+      "questionPattern": "destination|production",
+      "answer": "The production project"
+    },
+    {
+      "questionPattern": "confirm|proceed",
+      "answer": "Yes, proceed with the migration"
+    }
+>>>>>>> 008-mcp-server-instruction
   ],
   "estimatedDuration": 5,
   "timeout": 15,
   "priority": "P1",
+<<<<<<< HEAD
   "tags": ["apps", "migration", "planning", "mittwald"]
+=======
+  "tags": [
+    "apps",
+    "migration",
+    "staging",
+    "production"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }

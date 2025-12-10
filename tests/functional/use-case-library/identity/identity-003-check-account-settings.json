@@ -3,8 +3,15 @@
   "title": "Review Mittwald Account Information",
   "description": "User wants to review their Mittwald account details and active sessions for security purposes.",
   "domain": "identity",
+<<<<<<< HEAD
   "prompt": "I'd like to do a security review of my Mittwald account. Use the Mittwald MCP tools to show me my account details and list all my active sessions.",
   "expectedDomains": ["identity"],
+=======
+  "prompt": "I'd like to do a security review of my account. Can you show me my account details, list all active sessions, and tell me when I last logged in? I want to make sure there are no suspicious sessions. Use the available Mittwald MCP tools to complete this - discover any needed information yourself and make reasonable choices for parameters I didn't specify. Do not ask me questions - just use the tools to get it done.",
+  "expectedDomains": [
+    "identity"
+  ],
+>>>>>>> 008-mcp-server-instruction
   "expectedTools": [
     "mcp__mittwald__mittwald_user_get",
     "mcp__mittwald__mittwald_user_session_list"
@@ -21,10 +28,22 @@
   ],
   "cleanupRequirements": [],
   "questionAnswers": [
-    { "questionPattern": "terminate|revoke", "answer": "No, just reviewing for now" }
+    {
+      "questionPattern": "terminate|revoke",
+      "answer": "No, just reviewing for now"
+    }
   ],
   "estimatedDuration": 2,
   "timeout": 8,
   "priority": "P3",
+<<<<<<< HEAD
   "tags": ["identity", "security", "sessions", "account", "mittwald"]
+=======
+  "tags": [
+    "identity",
+    "security",
+    "sessions",
+    "account"
+  ]
+>>>>>>> 008-mcp-server-instruction
 }
