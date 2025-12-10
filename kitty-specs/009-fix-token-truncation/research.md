@@ -296,6 +296,12 @@ payload = JSON.parse(text);          // Correct parsing
 
 **Conclusion**: Token format is correct, but **token TYPE is incompatible with CLI**.
 
+**Additional Finding**: MCP server has **dual authentication modes**:
+- **OAuth flow** → `mittwald_o` tokens → CLI incompatible → 403 errors
+- **Direct bearer** → `mittwald_a` tokens (user-provided) → CLI compatible → SUCCESS
+
+Sprint 008's 19.4% pass rate likely reflects mixed authentication (some tests used direct bearer tokens).
+
 ## Surgical Fix Design
 
 ### Fix Approaches (3 Options)
