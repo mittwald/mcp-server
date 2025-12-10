@@ -366,15 +366,33 @@ const result = await client.sshsftpUser.createSftpUser({
 
 ## Alternative Causes Investigated
 
-*Document other potential causes ruled out during investigation*
+### Hypothesis 1: Token Truncation in Pipeline
+- **Theory**: Token being truncated during OAuth Bridge → Session → CLI flow
+- **Evidence**: Instrumented all 4 stages, token maintains 91 chars throughout
+- **Conclusion**: ❌ Ruled out - no truncation occurs, `mittwald_o` is complete format
 
-### Hypothesis 1: [TBD]
-- **Evidence**: [TBD]
-- **Conclusion**: Ruled out because [TBD]
+### Hypothesis 2: JSON Serialization Limits
+- **Theory**: JSON.parse or JSON.stringify truncating long strings
+- **Evidence**: Logged raw HTTP response (318 chars total), parsing preserves all fields
+- **Conclusion**: ❌ Ruled out - JSON handling is correct
 
-### Hypothesis 2: [TBD]
-- **Evidence**: [TBD]
-- **Conclusion**: Ruled out because [TBD]
+### Hypothesis 3: Redis String Limits
+- **Theory**: Redis or ioredis configuration limiting string lengths
+- **Evidence**: No maxlen or limits found in code or configuration
+- **Conclusion**: ❌ Ruled out - Redis handles full tokens correctly
+
+### Hypothesis 4: Scope Insufficiency
+- **Theory**: OAuth tokens lack write permissions
+- **Evidence**: Manual CLI with same user/project CAN create SFTP users successfully
+- **Conclusion**: ❌ Ruled out - user has proper permissions, issue is token TYPE not scopes
+
+### Hypothesis 5: CLI Token Type Incompatibility (CONFIRMED ✅)
+- **Theory**: `mw` CLI only accepts `mittwald_a` (API) tokens, rejects `mittwald_o` (OAuth) tokens
+- **Evidence**:
+  - CLI token: `mittwald_a` → write operations SUCCESS
+  - OAuth token: `mittwald_o` → write operations 403 FAIL
+  - Both tokens 91 chars, same format, same user, same permissions
+- **Conclusion**: ✅ **THIS IS THE ROOT CAUSE** - CLI incompatible with OAuth tokens
 
 ## References
 
