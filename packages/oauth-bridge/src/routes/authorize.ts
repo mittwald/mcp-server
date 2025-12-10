@@ -129,8 +129,9 @@ export function createAuthorizeRouter({ config, stateStore }: AuthorizeRouterDep
     }
 
     const scopedRequest = buildScopeString(effectiveScopes);
-    // Use the Mittwald-specific scope format (see mittwald-scopes.ts for documentation)
-    const mittwaldScopeString = MITTWALD_SCOPE_STRING;
+    // Use the client's requested scopes (filtered to upstreamScopes) instead of hardcoded defaults
+    // This allows clients to request database:read, backup:read, etc. beyond the 4 default scopes
+    const mittwaldScopeString = buildScopeString(filterUpstreamScopes(effectiveScopes));
 
     const internalState = randomUUID();
 
