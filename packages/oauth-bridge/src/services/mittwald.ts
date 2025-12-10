@@ -28,6 +28,12 @@ export async function exchangeMittwaldAuthorizationCode({
   body.set('client_id', config.mittwald.clientId);
   body.set('code_verifier', codeVerifier);
 
+  // [TOKEN-DEBUG] Log request to Mittwald
+  console.error(`[TOKEN-DEBUG] mittwald_token_request: url=${config.mittwald.tokenUrl}`);
+  console.error(`[TOKEN-DEBUG] mittwald_token_request: client_id=${config.mittwald.clientId}`);
+  console.error(`[TOKEN-DEBUG] mittwald_token_request: redirect_uri=${config.bridge.baseUrl}/mittwald/callback`);
+  console.error(`[TOKEN-DEBUG] mittwald_token_request: code_verifier_length=${codeVerifier.length}`);
+
   const response = await fetch(config.mittwald.tokenUrl, {
     method: 'POST',
     headers: {
