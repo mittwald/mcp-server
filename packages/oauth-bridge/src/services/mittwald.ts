@@ -37,6 +37,11 @@ export async function exchangeMittwaldAuthorizationCode({
   });
 
   const text = await response.text();
+
+  // [TOKEN-DEBUG] Log RAW response from Mittwald
+  console.error(`[TOKEN-DEBUG] mittwald_api_response_length: ${text.length}`);
+  console.error(`[TOKEN-DEBUG] mittwald_api_response_preview: ${text.substring(0, 200)}`);
+
   let payload: MittwaldTokenResponse | { error: string; error_description?: string };
 
   try {
@@ -44,6 +49,12 @@ export async function exchangeMittwaldAuthorizationCode({
   } catch (error) {
     logger.error({ error, text }, 'Failed to parse Mittwald token response');
     throw new Error('Failed to parse Mittwald token response');
+  }
+
+  // [TOKEN-DEBUG] Log parsed payload access_token field
+  if ('access_token' in payload) {
+    console.error(`[TOKEN-DEBUG] parsed_access_token_length: ${payload.access_token.length}`);
+    console.error(`[TOKEN-DEBUG] parsed_access_token_value: ${payload.access_token}`);
   }
 
   if (!response.ok) {
