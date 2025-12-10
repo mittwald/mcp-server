@@ -239,30 +239,55 @@ c8e06919-aa0c-447e-b57f-c1508f64a76f:-AlM9BrYn9VzcyJB39tzWPr96IXP-GxQupdpYuPrioE
 
 ### Truncation Point Identified
 
-**Status**: PENDING - Instrumentation in place, awaiting test execution
+**Status**: ✅ RESOLVED - No truncation bug exists
 
-**Next Action Required**: Deploy instrumented code to Fly.io OR run local OAuth flow with Redis to capture [TOKEN-DEBUG] logs
+**Stage**: Mittwald OAuth API (source)
 
-**Stage**: [TBD - OAuth Bridge | Session Storage | Retrieval | CLI Wrapper]
+**File**: N/A - This is Mittwald's API response format, not our code
 
-**File**: [TBD - exact file path]
+**Root Cause**: **MISCONCEPTION - "mittwald_o" is the CORRECT and COMPLETE suffix for OAuth tokens**
 
-**Line**: [TBD - exact line number]
-
-**Root Cause**: [TBD - describe the issue]
-
-**Evidence**:
+**Evidence from Fly.io logs (2025-12-10 12:19:01Z)**:
 ```
-[Awaiting [TOKEN-DEBUG] logs from instrumented test run]
+[TOKEN-DEBUG] mittwald_api_response_preview: {"access_token":"90ed91fa-b39d-4d8e-85e3-d65c0f3b2f55:gSIlFxf5OqxqcvsSlZunanIxE9FZJBu2kXYlXRlxqAc:mittwald_o"
+[TOKEN-DEBUG] parsed_access_token_length: 91
+[TOKEN-DEBUG] parsed_access_token_value: 90ed91fa-b39d-4d8e-85e3-d65c0f3b2f55:gSIlFxf5OqxqcvsSlZunanIxE9FZJBu2kXYlXRlxqAc:mittwald_o
+[TOKEN-DEBUG] oauth_bridge_generation: length=91, parts=3, suffix_len=10
+[TOKEN-DEBUG] oauth_bridge format: 90ed91fa...:[REDACTED]:mittwald_o
 ```
+
+**Mittwald Token Format** (per [API docs](https://developer.mittwald.de/docs/v2/api/intro/)):
+- Format: `{UUID}:{description}:{mittwald_type}`
+- API tokens: `mittwald_a` (short suffix)
+- OAuth tokens: `mittwald_o` (short suffix)
+- **Short suffixes are BY DESIGN, not truncation**
 
 ### Root Cause Analysis
 
-**Why Truncation Occurs**: [TBD]
+**Why "Truncation" Was Misdiagnosed**:
 
-**Code Context**: [TBD - show relevant code snippet]
+The original assumption was that tokens were being truncated from a longer format like `mittwald_oauth_xyz` to `mittwald_o`. Investigation revealed this is FALSE.
 
-**Fix Approach**: [TBD - describe surgical fix]
+**Actual Token Format** (verified via instrumentation):
+- OAuth tokens from Mittwald API: `{uuid}:{secret}:mittwald_o` (91 chars, suffix=10)
+- This matches Mittwald's documented format: `{uuid}:{description}:{mittwald_type}`
+- Known suffixes: `mittwald_a` (API), `mittwald_o` (OAuth)
+- **Short suffixes are intentional design, not truncation**
+
+**Code Context**:
+```typescript
+// packages/oauth-bridge/src/services/mittwald.ts:39-43
+const text = await response.text();  // Full response from Mittwald
+payload = JSON.parse(text);          // Correct parsing
+// payload.access_token = "uuid:secret:mittwald_o" ← This IS the full token!
+```
+
+**Fix Approach**: **NO FIX NEEDED for truncation** - tokens are correct format.
+
+**Real Issue**: The 403 "verdict: abstain" errors are likely caused by:
+1. **Scope insufficiency** - OAuth tokens may lack permissions for write operations
+2. **Token type mismatch** - `mw` CLI may expect different token type than OAuth provides
+3. **Client configuration** - Mittwald OAuth client may not have proper permissions configured
 
 ## Surgical Fix Design
 
@@ -319,14 +344,17 @@ c8e06919-aa0c-447e-b57f-c1508f64a76f:-AlM9BrYn9VzcyJB39tzWPr96IXP-GxQupdpYuPrioE
 
 ## Conclusion
 
-*To be completed after investigation*
+**Summary**: Comprehensive instrumentation of the token pipeline revealed that **no truncation bug exists**. Mittwald's OAuth API intentionally returns tokens with short suffix `mittwald_o` (10 characters) as part of their token format design: `{uuid}:{secret}:{mittwald_type}`. This matches their documented API token format where suffixes are single-letter or short codes (`mittwald_a` for API, `mittwald_o` for OAuth). The 403 "verdict: abstain" errors affecting 60% of tests are NOT caused by malformed tokens, but likely by scope/permission mismatches between OAuth tokens and CLI operations.
 
-**Summary**: [One paragraph describing what was found, where truncation occurs, and how it will be fixed]
+**Confidence Level**: **High** - Verified via:
+- ✅ Raw HTTP response from Mittwald API showing complete JSON with `mittwald_o` suffix
+- ✅ Consistent 91-char length across multiple OAuth flows
+- ✅ Mittwald API documentation confirming short suffix design pattern
+- ✅ No code found that truncates tokens in our pipeline
 
-**Confidence Level**: High | Medium | Low
-
-**Next Steps**:
-1. Implement surgical fix
-2. Add lightweight validation
-3. Create regression tests
-4. Verify fix resolves issue
+**Revised Next Steps**:
+1. ~~Implement surgical fix for truncation~~ **NOT NEEDED - no truncation**
+2. **Investigate scope/permission configuration** for OAuth vs CLI tokens
+3. **Test OAuth tokens with read-only operations** to verify token validity
+4. **Review Mittwald OAuth client configuration** for proper permission grants
+5. **Document correct token format** to prevent future misdiagnosis
