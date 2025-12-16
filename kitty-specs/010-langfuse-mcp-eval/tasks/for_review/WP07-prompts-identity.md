@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Generate Prompts - identity (17 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "for_review"
+assignee: "claude"
+agent: "claude"
+shell_pid: "78380"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T16:43:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "78380"
+    action: "Generated 19 identity domain prompts (includes login/* tools)"
 ---
 
 # Work Package Prompt: WP07 – Generate Prompts - identity (17 tools)

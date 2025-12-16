@@ -30,7 +30,7 @@ history:
     lane: "planned"
     agent: "codex"
     shell_pid: "90732"
-    action: "Review submitted: needs changes (schema compliance gaps, missing inventory/output)"
+    action: "Review submitted: needs changes (schema compliance gaps, missing generated prompts/manifests)"
 ---
 
 ## Review Feedback
@@ -39,7 +39,7 @@ history:
 
 **Key Issues**:
 1. `required_resources` values emitted by the generator include labels not permitted by the contract schema (e.g., `ssh-key`, `api-token` from `evals/scripts/generate-eval-prompts.ts:175-244`), so generated prompts will fail validation against `contracts/eval-prompt-input.schema.json` which only allows the enumerated resource types. These need to be mapped to the allowed values or filtered before writing files.
-2. No tool inventory or generated prompts are present (`evals/inventory/` and `evals/prompts/` are empty), so acceptance criteria requiring 175 prompts plus manifest cannot be verified. The generator currently throws immediately when `tools.json` is missing; we need the inventory in place and to commit the generated outputs or document why they are deferred.
+2. Although `evals/inventory/tools.json` is now present, no prompts or manifest have been generated (`evals/prompts/` is empty), so the deliverable of 175 Langfuse prompt JSONs is still unmet and unverified.
 3. `validatePromptFile` only performs ad-hoc checks and does not validate against the provided JSON Schemas (`contracts/eval-prompt-input.schema.json`, `contracts/eval-prompt-metadata.schema.json`), so schema-breaking prompts (like the resource enum issue above) would pass validation and ship undetected. Integrate schema validation to enforce compliance.
 
 **What Was Done Well**:
@@ -49,7 +49,7 @@ history:
 **Action Items** (must complete before re-review):
 - [ ] Align `required_resources` to the schema enum (e.g., remap SSH/API token tooling to allowed labels) and ensure outputs validate.
 - [ ] Add schema-backed validation (Ajv or similar) inside `validatePromptFile` so CI catches contract drift.
-- [ ] Provide `evals/inventory/tools.json`, run the generator, and commit the 175 prompt JSON files plus manifest to satisfy deliverables.
+- [ ] Run the generator with the available inventory and commit the 175 prompt JSON files plus manifest to satisfy deliverables.
 
 # Work Package Prompt: WP02 – Eval Prompt Generator Script
 

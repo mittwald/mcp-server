@@ -1,0 +1,34 @@
+{
+  "input": {
+    "prompt": "# Eval: user/ssh-key/get\n\n## Goal\nTest the `mcp__mittwald__mittwald_user_ssh-key_get` MCP tool by get details of a specific ssh key.\n\n## Tool Information\n- **MCP Tool Name**: `mcp__mittwald__mittwald_user_ssh-key_get`\n- **Display Name**: `user/ssh-key/get`\n- **Domain**: identity\n- **Dependency Tier**: 0\n- **Description**: Get details of a specific SSH key\n\n**Note**: This tool may require interactive input or produce interactive output (e.g., SSH sessions, port forwarding).\n\n## Prerequisites\nThis is a Tier 0 tool with no prerequisites. You can execute it immediately.\n\n## Task\nExecute the `mcp__mittwald__mittwald_user_ssh-key_get` tool and verify the result.\n\n### Steps:\n1. Execute `mcp__mittwald__mittwald_user_ssh-key_get` with appropriate parameters\n2. Verify the operation succeeded by checking the response\n3. Record the outcome in your self-assessment\n\n### Example Parameters:\n- Resource ID required (check tool schema for exact parameter name)\n- Use the corresponding `/list` tool to find available IDs\n\n## Success Indicators\nThe eval is successful if:\n- Returns resource details\n- Resource ID matches request\n- User data returned correctly\n\n\n## Self-Assessment Instructions\n\nAfter completing the task (whether successful or not), you MUST provide a structured self-assessment. Output your assessment in the following exact format, enclosed in the marker comments:\n\n<!-- SELF_ASSESSMENT_START -->\n```json\n{\n  \"success\": true,\n  \"confidence\": \"high\",\n  \"tool_executed\": \"mcp__mittwald__mittwald_user_ssh-key_get\",\n  \"timestamp\": \"2025-12-16T15:43:10.298Z\",\n  \"problems_encountered\": [],\n  \"resources_created\": [],\n  \"resources_verified\": [],\n  \"tool_response_summary\": \"Brief summary of what the tool returned\",\n  \"execution_notes\": \"Any observations about the execution\"\n}\n```\n<!-- SELF_ASSESSMENT_END -->\n\n### Self-Assessment Field Guide:\n- **success**: `true` if the tool achieved its goal, `false` otherwise\n- **confidence**: `high` (clear outcome), `medium` (some uncertainty), `low` (unable to determine)\n- **tool_executed**: The exact MCP tool name you invoked\n- **timestamp**: Current ISO 8601 timestamp\n- **problems_encountered**: Array of problem objects with `type` and `description` fields\n  - Valid types: `auth_error`, `resource_not_found`, `validation_error`, `timeout`, `api_error`, `permission_denied`, `quota_exceeded`, `dependency_missing`, `other`\n- **resources_created**: Array of created resources with `type` and `id` fields\n- **resources_verified**: Array of verified resources with `type`, `id`, and `status` fields\n- **tool_response_summary**: Key information from the tool's response\n- **execution_notes**: Any observations or recommendations\n\n**IMPORTANT**: The self-assessment MUST be valid JSON enclosed in the marker comments exactly as shown.\n\n",
+    "tool_name": "mcp__mittwald__mittwald_user_ssh-key_get",
+    "display_name": "user/ssh-key/get",
+    "context": {
+      "dependencies": [
+        "user/ssh-key/list"
+      ],
+      "setup_instructions": "No setup required - this is a Tier 0 tool with no prerequisites.",
+      "required_resources": []
+    }
+  },
+  "expectedOutput": null,
+  "metadata": {
+    "domain": "identity",
+    "tier": 0,
+    "tool_description": "Get details of a specific SSH key",
+    "success_indicators": [
+      "Returns resource details",
+      "Resource ID matches request",
+      "User data returned correctly"
+    ],
+    "self_assessment_required": true,
+    "eval_version": "1.0.0",
+    "created_at": "2025-12-16T15:43:10.298Z",
+    "tags": [
+      "identity",
+      "tier-0",
+      "interactive",
+      "read-only"
+    ]
+  }
+}

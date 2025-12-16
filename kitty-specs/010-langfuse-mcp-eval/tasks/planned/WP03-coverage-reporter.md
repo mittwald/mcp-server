@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Coverage Reporter Script"
 phase: "Phase 1 - Infrastructure & Schemas"
-lane: "for_review"
+lane: "planned"
 assignee: "claude"
 agent: "claude"
 shell_pid: "78380"
-review_status: ""
-reviewed_by: ""
+review_status: "has_feedback"
+reviewed_by: "codex"
 history:
   - timestamp: "2025-12-16T13:03:00Z"
     lane: "planned"
@@ -26,7 +26,28 @@ history:
     agent: "claude"
     shell_pid: "78380"
     action: "Implementation complete - all 29 unit tests pass"
+  - timestamp: "2025-12-16T15:42:24Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "95120"
+    action: "Review submitted: needs changes (CLI defaults & missing generated reports)"
 ---
+
+## Review Feedback
+
+**Status**: ❌ **Needs Changes**
+
+**Key Issues**:
+1. CLI requires an assessments directory argument and exits early when none is provided (`evals/scripts/generate-coverage-report.ts:519-546`), but the prompt specifies default paths (self-assessments, inventory, results) so it should run with zero args. This blocks basic usage and contradicts Implementation Step 8.
+2. No coverage outputs are present (`evals/results/coverage-report.json`, `evals/results/baseline-report.md` are missing), so deliverables can’t be verified. With the current CLI defaults behavior and no assessments dir, the script halts before generating reports—please run with available data (even empty) to produce the expected artifacts.
+
+**What Was Done Well**:
+- Clear separation of loading, aggregation, and formatting with thorough unit tests covering 29 cases.
+- Markdown report includes domain/tier tables, problem summaries, and actionable recommendations.
+
+**Action Items** (must complete before re-review):
+- [ ] Allow the CLI to run with default paths when no args are provided, matching the prompt’s expected interface.
+- [ ] Generate and commit `coverage-report.json` and `baseline-report.md` (even with zero assessments) so deliverables are present and format-checked.
 
 # Work Package Prompt: WP03 – Coverage Reporter Script
 
@@ -478,4 +499,3 @@ Will be used in Phase 5, requires:
 - TypeScript
 - `evals/inventory/tools.json` (from WP-04)
 - `evals/results/self-assessments/` (from WP-29)
-

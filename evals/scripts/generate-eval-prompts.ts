@@ -1,4 +1,4 @@
-#!/usr/bin/env npx ts-node
+#!/usr/bin/env npx tsx
 
 /**
  * Eval Prompt Generator
@@ -7,12 +7,13 @@
  * Produces JSON files organized by domain with embedded self-assessment instructions.
  *
  * Usage:
- *   npx ts-node generate-eval-prompts.ts [inventory-path] [output-dir]
- *   npx ts-node generate-eval-prompts.ts --validate <prompt-file>
+ *   npx tsx generate-eval-prompts.ts [inventory-path] [output-dir]
+ *   npx tsx generate-eval-prompts.ts --validate <prompt-file>
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
 // ============================================================================
 // Type Definitions
@@ -580,7 +581,8 @@ export {
 };
 
 // Run if executed directly
-if (require.main === module) {
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename || process.argv[1]?.endsWith('generate-eval-prompts.ts')) {
   main().catch((e) => {
     console.error('Fatal error:', e);
     process.exit(1);
