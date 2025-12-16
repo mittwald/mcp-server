@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mittwald-mcp.dev/schemas/eval-prompt-metadata.schema.json",
+  "title": "Eval Prompt Metadata",
+  "description": "Langfuse dataset metadata structure for MCP tool evaluation prompts",
+  "type": "object",
+  "required": ["domain", "tier", "tool_description", "success_indicators"],
+  "properties": {
+    "domain": {
+      "type": "string",
+      "description": "Functional domain classification",
+      "enum": [
+        "identity",
+        "organization",
+        "project-foundation",
+        "apps",
+        "containers",
+        "databases",
+        "domains-mail",
+        "access-users",
+        "automation",
+        "backups",
+        "misc"
+      ]
+    },
+    "tier": {
+      "type": "integer",
+      "description": "Dependency tier (0 = no deps, 4 = highest dependency)",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "tool_description": {
+      "type": "string",
+      "description": "Brief description of what the tool does",
+      "minLength": 10,
+      "maxLength": 500
+    },
+    "success_indicators": {
+      "type": "array",
+      "description": "Observable outcomes that indicate successful execution",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "self_assessment_required": {
+      "type": "boolean",
+      "description": "Whether the eval expects a self-assessment output",
+      "default": true
+    },
+    "eval_version": {
+      "type": "string",
+      "description": "Version of the eval prompt format",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "default": "1.0.0"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when eval was created"
+    },
+    "tags": {
+      "type": "array",
+      "description": "Additional categorization tags",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "additionalProperties": false
+}

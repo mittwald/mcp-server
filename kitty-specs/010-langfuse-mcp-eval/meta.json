@@ -1,0 +1,7 @@
+{
+  "feature_number": "010",
+  "slug": "010-langfuse-mcp-eval",
+  "friendly_name": "Langfuse MCP Eval Suite",
+  "source_description": "Create a comprehensive evaluation suite for the Mittwald MCP server with Langfuse-compatible eval prompts for all ~174 tools across 10 domains. Research Langfuse eval format, map MCP tool dependencies, write eval prompts, standardize LLM self-assessment capture, and manually execute the full suite to establish baseline results. Leverage existing sprint 005-009 session log processing infrastructure.",
+  "created_at": "2025-12-16T11:51:32Z"
+}

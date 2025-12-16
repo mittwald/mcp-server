@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mittwald-mcp.dev/schemas/eval-result.schema.json",
+  "title": "Eval Result",
+  "description": "Combined record of eval prompt execution and self-assessment",
+  "type": "object",
+  "required": ["id", "tool_name", "domain", "execution_status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique result identifier",
+      "pattern": "^result-[a-z]+-[a-z_]+-\\d{8}T\\d{6}$"
+    },
+    "tool_name": {
+      "type": "string",
+      "description": "MCP tool identifier",
+      "pattern": "^mcp__mittwald__mittwald_[a-z_]+$"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable tool name"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Functional domain",
+      "enum": [
+        "identity",
+        "organization",
+        "project-foundation",
+        "apps",
+        "containers",
+        "databases",
+        "domains-mail",
+        "access-users",
+        "automation",
+        "backups",
+        "misc"
+      ]
+    },
+    "tier": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4
+    },
+    "execution_status": {
+      "type": "string",
+      "enum": ["completed", "interrupted", "failed", "timeout", "pending"],
+      "description": "Overall execution outcome"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Claude Code session identifier"
+    },
+    "session_log_path": {
+      "type": "string",
+      "description": "Path to raw session log file"
+    },
+    "self_assessment": {
+      "$ref": "self-assessment.schema.json",
+      "description": "Extracted self-assessment (null if extraction failed)"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Execution start time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Execution end time"
+    },
+    "duration_ms": {
+      "type": "integer",
+      "description": "Execution duration in milliseconds",
+      "minimum": 0
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if execution failed"
+    }
+  },
+  "additionalProperties": false
+}

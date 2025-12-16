@@ -1,0 +1,9 @@
+id,type,title,url,accessed_date,notes
+S-001,documentation,"Langfuse Dataset Documentation","https://langfuse.com/docs/evaluation/experiments/datasets",2025-12-16,"Primary source for dataset schema and API"
+S-002,documentation,"Langfuse Datasets Cookbook","https://langfuse.com/guides/cookbook/datasets",2025-12-16,"Code examples for dataset creation and experiments"
+S-003,documentation,"Langfuse JSON Schema Enforcement Changelog","https://langfuse.com/changelog/2025-11-06-dataset-schema-enforcement",2025-12-16,"November 2025 feature for schema validation"
+S-004,codebase,"MCP Server Tool Handlers","./src/handlers/tools/mittwald-cli/",2025-12-16,"175 CLI tool handler files (*-cli.ts)"
+S-005,codebase,"Test Harness Inventory/Grouping","./tests/functional/src/inventory/grouping.ts",2025-12-16,"Domain patterns and tier assignment logic"
+S-006,codebase,"LLM Evaluation Best Practices","internal analysis",2025-12-16,"Self-assessment design principles"
+S-007,codebase,"Sprint 005-009 Test Infrastructure","./tests/functional/src/harness/",2025-12-16,"Session runner, stream parser, manifest, coverage"
+S-008,codebase,"Session Log Examples","./tests/functional/session-logs/007-real-world-use/",2025-12-16,"20+ real-world use case session logs (~5700 lines)"

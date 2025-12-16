@@ -1,0 +1,11 @@
+id,date,source_id,finding_summary,decision_ref,notes
+E-001,2025-12-16,S-001,"Langfuse datasets use input/expectedOutput/metadata structure with optional JSON Schema validation",D-001,"Schema documented in research.md"
+E-002,2025-12-16,S-002,"Langfuse supports dataset item creation via Python SDK (langfuse.create_dataset_item) and TypeScript SDK",D-001,"API examples documented"
+E-003,2025-12-16,S-003,"Langfuse added JSON Schema enforcement in November 2025 for data quality",D-001,"Can define inputSchema and expectedOutputSchema"
+E-004,2025-12-16,S-004,"MCP server has 175 CLI tool handlers verified via file count",D-002,"Tools in /src/handlers/tools/mittwald-cli/"
+E-005,2025-12-16,S-005,"Existing test harness has tier classification (0-4) in grouping.ts",D-002,"Tier 0=no deps to Tier 4=requires project"
+E-006,2025-12-16,S-005,"Tools distributed across 10+ domains with apps (28) and databases (22) being largest",D-002,"Additional domains: conversation, login, ddev, certificate"
+E-007,2025-12-16,S-006,"Self-assessment schema must be JSON with markers for reliable extraction",D-003,"Using <!-- SELF_ASSESSMENT_START/END --> markers"
+E-008,2025-12-16,S-007,"Existing session runner spawns Claude Code headless with JSONL streaming",D-004,"Reuse harness/session-runner.ts"
+E-009,2025-12-16,S-007,"Session logs are JSONL format with type field (system/assistant/user/tool_result)",D-004,"~5700 lines of prior sessions available"
+E-010,2025-12-16,S-007,"Coverage tracking exists in harness/coverage.ts",D-004,"Can extend for eval coverage reporting"
