@@ -129,7 +129,7 @@ export async function executeCli(
   const cliCommand = args.slice(0, 2).join(' ') || 'unknown';
 
   const {
-    timeout = 30000,
+    timeout = 180000, // 180 seconds (3 min) - some user/* and org/* commands take 90+ seconds
     maxBuffer,
     env = {},
     token,
