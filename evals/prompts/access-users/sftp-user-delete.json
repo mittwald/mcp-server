@@ -19,17 +19,10 @@
     "domain": "access-users",
     "tier": 4,
     "tool_description": "Delete an SFTP user (destructive operation)",
-    "destructive": true,
     "success_indicators": [
       "Tool executes without errors",
       "User no longer in list",
       "Deletion confirmed"
-    ],
-    "security_considerations": [
-      "Deletion is immediate and permanent",
-      "Only delete eval-created users",
-      "Verify user ID before deletion",
-      "Consider disabling instead of deleting"
     ],
     "self_assessment_required": true,
     "eval_version": "1.0.0",

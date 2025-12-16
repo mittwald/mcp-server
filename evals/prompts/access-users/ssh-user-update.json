@@ -24,12 +24,6 @@
       "Updated fields reflect in list calls",
       "User remains functional"
     ],
-    "security_considerations": [
-      "SSH credential changes grant shell access",
-      "Allows command execution on server",
-      "Prefer using test users for evaluation",
-      "Credential changes should invalidate sessions"
-    ],
     "self_assessment_required": true,
     "eval_version": "1.0.0",
     "created_at": "2025-12-16T17:50:00Z",

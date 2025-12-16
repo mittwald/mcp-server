@@ -23,12 +23,6 @@
       "User appears in sftp/user-list",
       "No quota or permission errors"
     ],
-    "security_considerations": [
-      "Created users have file transfer access",
-      "Use strong passwords or key-based auth",
-      "Restrict directories to limit scope",
-      "Track user IDs for cleanup"
-    ],
     "self_assessment_required": true,
     "eval_version": "1.0.0",
     "created_at": "2025-12-16T17:50:00Z",

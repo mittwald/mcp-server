@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Generate Prompts - access-users (8 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "30452"
-review_status: "acknowledged"
-reviewed_by: "claude-reviewer"
+review_status: ""
+reviewed_by: ""
 history:
   - timestamp: "2025-12-16T13:14:00Z"
     lane: "planned"
@@ -36,43 +36,11 @@ history:
     agent: "claude"
     shell_pid: "30452"
     action: "Acknowledged feedback - fixing schema validation issues"
----
-
-## Review Feedback
-
-**Status**: ❌ **Needs Changes**
-
-**Key Issues**:
-1. **Schema validation failures** - All 8 prompts fail validation due to additional properties in `metadata` object:
-   - `destructive: true` - Property not allowed (already captured via `tags` array)
-   - `security_considerations: [...]` - Property not in schema
-
-   Error messages:
-   ```
-   (root) [destructive] must NOT have additional properties
-   (root) [security_considerations] must NOT have additional properties
-   ```
-
-2. **Schema contract violation** - The `eval-prompt-metadata.schema.json` has `additionalProperties: false`, so custom fields break validation.
-
-**What Was Done Well**:
-- Excellent security warnings embedded in the prompt text (especially for delete operations)
-- `destructive` tag correctly added to `tags` array
-- Comprehensive setup instructions
-- Good step-by-step guidance for users
-
-**Root Cause**:
-The implementation manually added properties that aren't in the schema. Compare to `org/delete.json` which passes validation - it uses only `tags` for the destructive flag and doesn't add extra metadata properties.
-
-**Action Items** (must complete before re-review):
-- [x] Remove `destructive: true` property from metadata in all 8 files (the `destructive` tag in `tags` array is sufficient)
-- [x] Remove `security_considerations: [...]` property from metadata in all 8 files (this info is already in the prompt text)
-- [ ] Re-run validation: `npx tsx evals/scripts/generate-eval-prompts.ts --validate <file>` for each file
-- [ ] Verify all 8 files pass validation
-
-**Alternative Fix** (optional, for future sprints):
-If `security_considerations` as structured metadata is valuable, update `eval-prompt-metadata.schema.json` to allow it. But for this sprint, stick to the existing schema.
-
+  - timestamp: "2025-12-16T19:20:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "30452"
+    action: "Fixed all 8 files - removed destructive and security_considerations properties, all pass validation"
 ---
 
 # Work Package Prompt: WP14 – Generate Prompts - access-users (8 tools)
@@ -131,21 +99,29 @@ Generate Langfuse-compatible eval prompts for all 8 tools in the access-users do
 
 ## Deliverables
 
-- [ ] `evals/prompts/access-users/sftp-user-list.json`
-- [ ] `evals/prompts/access-users/sftp-user-create.json`
-- [ ] `evals/prompts/access-users/sftp-user-update.json`
-- [ ] `evals/prompts/access-users/sftp-user-delete.json`
-- [ ] `evals/prompts/access-users/ssh-user-list.json`
-- [ ] `evals/prompts/access-users/ssh-user-create.json`
-- [ ] `evals/prompts/access-users/ssh-user-update.json`
-- [ ] `evals/prompts/access-users/ssh-user-delete.json`
+- [x] `evals/prompts/access-users/sftp-user-list.json`
+- [x] `evals/prompts/access-users/sftp-user-create.json`
+- [x] `evals/prompts/access-users/sftp-user-update.json`
+- [x] `evals/prompts/access-users/sftp-user-delete.json`
+- [x] `evals/prompts/access-users/ssh-user-list.json`
+- [x] `evals/prompts/access-users/ssh-user-create.json`
+- [x] `evals/prompts/access-users/ssh-user-update.json`
+- [x] `evals/prompts/access-users/ssh-user-delete.json`
 
 **Total**: 8 JSON files
 
 ## Acceptance Criteria
 
-1. All 8 prompt files created
-2. Security considerations documented in prompts
-3. Delete operations have warnings
-4. **All prompts pass schema validation** ← fixing
+1. ✅ All 8 prompt files created
+2. ✅ Security considerations documented in prompts (in prompt text)
+3. ✅ Delete operations have warnings (in prompt text)
+4. ✅ All prompts pass schema validation
+
+## Implementation Notes (Fix #1)
+
+**Issue**: Original implementation added custom metadata properties not in schema:
+- `destructive: true` - removed (already in `tags` array)
+- `security_considerations: [...]` - removed (info already in prompt text)
+
+**Fix**: Removed both properties from all 8 files. Schema validation now passes for all.
 
