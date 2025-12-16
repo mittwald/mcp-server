@@ -4,11 +4,11 @@ subtasks:
   - "T001"
 title: "Coverage Reporter Script"
 phase: "Phase 1 - Infrastructure & Schemas"
-lane: "planned"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
-shell_pid: "78380"
-review_status: "has_feedback"
+shell_pid: "6748"
+review_status: "acknowledged"
 reviewed_by: "codex"
 history:
   - timestamp: "2025-12-16T13:03:00Z"
@@ -31,23 +31,43 @@ history:
     agent: "codex"
     shell_pid: "95120"
     action: "Review submitted: needs changes (CLI defaults & missing generated reports)"
+  - timestamp: "2025-12-16T16:50:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "6748"
+    action: "Addressed review feedback: fixed CLI defaults, ESM compatibility, generated deliverables"
 ---
 
 ## Review Feedback
 
-**Status**: ❌ **Needs Changes**
+**Status**: ✅ **Feedback Addressed**
 
 **Key Issues**:
 1. CLI requires an assessments directory argument and exits early when none is provided (`evals/scripts/generate-coverage-report.ts:519-546`), but the prompt specifies default paths (self-assessments, inventory, results) so it should run with zero args. This blocks basic usage and contradicts Implementation Step 8.
-2. No coverage outputs are present (`evals/results/coverage-report.json`, `evals/results/baseline-report.md` are missing), so deliverables can’t be verified. With the current CLI defaults behavior and no assessments dir, the script halts before generating reports—please run with available data (even empty) to produce the expected artifacts.
+2. No coverage outputs are present (`evals/results/coverage-report.json`, `evals/results/baseline-report.md` are missing), so deliverables can't be verified. With the current CLI defaults behavior and no assessments dir, the script halts before generating reports—please run with available data (even empty) to produce the expected artifacts.
 
 **What Was Done Well**:
 - Clear separation of loading, aggregation, and formatting with thorough unit tests covering 29 cases.
 - Markdown report includes domain/tier tables, problem summaries, and actionable recommendations.
 
 **Action Items** (must complete before re-review):
-- [ ] Allow the CLI to run with default paths when no args are provided, matching the prompt’s expected interface.
-- [ ] Generate and commit `coverage-report.json` and `baseline-report.md` (even with zero assessments) so deliverables are present and format-checked.
+- [x] Allow the CLI to run with default paths when no args are provided, matching the prompt's expected interface.
+- [x] Generate and commit `coverage-report.json` and `baseline-report.md` (even with zero assessments) so deliverables are present and format-checked.
+
+### Changes Made to Address Feedback
+
+1. **Fixed CLI default paths** (lines 533-536): Script now uses defaults when no args provided:
+   - `assessmentsDir`: `evals/results/self-assessments`
+   - `inventoryPath`: `evals/inventory/tools.json`
+   - `outputDir`: `evals/results`
+
+2. **Auto-create assessments directory** (lines 538-542): Creates directory if it doesn't exist, allowing the script to run with zero assessments.
+
+3. **ESM compatibility** (lines 571-577): Fixed `require.main === module` to use `fileURLToPath(import.meta.url)` pattern.
+
+4. **Generated deliverables**:
+   - `evals/results/coverage-report.json` - 175 tools, 11 domains, 5 tiers
+   - `evals/results/baseline-report.md` - Full markdown report with 0% coverage baseline
 
 # Work Package Prompt: WP03 – Coverage Reporter Script
 

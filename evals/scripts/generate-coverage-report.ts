@@ -1,4 +1,4 @@
-#!/usr/bin/env npx ts-node
+#!/usr/bin/env npx tsx
 
 /**
  * Coverage Reporter
@@ -7,11 +7,17 @@
  * Produces both machine-readable JSON and human-readable Markdown.
  *
  * Usage:
- *   npx ts-node generate-coverage-report.ts [assessments-dir] [inventory-path] [output-dir]
+ *   npx tsx generate-coverage-report.ts [assessments-dir] [inventory-path] [output-dir]
+ *
+ * Default paths are used when arguments are not provided:
+ *   - assessments-dir: evals/results/self-assessments
+ *   - inventory-path: evals/inventory/tools.json
+ *   - output-dir: evals/results
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
 // ============================================================================
 // Type Definitions
@@ -524,28 +530,20 @@ export async function generateCoverageReport(
 async function main() {
   const args = process.argv.slice(2);
 
-  if (args.length === 0) {
-    console.error('Usage:');
-    console.error(
-      '  npx ts-node generate-coverage-report.ts <assessments-dir> <inventory-path> [output-dir]'
-    );
-    console.error('');
-    console.error('Examples:');
-    console.error(
-      '  npx ts-node generate-coverage-report.ts evals/results/self-assessments evals/inventory/tools.json evals/results'
-    );
-    process.exit(1);
-  }
-
-  const assessmentsDir = args[0];
+  // Use default paths when arguments are not provided (per WP03 spec)
+  const assessmentsDir = args[0] || 'evals/results/self-assessments';
   const inventoryPath = args[1] || 'evals/inventory/tools.json';
   const outputDir = args[2] || 'evals/results';
 
+  // Create assessments directory if it doesn't exist (allows running with zero assessments)
   if (!fs.existsSync(assessmentsDir)) {
-    console.error(`Assessments directory not found: ${assessmentsDir}`);
-    console.error(
-      'Note: This directory will be populated after running evals and extracting assessments.'
-    );
+    console.log(`Creating assessments directory: ${assessmentsDir}`);
+    fs.mkdirSync(assessmentsDir, { recursive: true });
+  }
+
+  if (!fs.existsSync(inventoryPath)) {
+    console.error(`Inventory file not found: ${inventoryPath}`);
+    console.error('Run WP-04 (Tool Inventory Generation) first.');
     process.exit(1);
   }
 
@@ -570,8 +568,9 @@ async function main() {
   }
 }
 
-// Run if executed directly
-if (require.main === module) {
+// Run if executed directly (ESM compatible)
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename || process.argv[1]?.endsWith('generate-coverage-report.ts')) {
   main().catch((e) => {
     console.error('Fatal error:', e);
     process.exit(1);
