@@ -1,0 +1,4 @@
+{"eval_id": "extension-uninstall", "tool_name": "mcp__mittwald__mittwald_extension_uninstall", "display_name": "extension/uninstall", "domain": "organization", "tier": 1, "timestamp": "2025-12-16T17:43:00Z", "tool_response": {"status": "skipped", "message": "Skipped - no extension was installed to uninstall (extension/install skipped due to timeout cascade)"}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_extension_uninstall", "timestamp": "2025-12-16T17:43:00Z", "problems_encountered": [{"type": "dependency_missing", "description": "No extension to uninstall - extension/install was skipped due to timeout cascade"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped - no resources to clean up", "execution_notes": "Cleanup tool skipped because install was not executed"}
+<!-- SELF_ASSESSMENT_END -->

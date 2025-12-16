@@ -1,0 +1,4 @@
+{"eval_id": "extension-list", "tool_name": "mcp__mittwald__mittwald_extension_list", "display_name": "extension/list", "domain": "organization", "tier": 0, "timestamp": "2025-12-16T17:42:00Z", "tool_response": {"status": "error", "message": "Failed to list extensions - Command killed with signal SIGTERM (timeout)"}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_extension_list", "timestamp": "2025-12-16T17:42:00Z", "problems_encountered": [{"type": "timeout", "description": "Command killed with SIGTERM - exceeded timeout limit"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool execution timed out before completing", "execution_notes": "Consistent timeout pattern across organization domain tools"}
+<!-- SELF_ASSESSMENT_END -->

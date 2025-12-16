@@ -1,0 +1,50 @@
+{
+  "domain": "organization",
+  "execution_date": "2025-12-16",
+  "total_evals": 14,
+  "results_summary": {
+    "success": 0,
+    "failed": 14,
+    "skipped": 0
+  },
+  "success_rate": "0%",
+  "tool_results": [
+    {"tool": "org/list", "status": "failed", "notes": "Timeout - SIGTERM"},
+    {"tool": "org/membership-list-own", "status": "failed", "notes": "Timeout - SIGTERM"},
+    {"tool": "org/invite-list-own", "status": "failed", "notes": "Timeout - SIGTERM"},
+    {"tool": "extension/list", "status": "failed", "notes": "Timeout - SIGTERM"},
+    {"tool": "org/get", "status": "failed", "notes": "Skipped - dependency missing (org/list timeout)"},
+    {"tool": "org/membership-list", "status": "failed", "notes": "Skipped - dependency missing (org/list timeout)"},
+    {"tool": "org/invite-list", "status": "failed", "notes": "Skipped - dependency missing (org/list timeout)"},
+    {"tool": "org/invite", "status": "failed", "notes": "Skipped - dependency missing (org/list timeout)"},
+    {"tool": "org/invite-revoke", "status": "failed", "notes": "Skipped - no invite to revoke"},
+    {"tool": "extension/list-installed", "status": "failed", "notes": "Skipped - dependency missing (extension/list timeout)"},
+    {"tool": "extension/install", "status": "failed", "notes": "Skipped - dependency missing (extension/list timeout)"},
+    {"tool": "extension/uninstall", "status": "failed", "notes": "Skipped - no extension to uninstall"},
+    {"tool": "org/membership-revoke", "status": "failed", "notes": "Skipped - safety concern (could lock out users)"},
+    {"tool": "org/delete", "status": "failed", "notes": "Skipped - safety concern (too destructive)"}
+  ],
+  "problem_patterns": [
+    {
+      "pattern": "timeout",
+      "count": 4,
+      "affected_tools": ["org/list", "org/membership-list-own", "org/invite-list-own", "extension/list"],
+      "description": "Mittwald CLI commands killed with SIGTERM before completing"
+    },
+    {
+      "pattern": "dependency_cascade",
+      "count": 8,
+      "affected_tools": ["org/get", "org/membership-list", "org/invite-list", "org/invite", "org/invite-revoke", "extension/list-installed", "extension/install", "extension/uninstall"],
+      "description": "Tier 1 tools skipped due to Tier 0 timeout failures"
+    },
+    {
+      "pattern": "safety_skip",
+      "count": 2,
+      "affected_tools": ["org/membership-revoke", "org/delete"],
+      "description": "Explicitly skipped per WP prompt safety notes"
+    }
+  ],
+  "resources_created": [],
+  "resources_cleaned": true,
+  "notes": "Organization domain eval execution completed with 0% success rate. All Tier 0 tools timed out, causing cascade failure for Tier 1 tools. Two tools were intentionally skipped for safety. Consistent with identity domain timeout pattern."
+}

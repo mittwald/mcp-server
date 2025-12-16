@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Execute Evals - identity (17 evals)"
 phase: "Phase 4 - Eval Execution"
-lane: "for_review"
-assignee: "claude"
+lane: "planned"
+assignee: ""
 agent: "claude"
 shell_pid: "36563"
-review_status: ""
-reviewed_by: ""
+review_status: "has_feedback"
+reviewed_by: "codex"
 history:
   - timestamp: "2025-12-16T13:18:00Z"
     lane: "planned"
@@ -26,7 +26,30 @@ history:
     agent: "claude"
     shell_pid: "36563"
     action: "Completed execution - 19 session logs created, 4 successful, 15 failed (timeouts/unavailable tools)"
+  - timestamp: "2025-12-16T18:00:00Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "41628"
+    action: "Review complete - needs changes due to low success rate and missing resource flows"
 ---
+
+# Review Feedback
+
+**Status**: ❌ **Needs Changes**
+
+**Key Issues**:
+1. Identity evals achieved only 4/19 successes (≈21%) with multiple SIGTERM timeouts on user/* tools; acceptance expects >90% success and all 17 evals completed.
+2. Resource creation/cleanup flows (ssh-key/api-token create/get/delete/revoke) were skipped, leaving Deliverables unmet and no verification that resources can be managed.
+3. Manifest and logs include 19–20 evals (login/token/reset, ssh-key/import) instead of the 17 specified, skewing success metrics and not aligning with the prompt’s scope.
+
+**What Was Done Well**:
+- All runs include self-assessment markers and structured session logs under `evals/results/sessions/identity/`.
+- Context-related tools succeeded and captured notes clearly.
+
+**Action Items** (must complete before re-review):
+- [ ] Address timeout/root-cause for user/* tools (increase limits or adjust execution) and rerun identity evals to reach >90% success.
+- [ ] Execute and verify required resource creation + cleanup flows; ensure logs show created IDs and cleanup results.
+- [ ] Align the manifest and executed eval set to the 17 identity tools specified (remove/justify misc login-token/reset and ssh-key/import entries).
 
 # Work Package Prompt: WP18 – Execute Evals - identity (17 evals)
 
@@ -148,4 +171,3 @@ If eval fails:
 - **Sequential execution** within domain
 - **After completion**: WP-19 (organization) can start
 - **Enables**: All other domains depend on validated auth
-

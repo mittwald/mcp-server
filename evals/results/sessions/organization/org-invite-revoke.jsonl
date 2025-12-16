@@ -1,0 +1,4 @@
+{"eval_id": "org-invite-revoke", "tool_name": "mcp__mittwald__mittwald_org_invite_revoke", "display_name": "org/invite-revoke", "domain": "organization", "tier": 1, "timestamp": "2025-12-16T17:43:00Z", "tool_response": {"status": "skipped", "message": "Skipped - no invite was created to revoke (org/invite skipped due to timeout cascade)"}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_org_invite_revoke", "timestamp": "2025-12-16T17:43:00Z", "problems_encountered": [{"type": "dependency_missing", "description": "No invite to revoke - org/invite was skipped due to timeout cascade"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped - no resources to clean up", "execution_notes": "Cleanup tool skipped because create was not executed"}
+<!-- SELF_ASSESSMENT_END -->

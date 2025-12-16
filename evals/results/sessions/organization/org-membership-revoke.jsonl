@@ -1,0 +1,4 @@
+{"eval_id": "org-membership-revoke", "tool_name": "mcp__mittwald__mittwald_org_membership_revoke", "display_name": "org/membership-revoke", "domain": "organization", "tier": 1, "timestamp": "2025-12-16T17:43:00Z", "tool_response": {"status": "skipped", "message": "Skipped - too risky (could lock out users) and requires org context from timed-out org/list"}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_org_membership_revoke", "timestamp": "2025-12-16T17:43:00Z", "problems_encountered": [{"type": "other", "description": "Skipped for safety - could lock out users from organization"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped due to safety concerns", "execution_notes": "This tool is marked as risky in the WP prompt - skipping to avoid accidental lockouts. Also affected by timeout cascade."}
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,4 @@
+{"eval_id": "extension-list-installed", "tool_name": "mcp__mittwald__mittwald_extension_list_installed", "display_name": "extension/list-installed", "domain": "organization", "tier": 1, "timestamp": "2025-12-16T17:43:00Z", "tool_response": {"status": "skipped", "message": "Skipped - requires project/org ID, timeout cascade from extension/list"}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_extension_list_installed", "timestamp": "2025-12-16T17:43:00Z", "problems_encountered": [{"type": "dependency_missing", "description": "Cannot execute - requires context from extension/list which timed out"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped due to timeout cascade", "execution_notes": "Tier 1 tool depends on extension/list which timed out"}
+<!-- SELF_ASSESSMENT_END -->
