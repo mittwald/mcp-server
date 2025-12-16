@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Tool Inventory Generation"
 phase: "Phase 2 - Dependency Graph & Inventory"
-lane: "for_review"
+lane: "doing"
 assignee: "claude"
 agent: "claude"
-shell_pid: "78380"
-review_status: ""
-reviewed_by: ""
+shell_pid: "21946"
+review_status: "acknowledged"
+reviewed_by: "codex"
 history:
   - timestamp: "2025-12-16T13:04:00Z"
     lane: "planned"
@@ -26,7 +26,33 @@ history:
     agent: "claude"
     shell_pid: "78380"
     action: "Generated tools.json with 175 tools, all domains/tiers classified"
+  - timestamp: "2025-12-16T15:53:17Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "14588"
+    action: "Review submitted: needs changes (domain misclassification, spec count mismatch)"
+  - timestamp: "2025-12-16T17:00:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "21946"
+    action: "Acknowledged feedback, addressing domain misclassification issues"
 ---
+
+## Review Feedback
+
+**Status**: ❌ **Needs Changes**
+
+**Key Issues**:
+1. Domain distribution does not match the spec’s expected counts (identity 19 vs 17, containers 20 vs 19, databases 22 vs 21, domains-mail 21 vs 20, misc 8 vs 13), so the inventory fails the “valid domain assignments” acceptance criterion and downstream prompt generation will be mis-bucketed. Example: `login/*` tools are classified under `identity` but the prompt lists them under `misc`.
+2. The reported domain tallies in `evals/inventory/tools.json` don’t align with the enumerated breakdown in the prompt (identity 17, organization 14, project-foundation 16, apps 28, containers 19, databases 21, domains-mail 20, access-users 8, automation 10, backups 9, misc 13). This needs to be reconciled and regenerated to ensure the manifest matches the contract.
+
+**What Was Done Well**:
+- Inventory includes all 175 tools with dependencies, required_resources, and success indicator arrays populated.
+- Tiers and destructive/interactive flags are consistently present across entries.
+
+**Action Items** (must complete before re-review):
+- [ ] Reclassify tools to match the domain breakdown specified in the prompt (e.g., move `login/*` to `misc`, adjust other mis-bucketed tools) and regenerate `evals/inventory/tools.json`.
+- [ ] Verify the `domains` map totals exactly match the expected per-domain counts from the prompt and update the file accordingly.
 
 # Work Package Prompt: WP04 – Tool Inventory Generation
 
@@ -431,4 +457,3 @@ Can be started immediately as it has no dependencies.
 
 - Access to MCP server tool definitions
 - Existing `grouping.ts` classification logic
-

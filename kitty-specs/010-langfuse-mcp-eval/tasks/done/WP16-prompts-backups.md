@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Generate Prompts - backups (9 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
-agent: "claude"
-shell_pid: "99655"
-review_status: ""
-reviewed_by: ""
+agent: "claude-reviewer"
+shell_pid: "21815"
+review_status: "approved"
+reviewed_by: "claude-reviewer"
 history:
   - timestamp: "2025-12-16T13:16:00Z"
     lane: "planned"
@@ -26,6 +26,11 @@ history:
     agent: "claude"
     shell_pid: "99655"
     action: "Completed - all 9 prompts generated with destructive warnings"
+  - timestamp: "2025-12-16T18:00:00Z"
+    lane: "done"
+    agent: "claude-reviewer"
+    shell_pid: "21815"
+    action: "Approved - all 9 prompts verified, delete warnings present, acceptance criteria met"
 ---
 
 # Work Package Prompt: WP16 – Generate Prompts - backups (9 tools)
