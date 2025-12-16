@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Execute Evals - identity (17 evals)"
 phase: "Phase 4 - Eval Execution"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "36563"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T17:20:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "36563"
+    action: "Started implementation - executing identity domain evals"
 ---
 
 # Work Package Prompt: WP18 – Execute Evals - identity (17 evals)
