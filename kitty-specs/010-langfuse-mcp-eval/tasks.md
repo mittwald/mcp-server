@@ -79,21 +79,21 @@ Create a script to aggregate eval results into coverage reports.
 ## Phase 2: Dependency Graph & Inventory
 
 ### WP-04: Tool Inventory Generation
-**Status**: todo
-**Prompt**: `tasks/WP-04-tool-inventory.md`
+**Status**: done
+**Prompt**: `tasks/done/WP04-tool-inventory.md`
 
 Generate complete tool inventory from MCP server.
 
 **Deliverables**:
-- `evals/inventory/tools.json` (175 tools)
+- `evals/inventory/tools.json` (177 tools - actual codebase count)
 - Domain and tier classification for each tool
 - Success indicators for each tool
 
 **Acceptance Criteria**:
-- [ ] All 175 tools inventoried
-- [ ] Each tool has domain assignment
-- [ ] Each tool has tier classification
-- [ ] Each tool has success indicators
+- [x] All 177 tools inventoried (codebase has 177, not 175)
+- [x] Each tool has domain assignment
+- [x] Each tool has tier classification
+- [x] Each tool has success indicators
 
 ---
 
@@ -539,7 +539,7 @@ Phase 5 (Aggregation):
 | WP-01 | done | 2025-12-16 | 2025-12-16 | Prompt: tasks/done/WP01-self-assessment-extractor.md |
 | WP-02 | todo | - | - | |
 | WP-03 | done | 2025-12-16 | 2025-12-16 | Prompt: tasks/done/WP03-coverage-reporter.md |
-| WP-04 | todo | - | - | |
+| WP-04 | done | 2025-12-16 | 2025-12-16 | Prompt: tasks/done/WP04-tool-inventory.md (177 tools) |
 | WP-05 | todo | - | - | |
 | WP-06 | todo | - | - | |
 | WP-07 | todo | - | - | identity (17) |
