@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Generate Prompts - project-foundation (16 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "650"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T17:15:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "650"
+    action: "Started implementation"
 ---
 
 # Work Package Prompt: WP09 – Generate Prompts - project-foundation (16 tools)
