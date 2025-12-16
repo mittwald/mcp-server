@@ -1,0 +1,370 @@
+{
+  "generated_at": "2025-12-16T15:41:43.532Z",
+  "total_phases": 21,
+  "phases": [
+    {
+      "phase": 0,
+      "name": "Foundation",
+      "tier": 0,
+      "tools": [
+        "context/accessible-projects",
+        "context/get",
+        "context/reset",
+        "context/set",
+        "login/status",
+        "org/list",
+        "org/membership-list-own",
+        "project/list",
+        "server/list",
+        "user/api-token/create",
+        "user/api-token/get",
+        "user/api-token/list",
+        "user/api-token/revoke",
+        "user/get",
+        "user/session/get",
+        "user/session/list",
+        "user/ssh-key/create",
+        "user/ssh-key/delete",
+        "user/ssh-key/get",
+        "user/ssh-key/import",
+        "user/ssh-key/list"
+      ],
+      "parallel_safe": true,
+      "notes": "All Tier 0 tools can run in parallel"
+    },
+    {
+      "phase": 1,
+      "name": "Organization",
+      "tier": 1,
+      "tools": [
+        "extension/install",
+        "extension/list",
+        "extension/list-installed",
+        "extension/uninstall",
+        "org/delete",
+        "org/get",
+        "org/invite",
+        "org/invite-list",
+        "org/invite-list-own",
+        "org/invite-revoke",
+        "org/membership-list",
+        "org/membership-revoke"
+      ],
+      "parallel_safe": true,
+      "notes": "Org-level tools, parallel within domain"
+    },
+    {
+      "phase": 2,
+      "name": "Resource Creation",
+      "tier": 3,
+      "tools": [
+        "server/get",
+        "project/create"
+      ],
+      "parallel_safe": false,
+      "notes": "Sequential execution - creates shared resources"
+    },
+    {
+      "phase": 3,
+      "name": "apps - Operations",
+      "tier": 4,
+      "tools": [
+        "app/copy",
+        "app/create/node",
+        "app/create/php",
+        "app/create/php-worker",
+        "app/create/python",
+        "app/create/static",
+        "app/dependency-list",
+        "app/dependency-update",
+        "app/dependency-versions",
+        "app/download",
+        "app/get",
+        "app/install/contao",
+        "app/install/joomla",
+        "app/install/matomo",
+        "app/install/nextcloud",
+        "app/install/shopware5",
+        "app/install/shopware6",
+        "app/install/typo3",
+        "app/install/wordpress",
+        "app/list",
+        "app/list-upgrade-candidates",
+        "app/open",
+        "app/ssh",
+        "app/update",
+        "app/upgrade",
+        "app/upload",
+        "app/versions"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive apps tools"
+    },
+    {
+      "phase": 4,
+      "name": "apps - Cleanup",
+      "tier": 4,
+      "tools": [
+        "app/uninstall"
+      ],
+      "parallel_safe": false,
+      "notes": "Destructive apps tools - execute last"
+    },
+    {
+      "phase": 5,
+      "name": "backups - Operations",
+      "tier": 4,
+      "tools": [
+        "backup/create",
+        "backup/download",
+        "backup/get",
+        "backup/list",
+        "backup/schedule-create",
+        "backup/schedule-list",
+        "backup/schedule-update"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive backups tools"
+    },
+    {
+      "phase": 6,
+      "name": "backups - Cleanup",
+      "tier": 4,
+      "tools": [
+        "backup/delete",
+        "backup/schedule-delete"
+      ],
+      "parallel_safe": false,
+      "notes": "Destructive backups tools - execute last"
+    },
+    {
+      "phase": 7,
+      "name": "domains-mail - Operations",
+      "tier": 4,
+      "tools": [
+        "certificate/list",
+        "certificate/request",
+        "domain/dnszone/get",
+        "domain/dnszone/list",
+        "domain/dnszone/update",
+        "domain/get",
+        "domain/list",
+        "domain/virtualhost-create",
+        "domain/virtualhost-get",
+        "domain/virtualhost-list",
+        "mail/address/create",
+        "mail/address/get",
+        "mail/address/list",
+        "mail/address/update",
+        "mail/deliverybox/create",
+        "mail/deliverybox/get",
+        "mail/deliverybox/list",
+        "mail/deliverybox/update"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive domains-mail tools"
+    },
+    {
+      "phase": 8,
+      "name": "domains-mail - Cleanup",
+      "tier": 4,
+      "tools": [
+        "domain/virtualhost-delete",
+        "mail/address/delete",
+        "mail/deliverybox/delete"
+      ],
+      "parallel_safe": false,
+      "notes": "Destructive domains-mail tools - execute last"
+    },
+    {
+      "phase": 9,
+      "name": "containers - Operations",
+      "tier": 4,
+      "tools": [
+        "container/list-services",
+        "container/logs",
+        "container/recreate",
+        "container/restart",
+        "container/run",
+        "container/start",
+        "container/stop",
+        "container/update",
+        "registry/create",
+        "registry/list",
+        "registry/update",
+        "stack/deploy",
+        "stack/list",
+        "stack/ps",
+        "volume/create",
+        "volume/list"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive containers tools"
+    },
+    {
+      "phase": 10,
+      "name": "containers - Cleanup",
+      "tier": 4,
+      "tools": [
+        "container/delete",
+        "registry/delete",
+        "stack/delete",
+        "volume/delete"
+      ],
+      "parallel_safe": false,
+      "notes": "Destructive containers tools - execute last"
+    },
+    {
+      "phase": 11,
+      "name": "misc - Operations",
+      "tier": 4,
+      "tools": [
+        "conversation/categories",
+        "conversation/close",
+        "conversation/create",
+        "conversation/list",
+        "conversation/reply",
+        "conversation/show",
+        "ddev/init",
+        "ddev/render-config"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive misc tools"
+    },
+    {
+      "phase": 12,
+      "name": "automation - Operations",
+      "tier": 4,
+      "tools": [
+        "cronjob/create",
+        "cronjob/execute",
+        "cronjob/execution-get",
+        "cronjob/execution-list",
+        "cronjob/execution-logs",
+        "cronjob/get",
+        "cronjob/list",
+        "cronjob/update"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive automation tools"
+    },
+    {
+      "phase": 13,
+      "name": "automation - Cleanup",
+      "tier": 4,
+      "tools": [
+        "cronjob/delete",
+        "cronjob/execution-abort"
+      ],
+      "parallel_safe": false,
+      "notes": "Destructive automation tools - execute last"
+    },
+    {
+      "phase": 14,
+      "name": "databases - Operations",
+      "tier": 4,
+      "tools": [
+        "database/index",
+        "database/list",
+        "database/mysql/charsets",
+        "database/mysql/create",
+        "database/mysql/dump",
+        "database/mysql/get",
+        "database/mysql/import",
+        "database/mysql/list",
+        "database/mysql/phpmyadmin",
+        "database/mysql/port-forward",
+        "database/mysql/shell",
+        "database/mysql/user-create",
+        "database/mysql/user-get",
+        "database/mysql/user-list",
+        "database/mysql/user-update",
+        "database/mysql/versions",
+        "database/redis/create",
+        "database/redis/get",
+        "database/redis/list",
+        "database/redis/versions"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive databases tools"
+    },
+    {
+      "phase": 15,
+      "name": "databases - Cleanup",
+      "tier": 4,
+      "tools": [
+        "database/mysql/delete",
+        "database/mysql/user-delete"
+      ],
+      "parallel_safe": false,
+      "notes": "Destructive databases tools - execute last"
+    },
+    {
+      "phase": 16,
+      "name": "identity - Operations",
+      "tier": 4,
+      "tools": [
+        "login/reset",
+        "login/token"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive identity tools"
+    },
+    {
+      "phase": 17,
+      "name": "project-foundation - Operations",
+      "tier": 4,
+      "tools": [
+        "project/filesystem-usage",
+        "project/get",
+        "project/invite-get",
+        "project/invite-list",
+        "project/invite-list-own",
+        "project/membership-get",
+        "project/membership-get-own",
+        "project/membership-list",
+        "project/membership-list-own",
+        "project/ssh",
+        "project/update"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive project-foundation tools"
+    },
+    {
+      "phase": 18,
+      "name": "project-foundation - Cleanup",
+      "tier": 4,
+      "tools": [
+        "project/delete"
+      ],
+      "parallel_safe": false,
+      "notes": "Destructive project-foundation tools - execute last"
+    },
+    {
+      "phase": 19,
+      "name": "access-users - Operations",
+      "tier": 4,
+      "tools": [
+        "sftp/user-create",
+        "sftp/user-list",
+        "sftp/user-update",
+        "ssh/user-create",
+        "ssh/user-list",
+        "ssh/user-update"
+      ],
+      "parallel_safe": true,
+      "notes": "Non-destructive access-users tools"
+    },
+    {
+      "phase": 20,
+      "name": "access-users - Cleanup",
+      "tier": 4,
+      "tools": [
+        "sftp/user-delete",
+        "ssh/user-delete"
+      ],
+      "parallel_safe": false,
+      "notes": "Destructive access-users tools - execute last"
+    }
+  ]
+}

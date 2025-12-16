@@ -1,55 +1,44 @@
----
-work_package_id: "WP06"
-subtasks:
-  - "T001"
-title: "Tier Analysis Report"
-phase: "Phase 2 - Dependency Graph & Inventory"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
-history:
-  - timestamp: "2025-12-16T13:06:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
----
+#!/usr/bin/env npx tsx
 
-# Work Package Prompt: WP06 – Tier Analysis Report
+/**
+ * Tier Analysis Report Generator
+ *
+ * Analyzes tool tier distribution and generates execution order recommendations.
+ *
+ * Usage:
+ *   npx tsx generate-tier-analysis.ts [inventory-path] [graph-path] [output-dir]
+ */
 
-## Objective
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-Analyze and document the tier distribution of all 175 MCP tools, providing execution order recommendations and tier-specific considerations for eval execution.
+// ============================================================================
+// Type Definitions
+// ============================================================================
 
-## Context
+interface ToolEntry {
+  mcp_name: string;
+  display_name: string;
+  domain: string;
+  tier: number;
+  dependencies: string[];
+  is_destructive?: boolean;
+}
 
-Tools are classified into tiers 0-4 based on their dependency depth:
-- **Tier 0**: No prerequisites (can run immediately)
-- **Tier 1**: Requires authenticated user/org context
-- **Tier 2**: Requires server access
-- **Tier 3**: Project creation tools
-- **Tier 4**: Requires existing project/resources
+interface ToolInventory {
+  tool_count: number;
+  tools: ToolEntry[];
+}
 
-Understanding this distribution helps plan efficient eval execution.
+interface DependencyGraph {
+  generated_at: string;
+  node_count: number;
+  edge_count: number;
+  tiers: Record<number, string[]>;
+  domains: Record<string, string[]>;
+}
 
-## Technical Requirements
-
-### Input
-- Tool inventory from WP-04: `evals/inventory/tools.json`
-- Dependency graph from WP-05: `evals/inventory/dependency-graph.json`
-
-### Output
-- `evals/inventory/tier-analysis.md` - Comprehensive tier analysis report
-- `evals/inventory/execution-order.json` - Recommended execution sequence
-
-## Implementation Steps
-
-### Step 1: Load and Analyze Inventory
-
-```typescript
 interface TierAnalysis {
   tier: number;
   description: string;
@@ -65,31 +54,43 @@ interface TierAnalysis {
   execution_notes: string[];
 }
 
-async function analyzeTiers(inventoryPath: string): Promise<TierAnalysis[]> {
-  const inventory: ToolInventory = JSON.parse(
-    fs.readFileSync(inventoryPath, 'utf-8')
-  );
+interface ExecutionPhase {
+  phase: number;
+  name: string;
+  tier: number;
+  tools: string[];
+  parallel_safe: boolean;
+  notes: string;
+}
 
-  const tierDescriptions = [
-    'No prerequisites - can execute immediately',
-    'Organization-level - requires authenticated user context',
-    'Server-level - requires access to a server',
-    'Project creation - creates project resources',
-    'Project-dependent - requires existing project/resources'
-  ];
+// ============================================================================
+// Tier Analysis Functions
+// ============================================================================
 
+const TIER_DESCRIPTIONS = [
+  'No prerequisites - can execute immediately',
+  'Organization-level - requires authenticated user context',
+  'Server-level - requires access to a server',
+  'Project creation - creates project resources',
+  'Project-dependent - requires existing project/resources',
+];
+
+/**
+ * Analyze tool distribution across tiers
+ */
+function analyzeTiers(inventory: ToolInventory): TierAnalysis[] {
   const tiers: Map<number, TierAnalysis> = new Map();
 
-  // Initialize tiers
+  // Initialize tiers 0-4
   for (let i = 0; i <= 4; i++) {
     tiers.set(i, {
       tier: i,
-      description: tierDescriptions[i],
+      description: TIER_DESCRIPTIONS[i],
       tool_count: 0,
       percentage: 0,
       domains_represented: [],
       tools: [],
-      execution_notes: []
+      execution_notes: [],
     });
   }
 
@@ -101,7 +102,7 @@ async function analyzeTiers(inventoryPath: string): Promise<TierAnalysis[]> {
       display_name: tool.display_name,
       domain: tool.domain,
       dependencies: tool.dependencies,
-      is_destructive: tool.is_destructive || false
+      is_destructive: isDestructive(tool.display_name),
     });
 
     if (!analysis.domains_represented.includes(tool.domain)) {
@@ -118,11 +119,23 @@ async function analyzeTiers(inventoryPath: string): Promise<TierAnalysis[]> {
 
   return Array.from(tiers.values());
 }
-```
 
-### Step 2: Generate Tier-Specific Notes
+/**
+ * Check if a tool is destructive
+ */
+function isDestructive(displayName: string): boolean {
+  return (
+    displayName.includes('delete') ||
+    displayName.includes('uninstall') ||
+    displayName.includes('revoke') ||
+    displayName.includes('remove') ||
+    displayName.includes('abort')
+  );
+}
 
-```typescript
+/**
+ * Generate execution notes for a tier
+ */
 function generateTierNotes(analysis: TierAnalysis): string[] {
   const notes: string[] = [];
 
@@ -150,7 +163,7 @@ function generateTierNotes(analysis: TierAnalysis): string[] {
       notes.push('Largest tier - contains most operational tools');
       notes.push('Execute after Tier 3 establishes project context');
       notes.push('Many tools are domain-isolated (can run in parallel within domain)');
-      if (analysis.tools.some(t => t.is_destructive)) {
+      if (analysis.tools.some((t) => t.is_destructive)) {
         notes.push('WARNING: Contains destructive operations (delete, uninstall)');
         notes.push('Execute destructive tools last within each domain');
       }
@@ -159,78 +172,73 @@ function generateTierNotes(analysis: TierAnalysis): string[] {
 
   return notes;
 }
-```
 
-### Step 3: Generate Execution Order
+// ============================================================================
+// Execution Order Generation
+// ============================================================================
 
-```typescript
-interface ExecutionPhase {
-  phase: number;
-  name: string;
-  tier: number;
-  tools: string[];
-  parallel_safe: boolean;
-  notes: string;
-}
-
-function generateExecutionOrder(
-  tiers: TierAnalysis[],
-  graph: DependencyGraph
-): ExecutionPhase[] {
+/**
+ * Generate phased execution order
+ */
+function generateExecutionOrder(tiers: TierAnalysis[], graph: DependencyGraph): ExecutionPhase[] {
   const phases: ExecutionPhase[] = [];
 
   // Phase 0: Tier 0 tools (all parallel-safe)
-  phases.push({
-    phase: 0,
-    name: 'Foundation',
-    tier: 0,
-    tools: tiers.find(t => t.tier === 0)?.tools.map(t => t.display_name) || [],
-    parallel_safe: true,
-    notes: 'All Tier 0 tools can run in parallel'
-  });
+  const tier0 = tiers.find((t) => t.tier === 0);
+  if (tier0 && tier0.tools.length > 0) {
+    phases.push({
+      phase: 0,
+      name: 'Foundation',
+      tier: 0,
+      tools: tier0.tools.map((t) => t.display_name),
+      parallel_safe: true,
+      notes: 'All Tier 0 tools can run in parallel',
+    });
+  }
 
   // Phase 1: Tier 1 tools
-  phases.push({
-    phase: 1,
-    name: 'Organization',
-    tier: 1,
-    tools: tiers.find(t => t.tier === 1)?.tools.map(t => t.display_name) || [],
-    parallel_safe: true,
-    notes: 'Org-level tools, parallel within domain'
-  });
+  const tier1 = tiers.find((t) => t.tier === 1);
+  if (tier1 && tier1.tools.length > 0) {
+    phases.push({
+      phase: 1,
+      name: 'Organization',
+      tier: 1,
+      tools: tier1.tools.map((t) => t.display_name),
+      parallel_safe: true,
+      notes: 'Org-level tools, parallel within domain',
+    });
+  }
 
   // Phase 2: Tier 2 & 3 tools (sequential - creates resources)
-  const tier2Tools = tiers.find(t => t.tier === 2)?.tools.map(t => t.display_name) || [];
-  const tier3Tools = tiers.find(t => t.tier === 3)?.tools.map(t => t.display_name) || [];
-  phases.push({
-    phase: 2,
-    name: 'Resource Creation',
-    tier: 3,
-    tools: [...tier2Tools, ...tier3Tools],
-    parallel_safe: false,
-    notes: 'Sequential execution - creates shared resources'
-  });
+  const tier2Tools = tiers.find((t) => t.tier === 2)?.tools.map((t) => t.display_name) || [];
+  const tier3Tools = tiers.find((t) => t.tier === 3)?.tools.map((t) => t.display_name) || [];
+  if (tier2Tools.length > 0 || tier3Tools.length > 0) {
+    phases.push({
+      phase: 2,
+      name: 'Resource Creation',
+      tier: 3,
+      tools: [...tier2Tools, ...tier3Tools],
+      parallel_safe: false,
+      notes: 'Sequential execution - creates shared resources',
+    });
+  }
 
-  // Phase 3+: Tier 4 tools by domain (parallel by domain)
-  const tier4 = tiers.find(t => t.tier === 4);
+  // Phase 3+: Tier 4 tools by domain
+  const tier4 = tiers.find((t) => t.tier === 4);
   if (tier4) {
-    const byDomain = new Map<string, string[]>();
+    const byDomain = new Map<string, typeof tier4.tools>();
     for (const tool of tier4.tools) {
       if (!byDomain.has(tool.domain)) {
         byDomain.set(tool.domain, []);
       }
-      byDomain.get(tool.domain)!.push(tool.display_name);
+      byDomain.get(tool.domain)!.push(tool);
     }
 
     let phaseNum = 3;
     for (const [domain, tools] of byDomain) {
       // Separate destructive and non-destructive
-      const nonDestructive = tools.filter(t =>
-        !t.includes('delete') && !t.includes('uninstall')
-      );
-      const destructive = tools.filter(t =>
-        t.includes('delete') || t.includes('uninstall')
-      );
+      const nonDestructive = tools.filter((t) => !t.is_destructive).map((t) => t.display_name);
+      const destructive = tools.filter((t) => t.is_destructive).map((t) => t.display_name);
 
       if (nonDestructive.length > 0) {
         phases.push({
@@ -239,7 +247,7 @@ function generateExecutionOrder(
           tier: 4,
           tools: nonDestructive,
           parallel_safe: true,
-          notes: `Non-destructive ${domain} tools`
+          notes: `Non-destructive ${domain} tools`,
         });
       }
 
@@ -250,7 +258,7 @@ function generateExecutionOrder(
           tier: 4,
           tools: destructive,
           parallel_safe: false,
-          notes: `Destructive ${domain} tools - execute last`
+          notes: `Destructive ${domain} tools - execute last`,
         });
       }
     }
@@ -258,25 +266,25 @@ function generateExecutionOrder(
 
   return phases;
 }
-```
 
-### Step 4: Generate Markdown Report
+// ============================================================================
+// Report Generation
+// ============================================================================
 
-```typescript
-function generateTierReport(
-  tiers: TierAnalysis[],
-  phases: ExecutionPhase[]
-): string {
+/**
+ * Generate markdown tier analysis report
+ */
+function generateTierReport(tiers: TierAnalysis[], phases: ExecutionPhase[]): string {
   const lines: string[] = [
     '# Tier Analysis: Mittwald MCP Tools',
     '',
     `**Generated**: ${new Date().toISOString()}`,
-    `**Total Tools**: 175`,
+    `**Total Tools**: ${tiers.reduce((sum, t) => sum + t.tool_count, 0)}`,
     '',
     '## Tier Distribution',
     '',
     '| Tier | Description | Tools | % | Domains |',
-    '|------|-------------|-------|---|---------|'
+    '|------|-------------|-------|---|---------|',
   ];
 
   for (const tier of tiers) {
@@ -340,7 +348,9 @@ function generateTierReport(
         lines.push(`- \`${tool}\``);
       }
     } else {
-      lines.push(`**Tools**: ${phase.tools.slice(0, 5).map(t => `\`${t}\``).join(', ')}... and ${phase.tools.length - 5} more`);
+      lines.push(
+        `**Tools**: ${phase.tools.slice(0, 5).map((t) => `\`${t}\``).join(', ')}... and ${phase.tools.length - 5} more`
+      );
     }
     lines.push('');
   }
@@ -372,18 +382,21 @@ function generateTierReport(
 
   return lines.join('\n');
 }
-```
 
-### Step 5: Main Function
+// ============================================================================
+// Main Function
+// ============================================================================
 
-```typescript
-async function main() {
-  const inventoryPath = process.argv[2] || 'evals/inventory/tools.json';
-  const graphPath = process.argv[3] || 'evals/inventory/dependency-graph.json';
-  const outputDir = process.argv[4] || 'evals/inventory';
+async function generateTierAnalysis(
+  inventoryPath: string,
+  graphPath: string,
+  outputDir: string
+): Promise<void> {
+  console.log('Loading inventory...');
+  const inventory: ToolInventory = JSON.parse(fs.readFileSync(inventoryPath, 'utf-8'));
 
   console.log('Analyzing tiers...');
-  const tiers = await analyzeTiers(inventoryPath);
+  const tiers = analyzeTiers(inventory);
 
   console.log('Loading dependency graph...');
   const graph: DependencyGraph = JSON.parse(fs.readFileSync(graphPath, 'utf-8'));
@@ -391,12 +404,26 @@ async function main() {
   console.log('Generating execution order...');
   const phases = generateExecutionOrder(tiers, graph);
 
-  // Write execution order JSON
+  // Write outputs
+  fs.mkdirSync(outputDir, { recursive: true });
+
+  // Execution order JSON
   const orderPath = path.join(outputDir, 'execution-order.json');
-  fs.writeFileSync(orderPath, JSON.stringify(phases, null, 2));
+  fs.writeFileSync(
+    orderPath,
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        total_phases: phases.length,
+        phases,
+      },
+      null,
+      2
+    )
+  );
   console.log(`Execution order written to: ${orderPath}`);
 
-  // Write tier analysis report
+  // Tier analysis report
   const reportPath = path.join(outputDir, 'tier-analysis.md');
   fs.writeFileSync(reportPath, generateTierReport(tiers, phases));
   console.log(`Tier analysis written to: ${reportPath}`);
@@ -409,45 +436,38 @@ async function main() {
   console.log(`\nExecution phases: ${phases.length}`);
 }
 
-main().catch(console.error);
-```
+// ============================================================================
+// CLI Entry Point
+// ============================================================================
 
-## Expected Tier Distribution
+async function main() {
+  const args = process.argv.slice(2);
 
-Based on research:
+  const inventoryPath = args[0] || 'evals/inventory/tools.json';
+  const graphPath = args[1] || 'evals/inventory/dependency-graph.json';
+  const outputDir = args[2] || 'evals/inventory';
 
-| Tier | Expected Count | Percentage |
-|------|----------------|------------|
-| 0 | ~15 | ~9% |
-| 1 | ~12 | ~7% |
-| 2 | ~2 | ~1% |
-| 3 | ~4 | ~2% |
-| 4 | ~142 | ~81% |
+  if (!fs.existsSync(inventoryPath)) {
+    console.error(`Inventory file not found: ${inventoryPath}`);
+    process.exit(1);
+  }
 
-## Deliverables
+  if (!fs.existsSync(graphPath)) {
+    console.error(`Dependency graph not found: ${graphPath}`);
+    console.error('Run WP-05 (Dependency Graph Generation) first.');
+    process.exit(1);
+  }
 
-- [ ] `evals/inventory/tier-analysis.md` - Complete tier analysis report
-- [ ] `evals/inventory/execution-order.json` - Phased execution sequence
-- [ ] All 175 tools categorized
-- [ ] Parallelization opportunities documented
+  await generateTierAnalysis(inventoryPath, graphPath, outputDir);
+}
 
-## Acceptance Criteria
+// Run if executed directly
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename || process.argv[1]?.endsWith('generate-tier-analysis.ts')) {
+  main().catch((e) => {
+    console.error('Fatal error:', e);
+    process.exit(1);
+  });
+}
 
-1. All tiers (0-4) represented in analysis
-2. Each tier has execution notes
-3. Execution order respects dependencies
-4. Destructive operations identified
-5. Parallelization strategy documented
-
-## Parallelization Notes
-
-This WP:
-- **Depends on**: WP-04 (Tool Inventory), WP-05 (Dependency Graph)
-- **Can run in parallel with**: WP-05 (after WP-04 completes)
-- **Informs**: Phase 4 execution strategy
-
-## Dependencies
-
-- `evals/inventory/tools.json` (from WP-04)
-- `evals/inventory/dependency-graph.json` (from WP-05)
-
+export { generateTierAnalysis, analyzeTiers, generateExecutionOrder, generateTierReport };
