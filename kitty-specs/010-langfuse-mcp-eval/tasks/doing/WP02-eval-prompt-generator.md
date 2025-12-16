@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Eval Prompt Generator Script"
 phase: "Phase 1 - Infrastructure & Schemas"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "78380"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T16:30:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "78380"
+    action: "Started implementation following Phase 1 order"
 ---
 
 # Work Package Prompt: WP02 – Eval Prompt Generator Script
