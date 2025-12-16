@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Self-Assessment Extractor Script"
 phase: "Phase 1 - Infrastructure & Schemas"
-lane: "for_review"
-assignee: "claude"
+lane: "planned"
+assignee: ""
 agent: "claude"
 shell_pid: "78380"
-review_status: ""
-reviewed_by: ""
+review_status: "has_feedback"
+reviewed_by: "codex"
 history:
   - timestamp: "2025-12-16T13:01:00Z"
     lane: "planned"
@@ -26,7 +26,29 @@ history:
     agent: "claude"
     shell_pid: "78380"
     action: "Implementation complete - all 27 unit tests pass"
+  - timestamp: "2025-12-16T15:27:55Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "82955"
+    action: "Code review: needs schema validation and marker handling fixes"
 ---
+
+## Review Feedback
+
+**Status**: ❌ **Needs Changes**
+
+**Key Issues**:
+1. Missing schema validation: extraction reports success without enforcing `contracts/self-assessment.schema.json` (no `tool_executed` pattern or ISO timestamp checks, additionalProperties ignored), so invalid assessments slip through and acceptance criteria on schema validation are unmet.
+2. Marker edge case handling: when markers are present but content is empty/whitespace, the extractor returns “No self-assessment markers found” instead of flagging a malformed assessment with useful context, making it hard to distinguish missing output from broken output.
+
+**What Was Done Well**:
+- Streamed JSONL parsing supports assistant role variants and array-based content.
+- Directory mode provides per-file outputs and a summary to inspect batch results quickly.
+
+**Action Items** (must complete before re-review):
+- [ ] Integrate validation against `contracts/self-assessment.schema.json` (e.g., Ajv + formats) so schema violations (pattern, timestamp format, additionalProperties) surface as explicit errors instead of successes.
+- [ ] Detect empty/whitespace content between markers and return a clear error with the relevant message index/line metadata.
+- [ ] Add tests covering schema validation failures and empty-content marker scenarios.
 
 # Work Package Prompt: WP01 – Self-Assessment Extractor Script
 
@@ -382,4 +404,3 @@ More text`;
 - This script is a prerequisite for Phase 5 aggregation
 - Keep extraction logic simple and testable
 - Log detailed errors for debugging failed extractions
-
