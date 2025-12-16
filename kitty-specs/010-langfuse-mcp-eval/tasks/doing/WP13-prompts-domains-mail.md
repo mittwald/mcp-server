@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Generate Prompts - domains-mail (20 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "99395"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T17:19:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "99395"
+    action: "Started implementation - verifying and enhancing prompts"
 ---
 
 # Work Package Prompt: WP13 – Generate Prompts - domains-mail (20 tools)
