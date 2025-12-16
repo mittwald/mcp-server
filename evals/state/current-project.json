@@ -1,0 +1,9 @@
+{
+  "project_id": null,
+  "created_at": null,
+  "created_by": "WP-20",
+  "cleanup_deferred": true,
+  "status": "failed",
+  "failure_reason": "Tier 0 tools (server/list, project/list) timed out with SIGTERM, preventing project creation",
+  "notes": "All MCP CLI tools timeout before completing. This is a systemic issue affecting all Mittwald API operations through the MCP server."
+}

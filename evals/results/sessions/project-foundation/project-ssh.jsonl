@@ -1,0 +1,4 @@
+{"eval_id": "project-ssh", "tool_name": "mcp__mittwald__mittwald_project_ssh", "display_name": "project/ssh", "domain": "project-foundation", "tier": 4, "timestamp": "2025-12-16T17:53:00Z", "tool_response": {"status": "skipped", "message": "Skipped - dependency missing (project/create not executed) and interactive tool"}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_project_ssh", "timestamp": "2025-12-16T17:53:00Z", "problems_encountered": [{"type": "dependency_missing", "description": "project/create skipped - no project ID available"}, {"type": "other", "description": "Interactive SSH tool - provides command info only"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Skipped - dependency cascade + interactive tool", "execution_notes": "Tier 4 tool requires project ID and is interactive - skipped for both reasons"}
+<!-- SELF_ASSESSMENT_END -->
