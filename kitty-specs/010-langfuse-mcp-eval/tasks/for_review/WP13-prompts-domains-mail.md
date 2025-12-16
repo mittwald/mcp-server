@@ -4,11 +4,11 @@ subtasks:
   - "T001"
 title: "Generate Prompts - domains-mail (20 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "planned"
+lane: "for_review"
 assignee: ""
 agent: "claude"
-shell_pid: ""
-review_status: "has_feedback"
+shell_pid: "31343"
+review_status: ""
 reviewed_by: "claude"
 history:
   - timestamp: "2025-12-16T13:13:00Z"
@@ -31,6 +31,16 @@ history:
     agent: "claude"
     shell_pid: ""
     action: "REVIEW - changes_requested - see Review Feedback section below"
+  - timestamp: "2025-12-16T18:40:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "31343"
+    action: "Acknowledged feedback - addressing Issue 1 and Issue 2"
+  - timestamp: "2025-12-16T18:45:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "31343"
+    action: "Addressed feedback: Added destructive tag/warning to domain-virtualhost-delete.json (Issue 1), Added DNS propagation warning to domain-dnszone-update.json (Issue 2)"
 ---
 
 # Work Package Prompt: WP13 – Generate Prompts - domains-mail (20 tools)
