@@ -39,8 +39,8 @@ Create a TypeScript script to extract self-assessment JSON blocks from session l
 ---
 
 ### WP-02: Eval Prompt Generator Script
-**Status**: todo
-**Prompt**: `tasks/WP-02-eval-prompt-generator.md`
+**Status**: done
+**Prompt**: `tasks/done/WP02-eval-prompt-generator.md`
 
 Create a script to generate Langfuse-format eval prompts from tool inventory.
 
@@ -50,10 +50,10 @@ Create a script to generate Langfuse-format eval prompts from tool inventory.
 - Template interpolation logic
 
 **Acceptance Criteria**:
-- [ ] Script reads tool inventory JSON
-- [ ] Generates eval prompt for each tool using template
-- [ ] Outputs Langfuse-compatible JSON files
-- [ ] Handles all 175 tools without errors
+- [x] Script reads tool inventory JSON
+- [x] Generates eval prompt for each tool using template
+- [x] Outputs Langfuse-compatible JSON files
+- [x] Handles all 175 tools without errors
 
 ---
 
@@ -245,8 +245,8 @@ Generate eval prompts for automation domain tools.
 ---
 
 ### WP-16: Generate Prompts - backups (9 tools)
-**Status**: todo
-**Prompt**: `tasks/WP-16-prompts-backups.md`
+**Status**: done
+**Prompt**: `tasks/done/WP16-prompts-backups.md`
 
 Generate eval prompts for backups domain tools.
 
@@ -551,7 +551,7 @@ Phase 5 (Aggregation):
 | WP-13 | todo | - | - | domains-mail (20) |
 | WP-14 | todo | - | - | access-users (8) |
 | WP-15 | todo | - | - | automation (10) |
-| WP-16 | todo | - | - | backups (9) |
+| WP-16 | done | claude-reviewer | 21815 | backups (9) |
 | WP-17 | todo | - | - | misc (13) |
 | WP-18 | todo | - | - | Execute identity |
 | WP-19 | todo | - | - | Execute organization |
