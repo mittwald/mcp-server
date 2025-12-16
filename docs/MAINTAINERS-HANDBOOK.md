@@ -264,6 +264,10 @@ mittwald-mcp/
 | `src/server/mcp.ts` | MCP protocol handler, session lifecycle |
 | `src/server/session-manager.ts` | Redis session persistence |
 | `src/middleware/session-auth.ts` | Request authentication |
+| `src/utils/session-aware-cli.ts` | CLI execution with session context injection |
+| `src/utils/context-flag-support.ts` | Generated map of tool → supported context flags |
+| `src/tools/cli-adapter.ts` | CLI tool invocation with error handling |
+| `scripts/generate-context-flag-map.ts` | Generator for context flag support map |
 | `packages/oauth-bridge/src/server.ts` | OAuth bridge entry point |
 | `packages/oauth-bridge/src/routes/token.ts` | Token exchange logic |
 
@@ -291,6 +295,9 @@ npm run typecheck
 
 # Coverage
 npm run coverage:generate  # Regenerate CLI coverage report
+
+# Context Flag Map (regenerate after adding new CLI tools)
+npm run generate:context-flags  # Updates src/utils/context-flag-support.ts
 ```
 
 ### mittwald-oauth
@@ -608,6 +615,7 @@ mw container logs c-u8i2fa
 | `Redis connection refused` | Wrong `REDIS_URL` | Verify Redis credentials and network |
 | `JWT issuer mismatch` | Config mismatch | Ensure `BRIDGE_ISSUER` matches across services |
 | OAuth callback error | Redirect URI mismatch | Verify URI in Mittwald ID config |
+| CLI flag not recognized | Context flag injection | Tool doesn't support `--project-id`. Run `npm run generate:context-flags` after adding tools |
 
 ### Diagnostic Commands
 

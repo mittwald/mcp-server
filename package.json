@@ -60,7 +60,8 @@
     "inspector": "npx @modelcontextprotocol/inspector",
     "logs:registration": "bash scripts/tail-registration-logs.sh",
     "coverage:generate": "tsx scripts/generate-mw-coverage.ts",
-    "check:cli-version": "tsx scripts/check-cli-version.ts"
+    "check:cli-version": "tsx scripts/check-cli-version.ts",
+    "generate:context-flags": "tsx scripts/generate-context-flag-map.ts"
   },
   "repository": {
     "type": "git",

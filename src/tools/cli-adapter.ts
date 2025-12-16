@@ -100,7 +100,8 @@ export async function invokeCliTool<T = string>(
       binary,
       argv,
       sessionId,
-      cliOptions ?? {}
+      cliOptions ?? {},
+      toolName  // Pass tool name for context flag filtering
     );
   } catch (error) {
     throw mapSessionError(error, toolName, commandString);

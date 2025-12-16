@@ -1,6 +1,7 @@
 import { executeCli, type CliExecuteOptions, type CliExecuteResult } from './cli-wrapper.js';
 import { sessionManager, type UserSession } from '../server/session-manager.js';
 import { logger } from './logger.js';
+import { getContextFlagSupport, type ContextFlagSupport } from './context-flag-support.js';
 
 export class SessionNotFoundError extends Error {
   constructor(sessionId: string) {
@@ -33,12 +34,14 @@ export class SessionAwareCli {
    * @param args - CLI arguments
    * @param sessionId - User session ID for context isolation
    * @param options - Additional execution options
+   * @param toolName - Tool name for context flag filtering (e.g., 'mittwald_app_list')
    */
   async executeWithSession(
     command: string,
     args: string[],
     sessionId: string,
-    options: SessionAwareCliOptions = {}
+    options: SessionAwareCliOptions = {},
+    toolName?: string
   ): Promise<CliExecuteResult> {
     try {
       // Get user session from Redis
@@ -54,7 +57,8 @@ export class SessionAwareCli {
       }
 
       // Inject user's OAuth token and context into CLI command
-      const enhancedArgs = this.injectSessionContext(args, session);
+      // Only inject context flags that the tool supports (based on its schema)
+      const enhancedArgs = this.injectSessionContext(args, session, toolName);
       const enhancedOptions = this.injectSessionToken(options, session);
 
       logger.debug(`Executing CLI command for session ${sessionId}:`, {
@@ -106,22 +110,43 @@ export class SessionAwareCli {
 
   /**
    * Inject user's current context parameters into CLI arguments
-   * This prevents context contamination between users
+   * This prevents context contamination between users.
+   *
+   * IMPORTANT: Only injects flags that the tool actually supports (based on schema).
+   * This fixes the issue where tools like 'app versions' or 'server list' would fail
+   * because they don't accept --project-id flag.
+   *
+   * @param args - CLI arguments
+   * @param session - User session with context
+   * @param toolName - Tool name to lookup supported flags (e.g., 'mittwald_app_list')
    */
-  private injectSessionContext(args: string[], session: UserSession): string[] {
+  private injectSessionContext(
+    args: string[],
+    session: UserSession,
+    toolName?: string
+  ): string[] {
     const enhancedArgs = [...args];
     const context = session.currentContext;
 
-    // Only inject context if not already specified in command
-    if (context.projectId && !this.hasContextParam(args, '--project-id')) {
+    // Get flag support for this tool (defaults to no flags if unknown)
+    const flagSupport = toolName ? getContextFlagSupport(toolName) : null;
+
+    // Only inject context flags that the tool supports
+    if (context.projectId &&
+        !this.hasContextParam(args, '--project-id') &&
+        (flagSupport?.projectId ?? false)) {
       enhancedArgs.push('--project-id', context.projectId);
     }
 
-    if (context.serverId && !this.hasContextParam(args, '--server-id')) {
+    if (context.serverId &&
+        !this.hasContextParam(args, '--server-id') &&
+        (flagSupport?.serverId ?? false)) {
       enhancedArgs.push('--server-id', context.serverId);
     }
 
-    if (context.orgId && !this.hasContextParam(args, '--org-id')) {
+    if (context.orgId &&
+        !this.hasContextParam(args, '--org-id') &&
+        (flagSupport?.orgId ?? false)) {
       enhancedArgs.push('--org-id', context.orgId);
     }
 

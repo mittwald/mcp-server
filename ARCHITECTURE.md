@@ -178,6 +178,78 @@ User → MCP Client → OAuth Bridge → Mittwald ID
 
 See `docs/security/risk-register.md` for the full list of identified, remediated, and accepted risks.
 
+## Session-Aware Context Flag Injection
+
+### Problem Solved
+
+When users set session context (e.g., via `context/set-session`), the system previously injected `--project-id`, `--server-id`, and `--org-id` flags to ALL CLI commands. However, not all commands support these flags:
+
+- **51 tools** (29%) support `--project-id`
+- **1 tool** (0.6%) supports `--server-id`
+- **1 tool** (0.6%) supports `--org-id`
+- **125 tools** (71%) don't support any context flags
+
+Commands like `mw app versions`, `mw server list`, and `mw project list` would fail with CLI parameter errors when context was set.
+
+### Solution: Schema-Aware Context Injection
+
+The system now uses a build-time generated map to determine which flags each tool supports:
+
+```
+scripts/generate-context-flag-map.ts
+         │
+         ▼ scans
+src/constants/tool/mittwald-cli/**/*-cli.ts (178 tool definitions)
+         │
+         ▼ generates
+src/utils/context-flag-support.ts (176 tools mapped)
+         │
+         ▼ used by
+src/utils/session-aware-cli.ts (injectSessionContext method)
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `scripts/generate-context-flag-map.ts` | Generator script that scans tool schemas |
+| `src/utils/context-flag-support.ts` | Generated map: tool name → supported flags |
+| `src/utils/session-aware-cli.ts` | Context injection with flag filtering |
+| `src/tools/cli-adapter.ts` | Passes `toolName` to session-aware CLI |
+
+### Maintenance
+
+When adding new CLI tools, regenerate the context flag map:
+
+```bash
+npm run generate:context-flags
+```
+
+This will:
+1. Scan all `*-cli.ts` files in `src/constants/tool/mittwald-cli/`
+2. Extract `inputSchema.properties` for each tool
+3. Check for `projectId`, `serverId`, `orgId` properties
+4. Generate an updated `src/utils/context-flag-support.ts`
+
+### How It Works
+
+1. **CLI Adapter** passes `toolName` when calling `sessionAwareCli.executeWithSession()`
+2. **Session-Aware CLI** looks up the tool in `CONTEXT_FLAG_SUPPORT` map
+3. **Context Injection** only adds flags that the tool schema declares:
+
+```typescript
+// Only injects --project-id if tool supports it
+if (context.projectId &&
+    !this.hasContextParam(args, '--project-id') &&
+    (flagSupport?.projectId ?? false)) {
+  enhancedArgs.push('--project-id', context.projectId);
+}
+```
+
+4. **Fail-safe default**: Unknown tools get no flags injected (prevents errors)
+
+---
+
 ## Remaining Work / Considerations
 - Token refresh orchestration (optional) – bridge currently mints refresh tokens; MCP server may use Mittwald refresh tokens in future.
 - Enterprise IdPs without DCR – may require a separate onboarding flow.
