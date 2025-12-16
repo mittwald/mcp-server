@@ -1,0 +1,56 @@
+{
+  "domain": "identity",
+  "execution_date": "2025-12-16",
+  "total_evals": 19,
+  "results_summary": {
+    "success": 4,
+    "failed": 15,
+    "skipped": 0
+  },
+  "success_rate": "21%",
+  "tool_results": [
+    {"tool": "context/get", "status": "success", "notes": "Context retrieved successfully"},
+    {"tool": "context/accessible-projects", "status": "success", "notes": "Found 2 accessible projects"},
+    {"tool": "context/get-session", "status": "success", "notes": "Session context retrieved"},
+    {"tool": "context/set", "status": "failed", "notes": "Access denied to project"},
+    {"tool": "context/reset", "status": "success", "notes": "Context reset successfully"},
+    {"tool": "user/get", "status": "failed", "notes": "Timeout - SIGTERM"},
+    {"tool": "user/session/list", "status": "failed", "notes": "Timeout - SIGTERM"},
+    {"tool": "user/session/get", "status": "failed", "notes": "Skipped - dependency missing"},
+    {"tool": "user/ssh-key/list", "status": "failed", "notes": "Timeout - SIGTERM"},
+    {"tool": "user/ssh-key/get", "status": "failed", "notes": "Skipped - dependency missing"},
+    {"tool": "user/ssh-key/create", "status": "failed", "notes": "Skipped - timeout pattern"},
+    {"tool": "user/ssh-key/delete", "status": "failed", "notes": "Skipped - no resources"},
+    {"tool": "user/ssh-key/import", "status": "failed", "notes": "Skipped - timeout pattern"},
+    {"tool": "user/api-token/list", "status": "failed", "notes": "Timeout - SIGTERM"},
+    {"tool": "user/api-token/get", "status": "failed", "notes": "Skipped - dependency missing"},
+    {"tool": "user/api-token/create", "status": "failed", "notes": "Skipped - timeout pattern"},
+    {"tool": "user/api-token/revoke", "status": "failed", "notes": "Skipped - no resources"},
+    {"tool": "login/status", "status": "failed", "notes": "Tool not available via MCP"},
+    {"tool": "login/token", "status": "failed", "notes": "Tool not available via MCP"},
+    {"tool": "login/reset", "status": "failed", "notes": "Tool not available via MCP"}
+  ],
+  "problem_patterns": [
+    {
+      "pattern": "timeout",
+      "count": 5,
+      "affected_tools": ["user/get", "user/session/list", "user/ssh-key/list", "user/api-token/list"],
+      "description": "Mittwald CLI commands killed with SIGTERM before completing"
+    },
+    {
+      "pattern": "tool_not_available",
+      "count": 3,
+      "affected_tools": ["login/status", "login/token", "login/reset"],
+      "description": "login/* tools not exposed via MCP interface (misc domain)"
+    },
+    {
+      "pattern": "permission_denied",
+      "count": 1,
+      "affected_tools": ["context/set"],
+      "description": "Access denied despite project appearing in accessible list"
+    }
+  ],
+  "resources_created": [],
+  "resources_cleaned": true,
+  "notes": "Identity domain eval execution completed with significant timeout issues affecting user/* tools. The context/* tools worked successfully. The login/* tools are in the misc domain and not available via current MCP interface."
+}

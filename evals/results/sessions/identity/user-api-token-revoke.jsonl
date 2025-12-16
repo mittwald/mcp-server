@@ -1,0 +1,4 @@
+{"eval_id": "user-api-token-revoke", "tool_name": "mcp__mittwald__mittwald_user_api_token_revoke", "display_name": "user/api-token/revoke", "domain": "identity", "tier": 0, "timestamp": "2025-12-16T17:33:00Z", "tool_response": {"status": "skipped", "message": "Skipped - no resources to revoke (create was skipped due to timeout issues)"}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_user_api_token_revoke", "timestamp": "2025-12-16T17:33:00Z", "problems_encountered": [{"type": "dependency_missing", "description": "No resources to revoke - create was skipped due to timeout issues"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped - no resources created", "execution_notes": "Cleanup tool skipped because create was not executed due to timeout pattern"}
+<!-- SELF_ASSESSMENT_END -->

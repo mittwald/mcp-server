@@ -1,0 +1,4 @@
+{"eval_id": "user-ssh-key-get", "tool_name": "mcp__mittwald__mittwald_user_ssh_key_get", "display_name": "user/ssh-key/get", "domain": "identity", "tier": 0, "timestamp": "2025-12-16T17:33:00Z", "tool_response": {"status": "skipped", "message": "Skipped - requires key ID from user/ssh-key/list which timed out"}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_get", "timestamp": "2025-12-16T17:33:00Z", "problems_encountered": [{"type": "dependency_missing", "description": "Cannot execute - requires key ID from user/ssh-key/list which timed out"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped due to missing dependency", "execution_notes": "This tool requires a key ID from user/ssh-key/list, which timed out during execution"}
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,4 @@
+{"eval_id": "context-reset", "tool_name": "mcp__mittwald__mittwald_context_reset", "display_name": "context/reset", "domain": "identity", "tier": 0, "timestamp": "2025-12-16T17:29:00Z", "tool_response": {"status": "success", "message": "Context parameters reset successfully", "data": {"message": "Context parameters reset successfully", "timestamp": "2025-12-16T16:24:50.512Z"}, "meta": {"command": "mw context reset", "durationMs": 24266}}}
+<!-- SELF_ASSESSMENT_START -->
+{"success": true, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_context_reset", "timestamp": "2025-12-16T17:29:00Z", "problems_encountered": [], "resources_created": [], "resources_verified": [{"type": "context", "id": "current", "status": "reset"}], "tool_response_summary": "Context parameters reset successfully", "execution_notes": "Successfully reset all context parameters to default state"}
+<!-- SELF_ASSESSMENT_END -->
