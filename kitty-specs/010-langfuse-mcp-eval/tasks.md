@@ -301,8 +301,8 @@ Execute all organization domain evals.
 ---
 
 ### WP-20: Execute Evals - project-foundation (16 evals)
-**Status**: todo
-**Prompt**: `tasks/WP-20-execute-project-foundation.md`
+**Status**: done
+**Prompt**: `tasks/done/phase-4-eval-execution/WP20-execute-project-foundation.md`
 
 Execute all project-foundation domain evals.
 
@@ -555,7 +555,7 @@ Phase 5 (Aggregation):
 | WP-17 | todo | - | - | misc (13) |
 | WP-18 | done | claude-reviewer | 98765 | Execute identity - 19 session logs (21% success, baseline captured) |
 | WP-19 | done | 2025-12-16 | 2025-12-16 | Execute organization - 14 session logs (0% success, timeouts) |
-| WP-20 | todo | - | - | Execute project-foundation |
+| WP-20 | done | claude-reviewer | 99001 | Execute project-foundation - 16 session logs (0% success, CRITICAL: no project created) |
 | WP-21 | todo | - | - | Execute apps |
 | WP-22 | todo | - | - | Execute containers |
 | WP-23 | todo | - | - | Execute databases |
