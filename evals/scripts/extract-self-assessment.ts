@@ -506,7 +506,9 @@ async function main() {
 export { extractBetweenMarkers, parseAssessmentJson, parseSessionLog };
 
 // Run if executed directly
-if (require.main === module) {
+// Guard for ESM environments (e.g., tsx) where require is undefined
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (typeof require !== 'undefined' && require.main === module) {
   main().catch((e) => {
     console.error('Fatal error:', e);
     process.exit(1);

@@ -157,7 +157,7 @@ describe('parseAssessmentJson', () => {
     expect(error).toContain('JSON parse error');
   });
 
-  it('normalizes problem types to valid enum', () => {
+  it('rejects invalid problem types per schema', () => {
     const json = JSON.stringify({
       success: false,
       confidence: 'medium',
@@ -170,10 +170,8 @@ describe('parseAssessmentJson', () => {
     });
 
     const { assessment, error } = parseAssessmentJson(json);
-    expect(error).toBeUndefined();
-    expect(assessment?.problems_encountered).toHaveLength(2);
-    expect(assessment?.problems_encountered[0].type).toBe('auth_error');
-    expect(assessment?.problems_encountered[1].type).toBe('other');
+    expect(assessment).toBeNull();
+    expect(error).toContain('problems_encountered/1/type');
   });
 
   it('handles optional fields', () => {
@@ -192,7 +190,7 @@ describe('parseAssessmentJson', () => {
     expect(assessment?.execution_notes).toBe('All good');
   });
 
-  it('validates resources_created structure', () => {
+  it('fails schema validation when resources_created entries are invalid', () => {
     const json = JSON.stringify({
       success: true,
       confidence: 'high',
@@ -205,14 +203,12 @@ describe('parseAssessmentJson', () => {
       ],
     });
 
-    const { assessment } = parseAssessmentJson(json);
-    expect(assessment?.resources_created).toHaveLength(2);
-    expect(assessment?.resources_created[0].name).toBe('Test Project');
-    expect(assessment?.resources_created[0].verified).toBe(true);
-    expect(assessment?.resources_created[1].name).toBeUndefined();
+    const { assessment, error } = parseAssessmentJson(json);
+    expect(assessment).toBeNull();
+    expect(error).toContain('resources_created');
   });
 
-  it('validates resources_verified structure', () => {
+  it('fails schema validation when resources_verified entries are invalid', () => {
     const json = JSON.stringify({
       success: true,
       confidence: 'high',
@@ -225,11 +221,9 @@ describe('parseAssessmentJson', () => {
       ],
     });
 
-    const { assessment } = parseAssessmentJson(json);
-    expect(assessment?.resources_verified).toHaveLength(3);
-    expect(assessment?.resources_verified[0].status).toBe('exists');
-    expect(assessment?.resources_verified[1].status).toBe('not_found');
-    expect(assessment?.resources_verified[2].status).toBe('error');
+    const { assessment, error } = parseAssessmentJson(json);
+    expect(assessment).toBeNull();
+    expect(error).toContain('resources_verified');
   });
 
   it('fails schema validation for invalid tool pattern', () => {
@@ -429,7 +423,7 @@ describe('processDirectory', () => {
       type: 'assistant',
       message: {
         content: `<!-- SELF_ASSESSMENT_START -->
-{"success": true, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_tool1", "timestamp": "2025-12-16T12:00:00Z"}
+{"success": true, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_toolone", "timestamp": "2025-12-16T12:00:00Z"}
 <!-- SELF_ASSESSMENT_END -->`,
       },
     });

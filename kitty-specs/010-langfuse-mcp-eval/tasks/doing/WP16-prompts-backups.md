@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Generate Prompts - backups (9 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "99655"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T17:00:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "99655"
+    action: "Started implementation - improving backup prompts"
 ---
 
 # Work Package Prompt: WP16 – Generate Prompts - backups (9 tools)

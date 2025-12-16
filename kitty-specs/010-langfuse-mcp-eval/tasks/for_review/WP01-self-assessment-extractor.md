@@ -4,7 +4,7 @@ subtasks:
   - "T001"
 title: "Self-Assessment Extractor Script"
 phase: "Phase 1 - Infrastructure & Schemas"
-lane: "doing"
+lane: "for_review"
 assignee: "codex"
 agent: "codex"
 shell_pid: "82955"
@@ -36,6 +36,16 @@ history:
     agent: "codex"
     shell_pid: "82955"
     action: "Acknowledged review feedback; starting fixes for schema validation and marker handling"
+  - timestamp: "2025-12-16T15:44:24Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "82955"
+    action: "Addressed feedback: added schema validation, empty marker detection, and tests"
+  - timestamp: "2025-12-16T15:44:52Z"
+    lane: "for_review"
+    agent: "codex"
+    shell_pid: "82955"
+    action: "Implementation updated after feedback; ready for review"
 ---
 
 ## Review Feedback
@@ -51,9 +61,9 @@ history:
 - Directory mode provides per-file outputs and a summary to inspect batch results quickly.
 
 **Action Items** (must complete before re-review):
-- [ ] Integrate validation against `contracts/self-assessment.schema.json` (e.g., Ajv + formats) so schema violations (pattern, timestamp format, additionalProperties) surface as explicit errors instead of successes.
-- [ ] Detect empty/whitespace content between markers and return a clear error with the relevant message index/line metadata.
-- [ ] Add tests covering schema validation failures and empty-content marker scenarios.
+- [x] Integrate validation against `contracts/self-assessment.schema.json` (e.g., Ajv + formats) so schema violations (pattern, timestamp format, additionalProperties) surface as explicit errors instead of successes.
+- [x] Detect empty/whitespace content between markers and return a clear error with the relevant message index/line metadata.
+- [x] Add tests covering schema validation failures and empty-content marker scenarios.
 
 # Work Package Prompt: WP01 – Self-Assessment Extractor Script
 
