@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Generate Prompts - automation (10 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "for_review"
+assignee: "claude"
+agent: "claude"
+shell_pid: "1391"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,16 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T17:15:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "1391"
+    action: "Started implementation - all prompts already exist, verifying"
+  - timestamp: "2025-12-16T17:20:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "1391"
+    action: "Completed - all 10 prompts verified with valid JSON structure"
 ---
 
 # Work Package Prompt: WP15 – Generate Prompts - automation (10 tools)
@@ -79,22 +89,22 @@ Generate Langfuse-compatible eval prompts for all 10 tools in the automation dom
 
 ## Deliverables
 
-- [ ] `evals/prompts/automation/cronjob-list.json`
-- [ ] `evals/prompts/automation/cronjob-get.json`
-- [ ] `evals/prompts/automation/cronjob-create.json`
-- [ ] `evals/prompts/automation/cronjob-update.json`
-- [ ] `evals/prompts/automation/cronjob-delete.json`
-- [ ] `evals/prompts/automation/cronjob-execute.json`
-- [ ] `evals/prompts/automation/cronjob-execution-list.json`
-- [ ] `evals/prompts/automation/cronjob-execution-get.json`
-- [ ] `evals/prompts/automation/cronjob-execution-abort.json`
-- [ ] `evals/prompts/automation/cronjob-execution-logs.json`
+- [x] `evals/prompts/automation/cronjob-list.json`
+- [x] `evals/prompts/automation/cronjob-get.json`
+- [x] `evals/prompts/automation/cronjob-create.json`
+- [x] `evals/prompts/automation/cronjob-update.json`
+- [x] `evals/prompts/automation/cronjob-delete.json`
+- [x] `evals/prompts/automation/cronjob-execute.json`
+- [x] `evals/prompts/automation/cronjob-execution-list.json`
+- [x] `evals/prompts/automation/cronjob-execution-get.json`
+- [x] `evals/prompts/automation/cronjob-execution-abort.json`
+- [x] `evals/prompts/automation/cronjob-execution-logs.json`
 
-**Total**: 10 JSON files
+**Total**: 10 JSON files ✓
 
 ## Acceptance Criteria
 
-1. All 10 prompt files created
-2. App dependency documented
-3. Cron interval format explained
+1. ✅ All 10 prompt files created
+2. ✅ App dependency documented (cronjob/create shows `appInstallationId` parameter and app/list dependency)
+3. ✅ Cron interval format explained (cronjob/create shows example: "0 * * * *")
 
