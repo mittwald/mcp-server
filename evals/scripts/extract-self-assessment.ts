@@ -14,10 +14,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
+import Ajv2020, { type ErrorObject, type ValidateFunction } from 'ajv/dist/2020';
+import addFormats from 'ajv-formats';
 
 // Marker constants
 const ASSESSMENT_START = '<!-- SELF_ASSESSMENT_START -->';
 const ASSESSMENT_END = '<!-- SELF_ASSESSMENT_END -->';
+const SCHEMA_PATH = path.resolve(
+  process.cwd(),
+  'kitty-specs/010-langfuse-mcp-eval/contracts/self-assessment.schema.json'
+);
 
 // Problem type enum from schema
 type ProblemType =
@@ -76,6 +82,39 @@ interface ExtractionResult {
     extractedAt: string;
     rawContent?: string;
   };
+}
+
+let validateSelfAssessment: ValidateFunction | null = null;
+
+function formatAjvErrors(errors: ErrorObject[] | null | undefined): string {
+  if (!errors || errors.length === 0) return 'Unknown schema validation error';
+
+  return errors
+    .map((err) => {
+      const pathDisplay = err.instancePath && err.instancePath !== '' ? err.instancePath : '(root)';
+      const additional = (err.params as { additionalProperty?: string }).additionalProperty;
+      const additionalText = additional ? ` [${additional}]` : '';
+      return `${pathDisplay}${additionalText} ${err.message ?? ''}`.trim();
+    })
+    .join('; ');
+}
+
+function getSchemaValidator(): { validate: ValidateFunction; schemaLoaded: boolean; error?: string } {
+  if (validateSelfAssessment) {
+    return { validate: validateSelfAssessment, schemaLoaded: true };
+  }
+
+  try {
+    const schemaContent = fs.readFileSync(SCHEMA_PATH, 'utf-8');
+    const schemaJson = JSON.parse(schemaContent);
+    const ajv = new Ajv2020({ allErrors: true, strict: false });
+    addFormats(ajv);
+    validateSelfAssessment = ajv.compile(schemaJson);
+    return { validate: validateSelfAssessment, schemaLoaded: true };
+  } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    return { validate: (() => false) as ValidateFunction, schemaLoaded: false, error: errorMessage };
+  }
 }
 
 /**
@@ -225,6 +264,16 @@ function parseAssessmentJson(jsonString: string): { assessment: SelfAssessment |
   try {
     const parsed = JSON.parse(jsonString);
 
+    const { validate, schemaLoaded, error: schemaError } = getSchemaValidator();
+    if (!schemaLoaded) {
+      return { assessment: null, error: `Schema validation unavailable: ${schemaError}` };
+    }
+
+    const isValid = validate(parsed);
+    if (!isValid) {
+      return { assessment: null, error: `Schema validation failed: ${formatAjvErrors(validate.errors)}` };
+    }
+
     // Validate required fields
     if (typeof parsed.success !== 'boolean') {
       return { assessment: null, error: 'Missing or invalid "success" field (must be boolean)' };
@@ -297,9 +346,14 @@ export async function extractSelfAssessment(logPath: string): Promise<Extraction
     // Search backwards (assessment usually at end of session)
     for (let i = messages.length - 1; i >= 0; i--) {
       const extracted = extractBetweenMarkers(messages[i]);
-      if (extracted) {
+      if (extracted !== null) {
         result.metadata.rawContent = extracted;
         result.metadata.lineNumber = i;
+
+        if (extracted.trim() === '') {
+          result.error = 'Empty self-assessment content between markers';
+          continue;
+        }
 
         const { assessment, error } = parseAssessmentJson(extracted);
         if (assessment) {

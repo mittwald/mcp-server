@@ -231,6 +231,22 @@ describe('parseAssessmentJson', () => {
     expect(assessment?.resources_verified[1].status).toBe('not_found');
     expect(assessment?.resources_verified[2].status).toBe('error');
   });
+
+  it('fails schema validation for invalid tool pattern', () => {
+    const json = JSON.stringify({
+      success: true,
+      confidence: 'high',
+      tool_executed: 'invalid_tool',
+      timestamp: '2025-12-16T12:00:00Z',
+      problems_encountered: [],
+      resources_created: [],
+      resources_verified: [],
+    });
+
+    const { assessment, error } = parseAssessmentJson(json);
+    expect(assessment).toBeNull();
+    expect(error).toContain('Schema validation failed');
+  });
 });
 
 describe('extractSelfAssessment', () => {
@@ -381,6 +397,24 @@ describe('extractSelfAssessment', () => {
     const result = await extractSelfAssessment(logPath);
     expect(result.success).toBe(true);
     expect(result.assessment?.tool_executed).toBe('new_tool');
+  });
+
+  it('returns explicit error when markers are present but empty', async () => {
+    const logContent = JSON.stringify({
+      type: 'assistant',
+      message: {
+        content: `<!-- SELF_ASSESSMENT_START -->
+
+<!-- SELF_ASSESSMENT_END -->`,
+      },
+    });
+
+    const logPath = path.join(tempDir, 'empty-markers.jsonl');
+    fs.writeFileSync(logPath, logContent);
+
+    const result = await extractSelfAssessment(logPath);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Empty self-assessment content');
   });
 });
 

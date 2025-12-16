@@ -4,11 +4,11 @@ subtasks:
   - "T001"
 title: "Self-Assessment Extractor Script"
 phase: "Phase 1 - Infrastructure & Schemas"
-lane: "planned"
-assignee: ""
-agent: "claude"
-shell_pid: "78380"
-review_status: "has_feedback"
+lane: "doing"
+assignee: "codex"
+agent: "codex"
+shell_pid: "82955"
+review_status: "acknowledged"
 reviewed_by: "codex"
 history:
   - timestamp: "2025-12-16T13:01:00Z"
@@ -31,6 +31,11 @@ history:
     agent: "codex"
     shell_pid: "82955"
     action: "Code review: needs schema validation and marker handling fixes"
+  - timestamp: "2025-12-16T15:30:44Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "82955"
+    action: "Acknowledged review feedback; starting fixes for schema validation and marker handling"
 ---
 
 ## Review Feedback
