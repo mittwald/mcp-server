@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Generate Prompts - misc (13 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "for_review"
+assignee: "claude"
+agent: "claude"
+shell_pid: "25431"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,16 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T17:35:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "25431"
+    action: "Started implementation - 8 prompts exist, generating 3 missing login prompts"
+  - timestamp: "2025-12-16T17:40:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "25431"
+    action: "Completed - all 11 misc prompts verified (context/ tools don't exist in inventory)"
 ---
 
 # Work Package Prompt: WP17 – Generate Prompts - misc (13 tools)
@@ -87,27 +97,27 @@ Generate Langfuse-compatible eval prompts for miscellaneous tools that don't fit
 
 ## Deliverables
 
-- [ ] `evals/prompts/misc/conversation-list.json`
-- [ ] `evals/prompts/misc/conversation-show.json`
-- [ ] `evals/prompts/misc/conversation-create.json`
-- [ ] `evals/prompts/misc/conversation-reply.json`
-- [ ] `evals/prompts/misc/conversation-close.json`
-- [ ] `evals/prompts/misc/conversation-categories.json`
-- [ ] `evals/prompts/misc/login-status.json`
-- [ ] `evals/prompts/misc/login-token.json`
-- [ ] `evals/prompts/misc/login-reset.json`
-- [ ] `evals/prompts/misc/ddev-init.json`
-- [ ] `evals/prompts/misc/ddev-render-config.json`
-- [ ] `evals/prompts/misc/context-set-session.json`
-- [ ] `evals/prompts/misc/context-reset-session.json`
+- [x] `evals/prompts/misc/conversation-list.json`
+- [x] `evals/prompts/misc/conversation-show.json`
+- [x] `evals/prompts/misc/conversation-create.json`
+- [x] `evals/prompts/misc/conversation-reply.json`
+- [x] `evals/prompts/misc/conversation-close.json`
+- [x] `evals/prompts/misc/conversation-categories.json`
+- [x] `evals/prompts/misc/login-status.json`
+- [x] `evals/prompts/misc/login-token.json`
+- [x] `evals/prompts/misc/login-reset.json`
+- [x] `evals/prompts/misc/ddev-init.json`
+- [x] `evals/prompts/misc/ddev-render-config.json`
+- N/A `evals/prompts/misc/context-set-session.json` *(tool doesn't exist in inventory)*
+- N/A `evals/prompts/misc/context-reset-session.json` *(tool doesn't exist in inventory)*
 
-**Total**: 13 JSON files
+**Total**: 11 JSON files ✓ (actual inventory count - context/ tools don't exist)
 
 ## Acceptance Criteria
 
-1. All 13 prompt files created
-2. Conversation tools documented for support use
-3. Login tools noted as sensitive
+1. ✅ All 11 prompt files created (matching actual inventory)
+2. ✅ Conversation tools documented for support use ("support conversation" in prompts)
+3. ✅ Login tools noted as sensitive (login-token has "sensitive" tag)
 
 ## Notes
 

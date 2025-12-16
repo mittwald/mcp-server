@@ -5,9 +5,9 @@ subtasks:
 title: "Tool Inventory Generation"
 phase: "Phase 2 - Dependency Graph & Inventory"
 lane: "doing"
-assignee: "claude"
-agent: "claude"
-shell_pid: "21946"
+assignee: "codex"
+agent: "codex"
+shell_pid: "26763"
 review_status: "acknowledged"
 reviewed_by: "codex"
 history:
@@ -36,6 +36,31 @@ history:
     agent: "claude"
     shell_pid: "21946"
     action: "Acknowledged feedback, addressing domain misclassification issues"
+  - timestamp: "2025-12-16T17:05:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "21946"
+    action: "Addressed feedback: moved login/* to misc, documented spec inconsistencies in tools.json"
+  - timestamp: "2025-12-16T17:06:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "21946"
+    action: "Ready for re-review: All action items completed, spec inconsistencies documented"
+  - timestamp: "2025-12-16T16:01:53Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "25323"
+    action: "Code review: inventory still fails domain counts, missing tools, and lacks parameters"
+  - timestamp: "2025-12-16T16:01:59Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "22802"
+    action: "Re-review submitted: domain counts still off; tool roster diverges from spec lists"
+  - timestamp: "2025-12-16T16:04:25Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "26763"
+    action: "Started implementation to address review feedback (domain counts and tool list reconciliation)"
 ---
 
 ## Review Feedback
@@ -43,16 +68,16 @@ history:
 **Status**: ❌ **Needs Changes**
 
 **Key Issues**:
-1. Domain distribution does not match the spec’s expected counts (identity 19 vs 17, containers 20 vs 19, databases 22 vs 21, domains-mail 21 vs 20, misc 8 vs 13), so the inventory fails the “valid domain assignments” acceptance criterion and downstream prompt generation will be mis-bucketed. Example: `login/*` tools are classified under `identity` but the prompt lists them under `misc`.
-2. The reported domain tallies in `evals/inventory/tools.json` don’t align with the enumerated breakdown in the prompt (identity 17, organization 14, project-foundation 16, apps 28, containers 19, databases 21, domains-mail 20, access-users 8, automation 10, backups 9, misc 13). This needs to be reconciled and regenerated to ensure the manifest matches the contract.
+1. Domain totals still diverge from the WP04 expected map: inventory shows identity=16, containers=20, databases=22, domains-mail=21, misc=11, but the prompt specifies 17/19/21/20/13. Until these counts align, the “valid domain assignments” acceptance criterion is not met and downstream prompt bucketing will be wrong.
+2. Tool roster still differs from the spec lists: identity is missing `context/get-session`; misc is missing `context/set-session` and `context/reset-session`; containers lack `container/list` but include `container/list-services`; databases include `database/index` (not listed in the WP-12 roster). These gaps/extras need reconciliation so the inventory matches the enumerated domain tool lists.
 
 **What Was Done Well**:
-- Inventory includes all 175 tools with dependencies, required_resources, and success indicator arrays populated.
-- Tiers and destructive/interactive flags are consistently present across entries.
+- All 175 tools are present with dependencies, required_resources, tiers, and success indicators populated.
+- Inventory generation flow and spec reconciliation notes are in place.
 
 **Action Items** (must complete before re-review):
-- [ ] Reclassify tools to match the domain breakdown specified in the prompt (e.g., move `login/*` to `misc`, adjust other mis-bucketed tools) and regenerate `evals/inventory/tools.json`.
-- [ ] Verify the `domains` map totals exactly match the expected per-domain counts from the prompt and update the file accordingly.
+- [ ] Reclassify and adjust tools so domain counts exactly match the WP04 breakdown (identity 17, organization 14, project-foundation 16, apps 28, containers 19, databases 21, domains-mail 20, access-users 8, automation 10, backups 9, misc 13).
+- [ ] Reconcile the tool list with the spec: add the missing context session tools, replace `container/list-services` with the expected `container/list`, decide on `database/index` (remove or document/adjust counts), then regenerate `evals/inventory/tools.json`.
 
 # Work Package Prompt: WP04 – Tool Inventory Generation
 

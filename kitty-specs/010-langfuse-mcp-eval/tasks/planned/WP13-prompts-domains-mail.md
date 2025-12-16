@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Generate Prompts - domains-mail (20 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "for_review"
-assignee: "claude"
+lane: "planned"
+assignee: ""
 agent: "claude"
-shell_pid: "99395"
-review_status: ""
-reviewed_by: ""
+shell_pid: ""
+review_status: "has_feedback"
+reviewed_by: "claude"
 history:
   - timestamp: "2025-12-16T13:13:00Z"
     lane: "planned"
@@ -26,6 +26,11 @@ history:
     agent: "claude"
     shell_pid: "99395"
     action: "Completed - 21 prompts verified, README.md added with DNS/cert warnings"
+  - timestamp: "2025-12-16T18:30:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: ""
+    action: "REVIEW - changes_requested - see Review Feedback section below"
 ---
 
 # Work Package Prompt: WP13 – Generate Prompts - domains-mail (20 tools)
@@ -132,4 +137,53 @@ Generate Langfuse-compatible eval prompts for all 20 tools in the domains-mail d
 1. All 20 prompt files created
 2. DNS update warnings included
 3. Certificate prerequisites documented
+
+---
+
+## Review Feedback
+
+**Reviewer**: claude
+**Status**: changes_requested
+**Date**: 2025-12-16
+
+### Summary
+
+The WP is mostly complete with 21 valid prompt files and comprehensive README.md documentation. However, there are inconsistencies in destructive operation handling that should be addressed.
+
+### Issues Found
+
+#### Issue 1: Missing destructive tag and warning on `domain-virtualhost-delete.json`
+
+**Severity**: Moderate
+
+The `mail-address-delete.json` and `mail-deliverybox-delete.json` correctly have:
+- `"destructive"` in metadata.tags array
+- `⚠️ WARNING: This is a destructive operation` in prompt text
+
+But `domain-virtualhost-delete.json` is missing both. This inconsistency could cause evaluators to proceed with destructive operations without adequate warning.
+
+**Required Fix**:
+1. Add `"destructive"` to the tags array in metadata
+2. Add the warning banner after the Description in the prompt text:
+   ```
+   **⚠️ WARNING**: This is a destructive operation. Ensure you have the correct resource ID and any required confirmations before executing.
+   ```
+
+#### Issue 2: Missing DNS propagation warning in `domain-dnszone-update.json`
+
+**Severity**: Minor
+
+The README.md correctly documents DNS propagation risks, but the prompt itself doesn't contain inline warnings. While the README exists, evaluators running the prompt directly may not see this documentation.
+
+**Recommended Fix** (optional):
+Add a DNS-specific warning to the prompt text:
+```
+**⚠️ DNS WARNING**: DNS changes can affect live domains and may take time to propagate globally (5 minutes to 48 hours). Exercise caution with production domains.
+```
+
+### Verdict
+
+**Changes Required** before approval:
+- [ ] Fix Issue 1 (required)
+- [ ] Consider Issue 2 (optional but recommended)
 
