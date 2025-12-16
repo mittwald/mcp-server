@@ -1,19 +1,19 @@
 {
-  "generated_at": "2025-12-16T15:59:01.423Z",
-  "tool_count": 175,
+  "generated_at": "2025-12-16T16:09:39Z",
+  "tool_count": 177,
   "source": "mittwald-mcp-fly2.fly.dev",
   "domains": {
-    "identity": 16,
+    "identity": 17,
     "organization": 14,
     "project-foundation": 16,
     "apps": 28,
     "containers": 20,
-    "databases": 22,
+    "databases": 21,
     "domains-mail": 21,
     "access-users": 8,
     "automation": 10,
     "backups": 9,
-    "misc": 11
+    "misc": 13
   },
   "tools": [
     {
@@ -844,8 +844,8 @@
       "parameters": {}
     },
     {
-      "mcp_name": "mcp__mittwald__mittwald_container_list-services",
-      "display_name": "container/list-services",
+      "mcp_name": "mcp__mittwald__mittwald_container_list",
+      "display_name": "container/list",
       "domain": "containers",
       "tier": 4,
       "description": "List container services",
@@ -1042,6 +1042,25 @@
       "parameters": {}
     },
     {
+      "mcp_name": "mcp__mittwald__mittwald_context_get_session",
+      "display_name": "context/get-session",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Get current user context from Redis session (session-aware, multi-tenant safe)",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns session context data",
+        "Response includes context parameters",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {
+        "output": "optional - output format (txt, json, yaml)"
+      }
+    },
+    {
       "mcp_name": "mcp__mittwald__mittwald_context_reset",
       "display_name": "context/reset",
       "domain": "identity",
@@ -1051,6 +1070,23 @@
       "required_resources": [],
       "success_indicators": [
         "Context value updated/returned"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_context_reset_session",
+      "display_name": "context/reset-session",
+      "domain": "misc",
+      "tier": 0,
+      "description": "Reset (clear) all user context parameters in Redis session (session-aware, multi-tenant safe)",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Context parameters cleared",
+        "Response confirms reset",
+        "No authentication errors"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -1070,6 +1106,29 @@
       "is_destructive": false,
       "is_interactive": false,
       "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_context_set_session",
+      "display_name": "context/set-session",
+      "domain": "misc",
+      "tier": 0,
+      "description": "Set user context in Redis session (session-aware, multi-tenant safe)",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Context parameters updated",
+        "Response confirms changes",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {
+        "projectId": "optional - project ID",
+        "serverId": "optional - server ID",
+        "orgId": "optional - organization ID",
+        "installationId": "optional - installation ID",
+        "stackId": "optional - stack ID"
+      }
     },
     {
       "mcp_name": "mcp__mittwald__mittwald_conversation_categories",
@@ -1384,24 +1443,6 @@
       "success_indicators": [
         "Updated fields reflected",
         "No validation errors"
-      ],
-      "is_destructive": false,
-      "is_interactive": false,
-      "parameters": {}
-    },
-    {
-      "mcp_name": "mcp__mittwald__mittwald_database_index",
-      "display_name": "database/index",
-      "domain": "databases",
-      "tier": 4,
-      "description": "Execute database index operation",
-      "dependencies": [],
-      "required_resources": [
-        "project"
-      ],
-      "success_indicators": [
-        "Tool executes without errors",
-        "Response contains expected data"
       ],
       "is_destructive": false,
       "is_interactive": false,
