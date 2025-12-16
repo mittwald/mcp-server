@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Generate Prompts - containers (19 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
-agent: "claude"
-shell_pid: "884"
-review_status: ""
-reviewed_by: ""
+agent: "claude-reviewer"
+shell_pid: "13186"
+review_status: "approved"
+reviewed_by: "claude-reviewer"
 history:
   - timestamp: "2025-12-16T13:11:00Z"
     lane: "planned"
@@ -26,7 +26,24 @@ history:
     agent: "claude"
     shell_pid: "884"
     action: "Completed - verified 20 container prompts exist with all acceptance criteria met"
+  - timestamp: "2025-12-16T17:25:00Z"
+    lane: "done"
+    agent: "claude-reviewer"
+    shell_pid: "13186"
+    action: "APPROVED - All 20 prompts verified, JSON valid, destructive tools tagged, container image examples included"
 ---
+
+## Review Feedback
+
+**Status**: ✅ **APPROVED**
+
+**Review Summary**:
+- All 20 container domain prompts created (actual inventory count, correctly exceeds task spec's 19)
+- All JSON files validated successfully
+- Container image examples included (nginx:latest in container/run)
+- All 4 destructive tools properly tagged with "destructive" and "write" flags
+
+**Note**: Task spec listed 19 tools but inventory has 20. Implementer correctly followed inventory and generated all 20 prompts. The actual tool is `container/list-services`, not `container/list`.
 
 # Work Package Prompt: WP11 – Generate Prompts - containers (19 tools)
 
@@ -103,32 +120,32 @@ Generate Langfuse-compatible eval prompts for all 19 tools in the containers dom
 
 ## Deliverables
 
-- [ ] `evals/prompts/containers/container-run.json`
-- [ ] `evals/prompts/containers/container-list.json`
-- [ ] `evals/prompts/containers/container-logs.json`
-- [ ] `evals/prompts/containers/container-start.json`
-- [ ] `evals/prompts/containers/container-stop.json`
-- [ ] `evals/prompts/containers/container-restart.json`
-- [ ] `evals/prompts/containers/container-recreate.json`
-- [ ] `evals/prompts/containers/container-delete.json`
-- [ ] `evals/prompts/containers/container-update.json`
-- [ ] `evals/prompts/containers/stack-list.json`
-- [ ] `evals/prompts/containers/stack-deploy.json`
-- [ ] `evals/prompts/containers/stack-ps.json`
-- [ ] `evals/prompts/containers/stack-delete.json`
-- [ ] `evals/prompts/containers/volume-list.json`
-- [ ] `evals/prompts/containers/volume-create.json`
-- [ ] `evals/prompts/containers/volume-delete.json`
-- [ ] `evals/prompts/containers/registry-list.json`
-- [ ] `evals/prompts/containers/registry-create.json`
-- [ ] `evals/prompts/containers/registry-update.json`
-- [ ] `evals/prompts/containers/registry-delete.json`
+- [x] `evals/prompts/containers/container-run.json`
+- [x] `evals/prompts/containers/container-list-services.json` *(actual tool name from inventory)*
+- [x] `evals/prompts/containers/container-logs.json`
+- [x] `evals/prompts/containers/container-start.json`
+- [x] `evals/prompts/containers/container-stop.json`
+- [x] `evals/prompts/containers/container-restart.json`
+- [x] `evals/prompts/containers/container-recreate.json`
+- [x] `evals/prompts/containers/container-delete.json`
+- [x] `evals/prompts/containers/container-update.json`
+- [x] `evals/prompts/containers/stack-list.json`
+- [x] `evals/prompts/containers/stack-deploy.json`
+- [x] `evals/prompts/containers/stack-ps.json`
+- [x] `evals/prompts/containers/stack-delete.json`
+- [x] `evals/prompts/containers/volume-list.json`
+- [x] `evals/prompts/containers/volume-create.json`
+- [x] `evals/prompts/containers/volume-delete.json`
+- [x] `evals/prompts/containers/registry-list.json`
+- [x] `evals/prompts/containers/registry-create.json`
+- [x] `evals/prompts/containers/registry-update.json`
+- [x] `evals/prompts/containers/registry-delete.json`
 
-**Total**: 19 JSON files (note: 19 not 15 as originally estimated)
+**Total**: 20 JSON files ✓ (actual inventory count)
 
 ## Acceptance Criteria
 
-1. All 19 prompt files created
-2. Container image examples included
-3. Destructive tools marked appropriately
+1. ✅ All prompt files created (20 - matching actual inventory)
+2. ✅ Container image examples included (nginx:latest in container/run)
+3. ✅ Destructive tools marked appropriately (4 delete tools tagged)
 
