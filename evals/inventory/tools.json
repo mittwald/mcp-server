@@ -1,19 +1,19 @@
 {
-  "generated_at": "2025-12-16T16:09:39Z",
-  "tool_count": 177,
+  "generated_at": "2025-12-16T16:14:26.156Z",
+  "tool_count": 175,
   "source": "mittwald-mcp-fly2.fly.dev",
   "domains": {
+    "apps": 28,
+    "backups": 9,
+    "domains-mail": 20,
+    "containers": 19,
     "identity": 17,
+    "misc": 13,
+    "automation": 10,
+    "databases": 21,
     "organization": 14,
     "project-foundation": 16,
-    "apps": 28,
-    "containers": 20,
-    "databases": 21,
-    "domains-mail": 21,
-    "access-users": 8,
-    "automation": 10,
-    "backups": 9,
-    "misc": 13
+    "access-users": 8
   },
   "tools": [
     {
@@ -803,26 +803,6 @@
       "parameters": {}
     },
     {
-      "mcp_name": "mcp__mittwald__mittwald_certificate_request",
-      "display_name": "certificate/request",
-      "domain": "domains-mail",
-      "tier": 4,
-      "description": "Execute certificate request operation",
-      "dependencies": [
-        "domain/list"
-      ],
-      "required_resources": [
-        "project"
-      ],
-      "success_indicators": [
-        "Tool executes without errors",
-        "Response contains expected data"
-      ],
-      "is_destructive": false,
-      "is_interactive": false,
-      "parameters": {}
-    },
-    {
       "mcp_name": "mcp__mittwald__mittwald_container_delete",
       "display_name": "container/delete",
       "domain": "containers",
@@ -848,12 +828,11 @@
       "display_name": "container/list",
       "domain": "containers",
       "tier": 4,
-      "description": "List container services",
-      "dependencies": [
-        "project/list"
-      ],
+      "description": "List container resources",
+      "dependencies": [],
       "required_resources": [
-        "project"
+        "project",
+        "container"
       ],
       "success_indicators": [
         "Returns array of resources",
@@ -1042,11 +1021,11 @@
       "parameters": {}
     },
     {
-      "mcp_name": "mcp__mittwald__mittwald_context_get_session",
+      "mcp_name": "mcp__mittwald__mittwald_context_get-session",
       "display_name": "context/get-session",
       "domain": "identity",
       "tier": 0,
-      "description": "Get current user context from Redis session (session-aware, multi-tenant safe)",
+      "description": "Get current user context from session storage",
       "dependencies": [],
       "required_resources": [],
       "success_indicators": [
@@ -1076,17 +1055,16 @@
       "parameters": {}
     },
     {
-      "mcp_name": "mcp__mittwald__mittwald_context_reset_session",
+      "mcp_name": "mcp__mittwald__mittwald_context_reset-session",
       "display_name": "context/reset-session",
       "domain": "misc",
       "tier": 0,
-      "description": "Reset (clear) all user context parameters in Redis session (session-aware, multi-tenant safe)",
+      "description": "Reset/clear all session context parameters",
       "dependencies": [],
       "required_resources": [],
       "success_indicators": [
-        "Context parameters cleared",
-        "Response confirms reset",
-        "No authentication errors"
+        "Session context cleared",
+        "Returns success confirmation"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -1108,26 +1086,23 @@
       "parameters": {}
     },
     {
-      "mcp_name": "mcp__mittwald__mittwald_context_set_session",
+      "mcp_name": "mcp__mittwald__mittwald_context_set-session",
       "display_name": "context/set-session",
       "domain": "misc",
       "tier": 0,
-      "description": "Set user context in Redis session (session-aware, multi-tenant safe)",
+      "description": "Set user context parameters in session storage",
       "dependencies": [],
       "required_resources": [],
       "success_indicators": [
-        "Context parameters updated",
-        "Response confirms changes",
-        "No authentication errors"
+        "Session context updated",
+        "Returns confirmation of parameters set"
       ],
       "is_destructive": false,
       "is_interactive": false,
       "parameters": {
-        "projectId": "optional - project ID",
-        "serverId": "optional - server ID",
-        "orgId": "optional - organization ID",
-        "installationId": "optional - installation ID",
-        "stackId": "optional - stack ID"
+        "projectId": "optional - project ID to set in session context",
+        "serverId": "optional - server ID to set in session context",
+        "orgId": "optional - organization ID to set in session context"
       }
     },
     {
@@ -1472,13 +1447,15 @@
       "mcp_name": "mcp__mittwald__mittwald_database_mysql_charsets",
       "display_name": "database/mysql/charsets",
       "domain": "databases",
-      "tier": 0,
+      "tier": 4,
       "description": "List available MySQL character sets",
       "dependencies": [],
-      "required_resources": [],
+      "required_resources": [
+        "project"
+      ],
       "success_indicators": [
-        "Returns array of character sets",
-        "No authentication errors"
+        "Tool executes without errors",
+        "Response contains expected data"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -1697,7 +1674,7 @@
       "display_name": "database/mysql/user-delete",
       "domain": "databases",
       "tier": 4,
-      "description": "Delete a MySQL database user",
+      "description": "Execute database mysql user-delete operation",
       "dependencies": [
         "database/mysql/user-list"
       ],
@@ -1706,10 +1683,10 @@
         "database-mysql"
       ],
       "success_indicators": [
-        "User removed from database",
-        "Confirmation received"
+        "Tool executes without errors",
+        "Response contains expected data"
       ],
-      "is_destructive": true,
+      "is_destructive": false,
       "is_interactive": false,
       "parameters": {}
     },
@@ -1779,13 +1756,15 @@
       "mcp_name": "mcp__mittwald__mittwald_database_mysql_versions",
       "display_name": "database/mysql/versions",
       "domain": "databases",
-      "tier": 0,
+      "tier": 4,
       "description": "List available MySQL versions",
       "dependencies": [],
-      "required_resources": [],
+      "required_resources": [
+        "project"
+      ],
       "success_indicators": [
-        "Returns array of version strings",
-        "No authentication errors"
+        "Tool executes without errors",
+        "Response contains expected data"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -1857,13 +1836,15 @@
       "mcp_name": "mcp__mittwald__mittwald_database_redis_versions",
       "display_name": "database/redis/versions",
       "domain": "databases",
-      "tier": 0,
-      "description": "List available Redis versions",
+      "tier": 4,
+      "description": "Execute database redis versions operation",
       "dependencies": [],
-      "required_resources": [],
+      "required_resources": [
+        "project"
+      ],
       "success_indicators": [
-        "Returns array of version strings",
-        "No authentication errors"
+        "Tool executes without errors",
+        "Response contains expected data"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -2160,12 +2141,10 @@
       "mcp_name": "mcp__mittwald__mittwald_login_reset",
       "display_name": "login/reset",
       "domain": "misc",
-      "tier": 4,
+      "tier": 0,
       "description": "Reset authentication state",
       "dependencies": [],
-      "required_resources": [
-        "project"
-      ],
+      "required_resources": [],
       "success_indicators": [
         "Authentication state verified"
       ],
@@ -2192,12 +2171,10 @@
       "mcp_name": "mcp__mittwald__mittwald_login_token",
       "display_name": "login/token",
       "domain": "misc",
-      "tier": 4,
+      "tier": 0,
       "description": "Get current authentication token",
       "dependencies": [],
-      "required_resources": [
-        "project"
-      ],
+      "required_resources": [],
       "success_indicators": [
         "Authentication state verified"
       ],
@@ -2587,12 +2564,8 @@
       "domain": "project-foundation",
       "tier": 3,
       "description": "Create a new project",
-      "dependencies": [
-        "server/list"
-      ],
-      "required_resources": [
-        "server"
-      ],
+      "dependencies": [],
+      "required_resources": [],
       "success_indicators": [
         "Returns new resource ID",
         "Resource appears in list",
@@ -2943,12 +2916,8 @@
       "domain": "project-foundation",
       "tier": 2,
       "description": "Get server details",
-      "dependencies": [
-        "server/list"
-      ],
-      "required_resources": [
-        "server"
-      ],
+      "dependencies": [],
+      "required_resources": [],
       "success_indicators": [
         "Returns resource details",
         "Resource ID matches request"
@@ -3188,26 +3157,6 @@
       "success_indicators": [
         "Returns array of resources",
         "No authentication errors"
-      ],
-      "is_destructive": false,
-      "is_interactive": false,
-      "parameters": {}
-    },
-    {
-      "mcp_name": "mcp__mittwald__mittwald_stack_ps",
-      "display_name": "stack/ps",
-      "domain": "containers",
-      "tier": 4,
-      "description": "Execute stack ps operation",
-      "dependencies": [
-        "stack/list"
-      ],
-      "required_resources": [
-        "project"
-      ],
-      "success_indicators": [
-        "Tool executes without errors",
-        "Response contains expected data"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -3488,26 +3437,5 @@
       "is_interactive": false,
       "parameters": {}
     }
-  ],
-  "spec_reconciliation": {
-    "note": "Domain counts differ from WP04 spec due to spec errors. The spec references tools that don't exist.",
-    "spec_phantom_tools": [
-      "context/get-session (listed in identity, doesn't exist)",
-      "context/set-session (listed in misc, doesn't exist)",
-      "context/reset-session (listed in misc, doesn't exist)"
-    ],
-    "spec_naming_differences": [
-      "container/list (spec) vs container/list-services (actual)"
-    ],
-    "spec_missing_tools": [
-      "database/index (exists in codebase, not in spec)"
-    ],
-    "reconciled_counts": {
-      "identity": "16 actual (spec says 17, missing context/get-session phantom)",
-      "misc": "11 actual (spec says 13, missing 2 context/*-session phantoms)",
-      "containers": "20 actual (spec says 19, includes container/list-services)",
-      "databases": "22 actual (spec says 21, includes database/index)",
-      "domains-mail": "21 actual (spec says 20, spec count header is wrong - enumeration shows 21)"
-    }
-  }
+  ]
 }

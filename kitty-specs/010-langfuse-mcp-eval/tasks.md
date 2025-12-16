@@ -58,8 +58,8 @@ Create a script to generate Langfuse-format eval prompts from tool inventory.
 ---
 
 ### WP-03: Coverage Reporter Script
-**Status**: todo
-**Prompt**: `tasks/WP-03-coverage-reporter.md`
+**Status**: done
+**Prompt**: `tasks/done/WP03-coverage-reporter.md`
 
 Create a script to aggregate eval results into coverage reports.
 
@@ -69,10 +69,10 @@ Create a script to aggregate eval results into coverage reports.
 - JSON and Markdown output formats
 
 **Acceptance Criteria**:
-- [ ] Script reads eval results directory
-- [ ] Aggregates by domain and tier
-- [ ] Generates `coverage-report.json`
-- [ ] Generates `baseline-report.md`
+- [x] Script reads eval results directory
+- [x] Aggregates by domain and tier
+- [x] Generates `coverage-report.json`
+- [x] Generates `baseline-report.md`
 
 ---
 
@@ -149,8 +149,8 @@ Generate eval prompts for identity domain tools.
 ---
 
 ### WP-08: Generate Prompts - organization (14 tools)
-**Status**: todo
-**Prompt**: `tasks/WP-08-prompts-organization.md`
+**Status**: done
+**Prompt**: `tasks/done/WP08-prompts-organization.md`
 
 Generate eval prompts for organization domain tools.
 
@@ -221,8 +221,8 @@ Generate eval prompts for domains-mail domain tools.
 ---
 
 ### WP-14: Generate Prompts - access-users (8 tools)
-**Status**: todo
-**Prompt**: `tasks/WP-14-prompts-access-users.md`
+**Status**: done
+**Prompt**: `tasks/done/WP14-prompts-access-users.md`
 
 Generate eval prompts for access-users domain tools.
 
@@ -538,18 +538,18 @@ Phase 5 (Aggregation):
 |----|--------|---------|-----------|-------|
 | WP-01 | done | 2025-12-16 | 2025-12-16 | Prompt: tasks/done/WP01-self-assessment-extractor.md |
 | WP-02 | todo | - | - | |
-| WP-03 | todo | - | - | |
+| WP-03 | done | 2025-12-16 | 2025-12-16 | Prompt: tasks/done/WP03-coverage-reporter.md |
 | WP-04 | todo | - | - | |
 | WP-05 | todo | - | - | |
 | WP-06 | todo | - | - | |
 | WP-07 | todo | - | - | identity (17) |
-| WP-08 | todo | - | - | organization (14) |
+| WP-08 | done | 2025-12-16 | 2025-12-16 | organization (14) - Prompt: tasks/done/WP08-prompts-organization.md |
 | WP-09 | todo | - | - | project-foundation (16) |
 | WP-10 | todo | - | - | apps (28) |
 | WP-11 | todo | - | - | containers (19) |
 | WP-12 | todo | - | - | databases (21) |
 | WP-13 | todo | - | - | domains-mail (20) |
-| WP-14 | todo | - | - | access-users (8) |
+| WP-14 | done | 2025-12-16 | 2025-12-16 | access-users (8) - Prompt: tasks/done/WP14-prompts-access-users.md |
 | WP-15 | todo | - | - | automation (10) |
 | WP-16 | done | claude-reviewer | 21815 | backups (9) |
 | WP-17 | todo | - | - | misc (13) |

@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Generate Prompts - misc (13 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "for_review"
+lane: "done"
 assignee: "claude"
-agent: "claude"
-shell_pid: "25431"
-review_status: ""
-reviewed_by: ""
+agent: "claude-reviewer"
+shell_pid: "34704"
+review_status: "approved without changes"
+reviewed_by: "claude-reviewer"
 history:
   - timestamp: "2025-12-16T13:17:00Z"
     lane: "planned"
@@ -26,6 +26,30 @@ history:
     agent: "claude"
     shell_pid: "25431"
     action: "Completed - all 11 misc prompts verified (context/ tools don't exist in inventory)"
+  - timestamp: "2025-12-16T19:25:00Z"
+    lane: "done"
+    agent: "claude-reviewer"
+    shell_pid: "34704"
+    action: "Review approved - all 11 prompts validated, acceptance criteria met"
+---
+
+## Review Feedback
+
+**Status**: ✅ **Approved**
+
+**Review Summary**:
+- All 11 misc domain prompts exist and pass schema validation
+- Conversation tools properly documented as "support conversation" tools
+- Login-token has "sensitive" tag and appropriate security warnings
+- Correct handling of inventory discrepancy (context/ tools don't exist)
+
+**Verified**:
+- [x] 11 JSON files in `evals/prompts/misc/`
+- [x] All 11 files pass schema validation
+- [x] Conversation tools mention "support" use case
+- [x] Login-token has `sensitive` tag and warning text
+- [x] No extra metadata properties (schema compliant)
+
 ---
 
 # Work Package Prompt: WP17 – Generate Prompts - misc (13 tools)
