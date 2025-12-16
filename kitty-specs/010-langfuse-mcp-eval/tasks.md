@@ -19,8 +19,8 @@
 ## Phase 1: Infrastructure & Schemas
 
 ### WP-01: Self-Assessment Extractor Script
-**Status**: todo
-**Prompt**: `tasks/WP-01-self-assessment-extractor.md`
+**Status**: done
+**Prompt**: `tasks/done/WP01-self-assessment-extractor.md`
 
 Create a TypeScript script to extract self-assessment JSON blocks from session logs.
 
@@ -30,11 +30,11 @@ Create a TypeScript script to extract self-assessment JSON blocks from session l
 - Handle edge cases (malformed JSON, missing markers)
 
 **Acceptance Criteria**:
-- [ ] Script parses session log files
-- [ ] Extracts JSON between `<!-- SELF_ASSESSMENT_START -->` and `<!-- SELF_ASSESSMENT_END -->` markers
-- [ ] Validates extracted JSON against self-assessment schema
-- [ ] Returns null for missing/invalid assessments
-- [ ] Unit tests pass
+- [x] Script parses session log files
+- [x] Extracts JSON between `<!-- SELF_ASSESSMENT_START -->` and `<!-- SELF_ASSESSMENT_END -->` markers
+- [x] Validates extracted JSON against self-assessment schema
+- [x] Returns null for missing/invalid assessments
+- [x] Unit tests pass
 
 ---
 
@@ -536,7 +536,7 @@ Phase 5 (Aggregation):
 
 | WP | Status | Started | Completed | Notes |
 |----|--------|---------|-----------|-------|
-| WP-01 | todo | - | - | |
+| WP-01 | done | 2025-12-16 | 2025-12-16 | Prompt: tasks/done/WP01-self-assessment-extractor.md |
 | WP-02 | todo | - | - | |
 | WP-03 | todo | - | - | |
 | WP-04 | todo | - | - | |
