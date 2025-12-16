@@ -1,19 +1,19 @@
 {
-  "generated_at": "2025-12-16T15:37:11.180Z",
+  "generated_at": "2025-12-16T15:59:01.423Z",
   "tool_count": 175,
   "source": "mittwald-mcp-fly2.fly.dev",
   "domains": {
-    "apps": 28,
-    "backups": 9,
-    "domains-mail": 21,
-    "containers": 20,
-    "identity": 19,
-    "misc": 8,
-    "automation": 10,
-    "databases": 22,
+    "identity": 16,
     "organization": 14,
     "project-foundation": 16,
-    "access-users": 8
+    "apps": 28,
+    "containers": 20,
+    "databases": 22,
+    "domains-mail": 21,
+    "access-users": 8,
+    "automation": 10,
+    "backups": 9,
+    "misc": 11
   },
   "tools": [
     {
@@ -2118,7 +2118,7 @@
     {
       "mcp_name": "mcp__mittwald__mittwald_login_reset",
       "display_name": "login/reset",
-      "domain": "identity",
+      "domain": "misc",
       "tier": 4,
       "description": "Reset authentication state",
       "dependencies": [],
@@ -2135,7 +2135,7 @@
     {
       "mcp_name": "mcp__mittwald__mittwald_login_status",
       "display_name": "login/status",
-      "domain": "identity",
+      "domain": "misc",
       "tier": 0,
       "description": "Check authentication status",
       "dependencies": [],
@@ -2150,7 +2150,7 @@
     {
       "mcp_name": "mcp__mittwald__mittwald_login_token",
       "display_name": "login/token",
-      "domain": "identity",
+      "domain": "misc",
       "tier": 4,
       "description": "Get current authentication token",
       "dependencies": [],
@@ -2546,8 +2546,12 @@
       "domain": "project-foundation",
       "tier": 3,
       "description": "Create a new project",
-      "dependencies": ["server/list"],
-      "required_resources": ["server"],
+      "dependencies": [
+        "server/list"
+      ],
+      "required_resources": [
+        "server"
+      ],
       "success_indicators": [
         "Returns new resource ID",
         "Resource appears in list",
@@ -2898,8 +2902,12 @@
       "domain": "project-foundation",
       "tier": 2,
       "description": "Get server details",
-      "dependencies": ["server/list"],
-      "required_resources": ["server"],
+      "dependencies": [
+        "server/list"
+      ],
+      "required_resources": [
+        "server"
+      ],
       "success_indicators": [
         "Returns resource details",
         "Resource ID matches request"
@@ -3439,5 +3447,26 @@
       "is_interactive": false,
       "parameters": {}
     }
-  ]
+  ],
+  "spec_reconciliation": {
+    "note": "Domain counts differ from WP04 spec due to spec errors. The spec references tools that don't exist.",
+    "spec_phantom_tools": [
+      "context/get-session (listed in identity, doesn't exist)",
+      "context/set-session (listed in misc, doesn't exist)",
+      "context/reset-session (listed in misc, doesn't exist)"
+    ],
+    "spec_naming_differences": [
+      "container/list (spec) vs container/list-services (actual)"
+    ],
+    "spec_missing_tools": [
+      "database/index (exists in codebase, not in spec)"
+    ],
+    "reconciled_counts": {
+      "identity": "16 actual (spec says 17, missing context/get-session phantom)",
+      "misc": "11 actual (spec says 13, missing 2 context/*-session phantoms)",
+      "containers": "20 actual (spec says 19, includes container/list-services)",
+      "databases": "22 actual (spec says 21, includes database/index)",
+      "domains-mail": "21 actual (spec says 20, spec count header is wrong - enumeration shows 21)"
+    }
+  }
 }
