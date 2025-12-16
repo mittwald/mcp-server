@@ -14,6 +14,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import Ajv2020, { type ValidateFunction } from 'ajv/dist/2020';
+import addFormats from 'ajv-formats';
 
 // ============================================================================
 // Type Definitions
@@ -39,6 +41,34 @@ interface ToolInventory {
   source: string;
   domains: Record<string, number>;
   tools: ToolEntry[];
+}
+
+const ALLOWED_RESOURCES = new Set([
+  'project',
+  'server',
+  'organization',
+  'app',
+  'database-mysql',
+  'database-redis',
+  'container',
+  'backup',
+  'cronjob',
+  'domain',
+  'mail-address',
+  'ssh-user',
+  'sftp-user',
+]);
+
+const RESOURCE_MAP: Record<string, string | null> = {
+  'ssh-key': 'ssh-user',
+  'api-token': null,
+};
+
+function sanitizeRequiredResources(resources: string[]): string[] {
+  const mapped = resources
+    .map((r) => RESOURCE_MAP[r] ?? r)
+    .filter((r): r is string => Boolean(r));
+  return Array.from(new Set(mapped.filter((r) => ALLOWED_RESOURCES.has(r))));
 }
 
 interface EvalPromptInput {
@@ -75,6 +105,9 @@ interface GenerationManifest {
   by_domain: Record<string, string[]>;
   inventory_source: string;
 }
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ============================================================================
 // Self-Assessment Template
@@ -120,6 +153,35 @@ After completing the task (whether successful or not), you MUST provide a struct
 // Prompt Generation Functions
 // ============================================================================
 
+let validateInputSchema: ValidateFunction | null = null;
+let validateMetadataSchema: ValidateFunction | null = null;
+
+function getValidator(schemaFile: string, cache: 'input' | 'metadata'): ValidateFunction {
+  if (cache === 'input' && validateInputSchema) return validateInputSchema;
+  if (cache === 'metadata' && validateMetadataSchema) return validateMetadataSchema;
+
+  const schemaPath = path.resolve(__dirname, '..', '..', 'kitty-specs', '010-langfuse-mcp-eval', 'contracts', schemaFile);
+  const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf-8'));
+  const ajv = new Ajv2020({ allErrors: true, strict: false });
+  addFormats(ajv);
+  const validator = ajv.compile(schema);
+
+  if (cache === 'input') validateInputSchema = validator;
+  if (cache === 'metadata') validateMetadataSchema = validator;
+
+  return validator;
+}
+
+function collectSchemaErrors(validate: ValidateFunction): string[] {
+  if (!validate.errors) return [];
+  return validate.errors.map((err) => {
+    const pathDisplay = err.instancePath && err.instancePath !== '' ? err.instancePath : '(root)';
+    const additional = (err.params as { additionalProperty?: string }).additionalProperty;
+    const suffix = additional ? ` [${additional}]` : '';
+    return `${pathDisplay}${suffix} ${err.message ?? ''}`.trim();
+  });
+}
+
 /**
  * Generate setup instructions based on tool dependencies and tier
  */
@@ -129,7 +191,7 @@ function generateSetupInstructions(tool: ToolEntry): string {
   }
 
   const instructions: string[] = [];
-  const requiredResources = tool.required_resources || inferRequiredResources(tool);
+  const requiredResources = getRequiredResources(tool);
 
   if (requiredResources.includes('project')) {
     instructions.push(
@@ -170,18 +232,6 @@ function generateSetupInstructions(tool: ToolEntry): string {
   if (requiredResources.includes('container')) {
     instructions.push(
       `${instructions.length + 1}. Ensure a container exists (use \`mcp__mittwald__mittwald_container_list_services\` to find one)`
-    );
-  }
-
-  if (requiredResources.includes('ssh-key')) {
-    instructions.push(
-      `${instructions.length + 1}. Ensure an SSH key exists (use \`mcp__mittwald__mittwald_user_ssh_key_list\` to find one)`
-    );
-  }
-
-  if (requiredResources.includes('api-token')) {
-    instructions.push(
-      `${instructions.length + 1}. Ensure an API token exists (use \`mcp__mittwald__mittwald_user_api_token_list\` to find one)`
     );
   }
 
@@ -238,13 +288,18 @@ function inferRequiredResources(tool: ToolEntry): string[] {
 
   // User resource tools
   if (name.includes('ssh-key/get') || name.includes('ssh-key/delete')) {
-    resources.push('ssh-key');
+    resources.push('ssh-user');
   }
   if (name.includes('api-token/get') || name.includes('api-token/revoke')) {
-    resources.push('api-token');
+    // API tokens map to organization context; no dedicated resource enum, so skip
   }
 
   return resources;
+}
+
+function getRequiredResources(tool: ToolEntry): string[] {
+  const raw = tool.required_resources && tool.required_resources.length > 0 ? tool.required_resources : inferRequiredResources(tool);
+  return sanitizeRequiredResources(raw);
 }
 
 /**
@@ -387,7 +442,7 @@ function generateDatasetItem(tool: ToolEntry): LangfuseDatasetItem {
       context: {
         dependencies: tool.dependencies,
         setup_instructions: generateSetupInstructions(tool),
-        required_resources: tool.required_resources || inferRequiredResources(tool),
+        required_resources: getRequiredResources(tool),
       },
     },
     expectedOutput: null,
@@ -477,26 +532,34 @@ export function validatePromptFile(filePath: string): { valid: boolean; errors: 
   try {
     const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
-    // Check required top-level fields
-    if (!content.input) errors.push('Missing required field: input');
     if (content.expectedOutput !== null) errors.push('expectedOutput must be null');
-    if (!content.metadata) errors.push('Missing required field: metadata');
 
-    // Check input fields
-    if (content.input) {
-      if (!content.input.prompt) errors.push('Missing input.prompt');
-      if (!content.input.tool_name) errors.push('Missing input.tool_name');
-      if (!content.input.display_name) errors.push('Missing input.display_name');
-      if (!content.input.context) errors.push('Missing input.context');
+    // Schema validation
+    const inputValidator = getValidator('eval-prompt-input.schema.json', 'input');
+    const metadataValidator = getValidator('eval-prompt-metadata.schema.json', 'metadata');
+
+    if (!content.input) {
+      errors.push('Missing required field: input');
+    } else {
+      const sanitizedRequired = content.input.context?.required_resources
+        ? sanitizeRequiredResources(content.input.context.required_resources)
+        : [];
+      if (content.input.context) {
+        content.input.context.required_resources = sanitizedRequired;
+      }
+      const isValidInput = inputValidator(content.input);
+      if (!isValidInput) {
+        errors.push(...collectSchemaErrors(inputValidator));
+      }
     }
 
-    // Check metadata fields
-    if (content.metadata) {
-      if (!content.metadata.domain) errors.push('Missing metadata.domain');
-      if (typeof content.metadata.tier !== 'number') errors.push('Missing or invalid metadata.tier');
-      if (!content.metadata.tool_description) errors.push('Missing metadata.tool_description');
-      if (!Array.isArray(content.metadata.success_indicators)) errors.push('Missing or invalid metadata.success_indicators');
-      if (content.metadata.self_assessment_required !== true) errors.push('metadata.self_assessment_required must be true');
+    if (!content.metadata) {
+      errors.push('Missing required field: metadata');
+    } else {
+      const isValidMetadata = metadataValidator(content.metadata);
+      if (!isValidMetadata) {
+        errors.push(...collectSchemaErrors(metadataValidator));
+      }
     }
 
     // Check for self-assessment markers in prompt
@@ -581,7 +644,6 @@ export {
 };
 
 // Run if executed directly
-const __filename = fileURLToPath(import.meta.url);
 if (process.argv[1] === __filename || process.argv[1]?.endsWith('generate-eval-prompts.ts')) {
   main().catch((e) => {
     console.error('Fatal error:', e);

@@ -4,11 +4,11 @@ subtasks:
   - "T001"
 title: "Eval Prompt Generator Script"
 phase: "Phase 1 - Infrastructure & Schemas"
-lane: "planned"
-assignee: "claude"
-agent: "claude"
-shell_pid: "78380"
-review_status: "has_feedback"
+lane: "for_review"
+assignee: "codex"
+agent: "codex"
+shell_pid: "82955"
+review_status: "acknowledged"
 reviewed_by: "codex"
 history:
   - timestamp: "2025-12-16T13:02:00Z"
@@ -31,6 +31,21 @@ history:
     agent: "codex"
     shell_pid: "90732"
     action: "Review submitted: needs changes (schema compliance gaps, missing generated prompts/manifests)"
+  - timestamp: "2025-12-16T15:49:05Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "82955"
+    action: "Acknowledged review feedback; starting fixes (schema validation, required_resources alignment, prompt generation)"
+  - timestamp: "2025-12-16T15:52:27Z"
+    lane: "doing"
+    agent: "codex"
+    shell_pid: "82955"
+    action: "Implemented fixes: schema-backed validation, required_resources sanitization, regenerated prompts/manifest; tests updated"
+  - timestamp: "2025-12-16T15:52:59Z"
+    lane: "for_review"
+    agent: "codex"
+    shell_pid: "82955"
+    action: "Ready for review after addressing feedback"
 ---
 
 ## Review Feedback
@@ -47,9 +62,9 @@ history:
 - Unit test coverage across the prompt builder and validation helper ensures core behaviors are exercised.
 
 **Action Items** (must complete before re-review):
-- [ ] Align `required_resources` to the schema enum (e.g., remap SSH/API token tooling to allowed labels) and ensure outputs validate.
-- [ ] Add schema-backed validation (Ajv or similar) inside `validatePromptFile` so CI catches contract drift.
-- [ ] Run the generator with the available inventory and commit the 175 prompt JSON files plus manifest to satisfy deliverables.
+- [x] Align `required_resources` to the schema enum (e.g., remap SSH/API token tooling to allowed labels) and ensure outputs validate.
+- [x] Add schema-backed validation (Ajv or similar) inside `validatePromptFile` so CI catches contract drift.
+- [x] Run the generator with the available inventory and commit the 175 prompt JSON files plus manifest to satisfy deliverables.
 
 # Work Package Prompt: WP02 – Eval Prompt Generator Script
 
