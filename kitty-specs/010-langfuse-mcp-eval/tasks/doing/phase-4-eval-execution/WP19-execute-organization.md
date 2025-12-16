@@ -4,10 +4,10 @@ subtasks:
   - "T001"
 title: "Execute Evals - organization (14 evals)"
 phase: "Phase 4 - Eval Execution"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "claude"
+agent: "claude"
+shell_pid: "40775"
 review_status: ""
 reviewed_by: ""
 history:
@@ -16,6 +16,11 @@ history:
     agent: "system"
     shell_pid: ""
     action: "Prompt generated via /spec-kitty.tasks"
+  - timestamp: "2025-12-16T17:40:00Z"
+    lane: "doing"
+    agent: "claude"
+    shell_pid: "40775"
+    action: "Started implementation - executing organization domain evals"
 ---
 
 # Work Package Prompt: WP19 – Execute Evals - organization (14 evals)
