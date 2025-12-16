@@ -4,7 +4,7 @@ subtasks:
   - "T001"
 title: "Generate Prompts - domains-mail (20 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "99395"
@@ -21,6 +21,11 @@ history:
     agent: "claude"
     shell_pid: "99395"
     action: "Started implementation - verifying and enhancing prompts"
+  - timestamp: "2025-12-16T17:32:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "99395"
+    action: "Completed - 21 prompts verified, README.md added with DNS/cert warnings"
 ---
 
 # Work Package Prompt: WP13 – Generate Prompts - domains-mail (20 tools)
