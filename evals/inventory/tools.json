@@ -1431,15 +1431,13 @@
       "mcp_name": "mcp__mittwald__mittwald_database_mysql_charsets",
       "display_name": "database/mysql/charsets",
       "domain": "databases",
-      "tier": 4,
+      "tier": 0,
       "description": "List available MySQL character sets",
       "dependencies": [],
-      "required_resources": [
-        "project"
-      ],
+      "required_resources": [],
       "success_indicators": [
-        "Tool executes without errors",
-        "Response contains expected data"
+        "Returns array of character sets",
+        "No authentication errors"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -1658,7 +1656,7 @@
       "display_name": "database/mysql/user-delete",
       "domain": "databases",
       "tier": 4,
-      "description": "Execute database mysql user-delete operation",
+      "description": "Delete a MySQL database user",
       "dependencies": [
         "database/mysql/user-list"
       ],
@@ -1667,10 +1665,10 @@
         "database-mysql"
       ],
       "success_indicators": [
-        "Tool executes without errors",
-        "Response contains expected data"
+        "User removed from database",
+        "Confirmation received"
       ],
-      "is_destructive": false,
+      "is_destructive": true,
       "is_interactive": false,
       "parameters": {}
     },
@@ -1740,15 +1738,13 @@
       "mcp_name": "mcp__mittwald__mittwald_database_mysql_versions",
       "display_name": "database/mysql/versions",
       "domain": "databases",
-      "tier": 4,
+      "tier": 0,
       "description": "List available MySQL versions",
       "dependencies": [],
-      "required_resources": [
-        "project"
-      ],
+      "required_resources": [],
       "success_indicators": [
-        "Tool executes without errors",
-        "Response contains expected data"
+        "Returns array of version strings",
+        "No authentication errors"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -1820,15 +1816,13 @@
       "mcp_name": "mcp__mittwald__mittwald_database_redis_versions",
       "display_name": "database/redis/versions",
       "domain": "databases",
-      "tier": 4,
-      "description": "Execute database redis versions operation",
+      "tier": 0,
+      "description": "List available Redis versions",
       "dependencies": [],
-      "required_resources": [
-        "project"
-      ],
+      "required_resources": [],
       "success_indicators": [
-        "Tool executes without errors",
-        "Response contains expected data"
+        "Returns array of version strings",
+        "No authentication errors"
       ],
       "is_destructive": false,
       "is_interactive": false,
@@ -2552,8 +2546,8 @@
       "domain": "project-foundation",
       "tier": 3,
       "description": "Create a new project",
-      "dependencies": [],
-      "required_resources": [],
+      "dependencies": ["server/list"],
+      "required_resources": ["server"],
       "success_indicators": [
         "Returns new resource ID",
         "Resource appears in list",
@@ -2904,8 +2898,8 @@
       "domain": "project-foundation",
       "tier": 2,
       "description": "Get server details",
-      "dependencies": [],
-      "required_resources": [],
+      "dependencies": ["server/list"],
+      "required_resources": ["server"],
       "success_indicators": [
         "Returns resource details",
         "Resource ID matches request"
