@@ -197,8 +197,8 @@ Generate eval prompts for containers domain tools.
 ---
 
 ### WP-12: Generate Prompts - databases (21 tools)
-**Status**: todo
-**Prompt**: `tasks/WP-12-prompts-databases.md`
+**Status**: done
+**Prompt**: `tasks/done/WP12-prompts-databases.md`
 
 Generate eval prompts for databases domain tools.
 
@@ -547,7 +547,7 @@ Phase 5 (Aggregation):
 | WP-09 | todo | - | - | project-foundation (16) |
 | WP-10 | todo | - | - | apps (28) |
 | WP-11 | todo | - | - | containers (19) |
-| WP-12 | todo | - | - | databases (21) |
+| WP-12 | done | 2025-12-16 | 2025-12-16 | databases (21) - Prompt: tasks/done/WP12-prompts-databases.md |
 | WP-13 | todo | - | - | domains-mail (20) |
 | WP-14 | done | 2025-12-16 | 2025-12-16 | access-users (8) - Prompt: tasks/done/WP14-prompts-access-users.md |
 | WP-15 | todo | - | - | automation (10) |
