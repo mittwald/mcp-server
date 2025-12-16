@@ -4,7 +4,7 @@ subtasks:
   - "T001"
 title: "Generate Prompts - organization (14 tools)"
 phase: "Phase 3 - Eval Prompt Generation"
-lane: "doing"
+lane: "for_review"
 assignee: "claude"
 agent: "claude"
 shell_pid: "1767"
@@ -21,6 +21,11 @@ history:
     agent: "claude"
     shell_pid: "1767"
     action: "Started implementation"
+  - timestamp: "2025-12-16T18:50:00Z"
+    lane: "for_review"
+    agent: "claude"
+    shell_pid: "1767"
+    action: "Completed implementation - all 14 prompts generated and validated"
 ---
 
 # Work Package Prompt: WP08 – Generate Prompts - organization (14 tools)
@@ -154,29 +159,37 @@ Generate Langfuse-compatible eval prompts for all 14 tools in the organization d
 
 ## Deliverables
 
-- [ ] `evals/prompts/organization/org-list.json`
-- [ ] `evals/prompts/organization/org-get.json`
-- [ ] `evals/prompts/organization/org-delete.json`
-- [ ] `evals/prompts/organization/org-invite.json`
-- [ ] `evals/prompts/organization/org-invite-list.json`
-- [ ] `evals/prompts/organization/org-invite-list-own.json`
-- [ ] `evals/prompts/organization/org-invite-revoke.json`
-- [ ] `evals/prompts/organization/org-membership-list.json`
-- [ ] `evals/prompts/organization/org-membership-list-own.json`
-- [ ] `evals/prompts/organization/org-membership-revoke.json`
-- [ ] `evals/prompts/organization/extension-list.json`
-- [ ] `evals/prompts/organization/extension-install.json`
-- [ ] `evals/prompts/organization/extension-list-installed.json`
-- [ ] `evals/prompts/organization/extension-uninstall.json`
+- [x] `evals/prompts/organization/org-list.json`
+- [x] `evals/prompts/organization/org-get.json`
+- [x] `evals/prompts/organization/org-delete.json`
+- [x] `evals/prompts/organization/org-invite.json`
+- [x] `evals/prompts/organization/org-invite-list.json`
+- [x] `evals/prompts/organization/org-invite-list-own.json`
+- [x] `evals/prompts/organization/org-invite-revoke.json`
+- [x] `evals/prompts/organization/org-membership-list.json`
+- [x] `evals/prompts/organization/org-membership-list-own.json`
+- [x] `evals/prompts/organization/org-membership-revoke.json`
+- [x] `evals/prompts/organization/extension-list.json`
+- [x] `evals/prompts/organization/extension-install.json`
+- [x] `evals/prompts/organization/extension-list-installed.json`
+- [x] `evals/prompts/organization/extension-uninstall.json`
 
 **Total**: 14 JSON files
 
 ## Acceptance Criteria
 
-1. All 14 prompt files created
-2. Each validates against Langfuse schema
-3. Destructive tools clearly marked with warnings
-4. `org/delete` has explicit safety warnings
+1. All 14 prompt files created ✓
+2. Each validates against Langfuse schema ✓
+3. Destructive tools clearly marked with warnings ✓
+4. `org/delete` has explicit safety warnings ✓
+
+## Implementation Notes
+
+- Generated using `npx tsx evals/scripts/generate-eval-prompts.ts`
+- All prompts validated using `--validate` flag
+- Destructive tools (org/delete, org/invite-revoke, org/membership-revoke, extension/uninstall) have:
+  - `⚠️ WARNING` banner in prompt
+  - `destructive` tag in metadata
 
 ## Parallelization Notes
 
