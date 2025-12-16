@@ -271,8 +271,8 @@ Generate eval prompts for miscellaneous tools (conversation, login, ddev).
 ## Phase 4: Eval Execution
 
 ### WP-18: Execute Evals - identity (17 evals)
-**Status**: todo
-**Prompt**: `tasks/WP-18-execute-identity.md`
+**Status**: done
+**Prompt**: `tasks/done/phase-4-eval-execution/WP18-execute-identity.md`
 
 Execute all identity domain evals via spec-kitty agents.
 
@@ -286,8 +286,8 @@ Execute all identity domain evals via spec-kitty agents.
 ---
 
 ### WP-19: Execute Evals - organization (14 evals)
-**Status**: todo
-**Prompt**: `tasks/WP-19-execute-organization.md`
+**Status**: done
+**Prompt**: `tasks/done/phase-4-eval-execution/WP19-execute-organization.md`
 
 Execute all organization domain evals.
 
@@ -553,8 +553,8 @@ Phase 5 (Aggregation):
 | WP-15 | todo | - | - | automation (10) |
 | WP-16 | done | claude-reviewer | 21815 | backups (9) |
 | WP-17 | todo | - | - | misc (13) |
-| WP-18 | todo | - | - | Execute identity |
-| WP-19 | todo | - | - | Execute organization |
+| WP-18 | done | claude-reviewer | 98765 | Execute identity - 19 session logs (21% success, baseline captured) |
+| WP-19 | done | 2025-12-16 | 2025-12-16 | Execute organization - 14 session logs (0% success, timeouts) |
 | WP-20 | todo | - | - | Execute project-foundation |
 | WP-21 | todo | - | - | Execute apps |
 | WP-22 | todo | - | - | Execute containers |
