@@ -4,12 +4,12 @@ subtasks:
   - "T001"
 title: "Eval Prompt Generator Script"
 phase: "Phase 1 - Infrastructure & Schemas"
-lane: "for_review"
+lane: "planned"
 assignee: "claude"
 agent: "claude"
 shell_pid: "78380"
-review_status: ""
-reviewed_by: ""
+review_status: "has_feedback"
+reviewed_by: "codex"
 history:
   - timestamp: "2025-12-16T13:02:00Z"
     lane: "planned"
@@ -26,7 +26,30 @@ history:
     agent: "claude"
     shell_pid: "78380"
     action: "Implementation complete - all 35 unit tests pass"
+  - timestamp: "2025-12-16T15:36:31Z"
+    lane: "planned"
+    agent: "codex"
+    shell_pid: "90732"
+    action: "Review submitted: needs changes (schema compliance gaps, missing inventory/output)"
 ---
+
+## Review Feedback
+
+**Status**: ❌ **Needs Changes**
+
+**Key Issues**:
+1. `required_resources` values emitted by the generator include labels not permitted by the contract schema (e.g., `ssh-key`, `api-token` from `evals/scripts/generate-eval-prompts.ts:175-244`), so generated prompts will fail validation against `contracts/eval-prompt-input.schema.json` which only allows the enumerated resource types. These need to be mapped to the allowed values or filtered before writing files.
+2. No tool inventory or generated prompts are present (`evals/inventory/` and `evals/prompts/` are empty), so acceptance criteria requiring 175 prompts plus manifest cannot be verified. The generator currently throws immediately when `tools.json` is missing; we need the inventory in place and to commit the generated outputs or document why they are deferred.
+3. `validatePromptFile` only performs ad-hoc checks and does not validate against the provided JSON Schemas (`contracts/eval-prompt-input.schema.json`, `contracts/eval-prompt-metadata.schema.json`), so schema-breaking prompts (like the resource enum issue above) would pass validation and ship undetected. Integrate schema validation to enforce compliance.
+
+**What Was Done Well**:
+- Clear prompt composition with self-assessment markers included and sensible tagging for destructive/interactive operations.
+- Unit test coverage across the prompt builder and validation helper ensures core behaviors are exercised.
+
+**Action Items** (must complete before re-review):
+- [ ] Align `required_resources` to the schema enum (e.g., remap SSH/API token tooling to allowed labels) and ensure outputs validate.
+- [ ] Add schema-backed validation (Ajv or similar) inside `validatePromptFile` so CI catches contract drift.
+- [ ] Provide `evals/inventory/tools.json`, run the generator, and commit the 175 prompt JSON files plus manifest to satisfy deliverables.
 
 # Work Package Prompt: WP02 – Eval Prompt Generator Script
 
@@ -417,4 +440,3 @@ Must wait for:
 - TypeScript
 - `evals/inventory/tools.json` (from WP-04)
 - Template from `templates/eval-prompt.md`
-

@@ -1,0 +1,3449 @@
+{
+  "generated_at": "2025-12-16T15:37:11.180Z",
+  "tool_count": 175,
+  "source": "mittwald-mcp-fly2.fly.dev",
+  "domains": {
+    "apps": 28,
+    "backups": 9,
+    "domains-mail": 21,
+    "containers": 20,
+    "identity": 19,
+    "misc": 8,
+    "automation": 10,
+    "databases": 22,
+    "organization": 14,
+    "project-foundation": 16,
+    "access-users": 8
+  },
+  "tools": [
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_copy",
+      "display_name": "app/copy",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Copy an app",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_create_node",
+      "display_name": "app/create/node",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app create node operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_create_php",
+      "display_name": "app/create/php",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app create php operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_create_php-worker",
+      "display_name": "app/create/php-worker",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app create php-worker operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_create_python",
+      "display_name": "app/create/python",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app create python operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_create_static",
+      "display_name": "app/create/static",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app create static operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_dependency-list",
+      "display_name": "app/dependency-list",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app dependency-list operation",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_dependency-update",
+      "display_name": "app/dependency-update",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app dependency-update operation",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_dependency-versions",
+      "display_name": "app/dependency-versions",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app dependency-versions operation",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_download",
+      "display_name": "app/download",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Download app files",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_get",
+      "display_name": "app/get",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Get app details",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_install_contao",
+      "display_name": "app/install/contao",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app install contao operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_install_joomla",
+      "display_name": "app/install/joomla",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app install joomla operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_install_matomo",
+      "display_name": "app/install/matomo",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app install matomo operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_install_nextcloud",
+      "display_name": "app/install/nextcloud",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app install nextcloud operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_install_shopware5",
+      "display_name": "app/install/shopware5",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app install shopware5 operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_install_shopware6",
+      "display_name": "app/install/shopware6",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app install shopware6 operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_install_typo3",
+      "display_name": "app/install/typo3",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app install typo3 operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_install_wordpress",
+      "display_name": "app/install/wordpress",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Execute app install wordpress operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_list",
+      "display_name": "app/list",
+      "domain": "apps",
+      "tier": 4,
+      "description": "List all apps in a project",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_list-upgrade-candidates",
+      "display_name": "app/list-upgrade-candidates",
+      "domain": "apps",
+      "tier": 4,
+      "description": "List apps with available upgrades",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_open",
+      "display_name": "app/open",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Open app in browser",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_ssh",
+      "display_name": "app/ssh",
+      "domain": "apps",
+      "tier": 4,
+      "description": "SSH into an app",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_uninstall",
+      "display_name": "app/uninstall",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Uninstall an app",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_update",
+      "display_name": "app/update",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Update app settings",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Updated fields reflected",
+        "No validation errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_upgrade",
+      "display_name": "app/upgrade",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Upgrade app to a newer version",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_upload",
+      "display_name": "app/upload",
+      "domain": "apps",
+      "tier": 4,
+      "description": "Upload files to an app",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project",
+        "app"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_app_versions",
+      "display_name": "app/versions",
+      "domain": "apps",
+      "tier": 4,
+      "description": "List available app versions",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_create",
+      "display_name": "backup/create",
+      "domain": "backups",
+      "tier": 4,
+      "description": "Create a backup",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_delete",
+      "display_name": "backup/delete",
+      "domain": "backups",
+      "tier": 4,
+      "description": "Delete a backup",
+      "dependencies": [
+        "backup/list"
+      ],
+      "required_resources": [
+        "project",
+        "backup"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_download",
+      "display_name": "backup/download",
+      "domain": "backups",
+      "tier": 4,
+      "description": "Download a backup",
+      "dependencies": [
+        "backup/list"
+      ],
+      "required_resources": [
+        "project",
+        "backup"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_get",
+      "display_name": "backup/get",
+      "domain": "backups",
+      "tier": 4,
+      "description": "Get backup details",
+      "dependencies": [
+        "backup/list"
+      ],
+      "required_resources": [
+        "project",
+        "backup"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_list",
+      "display_name": "backup/list",
+      "domain": "backups",
+      "tier": 4,
+      "description": "List all backups",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_schedule-create",
+      "display_name": "backup/schedule-create",
+      "domain": "backups",
+      "tier": 4,
+      "description": "Execute backup schedule-create operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_schedule-delete",
+      "display_name": "backup/schedule-delete",
+      "domain": "backups",
+      "tier": 4,
+      "description": "Execute backup schedule-delete operation",
+      "dependencies": [
+        "backup/schedule-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_schedule-list",
+      "display_name": "backup/schedule-list",
+      "domain": "backups",
+      "tier": 4,
+      "description": "Execute backup schedule-list operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_backup_schedule-update",
+      "display_name": "backup/schedule-update",
+      "domain": "backups",
+      "tier": 4,
+      "description": "Execute backup schedule-update operation",
+      "dependencies": [
+        "backup/schedule-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_certificate_list",
+      "display_name": "certificate/list",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "List certificate resources",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_certificate_request",
+      "display_name": "certificate/request",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Execute certificate request operation",
+      "dependencies": [
+        "domain/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_delete",
+      "display_name": "container/delete",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Delete a container",
+      "dependencies": [
+        "container/list-services"
+      ],
+      "required_resources": [
+        "project",
+        "container"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_list-services",
+      "display_name": "container/list-services",
+      "domain": "containers",
+      "tier": 4,
+      "description": "List container services",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_logs",
+      "display_name": "container/logs",
+      "domain": "containers",
+      "tier": 4,
+      "description": "View container logs",
+      "dependencies": [
+        "container/list-services"
+      ],
+      "required_resources": [
+        "project",
+        "container"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_recreate",
+      "display_name": "container/recreate",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Recreate a container",
+      "dependencies": [
+        "container/list-services"
+      ],
+      "required_resources": [
+        "project",
+        "container"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_restart",
+      "display_name": "container/restart",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Restart a container",
+      "dependencies": [
+        "container/list-services"
+      ],
+      "required_resources": [
+        "project",
+        "container"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_run",
+      "display_name": "container/run",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Run a container",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_start",
+      "display_name": "container/start",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Start a container",
+      "dependencies": [
+        "container/list-services"
+      ],
+      "required_resources": [
+        "project",
+        "container"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_stop",
+      "display_name": "container/stop",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Stop a container",
+      "dependencies": [
+        "container/list-services"
+      ],
+      "required_resources": [
+        "project",
+        "container"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_container_update",
+      "display_name": "container/update",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Update container settings",
+      "dependencies": [
+        "container/list-services"
+      ],
+      "required_resources": [
+        "project",
+        "container"
+      ],
+      "success_indicators": [
+        "Updated fields reflected",
+        "No validation errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_context_accessible-projects",
+      "display_name": "context/accessible-projects",
+      "domain": "identity",
+      "tier": 0,
+      "description": "List projects accessible to current user",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Context value updated/returned"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_context_get",
+      "display_name": "context/get",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Get current CLI context parameters",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request",
+        "Context value updated/returned"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_context_reset",
+      "display_name": "context/reset",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Reset all context parameters",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Context value updated/returned"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_context_set",
+      "display_name": "context/set",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Set context parameters (project, org, server)",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Context value updated/returned"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_conversation_categories",
+      "display_name": "conversation/categories",
+      "domain": "misc",
+      "tier": 4,
+      "description": "List conversation categories",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_conversation_close",
+      "display_name": "conversation/close",
+      "domain": "misc",
+      "tier": 4,
+      "description": "Close a conversation",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_conversation_create",
+      "display_name": "conversation/create",
+      "domain": "misc",
+      "tier": 4,
+      "description": "Create a support conversation",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_conversation_list",
+      "display_name": "conversation/list",
+      "domain": "misc",
+      "tier": 4,
+      "description": "List support conversations",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_conversation_reply",
+      "display_name": "conversation/reply",
+      "domain": "misc",
+      "tier": 4,
+      "description": "Reply to a conversation",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_conversation_show",
+      "display_name": "conversation/show",
+      "domain": "misc",
+      "tier": 4,
+      "description": "Show conversation details",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_create",
+      "display_name": "cronjob/create",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Create a cronjob",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_delete",
+      "display_name": "cronjob/delete",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Delete a cronjob",
+      "dependencies": [
+        "cronjob/list"
+      ],
+      "required_resources": [
+        "project",
+        "cronjob"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_execute",
+      "display_name": "cronjob/execute",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Execute a cronjob immediately",
+      "dependencies": [
+        "cronjob/list"
+      ],
+      "required_resources": [
+        "project",
+        "cronjob"
+      ],
+      "success_indicators": [
+        "Execution initiated",
+        "Execution ID returned"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_execution-abort",
+      "display_name": "cronjob/execution-abort",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Execute cronjob execution-abort operation",
+      "dependencies": [
+        "cronjob/execution-list"
+      ],
+      "required_resources": [
+        "project",
+        "cronjob"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_execution-get",
+      "display_name": "cronjob/execution-get",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Execute cronjob execution-get operation",
+      "dependencies": [
+        "cronjob/execution-list"
+      ],
+      "required_resources": [
+        "project",
+        "cronjob"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_execution-list",
+      "display_name": "cronjob/execution-list",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Execute cronjob execution-list operation",
+      "dependencies": [
+        "cronjob/list"
+      ],
+      "required_resources": [
+        "project",
+        "cronjob"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_execution-logs",
+      "display_name": "cronjob/execution-logs",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Execute cronjob execution-logs operation",
+      "dependencies": [
+        "cronjob/execution-list"
+      ],
+      "required_resources": [
+        "project",
+        "cronjob"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_get",
+      "display_name": "cronjob/get",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Get cronjob details",
+      "dependencies": [
+        "cronjob/list"
+      ],
+      "required_resources": [
+        "project",
+        "cronjob"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_list",
+      "display_name": "cronjob/list",
+      "domain": "automation",
+      "tier": 4,
+      "description": "List all cronjobs",
+      "dependencies": [
+        "app/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_cronjob_update",
+      "display_name": "cronjob/update",
+      "domain": "automation",
+      "tier": 4,
+      "description": "Update cronjob settings",
+      "dependencies": [
+        "cronjob/list"
+      ],
+      "required_resources": [
+        "project",
+        "cronjob"
+      ],
+      "success_indicators": [
+        "Updated fields reflected",
+        "No validation errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_index",
+      "display_name": "database/index",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Execute database index operation",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_list",
+      "display_name": "database/list",
+      "domain": "databases",
+      "tier": 4,
+      "description": "List all databases",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_charsets",
+      "display_name": "database/mysql/charsets",
+      "domain": "databases",
+      "tier": 4,
+      "description": "List available MySQL character sets",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_create",
+      "display_name": "database/mysql/create",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Create a MySQL database",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_delete",
+      "display_name": "database/mysql/delete",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Delete a MySQL database",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_dump",
+      "display_name": "database/mysql/dump",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Dump MySQL database",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_get",
+      "display_name": "database/mysql/get",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Get MySQL database details",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_import",
+      "display_name": "database/mysql/import",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Import data into MySQL database",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_list",
+      "display_name": "database/mysql/list",
+      "domain": "databases",
+      "tier": 4,
+      "description": "List MySQL databases",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_phpmyadmin",
+      "display_name": "database/mysql/phpmyadmin",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Open phpMyAdmin",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_port-forward",
+      "display_name": "database/mysql/port-forward",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Forward MySQL port for local access",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_shell",
+      "display_name": "database/mysql/shell",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Open MySQL shell",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_user-create",
+      "display_name": "database/mysql/user-create",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Execute database mysql user-create operation",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_user-delete",
+      "display_name": "database/mysql/user-delete",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Execute database mysql user-delete operation",
+      "dependencies": [
+        "database/mysql/user-list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_user-get",
+      "display_name": "database/mysql/user-get",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Execute database mysql user-get operation",
+      "dependencies": [
+        "database/mysql/user-list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_user-list",
+      "display_name": "database/mysql/user-list",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Execute database mysql user-list operation",
+      "dependencies": [
+        "database/mysql/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_user-update",
+      "display_name": "database/mysql/user-update",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Execute database mysql user-update operation",
+      "dependencies": [
+        "database/mysql/user-list"
+      ],
+      "required_resources": [
+        "project",
+        "database-mysql"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_mysql_versions",
+      "display_name": "database/mysql/versions",
+      "domain": "databases",
+      "tier": 4,
+      "description": "List available MySQL versions",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_redis_create",
+      "display_name": "database/redis/create",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Create a new database redis",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_redis_get",
+      "display_name": "database/redis/get",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Get database redis details",
+      "dependencies": [
+        "database/redis/list"
+      ],
+      "required_resources": [
+        "project",
+        "database-redis"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_redis_list",
+      "display_name": "database/redis/list",
+      "domain": "databases",
+      "tier": 4,
+      "description": "List database redis resources",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_database_redis_versions",
+      "display_name": "database/redis/versions",
+      "domain": "databases",
+      "tier": 4,
+      "description": "Execute database redis versions operation",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_ddev_init",
+      "display_name": "ddev/init",
+      "domain": "misc",
+      "tier": 4,
+      "description": "Execute ddev init operation",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_ddev_render-config",
+      "display_name": "ddev/render-config",
+      "domain": "misc",
+      "tier": 4,
+      "description": "Execute ddev render-config operation",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_dnszone_get",
+      "display_name": "domain/dnszone/get",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Get domain dnszone details",
+      "dependencies": [
+        "domain/dnszone/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_dnszone_list",
+      "display_name": "domain/dnszone/list",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "List domain dnszone resources",
+      "dependencies": [
+        "domain/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_dnszone_update",
+      "display_name": "domain/dnszone/update",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Update domain dnszone settings",
+      "dependencies": [
+        "domain/dnszone/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Updated fields reflected",
+        "No validation errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_get",
+      "display_name": "domain/get",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Get domain details",
+      "dependencies": [
+        "domain/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_list",
+      "display_name": "domain/list",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "List domain resources",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_virtualhost-create",
+      "display_name": "domain/virtualhost-create",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Execute domain virtualhost-create operation",
+      "dependencies": [
+        "domain/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_virtualhost-delete",
+      "display_name": "domain/virtualhost-delete",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Execute domain virtualhost-delete operation",
+      "dependencies": [
+        "domain/virtualhost-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_virtualhost-get",
+      "display_name": "domain/virtualhost-get",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Execute domain virtualhost-get operation",
+      "dependencies": [
+        "domain/virtualhost-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_domain_virtualhost-list",
+      "display_name": "domain/virtualhost-list",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Execute domain virtualhost-list operation",
+      "dependencies": [
+        "domain/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_extension_install",
+      "display_name": "extension/install",
+      "domain": "organization",
+      "tier": 1,
+      "description": "Install install application",
+      "dependencies": [
+        "org/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Installation initiated",
+        "App appears in list",
+        "Installation status can be checked"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_extension_list",
+      "display_name": "extension/list",
+      "domain": "organization",
+      "tier": 1,
+      "description": "List extension resources",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_extension_list-installed",
+      "display_name": "extension/list-installed",
+      "domain": "organization",
+      "tier": 1,
+      "description": "Execute extension list-installed operation",
+      "dependencies": [
+        "org/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_extension_uninstall",
+      "display_name": "extension/uninstall",
+      "domain": "organization",
+      "tier": 1,
+      "description": "Execute extension uninstall operation",
+      "dependencies": [
+        "extension/list-installed"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_login_reset",
+      "display_name": "login/reset",
+      "domain": "identity",
+      "tier": 4,
+      "description": "Reset authentication state",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Authentication state verified"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_login_status",
+      "display_name": "login/status",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Check authentication status",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Authentication state verified"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_login_token",
+      "display_name": "login/token",
+      "domain": "identity",
+      "tier": 4,
+      "description": "Get current authentication token",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Authentication state verified"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_address_create",
+      "display_name": "mail/address/create",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Create a new mail address",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_address_delete",
+      "display_name": "mail/address/delete",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Delete a mail address",
+      "dependencies": [
+        "mail/address/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_address_get",
+      "display_name": "mail/address/get",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Get mail address details",
+      "dependencies": [
+        "mail/address/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_address_list",
+      "display_name": "mail/address/list",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "List mail address resources",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_address_update",
+      "display_name": "mail/address/update",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Update mail address settings",
+      "dependencies": [
+        "mail/address/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Updated fields reflected",
+        "No validation errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_deliverybox_create",
+      "display_name": "mail/deliverybox/create",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Create a new mail deliverybox",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_deliverybox_delete",
+      "display_name": "mail/deliverybox/delete",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Delete a mail deliverybox",
+      "dependencies": [
+        "mail/deliverybox/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_deliverybox_get",
+      "display_name": "mail/deliverybox/get",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Get mail deliverybox details",
+      "dependencies": [
+        "mail/deliverybox/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_deliverybox_list",
+      "display_name": "mail/deliverybox/list",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "List mail deliverybox resources",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_mail_deliverybox_update",
+      "display_name": "mail/deliverybox/update",
+      "domain": "domains-mail",
+      "tier": 4,
+      "description": "Update mail deliverybox settings",
+      "dependencies": [
+        "mail/deliverybox/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Updated fields reflected",
+        "No validation errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_delete",
+      "display_name": "org/delete",
+      "domain": "organization",
+      "tier": 1,
+      "description": "Delete an organization",
+      "dependencies": [
+        "org/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_get",
+      "display_name": "org/get",
+      "domain": "organization",
+      "tier": 1,
+      "description": "Get organization details",
+      "dependencies": [
+        "org/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_invite",
+      "display_name": "org/invite",
+      "domain": "organization",
+      "tier": 1,
+      "description": "Invite a user to an organization",
+      "dependencies": [
+        "org/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_invite-list",
+      "display_name": "org/invite-list",
+      "domain": "organization",
+      "tier": 1,
+      "description": "List pending organization invitations",
+      "dependencies": [
+        "org/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_invite-list-own",
+      "display_name": "org/invite-list-own",
+      "domain": "organization",
+      "tier": 1,
+      "description": "List your pending organization invitations",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_invite-revoke",
+      "display_name": "org/invite-revoke",
+      "domain": "organization",
+      "tier": 1,
+      "description": "Revoke an organization invitation",
+      "dependencies": [
+        "org/invite-list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_list",
+      "display_name": "org/list",
+      "domain": "organization",
+      "tier": 0,
+      "description": "List all organizations",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_membership-list",
+      "display_name": "org/membership-list",
+      "domain": "organization",
+      "tier": 1,
+      "description": "List organization members",
+      "dependencies": [
+        "org/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_membership-list-own",
+      "display_name": "org/membership-list-own",
+      "domain": "organization",
+      "tier": 0,
+      "description": "List your organization memberships",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_org_membership-revoke",
+      "display_name": "org/membership-revoke",
+      "domain": "organization",
+      "tier": 1,
+      "description": "Revoke organization membership",
+      "dependencies": [
+        "org/membership-list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_create",
+      "display_name": "project/create",
+      "domain": "project-foundation",
+      "tier": 3,
+      "description": "Create a new project",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_delete",
+      "display_name": "project/delete",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Delete a project",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_filesystem-usage",
+      "display_name": "project/filesystem-usage",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Get filesystem usage for a project",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_get",
+      "display_name": "project/get",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Get project details",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_invite-get",
+      "display_name": "project/invite-get",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Execute project invite-get operation",
+      "dependencies": [
+        "project/invite-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_invite-list",
+      "display_name": "project/invite-list",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Execute project invite-list operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_invite-list-own",
+      "display_name": "project/invite-list-own",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Execute project invite-list-own operation",
+      "dependencies": [],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_list",
+      "display_name": "project/list",
+      "domain": "project-foundation",
+      "tier": 0,
+      "description": "List all projects",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_membership-get",
+      "display_name": "project/membership-get",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Execute project membership-get operation",
+      "dependencies": [
+        "project/membership-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_membership-get-own",
+      "display_name": "project/membership-get-own",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Execute project membership-get-own operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_membership-list",
+      "display_name": "project/membership-list",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Execute project membership-list operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_membership-list-own",
+      "display_name": "project/membership-list-own",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Execute project membership-list-own operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_ssh",
+      "display_name": "project/ssh",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "SSH into a project",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_project_update",
+      "display_name": "project/update",
+      "domain": "project-foundation",
+      "tier": 4,
+      "description": "Update project settings",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Updated fields reflected",
+        "No validation errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_registry_create",
+      "display_name": "registry/create",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Create a new registry",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_registry_delete",
+      "display_name": "registry/delete",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Delete a registry",
+      "dependencies": [
+        "registry/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_registry_list",
+      "display_name": "registry/list",
+      "domain": "containers",
+      "tier": 4,
+      "description": "List registry resources",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_registry_update",
+      "display_name": "registry/update",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Update registry settings",
+      "dependencies": [
+        "registry/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Updated fields reflected",
+        "No validation errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_server_get",
+      "display_name": "server/get",
+      "domain": "project-foundation",
+      "tier": 2,
+      "description": "Get server details",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_server_list",
+      "display_name": "server/list",
+      "domain": "project-foundation",
+      "tier": 0,
+      "description": "List all servers",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_sftp_user-create",
+      "display_name": "sftp/user-create",
+      "domain": "access-users",
+      "tier": 4,
+      "description": "Execute sftp user-create operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_sftp_user-delete",
+      "display_name": "sftp/user-delete",
+      "domain": "access-users",
+      "tier": 4,
+      "description": "Execute sftp user-delete operation",
+      "dependencies": [
+        "sftp/user-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_sftp_user-list",
+      "display_name": "sftp/user-list",
+      "domain": "access-users",
+      "tier": 4,
+      "description": "Execute sftp user-list operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_sftp_user-update",
+      "display_name": "sftp/user-update",
+      "domain": "access-users",
+      "tier": 4,
+      "description": "Execute sftp user-update operation",
+      "dependencies": [
+        "sftp/user-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_ssh_user-create",
+      "display_name": "ssh/user-create",
+      "domain": "access-users",
+      "tier": 4,
+      "description": "Execute ssh user-create operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_ssh_user-delete",
+      "display_name": "ssh/user-delete",
+      "domain": "access-users",
+      "tier": 4,
+      "description": "Execute ssh user-delete operation",
+      "dependencies": [
+        "ssh/user-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_ssh_user-list",
+      "display_name": "ssh/user-list",
+      "domain": "access-users",
+      "tier": 4,
+      "description": "Execute ssh user-list operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_ssh_user-update",
+      "display_name": "ssh/user-update",
+      "domain": "access-users",
+      "tier": 4,
+      "description": "Execute ssh user-update operation",
+      "dependencies": [
+        "ssh/user-list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_stack_delete",
+      "display_name": "stack/delete",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Delete a stack",
+      "dependencies": [
+        "stack/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_stack_deploy",
+      "display_name": "stack/deploy",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Execute stack deploy operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_stack_list",
+      "display_name": "stack/list",
+      "domain": "containers",
+      "tier": 4,
+      "description": "List stack resources",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_stack_ps",
+      "display_name": "stack/ps",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Execute stack ps operation",
+      "dependencies": [
+        "stack/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Tool executes without errors",
+        "Response contains expected data"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_api-token_create",
+      "display_name": "user/api-token/create",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Create a new API token",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_api-token_get",
+      "display_name": "user/api-token/get",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Get details of a specific API token",
+      "dependencies": [
+        "user/api-token/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_api-token_list",
+      "display_name": "user/api-token/list",
+      "domain": "identity",
+      "tier": 0,
+      "description": "List all API tokens",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_api-token_revoke",
+      "display_name": "user/api-token/revoke",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Revoke an API token",
+      "dependencies": [
+        "user/api-token/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received",
+        "User data returned correctly"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_get",
+      "display_name": "user/get",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Get profile information for a user",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_session_get",
+      "display_name": "user/session/get",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Get details of a specific session",
+      "dependencies": [
+        "user/session/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_session_list",
+      "display_name": "user/session/list",
+      "domain": "identity",
+      "tier": 0,
+      "description": "List all active user sessions",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_ssh-key_create",
+      "display_name": "user/ssh-key/create",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Create a new SSH key pair",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_ssh-key_delete",
+      "display_name": "user/ssh-key/delete",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Delete an SSH key",
+      "dependencies": [
+        "user/ssh-key/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received",
+        "User data returned correctly"
+      ],
+      "is_destructive": true,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_ssh-key_get",
+      "display_name": "user/ssh-key/get",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Get details of a specific SSH key",
+      "dependencies": [
+        "user/ssh-key/list"
+      ],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns resource details",
+        "Resource ID matches request",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_ssh-key_import",
+      "display_name": "user/ssh-key/import",
+      "domain": "identity",
+      "tier": 0,
+      "description": "Import an existing SSH public key",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_user_ssh-key_list",
+      "display_name": "user/ssh-key/list",
+      "domain": "identity",
+      "tier": 0,
+      "description": "List all SSH keys for the user",
+      "dependencies": [],
+      "required_resources": [],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors",
+        "User data returned correctly"
+      ],
+      "is_destructive": false,
+      "is_interactive": true,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_volume_create",
+      "display_name": "volume/create",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Create a new volume",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns new resource ID",
+        "Resource appears in list",
+        "No quota errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_volume_delete",
+      "display_name": "volume/delete",
+      "domain": "containers",
+      "tier": 4,
+      "description": "Delete a volume",
+      "dependencies": [
+        "volume/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Resource removed from list",
+        "Confirmation received"
+      ],
+      "is_destructive": true,
+      "is_interactive": false,
+      "parameters": {}
+    },
+    {
+      "mcp_name": "mcp__mittwald__mittwald_volume_list",
+      "display_name": "volume/list",
+      "domain": "containers",
+      "tier": 4,
+      "description": "List volume resources",
+      "dependencies": [
+        "project/list"
+      ],
+      "required_resources": [
+        "project"
+      ],
+      "success_indicators": [
+        "Returns array of resources",
+        "No authentication errors"
+      ],
+      "is_destructive": false,
+      "is_interactive": false,
+      "parameters": {}
+    }
+  ]
+}

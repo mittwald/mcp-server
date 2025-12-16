@@ -161,7 +161,7 @@ describe('parseAssessmentJson', () => {
     const json = JSON.stringify({
       success: false,
       confidence: 'medium',
-      tool_executed: 'test',
+      tool_executed: 'mcp__mittwald__mittwald_user_get',
       timestamp: '2025-12-16T12:00:00Z',
       problems_encountered: [
         { type: 'auth_error', description: 'Auth failed' },
@@ -180,7 +180,7 @@ describe('parseAssessmentJson', () => {
     const json = JSON.stringify({
       success: true,
       confidence: 'high',
-      tool_executed: 'test',
+      tool_executed: 'mcp__mittwald__mittwald_user_get',
       timestamp: '2025-12-16T12:00:00Z',
       tool_response_summary: 'User data returned',
       execution_notes: 'All good',
@@ -196,7 +196,7 @@ describe('parseAssessmentJson', () => {
     const json = JSON.stringify({
       success: true,
       confidence: 'high',
-      tool_executed: 'test',
+      tool_executed: 'mcp__mittwald__mittwald_user_get',
       timestamp: '2025-12-16T12:00:00Z',
       resources_created: [
         { type: 'project', id: 'p-123', name: 'Test Project', verified: true },
@@ -216,7 +216,7 @@ describe('parseAssessmentJson', () => {
     const json = JSON.stringify({
       success: true,
       confidence: 'high',
-      tool_executed: 'test',
+      tool_executed: 'mcp__mittwald__mittwald_user_get',
       timestamp: '2025-12-16T12:00:00Z',
       resources_verified: [
         { type: 'project', id: 'p-123', status: 'exists' },
@@ -306,7 +306,7 @@ describe('extractSelfAssessment', () => {
             {
               type: 'text',
               text: `<!-- SELF_ASSESSMENT_START -->
-{"success": true, "confidence": "high", "tool_executed": "test", "timestamp": "2025-12-16T12:00:00Z"}
+{"success": true, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_tool", "timestamp": "2025-12-16T12:00:00Z"}
 <!-- SELF_ASSESSMENT_END -->`,
             },
           ],
@@ -358,7 +358,7 @@ describe('extractSelfAssessment', () => {
         type: 'assistant',
         message: {
           content: `<!-- SELF_ASSESSMENT_START -->
-{"success": true, "confidence": "high", "tool_executed": "test", "timestamp": "2025-12-16T12:00:00Z"}
+{"success": true, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_tool", "timestamp": "2025-12-16T12:00:00Z"}
 <!-- SELF_ASSESSMENT_END -->`,
         },
       }),
@@ -377,7 +377,7 @@ describe('extractSelfAssessment', () => {
         type: 'assistant',
         message: {
           content: `<!-- SELF_ASSESSMENT_START -->
-{"success": false, "confidence": "low", "tool_executed": "old_tool", "timestamp": "2025-12-16T11:00:00Z"}
+{"success": false, "confidence": "low", "tool_executed": "mcp__mittwald__mittwald_old_tool", "timestamp": "2025-12-16T11:00:00Z"}
 <!-- SELF_ASSESSMENT_END -->`,
         },
       }),
@@ -385,7 +385,7 @@ describe('extractSelfAssessment', () => {
         type: 'assistant',
         message: {
           content: `<!-- SELF_ASSESSMENT_START -->
-{"success": true, "confidence": "high", "tool_executed": "new_tool", "timestamp": "2025-12-16T12:00:00Z"}
+{"success": true, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_new_tool", "timestamp": "2025-12-16T12:00:00Z"}
 <!-- SELF_ASSESSMENT_END -->`,
         },
       }),
@@ -396,7 +396,7 @@ describe('extractSelfAssessment', () => {
 
     const result = await extractSelfAssessment(logPath);
     expect(result.success).toBe(true);
-    expect(result.assessment?.tool_executed).toBe('new_tool');
+    expect(result.assessment?.tool_executed).toBe('mcp__mittwald__mittwald_new_tool');
   });
 
   it('returns explicit error when markers are present but empty', async () => {
@@ -429,7 +429,7 @@ describe('processDirectory', () => {
       type: 'assistant',
       message: {
         content: `<!-- SELF_ASSESSMENT_START -->
-{"success": true, "confidence": "high", "tool_executed": "tool1", "timestamp": "2025-12-16T12:00:00Z"}
+{"success": true, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_tool1", "timestamp": "2025-12-16T12:00:00Z"}
 <!-- SELF_ASSESSMENT_END -->`,
       },
     });
