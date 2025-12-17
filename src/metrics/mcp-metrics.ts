@@ -51,3 +51,16 @@ export const memoryPressure = new Gauge({
   help: 'Current heap usage as percentage',
   registers: registries
 });
+
+// Gauge for Node.js heap size limit (for verifying --max-old-space-size flag)
+export const heapSizeLimit = new Gauge({
+  name: 'nodejs_heap_size_limit_bytes',
+  help: 'Maximum heap size limit from V8 in bytes',
+  registers: registries,
+  collect() {
+    // Update the gauge with current heap_size_limit from v8
+    const v8 = require('v8');
+    const stats = v8.getHeapStatistics();
+    this.set(stats.heap_size_limit);
+  }
+});
