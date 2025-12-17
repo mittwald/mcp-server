@@ -2,7 +2,7 @@ import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { getCurrentSessionId } from './execution-context.js';
 import { sessionManager } from '../server/session-manager.js';
-import { cliCallsTotal } from '../metrics/index.js';
+import { cliCallsTotal, cliInflight, cliQueueDepth, cliQueueWait } from '../metrics/index.js';
 
 /**
  * Use execFile instead of exec to prevent shell injection attacks.
@@ -13,6 +13,8 @@ const execFileAsync = promisify(execFile);
 
 const DEFAULT_MAX_BUFFER_BYTES = 20 * 1024 * 1024; // 20MB cap for stdout buffering
 const DEFAULT_MAX_HEAP_MB = 384; // Keep below Fly machine memory ceiling
+const DEFAULT_CLI_CONCURRENCY = 1; // Protect Fly VMs from mw's high RSS usage
+const DEFAULT_CLI_QUEUE_LIMIT = 25; // Prevent unbounded memory growth under load
 
 function parsePositiveInteger(value: string | undefined): number | undefined {
   if (!value) {
@@ -24,6 +26,110 @@ function parsePositiveInteger(value: string | undefined): number | undefined {
   }
   return parsed;
 }
+
+function parseNonNegativeInteger(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return undefined;
+  }
+  return parsed;
+}
+
+function resolveCliConcurrencyLimit(): number | undefined {
+  const raw = process.env.MCP_CLI_CONCURRENCY?.trim();
+  if (raw === '0') {
+    return undefined;
+  }
+  const fromEnv = parsePositiveInteger(raw);
+  if (typeof fromEnv === 'number') {
+    return fromEnv;
+  }
+  return DEFAULT_CLI_CONCURRENCY;
+}
+
+function resolveCliQueueLimit(): number {
+  const raw = process.env.MCP_CLI_QUEUE_LIMIT?.trim();
+  if (raw === '0') {
+    return 0;
+  }
+  const fromEnv = parseNonNegativeInteger(raw);
+  if (typeof fromEnv === 'number') {
+    return fromEnv;
+  }
+  return DEFAULT_CLI_QUEUE_LIMIT;
+}
+
+class AsyncSemaphore {
+  private active = 0;
+  private readonly queue: Array<(release: () => void) => void> = [];
+
+  constructor(
+    private readonly limit: number,
+    private readonly queueLimit: number
+  ) {
+    cliQueueDepth.set(0);
+    cliInflight.set(0);
+  }
+
+  getState(): { active: number; queued: number; limit: number; queueLimit: number } {
+    return {
+      active: this.active,
+      queued: this.queue.length,
+      limit: this.limit,
+      queueLimit: this.queueLimit,
+    };
+  }
+
+  async acquire(): Promise<() => void> {
+    if (this.limit <= 0) {
+      return () => {};
+    }
+
+    if (this.active < this.limit) {
+      this.active += 1;
+      cliInflight.set(this.active);
+      return this.release;
+    }
+
+    if (this.queueLimit === 0 || this.queue.length >= this.queueLimit) {
+      const state = this.getState();
+      throw new Error(
+        `Server is busy running Mittwald CLI commands (inflight=${state.active}/${state.limit}, queued=${state.queued}/${state.queueLimit}). Try again later.`
+      );
+    }
+
+    return new Promise((resolve) => {
+      this.queue.push((release) => resolve(release));
+      cliQueueDepth.set(this.queue.length);
+    });
+  }
+
+  private readonly release = (): void => {
+    if (this.limit <= 0) {
+      return;
+    }
+
+    this.active = Math.max(0, this.active - 1);
+    cliInflight.set(this.active);
+
+    const next = this.queue.shift();
+    cliQueueDepth.set(this.queue.length);
+
+    if (next) {
+      this.active += 1;
+      cliInflight.set(this.active);
+      next(this.release);
+    }
+  };
+}
+
+const cliConcurrencyLimit = resolveCliConcurrencyLimit();
+const cliSemaphore = typeof cliConcurrencyLimit === 'number'
+  ? new AsyncSemaphore(cliConcurrencyLimit, resolveCliQueueLimit())
+  : null;
 
 function resolveMaxBufferBytes(explicit?: number): number {
   if (typeof explicit === 'number' && explicit > 0) {
@@ -193,19 +299,30 @@ export async function executeCli(
   const redactedCommand = `${command} ${redactedArgs.join(' ')}`;
 
   try {
-    const { stdout, stderr } = await execFileAsync(command, effectiveArgs, {
-      timeout,
-      maxBuffer: resolvedMaxBuffer,
-      env: mergedEnv,
-    });
+    const queueStart = Date.now();
+    const release = cliSemaphore ? await cliSemaphore.acquire() : null;
+    const queueWaitSeconds = (Date.now() - queueStart) / 1000;
+    if (queueWaitSeconds > 0) {
+      cliQueueWait.observe(queueWaitSeconds);
+    }
 
-    cliCallsTotal.inc({ command: cliCommand, status: 'success' });
-    return {
-      stdout: stdout.trim(),
-      stderr: stderr.trim(),
-      exitCode: 0,
-      durationMs: Date.now() - startedAt
-    };
+    try {
+      const { stdout, stderr } = await execFileAsync(command, effectiveArgs, {
+        timeout,
+        maxBuffer: resolvedMaxBuffer,
+        env: mergedEnv,
+      });
+
+      cliCallsTotal.inc({ command: cliCommand, status: 'success' });
+      return {
+        stdout: stdout.trim(),
+        stderr: stderr.trim(),
+        exitCode: 0,
+        durationMs: Date.now() - startedAt
+      };
+    } finally {
+      release?.();
+    }
   } catch (error: any) {
     cliCallsTotal.inc({ command: cliCommand, status: 'error' });
     // execFile throws an error if the command exits with non-zero

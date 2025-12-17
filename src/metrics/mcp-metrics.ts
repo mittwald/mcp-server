@@ -37,6 +37,28 @@ export const cliCallsTotal = new Counter({
   registers: registries
 });
 
+// Gauge for in-flight Mittwald CLI processes (helps diagnose resource contention / OOM)
+export const cliInflight = new Gauge({
+  name: 'mcp_cli_inflight',
+  help: 'Number of in-flight Mittwald CLI executions',
+  registers: registries
+});
+
+// Gauge for queued Mittwald CLI executions waiting for a concurrency slot
+export const cliQueueDepth = new Gauge({
+  name: 'mcp_cli_queue_depth',
+  help: 'Number of queued Mittwald CLI executions waiting for a slot',
+  registers: registries
+});
+
+// Histogram for time spent waiting for a CLI concurrency slot
+export const cliQueueWait = new Histogram({
+  name: 'mcp_cli_queue_wait_seconds',
+  help: 'Time spent waiting for a Mittwald CLI concurrency slot in seconds',
+  buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30],
+  registers: registries
+});
+
 // Histogram for memory usage per tool
 export const toolMemoryDelta = new Histogram({
   name: 'mcp_tool_memory_delta_mb',

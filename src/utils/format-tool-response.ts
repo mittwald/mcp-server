@@ -27,5 +27,6 @@ export function formatToolResponse<T, M = any>(
         text: JSON.stringify(response, null, 2),
       },
     ],
+    isError: status === "error",
   };
 }

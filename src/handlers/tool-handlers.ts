@@ -273,7 +273,7 @@ export async function handleToolCall(
     const durationMs = Date.now() - startTime;
 
     // Record metrics
-    toolCallsTotal.inc({ tool_name: toolName, status: 'success' });
+    toolCallsTotal.inc({ tool_name: toolName, status: result.isError ? 'error' : 'success' });
     toolMemoryDelta.observe({ tool_name: toolName }, memoryDeltaMB);
     end(); // Record duration
 
