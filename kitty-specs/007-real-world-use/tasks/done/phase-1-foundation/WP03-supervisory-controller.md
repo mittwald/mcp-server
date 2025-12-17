@@ -1,56 +1,56 @@
 ---
-work_package_id: "WP03"
-subtasks:
-  - "T011"
-  - "T012"
-  - "T013"
-  - "T014"
-  - "T015"
-  - "T016"
-  - "T017"
-  - "T018"
-title: "Supervisory Controller"
-phase: "Phase 1 - Foundation"
-lane: "done"
-assignee: "claude"
-agent: "claude"
-shell_pid: "68317"
+work_package_id: WP03
+title: Supervisory Controller
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
-  - timestamp: "2025-12-05T13:00:00Z"
-    lane: "doing"
-    agent: "claude"
-    shell_pid: "5620"
-    action: "Started implementation"
-  - timestamp: "2025-12-05T10:06:08Z"
-    lane: "doing"
-    agent: "codex"
-    shell_pid: "55120"
-    action: "Started review"
-  - timestamp: "2025-12-05T10:09:42Z"
-    lane: "planned"
-    agent: "codex"
-    shell_pid: "55120"
-    action: "Review feedback: missing wiring to parser/session, success/failure detection, idle/timeout enforcement, and controller tests"
-  - timestamp: "2025-12-05T11:15:00Z"
-    lane: "doing"
-    agent: "claude"
-    shell_pid: "53821"
-    action: "Addressing review feedback - wiring parser events, adding idle checks, tests"
-  - timestamp: "2025-12-05T11:20:00Z"
-    lane: "for_review"
-    agent: "claude"
-    shell_pid: "53821"
-    action: "Review feedback addressed - added attachToParser(), idle check interval, processOutputLine(), processPatternState(), and 38 unit tests"
-  - timestamp: "2025-12-05T11:30:00Z"
-    lane: "done"
-    agent: "claude"
-    shell_pid: "68317"
-    action: "APPROVED: All 38 tests pass, implementation complete with parser integration, idle checks, and failure detection"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+- timestamp: '2025-12-05T13:00:00Z'
+  lane: doing
+  agent: claude
+  shell_pid: '5620'
+  action: Started implementation
+- timestamp: '2025-12-05T10:06:08Z'
+  lane: doing
+  agent: codex
+  shell_pid: '55120'
+  action: Started review
+- timestamp: '2025-12-05T10:09:42Z'
+  lane: planned
+  agent: codex
+  shell_pid: '55120'
+  action: 'Review feedback: missing wiring to parser/session, success/failure detection, idle/timeout enforcement, and controller tests'
+- timestamp: '2025-12-05T11:15:00Z'
+  lane: doing
+  agent: claude
+  shell_pid: '53821'
+  action: Addressing review feedback - wiring parser events, adding idle checks, tests
+- timestamp: '2025-12-05T11:20:00Z'
+  lane: for_review
+  agent: claude
+  shell_pid: '53821'
+  action: Review feedback addressed - added attachToParser(), idle check interval, processOutputLine(), processPatternState(), and 38 unit tests
+- timestamp: '2025-12-05T11:30:00Z'
+  lane: done
+  agent: claude
+  shell_pid: '68317'
+  action: 'APPROVED: All 38 tests pass, implementation complete with parser integration, idle checks, and failure detection'
+agent: claude
+assignee: claude
+phase: Phase 1 - Foundation
+shell_pid: '68317'
+subtasks:
+- T011
+- T012
+- T013
+- T014
+- T015
+- T016
+- T017
+- T018
 ---
 
 # Work Package Prompt: WP03 – Supervisory Controller

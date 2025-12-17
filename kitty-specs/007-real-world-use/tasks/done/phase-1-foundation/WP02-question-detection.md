@@ -1,38 +1,38 @@
 ---
-work_package_id: "WP02"
-subtasks:
-  - "T006"
-  - "T007"
-  - "T008"
-  - "T009"
-  - "T010"
-title: "Question Detection in Stream Parser"
-phase: "Phase 1 - Foundation"
-lane: "done"
-assignee: "codex"
-agent: "codex"
-shell_pid: "20405"
+work_package_id: WP02
+title: Question Detection in Stream Parser
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
-  - timestamp: "2025-12-05T10:35:00Z"
-    lane: "doing"
-    agent: "claude"
-    shell_pid: "6568"
-    action: "Started implementation"
-  - timestamp: "2025-12-05T10:45:00Z"
-    lane: "doing"
-    agent: "codex"
-    shell_pid: "8721"
-    action: "Started implementation"
-  - timestamp: "2025-12-05T10:40:00Z"
-    lane: "for_review"
-    agent: "claude"
-    shell_pid: "6568"
-    action: "Completed implementation - ready for review"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+- timestamp: '2025-12-05T10:35:00Z'
+  lane: doing
+  agent: claude
+  shell_pid: '6568'
+  action: Started implementation
+- timestamp: '2025-12-05T10:45:00Z'
+  lane: doing
+  agent: codex
+  shell_pid: '8721'
+  action: Started implementation
+- timestamp: '2025-12-05T10:40:00Z'
+  lane: for_review
+  agent: claude
+  shell_pid: '6568'
+  action: Completed implementation - ready for review
+agent: codex
+assignee: codex
+phase: Phase 1 - Foundation
+shell_pid: '20405'
+subtasks:
+- T006
+- T007
+- T008
+- T009
+- T010
 ---
 
 # Work Package Prompt: WP02 – Question Detection in Stream Parser

@@ -1,25 +1,25 @@
 ---
-work_package_id: "WP12"
-subtasks:
-  - "T080"
-  - "T081"
-  - "T082"
-  - "T083"
-  - "T084"
-  - "T085"
-  - "T086"
-title: "CLI Interface"
-phase: "Phase 4 - Expansion"
-lane: "done"
-assignee: "claude"
-agent: "claude"
-shell_pid: "68317"
+work_package_id: WP12
+title: CLI Interface
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+agent: claude
+assignee: claude
+phase: Phase 4 - Expansion
+shell_pid: '68317'
+subtasks:
+- T080
+- T081
+- T082
+- T083
+- T084
+- T085
+- T086
 ---
 
 # Work Package Prompt: WP12 – CLI Interface

@@ -1,50 +1,50 @@
 ---
-work_package_id: "WP08"
-subtasks:
-  - "T049"
-  - "T050"
-  - "T051"
-  - "T052"
-  - "T053"
-  - "T054"
-  - "T055"
-title: "Resource Tracking and Cleanup"
-phase: "Phase 2 - Core Infrastructure"
-lane: "done"
-assignee: "claude"
-agent: "claude"
-shell_pid: "61894"
+work_package_id: WP08
+title: Resource Tracking and Cleanup
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
-  - timestamp: "2025-12-05T10:05:37Z"
-    lane: "doing"
-    agent: "codex"
-    shell_pid: "54032"
-    action: "Started implementation"
-  - timestamp: "2025-12-05T10:08:34Z"
-    lane: "for_review"
-    agent: "codex"
-    shell_pid: "54032"
-    action: "Ready for review"
-  - timestamp: "2025-12-05T10:09:42Z"
-    lane: "planned"
-    agent: "codex"
-    shell_pid: "55120"
-    action: "Review feedback: missing wiring to parser/session, success/failure detection, idle/timeout enforcement, and controller tests"
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "doing"
-    agent: "codex"
-    shell_pid: "61363"
-    action: "Started review"
-  - timestamp: "2025-12-05T10:20:00Z"
-    lane: "done"
-    agent: "claude"
-    shell_pid: "61894"
-    action: "Approved after review"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+- timestamp: '2025-12-05T10:05:37Z'
+  lane: doing
+  agent: codex
+  shell_pid: '54032'
+  action: Started implementation
+- timestamp: '2025-12-05T10:08:34Z'
+  lane: for_review
+  agent: codex
+  shell_pid: '54032'
+  action: Ready for review
+- timestamp: '2025-12-05T10:09:42Z'
+  lane: planned
+  agent: codex
+  shell_pid: '55120'
+  action: 'Review feedback: missing wiring to parser/session, success/failure detection, idle/timeout enforcement, and controller tests'
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: doing
+  agent: codex
+  shell_pid: '61363'
+  action: Started review
+- timestamp: '2025-12-05T10:20:00Z'
+  lane: done
+  agent: claude
+  shell_pid: '61894'
+  action: Approved after review
+agent: claude
+assignee: claude
+phase: Phase 2 - Core Infrastructure
+shell_pid: '61894'
+subtasks:
+- T049
+- T050
+- T051
+- T052
+- T053
+- T054
+- T055
 ---
 
 # Work Package Prompt: WP08 – Resource Tracking and Cleanup

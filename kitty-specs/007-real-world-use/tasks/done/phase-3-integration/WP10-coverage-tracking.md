@@ -1,25 +1,25 @@
 ---
-work_package_id: "WP10"
-subtasks:
-  - "T064"
-  - "T065"
-  - "T066"
-  - "T067"
-  - "T068"
-  - "T069"
-  - "T070"
-title: "Coverage Tracking and Reporting"
-phase: "Phase 3 - Integration"
-lane: "done"
-assignee: "claude"
-agent: "claude"
-shell_pid: "74061"
+work_package_id: WP10
+title: Coverage Tracking and Reporting
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+agent: claude
+assignee: claude
+phase: Phase 3 - Integration
+shell_pid: '74061'
+subtasks:
+- T064
+- T065
+- T066
+- T067
+- T068
+- T069
+- T070
 ---
 
 # Work Package Prompt: WP10 – Coverage Tracking and Reporting

@@ -1,42 +1,42 @@
 ---
-work_package_id: "WP05"
-subtasks:
-  - "T027"
-  - "T028"
-  - "T029"
-  - "T030"
-  - "T031"
-  - "T032"
-  - "T033"
-  - "T034"
-  - "T035"
-title: "Use Case Library - First 10 Scenarios"
-phase: "Phase 2 - Core Infrastructure"
-lane: "done"
-assignee: "codex"
-agent: "codex"
-shell_pid: "29925"
+work_package_id: WP05
+title: Use Case Library - First 10 Scenarios
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
-  - timestamp: "2025-12-05T10:38:00Z"
-    lane: "doing"
-    agent: "claude"
-    shell_pid: "6568"
-    action: "Started implementation"
-  - timestamp: "2025-12-05T10:45:00Z"
-    lane: "for_review"
-    agent: "claude"
-    shell_pid: "6568"
-    action: "Completed implementation - 10 use cases ready for review"
-  - timestamp: "2025-12-05T09:50:15Z"
-    lane: "done"
-    agent: "codex"
-    shell_pid: "29925"
-    action: "Review accepted via /spec-kitty.review; tests: `npm run test -- tests/functional/src/use-cases/__tests__/loader.test.ts`"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+- timestamp: '2025-12-05T10:38:00Z'
+  lane: doing
+  agent: claude
+  shell_pid: '6568'
+  action: Started implementation
+- timestamp: '2025-12-05T10:45:00Z'
+  lane: for_review
+  agent: claude
+  shell_pid: '6568'
+  action: Completed implementation - 10 use cases ready for review
+- timestamp: '2025-12-05T09:50:15Z'
+  lane: done
+  agent: codex
+  shell_pid: '29925'
+  action: 'Review accepted via /spec-kitty.review; tests: `npm run test -- tests/functional/src/use-cases/__tests__/loader.test.ts`'
+agent: codex
+assignee: codex
+phase: Phase 2 - Core Infrastructure
+shell_pid: '29925'
+subtasks:
+- T027
+- T028
+- T029
+- T030
+- T031
+- T032
+- T033
+- T034
+- T035
 ---
 
 # Work Package Prompt: WP05 – Use Case Library - First 10 Scenarios

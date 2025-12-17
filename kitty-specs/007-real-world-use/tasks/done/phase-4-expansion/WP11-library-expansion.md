@@ -1,27 +1,27 @@
 ---
-work_package_id: "WP11"
-subtasks:
-  - "T071"
-  - "T072"
-  - "T073"
-  - "T074"
-  - "T075"
-  - "T076"
-  - "T077"
-  - "T078"
-  - "T079"
-title: "Use Case Library Expansion"
-phase: "Phase 4 - Expansion"
-lane: "done"
-assignee: "claude"
-agent: "claude"
-shell_pid: "68317"
+work_package_id: WP11
+title: Use Case Library Expansion
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+agent: claude
+assignee: claude
+phase: Phase 4 - Expansion
+shell_pid: '68317'
+subtasks:
+- T071
+- T072
+- T073
+- T074
+- T075
+- T076
+- T077
+- T078
+- T079
 ---
 
 # Work Package Prompt: WP11 – Use Case Library Expansion

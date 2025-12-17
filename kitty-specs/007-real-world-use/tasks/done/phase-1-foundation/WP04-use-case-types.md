@@ -1,41 +1,41 @@
 ---
-work_package_id: "WP04"
-subtasks:
-  - "T019"
-  - "T020"
-  - "T021"
-  - "T022"
-  - "T023"
-  - "T024"
-  - "T025"
-  - "T026"
-title: "Use Case Type Definitions"
-phase: "Phase 1 - Foundation"
-lane: "done"
-assignee: "codex"
-agent: "codex"
-shell_pid: "29925"
+work_package_id: WP04
+title: Use Case Type Definitions
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
-  - timestamp: "2025-12-05T09:39:28Z"
-    lane: "doing"
-    agent: "codex"
-    shell_pid: "8721"
-    action: "Started implementation"
-  - timestamp: "2025-12-05T09:43:18Z"
-    lane: "for_review"
-    agent: "codex"
-    shell_pid: "8721"
-    action: "Completed implementation"
-  - timestamp: "2025-12-05T09:47:18Z"
-    lane: "done"
-    agent: "codex"
-    shell_pid: "29925"
-    action: "Review accepted via /spec-kitty.review; tests: `npm run test -- tests/functional/src/use-cases/__tests__/loader.test.ts`"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+- timestamp: '2025-12-05T09:39:28Z'
+  lane: doing
+  agent: codex
+  shell_pid: '8721'
+  action: Started implementation
+- timestamp: '2025-12-05T09:43:18Z'
+  lane: for_review
+  agent: codex
+  shell_pid: '8721'
+  action: Completed implementation
+- timestamp: '2025-12-05T09:47:18Z'
+  lane: done
+  agent: codex
+  shell_pid: '29925'
+  action: 'Review accepted via /spec-kitty.review; tests: `npm run test -- tests/functional/src/use-cases/__tests__/loader.test.ts`'
+agent: codex
+assignee: codex
+phase: Phase 1 - Foundation
+shell_pid: '29925'
+subtasks:
+- T019
+- T020
+- T021
+- T022
+- T023
+- T024
+- T025
+- T026
 ---
 
 # Work Package Prompt: WP04 – Use Case Type Definitions

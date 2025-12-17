@@ -1,36 +1,36 @@
 ---
-work_package_id: "WP20"
-subtasks:
-  - "T001"
-title: "Execute Evals - project-foundation (16 evals)"
-phase: "Phase 4 - Eval Execution"
-lane: "done"
-assignee: ""
-agent: "claude-reviewer"
-shell_pid: "99001"
-review_status: "approved with notes"
-reviewed_by: "claude-reviewer"
+work_package_id: WP20
+title: Execute Evals - project-foundation (16 evals)
+lane: done
 history:
-  - timestamp: "2025-12-16T13:20:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
-  - timestamp: "2025-12-16T17:50:00Z"
-    lane: "doing"
-    agent: "claude"
-    shell_pid: "43699"
-    action: "Started execution of 16 project-foundation domain evals"
-  - timestamp: "2025-12-16T17:55:00Z"
-    lane: "for_review"
-    agent: "claude"
-    shell_pid: "43699"
-    action: "Completed execution - 16 session logs created, 0 successful, 16 failed (4 timeout, 12 cascade). CRITICAL: No eval project created - blocks WP21-WP28."
-  - timestamp: "2025-12-16T18:50:00Z"
-    lane: "done"
-    agent: "claude-reviewer"
-    shell_pid: "99001"
-    action: "APPROVED with notes - baseline data correctly captured; timeout issues are infrastructure constraints. 0% success documents scope of MCP timeout issues."
+- timestamp: '2025-12-16T13:20:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+- timestamp: '2025-12-16T17:50:00Z'
+  lane: doing
+  agent: claude
+  shell_pid: '43699'
+  action: Started execution of 16 project-foundation domain evals
+- timestamp: '2025-12-16T17:55:00Z'
+  lane: for_review
+  agent: claude
+  shell_pid: '43699'
+  action: 'Completed execution - 16 session logs created, 0 successful, 16 failed (4 timeout, 12 cascade). CRITICAL: No eval project created - blocks WP21-WP28.'
+- timestamp: '2025-12-16T18:50:00Z'
+  lane: done
+  agent: claude-reviewer
+  shell_pid: '99001'
+  action: APPROVED with notes - baseline data correctly captured; timeout issues are infrastructure constraints. 0% success documents scope of MCP timeout issues.
+agent: claude-reviewer
+assignee: ''
+phase: Phase 4 - Eval Execution
+review_status: approved with notes
+reviewed_by: claude-reviewer
+shell_pid: '99001'
+subtasks:
+- T001
 ---
 
 # Review Feedback

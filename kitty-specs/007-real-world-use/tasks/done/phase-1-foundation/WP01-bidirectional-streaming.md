@@ -1,53 +1,53 @@
 ---
-work_package_id: "WP01"
-subtasks:
-  - "T001"
-  - "T002"
-  - "T003"
-  - "T004"
-  - "T005"
-title: "Bidirectional Streaming Infrastructure"
-phase: "Phase 1 - Foundation"
-lane: "done"
-assignee: "claude"
-agent: "claude"
-shell_pid: "63362"
+work_package_id: WP01
+title: Bidirectional Streaming Infrastructure
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
-  - timestamp: "2025-12-05T11:00:00Z"
-    lane: "doing"
-    agent: "claude"
-    shell_pid: "5620"
-    action: "Started implementation"
-  - timestamp: "2025-12-05T10:01:59Z"
-    lane: "doing"
-    agent: "codex"
-    shell_pid: "50937"
-    action: "Started review"
-  - timestamp: "2025-12-05T10:12:34Z"
-    lane: "planned"
-    agent: "codex"
-    shell_pid: "62194"
-    action: "Review rejected via /spec-kitty.review – stdin closes immediately, no mid-session injection possible; success metric unmet; tests not run"
-  - timestamp: "2025-12-05T10:25:00Z"
-    lane: "doing"
-    agent: "claude"
-    shell_pid: "63362"
-    action: "Addressing review feedback - implementing true mid-session injection"
-  - timestamp: "2025-12-05T10:35:00Z"
-    lane: "for_review"
-    agent: "claude"
-    shell_pid: "63362"
-    action: "Ready for review - all feedback addressed, test-mid-session-injection.ts passes"
-  - timestamp: "2025-12-05T11:45:00Z"
-    lane: "done"
-    agent: "claude"
-    shell_pid: "65689"
-    action: "APPROVED: All DoD criteria verified. test-mid-session-injection.ts passes (question detected, answer injected mid-session, acknowledgment received). WP01-specific files compile cleanly. Regression test (test-stdin-injection.ts) passes."
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+- timestamp: '2025-12-05T11:00:00Z'
+  lane: doing
+  agent: claude
+  shell_pid: '5620'
+  action: Started implementation
+- timestamp: '2025-12-05T10:01:59Z'
+  lane: doing
+  agent: codex
+  shell_pid: '50937'
+  action: Started review
+- timestamp: '2025-12-05T10:12:34Z'
+  lane: planned
+  agent: codex
+  shell_pid: '62194'
+  action: Review rejected via /spec-kitty.review – stdin closes immediately, no mid-session injection possible; success metric unmet; tests not run
+- timestamp: '2025-12-05T10:25:00Z'
+  lane: doing
+  agent: claude
+  shell_pid: '63362'
+  action: Addressing review feedback - implementing true mid-session injection
+- timestamp: '2025-12-05T10:35:00Z'
+  lane: for_review
+  agent: claude
+  shell_pid: '63362'
+  action: Ready for review - all feedback addressed, test-mid-session-injection.ts passes
+- timestamp: '2025-12-05T11:45:00Z'
+  lane: done
+  agent: claude
+  shell_pid: '65689'
+  action: 'APPROVED: All DoD criteria verified. test-mid-session-injection.ts passes (question detected, answer injected mid-session, acknowledgment received). WP01-specific files compile cleanly. Regression test (test-stdin-injection.ts) passes.'
+agent: claude
+assignee: claude
+phase: Phase 1 - Foundation
+shell_pid: '63362'
+subtasks:
+- T001
+- T002
+- T003
+- T004
+- T005
 ---
 
 # Work Package Prompt: WP01 – Bidirectional Streaming Infrastructure

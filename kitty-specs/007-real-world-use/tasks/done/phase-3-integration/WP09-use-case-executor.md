@@ -1,26 +1,26 @@
 ---
-work_package_id: "WP09"
-subtasks:
-  - "T056"
-  - "T057"
-  - "T058"
-  - "T059"
-  - "T060"
-  - "T061"
-  - "T062"
-  - "T063"
-title: "Use Case Executor"
-phase: "Phase 3 - Integration"
-lane: "done"
-assignee: "claude"
-agent: "claude"
-shell_pid: "68317"
+work_package_id: WP09
+title: Use Case Executor
+lane: done
 history:
-  - timestamp: "2025-12-05T10:15:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2025-12-05T10:15:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+agent: claude
+assignee: claude
+phase: Phase 3 - Integration
+shell_pid: '68317'
+subtasks:
+- T056
+- T057
+- T058
+- T059
+- T060
+- T061
+- T062
+- T063
 ---
 
 # Work Package Prompt: WP09 – Use Case Executor
