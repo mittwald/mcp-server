@@ -11,6 +11,40 @@ There are 2 Fly.io apps for the Mittwald ecosystem:
 claude mcp add --transport http mittwald https://mittwald-mcp-fly2.fly.dev/mcp
 ```
 
+### Deployment - CRITICAL
+
+**NEVER run `fly deploy` or `flyctl deploy` directly!**
+
+Deployment is automated via GitHub Actions. To deploy:
+1. Commit and push changes to the `main` branch
+2. GitHub Actions workflow (`.github/workflows/deploy-fly.yml`) triggers automatically
+3. Monitor deployment status with: `gh run list --limit 5`
+
+**The workflow triggers on changes to:**
+- `packages/**`
+- `src/**`
+- `Dockerfile`
+- `fly.toml`
+- `.github/workflows/deploy-fly.yml`
+
+**To check deployment status:**
+```bash
+# View recent workflow runs
+gh run list --limit 5
+
+# Watch a specific run
+gh run watch
+
+# View logs for a failed run
+gh run view --log-failed
+```
+
+**Why not direct deploy?**
+- Bypasses CI/CD checks
+- No audit trail in GitHub
+- Can deploy untested/unbuilt code
+- Inconsistent with team workflow
+
 ## Project Structure
 ```
 src/
