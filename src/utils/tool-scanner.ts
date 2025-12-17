@@ -20,15 +20,39 @@ import type {
 } from '../types/tool-registry.js';
 
 /**
- * Tools that should be excluded from the tool registry
+ * Tools that should be excluded from the tool registry with reasons
  * These tools are deactivated for security and multi-tenancy reasons
  */
-const EXCLUDED_TOOLS = new Set([
-  'mittwald_login_reset',
-  'mittwald_login_token',
-  // org/delete excluded: no org/create exists for safe testing; prevents catastrophic deletion
-  'mittwald_org_delete'
-]);
+export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
+  'mittwald_login_reset': 'security reasons in multi-tenant environment',
+  'mittwald_login_token': 'security reasons in multi-tenant environment',
+  'mittwald_org_delete': 'organization deletion is irreversible and no org/create tool exists for safe testing'
+};
+
+/**
+ * Set of excluded tool names for quick lookup
+ */
+const EXCLUDED_TOOLS = new Set(Object.keys(EXCLUDED_TOOLS_WITH_REASONS));
+
+/**
+ * Check if a tool is excluded from the registry
+ *
+ * @param toolName - Name of the tool to check
+ * @returns true if the tool is excluded
+ */
+export function isToolExcluded(toolName: string): boolean {
+  return EXCLUDED_TOOLS.has(toolName);
+}
+
+/**
+ * Get the reason why a tool is excluded
+ *
+ * @param toolName - Name of the tool
+ * @returns Reason string or undefined if not excluded
+ */
+export function getExclusionReason(toolName: string): string | undefined {
+  return EXCLUDED_TOOLS_WITH_REASONS[toolName];
+}
 
 /**
  * Default options for tool scanning

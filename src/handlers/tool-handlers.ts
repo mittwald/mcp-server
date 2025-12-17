@@ -25,6 +25,7 @@ import {
   getToolSchema
 } from '../constants/tools.js';
 import { logger } from '../utils/logger.js';
+import { isToolExcluded, getExclusionReason } from '../utils/tool-scanner.js';
 import { toolCallsTotal, toolDuration } from '../metrics/index.js';
 import type { MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
@@ -141,6 +142,36 @@ export async function handleToolCall(
       }
       
       throw new Error(`Arguments are required for tool '${toolName}'`);
+    }
+
+    // Check if tool is explicitly excluded (disabled for safety)
+    if (isToolExcluded(request.params.name)) {
+      const reason = getExclusionReason(request.params.name);
+      logger.warn(`Attempted to call disabled tool: ${request.params.name}`, {
+        toolName: request.params.name,
+        reason: reason || 'excluded_for_safety'
+      });
+
+      toolCallsTotal.inc({ tool_name: toolName, status: 'disabled' });
+      end(); // Record duration
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              status: 'error',
+              message: `Tool '${request.params.name}' is disabled for safety reasons: ${reason || 'security policy'}.`,
+              data: {
+                toolName: request.params.name,
+                reason: 'excluded_for_safety',
+                suggestedAction: 'Please verify this action is necessary and contact support if required.'
+              }
+            }, null, 2),
+          },
+        ],
+        isError: true,
+      };
     }
 
     // Check if tool exists
