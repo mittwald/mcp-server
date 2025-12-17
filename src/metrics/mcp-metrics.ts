@@ -35,3 +35,19 @@ export const cliCallsTotal = new Counter({
   labelNames: ['command', 'status'],
   registers: registries
 });
+
+// Histogram for memory usage per tool
+export const toolMemoryDelta = new Histogram({
+  name: 'mcp_tool_memory_delta_mb',
+  help: 'Memory change during tool execution in MB',
+  labelNames: ['tool_name'],
+  buckets: [0.1, 1, 5, 10, 25, 50, 100],
+  registers: registries
+});
+
+// Gauge for current memory pressure level
+export const memoryPressure = new Gauge({
+  name: 'mcp_memory_pressure_percent',
+  help: 'Current heap usage as percentage',
+  registers: registries
+});

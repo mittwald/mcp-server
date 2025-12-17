@@ -26,7 +26,7 @@ import {
 } from '../constants/tools.js';
 import { logger } from '../utils/logger.js';
 import { isToolExcluded, getExclusionReason } from '../utils/tool-scanner.js';
-import { toolCallsTotal, toolDuration } from '../metrics/index.js';
+import { toolCallsTotal, toolDuration, toolMemoryDelta, memoryPressure } from '../metrics/index.js';
 import type { MCPToolContext } from '../types/request-context.js';
 import type { ToolHandlerContext } from './tools/types.js';
 import { filterTools, getToolCategories, getToolCountByCategory } from '../utils/tool-filter.js';
@@ -117,6 +117,25 @@ export async function handleToolCall(
 ): Promise<CallToolResult> {
   const toolName = request.params.name;
   const end = toolDuration.startTimer({ tool_name: toolName });
+  const startTime = Date.now();
+
+  // Capture memory before execution
+  const memBefore = process.memoryUsage();
+
+  // Update memory pressure gauge
+  const heapPercent = (memBefore.heapUsed / memBefore.heapTotal) * 100;
+  memoryPressure.set(heapPercent);
+
+  // Check for critical memory pressure
+  if (heapPercent > 90) {
+    logger.error('⚠️  CRITICAL memory pressure detected', {
+      tool: toolName,
+      heapPercent: heapPercent.toFixed(1),
+      heapUsedMB: (memBefore.heapUsed / 1024 / 1024).toFixed(1),
+      heapTotalMB: (memBefore.heapTotal / 1024 / 1024).toFixed(1),
+      sessionId: context.sessionId
+    });
+  }
 
   try {
     // Ensure tools are loaded
@@ -248,15 +267,65 @@ export async function handleToolCall(
     let result: CallToolResult;
     result = await runWithSessionContext(context.sessionId, () => handler(request.params.arguments as any));
 
+    // Capture memory after execution
+    const memAfter = process.memoryUsage();
+    const memoryDeltaMB = (memAfter.heapUsed - memBefore.heapUsed) / 1024 / 1024;
+    const durationMs = Date.now() - startTime;
+
+    // Record metrics
     toolCallsTotal.inc({ tool_name: toolName, status: 'success' });
+    toolMemoryDelta.observe({ tool_name: toolName }, memoryDeltaMB);
     end(); // Record duration
-    logger.info(`✅ Tool ${request.params.name} executed successfully`);
+
+    // Log slow operations
+    const SLOW_THRESHOLD_MS = 5000;
+    const VERY_SLOW_THRESHOLD_MS = 30000;
+
+    if (durationMs > VERY_SLOW_THRESHOLD_MS) {
+      logger.warn(`🐌 VERY SLOW tool execution`, {
+        tool: toolName,
+        durationMs,
+        durationSec: (durationMs / 1000).toFixed(1),
+        memoryDeltaMB: memoryDeltaMB.toFixed(1),
+        heapUsedMB: (memAfter.heapUsed / 1024 / 1024).toFixed(1),
+        sessionId: context.sessionId
+      });
+    } else if (durationMs > SLOW_THRESHOLD_MS) {
+      logger.info(`⏱️  Slow tool execution`, {
+        tool: toolName,
+        durationMs,
+        durationSec: (durationMs / 1000).toFixed(1),
+        memoryDeltaMB: memoryDeltaMB.toFixed(1),
+        sessionId: context.sessionId
+      });
+    } else {
+      logger.info(`✅ Tool ${request.params.name} executed successfully`, {
+        durationMs,
+        memoryDeltaMB: memoryDeltaMB.toFixed(1)
+      });
+    }
+
     return result;
     
   } catch (error) {
     toolCallsTotal.inc({ tool_name: toolName, status: 'error' });
     end(); // Record duration even on error
-    logger.error(`❌ Tool ${request.params.name} failed:`, error);
+
+    // Capture context for error diagnosis
+    const memAfterError = process.memoryUsage();
+    const durationMs = Date.now() - startTime;
+
+    logger.error(`❌ Tool ${request.params.name} failed`, {
+      tool: toolName,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      durationMs,
+      heapUsedMB: (memAfterError.heapUsed / 1024 / 1024).toFixed(1),
+      heapTotalMB: (memAfterError.heapTotal / 1024 / 1024).toFixed(1),
+      heapPercent: ((memAfterError.heapUsed / memAfterError.heapTotal) * 100).toFixed(1),
+      sessionId: context.sessionId,
+      uptime: process.uptime().toFixed(0)
+    });
 
     // Return error result instead of throwing
     return {
