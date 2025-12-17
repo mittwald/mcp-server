@@ -2,21 +2,26 @@
 
 ## Quick Setup
 
-### 1. Import Dashboard to Grafana
+### 1. Import Dashboard to Grafana (Manual - Recommended)
 
+**Via Grafana UI:**
+1. Go to https://mittwald-grafana.fly.dev/
+2. Login (admin/admin)
+3. Navigate to: Dashboards → Import
+4. Copy and paste the contents of `oom-monitoring-dashboard.json`
+5. Click "Load"
+6. Select datasource: "Prometheus"
+7. Click "Import"
+
+**Via API (if you have an API key):**
 ```bash
-# Via UI:
-# 1. Go to Grafana → Dashboards → Import
-# 2. Upload oom-monitoring-dashboard.json
-# 3. Select your Prometheus datasource
-# 4. Click Import
-
-# Via API:
-curl -X POST https://your-grafana/api/dashboards/db \
+curl -X POST https://mittwald-grafana.fly.dev/api/dashboards/db \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d @oom-monitoring-dashboard.json
+  -d @grafana/oom-monitoring-dashboard.json
 ```
+
+**Note:** The Grafana instance on Fly.io has ephemeral storage, so dashboards uploaded via filesystem won't persist across restarts. Use the UI import method above.
 
 ### 2. Configure Prometheus Alerts
 
