@@ -11,6 +11,27 @@ There are 2 Fly.io apps for the Mittwald ecosystem:
 claude mcp add --transport http mittwald https://mittwald-mcp-fly2.fly.dev/mcp
 ```
 
+### Single Instance Only - CRITICAL
+
+**NEVER scale to multiple instances!** Both `mittwald-oauth-server` and `mittwald-mcp-fly2` must run as **single instances only**.
+
+Why: In-memory storage (sessions, state) is NOT synchronized horizontally. Running multiple instances causes:
+- Session loss when requests hit different instances
+- OAuth state mismatches
+- Authentication failures
+
+**To verify single instance:**
+```bash
+flyctl status -a mittwald-oauth-server  # Should show 1 instance
+flyctl status -a mittwald-mcp-fly2      # Should show 1 instance
+```
+
+**If you accidentally scaled up:**
+```bash
+flyctl scale count 1 -a mittwald-oauth-server
+flyctl scale count 1 -a mittwald-mcp-fly2
+```
+
 ### Deployment - CRITICAL
 
 **NEVER run `fly deploy` or `flyctl deploy` directly!**
