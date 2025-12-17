@@ -1,5 +1,6 @@
 import { Counter, Histogram, Gauge } from 'prom-client';
 import { register, metricsEnabled } from './registry.js';
+import * as v8 from 'v8';
 
 // Only register metrics if enabled
 const registries = metricsEnabled ? [register] : [];
@@ -59,7 +60,6 @@ export const heapSizeLimit = new Gauge({
   registers: registries,
   collect() {
     // Update the gauge with current heap_size_limit from v8
-    const v8 = require('v8');
     const stats = v8.getHeapStatistics();
     this.set(stats.heap_size_limit);
   }
