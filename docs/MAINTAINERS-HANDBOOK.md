@@ -1,7 +1,7 @@
 # Mittwald MCP System - Maintainers Handbook
 
-**Version**: 1.0
-**Last Updated**: 2025-11-26
+**Version**: 1.1
+**Last Updated**: 2025-12-17
 **Target Audience**: Mittwald Operations & Development Teams
 
 ---
@@ -604,6 +604,75 @@ mw container logs c-u8i2fa
 ---
 
 ## Troubleshooting
+
+### Critical Issue: MCP Tool Timeouts (SIGTERM)
+
+**Symptom**: All MCP tool calls timeout with `Command killed with signal SIGTERM`
+
+**Root Cause**: Node.js process started without `--max-old-space-size` flag, resulting in insufficient heap memory (~42MB instead of 768MB).
+
+**Diagnosis Steps**:
+
+1. **Check for memory pressure in logs**:
+   ```bash
+   flyctl logs -a mittwald-mcp-fly2 --no-tail | tail -100 | grep "CRITICAL memory pressure"
+   ```
+
+   Look for:
+   ```
+   [ERROR] ⚠️  CRITICAL memory pressure detected {
+     heapPercent: '90.6',
+     heapUsedMB: '38.7',
+     heapTotalMB: '42.8'  ← Should be ~768MB!
+   }
+   ```
+
+2. **Verify Node.js is running with memory flag**:
+   ```bash
+   flyctl ssh console -a mittwald-mcp-fly2 -C "ps aux | grep 'node.*max-old-space'"
+   ```
+
+   Expected: `node --max-old-space-size=768 build/index.js`
+   Problem: `node build/index.js` (missing flag)
+
+3. **Check VM memory**:
+   ```bash
+   flyctl ssh console -a mittwald-mcp-fly2 -C "free -m"
+   ```
+
+   Should show ~459MB total with 200+ MB available
+
+**Resolution**:
+
+Ensure `Dockerfile` line 24 includes the memory flag:
+
+```dockerfile
+# CORRECT:
+CMD ["node", "--max-old-space-size=768", "build/index.js"]
+
+# WRONG:
+CMD ["node", "build/index.js"]
+```
+
+**Verification After Fix**:
+
+1. Deploy and check process:
+   ```bash
+   flyctl ssh console -a mittwald-mcp-fly2 -C "ps aux | grep node"
+   # Should show: --max-old-space-size=768
+   ```
+
+2. Verify no memory pressure:
+   ```bash
+   flyctl logs -a mittwald-mcp-fly2 --no-tail | tail -50 | grep "CRITICAL memory"
+   # Should return empty
+   ```
+
+3. Test MCP tool call (should complete without SIGTERM)
+
+**Reference**: This issue was discovered and resolved via WP34 backups domain evaluation on 2025-12-17. Complete diagnosis: `evals/results/2025-12-17T21-25-15/root-cause-diagnosis.md`
+
+---
 
 ### Common Issues
 
