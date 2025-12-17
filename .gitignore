@@ -36,7 +36,8 @@ lerna-debug.log*
 .DS_Store
 .claude
 .codex
-.kittify
+.kittify/*
+!.kittify/memory/
 
 .worktrees/
 # Testing
@@ -106,3 +107,4 @@ version.json
 .augment/
 .roo/
 .amazonq/
+.github/copilot/
