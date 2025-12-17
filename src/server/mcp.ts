@@ -116,6 +116,13 @@ export class MCPHandler implements IMCPHandler {
     // Wrapped in try/catch to ensure telemetry never affects session functionality
     server.oninitialized = () => {
       try {
+        // Defensive check: Verify SDK methods exist (for compatibility with older SDK versions)
+        if (typeof server.getClientCapabilities !== 'function' ||
+            typeof server.getClientVersion !== 'function') {
+          logger.debug(`📊 [${sessionId}] SDK doesn't support capability tracking (methods not available)`);
+          return;
+        }
+
         const clientCapabilities = server.getClientCapabilities();
         const clientVersion = server.getClientVersion();
 

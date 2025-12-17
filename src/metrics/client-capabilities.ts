@@ -6,6 +6,14 @@
  * Tracks which MCP clients support various spec features (including experimental
  * ones like Tasks from the 2025-11-25 spec) without changing tool implementations.
  * This provides data for deciding when to implement new features.
+ *
+ * CARDINALITY OPTIMIZATION:
+ * Metrics have been simplified to prevent Prometheus metric explosion:
+ * - clientCapabilitiesTotal: Only tracks client_name + experimental_tasks (20-40 time series)
+ * - clientVersionsTotal: Only tracks client_name (10-20 time series)
+ * - Detailed capability data is available in structured logs (logger.info statements)
+ *
+ * This design balances observability with Prometheus best practices for metric cardinality.
  */
 
 import { Counter, Gauge } from 'prom-client';
@@ -18,24 +26,20 @@ const registries = metricsEnabled ? [register] : [];
 
 /**
  * Counter for client connections by capability support
- * Labels allow filtering/grouping by specific capabilities
+ *
+ * CARDINALITY-OPTIMIZED: Limited to 2 labels to prevent metric explosion.
+ * - client_name: Expected to have ~10-20 unique values
+ * - supports_experimental_tasks: Boolean (2 values: true/false)
+ * Total time series: ~20-40 (very safe)
+ *
+ * For detailed capability breakdowns, query logs or use the gauge metrics.
  */
 export const clientCapabilitiesTotal = new Counter({
   name: 'mcp_client_capabilities_total',
-  help: 'Total client connections by capability support',
+  help: 'Total client connections by client and experimental Tasks support',
   labelNames: [
     'client_name',
-    'client_version',
-    'protocol_version',
-    'supports_roots',
-    'supports_sampling',
-    'supports_sampling_tools',
-    'supports_sampling_context',
-    'supports_elicitation',
-    'supports_elicitation_form',
-    'supports_elicitation_url',
     'supports_experimental_tasks',
-    'has_experimental',
   ],
   registers: registries,
 });
@@ -62,12 +66,15 @@ export const experimentalFeaturesTotal = new Counter({
 });
 
 /**
- * Detailed client info counter for version tracking
+ * Client version tracking counter
+ *
+ * CARDINALITY-OPTIMIZED: Only track client name (not full version strings).
+ * Full version details are available in logs.
  */
 export const clientVersionsTotal = new Counter({
   name: 'mcp_client_versions_total',
-  help: 'Client connections by name and version',
-  labelNames: ['client_name', 'client_version', 'protocol_version'],
+  help: 'Client connections by name',
+  labelNames: ['client_name'],
   registers: registries,
 });
 
@@ -163,27 +170,15 @@ export function trackClientCapabilities(
     },
   });
 
-  // Track detailed capability metrics
+  // Track simplified capability metrics (cardinality-optimized)
   clientCapabilitiesTotal.inc({
     client_name: clientName,
-    client_version: clientVersion,
-    protocol_version: protoVersion,
-    supports_roots: String(flags.supportsRoots),
-    supports_sampling: String(flags.supportsSampling),
-    supports_sampling_tools: String(flags.supportsSamplingTools),
-    supports_sampling_context: String(flags.supportsSamplingContext),
-    supports_elicitation: String(flags.supportsElicitation),
-    supports_elicitation_form: String(flags.supportsElicitationForm),
-    supports_elicitation_url: String(flags.supportsElicitationUrl),
     supports_experimental_tasks: String(flags.supportsExperimentalTasks),
-    has_experimental: String(flags.hasExperimental),
   });
 
-  // Track client versions
+  // Track client connections by name only (cardinality-optimized)
   clientVersionsTotal.inc({
     client_name: clientName,
-    client_version: clientVersion,
-    protocol_version: protoVersion,
   });
 
   // Track experimental features individually
