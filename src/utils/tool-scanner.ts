@@ -25,7 +25,9 @@ import type {
  */
 const EXCLUDED_TOOLS = new Set([
   'mittwald_login_reset',
-  'mittwald_login_token'
+  'mittwald_login_token',
+  // org/delete excluded: no org/create exists for safe testing; prevents catastrophic deletion
+  'mittwald_org_delete'
 ]);
 
 /**
