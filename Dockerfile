@@ -21,4 +21,4 @@ USER nodejs
 
 ARG PORT=3000
 EXPOSE ${PORT}
-CMD ["node", "build/index.js"]
+CMD ["node", "--max-old-space-size=768", "build/index.js"]
