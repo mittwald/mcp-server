@@ -5,7 +5,7 @@ import { handleMittwaldProjectListCli } from '../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: "mittwald_project_list",
   title: "List Projects",
-  description: "List all projects that you have access to. Results are cached for 5 minutes to improve performance.",
+  description: "List all projects that you have access to. Results are cached for 1 hour to improve performance.",
   inputSchema: {
     type: "object",
     properties: {

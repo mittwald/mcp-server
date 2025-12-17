@@ -9,7 +9,7 @@
  *
  * Cache Strategy:
  * - Per-session caching (different users see different projects)
- * - Configurable TTL (default: 5 minutes)
+ * - Configurable TTL (default: 1 hour)
  * - Automatic expiration
  * - Manual invalidation support
  */
@@ -27,12 +27,12 @@ export class ProjectListCache {
   private cache = new Map<string, CachedProjectList>();
   private readonly defaultTTLMs: number;
 
-  constructor(ttlSeconds: number = 300) { // Default 5 minutes
+  constructor(ttlSeconds: number = 3600) { // Default 1 hour
     this.defaultTTLMs = ttlSeconds * 1000;
     logger.info(`[ProjectListCache] Initialized with TTL: ${ttlSeconds}s`);
 
-    // Cleanup expired entries every minute
-    setInterval(() => this.cleanup(), 60000);
+    // Cleanup expired entries every 5 minutes
+    setInterval(() => this.cleanup(), 300000);
   }
 
   /**
@@ -152,5 +152,5 @@ export class ProjectListCache {
 
 // Singleton instance
 export const projectListCache = new ProjectListCache(
-  parseInt(process.env.PROJECT_LIST_CACHE_TTL_SECONDS || '300', 10)
+  parseInt(process.env.PROJECT_LIST_CACHE_TTL_SECONDS || '3600', 10)
 );
