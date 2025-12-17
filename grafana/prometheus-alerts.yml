@@ -1,0 +1,88 @@
+# Prometheus Alert Rules for OOM Monitoring
+# Place in Prometheus config directory and add to prometheus.yml:
+#   rule_files:
+#     - "prometheus-alerts.yml"
+
+groups:
+  - name: mcp_oom_alerts
+    interval: 30s
+    rules:
+      - alert: CriticalMemoryPressure
+        expr: mcp_memory_pressure_percent > 90
+        for: 1m
+        labels:
+          severity: critical
+          component: mcp-server
+        annotations:
+          summary: "MCP Server under critical memory pressure"
+          description: "Heap usage at {{ $value }}% for over 1 minute. OOM imminent!"
+
+      - alert: HighMemoryPressure
+        expr: mcp_memory_pressure_percent > 75
+        for: 5m
+        labels:
+          severity: warning
+          component: mcp-server
+        annotations:
+          summary: "MCP Server under high memory pressure"
+          description: "Heap usage at {{ $value }}% for over 5 minutes"
+
+      - alert: MemoryLeakDetected
+        expr: deriv(nodejs_heap_size_used_bytes[10m]) > 1048576
+        for: 10m
+        labels:
+          severity: warning
+          component: mcp-server
+        annotations:
+          summary: "Potential memory leak detected"
+          description: "Heap growing at {{ $value | humanize }}B/s for 10 minutes"
+
+      - alert: SlowToolExecution
+        expr: histogram_quantile(0.95, sum by (tool_name, le) (rate(mcp_tool_duration_seconds_bucket[5m]))) > 30
+        for: 5m
+        labels:
+          severity: warning
+          component: mcp-server
+        annotations:
+          summary: "Slow tool execution detected: {{ $labels.tool_name }}"
+          description: "Tool {{ $labels.tool_name }} p95 duration is {{ $value }}s"
+
+      - alert: HighMemoryToolDetected
+        expr: |
+          (
+            sum by (tool_name) (mcp_tool_memory_delta_mb_sum)
+            /
+            sum by (tool_name) (mcp_tool_memory_delta_mb_count)
+          ) > 50
+        for: 5m
+        labels:
+          severity: warning
+          component: mcp-server
+        annotations:
+          summary: "High memory tool: {{ $labels.tool_name }}"
+          description: "Tool {{ $labels.tool_name }} averages {{ $value }}MB memory usage"
+
+      - alert: HighEventLoopLag
+        expr: nodejs_eventloop_lag_p95_seconds > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: mcp-server
+        annotations:
+          summary: "High event loop lag detected"
+          description: "Event loop lag p95 is {{ $value }}s, server may be unresponsive"
+
+      - alert: ToolErrorRate
+        expr: |
+          (
+            sum(rate(mcp_tool_calls_total{status="error"}[5m]))
+            /
+            sum(rate(mcp_tool_calls_total[5m]))
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: mcp-server
+        annotations:
+          summary: "High tool error rate"
+          description: "{{ $value | humanizePercentage }} of tool calls are failing"

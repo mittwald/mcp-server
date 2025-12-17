@@ -1,0 +1,321 @@
+{
+  "dashboard": {
+    "title": "Mittwald MCP - OOM Monitoring",
+    "tags": ["mcp", "memory", "oom"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Memory Pressure (Heap %)",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "mcp_memory_pressure_percent{service=\"mcp-server\"}",
+            "legendFormat": "Heap Usage %",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 50, "color": "yellow"},
+                {"value": 75, "color": "orange"},
+                {"value": 90, "color": "red"}
+              ]
+            },
+            "unit": "percent",
+            "max": 100
+          }
+        },
+        "options": {
+          "legend": {"displayMode": "list", "placement": "bottom"}
+        }
+      },
+      {
+        "id": 2,
+        "title": "Process Memory Usage",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes{service=\"mcp-server\"} / 1024 / 1024",
+            "legendFormat": "Resident Memory (MB)",
+            "refId": "A"
+          },
+          {
+            "expr": "nodejs_heap_size_used_bytes{service=\"mcp-server\"} / 1024 / 1024",
+            "legendFormat": "Heap Used (MB)",
+            "refId": "B"
+          },
+          {
+            "expr": "nodejs_heap_size_total_bytes{service=\"mcp-server\"} / 1024 / 1024",
+            "legendFormat": "Heap Total (MB)",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "decmbytes"
+          }
+        },
+        "options": {
+          "legend": {"displayMode": "list", "placement": "bottom"}
+        }
+      },
+      {
+        "id": 3,
+        "title": "Top 10 Memory-Consuming Tools",
+        "type": "bargauge",
+        "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "topk(10, sum by (tool_name) (mcp_tool_memory_delta_mb_sum) / sum by (tool_name) (mcp_tool_memory_delta_mb_count))",
+            "legendFormat": "{{tool_name}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 10, "color": "yellow"},
+                {"value": 50, "color": "red"}
+              ]
+            },
+            "unit": "decmbytes"
+          }
+        },
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Tool Memory Delta Over Time",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "rate(mcp_tool_memory_delta_mb_sum[5m])",
+            "legendFormat": "{{tool_name}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "decmbytes"
+          }
+        },
+        "options": {
+          "legend": {"displayMode": "table", "placement": "right"}
+        }
+      },
+      {
+        "id": 5,
+        "title": "Slow Tool Executions (>5s)",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 16, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by (tool_name) (rate(mcp_tool_duration_seconds_bucket{le=\"5\"}[5m]))",
+            "legendFormat": "{{tool_name}} (<5s)",
+            "refId": "A"
+          },
+          {
+            "expr": "sum by (tool_name) (rate(mcp_tool_duration_seconds_bucket{le=\"30\"}[5m])) - sum by (tool_name) (rate(mcp_tool_duration_seconds_bucket{le=\"5\"}[5m]))",
+            "legendFormat": "{{tool_name}} (5-30s)",
+            "refId": "B"
+          },
+          {
+            "expr": "sum by (tool_name) (rate(mcp_tool_duration_seconds_count[5m])) - sum by (tool_name) (rate(mcp_tool_duration_seconds_bucket{le=\"30\"}[5m]))",
+            "legendFormat": "{{tool_name}} (>30s)",
+            "refId": "C"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "ops"
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Tool Execution Duration (p95)",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 16, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum by (tool_name, le) (rate(mcp_tool_duration_seconds_bucket[5m])))",
+            "legendFormat": "{{tool_name}} (p95)",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "s"
+          }
+        },
+        "options": {
+          "legend": {"displayMode": "table", "placement": "right", "sortBy": "Last", "sortDesc": true}
+        }
+      },
+      {
+        "id": 7,
+        "title": "Active Connections",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 24, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "mcp_active_connections{service=\"mcp-server\"}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 50, "color": "yellow"},
+                {"value": 80, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Tool Success Rate",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 24, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "sum(rate(mcp_tool_calls_total{status=\"success\"}[5m])) / sum(rate(mcp_tool_calls_total[5m])) * 100",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 90, "color": "yellow"},
+                {"value": 95, "color": "green"}
+              ]
+            },
+            "unit": "percent"
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Event Loop Lag (p95)",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 24, "w": 12, "h": 4},
+        "targets": [
+          {
+            "expr": "nodejs_eventloop_lag_p95_seconds{service=\"mcp-server\"} * 1000",
+            "legendFormat": "p95 Event Loop Lag",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 50, "color": "yellow"},
+                {"value": 100, "color": "red"}
+              ]
+            },
+            "unit": "ms"
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "CLI Command Execution Rate",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 28, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "sum by (command) (rate(mittwald_cli_calls_total[5m]))",
+            "legendFormat": "{{command}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "unit": "ops"
+          }
+        }
+      },
+      {
+        "id": 11,
+        "title": "Memory Leak Detector (Heap Growth Rate)",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 28, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "deriv(nodejs_heap_size_used_bytes{service=\"mcp-server\"}[5m]) / 1024 / 1024",
+            "legendFormat": "Heap Growth Rate (MB/s)",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": -1, "color": "green"},
+                {"value": 0, "color": "yellow"},
+                {"value": 1, "color": "red"}
+              ]
+            },
+            "unit": "MBs"
+          }
+        },
+        "options": {
+          "tooltip": {"mode": "multi"}
+        }
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "name": "High Memory Pressure",
+          "datasource": "Prometheus",
+          "expr": "ALERTS{alertname=\"HighMemoryPressure\"}",
+          "step": "60s",
+          "tagKeys": "tool_name",
+          "textFormat": "High memory pressure detected",
+          "titleFormat": "Memory Alert"
+        }
+      ]
+    }
+  },
+  "overwrite": true
+}
