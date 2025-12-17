@@ -30,6 +30,7 @@ import { handleListResources, handleResourceCall } from "../handlers/resource-ha
 import { logger } from "../utils/logger.js";
 import { sessionManager } from "./session-manager.js";
 import { activeConnections } from "../metrics/index.js";
+import { trackClientCapabilities, untrackClientCapabilities } from "../metrics/client-capabilities.js";
 import { rateLimitMiddleware, validateProtocolVersion, requestSizeLimit } from "./middleware.js";
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import type { AuthenticatedRequest } from "./auth-types.js";
@@ -48,12 +49,28 @@ interface SessionAuth {
   accessTokenExpiresAt?: Date;
 }
 
+/** Capability flags tracked for metrics */
+interface CapabilityFlags {
+  supportsRoots: boolean;
+  supportsSampling: boolean;
+  supportsSamplingTools: boolean;
+  supportsSamplingContext: boolean;
+  supportsElicitation: boolean;
+  supportsElicitationForm: boolean;
+  supportsElicitationUrl: boolean;
+  supportsExperimentalTasks: boolean;
+  hasExperimental: boolean;
+  experimentalFeatures: string[];
+}
+
 interface SessionInfo {
   server: Server;
   transport: StreamableHTTPServerTransport;
   auth?: SessionAuth;
   createdAt: Date;
   lastAccessed: Date;
+  /** Client capability flags for metrics cleanup */
+  capabilityFlags?: CapabilityFlags;
 }
 
 // Interface for MCP Handler
@@ -94,6 +111,33 @@ export class MCPHandler implements IMCPHandler {
   private createServer(sessionId: string, sessionAuth?: SessionAuth): Server {
     // Create new server instance for this session
     const server = new Server(serverConfig, serverCapabilities);
+
+    // Track client capabilities when initialization completes
+    // Wrapped in try/catch to ensure telemetry never affects session functionality
+    server.oninitialized = () => {
+      try {
+        const clientCapabilities = server.getClientCapabilities();
+        const clientVersion = server.getClientVersion();
+
+        // Track capabilities in Prometheus metrics
+        const flags = trackClientCapabilities(
+          sessionId,
+          clientCapabilities,
+          clientVersion,
+        );
+
+        // Store flags on session for cleanup
+        const sessionInfo = this.sessions.get(sessionId);
+        if (sessionInfo) {
+          sessionInfo.capabilityFlags = flags;
+        }
+      } catch (error) {
+        // Never throw - telemetry failures must not affect sessions
+        logger.warn(`📊 [${sessionId}] Failed to track client capabilities (non-fatal)`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    };
 
     // Tools
     server.setRequestHandler(ListToolsRequestSchema, (request) => {
@@ -496,6 +540,16 @@ export class MCPHandler implements IMCPHandler {
           sessionInfo.transport.close();
           this.sessions.delete(sessionId);
           activeConnections.dec(); // Decrement active sessions count
+
+          // Decrement capability gauges (non-fatal if fails)
+          if (sessionInfo.capabilityFlags) {
+            try {
+              untrackClientCapabilities(sessionInfo.capabilityFlags);
+            } catch {
+              // Telemetry cleanup failure is non-fatal
+            }
+          }
+
           cleaned++;
           logger.debug(`🧹 Cleaned up expired session: ${sessionId} (age: ${ageMinutes}min)`);
         } catch (error) {
@@ -623,6 +677,16 @@ export class MCPHandler implements IMCPHandler {
       sessionInfo.transport.close();
       this.sessions.delete(sessionId);
       activeConnections.dec(); // Decrement active sessions count
+
+      // Decrement capability gauges (non-fatal if fails)
+      if (sessionInfo.capabilityFlags) {
+        try {
+          untrackClientCapabilities(sessionInfo.capabilityFlags);
+        } catch {
+          // Telemetry cleanup failure is non-fatal
+        }
+      }
+
       logger.debug(`🧹 Cleaned up session: ${sessionId}`);
     }
   }
@@ -648,6 +712,15 @@ export class MCPHandler implements IMCPHandler {
       sessionInfo.server.close();
       sessionInfo.transport.close();
       activeConnections.dec(); // Decrement for each closed session
+
+      // Decrement capability gauges (non-fatal if fails)
+      if (sessionInfo.capabilityFlags) {
+        try {
+          untrackClientCapabilities(sessionInfo.capabilityFlags);
+        } catch {
+          // Telemetry cleanup failure is non-fatal
+        }
+      }
     }
     this.sessions.clear();
 
