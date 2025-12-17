@@ -5,7 +5,7 @@ import { handleMittwaldProjectListCli } from '../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: "mittwald_project_list",
   title: "List Projects",
-  description: "List all projects that you have access to. Results are cached for 1 hour to improve performance.",
+  description: "List all projects that you have access to.",
   inputSchema: {
     type: "object",
     properties: {
@@ -16,7 +16,7 @@ const tool: Tool = {
       },
       extended: {
         type: "boolean",
-        description: "Show extended information (bypasses cache)"
+        description: "Show extended information"
       },
       csvSeparator: {
         type: "string",
@@ -34,10 +34,6 @@ const tool: Tool = {
       noTruncate: {
         type: "boolean",
         description: "Do not truncate output (only relevant for txt output)"
-      },
-      bypassCache: {
-        type: "boolean",
-        description: "Bypass cache and fetch fresh data from the API"
       }
     },
     required: []
