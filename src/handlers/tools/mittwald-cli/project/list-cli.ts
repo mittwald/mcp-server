@@ -1,6 +1,9 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { projectListCache } from '../../../../utils/project-list-cache.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldProjectListArgs {
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
@@ -9,6 +12,7 @@ interface MittwaldProjectListArgs {
   noHeader?: boolean;
   noRelativeDates?: boolean;
   noTruncate?: boolean;
+  bypassCache?: boolean; // Optional flag to bypass cache
 }
 
 function buildCliArgs(args: MittwaldProjectListArgs): string[] {
@@ -61,6 +65,38 @@ function formatProjects(data: unknown[]): Array<{
 }
 
 export const handleMittwaldProjectListCli: MittwaldCliToolHandler<MittwaldProjectListArgs> = async (args) => {
+  const sessionId = getCurrentSessionId();
+
+  // Check cache first (unless bypassCache is true or extended is requested)
+  // Extended mode fetches additional data, so we don't cache it
+  if (!args.bypassCache && !args.extended && sessionId) {
+    const cachedOutput = projectListCache.get(sessionId);
+    if (cachedOutput) {
+      logger.info(`[ProjectList] Using cached data for session ${sessionId}`);
+
+      try {
+        const parsed = JSON.parse(cachedOutput);
+        const formatted = formatProjects(parsed);
+
+        return formatToolResponse(
+          'success',
+          `Found ${formatted.length} project(s) (cached)`,
+          formatted,
+          {
+            command: 'mw project list --output json (cached)',
+            durationMs: 0,
+            cached: true
+          } as any
+        );
+      } catch (parseError) {
+        logger.warn('[ProjectList] Failed to parse cached data, fetching fresh', {
+          error: parseError instanceof Error ? parseError.message : String(parseError)
+        });
+        // Continue to fetch fresh data
+      }
+    }
+  }
+
   const argv = buildCliArgs(args);
 
   try {
@@ -85,6 +121,12 @@ export const handleMittwaldProjectListCli: MittwaldCliToolHandler<MittwaldProjec
 
       if (parsed.length === 0) {
         return formatToolResponse('success', 'No projects found', [], commandMeta);
+      }
+
+      // Cache the result (only if not extended mode and we have a session)
+      if (!args.extended && sessionId) {
+        projectListCache.set(sessionId, output);
+        logger.info(`[ProjectList] Cached project list for session ${sessionId}`);
       }
 
       const formatted = formatProjects(parsed);

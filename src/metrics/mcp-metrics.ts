@@ -35,3 +35,23 @@ export const cliCallsTotal = new Counter({
   labelNames: ['command', 'status'],
   registers: registries
 });
+
+// Counter for project list cache hits/misses
+export const projectListCacheHits = new Counter({
+  name: 'project_list_cache_hits_total',
+  help: 'Total number of project list cache hits',
+  registers: registries
+});
+
+export const projectListCacheMisses = new Counter({
+  name: 'project_list_cache_misses_total',
+  help: 'Total number of project list cache misses',
+  registers: registries
+});
+
+// Gauge for cache size
+export const projectListCacheSize = new Gauge({
+  name: 'project_list_cache_size',
+  help: 'Number of entries in the project list cache',
+  registers: registries
+});
