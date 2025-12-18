@@ -9,6 +9,7 @@ vi.mock('../../../src/server/session-manager.js', () => ({
 
 vi.mock('../../../src/utils/execution-context.js', () => ({
   getCurrentSessionId: vi.fn(),
+  getCurrentAbortSignal: vi.fn().mockReturnValue(undefined),
 }));
 
 const { sessionManager } = await import('../../../src/server/session-manager.js');

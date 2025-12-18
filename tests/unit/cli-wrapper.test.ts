@@ -12,13 +12,34 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { executeCli, parseJsonOutput, parseQuietOutput } from '../../src/utils/cli-wrapper.js';
 import * as childProcess from 'child_process';
 import { promisify } from 'util';
+import { EventEmitter } from 'events';
+import { Readable } from 'stream';
 
-// Mock child_process.execFile
+// Helper to create mock spawn child process
+function createMockChild(stdout: string, stderr: string, exitCode: number = 0) {
+  const child = new EventEmitter() as any;
+  child.stdout = new EventEmitter();
+  child.stderr = new EventEmitter();
+  child.stdin = null;
+  child.kill = vi.fn();
+  child.killed = false;
+
+  // Simulate async process execution
+  setImmediate(() => {
+    if (stdout) child.stdout.emit('data', Buffer.from(stdout));
+    if (stderr) child.stderr.emit('data', Buffer.from(stderr));
+    child.emit('close', exitCode, null);
+  });
+
+  return child;
+}
+
+// Mock child_process.spawn
 vi.mock('child_process', async (importOriginal) => {
   const original = await importOriginal<typeof childProcess>();
   return {
     ...original,
-    execFile: vi.fn(),
+    spawn: vi.fn(),
   };
 });
 
@@ -32,10 +53,11 @@ vi.mock('../../src/server/session-manager.js', () => ({
 // Mock execution context
 vi.mock('../../src/utils/execution-context.js', () => ({
   getCurrentSessionId: vi.fn().mockReturnValue(null),
+  getCurrentAbortSignal: vi.fn().mockReturnValue(undefined),
 }));
 
 describe('cli-wrapper', () => {
-  const mockExecFile = vi.mocked(childProcess.execFile);
+  const mockSpawn = vi.mocked(childProcess.spawn);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -47,108 +69,58 @@ describe('cli-wrapper', () => {
 
   describe('executeCli', () => {
     describe('shell injection prevention', () => {
-      it('uses execFile instead of exec to prevent shell injection', async () => {
+      it('uses spawn instead of shell to prevent shell injection', async () => {
         // Mock successful execution
-        mockExecFile.mockImplementation(((
-          command: string,
-          args: string[],
-          options: any,
-          callback?: (error: Error | null, result: { stdout: string; stderr: string }) => void
-        ) => {
-          if (callback) {
-            callback(null, { stdout: 'success', stderr: '' });
-          }
-          return {} as any;
-        }) as any);
+        mockSpawn.mockReturnValue(createMockChild('success', '', 0));
 
         await executeCli('mw', ['project', 'list', '--output', 'json']);
 
-        // Verify execFile was called (not exec)
-        expect(mockExecFile).toHaveBeenCalled();
-        const [command, args] = mockExecFile.mock.calls[0];
+        // Verify spawn was called (not shell)
+        expect(mockSpawn).toHaveBeenCalled();
+        const [command, args] = mockSpawn.mock.calls[0];
         expect(command).toBe('mw');
         expect(args).toEqual(['project', 'list', '--output', 'json']);
       });
 
       it('passes shell metacharacters as literal arguments', async () => {
-        mockExecFile.mockImplementation(((
-          command: string,
-          args: string[],
-          options: any,
-          callback?: (error: Error | null, result: { stdout: string; stderr: string }) => void
-        ) => {
-          if (callback) {
-            callback(null, { stdout: 'success', stderr: '' });
-          }
-          return {} as any;
-        }) as any);
+        mockSpawn.mockReturnValue(createMockChild('success', '', 0));
 
         // These shell metacharacters should NOT be interpreted
         const dangerousInput = '$(rm -rf /)';
         await executeCli('mw', ['project', 'get', dangerousInput]);
 
-        const [, args] = mockExecFile.mock.calls[0];
+        const [, args] = mockSpawn.mock.calls[0];
         // The dangerous input should be passed as-is (literal string)
         expect(args).toContain(dangerousInput);
       });
 
       it('does not interpret backticks as command substitution', async () => {
-        mockExecFile.mockImplementation(((
-          command: string,
-          args: string[],
-          options: any,
-          callback?: (error: Error | null, result: { stdout: string; stderr: string }) => void
-        ) => {
-          if (callback) {
-            callback(null, { stdout: 'success', stderr: '' });
-          }
-          return {} as any;
-        }) as any);
+        mockSpawn.mockReturnValue(createMockChild('success', '', 0));
 
         const backtickInput = '`whoami`';
         await executeCli('mw', ['project', 'get', backtickInput]);
 
-        const [, args] = mockExecFile.mock.calls[0];
+        const [, args] = mockSpawn.mock.calls[0];
         expect(args).toContain(backtickInput);
       });
 
       it('does not interpret semicolons as command separators', async () => {
-        mockExecFile.mockImplementation(((
-          command: string,
-          args: string[],
-          options: any,
-          callback?: (error: Error | null, result: { stdout: string; stderr: string }) => void
-        ) => {
-          if (callback) {
-            callback(null, { stdout: 'success', stderr: '' });
-          }
-          return {} as any;
-        }) as any);
+        mockSpawn.mockReturnValue(createMockChild('success', '', 0));
 
         const semicolonInput = '; rm -rf /';
         await executeCli('mw', ['project', 'get', semicolonInput]);
 
-        const [, args] = mockExecFile.mock.calls[0];
+        const [, args] = mockSpawn.mock.calls[0];
         expect(args).toContain(semicolonInput);
       });
 
       it('does not interpret pipe characters', async () => {
-        mockExecFile.mockImplementation(((
-          command: string,
-          args: string[],
-          options: any,
-          callback?: (error: Error | null, result: { stdout: string; stderr: string }) => void
-        ) => {
-          if (callback) {
-            callback(null, { stdout: 'success', stderr: '' });
-          }
-          return {} as any;
-        }) as any);
+        mockSpawn.mockReturnValue(createMockChild('success', '', 0));
 
         const pipeInput = '| cat /etc/passwd';
         await executeCli('mw', ['project', 'get', pipeInput]);
 
-        const [, args] = mockExecFile.mock.calls[0];
+        const [, args] = mockSpawn.mock.calls[0];
         expect(args).toContain(pipeInput);
       });
     });
@@ -160,7 +132,7 @@ describe('cli-wrapper', () => {
         (error as any).stderr = '';
         (error as any).code = 1;
 
-        mockExecFile.mockImplementation(((
+        mockSpawn.mockImplementation(((
           command: string,
           args: string[],
           options: any,
@@ -184,7 +156,7 @@ describe('cli-wrapper', () => {
         (error as any).stderr = '';
         (error as any).code = 1;
 
-        mockExecFile.mockImplementation(((
+        mockSpawn.mockImplementation(((
           command: string,
           args: string[],
           options: any,
@@ -209,7 +181,7 @@ describe('cli-wrapper', () => {
       it('sets MITTWALD_NONINTERACTIVE=1', async () => {
         let capturedEnv: NodeJS.ProcessEnv = {};
 
-        mockExecFile.mockImplementation(((
+        mockSpawn.mockImplementation(((
           command: string,
           args: string[],
           options: any,
@@ -230,7 +202,7 @@ describe('cli-wrapper', () => {
       it('sets CI=1', async () => {
         let capturedEnv: NodeJS.ProcessEnv = {};
 
-        mockExecFile.mockImplementation(((
+        mockSpawn.mockImplementation(((
           command: string,
           args: string[],
           options: any,
@@ -251,7 +223,7 @@ describe('cli-wrapper', () => {
       it('merges custom env with process env', async () => {
         let capturedEnv: NodeJS.ProcessEnv = {};
 
-        mockExecFile.mockImplementation(((
+        mockSpawn.mockImplementation(((
           command: string,
           args: string[],
           options: any,
@@ -274,7 +246,7 @@ describe('cli-wrapper', () => {
       it('uses default timeout of 30000ms', async () => {
         let capturedOptions: any = {};
 
-        mockExecFile.mockImplementation(((
+        mockSpawn.mockImplementation(((
           command: string,
           args: string[],
           options: any,
@@ -295,7 +267,7 @@ describe('cli-wrapper', () => {
       it('allows custom timeout', async () => {
         let capturedOptions: any = {};
 
-        mockExecFile.mockImplementation(((
+        mockSpawn.mockImplementation(((
           command: string,
           args: string[],
           options: any,
@@ -319,7 +291,7 @@ describe('cli-wrapper', () => {
         (error as any).signal = 'SIGTERM';
         (error as any).code = null;
 
-        mockExecFile.mockImplementation(((
+        mockSpawn.mockImplementation(((
           command: string,
           args: string[],
           options: any,
