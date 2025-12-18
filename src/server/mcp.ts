@@ -752,6 +752,13 @@ export class MCPHandler implements IMCPHandler {
         accessibleProjects: existing?.accessibleProjects,
         authenticationMode: sessionAuth.authenticationMode ?? existing?.authenticationMode,
       }, { ttlSeconds });
+
+      // Auto-populate accessible projects and default context on first login
+      if (!existing?.accessibleProjects) {
+        const { sessionAwareCli } = await import('../utils/session-aware-cli.js');
+        await sessionAwareCli.initializeSessionContext(sessionId);
+        logger.info(`🎯 [${sessionId}] Auto-populated session context with accessible projects`);
+      }
     } catch (error) {
       logger.error(`💾 [${sessionId}] Failed to persist session auth`, {
         error: error instanceof Error ? error.message : String(error),

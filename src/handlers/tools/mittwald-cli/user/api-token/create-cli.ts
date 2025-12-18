@@ -112,7 +112,7 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
     }
 
     // Use library result (it's validated)
-    const result = validation.libraryOutput.data;
+    const result = validation.libraryOutput.data as { token?: string };
     const token = result?.token;
 
     if (!token) {

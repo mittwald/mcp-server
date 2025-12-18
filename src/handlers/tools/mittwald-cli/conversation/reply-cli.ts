@@ -1,6 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { replyToConversation, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldConversationReplyArgs {
   conversationId: string;
@@ -25,153 +29,110 @@ function buildCliArgs(args: MittwaldConversationReplyArgs): string[] {
   return cliArgs;
 }
 
-function parseConversationReplyOutput(output: string): unknown {
-  try {
-    const lines = output.split('\n');
+export const handleConversationReplyCli: MittwaldCliToolHandler<MittwaldConversationReplyArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line.startsWith('{') && !line.startsWith('[')) {
-        continue;
-      }
-
-      let jsonStr = line;
-      for (let j = i + 1; j < lines.length; j++) {
-        jsonStr += '\n' + lines[j];
-        try {
-          return JSON.parse(jsonStr);
-        } catch {
-          // continue collecting lines
-        }
-      }
-
-      return JSON.parse(jsonStr);
-    }
-
-    return JSON.parse(output);
-  } catch (error) {
-    throw new Error(`Failed to parse JSON output: ${error instanceof Error ? error.message : String(error)}`);
-  }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function mapCliError(error: CliToolError, args: MittwaldConversationReplyArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-
-  if (combined.includes('not found') && combined.includes('conversation')) {
-    return `Conversation not found with ID: ${args.conversationId}.\nError: ${error.stderr || error.message}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  return error.message;
-}
-
-export const handleConversationReplyCli: MittwaldCliToolHandler<MittwaldConversationReplyArgs> = async (args) => {
-  const { conversationId, message, messageFrom } = args;
-
-  if (!conversationId) {
-    return formatToolResponse('error', 'Conversation ID is required.');
+  if (!args.conversationId) {
+    return formatToolResponse('error', 'conversationId is required');
   }
 
-  if (!message && !messageFrom) {
+  if (!args.message && !args.messageFrom) {
     return formatToolResponse('error', 'No message provided. Please provide either a message or messageFrom parameter.');
   }
 
-  if (!message && messageFrom === '-') {
+  if (!args.message && args.messageFrom === '-') {
     return formatToolResponse(
       'error',
       'Reading from stdin is not supported in the MCP context. Please provide the message directly using the message parameter.'
     );
   }
 
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_conversation_reply',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await replyToConversation({
+          conversationId: args.conversationId,
+          message: args.message!,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp', 'createdAt', 'id', 'messageId'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-
-    try {
-      const parsed = parseConversationReplyOutput(stdout);
-
-      if (!isRecord(parsed)) {
-        throw new Error('Parsed output is not an object.');
-      }
-
-      const data = parsed;
-      const messageId = typeof data.messageId === 'string'
-        ? data.messageId
-        : typeof data.id === 'string'
-          ? data.id
-          : undefined;
-
-      return formatToolResponse(
-        'success',
-        `Reply sent to conversation: ${conversationId}`,
-        {
-          conversationId,
-          messageId,
-          ...data,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    } catch (parseError) {
-      const normalizedOutput = `${stdout}\n${stderr}`.toLowerCase();
-
-      if (
-        normalizedOutput.includes('sent') ||
-        normalizedOutput.includes('success') ||
-        normalizedOutput.includes('replied')
-      ) {
-        return formatToolResponse(
-          'success',
-          `Reply sent to conversation: ${conversationId}`,
-          {
-            conversationId,
-            rawOutput: stdout || stderr,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        `Reply operation completed for conversation: ${conversationId}`,
-        {
-          conversationId,
-          rawOutput: stdout || stderr,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError),
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
-  } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_conversation_reply',
+        conversationId: args.conversationId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_conversation_reply',
+        conversationId: args.conversationId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    // Use library result (it's validated) - data is object
+    const result = validation.libraryOutput.data as any;
+    const messageId = result?.messageId ?? result?.id;
+
+    return formatToolResponse(
+      'success',
+      `Reply sent to conversation: ${args.conversationId}`,
+      {
+        conversationId: args.conversationId,
+        messageId,
+        ...result,
+      },
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      }
+    );
+  } catch (error) {
+    if (error instanceof LibraryError) {
+      // Handle special cases
+      const message = error.message.toLowerCase();
+      if (message.includes('not found') && message.includes('conversation')) {
+        return formatToolResponse('error', `Conversation not found with ID: ${args.conversationId}.\nError: ${error.message}`, {
+          code: error.code,
+          details: error.details,
+        });
+      }
+
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
+    logger.error('[WP05] Unexpected error in conversation reply handler', { error });
+    return formatToolResponse('error', `Failed to reply to conversation: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -1,6 +1,13 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { createUserSshKey, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { homedir } from 'node:os';
 
 interface MittwaldUserSshKeyImportArgs {
   quiet?: boolean;
@@ -16,36 +23,125 @@ function buildCliArgs(args: MittwaldUserSshKeyImportArgs): string[] {
   return argv;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
-
-function mapCliError(error: CliToolError): string {
-  const stdout = error.stdout ?? '';
-  const stderr = error.stderr ?? '';
-  const rawMessage = stderr || stdout || error.message;
-  return `Failed to import SSH key: ${rawMessage}`;
-}
-
-export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKeyImportArgs> = async (args) => {
-  const argv = buildCliArgs(args);
+function readPublicKey(inputPath?: string): string {
+  // Default to ~/.ssh/id_rsa.pub if no input specified
+  const defaultPath = resolve(homedir(), '.ssh', 'id_rsa.pub');
+  const filePath = inputPath ? resolve(homedir(), '.ssh', inputPath) : defaultPath;
 
   try {
-    const result = await invokeCliTool({
+    return readFileSync(filePath, 'utf-8').trim();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw new Error(`SSH public key file not found: ${filePath}`);
+    }
+    throw new Error(`Failed to read SSH public key from ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+function parseExpiresInterval(expires?: string): string | undefined {
+  if (!expires) return undefined;
+
+  // Convert interval format (30m, 30d, 1y) to ISO 8601 datetime
+  const now = new Date();
+  const match = expires.match(/^(\d+)([mhdwy])$/i);
+
+  if (!match) {
+    throw new Error(`Invalid expires format: ${expires}. Use format like: 30m, 30d, 1y`);
+  }
+
+  const [, amount, unit] = match;
+  const value = parseInt(amount, 10);
+
+  switch (unit.toLowerCase()) {
+    case 'm': // minutes
+      now.setMinutes(now.getMinutes() + value);
+      break;
+    case 'h': // hours
+      now.setHours(now.getHours() + value);
+      break;
+    case 'd': // days
+      now.setDate(now.getDate() + value);
+      break;
+    case 'w': // weeks
+      now.setDate(now.getDate() + value * 7);
+      break;
+    case 'y': // years
+      now.setFullYear(now.getFullYear() + value);
+      break;
+    default:
+      throw new Error(`Invalid expires unit: ${unit}. Use m, h, d, w, or y`);
+  }
+
+  return now.toISOString();
+}
+
+export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKeyImportArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
+  // Check for stdin (not supported in MCP)
+  if (args.input === '-' || args.input === '/dev/stdin') {
+    return formatToolResponse('error', 'Reading SSH key from stdin is not supported in MCP. Please specify a file path in your ~/.ssh directory.');
+  }
+
+  try {
+    // Read the public key from file
+    const publicKey = readPublicKey(args.input);
+
+    // Parse expires interval to ISO 8601 datetime
+    const expiresAt = parseExpiresInterval(args.expires);
+
+    const argv = buildCliArgs(args);
+
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_user_ssh_key_import',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createUserSshKey({
+          publicKey,
+          expiresAt,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout.trim() || stderr.trim();
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_user_ssh_key_import',
+        input: args.input,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_user_ssh_key_import',
+        input: args.input,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
+
+    // Use library result (it's validated)
+    const result = validation.libraryOutput.data as Record<string, unknown>;
 
     if (args.quiet) {
-      const keyId = parseQuietOutput(stdout) ?? parseQuietOutput(stderr ?? '');
+      const keyId = result.id as string;
       if (!keyId) {
         return formatToolResponse('error', 'Failed to import SSH key - no key ID returned');
       }
@@ -59,40 +155,44 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
           input: args.input,
         },
         {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
+          durationMs: validation.libraryOutput.durationMs,
+          validationPassed: validation.passed,
+          discrepancyCount: validation.discrepancies.length,
+          cliDuration: validation.cliOutput.durationMs,
+          libraryDuration: validation.libraryOutput.durationMs,
         }
       );
     }
 
-    const message = output || 'SSH key imported successfully';
+    const message = `SSH key imported successfully${args.expires ? ` (expires in ${args.expires})` : ''}`;
     return formatToolResponse(
       'success',
       message,
       {
+        keyId: result.id,
         expires: args.expires,
+        expiresAt: result.expiresAt,
         input: args.input,
-        rawOutput: output,
+        fingerprint: result.fingerprint,
+        publicKey: result.publicKey,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', `Failed to import SSH key: ${error.message}`, {
+        code: error.code,
+        details: error.details,
       });
     }
 
-    return formatToolResponse(
-      'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    logger.error('[WP05] Unexpected error in user ssh key import handler', { error });
+    return formatToolResponse('error', `Failed to import SSH key: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

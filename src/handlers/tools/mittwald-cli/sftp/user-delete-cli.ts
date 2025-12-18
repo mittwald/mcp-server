@@ -2,6 +2,10 @@ import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { deleteSftpUser, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldSftpUserDeleteArgs {
   sftpUserId: string;
@@ -49,58 +53,95 @@ function mapCliError(error: CliToolError, args: MittwaldSftpUserDeleteArgs): str
 }
 
 export const handleSftpUserDeleteCli: MittwaldCliToolHandler<MittwaldSftpUserDeleteArgs> = async (args, sessionId) => {
+  if (!args.sftpUserId) {
+    return formatToolResponse(
+      "error",
+      "SFTP user ID is required to delete an SFTP user"
+    );
+  }
+
+  if (args.confirm !== true) {
+    return formatToolResponse(
+      'error',
+      'SFTP user deletion requires confirm=true. This operation is destructive and cannot be undone.'
+    );
+  }
+
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
+  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
+
+  logger.warn('[SftpUserDelete] Destructive operation attempted', {
+    sftpUserId: args.sftpUserId,
+    force: Boolean(args.force),
+    sessionId: effectiveSessionId,
+    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+  });
+
+  const argv = buildCliArgs(args);
+
   try {
-    if (!args.sftpUserId) {
-      return formatToolResponse(
-        "error",
-        "SFTP user ID is required to delete an SFTP user"
-      );
-    }
-
-    if (args.confirm !== true) {
-      return formatToolResponse(
-        'error',
-        'SFTP user deletion requires confirm=true. This operation is destructive and cannot be undone.'
-      );
-    }
-
-    const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
-    const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
-
-    logger.warn('[SftpUserDelete] Destructive operation attempted', {
-      sftpUserId: args.sftpUserId,
-      force: Boolean(args.force),
-      sessionId: resolvedSessionId,
-      ...(resolvedUserId ? { userId: resolvedUserId } : {}),
-    });
-
-    const argv = buildCliArgs(args);
-
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_sftp_user_delete',
-      argv,
-      parser: (stdout) => stdout,
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await deleteSftpUser({
+          sftpUserId: args.sftpUserId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const commandMeta = {
-      command: result.meta.command,
-      durationMs: result.meta.durationMs,
-    };
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_sftp_user_delete',
+        sftpUserId: args.sftpUserId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_sftp_user_delete',
+        sftpUserId: args.sftpUserId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
 
-    const stdout = result.result ?? '';
-
+    // Use library result (void for delete operations)
     if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout);
+      const quietOutput = args.sftpUserId; // For quiet mode, just return the ID
       return formatToolResponse(
         'success',
-        quietOutput || 'SFTP user deleted successfully',
+        quietOutput,
         {
           sftpUserId: args.sftpUserId,
           action: 'deleted',
           status: 'success',
-          output: stdout,
         },
-        commandMeta
+        {
+          durationMs: validation.libraryOutput.durationMs,
+          validationPassed: validation.passed,
+          cliDuration: validation.cliOutput.durationMs,
+          libraryDuration: validation.libraryOutput.durationMs,
+        }
       );
     }
 
@@ -110,11 +151,23 @@ export const handleSftpUserDeleteCli: MittwaldCliToolHandler<MittwaldSftpUserDel
       {
         sftpUserId: args.sftpUserId,
         action: 'deleted',
-        output: stdout,
       },
-      commandMeta
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -125,6 +178,7 @@ export const handleSftpUserDeleteCli: MittwaldCliToolHandler<MittwaldSftpUserDel
       });
     }
 
+    logger.error('[WP05] Unexpected error in sftp user delete handler', { error });
     return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

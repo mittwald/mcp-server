@@ -1,6 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { closeConversation, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldConversationCloseArgs {
   conversationId: string;
@@ -10,131 +14,103 @@ function buildCliArgs(args: MittwaldConversationCloseArgs): string[] {
   return ['conversation', 'close', args.conversationId];
 }
 
-function parseCloseOutput(output: string): Record<string, unknown> | undefined {
-  if (!output) return {};
+export const handleConversationCloseCli: MittwaldCliToolHandler<MittwaldConversationCloseArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  try {
-    const parsed = JSON.parse(output);
-    return typeof parsed === 'object' && parsed !== null ? parsed as Record<string, unknown> : {};
-  } catch {
-    return undefined;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
-}
 
-function isAlreadyClosedMessage(message: string): boolean {
-  return message.toLowerCase().includes('already closed');
-}
+  if (!args.conversationId) {
+    return formatToolResponse('error', 'conversationId is required');
+  }
 
-function isConversationNotFound(message: string): boolean {
-  const lower = message.toLowerCase();
-  return lower.includes('not found') && lower.includes('conversation');
-}
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
 
-export const handleConversationCloseCli: MittwaldCliToolHandler<MittwaldConversationCloseArgs> = async (args) => {
-  const { conversationId } = args;
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_conversation_close',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await closeConversation({
+          conversationId: args.conversationId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const parsed = parseCloseOutput(stdout.trim());
-
-    if (parsed === undefined) {
-      const normalized = stdout.toLowerCase();
-      if (normalized.includes('closed') || normalized.includes('success')) {
-        return formatToolResponse(
-          'success',
-          `Conversation closed successfully: ${conversationId}`,
-          {
-            conversationId,
-            status: 'closed',
-            rawOutput: stdout,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        `Close operation completed for conversation: ${conversationId}`,
-        {
-          conversationId,
-          rawOutput: stdout,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
-
-    return formatToolResponse(
-      'success',
-      `Conversation closed successfully: ${conversationId}`,
-      {
-        conversationId,
-        status: 'closed',
-        ...parsed,
-      },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
-      }
-    );
-  } catch (error) {
-    if (error instanceof CliToolError) {
-      const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.trim();
-
-      if (isConversationNotFound(combined || error.message)) {
-        return formatToolResponse(
-          'error',
-          `Conversation not found with ID: ${conversationId}.\nError: ${combined || error.message}`,
-          {
-            exitCode: error.exitCode,
-            stderr: error.stderr,
-            stdout: error.stdout,
-            suggestedAction: error.suggestedAction,
-          }
-        );
-      }
-
-      if (isAlreadyClosedMessage(combined || error.message)) {
-        return formatToolResponse(
-          'success',
-          `Conversation ${conversationId} is already closed`,
-          {
-            conversationId,
-            status: 'already_closed',
-            output: combined || undefined,
-          },
-          error.command
-            ? {
-                command: error.command,
-                durationMs: undefined,
-              }
-            : undefined
-        );
-      }
-
-      return formatToolResponse('error', error.message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_conversation_close',
+        conversationId: args.conversationId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_conversation_close',
+        conversationId: args.conversationId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
       });
     }
 
     return formatToolResponse(
-      'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      'success',
+      `Conversation closed successfully: ${args.conversationId}`,
+      {
+        conversationId: args.conversationId,
+        status: 'closed',
+      },
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      }
     );
+  } catch (error) {
+    if (error instanceof LibraryError) {
+      // Handle special cases
+      const message = error.message.toLowerCase();
+      if (message.includes('not found') && message.includes('conversation')) {
+        return formatToolResponse('error', `Conversation not found with ID: ${args.conversationId}.\nError: ${error.message}`, {
+          code: error.code,
+          details: error.details,
+        });
+      }
+      if (message.includes('already closed')) {
+        return formatToolResponse(
+          'success',
+          `Conversation ${args.conversationId} is already closed`,
+          {
+            conversationId: args.conversationId,
+            status: 'already_closed',
+          }
+        );
+      }
+
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
+    logger.error('[WP05] Unexpected error in conversation close handler', { error });
+    return formatToolResponse('error', `Failed to close conversation: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

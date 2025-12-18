@@ -128,7 +128,7 @@ export const handleUserSessionGetCli: MittwaldCliToolHandler<MittwaldUserSession
     }
 
     // Use library result (it's validated)
-    const sessionData = validation.libraryOutput.data;
+    const sessionData = validation.libraryOutput.data as Record<string, unknown>;
     const formattedData = {
       id: sessionData.id,
       tokenId: sessionData.tokenId,

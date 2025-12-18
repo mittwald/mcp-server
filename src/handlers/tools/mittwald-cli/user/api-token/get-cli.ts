@@ -119,7 +119,7 @@ export const handleUserApiTokenGetCli: MittwaldCliToolHandler<MittwaldUserApiTok
     }
 
     // Use library result (it's validated)
-    const parsed = validation.libraryOutput.data;
+    const parsed = validation.libraryOutput.data as Record<string, unknown>;
     const formattedData = {
       id: parsed.id,
       description: parsed.description,

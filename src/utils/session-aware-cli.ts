@@ -264,6 +264,162 @@ export class SessionAwareCli {
       throw error;
     }
   }
+
+  /**
+   * Initialize session context on first login
+   * Auto-populates accessible projects and sets first project as default context
+   * @param sessionId - User session ID
+   */
+  async initializeSessionContext(sessionId: string): Promise<void> {
+    try {
+      logger.info(`Initializing session context for ${sessionId}`);
+
+      // Fetch accessible projects
+      const projects = await this.getAccessibleProjects(sessionId);
+
+      logger.info(`Found ${projects.length} accessible projects for session ${sessionId}`);
+
+      // Set first project as default context (if any projects exist)
+      const defaultContext = projects.length > 0
+        ? { projectId: projects[0] }
+        : {};
+
+      // Update session with accessible projects and default context
+      await sessionManager.updateSession(sessionId, {
+        accessibleProjects: projects,
+        currentContext: defaultContext
+      });
+
+      logger.info(`Auto-populated context for session ${sessionId}`, {
+        projectCount: projects.length,
+        defaultProject: projects[0] || null
+      });
+
+    } catch (error) {
+      // Non-fatal - context can be set manually later
+      logger.warn(`Failed to auto-populate context for session ${sessionId}`, {
+        error: error instanceof Error ? error.message : String(error)
+      });
+      // Don't throw - let session continue without auto-populated context
+    }
+  }
+
+  /**
+   * Refresh accessible projects list for a session
+   * Call this after project create/delete operations
+   * @param sessionId - User session ID
+   */
+  async refreshAccessibleProjects(sessionId: string): Promise<void> {
+    try {
+      const projects = await this.getAccessibleProjects(sessionId);
+
+      await sessionManager.updateSession(sessionId, {
+        accessibleProjects: projects
+      });
+
+      logger.info(`Refreshed accessible projects for session ${sessionId}`, {
+        projectCount: projects.length
+      });
+
+    } catch (error) {
+      logger.warn(`Failed to refresh accessible projects for session ${sessionId}`, {
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+
+  /**
+   * Handle project creation - add to accessible projects and optionally set as context
+   * @param sessionId - User session ID
+   * @param newProjectId - ID of newly created project
+   * @param setAsContext - Whether to set as active context (default: true)
+   */
+  async handleProjectCreated(
+    sessionId: string,
+    newProjectId: string,
+    setAsContext: boolean = true
+  ): Promise<void> {
+    try {
+      const session = await sessionManager.getSession(sessionId);
+      if (!session) {
+        logger.warn(`Session ${sessionId} not found, skipping project creation update`);
+        return;
+      }
+
+      // Add to accessible projects list
+      const accessibleProjects = session.accessibleProjects || [];
+      if (!accessibleProjects.includes(newProjectId)) {
+        accessibleProjects.push(newProjectId);
+      }
+
+      // Set as context if requested
+      const newContext = setAsContext
+        ? { ...session.currentContext, projectId: newProjectId }
+        : session.currentContext;
+
+      await sessionManager.updateSession(sessionId, {
+        accessibleProjects,
+        currentContext: newContext
+      });
+
+      logger.info(`Updated session after project creation`, {
+        sessionId,
+        newProjectId,
+        setAsContext,
+        totalProjects: accessibleProjects.length
+      });
+
+    } catch (error) {
+      logger.warn(`Failed to update session after project creation`, {
+        sessionId,
+        newProjectId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+
+  /**
+   * Handle project deletion - remove from accessible projects and clear context if active
+   * @param sessionId - User session ID
+   * @param deletedProjectId - ID of deleted project
+   */
+  async handleProjectDeleted(sessionId: string, deletedProjectId: string): Promise<void> {
+    try {
+      const session = await sessionManager.getSession(sessionId);
+      if (!session) {
+        logger.warn(`Session ${sessionId} not found, skipping project deletion update`);
+        return;
+      }
+
+      // Remove from accessible projects
+      const accessibleProjects = (session.accessibleProjects || [])
+        .filter(id => id !== deletedProjectId);
+
+      // Clear context if deleted project was active
+      const newContext = session.currentContext.projectId === deletedProjectId
+        ? { ...session.currentContext, projectId: undefined }
+        : session.currentContext;
+
+      await sessionManager.updateSession(sessionId, {
+        accessibleProjects,
+        currentContext: newContext
+      });
+
+      logger.info(`Updated session after project deletion`, {
+        sessionId,
+        deletedProjectId,
+        clearedContext: session.currentContext.projectId === deletedProjectId,
+        remainingProjects: accessibleProjects.length
+      });
+
+    } catch (error) {
+      logger.warn(`Failed to update session after project deletion`, {
+        sessionId,
+        deletedProjectId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
 }
 
 export const sessionAwareCli = new SessionAwareCli();

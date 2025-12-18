@@ -4,7 +4,6 @@
     "module": "ESNext",
     "lib": ["ES2022", "DOM"],
     "outDir": "./build",
-    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -24,7 +23,7 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": [
     "node_modules",
     "build",

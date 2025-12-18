@@ -167,7 +167,7 @@ export const handleDatabaseMysqlUserCreateCli: MittwaldCliToolHandler<MittwaldDa
     }
 
     // Use library result (it's validated)
-    const result = validation.libraryOutput.data;
+    const result = validation.libraryOutput.data as Record<string, unknown>;
 
     const responseData = {
       ...result,

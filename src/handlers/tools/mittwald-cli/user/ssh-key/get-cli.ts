@@ -132,7 +132,7 @@ export const handleUserSshKeyGetCli: MittwaldCliToolHandler<MittwaldUserSshKeyGe
     }
 
     // Use library result (it's validated)
-    const key = validation.libraryOutput.data;
+    const key = validation.libraryOutput.data as Record<string, unknown>;
     const formattedData = {
       id: key.id,
       comment: key.comment,

@@ -1,6 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { buildSecureToolResponse } from '../../../../utils/credential-response.js';
+import { createSftpUser, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldSftpUserCreateArgs {
   projectId?: string;
@@ -81,49 +86,165 @@ export const handleSftpUserCreateCli: MittwaldCliToolHandler<MittwaldSftpUserCre
     return buildSecureToolResponse('error', 'Either password or public key must be specified for authentication');
   }
 
+  if (!args.projectId) {
+    return buildSecureToolResponse('error', 'projectId is required');
+  }
+
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return buildSecureToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return buildSecureToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
-      toolName: 'mittwald_sftp_user_create',
-      argv,
-      sessionId,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-    });
+    // WP05: Note - Library function has limited parameter support (only description + password)
+    // CLI supports: directories, expires, publicKey, accessLevel
+    // For now, we only validate when using password authentication with basic params
+    const canUseLibrary = args.password && !args.publicKey && !args.expires && !args.accessLevel;
 
-    const stdout = result.result.stdout ?? '';
-    const sftpUserId = parseQuietOutput(stdout) ?? extractSftpUserId(stdout);
+    if (canUseLibrary) {
+      // Run parallel validation for simple password-based creation
+      const validation = await validateToolParity({
+        toolName: 'mittwald_sftp_user_create',
+        cliCommand: 'mw',
+        cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+        libraryFn: async () => {
+          return await createSftpUser({
+            projectId: args.projectId!,
+            description: args.description,
+            password: args.password!,
+            directories: (args.directories && args.directories.length > 0) ?
+              (args.directories as [string, ...string[]]) : ['/'],
+            apiToken: session.mittwaldAccessToken,
+          });
+        },
+        ignoreFields: ['durationMs', 'duration', 'timestamp'],
+      });
 
-    const authentication = {
-      method: args.publicKey ? 'publicKey' : 'password',
-      passwordProvided: Boolean(args.password),
-      publicKeyProvided: Boolean(args.publicKey),
-    };
-
-    const responseData = {
-      id: sftpUserId,
-      description: args.description,
-      directories: args.directories,
-      accessLevel: args.accessLevel ?? 'read',
-      authentication,
-      projectId: args.projectId,
-      expires: args.expires,
-    };
-
-    const message = sftpUserId
-      ? `Successfully created SFTP user '${args.description}' with ID ${sftpUserId}`
-      : `Successfully created SFTP user '${args.description}'`;
-
-    return buildSecureToolResponse(
-      'success',
-      args.quiet ? sftpUserId ?? message : message,
-      responseData,
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+      // Log validation results
+      if (!validation.passed) {
+        logger.warn('[WP05 Validation] Output mismatch detected', {
+          tool: 'mittwald_sftp_user_create',
+          projectId: args.projectId,
+          discrepancyCount: validation.discrepancies.length,
+          discrepancies: validation.discrepancies,
+          cliExitCode: validation.cliOutput.exitCode,
+          cliDuration: validation.cliOutput.durationMs,
+          libraryDuration: validation.libraryOutput.durationMs,
+        });
+      } else {
+        logger.info('[WP05 Validation] 100% parity achieved', {
+          tool: 'mittwald_sftp_user_create',
+          projectId: args.projectId,
+          cliDuration: validation.cliOutput.durationMs,
+          libraryDuration: validation.libraryOutput.durationMs,
+          speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+        });
       }
-    );
+
+      // Extract SFTP user ID from library result
+      const libraryData = validation.libraryOutput.data as any;
+      const sftpUserId = libraryData?.id || libraryData?.sftpUserId;
+
+      const authentication = {
+        method: 'password',
+        passwordProvided: true,
+        publicKeyProvided: false,
+      };
+
+      const responseData = {
+        id: sftpUserId,
+        description: args.description,
+        directories: args.directories,
+        accessLevel: args.accessLevel ?? 'read',
+        authentication,
+        projectId: args.projectId,
+        expires: args.expires,
+      };
+
+      const message = sftpUserId
+        ? `Successfully created SFTP user '${args.description}' with ID ${sftpUserId}`
+        : `Successfully created SFTP user '${args.description}'`;
+
+      return buildSecureToolResponse(
+        'success',
+        args.quiet ? sftpUserId ?? message : message,
+        responseData,
+        {
+          durationMs: validation.libraryOutput.durationMs,
+          validationPassed: validation.passed,
+          discrepancyCount: validation.discrepancies.length,
+          cliDuration: validation.cliOutput.durationMs,
+          libraryDuration: validation.libraryOutput.durationMs,
+        }
+      );
+    } else {
+      // Fall back to CLI-only for advanced features (publicKey, expires, accessLevel, directories)
+      logger.info('[WP05] Using CLI-only mode for advanced SFTP user create features', {
+        tool: 'mittwald_sftp_user_create',
+        projectId: args.projectId,
+        hasPublicKey: Boolean(args.publicKey),
+        hasExpires: Boolean(args.expires),
+        hasAccessLevel: Boolean(args.accessLevel),
+        reason: 'Library function does not support these parameters',
+      });
+
+      const result = await invokeCliTool({
+        toolName: 'mittwald_sftp_user_create',
+        argv,
+        sessionId: effectiveSessionId,
+        parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      });
+
+      const stdout = result.result.stdout ?? '';
+      const sftpUserId = parseQuietOutput(stdout) ?? extractSftpUserId(stdout);
+
+      const authentication = {
+        method: args.publicKey ? 'publicKey' : 'password',
+        passwordProvided: Boolean(args.password),
+        publicKeyProvided: Boolean(args.publicKey),
+      };
+
+      const responseData = {
+        id: sftpUserId,
+        description: args.description,
+        directories: args.directories,
+        accessLevel: args.accessLevel ?? 'read',
+        authentication,
+        projectId: args.projectId,
+        expires: args.expires,
+      };
+
+      const message = sftpUserId
+        ? `Successfully created SFTP user '${args.description}' with ID ${sftpUserId}`
+        : `Successfully created SFTP user '${args.description}'`;
+
+      return buildSecureToolResponse(
+        'success',
+        args.quiet ? sftpUserId ?? message : message,
+        responseData,
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+          mode: 'cli-only',
+        }
+      );
+    }
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return buildSecureToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return buildSecureToolResponse('error', message, {
@@ -134,6 +255,7 @@ export const handleSftpUserCreateCli: MittwaldCliToolHandler<MittwaldSftpUserCre
       });
     }
 
+    logger.error('[WP05] Unexpected error in sftp user create handler', { error });
     return buildSecureToolResponse(
       'error',
       `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`

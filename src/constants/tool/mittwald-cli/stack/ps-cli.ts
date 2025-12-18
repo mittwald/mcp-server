@@ -13,6 +13,10 @@ const tool: Tool = {
         type: 'string',
         description: 'ID of a stack'
       },
+      projectId: {
+        type: 'string',
+        description: 'ID of the project containing the stack'
+      },
       output: {
         type: 'string',
         enum: ['txt', 'json', 'yaml', 'csv', 'tsv'],

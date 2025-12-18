@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { createProject, LibraryError } from '@mittwald-mcp/cli-core';
@@ -61,7 +61,7 @@ interface MittwaldProjectCreateArgs {
   updateContext?: boolean;
 }
 
-export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateArgs> = async (args, sessionId) => {
+export const handleProjectCreateCli: MittwaldCliToolHandler<MittwaldProjectCreateArgs> = async (args, sessionId) => {
   if (!args.serverId) {
     return formatToolResponse('error', 'serverId is required');
   }
@@ -121,6 +121,13 @@ export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateAr
     // Use library result (it's validated) - data contains the project ID
     const projectData = validation.libraryOutput.data as any;
     const projectId = projectData?.id || projectData;
+
+    // Auto-update session: add new project to accessible projects and set as context
+    if (projectId && effectiveSessionId) {
+      const { sessionAwareCli } = await import('../../../../utils/session-aware-cli.js');
+      await sessionAwareCli.handleProjectCreated(effectiveSessionId, projectId, args.updateContext !== false);
+      logger.info(`Session updated with new project ${projectId}`);
+    }
 
     return formatToolResponse(
       'success',

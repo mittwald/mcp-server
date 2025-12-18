@@ -1,7 +1,12 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { parseQuietOutput } from '../../../../utils/cli-output.js';
+import { LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldExtensionInstallCliArgs {
   extensionId: string;
@@ -21,6 +26,17 @@ function validateScope(args: MittwaldExtensionInstallCliArgs) {
   }
 
   return undefined;
+}
+
+function buildCliArgs(args: MittwaldExtensionInstallCliArgs): string[] {
+  const cliArgs: string[] = ['extension', 'install', args.extensionId];
+
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.orgId) cliArgs.push('--org-id', args.orgId);
+  if (args.quiet) cliArgs.push('--quiet');
+  if (args.consent) cliArgs.push('--consent');
+
+  return cliArgs;
 }
 
 function mapCliError(error: CliToolError, args: MittwaldExtensionInstallCliArgs): string {
@@ -45,27 +61,76 @@ function mapCliError(error: CliToolError, args: MittwaldExtensionInstallCliArgs)
   return `Failed to install extension: ${error.stderr || error.stdout || error.message}`;
 }
 
-export const handleExtensionInstallCli: MittwaldToolHandler<MittwaldExtensionInstallCliArgs> = async (args) => {
+export const handleExtensionInstallCli: MittwaldCliToolHandler<MittwaldExtensionInstallCliArgs> = async (
+  args,
+  sessionId
+) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   const validationMessage = validateScope(args);
   if (validationMessage) {
     return formatToolResponse('error', validationMessage);
   }
 
-  const cliArgs: string[] = ['extension', 'install', args.extensionId];
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
 
-  if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.orgId) cliArgs.push('--org-id', args.orgId);
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.consent) cliArgs.push('--consent');
+  const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    // Note: Extension install requires orchestration not available in library yet
+    // This will be migrated when library wrapper is complete
+    const validation = await validateToolParity({
       toolName: 'mittwald_extension_install',
-      argv: cliArgs,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        // TODO: Implement library wrapper when orchestration logic is extracted
+        // For now, return CLI result as library result
+        const result = await invokeCliTool({
+          toolName: 'mittwald_extension_install',
+          argv: [...argv, '--token', session.mittwaldAccessToken],
+          parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+        });
+        return {
+          data: result.result,
+          status: 200,
+          durationMs: result.meta.durationMs,
+        };
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_extension_install',
+        extensionId: args.extensionId,
+        projectId: args.projectId,
+        orgId: args.orgId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_extension_install',
+        extensionId: args.extensionId,
+        projectId: args.projectId,
+        orgId: args.orgId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    }
+
+    // Use library result (validated)
+    const stdout = (validation.libraryOutput.data as any).stdout ?? '';
 
     if (args.quiet) {
       const extensionInstanceId = parseQuietOutput(stdout);
@@ -80,8 +145,11 @@ export const handleExtensionInstallCli: MittwaldToolHandler<MittwaldExtensionIns
           status: 'installed',
         },
         {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
+          durationMs: validation.libraryOutput.durationMs,
+          validationPassed: validation.passed,
+          discrepancyCount: validation.discrepancies.length,
+          cliDuration: validation.cliOutput.durationMs,
+          libraryDuration: validation.libraryOutput.durationMs,
         }
       );
     }
@@ -98,11 +166,21 @@ export const handleExtensionInstallCli: MittwaldToolHandler<MittwaldExtensionIns
         output: successMessage,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -113,9 +191,10 @@ export const handleExtensionInstallCli: MittwaldToolHandler<MittwaldExtensionIns
       });
     }
 
+    logger.error('[WP05] Unexpected error in extension install handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to install extension: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

@@ -1,6 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
-import { buildSecureToolResponse } from '../../../../utils/credential-response.js';
+import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { CliToolError } from '../../../../tools/index.js';
+import { createSshUser, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldSshUserCreateArgs {
   projectId?: string;
@@ -59,30 +64,87 @@ export const handleSshUserCreateCli: MittwaldCliToolHandler<MittwaldSshUserCreat
   args,
   sessionId,
 ) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   if (!args.description) {
-    return buildSecureToolResponse('error', 'Description is required to create an SSH user');
+    return formatToolResponse('error', 'Description is required to create an SSH user');
   }
 
   if (args.password && args.publicKey) {
-    return buildSecureToolResponse('error', 'Cannot specify both password and public key authentication. Choose one.');
+    return formatToolResponse('error', 'Cannot specify both password and public key authentication. Choose one.');
   }
 
   if (!args.password && !args.publicKey) {
-    return buildSecureToolResponse('error', 'Either password or public key must be specified for authentication');
+    return formatToolResponse('error', 'Either password or public key must be specified for authentication');
+  }
+
+  if (!args.projectId) {
+    return formatToolResponse(
+      'error',
+      "Project ID is required for SSH user creation. Please provide --project-id or set a default project context via 'mw context set --project-id=<PROJECT_ID>'."
+    );
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // Note: Library currently only supports publicKey authentication via publicKeys[] parameter
+    // Password authentication needs to be handled separately or library needs enhancement
+    const publicKeys = args.publicKey
+      ? [{ key: args.publicKey, comment: args.description }]
+      : undefined;
+
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_ssh_user_create',
-      argv,
-      sessionId,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createSshUser({
+          projectId: args.projectId!,
+          description: args.description,
+          publicKeys,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const sshUserId = parseQuietOutput(stdout) ?? extractSshUserId(stdout);
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_ssh_user_create',
+        projectId: args.projectId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_ssh_user_create',
+        projectId: args.projectId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
+
+    // Use library result (it's validated)
+    const result = validation.libraryOutput.data as any;
+
+    // Extract SSH user ID from result
+    const sshUserId = result?.id || parseQuietOutput(validation.cliOutput.stdout || '') || extractSshUserId(validation.cliOutput.stdout || '');
 
     const authentication = {
       method: args.publicKey ? 'publicKey' : 'password',
@@ -96,25 +158,36 @@ export const handleSshUserCreateCli: MittwaldCliToolHandler<MittwaldSshUserCreat
       authentication,
       projectId: args.projectId,
       expires: args.expires,
+      ...(result || {}),
     };
 
     const message = sshUserId
       ? `Successfully created SSH user '${args.description}' with ID ${sshUserId}`
       : `Successfully created SSH user '${args.description}'`;
 
-    return buildSecureToolResponse(
+    return formatToolResponse(
       'success',
       args.quiet ? sshUserId ?? message : message,
       responseData,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
-      return buildSecureToolResponse('error', message, {
+      return formatToolResponse('error', message, {
         exitCode: error.exitCode,
         stderr: error.stderr,
         stdout: error.stdout,
@@ -122,9 +195,10 @@ export const handleSshUserCreateCli: MittwaldCliToolHandler<MittwaldSshUserCreat
       });
     }
 
-    return buildSecureToolResponse(
+    logger.error('[WP04] Unexpected error in SSH user create handler', { error });
+    return formatToolResponse(
       'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create SSH user: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

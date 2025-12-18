@@ -2,6 +2,10 @@ import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { createVolume, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldVolumeCreateArgs {
   projectId: string;
@@ -10,6 +14,9 @@ interface MittwaldVolumeCreateArgs {
 }
 
 const VOLUME_NAME_PATTERN = /^[a-z0-9-]+$/;
+// Default volume size: 1 GB (1073741824 bytes)
+// The CLI creates volumes with a default size since it doesn't expose a size parameter
+const DEFAULT_VOLUME_SIZE = 1073741824;
 
 function buildCliArgs(args: MittwaldVolumeCreateArgs): string[] {
   const cliArgs: string[] = ['volume', 'create', args.name];
@@ -45,7 +52,13 @@ function mapCliError(error: CliToolError, args: MittwaldVolumeCreateArgs): strin
   return `Failed to create volume '${args.name}'. ${error.stderr || error.message}`;
 }
 
-export const handleVolumeCreateCli: MittwaldCliToolHandler<MittwaldVolumeCreateArgs> = async (args) => {
+export const handleVolumeCreateCli: MittwaldCliToolHandler<MittwaldVolumeCreateArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   if (!args.projectId) {
     return formatToolResponse('error', 'Project ID is required to create a volume.');
   }
@@ -62,18 +75,56 @@ export const handleVolumeCreateCli: MittwaldCliToolHandler<MittwaldVolumeCreateA
     );
   }
 
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_volume_create',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createVolume({
+          projectId: args.projectId,
+          description: args.name,
+          size: DEFAULT_VOLUME_SIZE,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const createdName = parseQuietOutput(stdout) ?? args.name;
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_volume_create',
+        projectId: args.projectId,
+        volumeName: args.name,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_volume_create',
+        projectId: args.projectId,
+        volumeName: args.name,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
+
+    // Use library result
+    const volumeData = validation.libraryOutput.data as Record<string, unknown> | undefined;
+    const createdName = args.name;
 
     const message = `Volume '${createdName}' created successfully.`;
 
@@ -85,15 +136,25 @@ export const handleVolumeCreateCli: MittwaldCliToolHandler<MittwaldVolumeCreateA
           name: createdName,
           projectId: args.projectId,
           quiet: Boolean(args.quiet),
+          ...(volumeData && typeof volumeData === 'object' ? volumeData : {}),
         },
-        output: stdout.trim() || stderr.trim() || undefined,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -104,9 +165,10 @@ export const handleVolumeCreateCli: MittwaldCliToolHandler<MittwaldVolumeCreateA
       });
     }
 
+    logger.error('[WP05] Unexpected error in volume create handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create volume: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

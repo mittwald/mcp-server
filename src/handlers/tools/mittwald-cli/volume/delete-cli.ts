@@ -2,6 +2,10 @@ import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { deleteVolume, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldVolumeDeleteArgs {
   volumeId?: string;
@@ -17,11 +21,13 @@ interface RawVolume {
   name?: string;
   orphaned?: boolean;
   linkedServices?: Array<{ id?: string; name?: string }> | null;
+  stackId?: string;
 }
 
 interface VolumeSafetyCheck {
   status: 'ok' | 'mounted' | 'not-found' | 'unknown';
   volumeName?: string;
+  stackId?: string;
   linkedServices?: Array<{ id?: string; name?: string }>;
 }
 
@@ -65,7 +71,7 @@ async function checkVolumeSafety(args: MittwaldVolumeDeleteArgs, volumeName: str
     logger.warn('[Volume Delete] Skipping mounted volume check because projectId is missing', {
       volumeName,
     });
-    return { status: 'unknown', volumeName };
+    return { status: 'unknown', volumeName, stackId: undefined };
   }
 
   try {
@@ -76,7 +82,7 @@ async function checkVolumeSafety(args: MittwaldVolumeDeleteArgs, volumeName: str
 
     const volumes = safeParseVolumes(result.result);
     if (!volumes) {
-      return { status: 'unknown', volumeName };
+      return { status: 'unknown', volumeName, stackId: undefined };
     }
 
     const match = volumes.find((volume) => {
@@ -85,7 +91,7 @@ async function checkVolumeSafety(args: MittwaldVolumeDeleteArgs, volumeName: str
     });
 
     if (!match) {
-      return { status: 'not-found', volumeName };
+      return { status: 'not-found', volumeName, stackId: undefined };
     }
 
     const linkedServices = Array.isArray(match.linkedServices)
@@ -96,6 +102,7 @@ async function checkVolumeSafety(args: MittwaldVolumeDeleteArgs, volumeName: str
       return {
         status: 'mounted',
         volumeName: match.name ?? volumeName,
+        stackId: match.stackId,
         linkedServices,
       };
     }
@@ -103,6 +110,7 @@ async function checkVolumeSafety(args: MittwaldVolumeDeleteArgs, volumeName: str
     return {
       status: 'ok',
       volumeName: match.name ?? volumeName,
+      stackId: match.stackId,
       linkedServices,
     };
   } catch (error) {
@@ -120,7 +128,7 @@ async function checkVolumeSafety(args: MittwaldVolumeDeleteArgs, volumeName: str
       logger.warn('[Volume Delete] Unexpected error while running safety check', { error });
     }
 
-    return { status: 'unknown', volumeName };
+    return { status: 'unknown', volumeName, stackId: undefined };
   }
 }
 
@@ -143,7 +151,12 @@ function mapCliError(error: CliToolError, volumeName: string, projectId?: string
 }
 
 export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteArgs> = async (args, sessionId) => {
-  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
   const volumeName = resolveVolumeName(args);
 
@@ -174,12 +187,17 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
     );
   }
 
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   // C4 Pattern: Audit logging with session context (BEFORE any destructive action)
   logger.warn('[Volume Delete] Destructive operation attempted', {
     volumeName,
     projectId: args.projectId,
     force: Boolean(args.force),
-    sessionId: resolvedSessionId,
+    sessionId: effectiveSessionId,
     ...(resolvedUserId ? { userId: resolvedUserId } : {}),
   });
 
@@ -202,16 +220,45 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
   const argv = buildCliArgs(volumeName, args);
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_volume_delete',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await deleteVolume({
+          volumeId: volumeName,
+          stackId: safety.stackId || '',
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const deletedName = parseQuietOutput(stdout) ?? safety.volumeName ?? volumeName;
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_volume_delete',
+        volumeName,
+        projectId: args.projectId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_volume_delete',
+        volumeName,
+        projectId: args.projectId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
 
+    const deletedName = safety.volumeName ?? volumeName;
     const message = `Volume '${deletedName}' deleted successfully.`;
 
     const responseData: Record<string, unknown> = {
@@ -220,7 +267,6 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
         projectId: args.projectId,
         force: Boolean(args.force),
       },
-      output: stdout.trim() || stderr.trim() || undefined,
     };
 
     if (safety.linkedServices && safety.linkedServices.length > 0) {
@@ -232,11 +278,21 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
       message,
       responseData,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, volumeName, args.projectId);
       return formatToolResponse('error', message, {
@@ -247,9 +303,10 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
       });
     }
 
+    logger.error('[WP05] Unexpected error in volume delete handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to execute volume delete: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

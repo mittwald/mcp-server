@@ -151,7 +151,7 @@ export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDataba
     }
 
     // Use library result (it's validated)
-    const result = validation.libraryOutput.data;
+    const result = validation.libraryOutput.data as Record<string, unknown>;
 
     return buildSecureToolResponse(
       'success',

@@ -1,78 +1,66 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { deployStack, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldStackDeployCliArgs {
   stackId?: string;
   quiet?: boolean;
   composeFile?: string;
   envFile?: string;
+  recreate?: boolean;
 }
 
-function buildCliArgs(args: MittwaldStackDeployCliArgs): string[] {
-  const cliArgs: string[] = ['stack', 'deploy'];
+export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCliArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  if (args.stackId) cliArgs.push('--stack-id', args.stackId);
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.composeFile) cliArgs.push('--compose-file', args.composeFile);
-  if (args.envFile) cliArgs.push('--env-file', args.envFile);
-
-  return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
-
-function mapCliError(error: CliToolError, args: MittwaldStackDeployCliArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-
-  if (combined.includes('not found') && combined.includes('stack')) {
-    return `Stack not found: ${args.stackId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  if (combined.includes('not found') && combined.includes('file')) {
-    return `Compose file not found: ${args.composeFile ?? 'docker-compose.yml'}.\nError: ${error.stderr || error.message}`;
+  if (!args.stackId) {
+    return formatToolResponse('error', 'Stack ID is required. Please provide the stackId parameter.');
   }
 
-  return error.message;
-}
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
 
-export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCliArgs> = async (args) => {
-  const argv = buildCliArgs(args);
+  const argv: string[] = ['stack', 'deploy'];
+  if (args.stackId) argv.push('--stack-id', args.stackId);
+  if (args.quiet) argv.push('--quiet');
+  if (args.composeFile) argv.push('--compose-file', args.composeFile);
+  if (args.envFile) argv.push('--env-file', args.envFile);
 
   try {
-    const result = await invokeCliTool({
+    const validation = await validateToolParity({
       toolName: 'mittwald_stack_deploy',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await deployStack({
+          stackId: args.stackId!,
+          recreate: args.recreate ?? true,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout || '';
-    const stderr = result.result.stderr || '';
-    const output = stdout || stderr || 'Stack deployed successfully';
-
-    if (args.quiet) {
-      const stackId = parseQuietOutput(stdout) ?? args.stackId;
-      return formatToolResponse(
-        'success',
-        'Stack deployed successfully',
-        {
-          stackId,
-          status: 'deployed',
-          composeFile: args.composeFile,
-          envFile: args.envFile,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_stack_deploy',
+        stackId: args.stackId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+      });
     }
+
+    const deployData = validation.libraryOutput.data as any;
 
     return formatToolResponse(
       'success',
@@ -82,24 +70,24 @@ export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCli
         status: 'deployed',
         composeFile: args.composeFile,
         envFile: args.envFile,
-        output,
+        recreate: args.recreate ?? true,
+        result: deployData,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
       }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP05] Unexpected error in stack deploy handler', { error });
+    return formatToolResponse('error', `Failed to deploy stack: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

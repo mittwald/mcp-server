@@ -162,7 +162,7 @@ export const handleUserGetCli: MittwaldCliToolHandler<MittwaldUserGetArgs> = asy
     }
 
     // Use library result (it's validated)
-    const user = validation.libraryOutput.data;
+    const user = validation.libraryOutput.data as RawUserProfile;
     const outputFormat = args.output ?? 'txt';
 
     let formattedOutput: string;

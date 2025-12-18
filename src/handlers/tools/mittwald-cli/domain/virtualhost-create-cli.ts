@@ -138,6 +138,7 @@ export const handleDomainVirtualhostCreateCli: MittwaldCliToolHandler<MittwaldDo
         return await createVirtualHost({
           hostname: args.hostname,
           paths: paths,
+          projectId: args.projectId || '',
           apiToken: session.mittwaldAccessToken,
         });
       },

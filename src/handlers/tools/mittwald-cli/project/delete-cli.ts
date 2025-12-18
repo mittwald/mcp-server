@@ -128,6 +128,13 @@ export const handleProjectDeleteCli: MittwaldCliToolHandler<MittwaldProjectDelet
       });
     }
 
+    // Auto-update session: remove deleted project from accessible projects and clear context if active
+    if (effectiveSessionId) {
+      const { sessionAwareCli } = await import('../../../../utils/session-aware-cli.js');
+      await sessionAwareCli.handleProjectDeleted(effectiveSessionId, args.projectId);
+      logger.info(`Session updated after deleting project ${args.projectId}`);
+    }
+
     const message = `Project ${args.projectId} deleted successfully`;
 
     return formatToolResponse(

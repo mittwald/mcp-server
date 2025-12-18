@@ -1,7 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
-import { parseJsonOutput } from '../../../../utils/cli-output.js';
+import { createConversation, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldConversationCreateArgs {
   title: string;
@@ -27,50 +30,23 @@ function buildCliArgs(args: MittwaldConversationCreateArgs): string[] {
   return cliArgs;
 }
 
-type ParsedConversationOutput = {
-  ok: true;
-  data: Record<string, unknown>;
-} | {
-  ok: false;
-  error: string;
-}
+export const handleConversationCreateCli: MittwaldCliToolHandler<MittwaldConversationCreateArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-function parseConversationOutput(stdout: string): ParsedConversationOutput {
-  if (!stdout) {
-    return { ok: true, data: {} };
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  try {
-    const parsed = parseJsonOutput(stdout);
-    if (typeof parsed === 'object' && parsed !== null) {
-      return { ok: true, data: parsed as Record<string, unknown> };
-    }
-    return { ok: true, data: {} };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return { ok: false, error: message };
-  }
-}
-
-function mapCliError(error: CliToolError, category?: string): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-
-  if (combined.includes('category') && combined.includes('not found')) {
-    return `Category not found: ${category}. Use conversation categories command to list available categories.\nError: ${error.stderr || error.stdout || error.message}`;
+  if (!args.title) {
+    return formatToolResponse('error', 'title is required');
   }
 
-  return error.message;
-}
-
-export const handleConversationCreateCli: MittwaldCliToolHandler<MittwaldConversationCreateArgs> = async (args) => {
-  const { title, message, messageFrom, category } = args;
-
-  if (!message) {
-    if (!messageFrom) {
+  if (!args.message) {
+    if (!args.messageFrom) {
       return formatToolResponse('error', 'No message provided. Please provide either a message or messageFrom parameter.');
     }
 
-    if (messageFrom === '-') {
+    if (args.messageFrom === '-') {
       return formatToolResponse(
         'error',
         'Reading from stdin is not supported in the MCP context. Please provide the message directly using the message parameter.'
@@ -78,78 +54,89 @@ export const handleConversationCreateCli: MittwaldCliToolHandler<MittwaldConvers
     }
   }
 
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_conversation_create',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createConversation({
+          title: args.title,
+          categoryId: args.category || '',
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp', 'createdAt', 'id', 'conversationId'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const parsed = parseConversationOutput(stdout.trim());
-
-    if (!parsed.ok) {
-      const normalized = stdout.toLowerCase();
-      if (normalized.includes('created') || normalized.includes('success')) {
-        return formatToolResponse(
-          'success',
-          'Conversation created successfully',
-          {
-            title,
-            category,
-            rawOutput: stdout,
-            parseError: parsed.error,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        'Conversation creation completed (raw output)',
-        {
-          rawOutput: stdout,
-          parseError: parsed.error,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_conversation_create',
+        title: args.title,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_conversation_create',
+        title: args.title,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
 
-    const conversationId = parsed.data.conversationId ?? parsed.data.id;
+    // Use library result (it's validated) - data is object
+    const result = validation.libraryOutput.data as any;
+    const conversationId = result?.conversationId ?? result?.id;
 
     return formatToolResponse(
       'success',
       'Conversation created successfully',
       {
         conversationId,
-        title,
-        category,
-        ...parsed.data,
+        title: args.title,
+        category: args.category,
+        ...result,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const messageText = mapCliError(error, category);
-      return formatToolResponse('error', messageText, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (error instanceof LibraryError) {
+      // Handle special cases
+      const message = error.message.toLowerCase();
+      if (message.includes('category') && message.includes('not found')) {
+        return formatToolResponse('error', `Category not found: ${args.category}. Use conversation categories command to list available categories.\nError: ${error.message}`, {
+          code: error.code,
+          details: error.details,
+        });
+      }
+
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP05] Unexpected error in conversation create handler', { error });
+    return formatToolResponse('error', `Failed to create conversation: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -1,4 +1,4 @@
-import type { MittwaldToolHandler } from '../../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { CliToolError } from '@/tools/index.js';
 import { createMysqlDatabase, LibraryError } from '@mittwald-mcp/cli-core';
@@ -109,7 +109,7 @@ function mapInteractiveOutput(stdout: string, stderr: string): string | undefine
   return undefined;
 }
 
-export const handleDatabaseMysqlCreateCli: MittwaldToolHandler<MittwaldDatabaseMysqlCreateArgs> = async (args, sessionId) => {
+export const handleDatabaseMysqlCreateCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlCreateArgs> = async (args, sessionId) => {
   const effectiveSessionId = sessionId || getCurrentSessionId();
 
   if (!effectiveSessionId) {

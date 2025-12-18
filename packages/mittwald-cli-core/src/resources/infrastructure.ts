@@ -46,7 +46,7 @@ export interface ListDomainsOptions extends LibraryFunctionBase {
 export async function listDomains(options: ListDomainsOptions): Promise<LibraryResult<any[]>> {
   return executeApiCall(options.apiToken, (client) =>
     options.projectId
-      ? client.domain.listDomains({ projectId: options.projectId })
+      ? client.domain.listDomains({ queryParameters: { projectId: options.projectId } })
       : client.domain.listDomains({})
   );
 }
@@ -61,14 +61,15 @@ export async function getDomain(options: GetDomainOptions): Promise<LibraryResul
 
 // Domain DNS zones
 export interface ListDnsZonesOptions extends LibraryFunctionBase {
-  domainId?: string;
+  projectId?: string;
 }
 
 export async function listDnsZones(options: ListDnsZonesOptions): Promise<LibraryResult<any[]>> {
+  if (!options.projectId) {
+    throw new LibraryError('projectId is required for listDnsZones', 400);
+  }
   return executeApiCall(options.apiToken, (client) =>
-    options.domainId
-      ? client.domain.listDnsZones({ domainId: options.domainId })
-      : client.domain.listDnsZones({})
+    client.domain.dnsListDnsZones({ projectId: options.projectId })
   );
 }
 
@@ -77,18 +78,26 @@ export interface GetDnsZoneOptions extends LibraryFunctionBase {
 }
 
 export async function getDnsZone(options: GetDnsZoneOptions): Promise<LibraryResult<any>> {
-  return executeApiCall(options.apiToken, (client) => client.domain.getDnsZone({ dnsZoneId: options.dnsZoneId }));
+  return executeApiCall(options.apiToken, (client) => client.domain.dnsGetDnsZone({ dnsZoneId: options.dnsZoneId }));
 }
 
 export interface UpdateDnsZoneOptions extends LibraryFunctionBase {
   dnsZoneId: string;
+  recordSetType: 'a' | 'mx' | 'txt' | 'srv' | 'cname' | 'caa';
   recordSet: any; // Complex DNS record structure
 }
 
 export async function updateDnsZone(options: UpdateDnsZoneOptions): Promise<LibraryResult<void>> {
   return executeApiCall(
     options.apiToken,
-    (client) => client.domain.updateDnsZone({ dnsZoneId: options.dnsZoneId, data: { recordSet: options.recordSet } }),
+    (client) => client.domain.dnsUpdateRecordSet({
+      dnsZoneId: options.dnsZoneId,
+      recordSet: options.recordSetType,
+      data: {
+        records: options.recordSet,
+        settings: { ttl: { auto: true } }
+      }
+    }),
     204
   );
 }
@@ -101,7 +110,7 @@ export interface ListVirtualHostsOptions extends LibraryFunctionBase {
 export async function listVirtualHosts(options: ListVirtualHostsOptions): Promise<LibraryResult<any[]>> {
   return executeApiCall(options.apiToken, (client) =>
     options.projectId
-      ? client.domain.ingressListIngresses({ projectId: options.projectId })
+      ? client.domain.ingressListIngresses({ queryParameters: { projectId: options.projectId } })
       : client.domain.ingressListIngresses({})
   );
 }
@@ -117,12 +126,13 @@ export async function getVirtualHost(options: GetVirtualHostOptions): Promise<Li
 export interface CreateVirtualHostOptions extends LibraryFunctionBase {
   hostname: string;
   paths: any[];
+  projectId: string; // Required by API
 }
 
 export async function createVirtualHost(options: CreateVirtualHostOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
-    (client) => client.domain.ingressCreateIngress({ data: { hostname: options.hostname, paths: options.paths } }),
+    (client) => client.domain.ingressCreateIngress({ data: { hostname: options.hostname, paths: options.paths, projectId: options.projectId } }),
     201
   );
 }
@@ -144,7 +154,7 @@ export interface ListContainersOptions extends LibraryFunctionBase {
 }
 
 export async function listContainers(options: ListContainersOptions): Promise<LibraryResult<any[]>> {
-  return executeApiCall(options.apiToken, (client) => client.container.listContainers({ projectId: options.projectId }));
+  return executeApiCall(options.apiToken, (client) => client.container.listServices({ projectId: options.projectId }));
 }
 
 export interface RestartContainerOptions extends LibraryFunctionBase {
@@ -152,7 +162,8 @@ export interface RestartContainerOptions extends LibraryFunctionBase {
 }
 
 export async function restartContainer(options: RestartContainerOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.container.restartContainer({ containerId: options.containerId }), 204);
+  // Note: Container operations map to Service operations in the API
+  throw new LibraryError('restartContainer not implemented - needs stackId and serviceId mapping', 501);
 }
 
 export interface StartContainerOptions extends LibraryFunctionBase {
@@ -160,7 +171,8 @@ export interface StartContainerOptions extends LibraryFunctionBase {
 }
 
 export async function startContainer(options: StartContainerOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.container.startContainer({ containerId: options.containerId }), 204);
+  // Note: Container operations map to Service operations in the API
+  throw new LibraryError('startContainer not implemented - needs stackId and serviceId mapping', 501);
 }
 
 export interface StopContainerOptions extends LibraryFunctionBase {
@@ -168,7 +180,9 @@ export interface StopContainerOptions extends LibraryFunctionBase {
 }
 
 export async function stopContainer(options: StopContainerOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.container.stopContainer({ containerId: options.containerId }), 204);
+  // Note: Container operations map to Service operations in the API
+  // containerId is used as both stackId and serviceId
+  throw new LibraryError('stopContainer not implemented - needs stackId and serviceId mapping', 501);
 }
 
 export interface DeleteContainerOptions extends LibraryFunctionBase {
@@ -176,7 +190,8 @@ export interface DeleteContainerOptions extends LibraryFunctionBase {
 }
 
 export async function deleteContainer(options: DeleteContainerOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.container.deleteContainer({ containerId: options.containerId }), 204);
+  // Note: Container operations map to Service operations in the API
+  throw new LibraryError('deleteContainer not implemented - needs stackId and serviceId mapping', 501);
 }
 
 // ============================================================================
@@ -207,7 +222,13 @@ export interface CreateBackupOptions extends LibraryFunctionBase {
 export async function createBackup(options: CreateBackupOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
-    (client) => client.backup.createProjectBackup({ projectId: options.projectId, data: { description: options.description } }),
+    (client) => client.backup.createProjectBackup({
+      projectId: options.projectId,
+      data: {
+        description: options.description,
+        expirationTime: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // Default: 30 days
+      }
+    }),
     201
   );
 }
@@ -294,23 +315,20 @@ export interface CreateVolumeOptions extends LibraryFunctionBase {
 }
 
 export async function createVolume(options: CreateVolumeOptions): Promise<LibraryResult<any>> {
-  return executeApiCall(
-    options.apiToken,
-    (client) =>
-      client.container.createVolume({
-        projectId: options.projectId,
-        data: { description: options.description, size: options.size },
-      }),
-    201
-  );
+  // Note: createVolume does not exist in API - volumes are created via declareStack
+  throw new LibraryError('createVolume not implemented - use declareStack to manage volumes', 501);
 }
 
 export interface DeleteVolumeOptions extends LibraryFunctionBase {
   volumeId: string;
+  stackId: string; // Required by API
 }
 
 export async function deleteVolume(options: DeleteVolumeOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.container.deleteVolume({ volumeId: options.volumeId }), 204);
+  return executeApiCall(options.apiToken, (client) => client.container.deleteVolume({
+    stackId: options.stackId,
+    volumeId: options.volumeId
+  }), 204);
 }
 
 // ============================================================================
@@ -340,22 +358,25 @@ export interface ListSshUsersOptions extends LibraryFunctionBase {
 }
 
 export async function listSshUsers(options: ListSshUsersOptions): Promise<LibraryResult<any[]>> {
-  return executeApiCall(options.apiToken, (client) => client.user.listSshsfus({ projectId: options.projectId }));
+  return executeApiCall(options.apiToken, (client) => client.sshsftpUser.sshUserListSshUsers({ projectId: options.projectId }));
 }
 
 export interface CreateSshUserOptions extends LibraryFunctionBase {
   projectId: string;
   description: string;
-  publicKeys?: string[];
+  publicKeys?: Array<{ key: string; comment: string }>;
 }
 
 export async function createSshUser(options: CreateSshUserOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
     (client) =>
-      client.user.createSshusfUser({
+      client.sshsftpUser.sshUserCreateSshUser({
         projectId: options.projectId,
-        data: { description: options.description, publicKeys: options.publicKeys },
+        data: {
+          description: options.description,
+          authentication: { publicKeys: options.publicKeys || [] }
+        },
       }),
     201
   );
@@ -366,7 +387,7 @@ export interface DeleteSshUserOptions extends LibraryFunctionBase {
 }
 
 export async function deleteSshUser(options: DeleteSshUserOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.user.deleteSshuser({ sshuserId: options.sshUserId }), 204);
+  return executeApiCall(options.apiToken, (client) => client.sshsftpUser.sshUserDeleteSshUser({ sshUserId: options.sshUserId }), 204);
 }
 
 export interface UpdateSshUserOptions extends LibraryFunctionBase {
@@ -379,9 +400,9 @@ export async function updateSshUser(options: UpdateSshUserOptions): Promise<Libr
   return executeApiCall(
     options.apiToken,
     (client) =>
-      client.user.updateSshuserAuthenticationPublicKeys({
-        sshuserId: options.sshUserId,
-        data: { publicKeys: [] }, // TODO: Add proper public keys handling
+      client.sshsftpUser.sshUserUpdateSshUser({
+        sshUserId: options.sshUserId,
+        data: { description: options.description, active: options.active },
       }),
     204
   );
@@ -396,22 +417,29 @@ export interface ListSftpUsersOptions extends LibraryFunctionBase {
 }
 
 export async function listSftpUsers(options: ListSftpUsersOptions): Promise<LibraryResult<any[]>> {
-  return executeApiCall(options.apiToken, (client) => client.user.listSftpusers({ projectId: options.projectId }));
+  return executeApiCall(options.apiToken, (client) => client.sshsftpUser.sftpUserListSftpUsers({ projectId: options.projectId }));
 }
 
 export interface CreateSftpUserOptions extends LibraryFunctionBase {
   projectId: string;
   description: string;
   password: string;
+  directories: [string, ...string[]]; // Required by API
+  accessLevel?: 'read' | 'full';
 }
 
 export async function createSftpUser(options: CreateSftpUserOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
     (client) =>
-      client.user.createSftpUser({
+      client.sshsftpUser.sftpUserCreateSftpUser({
         projectId: options.projectId,
-        data: { description: options.description, password: options.password },
+        data: {
+          description: options.description,
+          authentication: { password: options.password },
+          directories: options.directories,
+          accessLevel: options.accessLevel
+        },
       }),
     201
   );
@@ -422,7 +450,7 @@ export interface DeleteSftpUserOptions extends LibraryFunctionBase {
 }
 
 export async function deleteSftpUser(options: DeleteSftpUserOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.user.deleteSftpUser({ sftpUserId: options.sftpUserId }), 204);
+  return executeApiCall(options.apiToken, (client) => client.sshsftpUser.sftpUserDeleteSftpUser({ sftpUserId: options.sftpUserId }), 204);
 }
 
 export interface UpdateSftpUserOptions extends LibraryFunctionBase {
@@ -436,9 +464,9 @@ export async function updateSftpUser(options: UpdateSftpUserOptions): Promise<Li
   return executeApiCall(
     options.apiToken,
     (client) =>
-      client.user.updateSftpUserAuthentication({
+      client.sshsftpUser.sftpUserUpdateSftpUser({
         sftpUserId: options.sftpUserId,
-        data: { password: options.password },
+        data: { description: options.description, password: options.password, active: options.active },
       }),
     204
   );
@@ -459,12 +487,19 @@ export async function listRegistries(options: ListRegistriesOptions): Promise<Li
 export interface CreateRegistryOptions extends LibraryFunctionBase {
   projectId: string;
   description: string;
+  uri: string; // Required by API
 }
 
 export async function createRegistry(options: CreateRegistryOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
-    (client) => client.container.createRegistry({ projectId: options.projectId, data: { description: options.description } }),
+    (client) => client.container.createRegistry({
+      projectId: options.projectId,
+      data: {
+        description: options.description,
+        uri: options.uri
+      }
+    }),
     201
   );
 }
@@ -499,7 +534,7 @@ export interface ListExtensionsOptions extends LibraryFunctionBase {
 }
 
 export async function listExtensions(options: ListExtensionsOptions): Promise<LibraryResult<any[]>> {
-  return executeApiCall(options.apiToken, (client) => client.app.listAppextensions({ appId: options.appId }));
+  return executeApiCall(options.apiToken, (client) => client.marketplace.extensionListExtensions({}));
 }
 
 export interface ListInstalledExtensionsOptions extends LibraryFunctionBase {
@@ -507,21 +542,29 @@ export interface ListInstalledExtensionsOptions extends LibraryFunctionBase {
 }
 
 export async function listInstalledExtensions(options: ListInstalledExtensionsOptions): Promise<LibraryResult<any[]>> {
-  return executeApiCall(options.apiToken, (client) => client.app.listExtensionInstances({ appInstallationId: options.installationId }));
+  return executeApiCall(options.apiToken, (client) => client.marketplace.extensionListExtensionInstances({}));
 }
 
 export interface InstallExtensionOptions extends LibraryFunctionBase {
-  installationId: string;
   extensionId: string;
+  context: 'project' | 'customer'; // MarketplaceContext
+  contextId: string;
+  consentedScopes: string[];
+  variantKey?: string;
 }
 
 export async function installExtension(options: InstallExtensionOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
     (client) =>
-      client.app.installExtension({
-        appInstallationId: options.installationId,
-        data: { extensionId: options.extensionId },
+      client.marketplace.extensionCreateExtensionInstance({
+        data: {
+          extensionId: options.extensionId,
+          context: options.context,
+          contextId: options.contextId,
+          consentedScopes: options.consentedScopes,
+          variantKey: options.variantKey
+        },
       }),
     201
   );
@@ -532,7 +575,7 @@ export interface UninstallExtensionOptions extends LibraryFunctionBase {
 }
 
 export async function uninstallExtension(options: UninstallExtensionOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.app.uninstallExtension({ extensionInstanceId: options.extensionInstanceId }), 204);
+  return executeApiCall(options.apiToken, (client) => client.marketplace.extensionDeleteExtensionInstance({ extensionInstanceId: options.extensionInstanceId }), 204);
 }
 
 // ============================================================================
@@ -544,17 +587,31 @@ export interface ListCertificatesOptions extends LibraryFunctionBase {
 }
 
 export async function listCertificates(options: ListCertificatesOptions): Promise<LibraryResult<any[]>> {
-  return executeApiCall(options.apiToken, (client) => client.domain.listCertificates({ projectId: options.projectId }));
+  return executeApiCall(options.apiToken, (client) => client.domain.sslListCertificates({ queryParameters: { projectId: options.projectId } }));
 }
 
 export interface RequestCertificateOptions extends LibraryFunctionBase {
-  ingressId: string;
+  projectId: string;
+  commonName: string;
+  contact: {
+    city?: string;
+    company?: string;
+    country?: string;
+    organizationalUnit?: string;
+    state?: string;
+  };
 }
 
 export async function requestCertificate(options: RequestCertificateOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
-    (client) => client.domain.createCertificateRequest({ ingressId: options.ingressId }),
+    (client) => client.domain.sslCreateCertificateRequest({
+      data: {
+        commonName: options.commonName,
+        contact: options.contact,
+        projectId: options.projectId
+      }
+    }),
     201
   );
 }
@@ -579,7 +636,6 @@ export async function getConversation(options: GetConversationOptions): Promise<
 
 export interface CreateConversationOptions extends LibraryFunctionBase {
   title: string;
-  message: string;
   categoryId: string;
 }
 
@@ -588,7 +644,7 @@ export async function createConversation(options: CreateConversationOptions): Pr
     options.apiToken,
     (client) =>
       client.conversation.createConversation({
-        data: { title: options.title, messageContent: options.message, categoryId: options.categoryId },
+        data: { title: options.title, categoryId: options.categoryId },
       }),
     201
   );
@@ -616,11 +672,9 @@ export interface CloseConversationOptions extends LibraryFunctionBase {
 }
 
 export async function closeConversation(options: CloseConversationOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(
-    options.apiToken,
-    (client) => client.conversation.updateConversationStatus({ conversationId: options.conversationId, data: { status: 'closed' } }),
-    204
-  );
+  // Note: updateConversation does not have a status field in the API
+  // Status changes may require a different API endpoint
+  throw new LibraryError('closeConversation not implemented - updateConversation does not support status field', 501);
 }
 
 export interface ListConversationCategoriesOptions extends LibraryFunctionBase {}
@@ -646,5 +700,46 @@ export interface DeleteStackOptions extends LibraryFunctionBase {
 }
 
 export async function deleteStack(options: DeleteStackOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.container.deleteStack({ stackId: options.stackId }), 204);
+  // Note: Mittwald API uses declareStack with empty services/volumes to delete
+  return executeApiCall(
+    options.apiToken,
+    (client) =>
+      client.container.declareStack({
+        stackId: options.stackId,
+        data: { services: {}, volumes: {} },
+      }),
+    204
+  );
+}
+
+export interface DeployStackOptions extends LibraryFunctionBase {
+  stackId: string;
+  recreate?: boolean;
+}
+
+export async function deployStack(options: DeployStackOptions): Promise<LibraryResult<any>> {
+  return executeApiCall(
+    options.apiToken,
+    (client) =>
+      client.container.updateStack({
+        stackId: options.stackId,
+        data: {},
+        queryParameters: { recreate: options.recreate ?? true },
+      }),
+    200
+  );
+}
+
+export interface GetStackProcessesOptions extends LibraryFunctionBase {
+  stackId: string;
+  projectId: string;
+}
+
+export async function getStackProcesses(options: GetStackProcessesOptions): Promise<LibraryResult<any[]>> {
+  return executeApiCall(options.apiToken, (client) =>
+    client.container.listServices({
+      projectId: options.projectId,
+      queryParameters: { stackId: options.stackId },
+    })
+  );
 }
