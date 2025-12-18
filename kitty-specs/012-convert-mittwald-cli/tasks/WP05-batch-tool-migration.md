@@ -9,10 +9,10 @@ subtasks:
   - "T035"
 title: "Batch Tool Migration"
 phase: "Per-Story"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "doing"
+assignee: "Claude Sonnet 4.5"
+agent: "claude"
+shell_pid: "99811"
 review_status: ""
 reviewed_by: ""
 history:
@@ -120,3 +120,4 @@ Per-category validation:
 ## Activity Log
 
 - 2025-12-18T06:00:00Z – system – lane=planned – Prompt created
+- 2025-12-18T16:00:00Z – claude – shell_pid=99811 – lane=doing – Started WP05 batch migration using proven WP04 pattern
