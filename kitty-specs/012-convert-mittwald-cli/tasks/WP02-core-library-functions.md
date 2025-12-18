@@ -10,10 +10,10 @@ subtasks:
   - "T015"
 title: "Core Library Functions & Contracts"
 phase: "Foundational"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "for_review"
+assignee: "Claude Sonnet 4.5"
+agent: "claude"
+shell_pid: "84179"
 review_status: ""
 reviewed_by: ""
 history:
@@ -124,3 +124,5 @@ Verify:
 ## Activity Log
 
 - 2025-12-18T06:00:00Z – system – lane=planned – Prompt created
+- 2025-12-18T08:20:00Z – claude – shell_pid=84179 – lane=doing – Started WP02 implementation
+- 2025-12-18T08:35:00Z – claude – shell_pid=84179 – lane=for_review – Completed T009-T015. Created contracts and 3 wrapper functions (listApps, listProjects, listMysqlDatabases). Build successful.
