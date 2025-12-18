@@ -464,6 +464,11 @@ export async function executeCli(
   mergedEnv.MW_SKIP_NEW_VERSION_CHECK = mergedEnv.MW_SKIP_NEW_VERSION_CHECK ?? '1';
   mergedEnv.MW_SKIP_ANALYTICS = mergedEnv.MW_SKIP_ANALYTICS ?? '1';
 
+  // CRITICAL FIX: Each mw process gets its own temp config dir to prevent
+  // concurrent file access to ~/.config/mw/context.json which has NO LOCKING
+  // See: https://github.com/mittwald/cli/blob/master/src/lib/context/UserContextProvider.ts
+  mergedEnv.XDG_CONFIG_HOME = `/tmp/mw-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
   const nodeOptions = combineNodeOptions(
     mergedEnv.NODE_OPTIONS,
     process.env.MCP_CLI_NODE_OPTIONS,
