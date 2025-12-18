@@ -1,28 +1,28 @@
 ---
-work_package_id: "WP01"
-subtasks:
-  - "T001"
-  - "T002"
-  - "T003"
-  - "T004"
-  - "T005"
-  - "T006"
-  - "T007"
-  - "T008"
-title: "Library Package Extraction"
-phase: "Foundational"
-lane: "done"
-assignee: "Claude Sonnet 4.5"
-agent: "codex"
-shell_pid: "84179"
-review_status: ""
-reviewed_by: ""
+work_package_id: WP01
+title: Library Package Extraction
+lane: done
 history:
-  - timestamp: "2025-12-18T06:00:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2025-12-18T06:00:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+agent: codex
+assignee: Claude Sonnet 4.5
+phase: Foundational
+review_status: ''
+reviewed_by: ''
+shell_pid: '84179'
+subtasks:
+- T001
+- T002
+- T003
+- T004
+- T005
+- T006
+- T007
+- T008
 ---
 
 # Work Package Prompt: WP01 – Library Package Extraction
