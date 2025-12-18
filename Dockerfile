@@ -41,6 +41,7 @@ RUN npm ci --ignore-scripts || npm install --ignore-scripts
 
 # Copy application source
 COPY src ./src
+COPY tests ./tests
 COPY tsconfig.json ./tsconfig.json
 COPY packages/oauth-bridge ./packages/oauth-bridge
 COPY packages/mcp-server ./packages/mcp-server
