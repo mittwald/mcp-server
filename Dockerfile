@@ -8,8 +8,13 @@ RUN apk add --no-cache openssh-client
 RUN npm install -g @mittwald/cli@1.12.0
 
 COPY package*.json ./
+COPY packages/mittwald-cli-core/package*.json ./packages/mittwald-cli-core/
+COPY packages/oauth-bridge/package*.json ./packages/oauth-bridge/
+COPY packages/mcp-server/package*.json ./packages/mcp-server/
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
+
 COPY . .
+RUN rm -rf packages/mittwald-cli-core/src/rendering
 RUN cd packages/mittwald-cli-core && npm run build && cd ../..
 RUN npm run build
 
