@@ -2,7 +2,6 @@ import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { CliToolError } from '../../../../tools/index.js';
 import { requestCertificate, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -17,27 +16,6 @@ interface MittwaldCertificateRequestArgs {
   state?: string;
 }
 
-function buildCliArgs(args: MittwaldCertificateRequestArgs): string[] {
-  const cliArgs: string[] = ['domain', 'certificate', 'request', '--output', 'json'];
-  cliArgs.push('--project-id', args.projectId);
-  cliArgs.push('--common-name', args.commonName);
-  if (args.city) cliArgs.push('--city', args.city);
-  if (args.company) cliArgs.push('--company', args.company);
-  if (args.country) cliArgs.push('--country', args.country);
-  if (args.organizationalUnit) cliArgs.push('--organizational-unit', args.organizationalUnit);
-  if (args.state) cliArgs.push('--state', args.state);
-  return cliArgs;
-}
-
-function mapCliError(error: CliToolError, args: MittwaldCertificateRequestArgs): string {
-  const combined = `${error.stderr ?? ''} ${error.stdout ?? ''}`.toLowerCase();
-
-  if (combined.includes('not found') && combined.includes('project')) {
-    return `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${error.stderr || error.message}`;
-  }
-
-  return error.message;
-}
 
 export const handleCertificateRequestCli: MittwaldCliToolHandler<MittwaldCertificateRequestArgs> = async (args, sessionId) => {
   const effectiveSessionId = sessionId || getCurrentSessionId();
@@ -59,67 +37,28 @@ export const handleCertificateRequestCli: MittwaldCliToolHandler<MittwaldCertifi
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv = buildCliArgs(args);
-
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_certificate_request',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await requestCertificate({
-          projectId: args.projectId,
-          commonName: args.commonName,
-          contact: {
-            city: args.city,
-            company: args.company,
-            country: args.country,
-            organizationalUnit: args.organizationalUnit,
-            state: args.state,
-          },
-          apiToken: session.mittwaldAccessToken,
-        });
+    const result = await requestCertificate({
+      projectId: args.projectId,
+      commonName: args.commonName,
+      contact: {
+        city: args.city,
+        company: args.company,
+        country: args.country,
+        organizationalUnit: args.organizationalUnit,
+        state: args.state,
       },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+      apiToken: session.mittwaldAccessToken,
     });
 
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_certificate_request',
-        projectId: args.projectId,
-        commonName: args.commonName,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_certificate_request',
-        projectId: args.projectId,
-        commonName: args.commonName,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
-
-    // Use library result (it's validated) - data is the certificate request result
-    const certificateRequest = validation.libraryOutput.data;
+    const certificateRequest = result.data;
 
     return formatToolResponse(
       'success',
       'SSL certificate request initiated',
       certificateRequest,
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -131,7 +70,13 @@ export const handleCertificateRequestCli: MittwaldCliToolHandler<MittwaldCertifi
     }
 
     if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
+      const combined = `${error.stderr ?? ''} ${error.stdout ?? ''}`.toLowerCase();
+      let message = error.message;
+
+      if (combined.includes('not found') && combined.includes('project')) {
+        message = `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${error.stderr || error.message}`;
+      }
+
       return formatToolResponse('error', message, {
         exitCode: error.exitCode,
         stderr: error.stderr,
@@ -140,7 +85,7 @@ export const handleCertificateRequestCli: MittwaldCliToolHandler<MittwaldCertifi
       });
     }
 
-    logger.error('[WP05] Unexpected error in certificate request handler', { error });
+    logger.error('[WP06] Unexpected error in certificate request handler', { error });
     return formatToolResponse('error', `Failed to request certificate: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
