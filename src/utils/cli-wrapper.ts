@@ -16,13 +16,18 @@ async function spawnPromise(
     env?: NodeJS.ProcessEnv;
   }
 ): Promise<{ stdout: string; stderr: string }> {
+  const traceId = `${args[0]}-${args[1]}-${Date.now()}`;
+  console.log(`[TRACE-${traceId}] 1. Starting spawnPromise`);
+
   return new Promise((resolve, reject) => {
     const { timeout, maxBuffer = 20 * 1024 * 1024 } = options;
 
+    console.log(`[TRACE-${traceId}] 2. About to call spawn()`);
     const child = spawn(command, args, {
       env: options.env,
       stdio: ['ignore', 'pipe', 'pipe'], // stdin=ignore, stdout=pipe, stderr=pipe
     });
+    console.log(`[TRACE-${traceId}] 3. spawn() returned, PID: ${child.pid}`);
 
     let stdout = '';
     let stderr = '';
@@ -32,7 +37,9 @@ async function spawnPromise(
 
     // CRITICAL: Attach data listeners IMMEDIATELY to avoid pipe buffer overflow
     // If we don't read from pipes fast enough, child process blocks waiting
+    console.log(`[TRACE-${traceId}] 4. Attaching stdout listener`);
     child.stdout?.on('data', (data: Buffer) => {
+      console.log(`[TRACE-${traceId}] 5. stdout data received: ${data.length} bytes`);
       stdout += data.toString('utf8');
       if (stdout.length > maxBuffer && !settled) {
         settled = true;
@@ -96,12 +103,14 @@ async function spawnPromise(
 
     // Handle process exit
     child.on('close', (code, signal) => {
+      console.log(`[TRACE-${traceId}] 6. Process closed with code: ${code}, signal: ${signal}`);
       if (timeoutHandle) {
         clearTimeout(timeoutHandle);
       }
 
       // Don't settle twice - timeout handler may have already rejected
       if (settled) {
+        console.log(`[TRACE-${traceId}] 7. Already settled, skipping`);
         return;
       }
       settled = true;
@@ -127,6 +136,7 @@ async function spawnPromise(
         error.stderr = stderr;
         reject(error);
       } else {
+        console.log(`[TRACE-${traceId}] 8. SUCCESS - Resolving with ${stdout.length} bytes stdout`);
         resolve({ stdout, stderr });
       }
     });
