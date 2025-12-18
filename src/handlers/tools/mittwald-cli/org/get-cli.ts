@@ -1,8 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { getOrganization, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -28,21 +26,6 @@ interface OrganizationDetails {
 interface OrganizationDetailsPayload {
   summary: string;
   organization: OrganizationDetails;
-}
-
-/**
- * Parses and normalizes the CLI output for `mw org get`.
- *
- * @param stdout - Raw CLI stdout.
- * @returns Normalized organization details.
- */
-function parseOrganizationDetails(stdout: string): OrganizationDetails {
-  const parsed = JSON.parse(stdout) as unknown;
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    throw new Error('Unexpected CLI output: expected an organization object');
-  }
-
-  return normalizeOrganizationDetails(parsed as Record<string, unknown>);
 }
 
 /**
@@ -163,37 +146,6 @@ function formatOrganizationSummary(details: OrganizationDetails): string {
 }
 
 /**
- * Maps CLI execution errors to descriptive messages.
- *
- * @param error - CLI adapter error.
- * @param organizationId - Requested organization identifier.
- * @returns Human-readable error message.
- */
-function mapCliError(error: CliToolError, organizationId: string): string {
-  const stderr = error.stderr ?? '';
-  const stdout = error.stdout ?? '';
-  const combined = `${stderr}\n${stdout}`.toLowerCase();
-
-  if (combined.includes('not found')) {
-    const details = stderr || stdout || error.message;
-    return `Organization not found: ${organizationId}.\nError: ${details}`;
-  }
-
-  if (error.kind === 'AUTHENTICATION' || combined.includes('unauthorized') || combined.includes('not authenticated')) {
-    const details = stderr || stdout || error.message;
-    return `Authentication failed when retrieving organization ${organizationId}.\nError: ${details}`;
-  }
-
-  if (combined.includes('forbidden') || combined.includes('permission denied')) {
-    const details = stderr || stdout || error.message;
-    return `Permission denied while retrieving organization ${organizationId}.\nError: ${details}`;
-  }
-
-  const details = stderr || stdout || error.message;
-  return `Failed to retrieve organization ${organizationId}: ${details}`;
-}
-
-/**
  * Handler for the `mittwald_org_get` tool.
  */
 export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = async (args, context) => {
@@ -212,46 +164,13 @@ export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = 
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv = ['org', 'get', args.organizationId, '--output', 'json'];
-
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_org_get',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await getOrganization({
-          customerId: args.organizationId,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await getOrganization({
+      customerId: args.organizationId,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_org_get',
-        organizationId: args.organizationId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_org_get',
-        organizationId: args.organizationId,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
-
-    // Use library result (it's validated)
-    const organization = normalizeOrganizationDetails(validation.libraryOutput.data as Record<string, unknown>);
+    const organization = normalizeOrganizationDetails(result.data as Record<string, unknown>);
     const summary = formatOrganizationSummary(organization);
     const payload: OrganizationDetailsPayload = {
       summary,
@@ -263,11 +182,7 @@ export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = 
       `Organization ${organization.name ?? organization.id} retrieved successfully.`,
       payload,
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -278,17 +193,7 @@ export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = 
       });
     }
 
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args.organizationId);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
-      });
-    }
-
-    logger.error('[WP05] Unexpected error in org get handler', { error });
+    logger.error('[WP06] Unexpected error in org get handler', { error });
     return formatToolResponse(
       'error',
       `Failed to get organization: ${error instanceof Error ? error.message : String(error)}`
