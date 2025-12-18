@@ -1,7 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { createUserSshKey, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
 import { logger } from '../../../../../utils/logger.js';
@@ -13,14 +12,6 @@ interface MittwaldUserSshKeyImportArgs {
   quiet?: boolean;
   expires?: string;
   input?: string;
-}
-
-function buildCliArgs(args: MittwaldUserSshKeyImportArgs): string[] {
-  const argv = ['user', 'ssh-key', 'import'];
-  if (args.expires) argv.push('--expires', args.expires);
-  if (args.input) argv.push('--input', args.input);
-  if (args.quiet) argv.push('--quiet');
-  return argv;
 }
 
 function readPublicKey(inputPath?: string): string {
@@ -99,49 +90,16 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
     // Parse expires interval to ISO 8601 datetime
     const expiresAt = parseExpiresInterval(args.expires);
 
-    const argv = buildCliArgs(args);
-
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_user_ssh_key_import',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await createUserSshKey({
-          publicKey,
-          expiresAt,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await createUserSshKey({
+      publicKey,
+      expiresAt,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_user_ssh_key_import',
-        input: args.input,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_user_ssh_key_import',
-        input: args.input,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
-
-    // Use library result (it's validated)
-    const result = validation.libraryOutput.data as Record<string, unknown>;
+    const data = result.data as Record<string, unknown>;
 
     if (args.quiet) {
-      const keyId = result.id as string;
+      const keyId = data.id as string;
       if (!keyId) {
         return formatToolResponse('error', 'Failed to import SSH key - no key ID returned');
       }
@@ -155,11 +113,7 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
           input: args.input,
         },
         {
-          durationMs: validation.libraryOutput.durationMs,
-          validationPassed: validation.passed,
-          discrepancyCount: validation.discrepancies.length,
-          cliDuration: validation.cliOutput.durationMs,
-          libraryDuration: validation.libraryOutput.durationMs,
+          durationMs: result.durationMs,
         }
       );
     }
@@ -169,19 +123,15 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
       'success',
       message,
       {
-        keyId: result.id,
+        keyId: data.id,
         expires: args.expires,
-        expiresAt: result.expiresAt,
+        expiresAt: data.expiresAt,
         input: args.input,
-        fingerprint: result.fingerprint,
-        publicKey: result.publicKey,
+        fingerprint: data.fingerprint,
+        publicKey: data.publicKey,
       },
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -192,7 +142,7 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
       });
     }
 
-    logger.error('[WP05] Unexpected error in user ssh key import handler', { error });
+    logger.error('[WP06] Unexpected error in user ssh key import handler', { error });
     return formatToolResponse('error', `Failed to import SSH key: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
