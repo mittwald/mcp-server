@@ -473,11 +473,6 @@ export async function executeCli(
   mergedEnv.MW_DISABLE_AUTOUPDATE = mergedEnv.MW_DISABLE_AUTOUPDATE ?? '1';
   mergedEnv.MW_SKIP_NEW_VERSION_CHECK = mergedEnv.MW_SKIP_NEW_VERSION_CHECK ?? '1';
   mergedEnv.MW_SKIP_ANALYTICS = mergedEnv.MW_SKIP_ANALYTICS ?? '1';
-
-  // CRITICAL FIX: Give each mw process unique compilation cache directory
-  // strace showed processes deadlocking on shared /tmp/node-compile-cache
-  // Using unique temp dir prevents file lock contention between concurrent processes
-  mergedEnv.NODE_COMPILE_CACHE = `/tmp/mw-cache-${process.pid}-${Date.now()}`;
   const nodeOptions = combineNodeOptions(
     mergedEnv.NODE_OPTIONS,
     process.env.MCP_CLI_NODE_OPTIONS,
