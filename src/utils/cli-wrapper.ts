@@ -373,6 +373,7 @@ export async function executeCli(
     }
 
 	    try {
+	      console.log(`[CLI-EXEC] BEFORE execFilePromise: ${cliCommand}, slot acquired`);
 	      const { stdout, stderr } = await execFilePromise(command, effectiveArgs, {
 	        timeout,
 	        maxBuffer: resolvedMaxBuffer,
@@ -380,6 +381,7 @@ export async function executeCli(
 	        // TEMPORARY: Remove signal to test if it's causing hangs
 	        // signal: abortSignal,
 	      });
+	      console.log(`[CLI-EXEC] AFTER execFilePromise: ${cliCommand}, got ${stdout.length} bytes stdout`);
 
       cliCallsTotal.inc({ command: cliCommand, status: 'success' });
       return {
@@ -389,7 +391,9 @@ export async function executeCli(
         durationMs: Date.now() - startedAt
       };
     } finally {
+      console.log(`[CLI-EXEC] FINALLY block: ${cliCommand}, releasing slot`);
       release?.();
+      console.log(`[CLI-EXEC] FINALLY complete: ${cliCommand}, slot released`);
     }
   } catch (error: any) {
     cliCallsTotal.inc({ command: cliCommand, status: 'error' });
