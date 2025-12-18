@@ -2,12 +2,13 @@
 FROM node:24.11.0-alpine AS library-builder
 WORKDIR /app
 
-# Copy library package files
+# Copy root and library package files
+COPY package*.json ./
 COPY packages/mittwald-cli-core/package*.json ./packages/mittwald-cli-core/
 COPY packages/mittwald-cli-core/tsconfig.json ./packages/mittwald-cli-core/
 
-# Install library dependencies
-RUN cd packages/mittwald-cli-core && npm install
+# Install all workspace dependencies (needed for library package)
+RUN npm ci --ignore-scripts || npm install --ignore-scripts
 
 # Copy library source (including rendering, basecommands, ddev)
 COPY packages/mittwald-cli-core/src ./packages/mittwald-cli-core/src
