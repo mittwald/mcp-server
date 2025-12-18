@@ -44,4 +44,9 @@ export interface MCPToolContext {
    * Can be extended with provider-specific credentials.
    */
   authInfo: AuthInfo;
+
+  /**
+   * Abort signal used to cancel tool execution when the client disconnects.
+   */
+  abortSignal?: AbortSignal;
 }

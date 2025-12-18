@@ -265,7 +265,11 @@ export async function handleToolCall(
                           request.params.name.includes('accessible_projects');
     
     let result: CallToolResult;
-    result = await runWithSessionContext(context.sessionId, () => handler(request.params.arguments as any));
+    result = await runWithSessionContext(
+      context.sessionId,
+      () => handler(request.params.arguments as any),
+      context.abortSignal
+    );
 
     // Capture memory after execution
     const memAfter = process.memoryUsage();

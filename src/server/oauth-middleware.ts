@@ -23,11 +23,8 @@ export function createOAuthMiddleware() {
     res: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
-    console.log('[OAuth Middleware DEBUG] Headers:', JSON.stringify(req.headers, null, 2));
-
     logger.info(`[OAuth Middleware] Request received: ${req.method} ${req.path}`, {
       hasAuth: !!req.headers.authorization,
-      authHeader: req.headers.authorization,
       authLength: req.headers.authorization?.length,
       allHeaderKeys: Object.keys(req.headers),
       directTokensEnabled,
@@ -115,7 +112,6 @@ async function handleJwtToken(
 ): Promise<boolean> {
   logger.debug('[handleJwtToken] Attempting JWT validation', {
     tokenLength: token.length,
-    tokenPrefix: token.substring(0, 20),
   });
 
   const bridgeSecret = CONFIG.OAUTH_BRIDGE.JWT_SECRET;
@@ -226,7 +222,6 @@ async function handleDirectToken(
 ): Promise<boolean> {
   logger.info('[handleDirectToken] Starting direct token validation', {
     tokenLength: token.length,
-    tokenPrefix: token.substring(0, 30),
   });
 
   const validation = await directTokenValidator.validate(token);

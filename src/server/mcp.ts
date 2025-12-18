@@ -152,7 +152,7 @@ export class MCPHandler implements IMCPHandler {
       return handleListTools(request);
     });
 
-    server.setRequestHandler(CallToolRequestSchema, (request) => {
+    server.setRequestHandler(CallToolRequestSchema, (request, extra) => {
       logger.debug(`🔧 [${sessionId}] Calling tool: ${request.params.name}`);
 
       if (!sessionAuth) {
@@ -168,7 +168,7 @@ export class MCPHandler implements IMCPHandler {
         },
       };
 
-      return handleToolCall(request, { sessionId, authInfo });
+      return handleToolCall(request, { sessionId, authInfo, abortSignal: extra.signal });
     });
 
     // Prompts

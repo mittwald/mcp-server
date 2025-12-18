@@ -1,6 +1,6 @@
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { getCurrentSessionId } from './execution-context.js';
+import { getCurrentAbortSignal, getCurrentSessionId } from './execution-context.js';
 import { sessionManager } from '../server/session-manager.js';
 import { cliCallsTotal, cliInflight, cliQueueDepth, cliQueueWait } from '../metrics/index.js';
 
@@ -83,9 +83,13 @@ class AsyncSemaphore {
     };
   }
 
-  async acquire(): Promise<() => void> {
+  async acquire(signal?: AbortSignal): Promise<() => void> {
     if (this.limit <= 0) {
       return () => {};
+    }
+
+    if (signal?.aborted) {
+      throw new Error('Request aborted before acquiring a Mittwald CLI slot.');
     }
 
     if (this.active < this.limit) {
@@ -101,9 +105,45 @@ class AsyncSemaphore {
       );
     }
 
-    return new Promise((resolve) => {
-      this.queue.push((release) => resolve(release));
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      let onAbort: (() => void) | undefined;
+
+      const cleanup = () => {
+        if (signal && onAbort) {
+          signal.removeEventListener('abort', onAbort);
+        }
+      };
+
+      const waiter = (release: () => void) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        cleanup();
+        resolve(release);
+      };
+
+      onAbort = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        const index = this.queue.indexOf(waiter);
+        if (index >= 0) {
+          this.queue.splice(index, 1);
+          cliQueueDepth.set(this.queue.length);
+        }
+        cleanup();
+        reject(new Error('Request aborted while waiting for a Mittwald CLI slot.'));
+      };
+
+      this.queue.push(waiter);
       cliQueueDepth.set(this.queue.length);
+
+      if (signal) {
+        signal.addEventListener('abort', onAbort, { once: true });
+      }
     });
   }
 
@@ -216,6 +256,8 @@ export interface CliExecuteOptions {
   env?: Record<string, string>;
   /** Per-user Mittwald access token to pass to the CLI via --token */
   token?: string;
+  /** Abort signal from the MCP transport, used to cancel the CLI call early. */
+  signal?: AbortSignal;
 }
 
 export interface CliExecuteResult {
@@ -239,9 +281,11 @@ export async function executeCli(
     maxBuffer,
     env = {},
     token,
+    signal,
   } = options;
   const resolvedMaxBuffer = resolveMaxBufferBytes(maxBuffer);
   const maxOldSpaceMb = resolveMaxOldSpaceMb();
+  const abortSignal = signal ?? getCurrentAbortSignal();
 
   // Compute token to inject if not already present in args
   let effectiveArgs = [...args];
@@ -277,6 +321,9 @@ export async function executeCli(
   };
   mergedEnv.MITTWALD_NONINTERACTIVE = '1';
   mergedEnv.CI = '1';
+  mergedEnv.MW_DISABLE_AUTOUPDATE = mergedEnv.MW_DISABLE_AUTOUPDATE ?? '1';
+  mergedEnv.MW_SKIP_NEW_VERSION_CHECK = mergedEnv.MW_SKIP_NEW_VERSION_CHECK ?? '1';
+  mergedEnv.MW_SKIP_ANALYTICS = mergedEnv.MW_SKIP_ANALYTICS ?? '1';
 
   const nodeOptions = combineNodeOptions(
     mergedEnv.NODE_OPTIONS,
@@ -300,7 +347,7 @@ export async function executeCli(
 
   try {
     const queueStart = Date.now();
-    const release = cliSemaphore ? await cliSemaphore.acquire() : null;
+    const release = cliSemaphore ? await cliSemaphore.acquire(abortSignal) : null;
     const queueWaitSeconds = (Date.now() - queueStart) / 1000;
     if (queueWaitSeconds > 0) {
       cliQueueWait.observe(queueWaitSeconds);
@@ -311,6 +358,7 @@ export async function executeCli(
         timeout,
         maxBuffer: resolvedMaxBuffer,
         env: mergedEnv,
+        signal: abortSignal,
       });
 
       cliCallsTotal.inc({ command: cliCommand, status: 'success' });

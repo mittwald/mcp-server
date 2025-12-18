@@ -1,8 +1,52 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger.js';
+import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
 
 // Simple in-memory rate limiter
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
+
+type RateLimitKeyType = 'user' | 'client' | 'session' | 'ip' | 'unknown';
+
+function normalizeHeaderValue(value: string | string[] | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
+}
+
+function resolveRateLimitKey(req: Request): { key: string; keyType: RateLimitKeyType } {
+  const authInfo = (req as Request & { auth?: AuthInfo }).auth;
+
+  const userId = authInfo?.extra && typeof authInfo.extra.userId === 'string'
+    ? authInfo.extra.userId
+    : undefined;
+  if (userId) {
+    return { key: `user:${userId}`, keyType: 'user' };
+  }
+
+  const clientId = typeof authInfo?.clientId === 'string' ? authInfo.clientId : undefined;
+  if (clientId) {
+    return { key: `client:${clientId}`, keyType: 'client' };
+  }
+
+  const sessionId =
+    normalizeHeaderValue(req.headers['mcp-session-id'] as string | string[] | undefined) ||
+    normalizeHeaderValue(req.headers['x-session-id'] as string | string[] | undefined);
+  if (sessionId) {
+    return { key: `session:${sessionId}`, keyType: 'session' };
+  }
+
+  const flyClientIp = normalizeHeaderValue(req.headers['fly-client-ip'] as string | string[] | undefined);
+  const clientIp = flyClientIp || req.ip || req.connection.remoteAddress;
+  if (clientIp) {
+    return { key: `ip:${clientIp}`, keyType: 'ip' };
+  }
+
+  return { key: 'unknown', keyType: 'unknown' };
+}
 
 /**
  * Rate limiting middleware for MCP endpoints
@@ -12,7 +56,7 @@ export function rateLimitMiddleware(
   maxRequests: number = 100
 ) {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const key = req.ip || 'unknown';
+    const { key, keyType } = resolveRateLimitKey(req);
     const now = Date.now();
     
     // Get or create rate limit data
@@ -24,7 +68,8 @@ export function rateLimitMiddleware(
     
     // Check rate limit
     if (rateData.count >= maxRequests) {
-      logger.warn('Rate limit exceeded', { ip: key, count: rateData.count });
+      logger.warn('Rate limit exceeded', { keyType, key, count: rateData.count });
+      res.setHeader('Retry-After', Math.ceil((rateData.resetTime - now) / 1000));
       res.status(429).json({
         jsonrpc: '2.0',
         error: {
