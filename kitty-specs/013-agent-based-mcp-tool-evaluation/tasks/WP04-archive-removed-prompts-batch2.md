@@ -1,15 +1,15 @@
 ---
 work_package_id: WP04
 title: Archive Removed Tool Prompts (Batch 2)
-subtasks:
-  - T012
-  - T013
-priority: P1
 lane: planned
+priority: P1
 history:
-  - date: 2025-12-18
-    action: created
-    agent: Claude
+- date: 2025-12-18
+  action: created
+  agent: Claude
+subtasks:
+- T012
+- T013
 ---
 
 # Work Package 04: Archive Removed Tool Prompts (Batch 2)

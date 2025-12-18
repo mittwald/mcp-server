@@ -1,17 +1,17 @@
 ---
 work_package_id: WP05
 title: Update Tool Prompts (Core Domains)
-subtasks:
-  - T014
-  - T015
-  - T016
-  - T017
-priority: P0
 lane: planned
+priority: P0
 history:
-  - date: 2025-12-18
-    action: created
-    agent: Claude
+- date: 2025-12-18
+  action: created
+  agent: Claude
+subtasks:
+- T014
+- T015
+- T016
+- T017
 ---
 
 # Work Package 05: Update Tool Prompts (Core Domains)

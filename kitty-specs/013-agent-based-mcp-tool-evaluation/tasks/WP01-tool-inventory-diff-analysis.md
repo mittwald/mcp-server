@@ -1,17 +1,18 @@
 ---
 work_package_id: WP01
 title: Tool Inventory & Diff Analysis
-subtasks:
-  - T001
-  - T002
-  - T003
-  - T004
+lane: doing
 priority: P0
-lane: planned
 history:
-  - date: 2025-12-18
-    action: created
-    agent: Claude
+- date: 2025-12-18
+  action: created
+  agent: Claude
+agent: codex
+subtasks:
+- T001
+- T002
+- T003
+- T004
 ---
 
 # Work Package 01: Tool Inventory & Diff Analysis
@@ -35,6 +36,118 @@ Feature 012 converted the MCP server from CLI process spawning to library-based 
 ### T001: Generate Current Tool Inventory JSON
 
 **Goal**: Query the live MCP server and capture complete tool metadata for all 115 current tools.
+
+UPDATE: here are the tools:
+
+Here’s the full set of 115 mittwald MCP tools available right now (grouped by
+  domain):
+
+  - app (8): mcp__mittwald__mittwald_app_copy, mcp__mittwald__mittwald_app_get,
+    mcp__mittwald__mittwald_app_list,
+    mcp__mittwald__mittwald_app_list_upgrade_candidates,
+    mcp__mittwald__mittwald_app_uninstall, mcp__mittwald__mittwald_app_update,
+    mcp__mittwald__mittwald_app_upgrade, mcp__mittwald__mittwald_app_versions
+  - backups (8): mcp__mittwald__mittwald_backup_create,
+    mcp__mittwald__mittwald_backup_delete, mcp__mittwald__mittwald_backup_get,
+    mcp__mittwald__mittwald_backup_list,
+    mcp__mittwald__mittwald_backup_schedule_create,
+    mcp__mittwald__mittwald_backup_schedule_delete,
+    mcp__mittwald__mittwald_backup_schedule_list,
+    mcp__mittwald__mittwald_backup_schedule_update
+  - certificates (2): mcp__mittwald__mittwald_certificate_list,
+    mcp__mittwald__mittwald_certificate_request
+  - containers (1): mcp__mittwald__mittwald_container_list
+  - context (3): mcp__mittwald__mittwald_context_get_session,
+    mcp__mittwald__mittwald_context_reset_session,
+    mcp__mittwald__mittwald_context_set_session
+  - conversation (5): mcp__mittwald__mittwald_conversation_categories,
+    mcp__mittwald__mittwald_conversation_create,
+    mcp__mittwald__mittwald_conversation_list,
+    mcp__mittwald__mittwald_conversation_reply,
+    mcp__mittwald__mittwald_conversation_show
+  - cronjob (9): mcp__mittwald__mittwald_cronjob_create,
+    mcp__mittwald__mittwald_cronjob_delete,
+    mcp__mittwald__mittwald_cronjob_execute,
+    mcp__mittwald__mittwald_cronjob_execution_abort,
+    mcp__mittwald__mittwald_cronjob_execution_get,
+    mcp__mittwald__mittwald_cronjob_execution_list,
+    mcp__mittwald__mittwald_cronjob_get, mcp__mittwald__mittwald_cronjob_list,
+    mcp__mittwald__mittwald_cronjob_update
+  - database/mysql (10): mcp__mittwald__mittwald_database_mysql_create,
+    mcp__mittwald__mittwald_database_mysql_delete,
+    mcp__mittwald__mittwald_database_mysql_get,
+    mcp__mittwald__mittwald_database_mysql_list,
+    mcp__mittwald__mittwald_database_mysql_user_create,
+    mcp__mittwald__mittwald_database_mysql_user_delete,
+    mcp__mittwald__mittwald_database_mysql_user_get,
+    mcp__mittwald__mittwald_database_mysql_user_list,
+    mcp__mittwald__mittwald_database_mysql_user_update,
+    mcp__mittwald__mittwald_database_mysql_versions
+  - database/redis (4): mcp__mittwald__mittwald_database_redis_create,
+    mcp__mittwald__mittwald_database_redis_get,
+    mcp__mittwald__mittwald_database_redis_list,
+    mcp__mittwald__mittwald_database_redis_versions
+  - domain/dns/virtualhost (9): mcp__mittwald__mittwald_domain_dnszone_get,
+    mcp__mittwald__mittwald_domain_dnszone_list,
+    mcp__mittwald__mittwald_domain_dnszone_update,
+    mcp__mittwald__mittwald_domain_get, mcp__mittwald__mittwald_domain_list,
+    mcp__mittwald__mittwald_domain_virtualhost_create,
+    mcp__mittwald__mittwald_domain_virtualhost_delete,
+    mcp__mittwald__mittwald_domain_virtualhost_get,
+    mcp__mittwald__mittwald_domain_virtualhost_list
+  - mail (10): mcp__mittwald__mittwald_mail_address_create,
+    mcp__mittwald__mittwald_mail_address_delete,
+    mcp__mittwald__mittwald_mail_address_get,
+    mcp__mittwald__mittwald_mail_address_list,
+    mcp__mittwald__mittwald_mail_address_update,
+    mcp__mittwald__mittwald_mail_deliverybox_create,
+    mcp__mittwald__mittwald_mail_deliverybox_delete,
+    mcp__mittwald__mittwald_mail_deliverybox_get,
+    mcp__mittwald__mittwald_mail_deliverybox_list,
+    mcp__mittwald__mittwald_mail_deliverybox_update
+  - organization (7): mcp__mittwald__mittwald_org_get,
+    mcp__mittwald__mittwald_org_invite, mcp__mittwald__mittwald_org_invite_list,
+    mcp__mittwald__mittwald_org_invite_revoke, mcp__mittwald__mittwald_org_list,
+    mcp__mittwald__mittwald_org_membership_list,
+    mcp__mittwald__mittwald_org_membership_revoke
+  - project (10): mcp__mittwald__mittwald_project_create,
+    mcp__mittwald__mittwald_project_delete, mcp__mittwald__mittwald_project_get,
+    mcp__mittwald__mittwald_project_invite_get,
+    mcp__mittwald__mittwald_project_invite_list,
+    mcp__mittwald__mittwald_project_list,
+    mcp__mittwald__mittwald_project_membership_get,
+    mcp__mittwald__mittwald_project_membership_list,
+    mcp__mittwald__mittwald_project_ssh, mcp__mittwald__mittwald_project_update
+  - registry (4): mcp__mittwald__mittwald_registry_create,
+    mcp__mittwald__mittwald_registry_delete,
+    mcp__mittwald__mittwald_registry_list,
+    mcp__mittwald__mittwald_registry_update
+  - server (2): mcp__mittwald__mittwald_server_get,
+    mcp__mittwald__mittwald_server_list
+  - sftp (2): mcp__mittwald__mittwald_sftp_user_delete,
+    mcp__mittwald__mittwald_sftp_user_list
+  - ssh users (4): mcp__mittwald__mittwald_ssh_user_create,
+    mcp__mittwald__mittwald_ssh_user_delete,
+    mcp__mittwald__mittwald_ssh_user_list,
+    mcp__mittwald__mittwald_ssh_user_update
+  - stack (4): mcp__mittwald__mittwald_stack_delete,
+    mcp__mittwald__mittwald_stack_deploy, mcp__mittwald__mittwald_stack_list,
+    mcp__mittwald__mittwald_stack_ps
+  - user + tokens/sessions/keys (12):
+    mcp__mittwald__mittwald_user_api_token_create,
+    mcp__mittwald__mittwald_user_api_token_get,
+    mcp__mittwald__mittwald_user_api_token_list,
+    mcp__mittwald__mittwald_user_api_token_revoke,
+    mcp__mittwald__mittwald_user_get, mcp__mittwald__mittwald_user_session_get,
+    mcp__mittwald__mittwald_user_session_list,
+    mcp__mittwald__mittwald_user_ssh_key_create,
+    mcp__mittwald__mittwald_user_ssh_key_delete,
+    mcp__mittwald__mittwald_user_ssh_key_get,
+    mcp__mittwald__mittwald_user_ssh_key_import,
+    mcp__mittwald__mittwald_user_ssh_key_list
+  - volume (1): mcp__mittwald__mittwald_volume_list
+
+  Total: 115 tools.
 
 **Steps**:
 1. You already have access to the mittwald MCP server tools (list available in your function registry)
@@ -240,3 +353,10 @@ Verify:
 2. Diff report summary counts add up correctly
 3. No obvious missing tools or miscategorizations
 4. Removed tool count (~60) matches expectation from feature 012 changes
+
+## Activity Log
+
+- 2025-12-18T20:33:58Z – claude – lane=doing – Test move
+- 2025-12-18T20:34:32Z – claude – lane=planned – Reset for testing
+- 2025-12-18T20:35:10Z – claude – lane=doing – Ready to implement
+- 2025-12-18T20:36:13Z – claude – lane=planned – Reset

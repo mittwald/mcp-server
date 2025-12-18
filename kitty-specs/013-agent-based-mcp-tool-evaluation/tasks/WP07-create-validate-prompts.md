@@ -1,16 +1,16 @@
 ---
 work_package_id: WP07
 title: Create New Tool Prompts & Validate
-subtasks:
-  - T022
-  - T023
-  - T024
-priority: P2
 lane: planned
+priority: P2
 history:
-  - date: 2025-12-18
-    action: created
-    agent: Claude
+- date: 2025-12-18
+  action: created
+  agent: Claude
+subtasks:
+- T022
+- T023
+- T024
 ---
 
 # Work Package 07: Create New Tool Prompts & Validate

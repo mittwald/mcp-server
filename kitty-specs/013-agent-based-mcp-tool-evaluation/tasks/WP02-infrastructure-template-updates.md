@@ -1,17 +1,17 @@
 ---
 work_package_id: WP02
 title: Infrastructure & Template Updates
-subtasks:
-  - T005
-  - T006
-  - T007
-  - T008
-priority: P0
 lane: planned
+priority: P0
 history:
-  - date: 2025-12-18
-    action: created
-    agent: Claude
+- date: 2025-12-18
+  action: created
+  agent: Claude
+subtasks:
+- T005
+- T006
+- T007
+- T008
 ---
 
 # Work Package 02: Infrastructure & Template Updates
@@ -146,3 +146,12 @@ Verify:
 1. Template includes 3+ mentions of "CALL tool directly" (task section, steps, how-to)
 2. eval_version = "2.0.0" in template
 3. Quickstart covers WP execution model clearly
+
+## Activity Log
+
+- 2025-12-18T21:17:49Z – agent – lane=doing – Started implementation via workflow command
+- 2025-12-18T21:18:23Z – unknown – lane=planned – Testing workflow command
+- 2025-12-18T21:23:48Z – agent – lane=doing – Started implementation via workflow command
+- 2025-12-18T21:24:43Z – unknown – lane=planned – Testing
+- 2025-12-18T21:24:43Z – agent – lane=doing – Started implementation via workflow command
+- 2025-12-18T21:26:39Z – agent – lane=doing – Started implementation via workflow command

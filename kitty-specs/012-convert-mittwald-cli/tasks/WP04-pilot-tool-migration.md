@@ -1,27 +1,27 @@
 ---
-work_package_id: "WP04"
-subtasks:
-  - "T023"
-  - "T024"
-  - "T025"
-  - "T026"
-  - "T027"
-  - "T028"
-  - "T029"
-title: "Pilot Tool Migration & Validation"
-phase: "Per-Story"
-lane: "done"
-assignee: "Claude Sonnet 4.5"
-agent: "codex"
-shell_pid: "84179"
-review_status: ""
-reviewed_by: ""
+work_package_id: WP04
+title: Pilot Tool Migration & Validation
+lane: done
 history:
-  - timestamp: "2025-12-18T06:00:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2025-12-18T06:00:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+agent: codex
+assignee: Claude Sonnet 4.5
+phase: Per-Story
+review_status: ''
+reviewed_by: ''
+shell_pid: '84179'
+subtasks:
+- T023
+- T024
+- T025
+- T026
+- T027
+- T028
+- T029
 ---
 
 # Work Package Prompt: WP04 – Pilot Tool Migration & Validation

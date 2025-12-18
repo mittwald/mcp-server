@@ -1,17 +1,17 @@
 ---
 work_package_id: WP06
 title: Update Tool Prompts (Extended Domains)
-subtasks:
-  - T018
-  - T019
-  - T020
-  - T021
-priority: P1
 lane: planned
+priority: P1
 history:
-  - date: 2025-12-18
-    action: created
-    agent: Claude
+- date: 2025-12-18
+  action: created
+  agent: Claude
+subtasks:
+- T018
+- T019
+- T020
+- T021
 ---
 
 # Work Package 06: Update Tool Prompts (Extended Domains)

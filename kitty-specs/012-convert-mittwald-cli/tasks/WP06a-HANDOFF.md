@@ -1,7 +1,7 @@
 ---
-lane: "done"
-agent: "codex"
-shell_pid: "57224"
+lane: done
+agent: codex
+shell_pid: '57224'
 ---
 # WP06 Handoff - CLI Removal & Cleanup
 

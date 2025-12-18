@@ -1,17 +1,17 @@
 ---
 work_package_id: WP08
 title: Coverage Verification & Baseline
-subtasks:
-  - T025
-  - T026
-  - T027
-  - T028
-priority: P0
 lane: planned
+priority: P0
 history:
-  - date: 2025-12-18
-    action: created
-    agent: Claude
+- date: 2025-12-18
+  action: created
+  agent: Claude
+subtasks:
+- T025
+- T026
+- T027
+- T028
 ---
 
 # Work Package 08: Coverage Verification & Baseline

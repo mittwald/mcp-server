@@ -1,26 +1,26 @@
 ---
-work_package_id: "WP06"
-subtasks:
-  - "T036"
-  - "T037"
-  - "T038"
-  - "T039"
-  - "T040"
-  - "T041"
-title: "CLI Removal & Cleanup"
-phase: "Polish"
-lane: "done"
-assignee: ""
-agent: "codex"
-shell_pid: "57224"
-review_status: "has_feedback"
-reviewed_by: "codex"
+work_package_id: WP06
+title: CLI Removal & Cleanup
+lane: done
 history:
-  - timestamp: "2025-12-18T06:00:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2025-12-18T06:00:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+agent: codex
+assignee: ''
+phase: Polish
+review_status: has_feedback
+reviewed_by: codex
+shell_pid: '57224'
+subtasks:
+- T036
+- T037
+- T038
+- T039
+- T040
+- T041
 ---
 
 # Work Package Prompt: WP06 – CLI Removal & Cleanup

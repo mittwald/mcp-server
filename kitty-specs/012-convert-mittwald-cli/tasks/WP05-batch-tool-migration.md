@@ -1,26 +1,26 @@
 ---
-work_package_id: "WP05"
-subtasks:
-  - "T030"
-  - "T031"
-  - "T032"
-  - "T033"
-  - "T034"
-  - "T035"
-title: "Batch Tool Migration"
-phase: "Per-Story"
-lane: "done"
-assignee: "Claude Sonnet 4.5"
-agent: "codex"
-shell_pid: "61471"
-review_status: "has_feedback"
-reviewed_by: "codex"
+work_package_id: WP05
+title: Batch Tool Migration
+lane: done
 history:
-  - timestamp: "2025-12-18T06:00:00Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2025-12-18T06:00:00Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
+agent: codex
+assignee: Claude Sonnet 4.5
+phase: Per-Story
+review_status: has_feedback
+reviewed_by: codex
+shell_pid: '61471'
+subtasks:
+- T030
+- T031
+- T032
+- T033
+- T034
+- T035
 ---
 
 # Work Package Prompt: WP05 – Batch Tool Migration
