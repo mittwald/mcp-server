@@ -1,32 +1,104 @@
-import { execFile } from 'child_process';
+import { spawn } from 'child_process';
 import { getCurrentAbortSignal, getCurrentSessionId } from './execution-context.js';
 import { sessionManager } from '../server/session-manager.js';
 import { cliCallsTotal, cliInflight, cliQueueDepth, cliQueueWait } from '../metrics/index.js';
 
 /**
- * Use execFile instead of exec to prevent shell injection attacks.
- * execFile does NOT invoke a shell - it passes arguments directly to the executable.
- * This means shell metacharacters are treated as literal strings, not interpreted.
+ * Use spawn instead of execFile to avoid buffering issues with concurrent processes.
+ * spawn gives us explicit control over stdio streams and prevents file descriptor leaks.
  */
-async function execFilePromise(
+async function spawnPromise(
   command: string,
   args: string[],
-  options: Parameters<typeof execFile>[2]
+  options: {
+    timeout?: number;
+    maxBuffer?: number;
+    env?: NodeJS.ProcessEnv;
+  }
 ): Promise<{ stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
-    const child = execFile(command, args, options, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      resolve({
-        stdout: typeof stdout === 'string' ? stdout : stdout.toString('utf8'),
-        stderr: typeof stderr === 'string' ? stderr : stderr.toString('utf8'),
-      });
+    const { timeout, maxBuffer = 20 * 1024 * 1024 } = options;
+
+    const child = spawn(command, args, {
+      env: options.env,
+      stdio: ['ignore', 'pipe', 'pipe'], // stdin=ignore, stdout=pipe, stderr=pipe
     });
 
-    // Ensure the CLI never blocks on stdin prompts.
-    child.stdin?.end();
+    let stdout = '';
+    let stderr = '';
+    let timedOut = false;
+    let maxBufferExceeded = false;
+
+    // Set up timeout
+    const timeoutHandle = timeout ? setTimeout(() => {
+      timedOut = true;
+      child.kill('SIGTERM');
+      // Force kill after 5 seconds if SIGTERM doesn't work
+      setTimeout(() => {
+        if (!child.killed) {
+          child.kill('SIGKILL');
+        }
+      }, 5000);
+    }, timeout) : null;
+
+    // Collect stdout
+    child.stdout?.on('data', (data: Buffer) => {
+      stdout += data.toString('utf8');
+      if (stdout.length > maxBuffer) {
+        maxBufferExceeded = true;
+        child.kill('SIGTERM');
+      }
+    });
+
+    // Collect stderr
+    child.stderr?.on('data', (data: Buffer) => {
+      stderr += data.toString('utf8');
+      if (stderr.length > maxBuffer) {
+        maxBufferExceeded = true;
+        child.kill('SIGTERM');
+      }
+    });
+
+    // Handle process exit
+    child.on('close', (code, signal) => {
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
+
+      if (timedOut) {
+        const error: any = new Error(`Command timed out after ${timeout}ms`);
+        error.code = 'ETIMEDOUT';
+        error.signal = 'SIGTERM';
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
+      } else if (maxBufferExceeded) {
+        const error: any = new Error(`stdout maxBuffer exceeded`);
+        error.code = 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
+      } else if (code !== 0) {
+        const error: any = new Error(`Command failed with exit code ${code}`);
+        error.code = code;
+        error.signal = signal;
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+
+    // Handle spawn errors (e.g., command not found)
+    child.on('error', (error: any) => {
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
+      error.stdout = stdout;
+      error.stderr = stderr;
+      reject(error);
+    });
   });
 }
 
@@ -329,7 +401,7 @@ export async function executeCli(
     }
   }
 
-  // No need to escape arguments - execFile passes them directly to the executable
+  // No need to escape arguments - spawn passes them directly to the executable
   // without shell interpretation. Shell metacharacters are treated as literal strings.
   // This eliminates shell injection vulnerabilities.
 
@@ -373,20 +445,14 @@ export async function executeCli(
     }
 
 	    try {
-	      console.log(`[CLI-EXEC] BEFORE execFilePromise: ${cliCommand}, slot acquired`);
-	      // TEST: Use shell wrapper like SSH does
-	      // Properly escape for shell to avoid injection
-	      const shellCommand = [command, ...effectiveArgs].map(arg =>
-	        `'${arg.replace(/'/g, "'\\''")}'`
-	      ).join(' ');
-	      const { stdout, stderr } = await execFilePromise('/bin/sh', ['-c', shellCommand], {
+	      console.log(`[CLI-EXEC] BEFORE spawnPromise: ${cliCommand}, slot acquired`);
+	      // Execute CLI directly without shell wrapper - spawn handles concurrent processes better
+	      const { stdout, stderr } = await spawnPromise(command, effectiveArgs, {
 	        timeout,
 	        maxBuffer: resolvedMaxBuffer,
 	        env: mergedEnv,
-	        // TEMPORARY: Remove signal to test if it's causing hangs
-	        // signal: abortSignal,
 	      });
-	      console.log(`[CLI-EXEC] AFTER execFilePromise: ${cliCommand}, got ${stdout.length} bytes stdout`);
+	      console.log(`[CLI-EXEC] AFTER spawnPromise: ${cliCommand}, got ${stdout.length} bytes stdout`);
 
       cliCallsTotal.inc({ command: cliCommand, status: 'success' });
       return {
@@ -402,7 +468,7 @@ export async function executeCli(
     }
   } catch (error: any) {
     cliCallsTotal.inc({ command: cliCommand, status: 'error' });
-    // execFile throws an error if the command exits with non-zero
+    // spawn rejects the promise if the command exits with non-zero
     let stderr = error?.stderr?.trim() || '';
 
     // If stderr is empty but we have an error message, use that
