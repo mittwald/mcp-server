@@ -1,12 +1,14 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { getAppVersions, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldAppVersionsArgs {
   app?: string;
 }
-
-type VersionsResult = unknown;
 
 function buildCliArgs(args: MittwaldAppVersionsArgs): string[] {
   const cliArgs: string[] = ['app', 'versions'];
@@ -14,76 +16,72 @@ function buildCliArgs(args: MittwaldAppVersionsArgs): string[] {
   return cliArgs;
 }
 
-function parseJsonOutput(output: string): VersionsResult | undefined {
-  if (!output) return undefined;
+export const handleAppVersionsCli: MittwaldCliToolHandler<MittwaldAppVersionsArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  try {
-    return JSON.parse(output);
-  } catch {
-    return undefined;
-  }
-}
-
-function mapCliError(error: CliToolError, args: MittwaldAppVersionsArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-
-  if (combined.includes('not found') && combined.includes('app')) {
-    return `App not found. Please verify the app name: ${args.app ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  return error.message;
-}
+  if (!args.app) {
+    return formatToolResponse('error', 'App ID is required. Please provide the app parameter.');
+  }
 
-export const handleAppVersionsCli: MittwaldCliToolHandler<MittwaldAppVersionsArgs> = async (args) => {
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    const validation = await validateToolParity({
       toolName: 'mittwald_app_versions',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await getAppVersions({
+          appId: args.app!,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout || '';
-    const parsed = parseJsonOutput(stdout);
-
-    if (parsed !== undefined) {
-      return formatToolResponse(
-        'success',
-        args.app ? `Found versions for ${args.app}` : 'Found available apps and versions',
-        parsed,
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
-
-    const output = stdout || result.result.stderr || 'No versions found';
-
-    return formatToolResponse(
-      'success',
-      args.app ? `Versions for ${args.app}` : 'Available apps and versions',
-      {
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_app_versions',
         app: args.app,
-        rawOutput: output,
-      },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
-      }
-    );
-  } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    const versions = validation.libraryOutput.data as any[];
+
+    return formatToolResponse(
+      'success',
+      `Found ${versions.length} version(s) for ${args.app}`,
+      versions,
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+      }
+    );
+  } catch (error) {
+    if (error instanceof LibraryError) {
+      const message = error.message.toLowerCase().includes('not found')
+        ? `App not found. Please verify the app name: ${args.app ?? 'not specified'}.`
+        : error.message;
+
+      return formatToolResponse('error', message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
+    logger.error('[WP05] Unexpected error in app versions handler', { error });
+    return formatToolResponse('error', `Failed to get app versions: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

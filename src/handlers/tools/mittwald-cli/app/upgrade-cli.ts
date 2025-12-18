@@ -1,6 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { upgradeApp, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldAppUpgradeArgs {
   installationId?: string;
@@ -25,116 +29,85 @@ function buildCliArgs(args: MittwaldAppUpgradeArgs, installationId: string): str
   return cliArgs;
 }
 
-function mapCliError(error: CliToolError, args: MittwaldAppUpgradeArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
+export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  if (combined.includes('not found') && combined.includes('installation')) {
-    return `App installation not found. Please verify the installation ID: ${args.installationId}.\nError: ${error.stderr || error.message}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  if (combined.includes('not found') && combined.includes('version')) {
-    return `Target version not found. Please verify the target version: ${args.targetVersion ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
-  }
-
-  if (combined.includes('cancelled') || combined.includes('canceled') || combined.includes('abort')) {
-    return `Upgrade operation was cancelled. Use --force flag to skip confirmation.\nError: ${error.stderr || error.message}`;
-  }
-
-  return error.message;
-}
-
-function formatSuccessMessage(args: MittwaldAppUpgradeArgs, installationId: string, quiet: boolean | undefined): { message: string; data: Record<string, unknown> } {
-  const baseData: Record<string, unknown> = {
-    installationId,
-    targetVersion: args.targetVersion,
-    projectId: args.projectId,
-    force: args.force,
-    wait: args.wait,
-  };
-
-  const message = args.wait
-    ? `App upgrade completed successfully for installation ${installationId}`
-    : `App upgrade started for installation ${installationId}`;
-
-  return {
-    message,
-    data: baseData,
-  };
-}
-
-function parseQuietId(stdout: string): string | undefined {
-  const trimmed = stdout.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
-
-export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs> = async (args) => {
   if (!args.installationId) {
     return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args, args.installationId);
 
   try {
-    const result = await invokeCliTool({
+    const validation = await validateToolParity({
       toolName: 'mittwald_app_upgrade',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-      cliOptions: {
-        timeout: 900000,
-        env: {
-          MITTWALD_NONINTERACTIVE: '1',
-        },
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await upgradeApp({
+          installationId: args.installationId!,
+          targetVersion: args.targetVersion,
+          apiToken: session.mittwaldAccessToken,
+        });
       },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout || '';
-    const stderr = result.result.stderr || '';
-    const output = stdout || stderr || 'App upgraded successfully';
-
-    const { message, data } = formatSuccessMessage(args, args.installationId, args.quiet);
-
-    if (args.quiet) {
-      const id = parseQuietId(stdout) ?? args.installationId;
-      return formatToolResponse(
-        'success',
-        id,
-        {
-          ...data,
-          appInstallationId: id,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_app_upgrade',
+        installationId: args.installationId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+      });
     }
+
+    const message = args.wait
+      ? `App upgrade completed successfully for installation ${args.installationId}`
+      : `App upgrade started for installation ${args.installationId}`;
 
     return formatToolResponse(
       'success',
       message,
       {
-        ...data,
-        output,
+        installationId: args.installationId,
+        targetVersion: args.targetVersion,
+        projectId: args.projectId,
+        force: args.force,
+        wait: args.wait,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
       }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
+    if (error instanceof LibraryError) {
+      const message = error.message.toLowerCase().includes('not found') && error.message.toLowerCase().includes('installation')
+        ? `App installation not found. Please verify the installation ID: ${args.installationId}.`
+        : error.message.toLowerCase().includes('not found') && error.message.toLowerCase().includes('version')
+        ? `Target version not found. Please verify the target version: ${args.targetVersion ?? 'not specified'}.`
+        : error.message.toLowerCase().includes('cancelled') || error.message.toLowerCase().includes('canceled') || error.message.toLowerCase().includes('abort')
+        ? `Upgrade operation was cancelled. Use --force flag to skip confirmation.`
+        : error.message;
+
       return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+        code: error.code,
+        details: error.details,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP05] Unexpected error in app upgrade handler', { error });
+    return formatToolResponse('error', `Failed to upgrade app: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

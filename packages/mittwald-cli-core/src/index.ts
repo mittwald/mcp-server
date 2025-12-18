@@ -11,4 +11,6 @@ export { LibraryError } from './contracts/functions.js';
 export * from './resources/app.js';
 export * from './resources/database.js';
 export * from './resources/project.js';
+export * from './resources/user.js';
 export * from './resources/all-resources.js';
+export * from './resources/infrastructure.js';

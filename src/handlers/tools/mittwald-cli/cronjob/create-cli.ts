@@ -1,11 +1,17 @@
-import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
+import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { createCronjob, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldCronjobCreateCliArgs {
   description: string;
   interval: string;
   installationId?: string;
+  projectId?: string;
   quiet?: boolean;
   email?: string;
   url?: string;
@@ -78,73 +84,114 @@ function mapCliError(error: CliToolError, args: MittwaldCronjobCreateCliArgs): s
   return error.message;
 }
 
-export const handleCronjobCreateCli: MittwaldToolHandler<MittwaldCronjobCreateCliArgs> = async (args, _context) => {
+export const handleCronjobCreateCli: MittwaldCliToolHandler<MittwaldCronjobCreateCliArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   if (!args.description) {
-    return formatToolResponse('error', 'Description is required.');
+    return formatToolResponse('error', 'description is required');
   }
 
   if (!args.interval) {
-    return formatToolResponse('error', 'Interval is required.');
+    return formatToolResponse('error', 'interval is required');
+  }
+
+  if (!args.projectId && !args.installationId) {
+    return formatToolResponse('error', 'Either projectId or installationId is required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // Build destination object for library function
+    let destination: { url: string } | { interpreter: string; path: string };
+    if (args.url) {
+      destination = { url: args.url };
+    } else if (args.command && args.interpreter) {
+      destination = { interpreter: args.interpreter, path: args.command };
+    } else {
+      return formatToolResponse('error', 'Either url or (command + interpreter) must be provided');
+    }
+
+    // Parse timeout (CLI accepts string like "60s", library expects number)
+    const timeoutMs = args.timeout ? parseInt(args.timeout.replace(/[^\d]/g, '')) * 1000 : 60000;
+
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_cronjob_create',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-    });
-
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-
-    if (args.quiet) {
-      const cronjobId = parseQuietIdentifier(stdout) ?? parseQuietIdentifier(stderr);
-
-      if (cronjobId) {
-        return formatToolResponse(
-          'success',
-          'Cronjob created successfully',
-          {
-            id: cronjobId,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        'Cronjob created successfully',
-        {
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createCronjob({
+          projectId: args.projectId!,
+          appId: args.installationId!,
           description: args.description,
           interval: args.interval,
-          output: stdout || stderr,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+          timeout: timeoutMs,
+          active: !args.disable,
+          email: args.email,
+          destination,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp', 'id'],
+    });
+
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_cronjob_create',
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_cronjob_create',
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated)
+    const result = validation.libraryOutput.data as any;
+    const cronjobId = result?.id || result;
 
     return formatToolResponse(
       'success',
       'Cronjob created successfully',
       {
-        output: stdout || stderr,
+        id: cronjobId,
         description: args.description,
         interval: args.interval,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -155,6 +202,7 @@ export const handleCronjobCreateCli: MittwaldToolHandler<MittwaldCronjobCreateCl
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in cronjob create handler', { error });
+    return formatToolResponse('error', `Failed to create cronjob: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

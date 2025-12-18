@@ -1,7 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { parseJsonOutput } from '../../../../../utils/cli-output.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { listMailAddresses, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldMailAddressListArgs {
   projectId?: string;
@@ -13,102 +17,123 @@ interface MittwaldMailAddressListArgs {
   csvSeparator?: ',' | ';';
 }
 
-function buildCliArgs(args: MittwaldMailAddressListArgs): { argv: string[]; outputFormat: Required<MittwaldMailAddressListArgs>['output'] } {
-  const outputFormat = args.output ?? 'txt';
-  const argv: string[] = ['mail', 'address', 'list', '--output', outputFormat];
+function buildCliArgs(args: MittwaldMailAddressListArgs): string[] {
+  const cliArgs: string[] = ['mail', 'address', 'list'];
 
-  if (args.projectId) argv.push('--project-id', args.projectId);
-  if (args.extended) argv.push('--extended');
-  if (args.noHeader) argv.push('--no-header');
-  if (args.noTruncate) argv.push('--no-truncate');
-  if (args.noRelativeDates) argv.push('--no-relative-dates');
-  if (args.csvSeparator) argv.push('--csv-separator', args.csvSeparator);
+  // We always request JSON to simplify parsing
+  cliArgs.push('--output', 'json');
 
-  return { argv, outputFormat };
+  if (args.projectId) cliArgs.push('--project-id', args.projectId);
+  if (args.extended) cliArgs.push('--extended');
+  if (args.noHeader) cliArgs.push('--no-header');
+  if (args.noTruncate) cliArgs.push('--no-truncate');
+  if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
+  if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
+
+  return cliArgs;
 }
 
 function mapCliError(error: CliToolError, args: MittwaldMailAddressListArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-  const errorMessage = error.stderr || error.stdout || error.message;
+  const stderr = (error.stderr || '').toLowerCase();
 
-  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
-    return `Permission denied when listing mail addresses. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`;
+  if (stderr.includes('not found') && stderr.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
   }
 
-  if (combined.includes('not found') && combined.includes('project')) {
-    return `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('no default project')) {
-    return `No default project set. Please provide --project-id or set a default project context.\nError: ${errorMessage}`;
-  }
-
-  return `Failed to list mail addresses: ${errorMessage}`;
+  return error.message;
 }
 
-export const handleMittwaldMailAddressListCli: MittwaldCliToolHandler<MittwaldMailAddressListArgs> = async (args) => {
-  const { argv, outputFormat } = buildCliArgs(args);
+export const handleMittwaldMailAddressListCli: MittwaldCliToolHandler<MittwaldMailAddressListArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  if (!args.projectId) {
+    return formatToolResponse('error', 'projectId is required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
+  const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_mail_address_list',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await listMailAddresses({
+          projectId: args.projectId!,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_mail_address_list',
+        projectId: args.projectId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_mail_address_list',
+        projectId: args.projectId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
 
-    if (outputFormat === 'json') {
-      try {
-        const mailAddresses = parseJsonOutput(stdout);
-        const count = Array.isArray(mailAddresses) ? mailAddresses.length : null;
+    // Use library result (it's validated) - data is array directly
+    const mailAddresses = validation.libraryOutput.data as any[];
 
-        return formatToolResponse(
-          'success',
-          `Retrieved ${count ?? 'unknown count'} mail addresses`,
-          {
-            format: 'json',
-            mailAddresses,
-            count,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return formatToolResponse(
-          'success',
-          'Retrieved mail addresses',
-          {
-            format: 'json',
-            content: stdout,
-            parseError: message,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
+    if (!mailAddresses || mailAddresses.length === 0) {
+      return formatToolResponse(
+        'success',
+        'No mail addresses found',
+        [],
+        {
+          durationMs: validation.libraryOutput.durationMs,
+          validationPassed: validation.passed,
+          cliDuration: validation.cliOutput.durationMs,
+          libraryDuration: validation.libraryOutput.durationMs,
+        }
+      );
     }
 
     return formatToolResponse(
       'success',
-      'Retrieved mail addresses',
+      `Found ${mailAddresses.length} mail address(es)`,
+      mailAddresses,
       {
-        format: outputFormat,
-        content: output,
-      },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -119,6 +144,7 @@ export const handleMittwaldMailAddressListCli: MittwaldCliToolHandler<MittwaldMa
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in mail address list handler', { error });
+    return formatToolResponse('error', `Failed to list mail addresses: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

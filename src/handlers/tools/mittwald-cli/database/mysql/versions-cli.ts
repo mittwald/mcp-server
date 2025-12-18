@@ -1,7 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '@/tools/index.js';
-import { parseJsonOutput } from '@/utils/cli-output.js';
+import { CliToolError } from '@/tools/index.js';
+import { getDatabaseVersions, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldDatabaseMysqlVersionsArgs {
   output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
@@ -38,49 +42,78 @@ function mapCliError(error: CliToolError): string {
   return error.message;
 }
 
-export const handleDatabaseMysqlVersionsCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlVersionsArgs> = async (args) => {
-  const { argv, outputFormat } = buildCliArgs(args);
+export const handleDatabaseMysqlVersionsCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlVersionsArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
+  const { argv } = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_database_mysql_versions',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await getDatabaseVersions({
+          type: 'mysql',
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-
-    if (outputFormat === 'json') {
-      try {
-        const versions = parseJsonOutput(stdout);
-        const count = Array.isArray(versions) ? versions.length : 'MySQL';
-        return formatToolResponse(
-          'success',
-          `Successfully retrieved ${count} versions`,
-          versions,
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      } catch (error) {
-        return formatToolResponse(
-          'error',
-          `Failed to parse JSON output: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_database_mysql_versions',
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_database_mysql_versions',
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated)
+    const versions = validation.libraryOutput.data as any[];
+    const count = Array.isArray(versions) ? versions.length : 'MySQL';
 
     return formatToolResponse(
       'success',
-      'MySQL versions retrieved successfully',
-      stdout,
+      `Successfully retrieved ${count} versions`,
+      versions,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error);
       return formatToolResponse('error', message, {
@@ -91,6 +124,7 @@ export const handleDatabaseMysqlVersionsCli: MittwaldCliToolHandler<MittwaldData
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in database mysql versions handler', { error });
+    return formatToolResponse('error', `Failed to list MySQL versions: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

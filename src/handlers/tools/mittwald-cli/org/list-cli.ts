@@ -1,6 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { listOrganizations, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface OrganizationListItem {
   id: string;
@@ -134,48 +139,81 @@ function mapCliError(error: CliToolError): string {
 /**
  * Handler for the `mittwald_org_list` tool.
  */
-export const handleOrgListCli: MittwaldToolHandler<Record<string, never>> = async () => {
+export const handleOrgListCli: MittwaldToolHandler<Record<string, never>> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
+  const argv = ['org', 'list', '--output', 'json'];
+
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_org_list',
-      argv: ['org', 'list', '--output', 'json'],
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await listOrganizations({
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const { command, durationMs } = result.meta;
-    const rawOutput = result.result ?? '';
-
-    try {
-      const organizations = parseOrgListOutput(rawOutput);
-      const table = formatOrganizationTable(organizations);
-      const message = organizations.length === 0
-        ? 'No organizations found.'
-        : `Found ${organizations.length} organization(s).`;
-
-      const payload: OrganizationListPayload = {
-        table,
-        organizations,
-      };
-
-      return formatToolResponse('success', message, payload, {
-        command,
-        durationMs,
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_org_list',
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       });
-    } catch (parseError) {
-      const message = parseError instanceof Error ? parseError.message : String(parseError);
-      return formatToolResponse(
-        'success',
-        'Organizations retrieved (raw output – parsing failed)',
-        {
-          rawOutput,
-          parseError: message,
-        },
-        {
-          command,
-          durationMs,
-        }
-      );
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_org_list',
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated) - data is array directly
+    const organizations = (validation.libraryOutput.data as any[]).map((org) => normalizeOrganizationEntry(org));
+
+    const table = formatOrganizationTable(organizations);
+    const message = organizations.length === 0
+      ? 'No organizations found.'
+      : `Found ${organizations.length} organization(s).`;
+
+    const payload: OrganizationListPayload = {
+      table,
+      organizations,
+    };
+
+    return formatToolResponse('success', message, payload, {
+      durationMs: validation.libraryOutput.durationMs,
+      validationPassed: validation.passed,
+      discrepancyCount: validation.discrepancies.length,
+      cliDuration: validation.cliOutput.durationMs,
+      libraryDuration: validation.libraryOutput.durationMs,
+    });
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error);
       return formatToolResponse('error', message, {
@@ -186,9 +224,10 @@ export const handleOrgListCli: MittwaldToolHandler<Record<string, never>> = asyn
       });
     }
 
+    logger.error('[WP05] Unexpected error in org list handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute organization list command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to list organizations: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

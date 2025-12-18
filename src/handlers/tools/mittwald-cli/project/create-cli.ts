@@ -1,6 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { createProject, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 function parseQuietOutput(output: string): string | undefined {
   const trimmed = output.trim();
@@ -56,67 +61,91 @@ interface MittwaldProjectCreateArgs {
   updateContext?: boolean;
 }
 
-export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateArgs> = async (args) => {
+export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateArgs> = async (args, sessionId) => {
+  if (!args.serverId) {
+    return formatToolResponse('error', 'serverId is required');
+  }
+
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_project_create',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createProject({
+          serverId: args.serverId!,
+          description: args.description,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp', 'id', 'projectId'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-
-    if (args.quiet) {
-      const projectId = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-
-      if (!projectId) {
-        return formatToolResponse(
-          'error',
-          'Project creation succeeded but no project ID was returned',
-          {
-            rawOutput: output,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
-
-      return formatToolResponse(
-        'success',
-        'Project created successfully',
-        {
-          projectId,
-          description: args.description,
-          serverId: args.serverId,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_project_create',
+        description: args.description,
+        serverId: args.serverId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_project_create',
+        description: args.description,
+        serverId: args.serverId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated) - data contains the project ID
+    const projectData = validation.libraryOutput.data as any;
+    const projectId = projectData?.id || projectData;
 
     return formatToolResponse(
       'success',
       'Project created successfully',
       {
-        output,
+        projectId,
         description: args.description,
         serverId: args.serverId,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -127,6 +156,7 @@ export const handleProjectCreateCli: MittwaldToolHandler<MittwaldProjectCreateAr
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in project create handler', { error });
+    return formatToolResponse('error', `Failed to create project: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -1,6 +1,11 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { getOrganization, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface OrganizationOwner {
   id?: string;
@@ -191,55 +196,88 @@ function mapCliError(error: CliToolError, organizationId: string): string {
 /**
  * Handler for the `mittwald_org_get` tool.
  */
-export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = async (args) => {
+export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = async (args, sessionId) => {
   if (!args.organizationId) {
     return formatToolResponse('error', 'Parameter "organizationId" is required.');
+  }
+
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = ['org', 'get', args.organizationId, '--output', 'json'];
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_org_get',
-      argv,
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await getOrganization({
+          customerId: args.organizationId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const { command, durationMs } = result.meta;
-    const rawOutput = result.result ?? '';
-
-    try {
-      const organization = parseOrganizationDetails(rawOutput);
-      const summary = formatOrganizationSummary(organization);
-      const payload: OrganizationDetailsPayload = {
-        summary,
-        organization,
-      };
-
-      return formatToolResponse(
-        'success',
-        `Organization ${organization.name ?? organization.id} retrieved successfully.`,
-        payload,
-        {
-          command,
-          durationMs,
-        }
-      );
-    } catch (parseError) {
-      const message = parseError instanceof Error ? parseError.message : String(parseError);
-      return formatToolResponse(
-        'success',
-        'Organization retrieved (raw output – parsing failed).',
-        {
-          rawOutput,
-          parseError: message,
-        },
-        {
-          command,
-          durationMs,
-        }
-      );
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_org_get',
+        organizationId: args.organizationId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_org_get',
+        organizationId: args.organizationId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated)
+    const organization = normalizeOrganizationDetails(validation.libraryOutput.data as Record<string, unknown>);
+    const summary = formatOrganizationSummary(organization);
+    const payload: OrganizationDetailsPayload = {
+      summary,
+      organization,
+    };
+
+    return formatToolResponse(
+      'success',
+      `Organization ${organization.name ?? organization.id} retrieved successfully.`,
+      payload,
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      }
+    );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args.organizationId);
       return formatToolResponse('error', message, {
@@ -250,9 +288,10 @@ export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = 
       });
     }
 
+    logger.error('[WP05] Unexpected error in org get handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute organization get command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to get organization: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

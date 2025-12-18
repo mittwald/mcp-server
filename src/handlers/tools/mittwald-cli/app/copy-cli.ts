@@ -1,6 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { copyApp, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldAppCopyArgs {
   installationId?: string;
@@ -8,12 +12,13 @@ interface MittwaldAppCopyArgs {
   quiet?: boolean;
 }
 
-function parseQuietIdentifier(stdout: string): string | undefined {
-  const lines = stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  return lines.at(-1);
-}
+export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = async (args) => {
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   if (!args.installationId) {
     return formatToolResponse(
       'error',
@@ -28,66 +33,68 @@ export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = asy
     );
   }
 
-  const argv = ['app', 'copy', args.installationId, '--description', args.description];
-  if (args.quiet) {
-    argv.push('--quiet');
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
+  const argv: string[] = ['app', 'copy', args.installationId, '--description', args.description];
+  if (args.quiet) argv.push('--quiet');
+
   try {
-    const result = await invokeCliTool({
+    const validation = await validateToolParity({
       toolName: 'mittwald_app_copy',
-      argv,
-      parser: (stdout, raw) => {
-        if (args.quiet) {
-          const newId = parseQuietIdentifier(stdout);
-          return {
-            originalInstallationId: args.installationId!,
-            newInstallationId: newId,
-            description: args.description,
-            quiet: true,
-            rawOutput: stdout,
-            meta: raw,
-          };
-        }
-
-        return {
-          originalInstallationId: args.installationId!,
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await copyApp({
+          installationId: args.installationId!,
           description: args.description,
-          output: stdout || raw.stderr,
-          quiet: false,
-          meta: raw,
-        };
+          apiToken: session.mittwaldAccessToken,
+        });
       },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const payload = result.result;
-    const summary = args.quiet
-      ? 'App copied successfully'
-      : (payload.output || 'App copied successfully');
-
-    return formatToolResponse('success', summary, {
-      originalInstallationId: payload.originalInstallationId,
-      description: payload.description,
-      ...(args.quiet
-        ? { newInstallationId: payload.newInstallationId, quiet: true }
-        : { output: payload.output, quiet: false }),
-    }, {
-      command: result.meta.command,
-      durationMs: result.meta.durationMs,
-    });
-  } catch (error) {
-    if (error instanceof CliToolError) {
-      return formatToolResponse('error', error.message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_app_copy',
+        installationId: args.installationId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
       });
     }
 
+    const copyData = validation.libraryOutput.data as any;
+
     return formatToolResponse(
-      'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      'success',
+      'App copied successfully',
+      {
+        originalInstallationId: args.installationId,
+        newInstallationId: copyData?.id,
+        description: args.description,
+        quiet: args.quiet,
+      },
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+      }
     );
+  } catch (error) {
+    if (error instanceof LibraryError) {
+      const message = error.message.toLowerCase().includes('not found')
+        ? `App installation not found. Please verify the installation ID: ${args.installationId}.`
+        : error.message;
+
+      return formatToolResponse('error', message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
+    logger.error('[WP05] Unexpected error in app copy handler', { error });
+    return formatToolResponse('error', `Failed to copy app: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

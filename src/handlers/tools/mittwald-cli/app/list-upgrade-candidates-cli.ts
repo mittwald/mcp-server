@@ -1,6 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { listUpgradeCandidates, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldAppListUpgradeCandidatesArgs {
   installationId?: string;
@@ -27,107 +31,85 @@ function buildCliArgs(args: MittwaldAppListUpgradeCandidatesArgs, installationId
   return cliArgs;
 }
 
-type RawUpgradeCandidate = {
-  version?: string;
-  releaseDate?: string;
-  changelog?: string;
-  breaking?: boolean;
-  recommended?: boolean;
-};
+export const handleAppListUpgradeCandidatesCli: MittwaldCliToolHandler<MittwaldAppListUpgradeCandidatesArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-function parseUpgradeCandidates(output: string): RawUpgradeCandidate[] | undefined {
-  if (!output) return undefined;
-
-  try {
-    const data = JSON.parse(output);
-    return Array.isArray(data) ? data : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-function mapCliError(error: CliToolError, installationId: string): string {
-  const stderr = (error.stderr || '').toLowerCase();
-
-  if (stderr.includes('not found') && stderr.includes('installation')) {
-    return `App installation not found. Please verify the installation ID: ${installationId}.\nError: ${error.stderr || error.message}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  return error.message;
-}
-
-export const handleAppListUpgradeCandidatesCli: MittwaldCliToolHandler<MittwaldAppListUpgradeCandidatesArgs> = async (args) => {
   if (!args.installationId) {
     return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args, args.installationId);
 
   try {
-    const result = await invokeCliTool({
+    const validation = await validateToolParity({
       toolName: 'mittwald_app_list_upgrade_candidates',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await listUpgradeCandidates({
+          installationId: args.installationId!,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout || '';
-    const parsed = parseUpgradeCandidates(stdout);
-
-    if (!parsed) {
-      return formatToolResponse(
-        'success',
-        'Upgrade candidates retrieved (raw output)',
-        {
-          installationId: args.installationId,
-          rawOutput: stdout,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_app_list_upgrade_candidates',
+        installationId: args.installationId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+      });
     }
 
-    if (parsed.length === 0) {
+    const candidates = validation.libraryOutput.data as any[];
+
+    if (!candidates || candidates.length === 0) {
       return formatToolResponse(
         'success',
         'No upgrade candidates available',
         [],
         {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
+          durationMs: validation.libraryOutput.durationMs,
+          validationPassed: validation.passed,
+          discrepancyCount: validation.discrepancies.length,
         }
       );
     }
 
-    const formatted = parsed.map((candidate) => ({
-      version: candidate.version,
-      releaseDate: candidate.releaseDate,
-      changelog: candidate.changelog,
-      breaking: candidate.breaking,
-      recommended: candidate.recommended,
-    }));
-
     return formatToolResponse(
       'success',
-      `Found ${formatted.length} upgrade candidate(s)`,
-      formatted,
+      `Found ${candidates.length} upgrade candidate(s)`,
+      candidates,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
       }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args.installationId);
+    if (error instanceof LibraryError) {
+      const message = error.message.toLowerCase().includes('not found')
+        ? `App installation not found. Please verify the installation ID: ${args.installationId}.`
+        : error.message;
+
       return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+        code: error.code,
+        details: error.details,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP05] Unexpected error in app list upgrade candidates handler', { error });
+    return formatToolResponse('error', `Failed to list upgrade candidates: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

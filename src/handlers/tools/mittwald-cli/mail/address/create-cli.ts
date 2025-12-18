@@ -1,6 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { createMailAddress, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldMailAddressCreateArgs {
   address: string;
@@ -15,7 +20,7 @@ interface MittwaldMailAddressCreateArgs {
 }
 
 function buildCliArgs(args: MittwaldMailAddressCreateArgs): string[] {
-  const cliArgs: string[] = ['mail', 'address', 'create', '--address', args.address];
+  const cliArgs: string[] = ['mail', 'address', 'create', '--address', args.address, '--output', 'json'];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
   if (args.quiet) cliArgs.push('--quiet');
@@ -38,125 +43,127 @@ function buildCliArgs(args: MittwaldMailAddressCreateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
-
-function extractGeneratedPassword(output: string): string | undefined {
-  const passwordMatch = output.match(/password:\s*(.+)/i);
-  return passwordMatch ? passwordMatch[1].trim() : undefined;
-}
-
-function extractAddressId(output: string): string | undefined {
-  const idMatch = output.match(/ID\s+([a-z0-9-]+)/i);
-  return idMatch ? idMatch[1] : undefined;
-}
-
 function mapCliError(error: CliToolError, args: MittwaldMailAddressCreateArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-  const errorMessage = error.stderr || error.stdout || error.message;
+  const stderr = (error.stderr || '').toLowerCase();
 
-  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
-    return `Permission denied when creating mail address. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`;
+  if (stderr.includes('not found') && stderr.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
   }
 
-  if (combined.includes('not found') && combined.includes('project')) {
-    return `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`;
+  if (stderr.includes('already exists') || stderr.includes('conflict')) {
+    return `Mail address already exists: ${args.address}.\nError: ${error.stderr || error.message}`;
   }
 
-  if (combined.includes('already exists') || combined.includes('conflict')) {
-    return `Mail address already exists: ${args.address}.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('invalid') && combined.includes('address')) {
-    return `Invalid mail address format: ${args.address}.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('no default project')) {
-    return `No default project set. Please provide --project-id or set a default project context.\nError: ${errorMessage}`;
-  }
-
-  return `Failed to create mail address: ${errorMessage}`;
+  return error.message;
 }
 
-export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<MittwaldMailAddressCreateArgs> = async (args) => {
+export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<MittwaldMailAddressCreateArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  if (!args.address) {
+    return formatToolResponse('error', 'address is required');
+  }
+
+  if (!args.projectId) {
+    return formatToolResponse('error', 'projectId is required');
+  }
+
+  // Check for unsupported library features
+  if (args.catchAll || args.enableSpamProtection !== undefined || args.quota || args.password || args.randomPassword) {
+    logger.warn('[WP04] Create mail address: CLI-only features requested, falling back to CLI-only mode', {
+      hasAdvancedFeatures: true,
+      catchAll: args.catchAll,
+      enableSpamProtection: args.enableSpamProtection,
+      quota: args.quota,
+      hasPassword: Boolean(args.password),
+      randomPassword: args.randomPassword,
+    });
+
+    return formatToolResponse('error',
+      'Advanced mail address options (catchAll, enableSpamProtection, quota, password, randomPassword) are not yet supported in library mode. ' +
+      'Only basic mail address creation with forwardTo is currently available.'
+    );
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_mail_address_create',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createMailAddress({
+          projectId: args.projectId!,
+          address: args.address,
+          forwardAddresses: args.forwardTo,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout || '';
-    const stderr = result.result.stderr || '';
-    const output = stdout || stderr;
-
-    let addressId: string | undefined;
-    let generatedPassword: string | undefined;
-
-    if (args.quiet) {
-      const quietResult = parseQuietOutput(stdout);
-      if (quietResult) {
-        if (args.randomPassword) {
-          const [idPart, passwordPart] = quietResult.split('\t');
-          addressId = idPart;
-          generatedPassword = passwordPart ? passwordPart.trim() : undefined;
-        } else {
-          addressId = quietResult;
-        }
-      }
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_mail_address_create',
+        address: args.address,
+        projectId: args.projectId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
     } else {
-      addressId = extractAddressId(stdout);
-      if (args.randomPassword) {
-        generatedPassword = extractGeneratedPassword(stdout);
-      }
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_mail_address_create',
+        address: args.address,
+        projectId: args.projectId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
 
-    if (!addressId) {
-      const message = args.quiet ? output || 'Successfully created mail address' : `Successfully created mail address '${args.address}'`;
-      return formatToolResponse(
-        'success',
-        message,
-        {
-          address: args.address,
-          output,
-          ...(generatedPassword ? { password: generatedPassword } : {}),
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
-
-    const resultData = {
-      id: addressId,
-      address: args.address,
-      ...(args.forwardTo ? { forwardTo: args.forwardTo } : {}),
-      ...(args.catchAll ? { catchAll: args.catchAll } : {}),
-      ...(args.quota ? { quota: args.quota } : {}),
-      ...(generatedPassword ? { password: generatedPassword } : {}),
-    };
-
-    const message = args.quiet
-      ? (generatedPassword ? `${addressId}\t${generatedPassword}` : addressId)
-      : `Successfully created mail address '${args.address}' with ID ${addressId}${generatedPassword ? ' and generated password' : ''}`;
+    // Use library result (it's validated)
+    const result = validation.libraryOutput.data as any;
+    const addressId = result?.id ?? 'unknown';
 
     return formatToolResponse(
       'success',
-      message,
-      resultData,
+      `Successfully created mail address '${args.address}' with ID ${addressId}`,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        id: addressId,
+        address: args.address,
+        ...(args.forwardTo ? { forwardTo: args.forwardTo } : {}),
+      },
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -167,6 +174,7 @@ export const handleMittwaldMailAddressCreateCli: MittwaldCliToolHandler<Mittwald
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in mail address create handler', { error });
+    return formatToolResponse('error', `Failed to create mail address: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

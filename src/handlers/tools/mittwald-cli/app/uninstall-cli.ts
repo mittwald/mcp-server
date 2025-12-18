@@ -1,6 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { uninstallApp, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldAppUninstallArgs {
   installationId?: string;
@@ -8,49 +12,48 @@ interface MittwaldAppUninstallArgs {
   force?: boolean;
 }
 
-function buildCliArgs(args: MittwaldAppUninstallArgs, installationId: string): string[] {
-  const cliArgs: string[] = ['app', 'uninstall', installationId];
+export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.force) cliArgs.push('--force');
-
-  return cliArgs;
-}
-
-function mapCliError(error: CliToolError, installationId: string): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-
-  if (combined.includes('not found') && combined.includes('installation')) {
-    return `App installation not found. Please verify the installation ID: ${installationId}.\nError: ${error.stderr || error.message}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  if (combined.includes('cancelled') || combined.includes('canceled') || combined.includes('abort')) {
-    return `Uninstall operation was cancelled. Use the --force flag to skip confirmation prompts.\nError: ${error.stderr || error.message}`;
-  }
-
-  return error.message;
-}
-
-export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallArgs> = async (args) => {
   if (!args.installationId) {
     return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
   }
 
-  const argv = buildCliArgs(args, args.installationId);
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
+  const argv: string[] = ['app', 'uninstall', args.installationId];
+  if (args.quiet) argv.push('--quiet');
+  if (args.force) argv.push('--force');
 
   try {
-    const result = await invokeCliTool({
+    const validation = await validateToolParity({
       toolName: 'mittwald_app_uninstall',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-      cliOptions: {
-        env: {
-          MITTWALD_NONINTERACTIVE: '1',
-        },
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await uninstallApp({
+          installationId: args.installationId!,
+          apiToken: session.mittwaldAccessToken,
+        });
       },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const output = result.result.stdout || result.result.stderr || 'App uninstalled successfully';
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_app_uninstall',
+        installationId: args.installationId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+      });
+    }
 
     return formatToolResponse(
       'success',
@@ -59,24 +62,26 @@ export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallA
         installationId: args.installationId,
         force: args.force,
         quiet: args.quiet,
-        output,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
       }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args.installationId);
+    if (error instanceof LibraryError) {
+      const message = error.message.toLowerCase().includes('not found')
+        ? `App installation not found. Please verify the installation ID: ${args.installationId}.`
+        : error.message;
+
       return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+        code: error.code,
+        details: error.details,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP05] Unexpected error in app uninstall handler', { error });
+    return formatToolResponse('error', `Failed to uninstall app: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
