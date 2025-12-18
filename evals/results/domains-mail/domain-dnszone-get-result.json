@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_dnszone_get",
+  "timestamp": "2025-12-19T00:33:00Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "Cannot test this tool because no DNS zones exist in the available projects. Tool requires a valid dnszoneId parameter."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool not executed due to missing prerequisites. No DNS zones available for testing.",
+  "execution_notes": "Tool requires a valid DNS zone ID which can only be obtained from an existing domain configuration. Since no domains/DNS zones exist in test projects, this eval cannot be completed."
+}

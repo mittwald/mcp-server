@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_update",
+  "timestamp": "2025-12-18T23:14:00Z",
+  "problems_encountered": [
+    {
+      "type": "other",
+      "description": "Tool would modify production app installation settings (description, documentRoot, entrypoint). Executing would alter actual app configuration in production environment."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool not executed - would modify production data",
+  "execution_notes": "This tool updates app installation properties including description, documentRoot, and entrypoint. Requires installationId parameter and at least one update field. Executing in production environment would modify actual app configurations, which should be avoided during evaluation. Tool prerequisites met (app installation a-v2tmw9 exists)."
+}

@@ -1,0 +1,342 @@
+# Data Model: Domain-Grouped Eval Work Packages
+
+**Feature**: 014-domain-grouped-eval-work-packages
+**Created**: 2025-12-18
+
+## Overview
+
+This document defines the data structures used for generating, executing, and aggregating MCP tool evaluations.
+
+---
+
+## Input: EvalPromptJSON (from feature 013)
+
+**Source**: `evals/prompts/{domain}/*.json`
+
+**Structure**:
+```typescript
+interface EvalPromptJSON {
+  input: {
+    prompt: string;              // Full markdown eval instructions for agent
+    tool_name: string;           // MCP tool name (e.g., "mcp__mittwald__mittwald_app_list")
+    display_name: string;        // Short name (e.g., "app/list")
+    context: {
+      dependencies: string[];    // Prerequisite tool names
+      setup_instructions?: string;
+    };
+  };
+  expectedOutput: null;          // Not used in this feature
+  metadata: {
+    domain: string;              // Domain classification (e.g., "apps")
+    tier: number;                // Dependency tier (0-4)
+    eval_version: string;        // Version (e.g., "2.0.0")
+  };
+}
+```
+
+**Example**:
+```json
+{
+  "input": {
+    "prompt": "# Eval: app/list\n\n## Goal\nTest the `mcp__mittwald__mittwald_app_list` tool...",
+    "tool_name": "mcp__mittwald__mittwald_app_list",
+    "display_name": "app/list",
+    "context": {
+      "dependencies": ["project/create"],
+      "setup_instructions": "Requires an existing project"
+    }
+  },
+  "expectedOutput": null,
+  "metadata": {
+    "domain": "apps",
+    "tier": 4,
+    "eval_version": "2.0.0"
+  }
+}
+```
+
+---
+
+## Intermediate: WorkPackage (generated)
+
+**Purpose**: Represents a domain-grouped WP file containing multiple eval prompts
+
+**Structure**:
+```typescript
+interface WorkPackage {
+  domain: string;                // Domain name (e.g., "apps")
+  tier_order: number[];          // Unique tiers in this domain (e.g., [0, 4])
+  eval_prompts: EvalPrompt[];    // All prompts for this domain, sorted by tier
+  total_evals: number;           // Count of prompts
+  file_path: string;             // Path to generated WP markdown file
+}
+
+interface EvalPrompt {
+  tool_name: string;             // MCP tool name
+  display_name: string;          // Short name
+  tier: number;                  // Dependency tier
+  prompt_text: string;           // Full markdown instructions
+  dependencies: string[];        // Prerequisite tools
+  result_file_path: string;      // Where to save self-assessment
+}
+```
+
+**Example**:
+```typescript
+{
+  domain: "apps",
+  tier_order: [4],
+  eval_prompts: [
+    {
+      tool_name: "mcp__mittwald__mittwald_app_list",
+      display_name: "app/list",
+      tier: 4,
+      prompt_text: "# Eval: app/list\n\n## Goal\nTest...",
+      dependencies: ["project/create"],
+      result_file_path: "evals/results/apps/app-list-result.json"
+    },
+    // ... 7 more app tools
+  ],
+  total_evals: 8,
+  file_path: "kitty-specs/014-domain-grouped-eval-work-packages/tasks/WP-02-apps.md"
+}
+```
+
+---
+
+## Output: SelfAssessment (saved by agents)
+
+**Source**: Agent execution output
+**Destination**: `evals/results/{domain}/{tool-name}-result.json`
+
+**Structure** (from feature 010):
+```typescript
+interface SelfAssessment {
+  success: boolean;                    // Pass/fail
+  confidence: "high" | "medium" | "low"; // Agent's confidence level
+  tool_executed: string;               // MCP tool name that was called
+  timestamp: string;                   // ISO 8601 timestamp
+  problems_encountered: Problem[];     // Issues during execution
+  resources_created: Resource[];       // Resources created by eval
+  tool_response_summary?: string;      // Brief description of tool output
+  execution_notes?: string;            // Freeform observations
+}
+
+interface Problem {
+  type: ProblemType;
+  description: string;
+  recovery_attempted?: boolean;
+  recovered?: boolean;
+}
+
+type ProblemType =
+  | "auth_error"
+  | "resource_not_found"
+  | "validation_error"
+  | "timeout"
+  | "api_error"
+  | "permission_denied"
+  | "quota_exceeded"
+  | "dependency_missing"
+  | "other";
+
+interface Resource {
+  type: string;       // e.g., "project", "database", "app"
+  id: string;         // Resource ID (e.g., "p-abc123")
+  name?: string;      // Human-readable name
+  verified?: boolean; // Whether resource was verified to exist
+}
+```
+
+**Example**:
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list",
+  "timestamp": "2025-12-18T23:45:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "tool_response_summary": "Listed 3 apps in project p-abc123",
+  "execution_notes": "Tool worked as expected. Found WordPress, Nextcloud, and custom Node.js app."
+}
+```
+
+**File Naming Convention**:
+- Tool `mcp__mittwald__mittwald_app_list` → `evals/results/apps/app-list-result.json`
+- Tool `mcp__mittwald__mittwald_database_mysql_create` → `evals/results/databases/database-mysql-create-result.json`
+
+---
+
+## Aggregated: CoverageReport (generated by scripts)
+
+**Source**: Feature 010's `generate-coverage-report.ts` script
+**Destination**: `evals/results/coverage-report.json` and `baseline-report.md`
+
+**Structure**:
+```typescript
+interface CoverageReport {
+  generated_at: string;               // ISO 8601 timestamp
+  total_tools: number;                // 116
+  executed_count: number;             // How many evals ran
+  success_count: number;              // Passed evals
+  failure_count: number;              // Failed evals
+  success_rate: number;               // Percentage (0-100)
+  domain_breakdown: DomainCoverage[]; // Per-domain metrics
+  tier_breakdown: TierCoverage[];     // Per-tier metrics
+  problem_summary: ProblemSummary[];  // Failure categorization
+}
+
+interface DomainCoverage {
+  domain: string;
+  total_tools: number;
+  executed: number;
+  success_count: number;
+  failure_count: number;
+  pending_count: number;
+  success_rate: number;
+  coverage_rate: number;
+}
+
+interface TierCoverage {
+  tier: number;
+  total_tools: number;
+  executed: number;
+  success_count: number;
+  failure_count: number;
+  success_rate: number;
+}
+
+interface ProblemSummary {
+  type: ProblemType;
+  count: number;
+  affected_tools: string[];
+}
+```
+
+**Example**:
+```json
+{
+  "generated_at": "2025-12-19T00:15:00Z",
+  "total_tools": 116,
+  "executed_count": 116,
+  "success_count": 98,
+  "failure_count": 18,
+  "success_rate": 84.5,
+  "domain_breakdown": [
+    {
+      "domain": "apps",
+      "total_tools": 8,
+      "executed": 8,
+      "success_count": 7,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 87.5,
+      "coverage_rate": 100
+    }
+    // ... 11 more domains
+  ],
+  "tier_breakdown": [
+    {
+      "tier": 0,
+      "total_tools": 25,
+      "executed": 25,
+      "success_count": 24,
+      "failure_count": 1,
+      "success_rate": 96.0
+    }
+    // ... tiers 1-4
+  ],
+  "problem_summary": [
+    {
+      "type": "api_error",
+      "count": 12,
+      "affected_tools": ["app/create", "database/restore", ...]
+    },
+    {
+      "type": "dependency_missing",
+      "count": 4,
+      "affected_tools": ["backup/restore", ...]
+    },
+    {
+      "type": "auth_error",
+      "count": 2,
+      "affected_tools": ["mail/address/create", ...]
+    }
+  ]
+}
+```
+
+---
+
+## Domain Classification
+
+| Domain | Tool Count | Example Tools |
+|--------|------------|---------------|
+| access-users | 7 | ssh/user-create, sftp/user-list |
+| apps | 8 | app/list, app/get, app/update |
+| automation | 9 | cronjob/create, cronjob/execute |
+| backups | 8 | backup/create, backup/schedule-create |
+| containers | 10 | container/list, stack/deploy |
+| context | 3 | context/get, context/set |
+| databases | 14 | database/mysql/create, database/redis/list |
+| domains-mail | 22 | domain/list, mail/address/create, certificate/request |
+| identity | 13 | user/get, user/api-token/create |
+| misc | 5 | conversation/list, conversation/create |
+| organization | 7 | org/list, org/invite, org/membership-list |
+| project-foundation | 10 | project/create, project/list, server/get |
+
+**Total**: 116 tools
+
+---
+
+## Tier Classification
+
+| Tier | Description | Example Tools | Count |
+|------|-------------|---------------|-------|
+| 0 | No dependencies | user/get, org/list, server/list | ~25 |
+| 1 | Depends on tier 0 | org/invite, user/ssh-key/create | ~15 |
+| 2 | Depends on tier 1 | - | ~5 |
+| 3 | Depends on tier 2 | project/create | ~10 |
+| 4 | Depends on tier 3 | app/list, database/mysql/create, backup/create | ~61 |
+
+**Execution Order**: Tier 0 → Tier 1 → Tier 2 → Tier 3 → Tier 4
+
+---
+
+## State Transitions
+
+```
+JSON File (feature 013)
+    ↓ (WP generation script)
+WorkPackage File (task)
+    ↓ (/spec-kitty.implement)
+Agent Execution
+    ↓ (inline save during execution)
+SelfAssessment File (evals/results/)
+    ↓ (aggregation script)
+CoverageReport (baseline)
+```
+
+---
+
+## Validation Rules
+
+**EvalPromptJSON**:
+- `input.prompt` must be non-empty markdown
+- `input.tool_name` must match pattern `mcp__mittwald__mittwald_*`
+- `metadata.tier` must be 0-4
+- `metadata.domain` must match one of 12 defined domains
+
+**SelfAssessment**:
+- `success` must be boolean
+- `confidence` must be "high" | "medium" | "low"
+- `tool_executed` must match the evaluated tool name
+- `timestamp` must be valid ISO 8601
+- `problems_encountered` array can be empty
+
+**CoverageReport**:
+- `total_tools` must equal 116
+- `executed_count` <= `total_tools`
+- `success_count` + `failure_count` == `executed_count`
+- `success_rate` == (`success_count` / `executed_count`) * 100

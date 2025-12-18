@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list",
+  "timestamp": "2025-12-18T23:12:50Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-kbuygq",
+      "status": "exists"
+    }
+  ],
+  "tool_response_summary": "Successfully listed apps for project p-kbuygq (Eval Test Project). Result: No apps found (empty array).",
+  "execution_notes": "Tool executed without errors in 86ms. Returns empty array when no apps are installed in the project. Authentication successful. Project prerequisites met."
+}

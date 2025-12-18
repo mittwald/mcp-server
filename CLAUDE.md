@@ -290,4 +290,65 @@ Eval prompts use feature 010's Langfuse-compatible JSON structure:
 - Archived prompts for removed tools documented
 - Post-012 baseline established for future validation
 
+## Domain-Grouped Eval Work Packages - CRITICAL
+
+**Feature 014: Execute All Evals and Establish Baseline**
+
+### Problem
+- Feature 013 created 116 eval prompt JSON files but they haven't been executed yet
+- No baseline data for post-012 MCP server health
+- Manual copy-paste workflow from JSON files is cumbersome
+
+### Solution
+**Execute all 116 evals in this feature:**
+- Generate 12 domain-grouped Work Package (WP) files during `/spec-kitty.tasks`
+- Each WP contains all eval prompts for that domain, ordered by tier (0→4)
+- Execute WPs via `/spec-kitty.implement`
+- Agents call MCP tools directly, save self-assessments inline to disk
+- Aggregate results using feature 010's existing scripts
+- By feature completion: all 116 evals executed, baseline established
+
+### Execution Model
+**WP Generation (automated during task generation):**
+- TypeScript script reads all JSON files from `evals/prompts/{domain}/`
+- Extracts `input.prompt` field from each JSON
+- Sorts by `metadata.tier` (ascending)
+- Generates 12 markdown WP files (one per domain)
+- WP files are task files, executed via `/spec-kitty.implement`
+
+**Inline Self-Assessment Save:**
+- Each eval prompt instructs agent: "After completing this eval, immediately save self-assessment JSON to `evals/results/{domain}/{tool-name}-result.json`"
+- Agent writes result file before moving to next eval
+- No batch save (prevents data loss if interrupted)
+
+**Aggregation:**
+- After all WPs execute, run `npx tsx evals/scripts/generate-coverage-report.ts`
+- Produces `coverage-report.json` and `baseline-report.md`
+- Feature 010 scripts handle the result file structure
+
+### Domain Classification (116 tools across 12 domains)
+- access-users (7), apps (8), automation (9), backups (8)
+- containers (10), context (3), databases (14), domains-mail (22)
+- identity (13), misc (5), organization (7), project-foundation (10)
+
+### Execution Order (by tier)
+1. **Tier 0** (no dependencies): identity, organization, context
+2. **Tier 1-3** (organizational/project setup): project-foundation
+3. **Tier 4** (requires project): remaining 8 domains
+
+### Key Locations
+- **Feature spec:** `kitty-specs/014-domain-grouped-eval-work-packages/spec.md`
+- **Plan:** `kitty-specs/014-domain-grouped-eval-work-packages/plan.md`
+- **Data model:** `kitty-specs/014-domain-grouped-eval-work-packages/data-model.md`
+- **Quickstart:** `kitty-specs/014-domain-grouped-eval-work-packages/quickstart.md`
+- **Eval prompts (input):** `evals/prompts/{domain}/*.json`
+- **Results (output):** `evals/results/{domain}/*.json`
+- **Aggregation scripts:** `evals/scripts/generate-coverage-report.ts`
+
+### Success Criteria
+- All 116 evals executed during this feature's implementation
+- 100% of evals have self-assessments saved to `evals/results/{domain}/{tool}-result.json`
+- Coverage report generated showing domain/tier breakdowns and success rates
+- Post-014 baseline established and documented
+
 <!-- MANUAL ADDITIONS END -->

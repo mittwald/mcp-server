@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_stack_list",
+  "timestamp": "2025-12-19T00:05:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "stack",
+      "id": "fd1ef726-14b8-4906-8a45-0756ba993246",
+      "status": "active"
+    }
+  ],
+  "tool_response_summary": "Successfully listed 1 container stack with 2 running services (mcp-server, oauth-server) and 1 volume",
+  "execution_notes": "Tool executed successfully. Returned detailed stack configuration including service images, environment variables, and volumes. Both services are in 'running' status."
+}

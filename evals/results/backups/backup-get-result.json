@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_backup_get",
+  "timestamp": "2025-12-19T00:23:15Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "backup",
+      "id": "536047ab-4b98-4850-ab95-10aecdcd1efb",
+      "status": "retrieved"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved backup details for ID 536047ab-4b98-4850-ab95-10aecdcd1efb. Backup status is 'Completed', created on 2025-11-19, expires on 2025-12-19.",
+  "execution_notes": "Tool executed successfully. Returned detailed backup information including id, projectId, description, status, createdAt, expiresAt, size, and format fields. Resource ID in response matched the requested ID."
+}

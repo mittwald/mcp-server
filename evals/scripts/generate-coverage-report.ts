@@ -127,7 +127,7 @@ interface CoverageReport {
 // ============================================================================
 
 /**
- * Load all self-assessments from a directory
+ * Load all self-assessments from a directory (supports nested domain subdirectories)
  */
 export async function loadAssessments(dir: string): Promise<Map<string, SelfAssessment>> {
   const assessments = new Map<string, SelfAssessment>();
@@ -137,22 +137,54 @@ export async function loadAssessments(dir: string): Promise<Map<string, SelfAsse
     return assessments;
   }
 
-  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
+  // Check if this is a flat directory or has subdirectories
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const hasSubdirs = entries.some(e => e.isDirectory());
 
-  for (const file of files) {
-    try {
-      const filePath = path.join(dir, file);
-      const content = fs.readFileSync(filePath, 'utf-8');
-      const data = JSON.parse(content);
+  if (hasSubdirs) {
+    // Load from domain subdirectories
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        const domainDir = path.join(dir, entry.name);
+        const files = fs.readdirSync(domainDir).filter((f) => f.endsWith('.json'));
 
-      // Handle both direct assessment and wrapped extraction result formats
-      const assessment: SelfAssessment | undefined = data.assessment || data;
+        for (const file of files) {
+          try {
+            const filePath = path.join(domainDir, file);
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const data = JSON.parse(content);
 
-      if (assessment && assessment.tool_executed) {
-        assessments.set(assessment.tool_executed, assessment);
+            // Handle both direct assessment and wrapped extraction result formats
+            const assessment: SelfAssessment | undefined = data.assessment || data;
+
+            if (assessment && assessment.tool_executed) {
+              assessments.set(assessment.tool_executed, assessment);
+            }
+          } catch (e) {
+            console.warn(`Failed to load ${file}: ${e instanceof Error ? e.message : String(e)}`);
+          }
+        }
       }
-    } catch (e) {
-      console.warn(`Failed to load ${file}: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  } else {
+    // Original flat directory logic
+    const files = entries.filter((e) => e.isFile() && e.name.endsWith('.json'));
+
+    for (const entry of files) {
+      try {
+        const filePath = path.join(dir, entry.name);
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const data = JSON.parse(content);
+
+        // Handle both direct assessment and wrapped extraction result formats
+        const assessment: SelfAssessment | undefined = data.assessment || data;
+
+        if (assessment && assessment.tool_executed) {
+          assessments.set(assessment.tool_executed, assessment);
+        }
+      } catch (e) {
+        console.warn(`Failed to load ${entry.name}: ${e instanceof Error ? e.message : String(e)}`);
+      }
     }
   }
 

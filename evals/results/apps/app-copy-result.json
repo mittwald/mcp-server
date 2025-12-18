@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_copy",
+  "timestamp": "2025-12-18T23:14:20Z",
+  "problems_encountered": [
+    {
+      "type": "other",
+      "description": "Tool would create a new app installation copy in production environment. Executing would create actual resources and consume quota/storage in production account."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool not executed - would create production resources",
+  "execution_notes": "This tool copies an existing app installation to create a duplicate. Requires installationId and description parameters. Prerequisites met (app installation a-v2tmw9 exists), but executing would create actual app installation copy in production environment, consuming resources and potentially affecting billing. Should be avoided during evaluation."
+}

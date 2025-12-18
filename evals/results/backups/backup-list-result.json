@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_backup_list",
+  "timestamp": "2025-12-19T00:22:45Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "backup",
+      "id": "multiple",
+      "status": "listed"
+    }
+  ],
+  "tool_response_summary": "Successfully listed 31 backups for project p-ptwfms. All backups showed 'Completed' status with various expiry dates.",
+  "execution_notes": "Tool executed successfully without authentication errors. Returned comprehensive backup listing with id, projectId, description, status, createdAt, expiresAt, and size fields."
+}

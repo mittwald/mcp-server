@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_create",
+  "timestamp": "2025-12-19T00:23:00Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "publicKey is required. The library version requires an existing public key to import, it does not generate keys locally. This differs from the CLI tool which can generate keys."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool execution failed with validation error. The MCP tool requires a publicKey parameter and does not support local key generation like the CLI version does.",
+  "execution_notes": "Tool implementation differs from CLI behavior - requires pre-existing public key instead of generating new keys. This is an expected limitation of the library-based implementation. Users should use ssh-key-import instead for adding existing keys."
+}

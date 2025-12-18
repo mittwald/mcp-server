@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+  "timestamp": "2025-12-18T23:13:45Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "a-v2tmw9",
+      "status": "exists"
+    }
+  ],
+  "tool_response_summary": "Successfully listed upgrade candidates for app installation a-v2tmw9. Result: No upgrade candidates available (empty array).",
+  "execution_notes": "Tool executed without errors in 140ms. Returns empty array when no upgrades are available for the specified app installation. Requires installationId parameter. Authentication successful."
+}
