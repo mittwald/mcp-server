@@ -7,36 +7,18 @@
     "jsx": "react-jsx",
     "outDir": "./dist",
     "rootDir": "./src",
-    "declaration": false,
-    "declarationMap": false,
-    "sourceMap": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "strict": false,
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "strictFunctionTypes": false,
-    "strictPropertyInitialization": false,
-    "noEmitOnError": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": false,
+    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "types": ["node"]
   },
-  "include": [
-    "src/index.ts",
-    "src/contracts/**/*",
-    "src/installers/**/*",
-    "src/lib/**/*",
-    "src/resources/**/*",
-    "src/types/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/__snapshots__"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx", "**/__snapshots__"]
 }
