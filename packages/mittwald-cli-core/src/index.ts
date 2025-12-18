@@ -15,29 +15,11 @@ export interface ListAppsOptions extends LibraryFunctionBase {
 }
 
 /**
- * Single app installation result
- */
-export interface AppInstallation {
-  id: string;
-  appId: string;
-  name: string;
-  version: string;
-  status: string;
-}
-
-/**
- * Result type for listApps
- */
-export interface AppListResult {
-  installations: AppInstallation[];
-}
-
-/**
  * List all app installations for a given project
  * @param options - Options including apiToken and projectId
- * @returns Library result containing app installations
+ * @returns Library result containing app installations array (full API response with enrichment, matching CLI output format exactly)
  */
-export async function listApps(options: ListAppsOptions): Promise<LibraryResult<AppListResult>> {
+export async function listApps(options: ListAppsOptions): Promise<LibraryResult<any[]>> {
   const startTime = performance.now();
 
   try {
@@ -52,24 +34,30 @@ export async function listApps(options: ListAppsOptions): Promise<LibraryResult<
     // Assert successful status
     assertStatus(response, 200);
 
-    // Import lib helpers for enrichment
-    const { getAppFromUuid } = await import('./lib/resources/app/uuid.js');
+    // Import lib helpers for enrichment (matching CLI mapData implementation)
+    const { getAppFromUuid, getAppVersionFromUuid } = await import('./lib/resources/app/uuid.js');
 
-    // Enrich data using lib utilities
+    // Enrich data exactly like CLI does (spread original item + add enriched fields)
     const enrichedData = await Promise.all(
       response.data.map(async (item) => ({
-        id: item.id,
-        appId: item.appId,
-        name: (await getAppFromUuid(client, item.appId)).name,
-        version: item.appVersion?.desired || 'unknown',
-        status: 'installed',
+        ...item,
+        app: await getAppFromUuid(client, item.appId),
+        appVersionCurrent: item.appVersion.current
+          ? await getAppVersionFromUuid(client, item.appId, item.appVersion.current)
+          : undefined,
+        appVersionDesired: await getAppVersionFromUuid(
+          client,
+          item.appId,
+          item.appVersion.desired
+        ),
       }))
     );
 
     const durationMs = performance.now() - startTime;
 
+    // Return array directly to match CLI output format
     return {
-      data: { installations: enrichedData },
+      data: enrichedData,
       status: response.status,
       durationMs,
     };

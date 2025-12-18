@@ -118,11 +118,10 @@ export const handleAppListCli: MittwaldCliToolHandler<MittwaldAppListArgs> = asy
       });
     }
 
-    // Use library result (it's validated)
-    const libraryData = validation.libraryOutput.data as any;
-    const installations = libraryData?.installations || [];
+    // Use library result (it's validated) - data is array directly
+    const apps = validation.libraryOutput.data as any[];
 
-    if (installations.length === 0) {
+    if (!apps || apps.length === 0) {
       return formatToolResponse(
         'success',
         'No apps found',
@@ -138,8 +137,8 @@ export const handleAppListCli: MittwaldCliToolHandler<MittwaldAppListArgs> = asy
 
     return formatToolResponse(
       'success',
-      `Found ${installations.length} app(s)`,
-      installations,
+      `Found ${apps.length} app(s)`,
+      apps,
       {
         durationMs: validation.libraryOutput.durationMs,
         validationPassed: validation.passed,
