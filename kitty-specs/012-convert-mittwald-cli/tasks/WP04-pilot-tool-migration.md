@@ -123,3 +123,11 @@ Manual validation:
 - 2025-12-18T06:00:00Z – system – lane=planned – Prompt created
 - 2025-12-18T09:00:00Z – claude – shell_pid=84179 – lane=doing – Started WP04
 - 2025-12-18T09:15:00Z – claude – shell_pid=84179 – lane=for_review – Created comprehensive migration-guide.md with before/after patterns, error handling, performance benchmarks, and troubleshooting.
+- 2025-12-18T14:00:00Z – claude – shell_pid=$$ – lane=doing – Restarted WP04 implementation - previous work was documentation only, not actual migration
+- 2025-12-18T14:45:00Z – claude – shell_pid=$$ – lane=for_review – Completed T023-T024, T029:
+  * T023: Selected mittwald_app_list as pilot tool
+  * T024: Migrated app/list-cli.ts handler to use library with parallel validation
+  * T029: Created comprehensive validation script (tests/validation/validate-wp04-pilot.ts)
+  * Added npm script: test:wp04
+  * Created implementation summary (docs/WP04-implementation-summary.md)
+  * T025-T028: Require manual execution with real Mittwald credentials (see WP04-implementation-summary.md)
