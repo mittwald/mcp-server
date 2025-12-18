@@ -1,8 +1,6 @@
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { listOrgMemberships, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -24,21 +22,6 @@ interface OrgMembershipEntry {
 interface OrgMembershipListPayload {
   table: string;
   memberships: OrgMembershipEntry[];
-}
-
-/**
- * Parses the JSON output produced by `mw org membership list`.
- *
- * @param stdout - Raw JSON string.
- * @returns Normalized membership entries.
- */
-function parseMembershipList(stdout: string): OrgMembershipEntry[] {
-  const parsed = JSON.parse(stdout) as unknown;
-  if (!Array.isArray(parsed)) {
-    throw new Error('Unexpected CLI output: expected an array of memberships');
-  }
-
-  return parsed.map((entry) => normalizeMembershipEntry(entry));
 }
 
 /**
@@ -144,37 +127,6 @@ function formatMembershipTable(memberships: OrgMembershipEntry[]): string {
 }
 
 /**
- * Maps CLI errors to descriptive membership list messages.
- *
- * @param error - CLI adapter error.
- * @param organizationId - Requested organization identifier.
- * @returns Human-readable message.
- */
-function mapCliError(error: CliToolError, organizationId: string): string {
-  const stderr = error.stderr ?? '';
-  const stdout = error.stdout ?? '';
-  const combined = `${stderr}\n${stdout}`.toLowerCase();
-
-  if (combined.includes('not found')) {
-    const details = stderr || stdout || error.message;
-    return `Organization not found: ${organizationId}.\nError: ${details}`;
-  }
-
-  if (error.kind === 'AUTHENTICATION' || combined.includes('unauthorized') || combined.includes('not authenticated')) {
-    const details = stderr || stdout || error.message;
-    return `Authentication failed when listing memberships for ${organizationId}.\nError: ${details}`;
-  }
-
-  if (combined.includes('permission denied') || combined.includes('forbidden')) {
-    const details = stderr || stdout || error.message;
-    return `Permission denied when listing memberships for ${organizationId}.\nError: ${details}`;
-  }
-
-  const details = stderr || stdout || error.message;
-  return `Failed to list organization memberships: ${details}`;
-}
-
-/**
  * Handler for the `mittwald_org_membership_list` tool.
  */
 export const handleOrgMembershipListCli: MittwaldToolHandler<OrgMembershipListArgs> = async (args, context) => {
@@ -193,46 +145,13 @@ export const handleOrgMembershipListCli: MittwaldToolHandler<OrgMembershipListAr
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv = ['org', 'membership', 'list', '--org-id', args.organizationId, '--output', 'json'];
-
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_org_membership_list',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await listOrgMemberships({
-          customerId: args.organizationId,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await listOrgMemberships({
+      customerId: args.organizationId,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_org_membership_list',
-        organizationId: args.organizationId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_org_membership_list',
-        organizationId: args.organizationId,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
-
-    // Use library result (it's validated) - data is array directly
-    const memberships = (validation.libraryOutput.data as any[]).map((m) => normalizeMembershipEntry(m));
+    const memberships = (result.data as any[]).map((m) => normalizeMembershipEntry(m));
 
     const table = formatMembershipTable(memberships);
     const message = memberships.length === 0
@@ -245,11 +164,7 @@ export const handleOrgMembershipListCli: MittwaldToolHandler<OrgMembershipListAr
     };
 
     return formatToolResponse('success', message, payload, {
-      durationMs: validation.libraryOutput.durationMs,
-      validationPassed: validation.passed,
-      discrepancyCount: validation.discrepancies.length,
-      cliDuration: validation.cliOutput.durationMs,
-      libraryDuration: validation.libraryOutput.durationMs,
+      durationMs: result.durationMs,
     });
   } catch (error) {
     if (error instanceof LibraryError) {
@@ -259,17 +174,7 @@ export const handleOrgMembershipListCli: MittwaldToolHandler<OrgMembershipListAr
       });
     }
 
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args.organizationId);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
-      });
-    }
-
-    logger.error('[WP05] Unexpected error in org membership list handler', { error });
+    logger.error('[WP06] Unexpected error in org membership list handler', { error });
     return formatToolResponse(
       'error',
       `Failed to list organization memberships: ${error instanceof Error ? error.message : String(error)}`
