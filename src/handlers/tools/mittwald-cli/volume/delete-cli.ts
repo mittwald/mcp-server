@@ -3,7 +3,6 @@ import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { deleteVolume, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
@@ -35,16 +34,6 @@ const VOLUME_NAME_PATTERN = /^[a-z0-9-]+$/;
 
 function resolveVolumeName(args: MittwaldVolumeDeleteArgs): string | undefined {
   return args.name ?? args.volumeId;
-}
-
-function buildCliArgs(volumeName: string, args: MittwaldVolumeDeleteArgs): string[] {
-  const cliArgs: string[] = ['volume', 'delete', volumeName];
-
-  if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.force) cliArgs.push('--force');
-  if (args.quiet) cliArgs.push('--quiet');
-
-  return cliArgs;
 }
 
 function parseQuietOutput(output: string): string | undefined {
@@ -132,23 +121,6 @@ async function checkVolumeSafety(args: MittwaldVolumeDeleteArgs, volumeName: str
   }
 }
 
-function mapCliError(error: CliToolError, volumeName: string, projectId?: string): string {
-  const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}\n${error.message}`.toLowerCase();
-
-  if (combined.includes('does not exist') || combined.includes('not found')) {
-    return `Volume '${volumeName}' was not found in project ${projectId ?? 'unknown'}.`;
-  }
-
-  if (combined.includes('in use') && combined.includes('force')) {
-    return `Volume '${volumeName}' is still mounted to one or more containers. Use force: true to override, but proceed with caution.`;
-  }
-
-  if (error.kind === 'AUTHENTICATION' || combined.includes('unauthorized')) {
-    return 'Authentication with Mittwald CLI failed. Re-run OAuth authentication and try again.';
-  }
-
-  return `Failed to delete volume '${volumeName}'. ${error.stderr || error.message}`;
-}
 
 export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteArgs> = async (args, sessionId) => {
   const effectiveSessionId = sessionId || getCurrentSessionId();
@@ -217,46 +189,12 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
     );
   }
 
-  const argv = buildCliArgs(volumeName, args);
-
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_volume_delete',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await deleteVolume({
-          volumeId: volumeName,
-          stackId: safety.stackId || '',
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await deleteVolume({
+      volumeId: volumeName,
+      stackId: safety.stackId || '',
+      apiToken: session.mittwaldAccessToken,
     });
-
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_volume_delete',
-        volumeName,
-        projectId: args.projectId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_volume_delete',
-        volumeName,
-        projectId: args.projectId,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
 
     const deletedName = safety.volumeName ?? volumeName;
     const message = `Volume '${deletedName}' deleted successfully.`;
@@ -278,11 +216,7 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
       message,
       responseData,
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -294,7 +228,17 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
     }
 
     if (error instanceof CliToolError) {
-      const message = mapCliError(error, volumeName, args.projectId);
+      const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}\n${error.message}`.toLowerCase();
+      let message = `Failed to delete volume '${volumeName}'. ${error.stderr || error.message}`;
+
+      if (combined.includes('does not exist') || combined.includes('not found')) {
+        message = `Volume '${volumeName}' was not found in project ${args.projectId ?? 'unknown'}.`;
+      } else if (combined.includes('in use') && combined.includes('force')) {
+        message = `Volume '${volumeName}' is still mounted to one or more containers. Use force: true to override, but proceed with caution.`;
+      } else if (error.kind === 'AUTHENTICATION' || combined.includes('unauthorized')) {
+        message = 'Authentication with Mittwald CLI failed. Re-run OAuth authentication and try again.';
+      }
+
       return formatToolResponse('error', message, {
         exitCode: error.exitCode,
         stderr: error.stderr,
@@ -303,7 +247,7 @@ export const handleVolumeDeleteCli: MittwaldCliToolHandler<MittwaldVolumeDeleteA
       });
     }
 
-    logger.error('[WP05] Unexpected error in volume delete handler', { error });
+    logger.error('[WP06] Unexpected error in volume delete handler', { error });
     return formatToolResponse(
       'error',
       `Failed to execute volume delete: ${error instanceof Error ? error.message : String(error)}`
