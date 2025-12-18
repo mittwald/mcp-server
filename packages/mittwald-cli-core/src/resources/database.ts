@@ -9,32 +9,6 @@ import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.
 import { LibraryError } from '../contracts/functions.js';
 
 // ============================================================================
-// LIST DATABASES
-// ============================================================================
-
-export interface ListDatabasesOptions extends LibraryFunctionBase {
-  projectId: string;
-}
-
-export async function listDatabases(options: ListDatabasesOptions): Promise<LibraryResult<any[]>> {
-  const startTime = performance.now();
-
-  try {
-    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const response = await client.database.listDatabases({ projectId: options.projectId });
-    assertStatus(response, 200);
-
-    return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
-  } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
-  }
-}
-
-// ============================================================================
 // MYSQL DATABASES
 // ============================================================================
 
@@ -189,8 +163,11 @@ export async function getMysqlUser(options: GetMysqlUserOptions): Promise<Librar
 
 export interface CreateMysqlUserOptions extends LibraryFunctionBase {
   databaseId: string;
+  accessLevel: 'full' | 'readonly';
   description: string;
   password: string;
+  accessIpMask?: string;
+  externalAccess?: boolean;
 }
 
 export async function createMysqlUser(options: CreateMysqlUserOptions): Promise<LibraryResult<any>> {
@@ -200,8 +177,12 @@ export async function createMysqlUser(options: CreateMysqlUserOptions): Promise<
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
 
     const data = {
+      accessLevel: options.accessLevel,
+      databaseId: options.databaseId,
       description: options.description,
       password: options.password,
+      accessIpMask: options.accessIpMask,
+      externalAccess: options.externalAccess,
     };
 
     const response = await client.database.createMysqlUser({

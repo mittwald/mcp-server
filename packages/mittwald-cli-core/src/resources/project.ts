@@ -62,12 +62,10 @@ export async function createProject(options: CreateProjectOptions): Promise<Libr
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
 
-    const data = {
+    const response = await client.project.createProject({
       serverId: options.serverId,
-      description: options.description,
-    };
-
-    const response = await client.project.createProject({ data });
+      data: { description: options.description },
+    });
     assertStatus(response, 201);
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
@@ -82,7 +80,7 @@ export async function createProject(options: CreateProjectOptions): Promise<Libr
 
 export interface UpdateProjectOptions extends LibraryFunctionBase {
   projectId: string;
-  description?: string;
+  description: string;
 }
 
 export async function updateProject(options: UpdateProjectOptions): Promise<LibraryResult<void>> {
@@ -91,12 +89,9 @@ export async function updateProject(options: UpdateProjectOptions): Promise<Libr
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
 
-    const data: any = {};
-    if (options.description !== undefined) data.description = options.description;
-
-    const response = await client.project.updateProject({
+    const response = await client.project.updateProjectDescription({
       projectId: options.projectId,
-      data,
+      data: { description: options.description },
     });
     assertStatus(response, 204);
 
@@ -142,7 +137,7 @@ export async function listProjectMemberships(options: ListProjectMembershipsOpti
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const response = await client.project.listProjectMemberships({ projectId: options.projectId });
+    const response = await client.project.listMembershipsForProject({ projectId: options.projectId });
     assertStatus(response, 200);
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
@@ -187,7 +182,7 @@ export async function listProjectInvites(options: ListProjectInvitesOptions): Pr
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const response = await client.project.listProjectInvites({ projectId: options.projectId });
+    const response = await client.project.listInvitesForProject({ projectId: options.projectId });
     assertStatus(response, 200);
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };

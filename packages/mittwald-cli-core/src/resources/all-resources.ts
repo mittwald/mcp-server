@@ -15,19 +15,14 @@ import { LibraryError } from '../contracts/functions.js';
 async function executeApiCall<T = any>(
   apiToken: string,
   apiCall: (client: MittwaldAPIV2Client) => Promise<any>,
-  expectedStatus: number | number[] = 200
+  expectedStatus: number = 200
 ): Promise<LibraryResult<T>> {
   const startTime = performance.now();
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(apiToken);
     const response = await apiCall(client);
-
-    if (Array.isArray(expectedStatus)) {
-      assertStatus(response, ...expectedStatus);
-    } else {
-      assertStatus(response, expectedStatus);
-    }
+    assertStatus(response, expectedStatus);
 
     return {
       data: response.data,
@@ -53,9 +48,7 @@ export interface GetUserOptions extends LibraryFunctionBase {
 
 export async function getUser(options: GetUserOptions): Promise<LibraryResult<any>> {
   return executeApiCall(options.apiToken, (client) =>
-    options.userId
-      ? client.user.getUser({ userId: options.userId })
-      : client.user.getAuthenticatedUser()
+    client.user.getUser({ userId: options.userId || "self" })
   );
 }
 
@@ -77,7 +70,7 @@ export async function getUserApiToken(options: GetUserApiTokenOptions): Promise<
 export interface CreateUserApiTokenOptions extends LibraryFunctionBase {
   description: string;
   expiresAt?: string;
-  roles?: string[];
+  roles: ["api_read" | "api_write", ...("api_read" | "api_write")[]];
 }
 
 export async function createUserApiToken(options: CreateUserApiTokenOptions): Promise<LibraryResult<any>> {
@@ -113,13 +106,13 @@ export async function getUserSshKey(options: GetUserSshKeyOptions): Promise<Libr
 
 export interface CreateUserSshKeyOptions extends LibraryFunctionBase {
   publicKey: string;
-  comment?: string;
+  expiresAt?: string;
 }
 
 export async function createUserSshKey(options: CreateUserSshKeyOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
-    (client) => client.user.createSshKey({ data: { publicKey: options.publicKey, comment: options.comment } }),
+    (client) => client.user.createSshKey({ data: { publicKey: options.publicKey, expiresAt: options.expiresAt } }),
     201
   );
 }
@@ -140,11 +133,11 @@ export async function listUserSessions(options: ListUserSessionsOptions): Promis
 }
 
 export interface GetUserSessionOptions extends LibraryFunctionBase {
-  sessionId: string;
+  tokenId: string;
 }
 
 export async function getUserSession(options: GetUserSessionOptions): Promise<LibraryResult<any>> {
-  return executeApiCall(options.apiToken, (client) => client.user.getSession({ sessionId: options.sessionId }));
+  return executeApiCall(options.apiToken, (client) => client.user.getSession({ tokenId: options.tokenId }));
 }
 
 // ============================================================================
@@ -179,7 +172,7 @@ export interface ListOrgMembershipsOptions extends LibraryFunctionBase {
 }
 
 export async function listOrgMemberships(options: ListOrgMembershipsOptions): Promise<LibraryResult<any[]>> {
-  return executeApiCall(options.apiToken, (client) => client.customer.listMemberships({ customerId: options.customerId }));
+  return executeApiCall(options.apiToken, (client) => client.customer.listMembershipsForCustomer({ customerId: options.customerId }));
 }
 
 // Organization invites
@@ -188,19 +181,19 @@ export interface ListOrgInvitesOptions extends LibraryFunctionBase {
 }
 
 export async function listOrgInvites(options: ListOrgInvitesOptions): Promise<LibraryResult<any[]>> {
-  return executeApiCall(options.apiToken, (client) => client.customer.listInvites({ customerId: options.customerId }));
+  return executeApiCall(options.apiToken, (client) => client.customer.listInvitesForCustomer({ customerId: options.customerId }));
 }
 
 export interface InviteToOrgOptions extends LibraryFunctionBase {
   customerId: string;
   email: string;
-  role: string;
+  role: 'owner' | 'member' | 'accountant';
 }
 
 export async function inviteToOrg(options: InviteToOrgOptions): Promise<LibraryResult<any>> {
   return executeApiCall(
     options.apiToken,
-    (client) => client.customer.createInvite({ customerId: options.customerId, data: { mailAddress: options.email, role: options.role } }),
+    (client) => client.customer.createCustomerInvite({ customerId: options.customerId, data: { mailAddress: options.email, role: options.role } }),
     201
   );
 }
@@ -210,7 +203,7 @@ export interface RevokeOrgInviteOptions extends LibraryFunctionBase {
 }
 
 export async function revokeOrgInvite(options: RevokeOrgInviteOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.customer.deleteInvite({ customerInviteId: options.inviteId }), 204);
+  return executeApiCall(options.apiToken, (client) => client.customer.deleteCustomerInvite({ customerInviteId: options.inviteId }), 204);
 }
 
 export interface RevokeOrgMembershipOptions extends LibraryFunctionBase {
@@ -218,7 +211,7 @@ export interface RevokeOrgMembershipOptions extends LibraryFunctionBase {
 }
 
 export async function revokeOrgMembership(options: RevokeOrgMembershipOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.customer.deleteMembership({ customerMembershipId: options.membershipId }), 204);
+  return executeApiCall(options.apiToken, (client) => client.customer.deleteCustomerMembership({ customerMembershipId: options.membershipId }), 204);
 }
 
 // ============================================================================
@@ -260,19 +253,18 @@ export async function createMailAddress(options: CreateMailAddressOptions): Prom
   );
 }
 
-export interface UpdateMailAddressOptions extends LibraryFunctionBase {
+export interface UpdateMailAddressCatchAllOptions extends LibraryFunctionBase {
   mailAddressId: string;
-  forwardAddresses?: string[];
-  catchAll?: boolean;
+  active: boolean;
 }
 
-export async function updateMailAddress(options: UpdateMailAddressOptions): Promise<LibraryResult<void>> {
+export async function updateMailAddressCatchAll(options: UpdateMailAddressCatchAllOptions): Promise<LibraryResult<void>> {
   return executeApiCall(
     options.apiToken,
     (client) =>
-      client.mail.updateMailAddress({
+      client.mail.updateMailAddressCatchAll({
         mailAddressId: options.mailAddressId,
-        data: { forwardAddresses: options.forwardAddresses, catchAll: options.catchAll },
+        data: { active: options.active },
       }),
     204
   );
@@ -313,7 +305,7 @@ export async function createDeliveryBox(options: CreateDeliveryBoxOptions): Prom
   return executeApiCall(
     options.apiToken,
     (client) =>
-      client.mail.createDeliveryBox({
+      client.mail.createDeliverybox({
         projectId: options.projectId,
         data: { description: options.description, password: options.password },
       }),
@@ -331,9 +323,9 @@ export async function updateDeliveryBox(options: UpdateDeliveryBoxOptions): Prom
   return executeApiCall(
     options.apiToken,
     (client) =>
-      client.mail.updateDeliveryBox({
+      client.mail.updateDeliveryBoxDescription({
         deliveryBoxId: options.deliveryBoxId,
-        data: { description: options.description, password: options.password },
+        data: { description: options.description! },
       }),
     204
   );
@@ -369,12 +361,13 @@ export async function getCronjob(options: GetCronjobOptions): Promise<LibraryRes
 
 export interface CreateCronjobOptions extends LibraryFunctionBase {
   projectId: string;
+  appId: string;
   description: string;
   interval: string;
+  timeout: number;
+  active?: boolean;
   email?: string;
-  url?: string;
-  command?: string;
-  interpreter?: string;
+  destination: { url: string } | { interpreter: string; path: string };
 }
 
 export async function createCronjob(options: CreateCronjobOptions): Promise<LibraryResult<any>> {
@@ -384,12 +377,13 @@ export async function createCronjob(options: CreateCronjobOptions): Promise<Libr
       client.cronjob.createCronjob({
         projectId: options.projectId,
         data: {
+          appId: options.appId,
           description: options.description,
           interval: options.interval,
+          timeout: options.timeout,
+          active: options.active !== false,
           email: options.email,
-          url: options.url,
-          command: options.command,
-          interpreter: options.interpreter,
+          destination: options.destination,
         },
       }),
     201
@@ -401,9 +395,8 @@ export interface UpdateCronjobOptions extends LibraryFunctionBase {
   description?: string;
   interval?: string;
   email?: string;
-  url?: string;
-  command?: string;
-  interpreter?: string;
+  destination?: { url: string } | { interpreter: string; path: string };
+  timeout?: number;
   active?: boolean;
 }
 
@@ -417,9 +410,8 @@ export async function updateCronjob(options: UpdateCronjobOptions): Promise<Libr
           description: options.description,
           interval: options.interval,
           email: options.email,
-          url: options.url,
-          command: options.command,
-          interpreter: options.interpreter,
+          destination: options.destination,
+          timeout: options.timeout,
           active: options.active,
         },
       }),
@@ -457,19 +449,21 @@ export async function listCronjobExecutions(options: ListCronjobExecutionsOption
 }
 
 export interface GetCronjobExecutionOptions extends LibraryFunctionBase {
+  cronjobId: string;
   executionId: string;
 }
 
 export async function getCronjobExecution(options: GetCronjobExecutionOptions): Promise<LibraryResult<any>> {
-  return executeApiCall(options.apiToken, (client) => client.cronjob.getExecution({ cronjobExecutionId: options.executionId }));
+  return executeApiCall(options.apiToken, (client) => client.cronjob.getExecution({ cronjobId: options.cronjobId, executionId: options.executionId }));
 }
 
 export interface AbortCronjobExecutionOptions extends LibraryFunctionBase {
+  cronjobId: string;
   executionId: string;
 }
 
 export async function abortCronjobExecution(options: AbortCronjobExecutionOptions): Promise<LibraryResult<void>> {
-  return executeApiCall(options.apiToken, (client) => client.cronjob.abortExecution({ cronjobExecutionId: options.executionId }), 204);
+  return executeApiCall(options.apiToken, (client) => client.cronjob.abortExecution({ cronjobId: options.cronjobId, executionId: options.executionId }), 204);
 }
 
 // Continue with domain, container, backup, and other resources...
