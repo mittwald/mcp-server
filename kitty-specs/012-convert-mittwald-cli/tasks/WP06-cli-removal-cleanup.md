@@ -13,8 +13,8 @@ lane: "for_review"
 assignee: ""
 agent: "claude"
 shell_pid: "57224"
-review_status: ""
-reviewed_by: ""
+review_status: "has_feedback"
+reviewed_by: "codex"
 history:
   - timestamp: "2025-12-18T06:00:00Z"
     lane: "planned"
@@ -129,3 +129,10 @@ Test suite verification:
 - 2025-12-18T06:00:00Z – system – lane=planned – Prompt created
 - 2025-12-18T13:26:01Z – claude – shell_pid=57224 – lane=doing – Started WP06 implementation - CLI removal and cleanup
 - 2025-12-18T14:35:02Z – claude – shell_pid=57224 – lane=for_review – Completed WP06 - 119 tools cleaned, build passes, 6 placeholder tools kept
+- 2025-12-18T16:30:00Z – codex – shell_pid=$$ – lane=for_review – Review feedback added (see below)
+
+## Review Feedback – Status: NEEDS CHANGES
+
+1) Tool inventory mismatch: `grep -L "@mittwald-mcp/cli-core" src/handlers/tools/mittwald-cli/**/*-cli.ts` reports **50** CLI-based handlers. Handoff/scope expect 46 unmigrated + 6 placeholders = 52 keep-CLI tools. Please reconcile counts (update inventory and/or exclusions) so the cleanable/keep lists are explicit and consistent.
+2) Validation harness still present: `tests/validation/parallel-validator.*` and 6 placeholder handlers still call `validateToolParity`. Success criteria say “Validation infrastructure deleted or deprecated,” but the harness is active. Clarify whether to keep it for the 6 placeholders or remove it and adjust their behavior/docs. If kept, update success criteria to match reality; if removed, refactor the 6 tools accordingly.
+3) Test evidence missing: No recorded `npm test`/build result for the post-cleanup state in this task. Gate 6 lists T041 “Run test suite.” Please run/record results or note why they are skipped.
