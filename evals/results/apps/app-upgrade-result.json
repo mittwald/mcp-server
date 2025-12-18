@@ -1,0 +1,20 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_upgrade",
+  "timestamp": "2025-12-18T23:14:10Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "No upgrade candidates available for app installation a-v2tmw9 (confirmed by app/list-upgrade-candidates tool). Cannot test upgrade without available target version."
+    },
+    {
+      "type": "other",
+      "description": "Tool would modify production app installation by upgrading to a different version. Executing would alter actual app in production environment."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool not executed - no upgrade candidates available and would modify production data",
+  "execution_notes": "This tool upgrades app installations to newer versions. Requires projectId, installationId, and optional targetVersion. The app/list-upgrade-candidates tool confirmed no upgrades are available for the existing app installation. Even if upgrades were available, executing would modify production app configuration which should be avoided during evaluation."
+}

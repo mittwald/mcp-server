@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_project_get",
+  "timestamp": "2025-12-19T00:03:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "ad6f44a6-132e-4c2a-9208-895494bfcd75",
+      "status": "ready"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved project details for ad6f44a6-132e-4c2a-9208-895494bfcd75 (Web Project - 2025-12-09), shortId p-p92nri, status ready, enabled, on server cf24e9ff-21e8-4895-82ef-47354868a861",
+  "execution_notes": "Tool executed in 92ms. Resource ID matches request. Project is enabled and in ready state."
+}
