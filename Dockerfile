@@ -42,6 +42,7 @@ RUN npm ci --ignore-scripts || npm install --ignore-scripts
 # Copy application source
 COPY src ./src
 COPY tests ./tests
+COPY config ./config
 COPY tsconfig.json ./tsconfig.json
 COPY packages/oauth-bridge ./packages/oauth-bridge
 COPY packages/mcp-server ./packages/mcp-server
@@ -59,6 +60,7 @@ RUN npm install -g @mittwald/cli@1.12.0
 
 # Copy built artifacts
 COPY --from=app-builder /app/build ./build
+COPY --from=app-builder /app/config ./config
 COPY --from=app-builder /app/node_modules ./node_modules
 COPY --from=app-builder /app/packages ./packages
 COPY --from=app-builder /app/package*.json ./
