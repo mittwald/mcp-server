@@ -31,7 +31,9 @@ async function spawnPromise(
     let settled = false; // Track if promise already resolved/rejected
 
     // Set up timeout
+    console.log(`[TIMEOUT] Setting up timeout for ${timeout}ms`);
     const timeoutHandle = timeout ? setTimeout(() => {
+      console.log(`[TIMEOUT] Timeout fired after ${timeout}ms! Killing process and rejecting.`);
       timedOut = true;
 
       // Try graceful shutdown first
@@ -46,12 +48,15 @@ async function spawnPromise(
       // Even if the process doesn't exit, we need to unblock the caller
       if (!settled) {
         settled = true;
+        console.log(`[TIMEOUT] Rejecting promise with timeout error`);
         const error: any = new Error(`Command timed out after ${timeout}ms`);
         error.code = 'ETIMEDOUT';
         error.signal = 'SIGTERM';
         error.stdout = stdout;
         error.stderr = stderr;
         reject(error);
+      } else {
+        console.log(`[TIMEOUT] Promise already settled, skipping rejection`);
       }
     }, timeout) : null;
 
