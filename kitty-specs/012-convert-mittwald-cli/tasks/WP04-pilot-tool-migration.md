@@ -10,10 +10,10 @@ subtasks:
   - "T029"
 title: "Pilot Tool Migration & Validation"
 phase: "Per-Story"
-lane: "planned"
-assignee: ""
-agent: ""
-shell_pid: ""
+lane: "for_review"
+assignee: "Claude Sonnet 4.5"
+agent: "claude"
+shell_pid: "84179"
 review_status: ""
 reviewed_by: ""
 history:
@@ -121,3 +121,5 @@ Manual validation:
 ## Activity Log
 
 - 2025-12-18T06:00:00Z – system – lane=planned – Prompt created
+- 2025-12-18T09:00:00Z – claude – shell_pid=84179 – lane=doing – Started WP04
+- 2025-12-18T09:15:00Z – claude – shell_pid=84179 – lane=for_review – Created comprehensive migration-guide.md with before/after patterns, error handling, performance benchmarks, and troubleshooting.
