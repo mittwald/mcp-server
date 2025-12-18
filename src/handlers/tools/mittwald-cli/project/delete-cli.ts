@@ -1,9 +1,7 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { logger } from '../../../../utils/logger.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { deleteProject, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
@@ -12,49 +10,6 @@ interface MittwaldProjectDeleteArgs {
   confirm?: boolean;
   quiet?: boolean;
   force?: boolean;
-}
-
-function buildCliArgs(args: MittwaldProjectDeleteArgs): string[] {
-  const cliArgs: string[] = ['project', 'delete', args.projectId];
-
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.force) cliArgs.push('--force');
-
-  return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
-
-function mapCliError(error: CliToolError, args: MittwaldProjectDeleteArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-  const errorMessage = error.stderr || error.stdout || error.message;
-
-  if (combined.includes('not found') && combined.includes('project')) {
-    return `Project not found. Please verify the project ID: ${args.projectId}.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('authentication') || combined.includes('unauthorized')) {
-    return `Authentication failed. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('permission') || combined.includes('forbidden')) {
-    return `Permission denied. You may not have the required permissions to delete this project.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('dependencies') || combined.includes('resources')) {
-    return `Project deletion failed due to existing dependencies or resources. Please remove all associated resources first.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('cancelled') || combined.includes('canceled') || combined.includes('aborted')) {
-    return `Project deletion was cancelled.\nError: ${errorMessage}`;
-  }
-
-  return `Failed to delete project: ${errorMessage}`;
 }
 
 export const handleProjectDeleteCli: MittwaldCliToolHandler<MittwaldProjectDeleteArgs> = async (args, sessionId) => {
@@ -90,43 +45,11 @@ export const handleProjectDeleteCli: MittwaldCliToolHandler<MittwaldProjectDelet
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv = buildCliArgs(args);
-
   try {
-    // WP04: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_project_delete',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await deleteProject({
-          projectId: args.projectId,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await deleteProject({
+      projectId: args.projectId,
+      apiToken: session.mittwaldAccessToken,
     });
-
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP04 Validation] Output mismatch detected', {
-        tool: 'mittwald_project_delete',
-        projectId: args.projectId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP04 Validation] 100% parity achieved', {
-        tool: 'mittwald_project_delete',
-        projectId: args.projectId,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
 
     // Auto-update session: remove deleted project from accessible projects and clear context if active
     if (effectiveSessionId) {
@@ -147,11 +70,7 @@ export const handleProjectDeleteCli: MittwaldCliToolHandler<MittwaldProjectDelet
         quiet: Boolean(args.quiet),
       },
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -162,17 +81,7 @@ export const handleProjectDeleteCli: MittwaldCliToolHandler<MittwaldProjectDelet
       });
     }
 
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
-      });
-    }
-
-    logger.error('[WP04] Unexpected error in project delete handler', { error });
+    logger.error('[WP06] Unexpected error in project delete handler', { error });
     return formatToolResponse('error', `Failed to delete project: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
