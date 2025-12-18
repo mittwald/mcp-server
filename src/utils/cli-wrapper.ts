@@ -374,7 +374,12 @@ export async function executeCli(
 
 	    try {
 	      console.log(`[CLI-EXEC] BEFORE execFilePromise: ${cliCommand}, slot acquired`);
-	      const { stdout, stderr } = await execFilePromise(command, effectiveArgs, {
+	      // TEST: Use shell wrapper like SSH does
+	      // Properly escape for shell to avoid injection
+	      const shellCommand = [command, ...effectiveArgs].map(arg =>
+	        `'${arg.replace(/'/g, "'\\''")}'`
+	      ).join(' ');
+	      const { stdout, stderr } = await execFilePromise('/bin/sh', ['-c', shellCommand], {
 	        timeout,
 	        maxBuffer: resolvedMaxBuffer,
 	        env: mergedEnv,
