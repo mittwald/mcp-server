@@ -2,11 +2,11 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 178,
-    "toolCount": 172,
+    "toolCount": 174,
     "coveredCount": 168,
     "missingCount": 0,
     "coveragePercent": 100,
-    "extraToolCount": 4,
+    "extraToolCount": 6,
     "excludedCount": 10
   },
   "coverage": [
@@ -2651,6 +2651,16 @@
       "toolName": "mittwald_user_accessible_projects",
       "relPath": "context/accessible-projects-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/accessible-projects-cli.js"
+    },
+    {
+      "toolName": "mittwald_certificate_list",
+      "relPath": "certificate/list-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/certificate/list-cli.js"
+    },
+    {
+      "toolName": "mittwald_certificate_request",
+      "relPath": "certificate/request-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/certificate/request-cli.js"
     }
   ]
 }
