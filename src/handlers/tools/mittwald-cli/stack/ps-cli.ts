@@ -1,10 +1,8 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { getStackProcesses, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
-import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldStackPsCliArgs {
   stackId?: string;
@@ -61,62 +59,25 @@ export const handleStackPsCli: MittwaldCliToolHandler<MittwaldStackPsCliArgs> = 
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv: string[] = ['stack', 'ps', '--stack-id', args.stackId, '--output', 'json'];
-  if (args.extended) argv.push('--extended');
-  if (args.noHeader) argv.push('--no-header');
-  if (args.noTruncate) argv.push('--no-truncate');
-  if (args.noRelativeDates) argv.push('--no-relative-dates');
-  if (args.csvSeparator) argv.push('--csv-separator', args.csvSeparator);
-
   try {
-    const validation = await validateToolParity({
-      toolName: 'mittwald_stack_ps',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await getStackProcesses({
-          stackId: args.stackId!,
-          projectId: args.projectId!,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
-    });
-
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_stack_ps',
-        stackId: args.stackId,
-        projectId: args.projectId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-      });
-    }
-
-    const services = validation.libraryOutput.data as RawService[];
+    const services = (await getStackProcesses({
+      stackId: args.stackId,
+      projectId: args.projectId,
+      apiToken: session.mittwaldAccessToken,
+    })) as RawService[];
 
     if (!services || services.length === 0) {
       return formatToolResponse(
         'success',
         'No services found in the stack',
-        [],
-        {
-          durationMs: validation.libraryOutput.durationMs,
-          validationPassed: validation.passed,
-          discrepancyCount: validation.discrepancies.length,
-        }
+        []
       );
     }
 
     return formatToolResponse(
       'success',
       `Found ${services.length} service${services.length === 1 ? '' : 's'} in the stack`,
-      formatServices(services),
-      {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-      }
+      formatServices(services)
     );
   } catch (error) {
     if (error instanceof LibraryError) {
@@ -126,7 +87,6 @@ export const handleStackPsCli: MittwaldCliToolHandler<MittwaldStackPsCliArgs> = 
       });
     }
 
-    logger.error('[WP05] Unexpected error in stack ps handler', { error });
     return formatToolResponse('error', `Failed to get stack processes: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

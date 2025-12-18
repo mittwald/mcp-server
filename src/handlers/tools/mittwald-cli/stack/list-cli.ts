@@ -1,10 +1,8 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { listStacks, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
-import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldStackListCliArgs {
   projectId?: string;
@@ -25,19 +23,6 @@ type RawStack = {
   disabled?: boolean;
   projectId?: string;
 };
-
-function buildCliArgs(args: MittwaldStackListCliArgs): string[] {
-  const cliArgs: string[] = ['stack', 'list', '--output', 'json'];
-
-  if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.extended) cliArgs.push('--extended');
-  if (args.noHeader) cliArgs.push('--no-header');
-  if (args.noTruncate) cliArgs.push('--no-truncate');
-  if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
-  if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
-
-  return cliArgs;
-}
 
 function formatStacks(stacks: RawStack[]) {
   return stacks.map((stack) => ({
@@ -68,70 +53,24 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
     return formatToolResponse('error', 'projectId is required');
   }
 
-  const argv = buildCliArgs(args);
-
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_stack_list',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await listStacks({
-          apiToken: session.mittwaldAccessToken,
-          projectId: args.projectId!,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
-    });
-
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_stack_list',
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_stack_list',
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
-
-    // Use library result (it's validated) - data is array directly
-    const stacks = validation.libraryOutput.data as any[];
+    const stacks = (await listStacks({
+      apiToken: session.mittwaldAccessToken,
+      projectId: args.projectId,
+    })) as any[];
 
     if (!stacks || stacks.length === 0) {
       return formatToolResponse(
         'success',
         'No container stacks found',
-        [],
-        {
-          durationMs: validation.libraryOutput.durationMs,
-          validationPassed: validation.passed,
-          cliDuration: validation.cliOutput.durationMs,
-          libraryDuration: validation.libraryOutput.durationMs,
-        }
+        []
       );
     }
 
     return formatToolResponse(
       'success',
       `Found ${stacks.length} container stack${stacks.length === 1 ? '' : 's'}`,
-      formatStacks(stacks),
-      {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      }
+      formatStacks(stacks)
     );
   } catch (error) {
     if (error instanceof LibraryError) {
@@ -149,7 +88,6 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
       });
     }
 
-    logger.error('[WP05] Unexpected error in stack list handler', { error });
     return formatToolResponse('error', `Failed to list container stacks: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
