@@ -2,7 +2,6 @@ import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { logger } from '../../../../utils/logger.js';
 import { deleteRegistry, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
@@ -11,15 +10,6 @@ interface MittwaldRegistryDeleteCliArgs {
   confirm?: boolean;
   quiet?: boolean;
   force?: boolean;
-}
-
-function buildCliArgs(args: MittwaldRegistryDeleteCliArgs): string[] {
-  const cliArgs: string[] = ['registry', 'delete', args.registryId];
-
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.force) cliArgs.push('--force');
-
-  return cliArgs;
 }
 
 export const handleRegistryDeleteCli: MittwaldCliToolHandler<MittwaldRegistryDeleteCliArgs> = async (args, sessionId) => {
@@ -51,43 +41,11 @@ export const handleRegistryDeleteCli: MittwaldCliToolHandler<MittwaldRegistryDel
     sessionId: effectiveSessionId,
   });
 
-  const argv = buildCliArgs(args);
-
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_registry_delete',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await deleteRegistry({
-          registryId: args.registryId,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await deleteRegistry({
+      registryId: args.registryId,
+      apiToken: session.mittwaldAccessToken,
     });
-
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_registry_delete',
-        registryId: args.registryId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_registry_delete',
-        registryId: args.registryId,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
 
     return formatToolResponse(
       'success',
@@ -97,11 +55,7 @@ export const handleRegistryDeleteCli: MittwaldCliToolHandler<MittwaldRegistryDel
         status: 'deleted',
       },
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -112,7 +66,7 @@ export const handleRegistryDeleteCli: MittwaldCliToolHandler<MittwaldRegistryDel
       });
     }
 
-    logger.error('[WP05] Unexpected error in registry delete handler', { error });
+    logger.error('[WP06] Unexpected error in registry delete handler', { error });
     return formatToolResponse('error', `Failed to delete registry: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
