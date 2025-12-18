@@ -10,6 +10,7 @@ RUN npm install -g @mittwald/cli@1.12.0
 COPY package*.json ./
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
 COPY . .
+RUN cd packages/mittwald-cli-core && npm run build && cd ../..
 RUN npm run build
 
 # Create non-root user and switch to it
