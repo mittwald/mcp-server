@@ -30,6 +30,40 @@ async function spawnPromise(
     let maxBufferExceeded = false;
     let settled = false; // Track if promise already resolved/rejected
 
+    // CRITICAL: Attach data listeners IMMEDIATELY to avoid pipe buffer overflow
+    // If we don't read from pipes fast enough, child process blocks waiting
+    child.stdout?.on('data', (data: Buffer) => {
+      stdout += data.toString('utf8');
+      if (stdout.length > maxBuffer && !settled) {
+        settled = true;
+        maxBufferExceeded = true;
+        child.kill('SIGTERM');
+        setTimeout(() => child.kill('SIGKILL'), 5000);
+
+        const error: any = new Error(`stdout maxBuffer exceeded`);
+        error.code = 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
+      }
+    });
+
+    child.stderr?.on('data', (data: Buffer) => {
+      stderr += data.toString('utf8');
+      if (stderr.length > maxBuffer && !settled) {
+        settled = true;
+        maxBufferExceeded = true;
+        child.kill('SIGTERM');
+        setTimeout(() => child.kill('SIGKILL'), 5000);
+
+        const error: any = new Error(`stderr maxBuffer exceeded`);
+        error.code = 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
+      }
+    });
+
     // Set up timeout
     console.log(`[TIMEOUT] Setting up timeout for ${timeout}ms`);
     const timeoutHandle = timeout ? setTimeout(() => {
@@ -59,40 +93,6 @@ async function spawnPromise(
         console.log(`[TIMEOUT] Promise already settled, skipping rejection`);
       }
     }, timeout) : null;
-
-    // Collect stdout
-    child.stdout?.on('data', (data: Buffer) => {
-      stdout += data.toString('utf8');
-      if (stdout.length > maxBuffer && !settled) {
-        settled = true;
-        maxBufferExceeded = true;
-        child.kill('SIGTERM');
-        setTimeout(() => child.kill('SIGKILL'), 5000);
-
-        const error: any = new Error(`stdout maxBuffer exceeded`);
-        error.code = 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
-        error.stdout = stdout;
-        error.stderr = stderr;
-        reject(error);
-      }
-    });
-
-    // Collect stderr
-    child.stderr?.on('data', (data: Buffer) => {
-      stderr += data.toString('utf8');
-      if (stderr.length > maxBuffer && !settled) {
-        settled = true;
-        maxBufferExceeded = true;
-        child.kill('SIGTERM');
-        setTimeout(() => child.kill('SIGKILL'), 5000);
-
-        const error: any = new Error(`stderr maxBuffer exceeded`);
-        error.code = 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
-        error.stdout = stdout;
-        error.stderr = stderr;
-        reject(error);
-      }
-    });
 
     // Handle process exit
     child.on('close', (code, signal) => {
