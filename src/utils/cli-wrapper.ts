@@ -377,7 +377,8 @@ export async function executeCli(
 	        timeout,
 	        maxBuffer: resolvedMaxBuffer,
 	        env: mergedEnv,
-	        signal: abortSignal,
+	        // TEMPORARY: Remove signal to test if it's causing hangs
+	        // signal: abortSignal,
 	      });
 
       cliCallsTotal.inc({ command: cliCommand, status: 'success' });
