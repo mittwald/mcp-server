@@ -25,46 +25,75 @@ history:
 
 # Work Package Prompt: WP06 – CLI Removal & Cleanup
 
+## ⚠️ CRITICAL: READ HANDOFF FIRST!
+
+**🎯 [WP06-HANDOFF.md](./WP06-HANDOFF.md) ← START HERE**
+
+This handoff document explains critical differences from the original plan:
+- Only 125/171 tools migrated (not all)
+- 46 tools intentionally unmigrated (with detailed reasoning)
+- 6 migrated tools have placeholder functions (keep CLI code)
+- Context system improvements (auto-population)
+- Library API corrections (different method names than expected)
+
+**DO NOT proceed without reading the handoff document!**
+
+---
+
 ## Objectives
 
-Remove all CLI spawning infrastructure after validation passes.
+Remove parallel validation code from **119 cleanable tools** and simplify to library-only calls.
 
-**Success Criteria (Gate 6):**
-- [ ] Parallel validation code removed
-- [ ] Tool handlers use library-only calls
-- [ ] cli-wrapper.ts, cli-adapter.ts deleted
-- [ ] child_process imports removed
-- [ ] Tests pass without CLI binary
+**Success Criteria (Gate 6) - UPDATED:**
+- [ ] Parallel validation code removed from 119 cleanable tools
+- [ ] Those 119 tools use library-only calls (no CLI fallback)
+- [ ] Validation infrastructure deleted or deprecated
+- [ ] CLI wrapper **KEPT** (still needed by 52 tools)
+- [ ] Build passes with 0 TypeScript errors
+- [ ] 119 tools verified library-only (spot testing)
 
 **User Story:** US3 - Tool Signatures Remain Unchanged
 
 ## Context
 
-**Dependencies:** WP05 (all tools validated)
+**Dependencies:** WP05 (125 tools migrated, 46 unmigrated)
 
-**Strategy:** Remove validation harness, delete spawning files, verify tests pass.
+**Strategy:** Remove validation harness from migrated tools, keep CLI spawning for unmigrated tools.
+
+**Scope Change**: Originally planned to remove ALL CLI infrastructure. Now only removing validation code while keeping CLI utilities for 52 tools (46 unmigrated + 6 placeholders).
 
 ---
 
-## Subtasks
+## Subtasks - UPDATED
 
-### T036 – Remove validation code from handlers
-Update all tool handlers: remove validateToolParity() calls, call library functions directly.
+### T036 – Remove validation code from 119 cleanable handlers
+Update 119 tool handlers (migrated tools - 6 placeholder functions): remove validateToolParity() calls, call library functions directly.
 
-### T037 – Update handlers to library-only
+**SKIP these 6 tools** (library functions throw errors):
+- container: stop, start, restart, delete
+- volume: create
+- conversation: close
+
+### T037 – Update 119 handlers to library-only
 Ensure handlers return LibraryResult → MCP response format. No CLI comparison.
 
-### T038 – Delete cli-wrapper.ts
-Remove `src/utils/cli-wrapper.ts` (spawn logic, semaphore, queuing).
+**PRESERVE** session refresh calls in project/create-cli.ts and project/delete-cli.ts (not validation code!)
 
-### T039 – Delete cli-adapter.ts
-Remove `src/tools/cli-adapter.ts` (CLI adapter pattern).
+### T038 – Delete validation infrastructure (MODIFIED)
+Remove `tests/validation/parallel-validator.ts` and `tests/validation/types.ts`.
 
-### T040 – Remove child_process imports
-Search: `grep -r "from 'child_process'" src/`. Delete all CLI-related imports.
+**DO NOT delete** `src/utils/cli-wrapper.ts` or `src/tools/cli-adapter.ts` - still needed by 52 tools!
+
+### T039 – Update tsconfig.json (NEW)
+Remove `tests/**/*` from includes if validation tests are deleted.
+
+### T040 – Remove child_process imports from cleaned tools
+Search cleaned tools only: `grep -r "from 'child_process'" src/handlers/tools/mittwald-cli/` and remove from migrated tools.
+
+**KEEP** child_process in CLI wrapper utilities (still needed by unmigrated tools).
 
 ### T041 – Run test suite
-Execute `npm test`. Verify tests pass without CLI binary in PATH. No process spawning.
+Execute `npm test`. Verify tests pass. Note: 52 tools still spawn CLI (expected).
 
 ---
 
