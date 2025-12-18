@@ -163,4 +163,63 @@ flyctl logs -a mittwald-mcp-fly2 --no-tail | tail -50
 ```
 
 <!-- MANUAL ADDITIONS START -->
+
+## CLI-to-Library Architecture - CRITICAL
+
+**Feature 012: Mittwald CLI converted to importable library to fix concurrent user failures**
+
+### Problem
+- MCP server spawned `mw` CLI processes for each tool invocation
+- Process spawning caused concurrent user failures and Node.js compilation cache deadlocks
+- 200-400ms overhead per CLI spawn vs <50ms target
+
+### Solution Architecture
+**Monorepo package:** `packages/mittwald-cli-core/`
+- Extracted `src/lib/` business logic from `@mittwald/cli` v1.12.0
+- Skipped CLI command layer (oclif wrappers)
+- Direct function imports replace process spawning
+
+**Why not import `@mittwald/cli` directly?**
+- Package exports NO library interface (`main: null`, `exports: null`)
+- Only exports binary: `bin/mw`
+- oclif framework discourages programmatic command invocation
+
+**Why not use `@mittwald/api-client` alone?**
+- CLI contains orchestration logic (multi-step workflows, validation)
+- One CLI command = multiple API calls + coordination
+- Would require duplicating ~101 files of business logic
+
+### Package Structure
+```
+packages/
+  mittwald-cli-core/
+    src/
+      lib/           # Extracted from @mittwald/cli/src/lib/
+      installers/    # Relocated from CLI command files
+      index.ts       # Library function exports
+```
+
+### Integration Pattern
+```typescript
+// Tool handlers import library functions instead of spawning CLI:
+import { listApps } from '@mittwald-mcp/cli-core';
+
+const result = await listApps({
+  projectId,
+  apiToken: session.mittwaldAccessToken,
+});
+```
+
+### Key Locations
+- **Library package:** `packages/mittwald-cli-core/`
+- **Tool handlers:** `src/handlers/tools/mittwald-cli/**/*.ts`
+- **Plan:** `kitty-specs/012-convert-mittwald-cli/plan.md`
+- **Spec:** `kitty-specs/012-convert-mittwald-cli/spec.md`
+
+### Success Criteria
+- 10 concurrent users, zero failures
+- <50ms median response time (vs 200-400ms baseline)
+- Zero `mw` CLI processes spawned
+- 100% output parity validated via parallel execution
+
 <!-- MANUAL ADDITIONS END -->

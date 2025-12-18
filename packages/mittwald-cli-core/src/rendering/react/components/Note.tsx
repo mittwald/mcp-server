@@ -1,0 +1,40 @@
+import React, { FC, PropsWithChildren } from "react";
+import { Box, Text } from "ink";
+
+export type NoteProps = PropsWithChildren<{
+  title?: string;
+  color?: string;
+  marginY?: number;
+  marginBottom?: number;
+  raw?: boolean;
+}>;
+
+export const noteColor = "#407FF8";
+
+export const Note: FC<NoteProps> = (props) => {
+  const { title = "Note", color = noteColor, marginY = 0, raw = false } = props;
+  const contents = raw ? (
+    props.children
+  ) : (
+    <Text wrap="wrap" color={color}>
+      {props.children}
+    </Text>
+  );
+
+  return (
+    <Box
+      width={80}
+      borderStyle={"round"}
+      borderColor={color}
+      flexDirection="column"
+      paddingX={2}
+      marginY={marginY}
+      marginBottom={props.marginBottom}
+    >
+      <Text bold underline color={color}>
+        {title.toUpperCase()}
+      </Text>
+      {contents}
+    </Box>
+  );
+};

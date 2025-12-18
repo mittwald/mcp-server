@@ -1,0 +1,7 @@
+{
+  "feature_number": "012",
+  "slug": "012-convert-mittwald-cli",
+  "friendly_name": "Convert Mittwald CLI to Library for Concurrent MCP Usage",
+  "source_description": "Convert the Mittwald CLI from spawned processes to an importable library to fix concurrent user failures in the MCP server. Clone @mittwald/cli locally, strip CLI-specific code (arg parsing, installation, console output), and expose core business logic as importable functions. Replace all process spawning with direct function calls while keeping authentication layer and tool signatures unchanged.",
+  "created_at": "2025-12-18T04:25:41Z"
+}
