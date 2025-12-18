@@ -94,6 +94,86 @@ export class MCPHandler implements IMCPHandler {
   private cleanupInterval: NodeJS.Timeout;
   private readonly SESSION_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
 
+  private attachAbortOnClientDisconnect(
+    sessionInfo: SessionInfo,
+    res: express.Response,
+    sessionId: string,
+    clientAddr: string,
+  ): void {
+    const transportAny = sessionInfo.transport as unknown as {
+      _streamMapping?: Map<string, express.Response>;
+      _requestToStreamMapping?: Map<unknown, string>;
+      _requestResponseMap?: Map<unknown, unknown>;
+    };
+
+    const streamMapping = transportAny._streamMapping;
+    const requestToStreamMapping = transportAny._requestToStreamMapping;
+    const requestResponseMap = transportAny._requestResponseMap;
+
+    if (!streamMapping || !requestToStreamMapping) {
+      return;
+    }
+
+    const serverAny = sessionInfo.server as unknown as {
+      _requestHandlerAbortControllers?: Map<unknown, AbortController>;
+    };
+
+    res.on('close', () => {
+      try {
+        let streamId: string | undefined;
+        for (const [candidateStreamId, candidateRes] of streamMapping.entries()) {
+          if (candidateRes === res) {
+            streamId = candidateStreamId;
+            break;
+          }
+        }
+
+        if (!streamId) {
+          return;
+        }
+
+        const requestIds: unknown[] = [];
+        for (const [requestId, mappedStreamId] of requestToStreamMapping.entries()) {
+          if (mappedStreamId === streamId) {
+            requestIds.push(requestId);
+          }
+        }
+
+        if (requestIds.length === 0) {
+          return;
+        }
+
+        const abortControllers = serverAny._requestHandlerAbortControllers;
+        let abortedCount = 0;
+        if (abortControllers) {
+          for (const requestId of requestIds) {
+            const controller = abortControllers.get(requestId);
+            if (controller && !controller.signal.aborted) {
+              controller.abort('client disconnected');
+              abortedCount += 1;
+            }
+          }
+        }
+
+        for (const requestId of requestIds) {
+          requestToStreamMapping.delete(requestId);
+          requestResponseMap?.delete(requestId);
+        }
+
+        if (abortedCount > 0) {
+          logger.warn(`⚠️ [${clientAddr}] Client disconnected; aborted ${abortedCount} request(s)`, {
+            sessionId,
+          });
+        }
+      } catch (error) {
+        logger.debug(`⚠️ [${clientAddr}] Failed to abort request(s) on client disconnect (non-fatal)`, {
+          sessionId,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    });
+  }
+
   constructor() {
     logger.info('🎯 MCP Handler initializing with session management');
     this.cleanupInterval = setInterval(
@@ -337,8 +417,6 @@ export class MCPHandler implements IMCPHandler {
         this.sessions.set(sessionId, sessionInfo);
         activeConnections.inc(); // Track active MCP sessions
         logger.info(`📝 [${clientAddr}] Session ${sessionId} created successfully (Total: ${this.sessions.size})`);
-        
-        await transport.handleRequest(req, res);
       } else {
         // Find existing session
         if (!sessionId) {
@@ -499,7 +577,14 @@ export class MCPHandler implements IMCPHandler {
           logger.debug(`✅ [${sessionId}] Session transport recreated successfully`);
         }
 
-        // Let the session's transport handle the request
+      }
+
+      if (sessionInfo && sessionId) {
+        this.attachAbortOnClientDisconnect(sessionInfo, res, sessionId, clientAddr);
+      }
+
+      // Let the session's transport handle the request
+      if (sessionInfo) {
         await sessionInfo.transport.handleRequest(req, res);
       }
 

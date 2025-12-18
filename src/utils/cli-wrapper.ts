@@ -1,5 +1,4 @@
 import { execFile } from 'child_process';
-import { promisify } from 'util';
 import { getCurrentAbortSignal, getCurrentSessionId } from './execution-context.js';
 import { sessionManager } from '../server/session-manager.js';
 import { cliCallsTotal, cliInflight, cliQueueDepth, cliQueueWait } from '../metrics/index.js';
@@ -9,7 +8,27 @@ import { cliCallsTotal, cliInflight, cliQueueDepth, cliQueueWait } from '../metr
  * execFile does NOT invoke a shell - it passes arguments directly to the executable.
  * This means shell metacharacters are treated as literal strings, not interpreted.
  */
-const execFileAsync = promisify(execFile);
+async function execFilePromise(
+  command: string,
+  args: string[],
+  options: Parameters<typeof execFile>[2]
+): Promise<{ stdout: string; stderr: string }> {
+  return new Promise((resolve, reject) => {
+    const child = execFile(command, args, options, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve({
+        stdout: typeof stdout === 'string' ? stdout : stdout.toString('utf8'),
+        stderr: typeof stderr === 'string' ? stderr : stderr.toString('utf8'),
+      });
+    });
+
+    // Ensure the CLI never blocks on stdin prompts.
+    child.stdin?.end();
+  });
+}
 
 const DEFAULT_MAX_BUFFER_BYTES = 20 * 1024 * 1024; // 20MB cap for stdout buffering
 const DEFAULT_MAX_HEAP_MB = 384; // Keep below Fly machine memory ceiling
@@ -353,13 +372,13 @@ export async function executeCli(
       cliQueueWait.observe(queueWaitSeconds);
     }
 
-    try {
-      const { stdout, stderr } = await execFileAsync(command, effectiveArgs, {
-        timeout,
-        maxBuffer: resolvedMaxBuffer,
-        env: mergedEnv,
-        stdio: ['ignore', 'pipe', 'pipe'], // Close stdin, pipe stdout/stderr
-      });
+	    try {
+	      const { stdout, stderr } = await execFilePromise(command, effectiveArgs, {
+	        timeout,
+	        maxBuffer: resolvedMaxBuffer,
+	        env: mergedEnv,
+	        signal: abortSignal,
+	      });
 
       cliCallsTotal.inc({ command: cliCommand, status: 'success' });
       return {
