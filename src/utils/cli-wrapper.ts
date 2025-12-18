@@ -28,34 +28,64 @@ async function spawnPromise(
     let stderr = '';
     let timedOut = false;
     let maxBufferExceeded = false;
+    let settled = false; // Track if promise already resolved/rejected
 
     // Set up timeout
     const timeoutHandle = timeout ? setTimeout(() => {
       timedOut = true;
+
+      // Try graceful shutdown first
       child.kill('SIGTERM');
+
       // Force kill after 5 seconds if SIGTERM doesn't work
       setTimeout(() => {
-        if (!child.killed) {
-          child.kill('SIGKILL');
-        }
+        child.kill('SIGKILL');
       }, 5000);
+
+      // CRITICAL: Reject the promise immediately to release semaphore slot
+      // Even if the process doesn't exit, we need to unblock the caller
+      if (!settled) {
+        settled = true;
+        const error: any = new Error(`Command timed out after ${timeout}ms`);
+        error.code = 'ETIMEDOUT';
+        error.signal = 'SIGTERM';
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
+      }
     }, timeout) : null;
 
     // Collect stdout
     child.stdout?.on('data', (data: Buffer) => {
       stdout += data.toString('utf8');
-      if (stdout.length > maxBuffer) {
+      if (stdout.length > maxBuffer && !settled) {
+        settled = true;
         maxBufferExceeded = true;
         child.kill('SIGTERM');
+        setTimeout(() => child.kill('SIGKILL'), 5000);
+
+        const error: any = new Error(`stdout maxBuffer exceeded`);
+        error.code = 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
       }
     });
 
     // Collect stderr
     child.stderr?.on('data', (data: Buffer) => {
       stderr += data.toString('utf8');
-      if (stderr.length > maxBuffer) {
+      if (stderr.length > maxBuffer && !settled) {
+        settled = true;
         maxBufferExceeded = true;
         child.kill('SIGTERM');
+        setTimeout(() => child.kill('SIGKILL'), 5000);
+
+        const error: any = new Error(`stderr maxBuffer exceeded`);
+        error.code = 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER';
+        error.stdout = stdout;
+        error.stderr = stderr;
+        reject(error);
       }
     });
 
@@ -64,6 +94,12 @@ async function spawnPromise(
       if (timeoutHandle) {
         clearTimeout(timeoutHandle);
       }
+
+      // Don't settle twice - timeout handler may have already rejected
+      if (settled) {
+        return;
+      }
+      settled = true;
 
       if (timedOut) {
         const error: any = new Error(`Command timed out after ${timeout}ms`);
@@ -95,6 +131,13 @@ async function spawnPromise(
       if (timeoutHandle) {
         clearTimeout(timeoutHandle);
       }
+
+      // Don't settle twice
+      if (settled) {
+        return;
+      }
+      settled = true;
+
       error.stdout = stdout;
       error.stderr = stderr;
       reject(error);
