@@ -6,6 +6,7 @@ on:
     paths:
       - 'packages/**'
       - 'src/**'
+      - 'Dockerfile'
       - '.github/workflows/deploy-fly.yml'
   workflow_dispatch:
 
