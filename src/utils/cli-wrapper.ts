@@ -474,16 +474,20 @@ export async function executeCli(
   mergedEnv.MW_SKIP_NEW_VERSION_CHECK = mergedEnv.MW_SKIP_NEW_VERSION_CHECK ?? '1';
   mergedEnv.MW_SKIP_ANALYTICS = mergedEnv.MW_SKIP_ANALYTICS ?? '1';
 
+  // CRITICAL FIX: Disable Node.js code cache to prevent concurrent compilation deadlock
+  // When 5 mw processes start simultaneously, they all try to write to the same
+  // /tmp/node-compile-cache directory, causing file lock contention
+  // See strace: processes stuck in infinite loop opening/reading stack-utils/index.js
   const nodeOptions = combineNodeOptions(
     mergedEnv.NODE_OPTIONS,
     process.env.MCP_CLI_NODE_OPTIONS,
     maxOldSpaceMb
   );
-  if (nodeOptions) {
-    mergedEnv.NODE_OPTIONS = nodeOptions;
-  } else {
-    delete mergedEnv.NODE_OPTIONS;
-  }
+  const finalNodeOptions = nodeOptions
+    ? `${nodeOptions} --no-compilation-cache`
+    : '--no-compilation-cache';
+
+  mergedEnv.NODE_OPTIONS = finalNodeOptions;
 
   // Build redacted command for error messages (redact token value)
   const redactedArgs = effectiveArgs.map((arg, i) => {
