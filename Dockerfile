@@ -14,7 +14,9 @@ COPY packages/mcp-server/package*.json ./packages/mcp-server/
 RUN npm ci --ignore-scripts || npm install --ignore-scripts
 
 COPY . .
-RUN rm -rf packages/mittwald-cli-core/src/rendering
+RUN rm -rf packages/mittwald-cli-core/src/rendering \
+           packages/mittwald-cli-core/src/lib/basecommands \
+           packages/mittwald-cli-core/src/lib/ddev
 RUN cd packages/mittwald-cli-core && npm run build && cd ../..
 RUN npm run build
 
