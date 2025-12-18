@@ -54,13 +54,14 @@ export const handleSftpUserCreateCli: MittwaldCliToolHandler<MittwaldSftpUserCre
     const result = await createSftpUser({
       projectId: args.projectId,
       description: args.description,
-      password: args.password,
+      password: args.password!,
       directories: (args.directories && args.directories.length > 0) ?
         (args.directories as [string, ...string[]]) : ['/'],
       apiToken: session.mittwaldAccessToken,
     });
 
-    const sftpUserId = result?.id || result?.sftpUserId;
+    const sftpUserData = result.data as any;
+    const sftpUserId = sftpUserData?.id || sftpUserData?.sftpUserId;
 
     const authentication = {
       method: args.publicKey ? 'publicKey' : 'password',

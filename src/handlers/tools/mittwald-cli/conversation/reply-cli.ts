@@ -45,7 +45,8 @@ export const handleConversationReplyCli: MittwaldCliToolHandler<MittwaldConversa
       apiToken: session.mittwaldAccessToken,
     });
 
-    const messageId = result?.messageId ?? result?.id;
+    const replyData = result.data as any;
+    const messageId = replyData?.messageId ?? replyData?.id;
 
     return formatToolResponse(
       'success',
@@ -53,7 +54,7 @@ export const handleConversationReplyCli: MittwaldCliToolHandler<MittwaldConversa
       {
         conversationId: args.conversationId,
         messageId,
-        ...result,
+        ...replyData,
       }
     );
   } catch (error) {

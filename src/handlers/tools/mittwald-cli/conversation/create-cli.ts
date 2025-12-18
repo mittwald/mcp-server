@@ -48,7 +48,8 @@ export const handleConversationCreateCli: MittwaldCliToolHandler<MittwaldConvers
       apiToken: session.mittwaldAccessToken,
     });
 
-    const conversationId = result?.conversationId ?? result?.id;
+    const conversationData = result.data as any;
+    const conversationId = conversationData?.conversationId ?? conversationData?.id;
 
     return formatToolResponse(
       'success',
@@ -57,7 +58,7 @@ export const handleConversationCreateCli: MittwaldCliToolHandler<MittwaldConvers
         conversationId,
         title: args.title,
         category: args.category,
-        ...result,
+        ...conversationData,
       }
     );
   } catch (error) {

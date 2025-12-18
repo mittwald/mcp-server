@@ -61,7 +61,8 @@ export const handleSshUserCreateCli: MittwaldCliToolHandler<MittwaldSshUserCreat
       apiToken: session.mittwaldAccessToken,
     });
 
-    const sshUserId = result?.id;
+    const sshUserData = result.data as any;
+    const sshUserId = sshUserData?.id;
 
     const authentication = {
       method: args.publicKey ? 'publicKey' : 'password',
@@ -75,7 +76,7 @@ export const handleSshUserCreateCli: MittwaldCliToolHandler<MittwaldSshUserCreat
       authentication,
       projectId: args.projectId,
       expires: args.expires,
-      ...(result || {}),
+      ...(sshUserData || {}),
     };
 
     const message = sshUserId

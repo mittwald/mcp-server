@@ -43,10 +43,12 @@ export const handleSshUserListCli: MittwaldCliToolHandler<MittwaldSshUserListArg
   }
 
   try {
-    const sshUsers = (await listSshUsers({
+    const result = await listSshUsers({
       projectId: args.projectId,
       apiToken: session.mittwaldAccessToken,
-    })) as any[];
+    });
+
+    const sshUsers = result.data as any[];
 
     if (!sshUsers || sshUsers.length === 0) {
       return formatToolResponse(

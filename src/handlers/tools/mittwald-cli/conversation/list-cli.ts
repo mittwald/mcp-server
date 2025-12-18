@@ -22,7 +22,7 @@ export const handleConversationListCli: MittwaldCliToolHandler = async (args, se
     });
 
     // Data is array directly
-    const conversations = result as any[];
+    const conversations = result.data as any[];
 
     if (!conversations || conversations.length === 0) {
       return formatToolResponse(

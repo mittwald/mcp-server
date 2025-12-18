@@ -60,11 +60,13 @@ export const handleStackPsCli: MittwaldCliToolHandler<MittwaldStackPsCliArgs> = 
   }
 
   try {
-    const services = (await getStackProcesses({
+    const result = await getStackProcesses({
       stackId: args.stackId,
       projectId: args.projectId,
       apiToken: session.mittwaldAccessToken,
-    })) as RawService[];
+    });
+
+    const services = result.data as RawService[];
 
     if (!services || services.length === 0) {
       return formatToolResponse(

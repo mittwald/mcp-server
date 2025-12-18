@@ -22,7 +22,7 @@ export const handleConversationCategoriesCli: MittwaldCliToolHandler = async (ar
     });
 
     // Data is array directly
-    const categories = result as any[];
+    const categories = result.data as any[];
 
     if (!categories || categories.length === 0) {
       return formatToolResponse(

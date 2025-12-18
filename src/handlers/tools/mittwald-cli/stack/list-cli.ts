@@ -54,10 +54,12 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
   }
 
   try {
-    const stacks = (await listStacks({
+    const result = await listStacks({
       apiToken: session.mittwaldAccessToken,
       projectId: args.projectId,
-    })) as any[];
+    });
+
+    const stacks = result.data as any[];
 
     if (!stacks || stacks.length === 0) {
       return formatToolResponse(
