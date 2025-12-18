@@ -2,7 +2,6 @@ import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { getServer, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -12,26 +11,6 @@ interface MittwaldServerGetArgs {
   output?: 'txt' | 'json' | 'yaml';
 }
 
-function buildCliArgs(args: MittwaldServerGetArgs): string[] {
-  const cliArgs: string[] = ['server', 'get'];
-  if (args.serverId) cliArgs.push(args.serverId);
-  cliArgs.push('--output', 'json');
-  return cliArgs;
-}
-
-function mapCliError(error: CliToolError, args: MittwaldServerGetArgs): string {
-  const stderr = error.stderr ?? '';
-  const stdout = error.stdout ?? '';
-  const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
-
-  if (combined.includes('not found') || combined.includes('no server found')) {
-    const details = stderr || stdout || error.message;
-    return `Server not found. Please verify the server ID: ${args.serverId || 'not specified'}.\nError: ${details}`;
-  }
-
-  const details = stderr || stdout || error.message;
-  return `Failed to get server: ${details}`;
-}
 
 function formatServer(record: Record<string, unknown>) {
   return {
@@ -60,46 +39,13 @@ export const handleServerGetCli: MittwaldCliToolHandler<MittwaldServerGetArgs> =
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv = buildCliArgs(args);
-
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
-      toolName: 'mittwald_server_get',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await getServer({
-          serverId: args.serverId!,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await getServer({
+      serverId: args.serverId!,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_server_get',
-        serverId: args.serverId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_server_get',
-        serverId: args.serverId,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
-
-    // Use library result (it's validated) - data is object
-    const server = validation.libraryOutput.data as Record<string, unknown>;
+    const server = result.data as Record<string, unknown>;
     const formatted = formatServer(server);
 
     return formatToolResponse(
@@ -107,11 +53,7 @@ export const handleServerGetCli: MittwaldCliToolHandler<MittwaldServerGetArgs> =
       `Server information retrieved for ${String(server.id ?? args.serverId ?? 'server')}`,
       formatted,
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -123,7 +65,15 @@ export const handleServerGetCli: MittwaldCliToolHandler<MittwaldServerGetArgs> =
     }
 
     if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
+      const stderr = error.stderr ?? '';
+      const stdout = error.stdout ?? '';
+      const combined = `${stderr}\n${stdout}\n${error.message}`.toLowerCase();
+      let message = `Failed to get server: ${stderr || stdout || error.message}`;
+
+      if (combined.includes('not found') || combined.includes('no server found')) {
+        message = `Server not found. Please verify the server ID: ${args.serverId || 'not specified'}.\nError: ${stderr || stdout || error.message}`;
+      }
+
       return formatToolResponse('error', message, {
         exitCode: error.exitCode,
         stderr: error.stderr,
@@ -132,7 +82,7 @@ export const handleServerGetCli: MittwaldCliToolHandler<MittwaldServerGetArgs> =
       });
     }
 
-    logger.error('[WP05] Unexpected error in server get handler', { error });
+    logger.error('[WP06] Unexpected error in server get handler', { error });
     return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
