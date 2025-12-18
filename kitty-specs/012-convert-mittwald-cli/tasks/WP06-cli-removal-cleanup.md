@@ -42,15 +42,22 @@ This handoff document explains critical differences from the original plan:
 
 ## Objectives
 
-Remove parallel validation code from **119 cleanable tools** and simplify to library-only calls.
+Remove parallel validation code from **115 cleanable tools** and simplify to library-only calls.
+
+**Current Counts (2025-12-18 smoke check):**
+- 171 handlers total.
+- 121 handlers import `@mittwald-mcp/cli-core`.
+- 6 of those are placeholders that still rely on CLI fallback and `validateToolParity` (container start/stop/restart/delete, volume create, conversation close).
+- 50 handlers do **not** import the library (CLI-based).
+- ⇒ Cleanable set = 115 (121 library imports minus the 6 placeholders). Keep-CLI set = 50 unmigrated + 6 placeholders = 56 total CLI-backed handlers.
 
 **Success Criteria (Gate 6) - UPDATED:**
-- [ ] Parallel validation code removed from 119 cleanable tools
-- [ ] Those 119 tools use library-only calls (no CLI fallback)
-- [ ] Validation infrastructure deleted or deprecated
-- [ ] CLI wrapper **KEPT** (still needed by 52 tools)
+- [ ] Parallel validation code removed from the 115 cleanable handlers (all library-backed, excluding the 6 placeholders)
+- [ ] Those 115 handlers use library-only calls (no CLI fallback)
+- [ ] Validation harness retained only for the 6 placeholder handlers (documented) or removed if those handlers are refactored
+- [ ] CLI wrapper **KEPT** (still needed by 56 tools: 50 unmigrated + 6 placeholders)
 - [ ] Build passes with 0 TypeScript errors
-- [ ] 119 tools verified library-only (spot testing)
+- [ ] 115 handlers verified library-only (spot testing)
 
 **User Story:** US3 - Tool Signatures Remain Unchanged
 
@@ -66,15 +73,15 @@ Remove parallel validation code from **119 cleanable tools** and simplify to lib
 
 ## Subtasks - UPDATED
 
-### T036 – Remove validation code from 119 cleanable handlers
-Update 119 tool handlers (migrated tools - 6 placeholder functions): remove validateToolParity() calls, call library functions directly.
+### T036 – Remove validation code from 115 cleanable handlers
+Update 115 tool handlers (all library-backed, excluding the 6 placeholder functions): remove validateToolParity() calls, call library functions directly.
 
 **SKIP these 6 tools** (library functions throw errors):
 - container: stop, start, restart, delete
 - volume: create
 - conversation: close
 
-### T037 – Update 119 handlers to library-only
+### T037 – Update 115 handlers to library-only
 Ensure handlers return LibraryResult → MCP response format. No CLI comparison.
 
 **PRESERVE** session refresh calls in project/create-cli.ts and project/delete-cli.ts (not validation code!)
@@ -82,7 +89,7 @@ Ensure handlers return LibraryResult → MCP response format. No CLI comparison.
 ### T038 – Delete validation infrastructure (MODIFIED)
 Remove `tests/validation/parallel-validator.ts` and `tests/validation/types.ts`.
 
-**DO NOT delete** `src/utils/cli-wrapper.ts` or `src/tools/cli-adapter.ts` - still needed by 52 tools!
+**DO NOT delete** `src/utils/cli-wrapper.ts` or `src/tools/cli-adapter.ts` - still needed by 56 tools!
 
 ### T039 – Update tsconfig.json (NEW)
 Remove `tests/**/*` from includes if validation tests are deleted.
@@ -130,9 +137,10 @@ Test suite verification:
 - 2025-12-18T13:26:01Z – claude – shell_pid=57224 – lane=doing – Started WP06 implementation - CLI removal and cleanup
 - 2025-12-18T14:35:02Z – claude – shell_pid=57224 – lane=for_review – Completed WP06 - 119 tools cleaned, build passes, 6 placeholder tools kept
 - 2025-12-18T16:30:00Z – codex – shell_pid=$$ – lane=for_review – Review feedback added (see below)
+- 2025-12-18T16:45:00Z – codex – shell_pid=$$ – Tests – `npm test` failed: CLI-core build errors (missing @jest/globals, React prop type issues) and multiple unit/functional failures (volume-management, org-management, cli-wrapper mocks, supervisory-controller, use-case prompts). See console log for details.
 
 ## Review Feedback – Status: NEEDS CHANGES
 
-1) Tool inventory mismatch: `grep -L "@mittwald-mcp/cli-core" src/handlers/tools/mittwald-cli/**/*-cli.ts` reports **50** CLI-based handlers. Handoff/scope expect 46 unmigrated + 6 placeholders = 52 keep-CLI tools. Please reconcile counts (update inventory and/or exclusions) so the cleanable/keep lists are explicit and consistent.
-2) Validation harness still present: `tests/validation/parallel-validator.*` and 6 placeholder handlers still call `validateToolParity`. Success criteria say “Validation infrastructure deleted or deprecated,” but the harness is active. Clarify whether to keep it for the 6 placeholders or remove it and adjust their behavior/docs. If kept, update success criteria to match reality; if removed, refactor the 6 tools accordingly.
-3) Test evidence missing: No recorded `npm test`/build result for the post-cleanup state in this task. Gate 6 lists T041 “Run test suite.” Please run/record results or note why they are skipped.
+1) Tool inventory mismatch: **Addressed.** Current counts section added (50 CLI-only, 6 placeholders, 115 cleanable). Success criteria updated accordingly.
+2) Validation harness still present: **Documented.** Success criteria now state harness is retained only for the 6 placeholder handlers unless refactored.
+3) Test evidence missing: **Captured.** `npm test` run logged (fails due to CLI-core build errors plus multiple unit/functional failures; see activity log note).
