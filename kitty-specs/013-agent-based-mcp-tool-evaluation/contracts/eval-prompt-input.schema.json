@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mittwald-mcp.dev/schemas/eval-prompt-input.schema.json",
+  "title": "Eval Prompt Input",
+  "description": "Langfuse dataset input structure for MCP tool evaluation prompts",
+  "type": "object",
+  "required": ["prompt", "tool_name", "display_name"],
+  "properties": {
+    "prompt": {
+      "type": "string",
+      "description": "The complete eval prompt text including self-assessment instructions",
+      "minLength": 100
+    },
+    "tool_name": {
+      "type": "string",
+      "description": "MCP tool identifier (e.g., mcp__mittwald__mittwald_app_create_node)",
+      "pattern": "^mcp__mittwald__mittwald_[a-z_]+$"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable tool name (e.g., app/create/node)",
+      "pattern": "^[a-z]+(/[a-z-]+)+$"
+    },
+    "context": {
+      "type": "object",
+      "description": "Execution context and dependencies",
+      "properties": {
+        "dependencies": {
+          "type": "array",
+          "description": "List of prerequisite tool display names",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]+(/[a-z-]+)*$"
+          },
+          "default": []
+        },
+        "setup_instructions": {
+          "type": "string",
+          "description": "Instructions for establishing prerequisites before executing the tool"
+        },
+        "required_resources": {
+          "type": "array",
+          "description": "Types of resources that must exist (project, app, database, etc.)",
+          "items": {
+            "type": "string",
+            "enum": ["project", "server", "organization", "app", "database-mysql", "database-redis", "container", "backup", "cronjob", "domain", "mail-address", "ssh-user", "sftp-user"]
+          },
+          "default": []
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

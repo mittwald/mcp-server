@@ -1,34 +1,33 @@
 {
   "input": {
-    "prompt": "# Eval: database/mysql/user-update\n\n## Goal\nTest the `mcp__mittwald__mittwald_database_mysql_user-update` MCP tool by execute database mysql user-update operation.\n\n## Tool Information\n- **MCP Tool Name**: `mcp__mittwald__mittwald_database_mysql_user-update`\n- **Display Name**: `database/mysql/user-update`\n- **Domain**: databases\n- **Dependency Tier**: 4\n- **Description**: Execute database mysql user-update operation\n\n## Prerequisites\n**Dependencies**: database/mysql/user-list\n\n**Setup Instructions**:\n1. Ensure you have an existing project (use `mcp__mittwald__mittwald_project_list` to find one, or `mcp__mittwald__mittwald_project_create` to create one)\n2. Ensure a MySQL database exists (use `mcp__mittwald__mittwald_database_mysql_list` to find one)\n\nEnsure all prerequisites are met before executing the target tool.\n\n## Task\nExecute the `mcp__mittwald__mittwald_database_mysql_user-update` tool and verify the result.\n\n### Steps:\n1. Verify prerequisites are in place (or establish them if needed)\n2. Execute `mcp__mittwald__mittwald_database_mysql_user-update` with appropriate parameters\n3. Verify the operation succeeded by checking the response\n4. Record the outcome in your self-assessment\n\n### Example Parameters:\n- Check the tool schema for required and optional parameters\n\n## Success Indicators\nThe eval is successful if:\n- Tool executes without errors\n- Response contains expected data\n\n\n## Self-Assessment Instructions\n\nAfter completing the task (whether successful or not), you MUST provide a structured self-assessment. Output your assessment in the following exact format, enclosed in the marker comments:\n\n<!-- SELF_ASSESSMENT_START -->\n```json\n{\n  \"success\": true,\n  \"confidence\": \"high\",\n  \"tool_executed\": \"mcp__mittwald__mittwald_database_mysql_user-update\",\n  \"timestamp\": \"2025-12-16T15:52:11.588Z\",\n  \"problems_encountered\": [],\n  \"resources_created\": [],\n  \"resources_verified\": [],\n  \"tool_response_summary\": \"Brief summary of what the tool returned\",\n  \"execution_notes\": \"Any observations about the execution\"\n}\n```\n<!-- SELF_ASSESSMENT_END -->\n\n### Self-Assessment Field Guide:\n- **success**: `true` if the tool achieved its goal, `false` otherwise\n- **confidence**: `high` (clear outcome), `medium` (some uncertainty), `low` (unable to determine)\n- **tool_executed**: The exact MCP tool name you invoked\n- **timestamp**: Current ISO 8601 timestamp\n- **problems_encountered**: Array of problem objects with `type` and `description` fields\n  - Valid types: `auth_error`, `resource_not_found`, `validation_error`, `timeout`, `api_error`, `permission_denied`, `quota_exceeded`, `dependency_missing`, `other`\n- **resources_created**: Array of created resources with `type` and `id` fields\n- **resources_verified**: Array of verified resources with `type`, `id`, and `status` fields\n- **tool_response_summary**: Key information from the tool's response\n- **execution_notes**: Any observations or recommendations\n\n**IMPORTANT**: The self-assessment MUST be valid JSON enclosed in the marker comments exactly as shown.\n\n",
-    "tool_name": "mcp__mittwald__mittwald_database_mysql_user-update",
-    "display_name": "database/mysql/user-update",
+    "prompt": "# Eval: database/mysql/user/update\n\n## Goal\nTest the `mcp__mittwald__mittwald_database_mysql_user_update` MCP tool by updating a resource.\n\n## Tool Information\n- **MCP Tool Name**: `mcp__mittwald__mittwald_database_mysql_user_update`\n- **Display Name**: `database/mysql/user/update`\n- **Domain**: databases\n- **Dependency Tier**: 4\n- **Description**: MCP tool operation\n\n## Prerequisites\n**Dependencies**: project/create\n\n**Setup Instructions**:\nEnsure a test project exists. Use project/list to verify, or project/create to establish one.\n\nEnsure all prerequisites are met before executing the target tool.\n\n## Task\nExecute the `mcp__mittwald__mittwald_database_mysql_user_update` tool and verify the result.\n\n**IMPORTANT**: You must CALL the MCP tool directly. Do NOT write a script or automation to simulate the tool call.\n\n### Steps:\n1. Verify prerequisites are in place (or establish them if needed)\n2. **CALL** `mcp__mittwald__mittwald_database_mysql_user_update` using the MCP tool interface\n3. Verify the operation succeeded by checking the response\n4. Record the outcome in your self-assessment\n\n### How to Execute:\nUse the MCP tool directly:\n- Claude Code: Tool will be available in your tool list\n- Provide parameters as specified in the tool schema\n- Observe the actual response from the production server\n\n**DO NOT**:\n- Write a TypeScript/JavaScript/Python script to call the tool\n- Create automation that simulates the tool execution\n- Use fetch/axios/HTTP clients to bypass the MCP interface\n\n**DO**:\n- Call the tool using your MCP tool interface\n- Use actual parameters from the tool schema\n- Observe real responses from the Mittwald API\n\n### Example Parameters:\n- databaseId: Use database/mysql/list to find an existing database ID\n- Refer to tool schema for user-specific parameters\n\n## Success Indicators\nThe eval is successful if:\n- Update operation succeeds without errors\n- Changes are reflected in subsequent get calls\n- Returns updated resource data\n\n\n## Self-Assessment Instructions\n\nAfter completing the task (whether successful or not), you MUST provide a structured self-assessment. Output your assessment in the following exact format, enclosed in the marker comments:\n\n<!-- SELF_ASSESSMENT_START -->\n```json\n{\n  \"success\": true,\n  \"confidence\": \"high\",\n  \"tool_executed\": \"mcp__mittwald__mittwald_database_mysql_user_update\",\n  \"timestamp\": \"2025-12-18T22:00:23.099Z\",\n  \"problems_encountered\": [],\n  \"resources_created\": [],\n  \"resources_verified\": [],\n  \"tool_response_summary\": \"Brief summary of what the tool returned\",\n  \"execution_notes\": \"Any observations about the execution\"\n}\n```\n<!-- SELF_ASSESSMENT_END -->\n\n### Self-Assessment Field Guide:\n- **success**: `true` if the tool achieved its goal, `false` otherwise\n- **confidence**: `high` (clear outcome), `medium` (some uncertainty), `low` (unable to determine)\n- **tool_executed**: The exact MCP tool name you invoked\n- **timestamp**: Current ISO 8601 timestamp\n- **problems_encountered**: Array of problem objects with `type` and `description` fields\n  - Valid types: `auth_error`, `resource_not_found`, `validation_error`, `timeout`, `api_error`, `permission_denied`, `quota_exceeded`, `dependency_missing`, `other`\n- **resources_created**: Array of created resources with `type` and `id` fields\n- **resources_verified**: Array of verified resources with `type`, `id`, and `status` fields\n- **tool_response_summary**: Key information from the tool's response\n- **execution_notes**: Any observations or recommendations\n\n**IMPORTANT**: The self-assessment MUST be valid JSON enclosed in the marker comments exactly as shown.\n\n",
+    "tool_name": "mcp__mittwald__mittwald_database_mysql_user_update",
+    "display_name": "database/mysql/user/update",
     "context": {
       "dependencies": [
-        "database/mysql/user-list"
+        "project/create"
       ],
-      "setup_instructions": "1. Ensure you have an existing project (use `mcp__mittwald__mittwald_project_list` to find one, or `mcp__mittwald__mittwald_project_create` to create one)\n2. Ensure a MySQL database exists (use `mcp__mittwald__mittwald_database_mysql_list` to find one)",
-      "required_resources": [
-        "project",
-        "database-mysql"
-      ]
+      "setup_instructions": "Ensure a test project exists. Use project/list to verify, or project/create to establish one.",
+      "required_resources": []
     }
   },
   "expectedOutput": null,
   "metadata": {
     "domain": "databases",
     "tier": 4,
-    "tool_description": "Execute database mysql user-update operation",
+    "tool_description": "MCP tool operation",
     "success_indicators": [
-      "Tool executes without errors",
-      "Response contains expected data"
+      "Update operation succeeds without errors",
+      "Changes are reflected in subsequent get calls",
+      "Returns updated resource data"
     ],
     "self_assessment_required": true,
-    "eval_version": "1.0.0",
-    "created_at": "2025-12-16T15:52:11.588Z",
+    "eval_version": "2.0.0",
+    "created_at": "2025-12-18T22:00:23.099Z",
     "tags": [
       "databases",
-      "tier-4"
+      "tier-4",
+      "update"
     ]
   }
 }

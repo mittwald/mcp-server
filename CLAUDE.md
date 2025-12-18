@@ -222,4 +222,72 @@ const result = await listApps({
 - Zero `mw` CLI processes spawned
 - 100% output parity validated via parallel execution
 
+## Agent-Based MCP Tool Evaluation - CRITICAL
+
+**Feature 013: Post-012 Eval Suite Reconciliation**
+
+### Problem
+- Feature 010 created eval suite for 175 tools (pre-CLI-to-library conversion)
+- Feature 012 reduced tool count to 115 tools (library-based architecture)
+- Existing eval prompts out of sync with current MCP server reality
+- Need to validate post-012 MCP server health and establish new baseline
+
+### Solution
+**Eval Prompt Reconciliation:**
+- Discover current tool inventory (115 tools across 19 domains)
+- Archive prompts for 60 removed tools
+- Update prompts for renamed/modified tools
+- Create prompts for new tools (if any)
+- Ensure all prompts formatted as Langfuse-importable JSON documents
+
+**Agent Execution Model:**
+- Users manually spawn agents (no orchestration automation)
+- Work package (WP) prompt files contain eval instructions
+- Agents execute via `/spec-kitty.implement` on WP files
+- **CRITICAL**: Agents must CALL MCP tools directly, NOT write scripts
+- Self-assessment captured via embedded JSON with marker extraction
+
+### Inventory Changes (010 → 013)
+- **Baseline (010)**: 175 tools, 10 domains
+- **Current (013)**: 115 tools, 19 domains
+- **Delta**: 60 tools removed/consolidated (34.3% reduction)
+- **Primary cause**: CLI-to-library conversion simplified tool set
+
+### Langfuse Format
+Eval prompts use feature 010's Langfuse-compatible JSON structure:
+```json
+{
+  "input": {
+    "prompt": "Markdown with self-assessment instructions",
+    "tool_name": "mcp__mittwald__mittwald_app_list",
+    "display_name": "app/list",
+    "context": {
+      "dependencies": ["..."],
+      "setup_instructions": "..."
+    }
+  },
+  "expectedOutput": null,
+  "metadata": {
+    "domain": "app",
+    "tier": 4,
+    "eval_version": "2.0.0"
+  }
+}
+```
+
+### Key Locations
+- **Feature spec:** `kitty-specs/013-agent-based-mcp-tool-evaluation/spec.md`
+- **Plan:** `kitty-specs/013-agent-based-mcp-tool-evaluation/plan.md`
+- **Research:** `kitty-specs/013-agent-based-mcp-tool-evaluation/research.md`
+- **Eval prompts:** `evals/prompts/{domain}/*.json`
+- **Archived prompts:** `evals/prompts/_archived/`
+- **Tool inventory:** `evals/inventory/tools-current.json`
+
+### Success Criteria
+- 100% of 115 current tools have valid eval prompts
+- All prompts formatted as Langfuse-importable JSON
+- Prompts explicitly instruct "CALL tool directly, NOT write scripts"
+- Archived prompts for removed tools documented
+- Post-012 baseline established for future validation
+
 <!-- MANUAL ADDITIONS END -->
