@@ -358,7 +358,6 @@ export async function executeCli(
         timeout,
         maxBuffer: resolvedMaxBuffer,
         env: mergedEnv,
-        signal: abortSignal,
       });
 
       cliCallsTotal.inc({ command: cliCommand, status: 'success' });
