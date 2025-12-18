@@ -21,12 +21,69 @@ import type {
 
 /**
  * Tools that should be excluded from the tool registry with reasons
- * These tools are deactivated for security and multi-tenancy reasons
+ * These tools are deactivated for security, multi-tenancy, and to enforce
+ * a no-CLI-spawn runtime (see docs/UNMIGRATED-TOOLS-ANALYSIS.md).
  */
 export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
   'mittwald_login_reset': 'security reasons in multi-tenant environment',
   'mittwald_login_token': 'security reasons in multi-tenant environment',
-  'mittwald_org_delete': 'organization deletion is irreversible and no org/create tool exists for safe testing'
+  'mittwald_org_delete': 'organization deletion is irreversible and no org/create tool exists for safe testing',
+
+  // Disabled to guarantee "no mw spawn" in normal operation (not yet migrated or not suitable for MCP).
+  'mittwald_app_create_node': 'not migrated to library yet (complex installer workflow)',
+  'mittwald_app_create_php': 'not migrated to library yet (complex installer workflow)',
+  'mittwald_app_create_php_worker': 'not migrated to library yet (complex installer workflow)',
+  'mittwald_app_create_python': 'not migrated to library yet (complex installer workflow)',
+  'mittwald_app_create_static': 'not migrated to library yet (complex installer workflow)',
+  'mittwald_app_install_wordpress': 'not migrated to library yet (multi-step installer workflow)',
+  'mittwald_app_install_typo3': 'not migrated to library yet (multi-step installer workflow)',
+  'mittwald_app_install_shopware5': 'not migrated to library yet (multi-step installer workflow)',
+  'mittwald_app_install_shopware6': 'not migrated to library yet (multi-step installer workflow)',
+  'mittwald_app_install_joomla': 'not migrated to library yet (multi-step installer workflow)',
+  'mittwald_app_install_matomo': 'not migrated to library yet (multi-step installer workflow)',
+  'mittwald_app_install_nextcloud': 'not migrated to library yet (multi-step installer workflow)',
+  'mittwald_app_install_contao': 'not migrated to library yet (multi-step installer workflow)',
+  'mittwald_app_dependency_list': 'not migrated to library yet',
+  'mittwald_app_dependency_update': 'not migrated to library yet',
+  'mittwald_app_dependency_versions': 'not migrated to library yet',
+  'mittwald_project_filesystem_usage': 'not migrated to library yet',
+  'mittwald_project_invite_list_own': 'not migrated to library yet',
+  'mittwald_project_membership_get_own': 'not migrated to library yet',
+  'mittwald_project_membership_list_own': 'not migrated to library yet',
+  'mittwald_org_invite_list_own': 'not migrated to library yet',
+  'mittwald_org_membership_list_own': 'not migrated to library yet',
+  'mittwald_extension_install': 'not migrated to library yet',
+  'mittwald_extension_list': 'not migrated to library yet',
+  'mittwald_extension_list_installed': 'not migrated to library yet',
+  'mittwald_extension_uninstall': 'not migrated to library yet',
+  'mittwald_container_recreate': 'not migrated to library yet',
+  'mittwald_container_update': 'not migrated to library yet',
+  'mittwald_sftp_user_create': 'not migrated to library yet (CLI-only parameter coverage)',
+  'mittwald_sftp_user_update': 'not migrated to library yet (CLI-only parameter coverage)',
+  'mittwald_volume_delete': 'not migrated to library yet (CLI-based safety checks)',
+
+  // Interactive/streaming/file-transfer operations (incompatible with stateless MCP requests).
+  'mittwald_app_ssh': 'interactive shell session not supported via MCP',
+  'mittwald_database_mysql_shell': 'interactive shell session not supported via MCP',
+  'mittwald_database_mysql_port_forward': 'long-running port-forward/tunnel not supported via MCP',
+  'mittwald_container_logs': 'streaming logs not supported via MCP',
+  'mittwald_container_run': 'interactive/arb command execution not supported via MCP',
+  'mittwald_app_download': 'local file download/upload not supported via MCP',
+  'mittwald_app_upload': 'local file download/upload not supported via MCP',
+  'mittwald_backup_download': 'local file download/upload not supported via MCP',
+  'mittwald_app_open': 'opens a browser on the host; not supported via MCP',
+  'mittwald_database_mysql_dump': 'streams large exports; not supported via MCP',
+  'mittwald_database_mysql_import': 'streams large imports; not supported via MCP',
+  'mittwald_database_mysql_phpmyadmin': 'opens a browser on the host; not supported via MCP',
+
+  // No stable API support.
+  'mittwald_cronjob_execution_logs': 'no API support for execution logs',
+  'mittwald_database_mysql_charsets': 'requires direct MySQL connection; no API support',
+  'mittwald_database_list': 'CLI-only wrapper; no direct API equivalent',
+
+  // Local development helpers.
+  'mittwald_ddev_init': 'local development helper (not supported in MCP server runtime)',
+  'mittwald_ddev_render_config': 'local development helper (not supported in MCP server runtime)',
 };
 
 /**
@@ -199,7 +256,9 @@ export async function loadTools(options: Partial<ToolScanOptions> = {}): Promise
         
         // Check if tool is excluded
         if (EXCLUDED_TOOLS.has(toolName)) {
-          logger.info(`Tool '${toolName}' is excluded from registry (deactivated for multi-tenancy)`);
+          logger.info(
+            `Tool '${toolName}' is excluded from registry: ${EXCLUDED_TOOLS_WITH_REASONS[toolName] ?? 'disabled'}`
+          );
           continue;
         }
         

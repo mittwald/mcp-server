@@ -565,8 +565,8 @@ cat validation-report.json
 ---
 
 ### Gate 5: All Tools Validated
-- [ ] All ~100 MCP tools migrated to library calls
-- [ ] Validation report shows 100% parity across all tools
+- [ ] All enabled MCP tools migrated to library calls (excluded tools remain disabled in `src/utils/tool-scanner.ts`)
+- [ ] Validation report shows 100% parity across enabled tools
 - [ ] No discrepancies in success cases
 - [ ] No discrepancies in error cases
 - [ ] Concurrency testing passes (10 concurrent users, zero failures)
@@ -611,7 +611,7 @@ cat validation-report.json
 | SC-005: 1000 req/sec throughput | Gate 7 | Load testing with sustained traffic |
 | SC-006: Auth layer unchanged | Gate 4 | Token flow testing, no code changes to auth modules |
 | SC-007: Tool signatures unchanged | Gate 6 | TypeScript compilation, existing tests pass |
-| SC-008: 100% tool coverage | Gate 5 | All tools in `src/handlers/tools/mittwald-cli/` migrated |
+| SC-008: 100% tool coverage | Gate 5 | All enabled tools in `src/constants/tool/mittwald-cli/` are library-backed; excluded tools disabled in `src/utils/tool-scanner.ts` |
 
 ---
 

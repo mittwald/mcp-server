@@ -10,9 +10,9 @@ subtasks:
   - "T029"
 title: "Pilot Tool Migration & Validation"
 phase: "Per-Story"
-lane: "for_review"
+lane: "done"
 assignee: "Claude Sonnet 4.5"
-agent: "claude"
+agent: "codex"
 shell_pid: "84179"
 review_status: ""
 reviewed_by: ""
@@ -138,3 +138,4 @@ Manual validation:
   * T028: Verified 100% parity - success case 0 discrepancies, error handling correct
   * Performance: 7.3x faster (220ms vs 1613ms median) - massive improvement
   * Note: <50ms target not achievable due to network latency + API enrichment calls
+- 2025-12-18T14:12:31Z – codex – shell_pid=84179 – lane=done – Smoke-check only; no blocking issues found. User requested closure.

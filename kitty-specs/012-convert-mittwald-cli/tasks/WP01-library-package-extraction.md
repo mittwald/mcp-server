@@ -11,9 +11,9 @@ subtasks:
   - "T008"
 title: "Library Package Extraction"
 phase: "Foundational"
-lane: "for_review"
+lane: "done"
 assignee: "Claude Sonnet 4.5"
-agent: "claude"
+agent: "codex"
 shell_pid: "84179"
 review_status: ""
 reviewed_by: ""
@@ -439,3 +439,4 @@ ls dist/installers/*.js | wc -l  # Should match installer count
 - 2025-12-18T06:00:00Z – system – lane=planned – Prompt created via /spec-kitty.tasks
 - 2025-12-18T07:45:00Z – claude – shell_pid=84179 – lane=doing – Started implementation of WP01
 - 2025-12-18T08:15:00Z – claude – shell_pid=84179 – lane=for_review – Completed all T001-T008. Package built successfully (242 JS files, 8 installers). Zero TypeScript errors.
+- 2025-12-18T14:12:24Z – codex – shell_pid=84179 – lane=done – Smoke-check only; no blocking issues found. User requested closure.

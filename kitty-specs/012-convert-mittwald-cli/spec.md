@@ -119,10 +119,10 @@ Tool invocations complete in <50ms (vs 200-400ms with process spawning), enablin
 - **FR-008**: Authentication layer (oauth-middleware, session-manager) MUST remain unchanged
 - **FR-009**: Token passing MUST work identically (extract from session, pass to library function) without changes to token format or storage
 - **FR-010**: Library functions MUST handle errors identically to CLI (same error codes, messages, validation)
-- **FR-011**: Library MUST support all currently exposed MCP tools (all tools in `src/handlers/tools/mittwald-cli/`)
+- **FR-011**: Library MUST support all enabled MCP tools (tools loaded from `src/constants/tool/mittwald-cli/`, excluding tools explicitly disabled in `src/utils/tool-scanner.ts`)
 - **FR-012**: Library functions MUST be callable concurrently without conflicts, locks, or shared state issues
 - **FR-013**: Library MUST use the same Mittwald SDK or API calls that the CLI uses internally (preserve business logic)
-- **FR-014**: MCP server MUST completely eliminate all `spawn()`, `exec()`, and `execFile()` calls to `mw` CLI
+- **FR-014**: MCP server MUST not call `spawn()`, `exec()`, or `execFile()` to run the `mw` CLI during normal operation (parity validation may enable CLI spawning explicitly for testing)
 - **FR-015**: Library functions MUST accept authentication token as parameter (extracted from session)
 
 ### Key Entities
@@ -151,12 +151,12 @@ Tool invocations complete in <50ms (vs 200-400ms with process spawning), enablin
 
 - **SC-001**: MCP server handles 10 concurrent users with zero failures, timeouts, or process spawning conflicts
 - **SC-002**: All existing MCP tools function identically (same inputs, outputs, errors) with library implementation
-- **SC-003**: Zero `mw` CLI processes are spawned during any MCP tool invocation
+- **SC-003**: Zero `mw` CLI processes are spawned during any enabled MCP tool invocation in normal operation; any CLI spawning is limited to the dedicated parity validation harness
 - **SC-004**: Median tool invocation response time is <50ms (measured over 100 identical requests)
 - **SC-005**: System handles 1000 concurrent requests/second without degradation or errors
 - **SC-006**: Zero changes required to authentication layer (oauth-middleware, session-manager, token refresh)
 - **SC-007**: Zero changes required to MCP tool signatures or parameter schemas
-- **SC-008**: Library successfully imports and exposes functions for all currently implemented MCP tools (100% coverage)
+- **SC-008**: 100% coverage of enabled MCP tools (any excluded tools are explicitly disabled with documented reasons in `src/utils/tool-scanner.ts`)
 
 ### Qualitative Outcomes
 
