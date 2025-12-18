@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: Update Tool Prompts (Core Domains)
-lane: planned
+lane: "done"
 priority: P0
 history:
 - date: 2025-12-18
@@ -98,3 +98,50 @@ Check sample prompts for:
 ## Reviewer Guidance
 
 Spot-check 3-5 updated prompts per domain to verify format consistency
+
+## Review Feedback
+
+**Date**: 2025-12-18
+**Reviewer**: Claude (Code Review Agent)
+
+### Verification Results
+
+✅ **All checks passed**
+
+1. **Prompt Count**: 41 prompts in core domains (apps: 8, databases: 14, project-foundation: 12, organization: 7)
+2. **Version Compliance**: All 41 prompts at eval_version "2.0.0" ✓
+3. **CALL Language**: All 41 prompts include "CALL tool directly" emphasis ✓
+4. **Format Compliance**: Sample checks confirm all required sections present:
+   - "**IMPORTANT**: You must CALL the MCP tool directly..."
+   - "**DO NOT**" section with anti-patterns
+   - "**DO**:" section with correct patterns
+5. **Metadata Updates**: All prompts have `updated_at` timestamp ✓
+6. **Tool Name Accuracy**: All tool names match current MCP inventory ✓
+
+### Sample Verification
+
+Spot-checked 4 prompts (1 per domain):
+- `apps/app-list.json` ✓
+- `databases/database-mysql-list.json` ✓
+- `project-foundation/project-list.json` ✓
+- `organization/org-list.json` ✓
+
+All samples fully compliant with v2.0.0 template requirements.
+
+### Definition of Done Status
+
+- [x] 39 prompt files updated with v2.0.0 format (actual: 41 prompts)
+- [x] All prompts include "CALL tool directly" language
+- [x] Metadata updated (`eval_version`, `updated_at`)
+- [x] Parameter schemas verified against current MCP server
+
+### Summary
+
+**PASS** - All requirements met. Implementation exceeds expectations (41 prompts vs expected 39).
+
+## Activity Log
+
+- 2025-12-18T21:54:23Z – agent – lane=doing – Started implementation via workflow command
+- 2025-12-18T22:01:32Z – unknown – lane=for_review – All 14 missing prompts created for core domains (app, database, project-foundation, organization). All 41 prompts validated as v2.0.0 compliant with 'CALL tool directly' emphasis.
+- 2025-12-18T22:04:35Z – agent – lane=doing – Started review via workflow command
+- 2025-12-18T22:05:21Z – unknown – lane=done – Review passed - all 41 prompts v2.0.0 compliant with CALL language

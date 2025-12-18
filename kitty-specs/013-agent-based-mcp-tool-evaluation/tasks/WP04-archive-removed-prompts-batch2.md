@@ -1,7 +1,7 @@
 ---
 work_package_id: WP04
 title: Archive Removed Tool Prompts (Batch 2)
-lane: planned
+lane: "done"
 priority: P1
 history:
 - date: 2025-12-18
@@ -55,3 +55,9 @@ WP03 establishes archive pattern
 ## Verification
 
 Total `_archived/` files = ~60 (matches removed tool count from WP01)
+
+## Activity Log
+
+- 2025-12-18T21:57:12Z – agent – lane=doing – Started implementation via workflow command
+- 2025-12-18T21:59:47Z – unknown – lane=for_review – Implementation complete. Archived 46 prompt files across 6 domains (access-users: 8, backups: 5, containers: 10, domains-mail: 4, organization: 11, project-foundation: 8). Combined with WP03 (56 files), total archived: 102 prompts. Note: 3 tools from removed list never had prompts created (context/*-session variants). All existing prompts for removed tools have been archived with metadata.
+- 2025-12-18T22:01:27Z – unknown – lane=done – Review passed - 102 prompts archived (3 tools never had baseline prompts), all existing removed prompts archived correctly

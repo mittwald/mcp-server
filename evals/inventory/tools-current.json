@@ -2,7 +2,7 @@
   "captureDate": "2025-12-18T21:34:14.317Z",
   "featureContext": "013-agent-based-mcp-tool-evaluation",
   "toolCount": 115,
-  "domainCount": 23,
+  "domainCount": 14,
   "tools": [
     {
       "mcpName": "mcp__mittwald__mittwald_app_copy",
@@ -28,7 +28,7 @@
     {
       "mcpName": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
       "displayName": "app/list/upgrade/candidates",
-      "domain": "app",
+      "domain": "apps",
       "description": "",
       "parameters": []
     },
@@ -91,28 +91,28 @@
     {
       "mcpName": "mcp__mittwald__mittwald_backup_schedule_create",
       "displayName": "backup/schedule/create",
-      "domain": "backup",
+      "domain": "backups",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_backup_schedule_delete",
       "displayName": "backup/schedule/delete",
-      "domain": "backup",
+      "domain": "backups",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_backup_schedule_list",
       "displayName": "backup/schedule/list",
-      "domain": "backup",
+      "domain": "backups",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_backup_schedule_update",
       "displayName": "backup/schedule/update",
-      "domain": "backup",
+      "domain": "backups",
       "description": "",
       "parameters": []
     },
@@ -126,7 +126,7 @@
     {
       "mcpName": "mcp__mittwald__mittwald_certificate_request",
       "displayName": "certificate/request",
-      "domain": "certificate",
+      "domain": "certificates",
       "description": "",
       "parameters": []
     },
@@ -217,21 +217,21 @@
     {
       "mcpName": "mcp__mittwald__mittwald_cronjob_execution_abort",
       "displayName": "cronjob/execution/abort",
-      "domain": "cronjob",
+      "domain": "automation",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_cronjob_execution_get",
       "displayName": "cronjob/execution/get",
-      "domain": "cronjob",
+      "domain": "automation",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_cronjob_execution_list",
       "displayName": "cronjob/execution/list",
-      "domain": "cronjob",
+      "domain": "automation",
       "description": "",
       "parameters": []
     },
@@ -287,35 +287,35 @@
     {
       "mcpName": "mcp__mittwald__mittwald_database_mysql_user_create",
       "displayName": "database/mysql/user/create",
-      "domain": "database",
+      "domain": "databases",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_database_mysql_user_delete",
       "displayName": "database/mysql/user/delete",
-      "domain": "database",
+      "domain": "databases",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_database_mysql_user_get",
       "displayName": "database/mysql/user/get",
-      "domain": "database",
+      "domain": "databases",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_database_mysql_user_list",
       "displayName": "database/mysql/user/list",
-      "domain": "database",
+      "domain": "databases",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_database_mysql_user_update",
       "displayName": "database/mysql/user/update",
-      "domain": "database",
+      "domain": "databases",
       "description": "",
       "parameters": []
     },
@@ -392,28 +392,28 @@
     {
       "mcpName": "mcp__mittwald__mittwald_domain_virtualhost_create",
       "displayName": "domain/virtualhost/create",
-      "domain": "domain",
+      "domain": "domains-mail",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_domain_virtualhost_delete",
       "displayName": "domain/virtualhost/delete",
-      "domain": "domain",
+      "domain": "domains-mail",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_domain_virtualhost_get",
       "displayName": "domain/virtualhost/get",
-      "domain": "domain",
+      "domain": "domains-mail",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_domain_virtualhost_list",
       "displayName": "domain/virtualhost/list",
-      "domain": "domain",
+      "domain": "domains-mail",
       "description": "",
       "parameters": []
     },
@@ -504,14 +504,14 @@
     {
       "mcpName": "mcp__mittwald__mittwald_org_invite_list",
       "displayName": "org/invite/list",
-      "domain": "org",
+      "domain": "organization",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_org_invite_revoke",
       "displayName": "org/invite/revoke",
-      "domain": "org",
+      "domain": "organization",
       "description": "",
       "parameters": []
     },
@@ -525,14 +525,14 @@
     {
       "mcpName": "mcp__mittwald__mittwald_org_membership_list",
       "displayName": "org/membership/list",
-      "domain": "org",
+      "domain": "organization",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_org_membership_revoke",
       "displayName": "org/membership/revoke",
-      "domain": "org",
+      "domain": "organization",
       "description": "",
       "parameters": []
     },
@@ -560,14 +560,14 @@
     {
       "mcpName": "mcp__mittwald__mittwald_project_invite_get",
       "displayName": "project/invite/get",
-      "domain": "project",
+      "domain": "project-foundation",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_project_invite_list",
       "displayName": "project/invite/list",
-      "domain": "project",
+      "domain": "project-foundation",
       "description": "",
       "parameters": []
     },
@@ -581,14 +581,14 @@
     {
       "mcpName": "mcp__mittwald__mittwald_project_membership_get",
       "displayName": "project/membership/get",
-      "domain": "project",
+      "domain": "project-foundation",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_project_membership_list",
       "displayName": "project/membership/list",
-      "domain": "project",
+      "domain": "project-foundation",
       "description": "",
       "parameters": []
     },
@@ -714,35 +714,35 @@
     {
       "mcpName": "mcp__mittwald__mittwald_stack_ps",
       "displayName": "stack/ps",
-      "domain": "stack",
+      "domain": "containers",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_user_api_token_create",
       "displayName": "user/api/token/create",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_user_api_token_get",
       "displayName": "user/api/token/get",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_user_api_token_list",
       "displayName": "user/api/token/list",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_user_api_token_revoke",
       "displayName": "user/api/token/revoke",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },
@@ -770,35 +770,35 @@
     {
       "mcpName": "mcp__mittwald__mittwald_user_ssh_key_create",
       "displayName": "user/ssh/key/create",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_user_ssh_key_delete",
       "displayName": "user/ssh/key/delete",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_user_ssh_key_get",
       "displayName": "user/ssh/key/get",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_user_ssh_key_import",
       "displayName": "user/ssh/key/import",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },
     {
       "mcpName": "mcp__mittwald__mittwald_user_ssh_key_list",
       "displayName": "user/ssh/key/list",
-      "domain": "user",
+      "domain": "identity",
       "description": "",
       "parameters": []
     },

@@ -244,6 +244,12 @@ I will now call the mcp__mittwald__mittwald_app_list tool with projectId="p-test
 - **Data Model**: `kitty-specs/013-agent-based-mcp-tool-evaluation/data-model.md`
 - **This Guide**: `kitty-specs/013-agent-based-mcp-tool-evaluation/quickstart.md`
 
+### Templates & Contracts
+- **Eval Prompt Template**: `kitty-specs/013-agent-based-mcp-tool-evaluation/contracts/eval-prompt-template.md`
+- **Self-Assessment Schema**: `kitty-specs/013-agent-based-mcp-tool-evaluation/contracts/self-assessment.schema.json`
+- **Metadata Schema**: `kitty-specs/013-agent-based-mcp-tool-evaluation/contracts/eval-prompt-metadata.schema.json`
+- **Input Schema**: `kitty-specs/013-agent-based-mcp-tool-evaluation/contracts/eval-prompt-input.schema.json`
+
 ### Eval Prompt Storage
 - **Current prompts**: `evals/prompts/{domain}/*.json`
 - **Archived prompts**: `evals/prompts/_archived/{domain}/*.json`
@@ -273,6 +279,33 @@ When executing evals (post-reconciliation), follow this order:
 3. Then Tier 2 (server context if needed)
 4. Then Tier 3 (create projects for Tier 4)
 5. Finally Tier 4 (all project-dependent tools)
+
+---
+
+## Common Pitfalls
+
+### ❌ Writing Scripts Instead of Calling Tools
+
+**Problem**: Agents write TypeScript/Python code to simulate tool execution instead of calling the actual MCP tool.
+
+**Example of WRONG approach**:
+```typescript
+// DON'T DO THIS
+async function testAppList(projectId: string) {
+  const response = await fetch('https://api.mittwald.de/v2/apps', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.json();
+}
+```
+
+**Correct approach**:
+```
+I will now call the mcp__mittwald__mittwald_app_list tool with projectId="p-abc123"
+[Uses MCP tool interface directly]
+```
+
+**Why this matters**: The eval suite tests the MCP server integration, not the underlying API. Scripts bypass the MCP layer and don't validate tool schemas, parameter handling, or error responses.
 
 ---
 

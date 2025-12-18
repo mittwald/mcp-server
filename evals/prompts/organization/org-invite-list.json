@@ -1,13 +1,13 @@
 {
   "input": {
-    "prompt": "# Eval: org/invite-list\n\n## Goal\nTest the `mcp__mittwald__mittwald_org_invite-list` MCP tool by list pending organization invitations.\n\n## Tool Information\n- **MCP Tool Name**: `mcp__mittwald__mittwald_org_invite-list`\n- **Display Name**: `org/invite-list`\n- **Domain**: organization\n- **Dependency Tier**: 1\n- **Description**: List pending organization invitations\n\n## Prerequisites\n**Dependencies**: org/list\n\n**Setup Instructions**:\nFollow the dependency chain to establish required resources: org/list\n\nEnsure all prerequisites are met before executing the target tool.\n\n## Task\nExecute the `mcp__mittwald__mittwald_org_invite-list` tool and verify the result.\n\n### Steps:\n1. Verify prerequisites are in place (or establish them if needed)\n2. Execute `mcp__mittwald__mittwald_org_invite-list` with appropriate parameters\n3. Verify the operation succeeded by checking the response\n4. Record the outcome in your self-assessment\n\n### Example Parameters:\n- Check the tool schema for required and optional parameters\n\n## Success Indicators\nThe eval is successful if:\n- Tool executes without errors\n- Response contains expected data\n\n\n## Self-Assessment Instructions\n\nAfter completing the task (whether successful or not), you MUST provide a structured self-assessment. Output your assessment in the following exact format, enclosed in the marker comments:\n\n<!-- SELF_ASSESSMENT_START -->\n```json\n{\n  \"success\": true,\n  \"confidence\": \"high\",\n  \"tool_executed\": \"mcp__mittwald__mittwald_org_invite-list\",\n  \"timestamp\": \"2025-12-16T15:52:11.592Z\",\n  \"problems_encountered\": [],\n  \"resources_created\": [],\n  \"resources_verified\": [],\n  \"tool_response_summary\": \"Brief summary of what the tool returned\",\n  \"execution_notes\": \"Any observations about the execution\"\n}\n```\n<!-- SELF_ASSESSMENT_END -->\n\n### Self-Assessment Field Guide:\n- **success**: `true` if the tool achieved its goal, `false` otherwise\n- **confidence**: `high` (clear outcome), `medium` (some uncertainty), `low` (unable to determine)\n- **tool_executed**: The exact MCP tool name you invoked\n- **timestamp**: Current ISO 8601 timestamp\n- **problems_encountered**: Array of problem objects with `type` and `description` fields\n  - Valid types: `auth_error`, `resource_not_found`, `validation_error`, `timeout`, `api_error`, `permission_denied`, `quota_exceeded`, `dependency_missing`, `other`\n- **resources_created**: Array of created resources with `type` and `id` fields\n- **resources_verified**: Array of verified resources with `type`, `id`, and `status` fields\n- **tool_response_summary**: Key information from the tool's response\n- **execution_notes**: Any observations or recommendations\n\n**IMPORTANT**: The self-assessment MUST be valid JSON enclosed in the marker comments exactly as shown.\n\n",
-    "tool_name": "mcp__mittwald__mittwald_org_invite-list",
-    "display_name": "org/invite-list",
+    "prompt": "# Eval: org/invite/list\n\n## Goal\nTest the `mcp__mittwald__mittwald_org_invite_list` MCP tool by listing resources.\n\n## Tool Information\n- **MCP Tool Name**: `mcp__mittwald__mittwald_org_invite_list`\n- **Display Name**: `org/invite/list`\n- **Domain**: organization\n- **Dependency Tier**: 1\n- **Description**: MCP tool operation\n\n## Prerequisites\n**Dependencies**: org/list\n\n**Setup Instructions**:\nEnsure you have access to an organization. Use org/list to verify.\n\nEnsure all prerequisites are met before executing the target tool.\n\n## Task\nExecute the `mcp__mittwald__mittwald_org_invite_list` tool and verify the result.\n\n**IMPORTANT**: You must CALL the MCP tool directly. Do NOT write a script or automation to simulate the tool call.\n\n### Steps:\n1. Verify prerequisites are in place (or establish them if needed)\n2. **CALL** `mcp__mittwald__mittwald_org_invite_list` using the MCP tool interface\n3. Verify the operation succeeded by checking the response\n4. Record the outcome in your self-assessment\n\n### How to Execute:\nUse the MCP tool directly:\n- Claude Code: Tool will be available in your tool list\n- Provide parameters as specified in the tool schema\n- Observe the actual response from the production server\n\n**DO NOT**:\n- Write a TypeScript/JavaScript/Python script to call the tool\n- Create automation that simulates the tool execution\n- Use fetch/axios/HTTP clients to bypass the MCP interface\n\n**DO**:\n- Call the tool using your MCP tool interface\n- Use actual parameters from the tool schema\n- Observe real responses from the Mittwald API\n\n### Example Parameters:\n- organizationId: Use org/list to find an existing organization ID\n\n## Success Indicators\nThe eval is successful if:\n- Returns an array of resources\n- Each resource has required ID fields\n- No authentication errors\n\n\n## Self-Assessment Instructions\n\nAfter completing the task (whether successful or not), you MUST provide a structured self-assessment. Output your assessment in the following exact format, enclosed in the marker comments:\n\n<!-- SELF_ASSESSMENT_START -->\n```json\n{\n  \"success\": true,\n  \"confidence\": \"high\",\n  \"tool_executed\": \"mcp__mittwald__mittwald_org_invite_list\",\n  \"timestamp\": \"2025-12-18T22:00:23.099Z\",\n  \"problems_encountered\": [],\n  \"resources_created\": [],\n  \"resources_verified\": [],\n  \"tool_response_summary\": \"Brief summary of what the tool returned\",\n  \"execution_notes\": \"Any observations about the execution\"\n}\n```\n<!-- SELF_ASSESSMENT_END -->\n\n### Self-Assessment Field Guide:\n- **success**: `true` if the tool achieved its goal, `false` otherwise\n- **confidence**: `high` (clear outcome), `medium` (some uncertainty), `low` (unable to determine)\n- **tool_executed**: The exact MCP tool name you invoked\n- **timestamp**: Current ISO 8601 timestamp\n- **problems_encountered**: Array of problem objects with `type` and `description` fields\n  - Valid types: `auth_error`, `resource_not_found`, `validation_error`, `timeout`, `api_error`, `permission_denied`, `quota_exceeded`, `dependency_missing`, `other`\n- **resources_created**: Array of created resources with `type` and `id` fields\n- **resources_verified**: Array of verified resources with `type`, `id`, and `status` fields\n- **tool_response_summary**: Key information from the tool's response\n- **execution_notes**: Any observations or recommendations\n\n**IMPORTANT**: The self-assessment MUST be valid JSON enclosed in the marker comments exactly as shown.\n\n",
+    "tool_name": "mcp__mittwald__mittwald_org_invite_list",
+    "display_name": "org/invite/list",
     "context": {
       "dependencies": [
         "org/list"
       ],
-      "setup_instructions": "Follow the dependency chain to establish required resources: org/list",
+      "setup_instructions": "Ensure you have access to an organization. Use org/list to verify.",
       "required_resources": []
     }
   },
@@ -15,17 +15,19 @@
   "metadata": {
     "domain": "organization",
     "tier": 1,
-    "tool_description": "List pending organization invitations",
+    "tool_description": "MCP tool operation",
     "success_indicators": [
-      "Tool executes without errors",
-      "Response contains expected data"
+      "Returns an array of resources",
+      "Each resource has required ID fields",
+      "No authentication errors"
     ],
     "self_assessment_required": true,
-    "eval_version": "1.0.0",
-    "created_at": "2025-12-16T15:52:11.592Z",
+    "eval_version": "2.0.0",
+    "created_at": "2025-12-18T22:00:23.099Z",
     "tags": [
       "organization",
-      "tier-1"
+      "tier-1",
+      "read-only"
     ]
   }
 }

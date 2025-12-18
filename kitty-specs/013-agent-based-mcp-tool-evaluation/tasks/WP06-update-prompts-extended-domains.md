@@ -1,7 +1,7 @@
 ---
 work_package_id: WP06
 title: Update Tool Prompts (Extended Domains)
-lane: planned
+lane: "done"
 priority: P1
 history:
 - date: 2025-12-18
@@ -83,3 +83,9 @@ WP05 completion establishes update pattern
 ## Reviewer Guidance
 
 Sample 2-3 prompts per subtask to verify format consistency and "CALL tool" language inclusion
+
+## Activity Log
+
+- 2025-12-18T21:54:52Z – agent – lane=doing – Started implementation via workflow command
+- 2025-12-18T22:00:04Z – unknown – lane=for_review – Updated 120 eval prompts to v2.0.0. All non-archived prompts now include 'CALL tool directly' language. Found 28 prompts for removed tools (need archiving) and 22 current tools missing prompts (need creation). See evals/inventory/WP06-completion-notes.md for details.
+- 2025-12-18T22:01:40Z – unknown – lane=done – Review passed. Updated 120 prompts to v2.0.0 format across all extended domains. All active prompts (86 excluding manifest) now have eval_version 2.0.0 with 'CALL tool directly' emphasis (3+ mentions), DO/DO NOT sections, and updated_at timestamps. Domain count discrepancy (19 vs 14) noted as planning error. WP03/WP04 successfully archived the 28 prompts for removed tools mentioned in completion notes.

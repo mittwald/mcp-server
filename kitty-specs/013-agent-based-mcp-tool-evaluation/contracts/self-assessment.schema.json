@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mittwald-mcp.dev/schemas/self-assessment.schema.json",
+  "title": "Self Assessment",
+  "description": "Structured LLM self-assessment output after eval execution",
+  "type": "object",
+  "required": ["success", "confidence", "tool_executed", "timestamp"],
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "Whether the tool achieved its intended goal"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "Confidence level in the success assessment"
+    },
+    "tool_executed": {
+      "type": "string",
+      "description": "The MCP tool name that was executed",
+      "pattern": "^mcp__mittwald__mittwald_[a-z_]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of assessment"
+    },
+    "problems_encountered": {
+      "type": "array",
+      "description": "List of problems encountered during execution",
+      "items": {
+        "type": "object",
+        "required": ["type", "description"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "auth_error",
+              "resource_not_found",
+              "validation_error",
+              "timeout",
+              "api_error",
+              "permission_denied",
+              "quota_exceeded",
+              "dependency_missing",
+              "other"
+            ],
+            "description": "Category of problem"
+          },
+          "description": {
+            "type": "string",
+            "description": "What happened"
+          },
+          "recovery_attempted": {
+            "type": "boolean",
+            "description": "Whether recovery was attempted"
+          },
+          "recovered": {
+            "type": "boolean",
+            "description": "Whether recovery succeeded"
+          }
+        },
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "resources_created": {
+      "type": "array",
+      "description": "Resources created during eval execution",
+      "items": {
+        "type": "object",
+        "required": ["type", "id"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Resource type (project, app, database, backup, etc.)"
+          },
+          "id": {
+            "type": "string",
+            "description": "Resource identifier from Mittwald"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name if available"
+          },
+          "verified": {
+            "type": "boolean",
+            "description": "Whether existence was confirmed via get/list"
+          }
+        },
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "resources_verified": {
+      "type": "array",
+      "description": "Resources that were verified during execution",
+      "items": {
+        "type": "object",
+        "required": ["type", "id", "status"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Resource type verified"
+          },
+          "id": {
+            "type": "string",
+            "description": "Resource identifier"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["exists", "not_found", "error"],
+            "description": "Verification outcome"
+          }
+        },
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "tool_response_summary": {
+      "type": "string",
+      "description": "Key data extracted from tool output"
+    },
+    "execution_notes": {
+      "type": "string",
+      "description": "Free-form observations, unexpected behaviors, or recommendations"
+    }
+  },
+  "additionalProperties": false
+}

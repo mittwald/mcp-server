@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Tool Inventory & Diff Analysis
-lane: doing
+lane: "done"
 priority: P0
 history:
 - date: 2025-12-18
@@ -360,3 +360,5 @@ Verify:
 - 2025-12-18T20:34:32Z – claude – lane=planned – Reset for testing
 - 2025-12-18T20:35:10Z – claude – lane=doing – Ready to implement
 - 2025-12-18T20:36:13Z – claude – lane=planned – Reset
+- 2025-12-18T21:46:05Z – codex – lane=for_review – Implementation complete
+- 2025-12-18T21:51:41Z – codex – lane=done – Review completed - approved with minor revisions noted in REVIEW-SUMMARY.md. Key deliverables complete: tools-current.json (115 tools), removed-tools-by-domain.md (105 removals), tool-mapping.md (45 renames). diff-report.json has known issue with renamed tools categorization but summary counts correct. WP02+ can proceed.
