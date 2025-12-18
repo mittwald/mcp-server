@@ -22,7 +22,7 @@ kill_timeout = "30s" # Extended for graceful shutdown
   MW_SKIP_NEW_VERSION_CHECK = "1"
   MW_SKIP_ANALYTICS = "1"
   # Bound concurrent mw executions to avoid OOM on small VMs
-  MCP_CLI_CONCURRENCY = "1"
+  MCP_CLI_CONCURRENCY = "3"
   MCP_CLI_QUEUE_LIMIT = "25"
 
 [[services]]
