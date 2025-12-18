@@ -358,6 +358,7 @@ export async function executeCli(
         timeout,
         maxBuffer: resolvedMaxBuffer,
         env: mergedEnv,
+        stdio: ['ignore', 'pipe', 'pipe'], // Close stdin, pipe stdout/stderr
       });
 
       cliCallsTotal.inc({ command: cliCommand, status: 'success' });
