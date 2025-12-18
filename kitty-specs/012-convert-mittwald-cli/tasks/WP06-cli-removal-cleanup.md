@@ -9,9 +9,9 @@ subtasks:
   - "T041"
 title: "CLI Removal & Cleanup"
 phase: "Polish"
-lane: "for_review"
+lane: "done"
 assignee: ""
-agent: "claude"
+agent: "codex"
 shell_pid: "57224"
 review_status: "has_feedback"
 reviewed_by: "codex"
@@ -138,6 +138,8 @@ Test suite verification:
 - 2025-12-18T14:35:02Z – claude – shell_pid=57224 – lane=for_review – Completed WP06 - 119 tools cleaned, build passes, 6 placeholder tools kept
 - 2025-12-18T16:30:00Z – codex – shell_pid=$$ – lane=for_review – Review feedback added (see below)
 - 2025-12-18T16:45:00Z – codex – shell_pid=$$ – Tests – `npm test` failed: CLI-core build errors (missing @jest/globals, React prop type issues) and multiple unit/functional failures (volume-management, org-management, cli-wrapper mocks, supervisory-controller, use-case prompts). See console log for details.
+- 2025-12-18T16:55:00Z – codex – shell_pid=$$ – lane=done – Per user request, moved WP06 to done despite outstanding test failures and placeholder handlers.
+- 2025-12-18T14:49:06Z – codex – shell_pid=57224 – lane=done – User request to close WP06 despite outstanding test failures and placeholder handlers.
 
 ## Review Feedback – Status: NEEDS CHANGES
 
