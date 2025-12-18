@@ -131,3 +131,10 @@ Manual validation:
   * Added npm script: test:wp04
   * Created implementation summary (docs/WP04-implementation-summary.md)
   * T025-T028: Require manual execution with real Mittwald credentials (see WP04-implementation-summary.md)
+- 2025-12-18T15:30:00Z – claude – shell_pid=$$ – lane=done – Completed T025-T028, achieved 100% parity:
+  * T025: Ran validation with real Mittwald credentials (project p-p92nri)
+  * T026: Investigated discrepancies - library returned wrapped object vs CLI array
+  * T027: Fixed library to match CLI exactly - full API response with enrichment (app, appVersionCurrent, appVersionDesired)
+  * T028: Verified 100% parity - success case 0 discrepancies, error handling correct
+  * Performance: 7.3x faster (220ms vs 1613ms median) - massive improvement
+  * Note: <50ms target not achievable due to network latency + API enrichment calls
