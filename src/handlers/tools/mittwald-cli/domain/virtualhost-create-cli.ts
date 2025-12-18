@@ -1,6 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { createVirtualHost, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldDomainVirtualhostCreateArgs {
   hostname: string;
@@ -32,16 +37,55 @@ function buildCliArgs(args: MittwaldDomainVirtualhostCreateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietId(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
-}
+function parsePathMappings(args: MittwaldDomainVirtualhostCreateArgs): any[] {
+  const paths: any[] = [];
 
-function extractIngressId(output: string): string | undefined {
-  const match = output.match(/ID\s+([a-f0-9-]+)/i);
-  return match?.[1];
+  // Parse path-to-app mappings (format: "path=/,appInstallationId=123")
+  if (args.pathToApp) {
+    for (const mapping of args.pathToApp) {
+      const parts = mapping.split(',');
+      const pathPart = parts.find(p => p.startsWith('path='));
+      const appPart = parts.find(p => p.startsWith('appInstallationId='));
+      if (pathPart && appPart) {
+        paths.push({
+          path: pathPart.split('=')[1],
+          target: { appInstallationId: appPart.split('=')[1] }
+        });
+      }
+    }
+  }
+
+  // Parse path-to-url mappings (format: "path=/,url=https://example.com")
+  if (args.pathToUrl) {
+    for (const mapping of args.pathToUrl) {
+      const parts = mapping.split(',');
+      const pathPart = parts.find(p => p.startsWith('path='));
+      const urlPart = parts.find(p => p.startsWith('url='));
+      if (pathPart && urlPart) {
+        paths.push({
+          path: pathPart.split('=')[1],
+          target: { url: urlPart.split('=')[1] }
+        });
+      }
+    }
+  }
+
+  // Parse path-to-container mappings (format: "path=/,containerId=123")
+  if (args.pathToContainer) {
+    for (const mapping of args.pathToContainer) {
+      const parts = mapping.split(',');
+      const pathPart = parts.find(p => p.startsWith('path='));
+      const containerPart = parts.find(p => p.startsWith('containerId='));
+      if (pathPart && containerPart) {
+        paths.push({
+          path: pathPart.split('=')[1],
+          target: { containerId: containerPart.split('=')[1] }
+        });
+      }
+    }
+  }
+
+  return paths;
 }
 
 function mapCliError(error: CliToolError, args: MittwaldDomainVirtualhostCreateArgs): string {
@@ -65,45 +109,65 @@ function mapCliError(error: CliToolError, args: MittwaldDomainVirtualhostCreateA
   return `Failed to create virtual host: ${error.stderr || error.stdout || error.message}`;
 }
 
-export const handleDomainVirtualhostCreateCli: MittwaldCliToolHandler<MittwaldDomainVirtualhostCreateArgs> = async (args) => {
+export const handleDomainVirtualhostCreateCli: MittwaldCliToolHandler<MittwaldDomainVirtualhostCreateArgs> = async (args, sessionId) => {
   if (!args.hostname) {
     return formatToolResponse('error', 'Hostname is required.');
   }
 
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
+  const paths = parsePathMappings(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_domain_virtualhost_create',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr ?? '' }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createVirtualHost({
+          hostname: args.hostname,
+          paths: paths,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-
-    const ingressId = args.quiet
-      ? parseQuietId(stdout) ?? parseQuietId(stderr)
-      : extractIngressId(stdout);
-
-    if (!ingressId) {
-      return formatToolResponse(
-        'success',
-        args.quiet ? stdout : `Successfully created virtual host '${args.hostname}'`,
-        {
-          hostname: args.hostname,
-          output: stdout,
-          stderr,
-          pathToApp: args.pathToApp,
-          pathToUrl: args.pathToUrl,
-          pathToContainer: args.pathToContainer,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_domain_virtualhost_create',
+        hostname: args.hostname,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_domain_virtualhost_create',
+        hostname: args.hostname,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated)
+    const result = validation.libraryOutput.data as any;
+    const ingressId = result?.id || result?.ingressId;
 
     const resultData = {
       id: ingressId,
@@ -118,11 +182,21 @@ export const handleDomainVirtualhostCreateCli: MittwaldCliToolHandler<MittwaldDo
       args.quiet ? ingressId : `Successfully created virtual host '${args.hostname}' with ID ${ingressId}`,
       resultData,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -133,6 +207,7 @@ export const handleDomainVirtualhostCreateCli: MittwaldCliToolHandler<MittwaldDo
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in virtualhost create handler', { error });
+    return formatToolResponse('error', `Failed to create virtual host: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

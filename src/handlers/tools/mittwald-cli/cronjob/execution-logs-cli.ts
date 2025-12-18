@@ -1,3 +1,5 @@
+// NOTE: This handler remains CLI-only as there is no library function for cronjob execution logs
+// The Mittwald API client does not expose a logs endpoint for cronjob executions
 import type { MittwaldToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';

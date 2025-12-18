@@ -1,5 +1,10 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { invokeCliTool, CliToolError } from '@/tools/index.js';
+import { CliToolError } from '@/tools/index.js';
+import { updateMysqlUser, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 import { buildSecureToolResponse, buildUpdatedAttributes } from '../../../../../utils/credential-response.js';
 
 interface MittwaldDatabaseMysqlUserUpdateArgs {
@@ -57,13 +62,16 @@ function hasUpdatePayload(args: MittwaldDatabaseMysqlUserUpdateArgs): boolean {
   );
 }
 
-/**
- * Handle updates to MySQL users through the Mittwald CLI wrapper.
- */
 export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlUserUpdateArgs> = async (
   args,
   sessionId,
 ) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return buildSecureToolResponse('error', 'Session ID required');
+  }
+
   if (!args.userId) {
     return buildSecureToolResponse('error', 'User ID is required to update a MySQL user.');
   }
@@ -79,20 +87,50 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
     );
   }
 
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return buildSecureToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_database_mysql_user_update',
-      argv,
-      sessionId,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await updateMysqlUser({
+          userId: args.userId,
+          description: args.description,
+          password: args.password,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr || undefined;
-    const nothingToChange = /nothing to change/i.test(stdout) || /nothing to change/i.test(stderr);
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_database_mysql_user_update',
+        userId: args.userId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_database_mysql_user_update',
+        userId: args.userId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
 
     const updatedAttributes = buildUpdatedAttributes({
       description: args.description,
@@ -109,20 +147,27 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
 
     return buildSecureToolResponse(
       'success',
-      nothingToChange
-        ? `No changes were applied to MySQL user ${args.userId}.`
-        : `Updated MySQL user ${args.userId}.`,
+      `Updated MySQL user ${args.userId}.`,
       {
         userId: args.userId,
-        output,
         updatedAttributes,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return buildSecureToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return buildSecureToolResponse('error', message, {
@@ -133,9 +178,7 @@ export const handleDatabaseMysqlUserUpdateCli: MittwaldCliToolHandler<MittwaldDa
       });
     }
 
-    return buildSecureToolResponse(
-      'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    logger.error('[WP04] Unexpected error in database mysql user update handler', { error });
+    return buildSecureToolResponse('error', `Failed to update MySQL user: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

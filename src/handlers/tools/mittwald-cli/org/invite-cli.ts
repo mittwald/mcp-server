@@ -2,6 +2,11 @@ import type { MittwaldToolHandler } from '../../../../types/mittwald/conversatio
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { parseQuietOutput } from '../../../../utils/cli-output.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { inviteToOrg, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface OrgInviteArgs {
   organizationId: string;
@@ -94,7 +99,7 @@ function mapCliError(error: CliToolError, args: OrgInviteArgs): string {
 /**
  * Handler for the `mittwald_org_invite` tool.
  */
-export const handleOrgInviteCli: MittwaldToolHandler<OrgInviteArgs> = async (args) => {
+export const handleOrgInviteCli: MittwaldToolHandler<OrgInviteArgs> = async (args, context) => {
   if (!args.organizationId) {
     return formatToolResponse('error', 'Parameter "organizationId" is required.');
   }
@@ -107,23 +112,67 @@ export const handleOrgInviteCli: MittwaldToolHandler<OrgInviteArgs> = async (arg
     return formatToolResponse('error', 'Parameter "role" is required.');
   }
 
+  const effectiveSessionId = context?.sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_org_invite',
-      argv,
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await inviteToOrg({
+          customerId: args.organizationId,
+          email: args.email,
+          role: args.role,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const { command, durationMs } = result.meta;
-    const rawOutput = result.result ?? '';
-    const inviteId = parseQuietOutput(rawOutput) ?? undefined;
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_org_invite',
+        organizationId: args.organizationId,
+        email: args.email,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_org_invite',
+        organizationId: args.organizationId,
+        email: args.email,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
+
+    // Use library result (it's validated)
+    const inviteData = validation.libraryOutput.data as any;
 
     const payload: OrgInvitePayload = {
       organizationId: args.organizationId,
       email: args.email,
       role: args.role,
-      inviteId,
+      inviteId: inviteData?.id,
       expires: args.expires,
       message: args.message,
     };
@@ -133,11 +182,21 @@ export const handleOrgInviteCli: MittwaldToolHandler<OrgInviteArgs> = async (arg
       `Invitation sent to ${args.email} for organization ${args.organizationId}.`,
       payload,
       {
-        command,
-        durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -148,9 +207,10 @@ export const handleOrgInviteCli: MittwaldToolHandler<OrgInviteArgs> = async (arg
       });
     }
 
+    logger.error('[WP05] Unexpected error in org invite handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute organization invite command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to send organization invite: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

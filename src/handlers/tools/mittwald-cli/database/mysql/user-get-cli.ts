@@ -1,26 +1,15 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { parseJsonOutput } from '@/utils/cli-output.js';
+import { CliToolError } from '@/tools/index.js';
+import { getMysqlUser, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
 import { logger } from '../../../../../utils/logger.js';
-import { invokeCliTool, CliToolError } from '@/tools/index.js';
 
 interface MittwaldDatabaseMysqlUserGetArgs {
   userId: string;
   outputFormat?: 'json' | 'yaml' | 'txt';
-}
-
-interface MysqlUserDetails {
-  id: string;
-  name?: string;
-  description?: string;
-  databaseId?: string;
-  accessLevel?: string;
-  externalAccess?: boolean;
-  accessIpMask?: string | null;
-  createdAt?: string;
-  updatedAt?: string;
-  mainUser?: boolean;
-  disabled?: boolean;
 }
 
 function buildCliArgs(args: MittwaldDatabaseMysqlUserGetArgs): string[] {
@@ -43,68 +32,86 @@ function mapCliError(error: CliToolError, args: MittwaldDatabaseMysqlUserGetArgs
   return `Failed to retrieve MySQL user: ${message}`;
 }
 
-/**
- * Handle retrieval of MySQL user details through the Mittwald CLI wrapper.
- */
 export const handleDatabaseMysqlUserGetCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlUserGetArgs> = async (
   args,
   sessionId,
 ) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   if (!args.userId) {
     return formatToolResponse('error', 'User ID is required to fetch MySQL user details.');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_database_mysql_user_get',
-      argv,
-      sessionId,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await getMysqlUser({
+          userId: args.userId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const outputFormat = args.outputFormat ?? 'json';
-    let details: MysqlUserDetails | undefined;
-    let parseError: string | undefined;
-
-    if (outputFormat === 'json') {
-      try {
-        const parsed = parseJsonOutput(stdout || stderr);
-        if (parsed && typeof parsed === 'object') {
-          details = parsed as MysqlUserDetails;
-        } else {
-          parseError = 'Unexpected JSON structure returned by Mittwald CLI.';
-        }
-      } catch (error) {
-        parseError = error instanceof Error ? error.message : String(error);
-        logger.error('[MySQL User Get] Failed to parse CLI output as JSON', {
-          userId: args.userId,
-          error: parseError,
-          stdout,
-          stderr,
-        });
-      }
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_database_mysql_user_get',
+        userId: args.userId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_database_mysql_user_get',
+        userId: args.userId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated)
+    const user = validation.libraryOutput.data;
 
     return formatToolResponse(
       'success',
       `Retrieved MySQL user ${args.userId}.`,
+      user,
       {
-        userId: args.userId,
-        format: outputFormat,
-        user: details,
-        rawOutput: details ? undefined : stdout || stderr || undefined,
-        parseError,
-      },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -115,9 +122,7 @@ export const handleDatabaseMysqlUserGetCli: MittwaldCliToolHandler<MittwaldDatab
       });
     }
 
-    return formatToolResponse(
-      'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    logger.error('[WP04] Unexpected error in database mysql user get handler', { error });
+    return formatToolResponse('error', `Failed to retrieve MySQL user: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

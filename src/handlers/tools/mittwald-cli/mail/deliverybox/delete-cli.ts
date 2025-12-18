@@ -1,7 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { logger } from '../../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { deleteDeliveryBox, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldMailDeliveryboxDeleteArgs {
   id: string;
@@ -17,37 +21,25 @@ function buildCliArgs(args: MittwaldMailDeliveryboxDeleteArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
-
 function mapCliError(error: CliToolError, args: MittwaldMailDeliveryboxDeleteArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-  const errorMessage = error.stderr || error.stdout || error.message;
+  const stderr = (error.stderr || '').toLowerCase();
 
-  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
-    return `Permission denied when deleting delivery box. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`;
+  if (stderr.includes('not found') || stderr.includes('404')) {
+    return `Delivery box not found: ${args.id}.\nError: ${error.stderr || error.message}`;
   }
 
-  if (combined.includes('not found') || combined.includes('404')) {
-    return `Delivery box not found: ${args.id}.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('cancelled') || combined.includes('canceled') || combined.includes('aborted')) {
-    return `Delete operation cancelled. Use --force to delete without confirmation.\nError: ${errorMessage}`;
-  }
-
-  return `Failed to delete delivery box: ${errorMessage}`;
+  return error.message;
 }
 
 export const handleMittwaldMailDeliveryboxDeleteCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxDeleteArgs> = async (args, sessionId) => {
-  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
-  const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   if (!args.id) {
-    return formatToolResponse('error', 'Delivery box ID is required.');
+    return formatToolResponse('error', 'id is required');
   }
 
   if (args.confirm !== true) {
@@ -60,41 +52,75 @@ export const handleMittwaldMailDeliveryboxDeleteCli: MittwaldCliToolHandler<Mitt
   logger.warn('[MailDeliveryboxDelete] Destructive operation attempted', {
     deliveryboxId: args.id,
     force: Boolean(args.force),
-    sessionId: resolvedSessionId,
-    ...(resolvedUserId ? { userId: resolvedUserId } : {}),
+    sessionId: effectiveSessionId,
   });
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
 
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_mail_deliverybox_delete',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await deleteDeliveryBox({
+          deliveryBoxId: args.id,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-
-    const quietMessage = args.quiet ? parseQuietOutput(stdout) ?? parseQuietOutput(stderr) ?? output : undefined;
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_mail_deliverybox_delete',
+        deliveryBoxId: args.id,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_mail_deliverybox_delete',
+        deliveryBoxId: args.id,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
 
     return formatToolResponse(
       'success',
-      args.quiet ? (quietMessage || 'Delivery box deleted') : `Successfully deleted delivery box: ${args.id}`,
+      `Successfully deleted delivery box: ${args.id}`,
       {
         id: args.id,
         deleted: true,
-        output,
-        force: args.force,
-        quiet: args.quiet,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -105,6 +131,7 @@ export const handleMittwaldMailDeliveryboxDeleteCli: MittwaldCliToolHandler<Mitt
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in mail deliverybox delete handler', { error });
+    return formatToolResponse('error', `Failed to delete delivery box: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

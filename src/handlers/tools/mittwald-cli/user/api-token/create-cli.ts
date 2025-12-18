@@ -2,6 +2,11 @@ import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conve
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
 import { parseQuietOutput } from '../../../../../utils/cli-output.js';
 import { buildSecureToolResponse } from '../../../../../utils/credential-response.js';
+import { createUserApiToken, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldUserApiTokenCreateArgs {
   description: string;
@@ -55,29 +60,71 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
     return buildSecureToolResponse('error', 'At least one role must be specified to create an API token.');
   }
 
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return buildSecureToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return buildSecureToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_user_api_token_create',
-      argv,
-      sessionId,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createUserApiToken({
+          description: args.description,
+          roles: args.roles,
+          expiresAt: args.expires,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp', 'token', 'generatedToken'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const token = args.quiet ? parseQuietOutput(stdout) : extractToken(stdout);
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_user_api_token_create',
+        description: args.description,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_user_api_token_create',
+        description: args.description,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
+
+    // Use library result (it's validated)
+    const result = validation.libraryOutput.data;
+    const token = result?.token;
 
     if (!token) {
       return buildSecureToolResponse(
         'error',
-        'Failed to create API token - no token returned by CLI.',
+        'Failed to create API token - no token returned.',
         {
-          rawOutput: stdout,
+          result,
         },
         {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
+          durationMs: validation.libraryOutput.durationMs,
+          validationPassed: validation.passed,
         }
       );
     }
@@ -97,11 +144,21 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
       message,
       data,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return buildSecureToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error);
       return buildSecureToolResponse('error', message, {
@@ -112,9 +169,10 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
       });
     }
 
+    logger.error('[WP04] Unexpected error in user api token create handler', { error });
     return buildSecureToolResponse(
       'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create API token: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

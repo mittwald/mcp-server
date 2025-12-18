@@ -1,6 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { updateDeliveryBox, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldMailDeliveryboxUpdateArgs {
   id: string;
@@ -19,91 +24,114 @@ function buildCliArgs(args: MittwaldMailDeliveryboxUpdateArgs): string[] {
   return cliArgs;
 }
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
-}
-
-function extractGeneratedPassword(output: string): string | undefined {
-  const match = output.match(/password:\s*(.+)/i);
-  return match ? match[1].trim() : undefined;
-}
-
 function mapCliError(error: CliToolError, id: string): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-  const errorMessage = error.stderr || error.stdout || error.message;
+  const stderr = (error.stderr || '').toLowerCase();
 
-  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
-    return `Permission denied when updating delivery box. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`;
+  if (stderr.includes('not found') || stderr.includes('404')) {
+    return `Delivery box not found: ${id}.\nError: ${error.stderr || error.message}`;
   }
 
-  if (combined.includes('not found') || combined.includes('404')) {
-    return `Delivery box not found: ${id}.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('invalid') && combined.includes('format')) {
-    return `Invalid format in request. Please check your parameters.\nError: ${errorMessage}`;
-  }
-
-  return `Failed to update delivery box: ${errorMessage}`;
+  return error.message;
 }
 
-export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxUpdateArgs> = async (args) => {
+export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxUpdateArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  if (!args.id) {
+    return formatToolResponse('error', 'id is required');
+  }
+
+  // Check for unsupported library features
+  if (args.password || args.randomPassword) {
+    logger.warn('[WP04] Update delivery box: password updates not supported in library mode', {
+      hasPassword: Boolean(args.password),
+      hasRandomPassword: Boolean(args.randomPassword),
+    });
+
+    return formatToolResponse('error',
+      'Password updates (password, randomPassword) are not yet supported in library mode. ' +
+      'Only description updates are currently available.'
+    );
+  }
+
+  if (!args.description) {
+    return formatToolResponse('error', 'description must be specified to update delivery box');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_mail_deliverybox_update',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await updateDeliveryBox({
+          deliveryBoxId: args.id,
+          description: args.description,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-
-    let generatedPassword: string | undefined;
-    let quietPayload: string | undefined;
-
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-      if (quietOutput) {
-        if (args.randomPassword) {
-          const [idPart, passwordPart] = quietOutput.split('\t');
-          generatedPassword = passwordPart ? passwordPart.trim() : undefined;
-          quietPayload = generatedPassword ? `${idPart}\t${generatedPassword}` : quietOutput;
-        } else {
-          quietPayload = quietOutput;
-        }
-      }
-    } else if (args.randomPassword) {
-      generatedPassword = extractGeneratedPassword(stdout);
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_mail_deliverybox_update',
+        deliveryBoxId: args.id,
+        description: args.description,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_mail_deliverybox_update',
+        deliveryBoxId: args.id,
+        description: args.description,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
-
-    const resultData = {
-      id: args.id,
-      updated: true,
-      ...(args.description ? { description: args.description } : {}),
-      ...(generatedPassword ? { password: generatedPassword } : {}),
-      output,
-    };
-
-    const message = args.quiet
-      ? (quietPayload ?? (generatedPassword ? `${args.id}\t${generatedPassword}` : output || 'Delivery box updated'))
-      : `Successfully updated delivery box: ${args.id}${generatedPassword ? ' with new generated password' : ''}`;
 
     return formatToolResponse(
       'success',
-      message,
-      resultData,
+      `Successfully updated delivery box: ${args.id}`,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        id: args.id,
+        updated: true,
+        description: args.description,
+      },
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args.id);
       return formatToolResponse('error', message, {
@@ -114,6 +142,7 @@ export const handleMittwaldMailDeliveryboxUpdateCli: MittwaldCliToolHandler<Mitt
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in mail deliverybox update handler', { error });
+    return formatToolResponse('error', `Failed to update delivery box: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

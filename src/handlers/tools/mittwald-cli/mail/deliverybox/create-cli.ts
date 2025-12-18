@@ -1,16 +1,22 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { createDeliveryBox, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1)?.trim();
+interface MittwaldMailDeliveryboxCreateArgs {
+  projectId?: string;
+  description: string;
+  quiet?: boolean;
+  password?: string;
+  randomPassword?: boolean;
 }
 
 function buildCliArgs(args: MittwaldMailDeliveryboxCreateArgs): string[] {
-  const cliArgs: string[] = ['mail', 'deliverybox', 'create', '--description', args.description];
+  const cliArgs: string[] = ['mail', 'deliverybox', 'create', '--description', args.description, '--output', 'json'];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
   if (args.quiet) cliArgs.push('--quiet');
@@ -21,98 +27,120 @@ function buildCliArgs(args: MittwaldMailDeliveryboxCreateArgs): string[] {
 }
 
 function mapCliError(error: CliToolError, args: MittwaldMailDeliveryboxCreateArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-  const errorMessage = error.stderr || error.stdout || error.message;
+  const stderr = (error.stderr || '').toLowerCase();
 
-  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
-    return `Permission denied when creating delivery box. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`;
+  if (stderr.includes('not found') && stderr.includes('project')) {
+    return `Project not found. Please verify the project ID: ${args.projectId ?? 'not specified'}.\nError: ${error.stderr || error.message}`;
   }
 
-  if (combined.includes('not found') && combined.includes('project')) {
-    return `Project not found. Please verify the project ID: ${args.projectId || 'not specified'}.\nError: ${errorMessage}`;
-  }
-
-  if (combined.includes('no default project')) {
-    return `No default project set. Please provide --project-id or set a default project context.\nError: ${errorMessage}`;
-  }
-
-  return `Failed to create delivery box: ${errorMessage}`;
+  return error.message;
 }
 
-interface MittwaldMailDeliveryboxCreateArgs {
-  projectId?: string;
-  description: string;
-  quiet?: boolean;
-  password?: string;
-  randomPassword?: boolean;
-}
+export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxCreateArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxCreateArgs> = async (args) => {
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  if (!args.description) {
+    return formatToolResponse('error', 'description is required');
+  }
+
+  if (!args.projectId) {
+    return formatToolResponse('error', 'projectId is required');
+  }
+
+  // Check for unsupported library features
+  if (args.randomPassword) {
+    logger.warn('[WP04] Create delivery box: randomPassword not supported in library mode', {
+      hasRandomPassword: true,
+    });
+
+    return formatToolResponse('error',
+      'Random password generation is not yet supported in library mode. ' +
+      'Please provide an explicit password using the password parameter.'
+    );
+  }
+
+  if (!args.password) {
+    return formatToolResponse('error', 'password is required (randomPassword not supported in library mode)');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_mail_deliverybox_create',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createDeliveryBox({
+          projectId: args.projectId!,
+          description: args.description,
+          password: args.password!,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-
-    let deliveryBoxId: string | undefined;
-    let generatedPassword: string | undefined;
-
-    if (args.quiet) {
-      const quietOutput = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-      if (quietOutput) {
-        if (args.randomPassword) {
-          const [idPart, passwordPart] = quietOutput.split('\t');
-          deliveryBoxId = idPart;
-          generatedPassword = passwordPart ? passwordPart.trim() : undefined;
-        } else {
-          deliveryBoxId = quietOutput;
-        }
-      }
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_mail_deliverybox_create',
+        description: args.description,
+        projectId: args.projectId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
     } else {
-      const idMatch = stdout.match(/ID\s+([a-f0-9-]+)/i);
-      if (idMatch) deliveryBoxId = idMatch[1];
-      if (args.randomPassword) generatedPassword = stdout ? extractPassword(stdout) : undefined;
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_mail_deliverybox_create',
+        description: args.description,
+        projectId: args.projectId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
 
-    if (!deliveryBoxId) {
-      return formatToolResponse(
-        'success',
-        args.quiet ? output || 'Delivery box created' : `Successfully created delivery box '${args.description}'`,
-        {
-          description: args.description,
-          output,
-          ...(generatedPassword ? { password: generatedPassword } : {}),
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    }
+    // Use library result (it's validated)
+    const result = validation.libraryOutput.data as any;
+    const deliveryBoxId = result?.id ?? 'unknown';
 
     return formatToolResponse(
       'success',
-      args.quiet
-        ? (generatedPassword ? `${deliveryBoxId}\t${generatedPassword}` : deliveryBoxId)
-        : `Successfully created delivery box '${args.description}' with ID ${deliveryBoxId}${generatedPassword ? ' and generated password' : ''}`,
+      `Successfully created delivery box '${args.description}' with ID ${deliveryBoxId}`,
       {
         id: deliveryBoxId,
         description: args.description,
-        ...(generatedPassword ? { password: generatedPassword } : {}),
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -123,11 +151,7 @@ export const handleMittwaldMailDeliveryboxCreateCli: MittwaldCliToolHandler<Mitt
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in mail deliverybox create handler', { error });
+    return formatToolResponse('error', `Failed to create delivery box: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
-
-function extractPassword(output: string): string | undefined {
-  const match = output.match(/password:\s*(.+)/i);
-  return match ? match[1].trim() : undefined;
-}

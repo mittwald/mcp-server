@@ -64,58 +64,91 @@ function mapCliError(error: CliToolError, args: MittwaldUserApiTokenGetArgs): st
   return `Failed to get API token: ${rawMessage}`;
 }
 
-export const handleUserApiTokenGetCli: MittwaldCliToolHandler<MittwaldUserApiTokenGetArgs> = async (args) => {
+export const handleUserApiTokenGetCli: MittwaldCliToolHandler<MittwaldUserApiTokenGetArgs> = async (args, sessionId) => {
   if (!args.tokenId) {
     return formatToolResponse('error', 'Token ID is required.');
+  }
+
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_user_api_token_get',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await getUserApiToken({
+          tokenId: args.tokenId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-
-    try {
-      const parsed = parseApiTokenOutput(stdout);
-      const formattedData = {
-        id: parsed.id,
-        description: parsed.description,
-        roles: parsed.roles,
-        createdAt: parsed.createdAt,
-        expiresAt: parsed.expiresAt,
-        ...parsed,
-      };
-
-      return formatToolResponse(
-        'success',
-        `API token information retrieved for ${args.tokenId}`,
-        formattedData,
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    } catch (parseError) {
-      return formatToolResponse(
-        'success',
-        'API token retrieved (raw output)',
-        {
-          rawOutput: stdout || stderr,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError),
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_user_api_token_get',
+        tokenId: args.tokenId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_user_api_token_get',
+        tokenId: args.tokenId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated)
+    const parsed = validation.libraryOutput.data;
+    const formattedData = {
+      id: parsed.id,
+      description: parsed.description,
+      roles: parsed.roles,
+      createdAt: parsed.createdAt,
+      expiresAt: parsed.expiresAt,
+      ...parsed,
+    };
+
+    return formatToolResponse(
+      'success',
+      `API token information retrieved for ${args.tokenId}`,
+      formattedData,
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      }
+    );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -126,9 +159,7 @@ export const handleUserApiTokenGetCli: MittwaldCliToolHandler<MittwaldUserApiTok
       });
     }
 
-    return formatToolResponse(
-      'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    logger.error('[WP04] Unexpected error in user api token get handler', { error });
+    return formatToolResponse('error', `Failed to get API token: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

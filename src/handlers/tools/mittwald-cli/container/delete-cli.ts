@@ -2,6 +2,10 @@ import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { logger } from '../../../../utils/logger.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { deleteContainer, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldContainerDeleteArgs {
   containerId: string;
@@ -19,13 +23,6 @@ function buildCliArgs(args: MittwaldContainerDeleteArgs): string[] {
   if (args.quiet) cliArgs.push('--quiet');
 
   return cliArgs;
-}
-
-function parseQuietOutput(output: string): string | undefined {
-  const trimmed = output.trim();
-  if (!trimmed) return undefined;
-  const lines = trimmed.split(/\r?\n/);
-  return lines.at(-1);
 }
 
 function mapCliError(error: CliToolError, args: MittwaldContainerDeleteArgs): string {
@@ -47,8 +44,13 @@ function mapCliError(error: CliToolError, args: MittwaldContainerDeleteArgs): st
 }
 
 export const handleContainerDeleteCli: MittwaldCliToolHandler<MittwaldContainerDeleteArgs> = async (args, sessionId) => {
-  const resolvedSessionId = typeof sessionId === 'string' ? sessionId : (sessionId as any)?.sessionId;
+  const effectiveSessionId = sessionId || getCurrentSessionId();
   const resolvedUserId = typeof sessionId === 'string' ? undefined : (sessionId as any)?.userId;
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   if (!args.containerId) {
     return formatToolResponse('error', 'Container ID is required.');
   }
@@ -64,39 +66,51 @@ export const handleContainerDeleteCli: MittwaldCliToolHandler<MittwaldContainerD
     containerId: args.containerId,
     projectId: args.projectId,
     force: Boolean(args.force),
-    sessionId: resolvedSessionId,
+    sessionId: effectiveSessionId,
     ...(resolvedUserId ? { userId: resolvedUserId } : {}),
   });
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
 
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_container_delete',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await deleteContainer({
+          containerId: args.containerId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout || '';
-    const stderr = result.result.stderr || '';
-    const output = stdout || stderr || `Container ${args.containerId} has been deleted successfully`;
-
-    if (args.quiet) {
-      const containerId = parseQuietOutput(stdout) ?? args.containerId;
-      return formatToolResponse(
-        'success',
-        `Container ${containerId} has been deleted successfully`,
-        {
-          containerId,
-          action: 'delete',
-          projectId: args.projectId,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_container_delete',
+        containerId: args.containerId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_container_delete',
+        containerId: args.containerId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
 
     return formatToolResponse(
@@ -106,14 +120,23 @@ export const handleContainerDeleteCli: MittwaldCliToolHandler<MittwaldContainerD
         containerId: args.containerId,
         action: 'delete',
         projectId: args.projectId,
-        output,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -124,6 +147,7 @@ export const handleContainerDeleteCli: MittwaldCliToolHandler<MittwaldContainerD
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP05] Unexpected error in container delete handler', { error });
+    return formatToolResponse('error', `Failed to delete container: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

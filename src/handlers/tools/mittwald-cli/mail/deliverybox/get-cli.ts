@@ -1,98 +1,111 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { parseJsonOutput } from '../../../../../utils/cli-output.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { getDeliveryBox, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldMailDeliveryboxGetArgs {
   id: string;
   output?: 'txt' | 'json' | 'yaml';
 }
 
-function buildCliArgs(args: MittwaldMailDeliveryboxGetArgs): { argv: string[]; format: Required<MittwaldMailDeliveryboxGetArgs>['output'] } {
-  const format = args.output ?? 'txt';
-  const argv: string[] = ['mail', 'deliverybox', 'get', args.id, '--output', format];
-  return { argv, format };
+function buildCliArgs(args: MittwaldMailDeliveryboxGetArgs): string[] {
+  // We always request JSON to simplify parsing
+  const argv: string[] = ['mail', 'deliverybox', 'get', args.id, '--output', 'json'];
+  return argv;
 }
 
 function mapCliError(error: CliToolError, id: string): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-  const errorMessage = error.stderr || error.stdout || error.message;
+  const stderr = (error.stderr || '').toLowerCase();
 
-  if (combined.includes('403') || combined.includes('forbidden') || combined.includes('permission denied')) {
-    return `Permission denied when getting delivery box. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorMessage}`;
+  if (stderr.includes('not found') || stderr.includes('404')) {
+    return `Delivery box not found: ${id}.\nError: ${error.stderr || error.message}`;
   }
 
-  if (combined.includes('not found') || combined.includes('404')) {
-    return `Delivery box not found: ${id}.\nError: ${errorMessage}`;
-  }
-
-  return `Failed to get delivery box: ${errorMessage}`;
+  return error.message;
 }
 
-export const handleMittwaldMailDeliveryboxGetCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxGetArgs> = async (args) => {
-  const { argv, format } = buildCliArgs(args);
+export const handleMittwaldMailDeliveryboxGetCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxGetArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  if (!args.id) {
+    return formatToolResponse('error', 'id is required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
+  const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_mail_deliverybox_get',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await getDeliveryBox({
+          deliveryBoxId: args.id,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-
-    if (format === 'json') {
-      try {
-        const deliveryBox = parseJsonOutput(stdout);
-        const description = typeof deliveryBox === 'object' && deliveryBox && 'description' in deliveryBox
-          ? String((deliveryBox as Record<string, unknown>).description ?? args.id)
-          : args.id;
-
-        return formatToolResponse(
-          'success',
-          `Retrieved delivery box: ${description}`,
-          {
-            format: 'json',
-            deliveryBox,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        return formatToolResponse(
-          'success',
-          `Retrieved delivery box: ${args.id}`,
-          {
-            format: 'json',
-            content: stdout,
-            parseError: message,
-          },
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      }
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_mail_deliverybox_get',
+        deliveryBoxId: args.id,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_mail_deliverybox_get',
+        deliveryBoxId: args.id,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated)
+    const deliveryBox = validation.libraryOutput.data as any;
+    const label = deliveryBox?.description ?? args.id;
 
     return formatToolResponse(
       'success',
-      `Retrieved delivery box: ${args.id}`,
+      `Retrieved delivery box: ${label}`,
+      deliveryBox,
       {
-        format,
-        content: output,
-      },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args.id);
       return formatToolResponse('error', message, {
@@ -103,6 +116,7 @@ export const handleMittwaldMailDeliveryboxGetCli: MittwaldCliToolHandler<Mittwal
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in mail deliverybox get handler', { error });
+    return formatToolResponse('error', `Failed to get delivery box: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -64,47 +64,80 @@ function mapCliError(error: CliToolError, args: MittwaldCronjobUpdateCliArgs): s
   return `Failed to update cronjob: ${message}`;
 }
 
-export const handleCronjobUpdateCli: MittwaldToolHandler<MittwaldCronjobUpdateCliArgs> = async (args, _context) => {
+export const handleCronjobUpdateCli: MittwaldCliToolHandler<MittwaldCronjobUpdateCliArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
   if (!args.cronjobId) {
-    return formatToolResponse('error', 'Cronjob ID is required.');
+    return formatToolResponse('error', 'cronjobId is required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // Build destination object if url or command is provided
+    let destination: { url: string } | { interpreter: string; path: string } | undefined;
+    if (args.url) {
+      destination = { url: args.url };
+    } else if (args.command && args.interpreter) {
+      destination = { interpreter: args.interpreter, path: args.command };
+    }
+
+    // Parse timeout if provided
+    const timeoutMs = args.timeout ? parseInt(args.timeout.replace(/[^\d]/g, '')) * 1000 : undefined;
+
+    // Determine active state
+    let active: boolean | undefined;
+    if (args.enable) active = true;
+    if (args.disable) active = false;
+
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_cronjob_update',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-    });
-
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-
-    if (args.quiet) {
-      const quietValue = parseQuietIdentifier(stdout) ?? parseQuietIdentifier(stderr);
-
-      return formatToolResponse(
-        'success',
-        'Cronjob updated successfully',
-        {
-          cronjobId: quietValue ?? args.cronjobId,
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await updateCronjob({
+          cronjobId: args.cronjobId,
           description: args.description,
           interval: args.interval,
-          command: args.command,
-          url: args.url,
           email: args.email,
-          enable: args.enable,
-          disable: args.disable,
-          timeout: args.timeout,
-          output,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+          destination,
+          timeout: timeoutMs,
+          active,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    });
+
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_cronjob_update',
+        cronjobId: args.cronjobId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_cronjob_update',
+        cronjobId: args.cronjobId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
 
     return formatToolResponse(
@@ -114,20 +147,24 @@ export const handleCronjobUpdateCli: MittwaldToolHandler<MittwaldCronjobUpdateCl
         cronjobId: args.cronjobId,
         description: args.description,
         interval: args.interval,
-        command: args.command,
-        url: args.url,
         email: args.email,
-        enable: args.enable,
-        disable: args.disable,
-        timeout: args.timeout,
-        output,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -138,6 +175,7 @@ export const handleCronjobUpdateCli: MittwaldToolHandler<MittwaldCronjobUpdateCl
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in cronjob update handler', { error });
+    return formatToolResponse('error', `Failed to update cronjob: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

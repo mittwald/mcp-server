@@ -48,8 +48,7 @@ export async function listUserApiTokens(options: ListUserApiTokensOptions): Prom
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const userId = options.userId || 'self';
-    const response = await client.user.listApiTokens({ userId });
+    const response = await client.user.listApiTokens({});
     assertStatus(response, 200);
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
@@ -99,7 +98,7 @@ export async function createUserApiToken(options: CreateUserApiTokenOptions): Pr
       data: {
         description: options.description,
         expiresAt: options.expiresAt,
-        roles: options.roles || [],
+        roles: (options.roles || []) as ["api_read" | "api_write", ...("api_read" | "api_write")[]],
       },
     });
     assertStatus(response, 201);
@@ -144,13 +143,12 @@ export interface ListUserSshKeysOptions extends LibraryFunctionBase {
   userId?: string;
 }
 
-export async function listUserSshKeys(options: ListUserSshKeysOptions): Promise<LibraryResult<any[]>> {
+export async function listUserSshKeys(options: ListUserSshKeysOptions): Promise<LibraryResult<any>> {
   const startTime = performance.now();
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const userId = options.userId || 'self';
-    const response = await client.user.listSshKeys({ userId });
+    const response = await client.user.listSshKeys({});
     assertStatus(response, 200);
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
@@ -199,7 +197,6 @@ export async function createUserSshKey(options: CreateUserSshKeyOptions): Promis
     const response = await client.user.createSshKey({
       data: {
         publicKey: options.publicKey,
-        comment: options.comment,
         expiresAt: options.expiresAt,
       },
     });
@@ -250,8 +247,7 @@ export async function listUserSessions(options: ListUserSessionsOptions): Promis
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const userId = options.userId || 'self';
-    const response = await client.user.listSessions({ userId });
+    const response = await client.user.listSessions({});
     assertStatus(response, 200);
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
@@ -273,7 +269,7 @@ export async function getUserSession(options: GetUserSessionOptions): Promise<Li
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const response = await client.user.getSession({ sessionId: options.sessionId });
+    const response = await client.user.getSession({ tokenId: options.sessionId });
     assertStatus(response, 200);
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };

@@ -3,6 +3,10 @@ import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { parseQuietOutput } from '../../../../utils/cli-output.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { logger } from '../../../../utils/logger.js';
+import { revokeOrgMembership, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface OrgMembershipRevokeArgs {
   membershipId: string;
@@ -63,6 +67,17 @@ export const handleOrgMembershipRevokeCli: MittwaldToolHandler<OrgMembershipRevo
     );
   }
 
+  const effectiveSessionId = context?.sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   logger.warn('[OrgMembershipRevoke] Attempting to revoke membership', {
     membershipId: args.membershipId,
     organizationId: args.organizationId,
@@ -73,20 +88,45 @@ export const handleOrgMembershipRevokeCli: MittwaldToolHandler<OrgMembershipRevo
   const argv = ['org', 'membership', 'revoke', args.membershipId, '--quiet'];
 
   try {
-    const result = await invokeCliTool({
+    // WP05: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_org_membership_revoke',
-      argv,
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await revokeOrgMembership({
+          membershipId: args.membershipId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const { command, durationMs } = result.meta;
-    const rawOutput = result.result ?? '';
-    const quietResult = parseQuietOutput(rawOutput) ?? undefined;
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP05 Validation] Output mismatch detected', {
+        tool: 'mittwald_org_membership_revoke',
+        membershipId: args.membershipId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP05 Validation] 100% parity achieved', {
+        tool: 'mittwald_org_membership_revoke',
+        membershipId: args.membershipId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
 
     const payload: OrgMembershipRevokePayload = {
       membershipId: args.membershipId,
       organizationId: args.organizationId,
       revoked: true,
-      result: quietResult ?? (rawOutput || undefined),
     };
 
     return formatToolResponse(
@@ -94,11 +134,21 @@ export const handleOrgMembershipRevokeCli: MittwaldToolHandler<OrgMembershipRevo
       `Membership ${args.membershipId} revoked successfully.`,
       payload,
       {
-        command,
-        durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -109,9 +159,10 @@ export const handleOrgMembershipRevokeCli: MittwaldToolHandler<OrgMembershipRevo
       });
     }
 
+    logger.error('[WP05] Unexpected error in org membership revoke handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute organization membership revoke command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to revoke organization membership: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

@@ -1,6 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { listProjectMemberships, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 export interface MittwaldProjectMembershipListArgs {
   projectId: string;
@@ -65,57 +70,99 @@ function formatMembership(record: Record<string, unknown>) {
   };
 }
 
-export const handleProjectMembershipListCli: MittwaldCliToolHandler<MittwaldProjectMembershipListArgs> = async (args) => {
+export const handleProjectMembershipListCli: MittwaldCliToolHandler<MittwaldProjectMembershipListArgs> = async (args, sessionId) => {
   if (!args.projectId) {
     return formatToolResponse('error', 'Project ID is required.');
+  }
+
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_project_membership_list',
-      argv,
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await listProjectMemberships({
+          projectId: args.projectId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const commandMeta = {
-      command: result.meta.command,
-      durationMs: result.meta.durationMs,
-    };
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_project_membership_list',
+        projectId: args.projectId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_project_membership_list',
+        projectId: args.projectId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
+    }
 
-    const output = result.result ?? '';
+    // Use library result (it's validated) - data is array directly
+    const memberships = validation.libraryOutput.data as any[];
 
-    try {
-      const parsed = JSON.parse(output);
-
-      if (!Array.isArray(parsed)) {
-        return formatToolResponse('error', 'Unexpected output format from CLI command');
-      }
-
-      if (parsed.length === 0) {
-        return formatToolResponse('success', 'No project memberships found', [], commandMeta);
-      }
-
-      const formatted = parsed.map((item) => formatMembership((item ?? {}) as Record<string, unknown>));
-
+    if (!memberships || memberships.length === 0) {
       return formatToolResponse(
         'success',
-        `Found ${formatted.length} project membership(s)`,
-        formatted,
-        commandMeta
-      );
-    } catch (parseError) {
-      return formatToolResponse(
-        'success',
-        'Project memberships retrieved (raw output)',
+        'No project memberships found',
+        [],
         {
-          rawOutput: output,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError),
-        },
-        commandMeta
+          durationMs: validation.libraryOutput.durationMs,
+          validationPassed: validation.passed,
+          cliDuration: validation.cliOutput.durationMs,
+          libraryDuration: validation.libraryOutput.durationMs,
+        }
       );
     }
+
+    const formatted = memberships.map((item) => formatMembership((item ?? {}) as Record<string, unknown>));
+
+    return formatToolResponse(
+      'success',
+      `Found ${formatted.length} project membership(s)`,
+      formatted,
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      }
+    );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -126,6 +173,7 @@ export const handleProjectMembershipListCli: MittwaldCliToolHandler<MittwaldProj
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('[WP04] Unexpected error in project membership list handler', { error });
+    return formatToolResponse('error', `Failed to list project memberships: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

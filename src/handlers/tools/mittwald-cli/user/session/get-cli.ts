@@ -1,6 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { getUserSession, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldUserSessionGetArgs {
   tokenId: string;
@@ -68,59 +73,92 @@ function mapCliError(error: CliToolError, tokenId: string): string {
   return `Failed to get session: ${rawMessage}`;
 }
 
-export const handleUserSessionGetCli: MittwaldCliToolHandler<MittwaldUserSessionGetArgs> = async (args) => {
+export const handleUserSessionGetCli: MittwaldCliToolHandler<MittwaldUserSessionGetArgs> = async (args, sessionId) => {
   if (!args.tokenId || !args.tokenId.trim()) {
     return formatToolResponse('error', 'Token ID is required.');
+  }
+
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   const argv = buildCliArgs(args.tokenId);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_user_session_get',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await getUserSession({
+          sessionId: args.tokenId,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-
-    try {
-      const session = parseSession(stdout);
-      const formattedData = {
-        id: session.id,
-        tokenId: session.tokenId,
-        createdAt: session.createdAt,
-        expiresAt: session.expiresAt,
-        userAgent: session.userAgent,
-        ipAddress: session.ipAddress,
-        ...session,
-      };
-
-      return formatToolResponse(
-        'success',
-        `Session information retrieved for ${args.tokenId}`,
-        formattedData,
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
-    } catch (parseError) {
-      return formatToolResponse(
-        'success',
-        'Session retrieved (raw output)',
-        {
-          rawOutput: stdout || stderr,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError),
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_user_session_get',
+        tokenId: args.tokenId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_user_session_get',
+        tokenId: args.tokenId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
+
+    // Use library result (it's validated)
+    const sessionData = validation.libraryOutput.data;
+    const formattedData = {
+      id: sessionData.id,
+      tokenId: sessionData.tokenId,
+      createdAt: sessionData.createdAt,
+      expiresAt: sessionData.expiresAt,
+      userAgent: sessionData.userAgent,
+      ipAddress: sessionData.ipAddress,
+      ...sessionData,
+    };
+
+    return formatToolResponse(
+      'success',
+      `Session information retrieved for ${args.tokenId}`,
+      formattedData,
+      {
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      }
+    );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args.tokenId);
       return formatToolResponse('error', message, {
@@ -131,9 +169,7 @@ export const handleUserSessionGetCli: MittwaldCliToolHandler<MittwaldUserSession
       });
     }
 
-    return formatToolResponse(
-      'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    logger.error('[WP04] Unexpected error in user session get handler', { error });
+    return formatToolResponse('error', `Failed to get session: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

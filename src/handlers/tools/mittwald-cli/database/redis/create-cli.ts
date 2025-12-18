@@ -1,8 +1,11 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
-import { buildSecureToolResponse } from '../../../../../utils/credential-response.js';
-import { parseJsonOutput, parseQuietOutput } from '@/utils/cli-output.js';
+import { CliToolError } from '@/tools/index.js';
+import { createRedisDatabase, LibraryError } from '@mittwald-mcp/cli-core';
+import { validateToolParity } from '../../../../../../tests/validation/parallel-validator.js';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
 import { logger } from '../../../../../utils/logger.js';
-import { invokeCliTool, CliToolError } from '@/tools/index.js';
+import { buildSecureToolResponse } from '../../../../../utils/credential-response.js';
 
 interface MittwaldDatabaseRedisCreateArgs {
   projectId: string;
@@ -20,23 +23,6 @@ interface MittwaldDatabaseRedisCreateArgs {
     | 'volatile-random'
     | 'volatile-ttl';
   quiet?: boolean;
-}
-
-interface RedisDatabaseDetails {
-  id: string;
-  name?: string;
-  description?: string;
-  projectId?: string;
-  version?: string;
-  hostname?: string;
-  configuration?: {
-    persistent?: boolean;
-    maxMemory?: string | null;
-    maxMemoryPolicy?: string | null;
-  };
-  status?: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 function buildCliArgs(args: MittwaldDatabaseRedisCreateArgs): string[] {
@@ -74,25 +60,6 @@ function buildCliArgs(args: MittwaldDatabaseRedisCreateArgs): string[] {
   return cliArgs;
 }
 
-function parseRedisCreateOutput(stdout: string, stderr: string): string | undefined {
-  const identifier = parseQuietOutput(stdout) ?? parseQuietOutput(stderr);
-  if (identifier) {
-    return identifier;
-  }
-
-  const combined = `${stdout}\n${stderr}`;
-  const match = combined.match(/(redis-[a-z0-9]+|[a-f0-9-]{8,})/i);
-  if (match) {
-    return match[1];
-  }
-
-  logger.error('[Redis Create] Unable to determine Redis database ID from CLI output', {
-    stdout,
-    stderr,
-  });
-  return undefined;
-}
-
 function mapCliError(error: CliToolError, args: MittwaldDatabaseRedisCreateArgs): string {
   const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}`.toLowerCase();
   const message = error.stderr || error.stdout || error.message;
@@ -116,41 +83,16 @@ function mapCliError(error: CliToolError, args: MittwaldDatabaseRedisCreateArgs)
   return `Failed to create Redis database: ${message}`;
 }
 
-async function fetchRedisDatabaseDetails(
-  redisId: string,
-  sessionId?: string,
-): Promise<RedisDatabaseDetails | undefined> {
-  try {
-    const result = await invokeCliTool({
-      toolName: 'mittwald_database_redis_get',
-      argv: ['database', 'redis', 'get', redisId, '--output', 'json'],
-      sessionId,
-      parser: (stdout) => stdout,
-    });
-
-    const parsed = parseJsonOutput(result.result);
-    if (!parsed || typeof parsed !== 'object') {
-      logger.warn('[Redis Create] Unexpected structure for Redis database details', { parsed });
-      return undefined;
-    }
-
-    return parsed as RedisDatabaseDetails;
-  } catch (error) {
-    logger.warn('[Redis Create] Failed to fetch newly created Redis database details', {
-      redisId,
-      error: error instanceof Error ? error.message : String(error),
-    });
-    return undefined;
-  }
-}
-
-/**
- * Handle Redis database creation via the Mittwald CLI wrapper.
- */
 export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDatabaseRedisCreateArgs> = async (
   args,
   sessionId,
 ) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
+
+  if (!effectiveSessionId) {
+    return buildSecureToolResponse('error', 'Session ID required');
+  }
+
   if (!args.projectId) {
     return buildSecureToolResponse('error', 'Project ID is required to create a Redis database.');
   }
@@ -163,66 +105,74 @@ export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDataba
     return buildSecureToolResponse('error', 'Version is required to create a Redis database.');
   }
 
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return buildSecureToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
+
   const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
+    // WP04: Parallel validation - run both CLI and library
+    const validation = await validateToolParity({
       toolName: 'mittwald_database_redis_create',
-      argv,
-      sessionId,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+      cliCommand: 'mw',
+      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
+      libraryFn: async () => {
+        return await createRedisDatabase({
+          projectId: args.projectId,
+          description: args.description,
+          version: args.version,
+          apiToken: session.mittwaldAccessToken,
+        });
+      },
+      ignoreFields: ['durationMs', 'duration', 'timestamp'],
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const redisId = parseRedisCreateOutput(stdout, stderr);
-
-    if (!redisId) {
-      return buildSecureToolResponse(
-        'error',
-        'Redis database created but the CLI did not return an identifier.',
-        {
-          output: stdout || stderr,
-        },
-        {
-          command: result.meta.command,
-          durationMs: result.meta.durationMs,
-        }
-      );
+    // Log validation results
+    if (!validation.passed) {
+      logger.warn('[WP04 Validation] Output mismatch detected', {
+        tool: 'mittwald_database_redis_create',
+        projectId: args.projectId,
+        discrepancyCount: validation.discrepancies.length,
+        discrepancies: validation.discrepancies,
+        cliExitCode: validation.cliOutput.exitCode,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+      });
+    } else {
+      logger.info('[WP04 Validation] 100% parity achieved', {
+        tool: 'mittwald_database_redis_create',
+        projectId: args.projectId,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
+        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
+      });
     }
 
-    const details = await fetchRedisDatabaseDetails(redisId, sessionId);
-    const persistent = args.persistent ?? true;
-
-    const responseData = {
-      redisId,
-      projectId: args.projectId,
-      description: args.description,
-      version: args.version,
-      persistent,
-      maxMemory: args.maxMemory,
-      maxMemoryPolicy: args.maxMemoryPolicy,
-      details,
-    };
-
-    const messageParts = [`Created Redis database ${redisId} in project ${args.projectId}.`];
-    if (!persistent) {
-      messageParts.push('Persistent storage disabled.');
-    }
-    if (!details) {
-      messageParts.push('Unable to retrieve full database details after creation.');
-    }
+    // Use library result (it's validated)
+    const result = validation.libraryOutput.data;
 
     return buildSecureToolResponse(
       'success',
-      messageParts.join(' '),
-      responseData,
+      `Created Redis database in project ${args.projectId}.`,
+      result,
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: validation.libraryOutput.durationMs,
+        validationPassed: validation.passed,
+        discrepancyCount: validation.discrepancies.length,
+        cliDuration: validation.cliOutput.durationMs,
+        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return buildSecureToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return buildSecureToolResponse('error', message, {
@@ -233,9 +183,7 @@ export const handleDatabaseRedisCreateCli: MittwaldCliToolHandler<MittwaldDataba
       });
     }
 
-    return buildSecureToolResponse(
-      'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
-    );
+    logger.error('[WP04] Unexpected error in database redis create handler', { error });
+    return buildSecureToolResponse('error', `Failed to create Redis database: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

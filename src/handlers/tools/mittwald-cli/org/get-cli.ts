@@ -196,12 +196,12 @@ function mapCliError(error: CliToolError, organizationId: string): string {
 /**
  * Handler for the `mittwald_org_get` tool.
  */
-export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = async (args, sessionId) => {
+export const handleOrgGetCli: MittwaldToolHandler<{ organizationId: string }> = async (args, context) => {
   if (!args.organizationId) {
     return formatToolResponse('error', 'Parameter "organizationId" is required.');
   }
 
-  const effectiveSessionId = sessionId || getCurrentSessionId();
+  const effectiveSessionId = context?.sessionId || getCurrentSessionId();
 
   if (!effectiveSessionId) {
     return formatToolResponse('error', 'Session ID required');

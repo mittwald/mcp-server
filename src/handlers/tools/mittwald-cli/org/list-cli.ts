@@ -139,8 +139,8 @@ function mapCliError(error: CliToolError): string {
 /**
  * Handler for the `mittwald_org_list` tool.
  */
-export const handleOrgListCli: MittwaldToolHandler<Record<string, never>> = async (args, sessionId) => {
-  const effectiveSessionId = sessionId || getCurrentSessionId();
+export const handleOrgListCli: MittwaldToolHandler<Record<string, never>> = async (args, context) => {
+  const effectiveSessionId = context?.sessionId || getCurrentSessionId();
 
   if (!effectiveSessionId) {
     return formatToolResponse('error', 'Session ID required');
