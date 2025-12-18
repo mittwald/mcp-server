@@ -1,7 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { uninstallApp, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -28,32 +27,11 @@ export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallA
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv: string[] = ['app', 'uninstall', args.installationId];
-  if (args.quiet) argv.push('--quiet');
-  if (args.force) argv.push('--force');
-
   try {
-    const validation = await validateToolParity({
-      toolName: 'mittwald_app_uninstall',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await uninstallApp({
-          installationId: args.installationId!,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await uninstallApp({
+      installationId: args.installationId!,
+      apiToken: session.mittwaldAccessToken,
     });
-
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_app_uninstall',
-        installationId: args.installationId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-      });
-    }
 
     return formatToolResponse(
       'success',
@@ -64,9 +42,7 @@ export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallA
         quiet: args.quiet,
       },
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -81,7 +57,7 @@ export const handleAppUninstallCli: MittwaldCliToolHandler<MittwaldAppUninstallA
       });
     }
 
-    logger.error('[WP05] Unexpected error in app uninstall handler', { error });
+    logger.error('[WP06] Unexpected error in app uninstall handler', { error });
     return formatToolResponse('error', `Failed to uninstall app: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

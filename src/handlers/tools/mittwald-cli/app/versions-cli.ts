@@ -1,19 +1,12 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { getAppVersions, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldAppVersionsArgs {
   app?: string;
-}
-
-function buildCliArgs(args: MittwaldAppVersionsArgs): string[] {
-  const cliArgs: string[] = ['app', 'versions'];
-  if (args.app) cliArgs.push(args.app);
-  return cliArgs;
 }
 
 export const handleAppVersionsCli: MittwaldCliToolHandler<MittwaldAppVersionsArgs> = async (args, sessionId) => {
@@ -32,41 +25,20 @@ export const handleAppVersionsCli: MittwaldCliToolHandler<MittwaldAppVersionsArg
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv = buildCliArgs(args);
-
   try {
-    const validation = await validateToolParity({
-      toolName: 'mittwald_app_versions',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await getAppVersions({
-          appId: args.app!,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await getAppVersions({
+      appId: args.app!,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_app_versions',
-        app: args.app,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-      });
-    }
-
-    const versions = validation.libraryOutput.data as any[];
+    const versions = result.data as any[];
 
     return formatToolResponse(
       'success',
       `Found ${versions.length} version(s) for ${args.app}`,
       versions,
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -81,7 +53,7 @@ export const handleAppVersionsCli: MittwaldCliToolHandler<MittwaldAppVersionsArg
       });
     }
 
-    logger.error('[WP05] Unexpected error in app versions handler', { error });
+    logger.error('[WP06] Unexpected error in app versions handler', { error });
     return formatToolResponse('error', `Failed to get app versions: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

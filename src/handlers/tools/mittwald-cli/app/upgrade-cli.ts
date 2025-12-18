@@ -1,7 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { upgradeApp, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -14,19 +13,6 @@ interface MittwaldAppUpgradeArgs {
   quiet?: boolean;
   wait?: boolean;
   waitTimeout?: string;
-}
-
-function buildCliArgs(args: MittwaldAppUpgradeArgs, installationId: string): string[] {
-  const cliArgs: string[] = ['app', 'upgrade', installationId];
-
-  if (args.targetVersion) cliArgs.push('--target-version', args.targetVersion);
-  if (args.force) cliArgs.push('--force');
-  if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.wait) cliArgs.push('--wait');
-  if (args.waitTimeout) cliArgs.push('--wait-timeout', args.waitTimeout);
-
-  return cliArgs;
 }
 
 export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs> = async (args, sessionId) => {
@@ -45,31 +31,12 @@ export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs>
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv = buildCliArgs(args, args.installationId);
-
   try {
-    const validation = await validateToolParity({
-      toolName: 'mittwald_app_upgrade',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await upgradeApp({
-          installationId: args.installationId!,
-          targetVersion: args.targetVersion,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await upgradeApp({
+      installationId: args.installationId!,
+      targetVersion: args.targetVersion,
+      apiToken: session.mittwaldAccessToken,
     });
-
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_app_upgrade',
-        installationId: args.installationId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-      });
-    }
 
     const message = args.wait
       ? `App upgrade completed successfully for installation ${args.installationId}`
@@ -86,9 +53,7 @@ export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs>
         wait: args.wait,
       },
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -107,7 +72,7 @@ export const handleAppUpgradeCli: MittwaldCliToolHandler<MittwaldAppUpgradeArgs>
       });
     }
 
-    logger.error('[WP05] Unexpected error in app upgrade handler', { error });
+    logger.error('[WP06] Unexpected error in app upgrade handler', { error });
     return formatToolResponse('error', `Failed to upgrade app: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

@@ -1,7 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { copyApp, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -38,34 +37,14 @@ export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = asy
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv: string[] = ['app', 'copy', args.installationId, '--description', args.description];
-  if (args.quiet) argv.push('--quiet');
-
   try {
-    const validation = await validateToolParity({
-      toolName: 'mittwald_app_copy',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await copyApp({
-          installationId: args.installationId!,
-          description: args.description,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await copyApp({
+      installationId: args.installationId!,
+      description: args.description,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_app_copy',
-        installationId: args.installationId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-      });
-    }
-
-    const copyData = validation.libraryOutput.data as any;
+    const copyData = result.data as any;
 
     return formatToolResponse(
       'success',
@@ -77,9 +56,7 @@ export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = asy
         quiet: args.quiet,
       },
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -94,7 +71,7 @@ export const handleAppCopyCli: MittwaldCliToolHandler<MittwaldAppCopyArgs> = asy
       });
     }
 
-    logger.error('[WP05] Unexpected error in app copy handler', { error });
+    logger.error('[WP06] Unexpected error in app copy handler', { error });
     return formatToolResponse('error', `Failed to copy app: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

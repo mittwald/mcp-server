@@ -1,7 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { getApp, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -27,41 +26,20 @@ export const handleAppGetCli: MittwaldCliToolHandler<MittwaldAppGetArgs> = async
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  const argv: string[] = ['app', 'get', args.installationId, '--output', 'json'];
-
   try {
-    const validation = await validateToolParity({
-      toolName: 'mittwald_app_get',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await getApp({
-          installationId: args.installationId!,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+    const result = await getApp({
+      installationId: args.installationId!,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_app_get',
-        installationId: args.installationId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-      });
-    }
-
-    const appData = validation.libraryOutput.data as any;
+    const appData = result.data as any;
 
     return formatToolResponse(
       'success',
       `App installation details retrieved for: ${appData.app?.name || appData.appId}`,
       appData,
       {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -72,7 +50,7 @@ export const handleAppGetCli: MittwaldCliToolHandler<MittwaldAppGetArgs> = async
       });
     }
 
-    logger.error('[WP05] Unexpected error in app get handler', { error });
+    logger.error('[WP06] Unexpected error in app get handler', { error });
     return formatToolResponse('error', `Failed to get app: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
