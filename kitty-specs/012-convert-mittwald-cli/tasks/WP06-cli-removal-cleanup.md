@@ -9,10 +9,10 @@ subtasks:
   - "T041"
 title: "CLI Removal & Cleanup"
 phase: "Polish"
-lane: "planned"
+lane: "doing"
 assignee: ""
-agent: ""
-shell_pid: ""
+agent: "claude"
+shell_pid: "57224"
 review_status: ""
 reviewed_by: ""
 history:
@@ -127,3 +127,4 @@ Test suite verification:
 ## Activity Log
 
 - 2025-12-18T06:00:00Z – system – lane=planned – Prompt created
+- 2025-12-18T13:26:01Z – claude – shell_pid=57224 – lane=doing – Started WP06 implementation - CLI removal and cleanup
