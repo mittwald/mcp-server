@@ -89,6 +89,43 @@ export async function getApp(options: GetAppOptions): Promise<LibraryResult<any>
 }
 
 // ============================================================================
+// GET PROJECT ID FROM INSTALLATION
+// ============================================================================
+
+export interface GetProjectIdFromInstallationOptions extends LibraryFunctionBase {
+  installationId: string;
+}
+
+/**
+ * Derives the projectId from an app installationId.
+ * Useful when handlers accept installationId but need projectId for API calls.
+ */
+export async function getProjectIdFromInstallation(
+  options: GetProjectIdFromInstallationOptions
+): Promise<LibraryResult<string>> {
+  const startTime = performance.now();
+
+  try {
+    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
+    const response = await client.app.getAppinstallation({ appInstallationId: options.installationId });
+    assertStatus(response, 200);
+
+    const projectId = response.data.projectId;
+    if (!projectId) {
+      throw new LibraryError('No projectId found in app installation', 404);
+    }
+
+    return { data: projectId, status: response.status, durationMs: performance.now() - startTime };
+  } catch (error) {
+    throw new LibraryError(
+      error instanceof Error ? error.message : 'Unknown error',
+      (error as any).status || 500,
+      { originalError: error, durationMs: performance.now() - startTime }
+    );
+  }
+}
+
+// ============================================================================
 // UNINSTALL APP
 // ============================================================================
 

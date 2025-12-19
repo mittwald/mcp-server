@@ -22,7 +22,7 @@ interface OrganizationListItem {
 function normalizeOrganizationEntry(entry: unknown): OrganizationListItem {
   const record = (entry ?? {}) as Record<string, unknown>;
 
-  const id = String(record.id ?? record.orgId ?? record.organizationId ?? 'unknown');
+  const id = String(record.customerId ?? record.id ?? record.organizationId ?? 'unknown');
   const name = String(record.name ?? record.title ?? 'Unnamed Organization');
   const roleValue = record.role ?? record.membershipRole ?? record.userRole ?? 'member';
   const role = typeof roleValue === 'string' ? roleValue : 'member';

@@ -24,6 +24,9 @@ export interface UserSession {
     orgId?: string;
   };
   accessibleProjects?: string[];
+  cache?: {
+    appToProject?: Record<string, string>; // installationId -> projectId
+  };
   lastAccessed: Date;
   authenticationMode?: 'bridge' | 'direct-token';
 }
@@ -237,6 +240,7 @@ export class SessionManager {
         mittwaldRefreshTokenExpiresAt: updatedSession.mittwaldRefreshTokenExpiresAt,
         currentContext: updatedSession.currentContext,
         accessibleProjects: updatedSession.accessibleProjects,
+        cache: updatedSession.cache,
         authenticationMode: updatedSession.authenticationMode,
       }, { ttlSeconds });
 

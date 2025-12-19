@@ -43,7 +43,9 @@
     "stack:write",
     "stack:delete",
     "user:read",
-    "user:write"
+    "user:write",
+    "conversation:read",
+    "conversation:write"
   ],
   "upstreamScopes": [
     "app:read",
@@ -86,7 +88,9 @@
     "stack:write",
     "stack:delete",
     "user:read",
-    "user:write"
+    "user:write",
+    "conversation:read",
+    "conversation:write"
   ],
   "defaultScopes": [
     "user:read",

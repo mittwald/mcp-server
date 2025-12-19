@@ -1,6 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { createCronjob, LibraryError } from '@mittwald-mcp/cli-core';
+import { createCronjob, getProjectIdFromInstallation, LibraryError } from '@mittwald-mcp/cli-core';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -57,8 +57,38 @@ export const handleCronjobCreateCli: MittwaldCliToolHandler<MittwaldCronjobCreat
     // Parse timeout (CLI accepts string like "60s", library expects number)
     const timeoutMs = args.timeout ? parseInt(args.timeout.replace(/[^\d]/g, '')) * 1000 : 60000;
 
+    // Derive projectId from installationId if not provided
+    let effectiveProjectId = args.projectId;
+    if (!effectiveProjectId && args.installationId) {
+      // Check cache first
+      const cachedProjectId = session.cache?.appToProject?.[args.installationId];
+      if (cachedProjectId) {
+        effectiveProjectId = cachedProjectId;
+        logger.debug(`Using cached projectId ${effectiveProjectId} for installationId ${args.installationId}`);
+      } else {
+        // Derive from API
+        const projectIdResult = await getProjectIdFromInstallation({
+          installationId: args.installationId,
+          apiToken: session.mittwaldAccessToken,
+        });
+        effectiveProjectId = projectIdResult.data;
+
+        // Cache for future use
+        await sessionManager.updateSession(effectiveSessionId, {
+          cache: {
+            ...session.cache,
+            appToProject: {
+              ...session.cache?.appToProject,
+              [args.installationId]: effectiveProjectId,
+            },
+          },
+        });
+        logger.debug(`Derived and cached projectId ${effectiveProjectId} for installationId ${args.installationId}`);
+      }
+    }
+
     const result = await createCronjob({
-      projectId: args.projectId!,
+      projectId: effectiveProjectId!,
       appId: args.installationId!,
       description: args.description,
       interval: args.interval,
