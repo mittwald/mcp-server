@@ -12,6 +12,38 @@ interface MittwaldUserApiTokenCreateArgs {
   expires?: string;
 }
 
+/**
+ * Converts interval format (30d, 1y, etc.) to ISO 8601 datetime
+ */
+function parseExpiresInterval(expires?: string): string | undefined {
+  if (!expires) return undefined;
+
+  const now = new Date();
+  const match = expires.match(/^(\d+)([mhdwy])$/i);
+
+  if (!match) {
+    // If it's already an ISO date, return as-is
+    if (expires.includes('T') || expires.includes('-')) {
+      return expires;
+    }
+    throw new Error(`Invalid expires format: ${expires}. Use format like: 30m, 30d, 1y`);
+  }
+
+  const [, amount, unit] = match;
+  const value = parseInt(amount, 10);
+
+  switch (unit.toLowerCase()) {
+    case 'm': now.setMinutes(now.getMinutes() + value); break;
+    case 'h': now.setHours(now.getHours() + value); break;
+    case 'd': now.setDate(now.getDate() + value); break;
+    case 'w': now.setDate(now.getDate() + value * 7); break;
+    case 'y': now.setFullYear(now.getFullYear() + value); break;
+    default: throw new Error(`Invalid expires unit: ${unit}`);
+  }
+
+  return now.toISOString();
+}
+
 export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApiTokenCreateArgs> = async (
   args,
   sessionId,
@@ -36,10 +68,13 @@ export const handleUserApiTokenCreateCli: MittwaldCliToolHandler<MittwaldUserApi
   }
 
   try {
+    // Convert interval format to ISO datetime
+    const expiresAt = parseExpiresInterval(args.expires);
+
     const result = await createUserApiToken({
       description: args.description,
       roles: args.roles,
-      expiresAt: args.expires,
+      expiresAt,
       apiToken: session.mittwaldAccessToken,
     });
 
