@@ -41,7 +41,20 @@ export const handleUserSshKeyListCli: MittwaldCliToolHandler<MittwaldUserSshKeyL
       apiToken: session.mittwaldAccessToken,
     });
 
-    const keys = result.data as any[];
+    // Handle different API response formats
+    let keys: any[] = [];
+    if (Array.isArray(result.data)) {
+      keys = result.data;
+    } else if (result.data && typeof result.data === 'object') {
+      // API might return an object with a keys/items/sshKeys property
+      const possibleArrayFields = ['keys', 'items', 'sshKeys', 'data'];
+      for (const field of possibleArrayFields) {
+        if (Array.isArray((result.data as any)[field])) {
+          keys = (result.data as any)[field];
+          break;
+        }
+      }
+    }
 
     if (!keys || keys.length === 0) {
       return formatToolResponse(
