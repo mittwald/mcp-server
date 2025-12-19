@@ -675,9 +675,10 @@ flyctl apps restart mittwald-prometheus
 ### Infrastruktur-Einschränkungen
 
 1. **Nur Einzelinstanz**
-   - **Grund:** In-Memory-Session-State (Redis für Persistenz, aber Session-Objekte im Speicher)
-   - **Auswirkung:** Kann nicht horizontal skalieren
-   - **Abhilfe:** Vertikale Skalierung bei Bedarf (derzeit ist 512MB ausreichend)
+   - **Grund:** MCP-Protokoll-State (Server-Instanzen und HTTP-Transports) müssen im Speicher für aktive Verbindungen bleiben
+   - **Details:** Benutzersitzungs-DATEN (Tokens, Context) sind vollständig in Redis, aber MCP-`Server` und `StreamableHTTPServerTransport`-Objekte können nicht serialisiert werden
+   - **Auswirkung:** Kann nicht horizontal skalieren ohne Sticky-Sessions oder Verbindungsmigration
+   - **Abhilfe:** Vertikale Skalierung bei Bedarf (derzeit ist 512MB ausreichend für 10+ gleichzeitige Benutzer)
 
 2. **Öffentliche Metriken-Endpunkte**
    - **Status:** Keine Authentifizierung bei `/metrics`-Endpunkten
@@ -710,10 +711,10 @@ flyctl apps restart mittwald-prometheus
    - Leistungs-Baselines unter Last etablieren
    - Vertikale Skalierungsschwellen identifizieren
 
-4. **Session-Persistenz**
-   - Session-State vollständig zu Redis migrieren
-   - Horizontale Skalierung bei Bedarf ermöglichen
-   - Session-Replikation implementieren
+4. **Horizontale Skalierungs-Unterstützung**
+   - Sticky-Sessions oder Verbindungsmigration für MCP-Protokoll-State implementieren
+   - Load-Balancing über mehrere Instanzen ermöglichen
+   - Hinweis: Benutzersitzungsdaten bereits in Redis; nur MCP-Server/Transport-Objekte sind im Speicher
 
 5. **Sicherheitshärtung**
    - Authentifizierung zu Metriken-Endpunkten hinzufügen

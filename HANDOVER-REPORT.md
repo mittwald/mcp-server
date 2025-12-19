@@ -675,9 +675,10 @@ flyctl apps restart mittwald-prometheus
 ### Infrastructure Limitations
 
 1. **Single Instance Only**
-   - **Reason:** In-memory session state (Redis for persistence, but session objects in memory)
-   - **Impact:** Cannot horizontally scale
-   - **Mitigation:** Vertical scaling if needed (currently 512MB is sufficient)
+   - **Reason:** MCP protocol state (Server instances and HTTP transports) must remain in-memory for active connections
+   - **Details:** User session DATA (tokens, context) is fully in Redis, but MCP `Server` and `StreamableHTTPServerTransport` objects cannot be serialized
+   - **Impact:** Cannot horizontally scale without sticky sessions or connection migration
+   - **Mitigation:** Vertical scaling if needed (currently 512MB is sufficient for 10+ concurrent users)
 
 2. **Metrics Endpoints Public**
    - **Status:** No authentication on `/metrics` endpoints
@@ -710,10 +711,10 @@ flyctl apps restart mittwald-prometheus
    - Establish performance baselines under load
    - Identify vertical scaling thresholds
 
-4. **Session Persistence**
-   - Migrate session state fully to Redis
-   - Enable horizontal scaling if needed
-   - Implement session replication
+4. **Horizontal Scaling Support**
+   - Implement sticky sessions or connection migration for MCP protocol state
+   - Enable load balancing across multiple instances
+   - Note: User session data already in Redis; only MCP Server/Transport objects are in-memory
 
 5. **Security Hardening**
    - Add authentication to metrics endpoints
