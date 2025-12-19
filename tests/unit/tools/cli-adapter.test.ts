@@ -86,7 +86,7 @@ describe('invokeCliTool', () => {
     expect(result.ok).toBe(true);
     expect(result.result).toEqual(['p-123']);
     expect(result.meta.exitCode).toBe(0);
-    expect(executeWithSession).toHaveBeenCalledWith('mw', ['project', 'list'], 'session-123', {});
+    expect(executeWithSession).toHaveBeenCalledWith('mw', ['project', 'list'], 'session-123', {}, 'mittwald_project_list');
   });
 
   it('uses session from execution context when not provided explicitly', async () => {
@@ -99,7 +99,7 @@ describe('invokeCliTool', () => {
     });
 
     expect(result.ok).toBe(true);
-    expect(executeWithSession).toHaveBeenCalledWith('mw', ['project', 'list'], 'session-from-context', {});
+    expect(executeWithSession).toHaveBeenCalledWith('mw', ['project', 'list'], 'session-from-context', {}, 'mittwald_project_list');
   });
 
   it('throws CliToolError when session is missing', async () => {
@@ -160,7 +160,7 @@ describe('invokeCliTool', () => {
       cliOptions: { timeout: 10_000 },
     });
 
-    expect(executeWithSession).toHaveBeenCalledWith('npx mw', ['project', 'list'], 'session-1', { timeout: 10_000 });
+    expect(executeWithSession).toHaveBeenCalledWith('npx mw', ['project', 'list'], 'session-1', { timeout: 10_000 }, 'mittwald_project_list');
   });
 
   it('fails with OUTPUT_LIMIT when stdout exceeds configured cap', async () => {

@@ -29,6 +29,9 @@ vi.mock('../../../src/metrics/index.js', () => ({
   toolDuration: {
     startTimer: vi.fn(() => vi.fn()),
   },
+  memoryPressure: {
+    set: vi.fn(),
+  },
 }));
 
 describe('Disabled Tools Error Handling', () => {
