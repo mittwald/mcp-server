@@ -1,0 +1,351 @@
+{
+  "generated_at": "2025-12-19T09:45:04.990Z",
+  "summary": {
+    "total_tools": 115,
+    "total_executed": 115,
+    "total_success": 54,
+    "total_failure": 61,
+    "overall_success_rate": 46.95652173913044,
+    "overall_coverage_rate": 100
+  },
+  "by_domain": [
+    {
+      "domain": "apps",
+      "total_tools": 8,
+      "executed": 7,
+      "success_count": 7,
+      "failure_count": 0,
+      "pending_count": 1,
+      "success_rate": 100,
+      "coverage_rate": 87.5
+    },
+    {
+      "domain": "automation",
+      "total_tools": 9,
+      "executed": 3,
+      "success_count": 3,
+      "failure_count": 0,
+      "pending_count": 6,
+      "success_rate": 100,
+      "coverage_rate": 33.33333333333333
+    },
+    {
+      "domain": "backups",
+      "total_tools": 8,
+      "executed": 8,
+      "success_count": 3,
+      "failure_count": 5,
+      "pending_count": 0,
+      "success_rate": 37.5,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "certificates",
+      "total_tools": 1,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "pending_count": 1,
+      "success_rate": 0,
+      "coverage_rate": 0
+    },
+    {
+      "domain": "containers",
+      "total_tools": 10,
+      "executed": 5,
+      "success_count": 5,
+      "failure_count": 0,
+      "pending_count": 5,
+      "success_rate": 100,
+      "coverage_rate": 50
+    },
+    {
+      "domain": "context",
+      "total_tools": 3,
+      "executed": 3,
+      "success_count": 2,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 66.66666666666666,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "databases",
+      "total_tools": 14,
+      "executed": 7,
+      "success_count": 5,
+      "failure_count": 2,
+      "pending_count": 7,
+      "success_rate": 71.42857142857143,
+      "coverage_rate": 50
+    },
+    {
+      "domain": "domains-mail",
+      "total_tools": 20,
+      "executed": 8,
+      "success_count": 8,
+      "failure_count": 0,
+      "pending_count": 12,
+      "success_rate": 100,
+      "coverage_rate": 40
+    },
+    {
+      "domain": "identity",
+      "total_tools": 12,
+      "executed": 12,
+      "success_count": 9,
+      "failure_count": 3,
+      "pending_count": 0,
+      "success_rate": 75,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "misc",
+      "total_tools": 5,
+      "executed": 5,
+      "success_count": 0,
+      "failure_count": 5,
+      "pending_count": 0,
+      "success_rate": 0,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "organization",
+      "total_tools": 7,
+      "executed": 7,
+      "success_count": 5,
+      "failure_count": 2,
+      "pending_count": 0,
+      "success_rate": 71.42857142857143,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "project-foundation",
+      "total_tools": 12,
+      "executed": 7,
+      "success_count": 5,
+      "failure_count": 2,
+      "pending_count": 5,
+      "success_rate": 71.42857142857143,
+      "coverage_rate": 58.333333333333336
+    },
+    {
+      "domain": "sftp",
+      "total_tools": 2,
+      "executed": 2,
+      "success_count": 1,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 50,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "ssh",
+      "total_tools": 4,
+      "executed": 4,
+      "success_count": 1,
+      "failure_count": 3,
+      "pending_count": 0,
+      "success_rate": 25,
+      "coverage_rate": 100
+    }
+  ],
+  "by_tier": [
+    {
+      "tier": 0,
+      "total_tools": 115,
+      "executed": 78,
+      "success_count": 54,
+      "failure_count": 24,
+      "success_rate": 69.23076923076923
+    },
+    {
+      "tier": 1,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 2,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 3,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 4,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    }
+  ],
+  "problems": [
+    {
+      "type": "dependency_missing",
+      "count": 43,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_sftp_user_delete",
+        "mcp__mittwald__mittwald_ssh_user_create",
+        "mcp__mittwald__mittwald_ssh_user_delete",
+        "mcp__mittwald__mittwald_ssh_user_update",
+        "mcp__mittwald__mittwald_app-upgrade",
+        "mcp__mittwald__mittwald_cronjob-create",
+        "mcp__mittwald__mittwald_cronjob-delete",
+        "mcp__mittwald__mittwald_cronjob-execute",
+        "mcp__mittwald__mittwald_cronjob-execution-abort",
+        "mcp__mittwald__mittwald_cronjob-execution-get",
+        "mcp__mittwald__mittwald_cronjob-update",
+        "mcp__mittwald__mittwald_registry-create",
+        "mcp__mittwald__mittwald_registry-delete",
+        "mcp__mittwald__mittwald_registry-update",
+        "mcp__mittwald__mittwald_stack-delete",
+        "mcp__mittwald__mittwald_stack-deploy",
+        "mcp__mittwald__mittwald_database-mysql-delete",
+        "mcp__mittwald__mittwald_database-mysql-get",
+        "mcp__mittwald__mittwald_database-mysql-user-create",
+        "mcp__mittwald__mittwald_database-mysql-user-delete",
+        "mcp__mittwald__mittwald_database-mysql-user-get",
+        "mcp__mittwald__mittwald_database-mysql-user-list",
+        "mcp__mittwald__mittwald_database-mysql-user-update",
+        "mcp__mittwald__mittwald_certificate-request",
+        "mcp__mittwald__mittwald_domain-dnszone-get",
+        "mcp__mittwald__mittwald_domain-dnszone-update",
+        "mcp__mittwald__mittwald_domain-get",
+        "mcp__mittwald__mittwald_domain-virtualhost-create",
+        "mcp__mittwald__mittwald_domain-virtualhost-delete",
+        "mcp__mittwald__mittwald_mail-address-create",
+        "mcp__mittwald__mittwald_mail-address-delete",
+        "mcp__mittwald__mittwald_mail-address-update",
+        "mcp__mittwald__mittwald_mail-deliverybox-create",
+        "mcp__mittwald__mittwald_mail-deliverybox-delete",
+        "mcp__mittwald__mittwald_mail-deliverybox-get",
+        "mcp__mittwald__mittwald_mail-deliverybox-update",
+        "mcp__mittwald__mittwald_org_invite_revoke",
+        "mcp__mittwald__mittwald_org_membership_revoke",
+        "mcp__mittwald__mittwald_project-create",
+        "mcp__mittwald__mittwald_project-delete",
+        "mcp__mittwald__mittwald_project-invite-get",
+        "mcp__mittwald__mittwald_project-membership-get",
+        "mcp__mittwald__mittwald_project-ssh"
+      ],
+      "sample_descriptions": [
+        "MCP tools not available in agent tool interface despite MCP server being connected. The mittwald MCP server shows as connected via 'claude mcp list', but no mcp__mittwald__* tools are exposed to the AI agent.",
+        "MCP tools not available in agent tool interface despite MCP server being connected. The mittwald MCP server shows as connected via 'claude mcp list', but no mcp__mittwald__* tools are exposed to the AI agent.",
+        "MCP tools not available in agent tool interface despite MCP server being connected. The mittwald MCP server shows as connected via 'claude mcp list', but no mcp__mittwald__* tools are exposed to the AI agent."
+      ]
+    },
+    {
+      "type": "permission_denied",
+      "count": 9,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_context_set_session",
+        "mcp__mittwald__mittwald_database_redis_versions",
+        "mcp__mittwald__mittwald_conversation_categories",
+        "mcp__mittwald__mittwald_conversation_create",
+        "mcp__mittwald__mittwald_conversation_list",
+        "mcp__mittwald__mittwald_conversation_reply",
+        "mcp__mittwald__mittwald_conversation_show",
+        "mcp__mittwald__mittwald_project_invite_list",
+        "mcp__mittwald__mittwald_project_membership_list"
+      ],
+      "sample_descriptions": [
+        "Access denied to project fd1ef726-14b8-4906-8a45-0756ba993246. API returned 403 error.",
+        "HTTP 403 Forbidden when querying Redis versions.",
+        "Tool disabled in MCP server - conversation endpoints return 403 Forbidden (no OAuth scope support, admin-only)"
+      ]
+    },
+    {
+      "type": "other",
+      "count": 5,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_backup_create",
+        "mcp__mittwald__mittwald_backup_delete",
+        "mcp__mittwald__mittwald_backup_schedule_create",
+        "mcp__mittwald__mittwald_backup_schedule_delete",
+        "mcp__mittwald__mittwald_backup_schedule_update"
+      ],
+      "sample_descriptions": [
+        "MCP tools not accessible in current Claude Code execution context. Tools are confirmed to exist in the inventory (evals/inventory/tools-current.json) and MCP server shows as connected, but tools cannot be invoked programmatically in this agent execution environment.",
+        "MCP tools not accessible in current Claude Code execution context. Tools are confirmed to exist in the inventory (evals/inventory/tools-current.json) and MCP server shows as connected, but tools cannot be invoked programmatically in this agent execution environment.",
+        "MCP tools not accessible in current Claude Code execution context. Tools are confirmed to exist in the inventory (evals/inventory/tools-current.json) and MCP server shows as connected, but tools cannot be invoked programmatically in this agent execution environment."
+      ]
+    },
+    {
+      "type": "validation_error",
+      "count": 3,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_user_api_token_create",
+        "mcp__mittwald__mittwald_user_ssh_key_create",
+        "mcp__mittwald__mittwald_user_ssh_key_import"
+      ],
+      "sample_descriptions": [
+        "HTTP 400 Bad Request. The 'expires' parameter format '30d' was rejected by API. May need ISO date format instead.",
+        "Tool requires publicKey parameter. Library version imports existing keys rather than generating new ones.",
+        "File path error: ~/ not properly expanded. Requires absolute path to SSH public key file."
+      ]
+    },
+    {
+      "type": "api_error",
+      "count": 1,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_database_mysql_create"
+      ],
+      "sample_descriptions": [
+        "HTTP 500 Internal Server Error when creating MySQL database. API endpoint failure."
+      ]
+    }
+  ],
+  "tools_without_assessment": [
+    "app/upgrade",
+    "certificate/request",
+    "cronjob/create",
+    "cronjob/delete",
+    "cronjob/execute",
+    "cronjob/execution/abort",
+    "cronjob/execution/get",
+    "cronjob/update",
+    "database/mysql/delete",
+    "database/mysql/get",
+    "database/mysql/user/create",
+    "database/mysql/user/delete",
+    "database/mysql/user/get",
+    "database/mysql/user/list",
+    "database/mysql/user/update",
+    "domain/dnszone/get",
+    "domain/dnszone/update",
+    "domain/get",
+    "domain/virtualhost/create",
+    "domain/virtualhost/delete",
+    "mail/address/create",
+    "mail/address/delete",
+    "mail/address/update",
+    "mail/deliverybox/create",
+    "mail/deliverybox/delete",
+    "mail/deliverybox/get",
+    "mail/deliverybox/update",
+    "project/create",
+    "project/delete",
+    "project/invite/get",
+    "project/membership/get",
+    "project/ssh",
+    "registry/create",
+    "registry/delete",
+    "registry/update",
+    "stack/delete",
+    "stack/deploy"
+  ],
+  "execution_metadata": {}
+}

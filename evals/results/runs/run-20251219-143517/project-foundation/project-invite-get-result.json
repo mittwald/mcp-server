@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_project_invite_get",
+  "timestamp": "2025-12-19T14:49:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "Cannot execute project-invite-get because project-invite-list failed with 403 permission error. Unable to obtain real invite ID."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Cannot execute - dependency failed",
+  "execution_notes": "Tool not executed because prerequisite project-invite-list failed. Would need valid invite ID from list operation."
+}

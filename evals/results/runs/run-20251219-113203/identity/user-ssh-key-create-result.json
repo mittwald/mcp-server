@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_create",
+  "timestamp": "2025-12-19T11:35:35Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {"type": "ssh_key", "comment": "eval-test-key-20251219", "algorithm": "ed25519"}
+  ],
+  "resources_verified": [],
+  "tool_response_summary": "Successfully imported SSH key with publicKey parameter (ed25519 key)",
+  "execution_notes": "Tool requires publicKey parameter (full key string). Creates/imports the key to user's SSH key list. Execution time: 93ms"
+}

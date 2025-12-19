@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_import",
+  "timestamp": "2025-12-19T14:41:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "ssh_key",
+      "id": "imported",
+      "description": "eval-import-test-20251219"
+    }
+  ],
+  "resources_verified": [],
+  "tool_response_summary": "Successfully imported SSH key using publicKey parameter. Test key: ssh-ed25519 with comment 'eval-import-test-20251219'. Response time: 93.28ms",
+  "execution_notes": "Tool executed successfully using publicKey parameter (recommended approach for MCP). Imported ed25519 key to Mittwald API. Key can now be used for SSH authentication."
+}

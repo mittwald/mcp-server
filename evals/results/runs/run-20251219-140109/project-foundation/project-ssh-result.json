@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_project_ssh",
+  "timestamp": "2025-12-19T14:07:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "ssh_command",
+      "projectId": "d3201a21-05ec-4154-af61-19ea7784ca95",
+      "description": "SSH command prepared for interactive use"
+    }
+  ],
+  "tool_response_summary": "Successfully prepared SSH command for interactive terminal execution",
+  "execution_notes": "Tool returns command string for terminal use: 'mw project ssh d3201a21-05ec-4154-af61-19ea7784ca95'. Cannot execute interactively through MCP."
+}

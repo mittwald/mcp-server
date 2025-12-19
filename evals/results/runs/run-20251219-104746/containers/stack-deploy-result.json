@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_stack_deploy",
+  "timestamp": "2025-12-19T09:53:06Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "Stack ID parameter is required"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Failed - stackId parameter required",
+  "execution_notes": "Tool requires stackId parameter to deploy compose file."
+}

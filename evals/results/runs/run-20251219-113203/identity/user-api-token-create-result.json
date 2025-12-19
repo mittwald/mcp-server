@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_api_token_create",
+  "timestamp": "2025-12-19T11:35:15Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {"type": "api_token", "id": "76a09a89-f64e-4d87-b096-61072d39dd55", "description": "eval-test-token-20251219"}
+  ],
+  "resources_verified": [],
+  "tool_response_summary": "Successfully created API token with api_read role, expires in 30 days",
+  "execution_notes": "Token generated with ID 76a09a89-f64e-4d87-b096-61072d39dd55. Execution time: 100ms"
+}

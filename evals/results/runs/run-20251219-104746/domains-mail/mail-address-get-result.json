@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_address_get",
+  "timestamp": "2025-12-19T09:52:55Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["mail:4223500d-baca-4d2d-87db-4d8534d23220"],
+  "tool_response_summary": "Successfully retrieved mail address info@mcp.mittwald.de",
+  "execution_notes": "Retrieved mailbox details including quota (5GB limit, 0 used), spam protection settings, auto-responder status. Duration: 57ms"
+}

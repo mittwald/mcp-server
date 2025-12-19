@@ -1,0 +1,1 @@
+{"success":true,"confidence":"high","tool_executed":"mcp__mittwald__mittwald_certificate_list","timestamp":"2025-12-19T14:15:00Z","problems_encountered":[],"resources_created":[],"resources_verified":[{"type":"certificate_list","count":0}],"tool_response_summary":"Successfully listed certificates - no certificates for example.com","execution_notes":"Response time: 57ms"}

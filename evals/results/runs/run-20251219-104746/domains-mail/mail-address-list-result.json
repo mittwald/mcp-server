@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_address_list",
+  "timestamp": "2025-12-19T09:52:54Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["3 mail addresses found"],
+  "tool_response_summary": "Successfully listed 3 mail addresses: info@, sales@, support@ mcp.mittwald.de",
+  "execution_notes": "Retrieved complete mailbox details including quota, spam protection, storage usage. Duration: 86ms"
+}

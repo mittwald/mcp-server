@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list",
+  "timestamp": "2025-12-19T11:37:45Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "app", "count": 2}
+  ],
+  "tool_response_summary": "Successfully listed 2 PHP applications (PHP 8.2 Application, Eval Test Copy)",
+  "execution_notes": "Both apps are in ready phase and enabled. IDs: 70a3012d-d28a-4ca3-a146-9d3531ac5f95, 0b6f1d0b-7bf3-4c98-9d95-85bc02951e47. Execution time: 199ms"
+}

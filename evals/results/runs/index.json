@@ -30,8 +30,209 @@
         "total_failure": 52,
         "success_rate": 50.476190476190474
       }
+    },
+    {
+      "run_id": "run-20251219-085123",
+      "name": "baseline-v2",
+      "description": "Second baseline run to compare consistency",
+      "created_at": "2025-12-19T07:51:23.624Z",
+      "status": "completed",
+      "domains_executed": [
+        "apps",
+        "automation",
+        "backups",
+        "containers",
+        "context",
+        "databases",
+        "domains-mail",
+        "identity",
+        "misc",
+        "organization",
+        "project-foundation",
+        "sftp",
+        "ssh"
+      ],
+      "total_evals_executed": 115,
+      "tags": [
+        "baseline",
+        "comparison"
+      ],
+      "environment": {
+        "mcp_server_url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+        "oauth_bridge_url": "https://mittwald-oauth-server.fly.dev"
+      },
+      "completed_at": "2025-12-19T09:45:04.992Z",
+      "summary": {
+        "total_success": 54,
+        "total_failure": 61,
+        "success_rate": 46.95652173913044
+      }
+    },
+    {
+      "run_id": "run-20251219-104746",
+      "name": "baseline-v3",
+      "description": "Third baseline run for consistency validation",
+      "created_at": "2025-12-19T09:47:46.102Z",
+      "status": "completed",
+      "domains_executed": [
+        "apps",
+        "automation",
+        "backups",
+        "certificates",
+        "containers",
+        "context",
+        "databases",
+        "domains-mail",
+        "identity",
+        "misc",
+        "organization",
+        "project-foundation",
+        "sftp",
+        "ssh"
+      ],
+      "total_evals_executed": 115,
+      "tags": [
+        "baseline",
+        "validation"
+      ],
+      "environment": {
+        "mcp_server_url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+        "oauth_bridge_url": "https://mittwald-oauth-server.fly.dev"
+      },
+      "completed_at": "2025-12-19T10:19:53.331Z",
+      "summary": {
+        "total_success": 81,
+        "total_failure": 34,
+        "success_rate": 70.43478260869566
+      }
+    },
+    {
+      "run_id": "run-20251219-113203",
+      "name": "baseline-v4",
+      "description": "Fourth baseline run - stability tracking",
+      "created_at": "2025-12-19T10:32:03.853Z",
+      "status": "completed",
+      "domains_executed": [
+        "apps",
+        "automation",
+        "backups",
+        "certificates",
+        "containers",
+        "context",
+        "databases",
+        "domains-mail",
+        "identity",
+        "organization",
+        "project-foundation",
+        "sftp",
+        "ssh"
+      ],
+      "total_evals_executed": 87,
+      "tags": [
+        "baseline",
+        "stability"
+      ],
+      "environment": {
+        "mcp_server_url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+        "oauth_bridge_url": "https://mittwald-oauth-server.fly.dev"
+      },
+      "completed_at": "2025-12-19T12:59:52.647Z",
+      "summary": {
+        "total_success": 52,
+        "total_failure": 35,
+        "success_rate": 59.77011494252874
+      }
+    },
+    {
+      "run_id": "run-20251219-140109",
+      "name": "baseline-v5",
+      "description": "Fifth baseline run - complete re-run for consistency",
+      "created_at": "2025-12-19T13:01:09.306Z",
+      "status": "completed",
+      "domains_executed": [
+        "apps",
+        "context",
+        "databases",
+        "domains-mail",
+        "identity",
+        "organization",
+        "project-foundation"
+      ],
+      "total_evals_executed": 57,
+      "tags": [
+        "baseline",
+        "complete"
+      ],
+      "environment": {
+        "mcp_server_url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+        "oauth_bridge_url": "https://mittwald-oauth-server.fly.dev"
+      },
+      "completed_at": "2025-12-19T13:18:08.967Z",
+      "summary": {
+        "total_success": 35,
+        "total_failure": 22,
+        "success_rate": 61.40350877192983
+      }
+    },
+    {
+      "run_id": "run-20251219-143425",
+      "name": "baseline-v6-multi-agent",
+      "description": "Complete run with 5-agent workload distribution",
+      "created_at": "2025-12-19T13:34:25.066Z",
+      "status": "in_progress",
+      "domains_executed": [],
+      "total_evals_executed": 0,
+      "tags": [
+        "baseline",
+        "multi-agent",
+        "complete"
+      ],
+      "environment": {
+        "mcp_server_url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+        "oauth_bridge_url": "https://mittwald-oauth-server.fly.dev"
+      }
+    },
+    {
+      "run_id": "run-20251219-143517",
+      "name": "baseline-v6-agent1",
+      "description": "Agent 1: Foundation tier (identity, org, context)",
+      "created_at": "2025-12-19T13:35:17.104Z",
+      "status": "completed",
+      "domains_executed": [
+        "apps",
+        "automation",
+        "backups",
+        "certificates",
+        "containers",
+        "context",
+        "databases",
+        "domains-mail",
+        "identity",
+        "misc",
+        "organization",
+        "project-foundation",
+        "sftp",
+        "ssh"
+      ],
+      "total_evals_executed": 115,
+      "tags": [
+        "baseline",
+        "multi-agent",
+        "agent-1",
+        "foundation"
+      ],
+      "environment": {
+        "mcp_server_url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+        "oauth_bridge_url": "https://mittwald-oauth-server.fly.dev"
+      },
+      "completed_at": "2025-12-19T13:56:34.119Z",
+      "summary": {
+        "total_success": 71,
+        "total_failure": 44,
+        "success_rate": 61.73913043478261
+      }
     }
   ],
-  "last_updated": "2025-12-19T07:21:19.051Z",
-  "active_run_id": "run-20251219-080127"
+  "last_updated": "2025-12-19T13:56:34.119Z",
+  "active_run_id": "run-20251219-143517"
 }

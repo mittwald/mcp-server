@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_api_token_create",
+  "timestamp": "2025-12-19T10:27:00Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "HTTP 400 Bad Request. The 'expires' parameter format '30d' was rejected by API. May need ISO date format instead."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Failed with 400 validation error on expires parameter format.",
+  "execution_notes": "Tool called correctly but API rejected the request. Parameter validation issue with expires field."
+}

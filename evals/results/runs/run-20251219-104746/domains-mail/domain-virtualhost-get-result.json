@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_virtualhost_get",
+  "timestamp": "2025-12-19T09:52:55Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["virtualhost:af77571f-93b4-4a64-ab86-d8740b430fdf"],
+  "tool_response_summary": "Successfully retrieved virtualhost details for auth.mcp.mittwald.de",
+  "execution_notes": "Retrieved paths, container mapping (port 3000/tcp), IPv4 address, and DNS validation status. Duration: 55ms"
+}

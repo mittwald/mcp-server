@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_certificate_request",
+  "timestamp": "2025-12-19T15:00:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "No domain resources found in any accessible project (verified via domain-list eval). Cannot request SSL/TLS certificate without an existing, verified domain. Domain registration and DNS verification required."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool not executed - prerequisite domain resource unavailable.",
+  "execution_notes": "Certificate request requires an existing, DNS-verified domain. None available in accessible projects. Would need domain registration and DNS setup to proceed."
+}

@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_create",
+  "timestamp": "2025-12-19T09:52:33Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "publicKey parameter is required - tool requires existing key to import, does not generate keys locally"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Failed - publicKey parameter required",
+  "execution_notes": "This tool is actually an import tool that requires an existing public key, not a key generator. See ssh-key-import for the intended use case."
+}

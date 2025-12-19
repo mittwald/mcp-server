@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_api_token_get",
+  "timestamp": "2025-12-19T11:35:11Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "api_token", "id": "699b1b90-5476-44b8-a504-f491ea771814"}
+  ],
+  "tool_response_summary": "Successfully retrieved API token details for MCP-DOCS token",
+  "execution_notes": "Token has api_read and api_write roles, created on 2025-12-03. Execution time: 68ms"
+}

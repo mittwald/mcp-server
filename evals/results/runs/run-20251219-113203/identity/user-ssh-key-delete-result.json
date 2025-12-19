@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_delete",
+  "timestamp": "2025-12-19T11:35:40Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "ssh_key", "id": "a544084d-9ff9-4d30-b7f1-586d90e2e40b", "action": "deleted"}
+  ],
+  "tool_response_summary": "Successfully deleted SSH key a544084d-9ff9-4d30-b7f1-586d90e2e40b (eval-test-key-20251219)",
+  "execution_notes": "Deleted the test SSH key created in previous step. Execution time: 97ms"
+}

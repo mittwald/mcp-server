@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_certificate_request",
+  "timestamp": "2025-12-19T09:52:56Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "commonName parameter is required but not provided"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Failed - commonName parameter required",
+  "execution_notes": "Attempted to request certificate for test.mcp.mittwald.de but commonName parameter was missing."
+}

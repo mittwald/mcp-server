@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+  "timestamp": "2025-12-19T09:52:47Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["No upgrade candidates"],
+  "tool_response_summary": "Successfully checked for upgrades - no candidates available",
+  "execution_notes": "App is on latest version (1.0.0), no upgrades available. Duration: 58ms"
+}

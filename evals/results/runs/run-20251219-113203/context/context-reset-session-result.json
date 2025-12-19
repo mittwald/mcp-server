@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_context_reset_session",
+  "timestamp": "2025-12-19T11:36:35Z",
+  "problems_encountered": [
+    {
+      "type": "other",
+      "description": "Session not found - Context session infrastructure not initialized"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Failed to reset session context - session not found error",
+  "execution_notes": "API returned 'Session not found' error. Context management tools require session infrastructure not available in MCP environment."
+}

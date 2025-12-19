@@ -73,7 +73,8 @@
     "eval:report": "tsx evals/scripts/generate-multi-run-report.ts",
     "eval:compare:visual": "tsx evals/scripts/visual-comparison.ts",
     "eval:save-result": "tsx evals/scripts/save-eval-result.ts",
-    "eval:migrate": "tsx evals/scripts/migrate-to-run.ts"
+    "eval:migrate": "tsx evals/scripts/migrate-to-run.ts",
+    "eval:best-of": "tsx evals/scripts/aggregate-best-of.ts"
   },
   "repository": {
     "type": "git",

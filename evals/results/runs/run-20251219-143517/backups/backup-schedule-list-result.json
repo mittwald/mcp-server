@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_backup_schedule_list",
+  "timestamp": "2025-12-19T15:01:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "backup_schedule",
+      "id": "1da838dd-8346-498f-99ce-671f4e845fba",
+      "status": "verified"
+    },
+    {
+      "type": "backup_schedule",
+      "id": "453f3880-3772-4d76-8fcb-14e6db346160",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Found 2 backup schedule(s) in project fd1ef726-14b8-4906-8a45-0756ba993246. Schedules run at 1:44 AM and 3:00 AM daily.",
+  "execution_notes": "Tool executed successfully in 104ms. Backup schedules include automated daily backups configured via cron expressions."
+}

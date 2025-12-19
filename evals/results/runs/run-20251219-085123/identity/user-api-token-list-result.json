@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_api_token_list",
+  "timestamp": "2025-12-19T10:22:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Successfully listed 10 API tokens with roles and expiration dates.",
+  "execution_notes": "Tool executed in 58ms. Returns token details including roles, creation/expiry dates. Working correctly."
+}

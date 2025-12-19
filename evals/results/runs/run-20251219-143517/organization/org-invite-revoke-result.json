@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_invite_revoke",
+  "timestamp": "2025-12-19T14:44:30.000Z",
+  "problems_encountered": [
+    {
+      "type": "permission_denied",
+      "description": "API returned 403 Forbidden when attempting to revoke invite 17678669-cbe6-44ae-82ac-b6c4f88e3a26. User may lack permission to revoke organization invitations (possibly requires owner role)."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Failed to revoke organization invite due to 403 permission error. Expected 204 response but got 403. Response time: 55.94ms",
+  "execution_notes": "Tool executed but failed with permission error. Likely requires owner-level permissions to revoke invitations. Current user role may be insufficient for this operation."
+}

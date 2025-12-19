@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_address_get",
+  "timestamp": "2025-12-19T15:02:30.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "No mail address resources found (verified via mail-address-list). Cannot test get operation without existing mail address ID."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool not executed - no mail addresses available.",
+  "execution_notes": "Get operation requires existing mail address ID. None found in project."
+}

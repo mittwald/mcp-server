@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_stack_ps",
+  "timestamp": "2025-12-19T14:56:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "stack",
+      "id": "fd1ef726-14b8-4906-8a45-0756ba993246",
+      "status": "active"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved 2 services from stack.",
+  "execution_notes": "Tool executed successfully after providing both stackId and projectId parameters."
+}

@@ -1,0 +1,40 @@
+{
+  "run_id": "run-20251219-143517",
+  "name": "baseline-v6-agent1",
+  "description": "Agent 1: Foundation tier (identity, org, context)",
+  "created_at": "2025-12-19T13:35:17.104Z",
+  "status": "completed",
+  "domains_executed": [
+    "apps",
+    "automation",
+    "backups",
+    "certificates",
+    "containers",
+    "context",
+    "databases",
+    "domains-mail",
+    "identity",
+    "misc",
+    "organization",
+    "project-foundation",
+    "sftp",
+    "ssh"
+  ],
+  "total_evals_executed": 115,
+  "tags": [
+    "baseline",
+    "multi-agent",
+    "agent-1",
+    "foundation"
+  ],
+  "environment": {
+    "mcp_server_url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+    "oauth_bridge_url": "https://mittwald-oauth-server.fly.dev"
+  },
+  "completed_at": "2025-12-19T13:56:34.119Z",
+  "summary": {
+    "total_success": 71,
+    "total_failure": 44,
+    "success_rate": 61.73913043478261
+  }
+}

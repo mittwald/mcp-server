@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_backup_schedule_create",
+  "timestamp": "2025-12-19T15:02:00Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "backup_schedule",
+      "id": "878656e9-e71d-4d03-8e22-886c0b94a620"
+    }
+  ],
+  "resources_verified": [],
+  "tool_response_summary": "Successfully created backup schedule 878656e9-e71d-4d03-8e22-886c0b94a620. Scheduled for 4:00 AM daily with 30-day retention.",
+  "execution_notes": "Tool executed successfully in 94ms. Schedule will run daily at 4:00 AM and retain backups for 30 days."
+}

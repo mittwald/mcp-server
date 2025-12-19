@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_delete",
+  "timestamp": "2025-12-19T09:53:01Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["cronjob:436fe009-a5c5-4a52-81ed-3773da57bb27 deleted"],
+  "tool_response_summary": "Successfully deleted cronjob 436fe009-a5c5-4a52-81ed-3773da57bb27",
+  "execution_notes": "Cronjob deleted with confirm=true as cleanup. Duration: 75ms"
+}

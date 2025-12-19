@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_virtualhost_get",
+  "timestamp": "2025-12-19T14:57:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "virtualhost",
+      "id": "ddfae3da-dc0e-42f1-91ca-605ce0de6afd",
+      "status": "retrieved"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved virtual host details for ID 'ddfae3da-dc0e-42f1-91ca-605ce0de6afd'. Hostname: 'p-fvayu4.project.space', IPv4: 185.215.158.240, no DNS validation errors.",
+  "execution_notes": "Tool executed successfully. Returned complete virtual host configuration including paths, IPs, and DNS validation status."
+}

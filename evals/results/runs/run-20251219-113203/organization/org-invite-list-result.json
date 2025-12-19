@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_invite_list",
+  "timestamp": "2025-12-19T11:36:03Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "invite", "count": 0}
+  ],
+  "tool_response_summary": "Successfully listed invites - no pending invites found",
+  "execution_notes": "Organization has no pending invites. Execution time: 67ms"
+}

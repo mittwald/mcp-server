@@ -1,0 +1,819 @@
+{
+  "generated_at": "2025-12-19T14:00:13.791Z",
+  "source_runs": [
+    "run-20251219-104746",
+    "run-20251219-113203",
+    "run-20251219-143517"
+  ],
+  "total_tools": 115,
+  "ever_succeeded": 87,
+  "never_succeeded": 28,
+  "not_tested": 0,
+  "tools": [
+    {
+      "tool": "mcp__mittwald__mittwald_app_copy",
+      "domain": "apps",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_app_get",
+      "domain": "apps",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_app_list",
+      "domain": "apps",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+      "domain": "apps",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_app_uninstall",
+      "domain": "apps",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_app_update",
+      "domain": "apps",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_app_upgrade",
+      "domain": "apps",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_app_versions",
+      "domain": "apps",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_backup_create",
+      "domain": "backups",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_backup_delete",
+      "domain": "backups",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_backup_get",
+      "domain": "backups",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_backup_list",
+      "domain": "backups",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_backup_schedule_create",
+      "domain": "backups",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_backup_schedule_delete",
+      "domain": "backups",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_backup_schedule_list",
+      "domain": "backups",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_backup_schedule_update",
+      "domain": "backups",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_certificate_list",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_certificate_request",
+      "domain": "certificates",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_container_list",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_context_get_session",
+      "domain": "context",
+      "ever_succeeded": true,
+      "success_rate": 66.66666666666666,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_context_reset_session",
+      "domain": "context",
+      "ever_succeeded": true,
+      "success_rate": 66.66666666666666,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_context_set_session",
+      "domain": "context",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_conversation_categories",
+      "domain": "misc",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_conversation_create",
+      "domain": "misc",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_conversation_list",
+      "domain": "misc",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_conversation_reply",
+      "domain": "misc",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_conversation_show",
+      "domain": "misc",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_create",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_delete",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_execute",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_execution_abort",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_execution_get",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_execution_list",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_get",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_list",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_cronjob_update",
+      "domain": "automation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_create",
+      "domain": "databases",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_delete",
+      "domain": "databases",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_get",
+      "domain": "databases",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_list",
+      "domain": "databases",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_user_create",
+      "domain": "databases",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_user_delete",
+      "domain": "databases",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_user_get",
+      "domain": "databases",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_user_list",
+      "domain": "databases",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_user_update",
+      "domain": "databases",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_mysql_versions",
+      "domain": "databases",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_redis_create",
+      "domain": "databases",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_redis_get",
+      "domain": "databases",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_redis_list",
+      "domain": "databases",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_database_redis_versions",
+      "domain": "databases",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_dnszone_get",
+      "domain": "domains-mail",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_dnszone_list",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_dnszone_update",
+      "domain": "domains-mail",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_get",
+      "domain": "domains-mail",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_list",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_virtualhost_create",
+      "domain": "domains-mail",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_virtualhost_delete",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_virtualhost_get",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_address_create",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 66.66666666666666,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_address_delete",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_address_get",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 66.66666666666666,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_address_list",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_address_update",
+      "domain": "domains-mail",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_deliverybox_create",
+      "domain": "domains-mail",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_deliverybox_delete",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_deliverybox_get",
+      "domain": "domains-mail",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_deliverybox_list",
+      "domain": "domains-mail",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_mail_deliverybox_update",
+      "domain": "domains-mail",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_org_get",
+      "domain": "organization",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_org_invite",
+      "domain": "organization",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_org_invite_list",
+      "domain": "organization",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_org_invite_revoke",
+      "domain": "organization",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_org_list",
+      "domain": "organization",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_org_membership_list",
+      "domain": "organization",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_org_membership_revoke",
+      "domain": "organization",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_create",
+      "domain": "project-foundation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_delete",
+      "domain": "project-foundation",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_get",
+      "domain": "project-foundation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_invite_get",
+      "domain": "project-foundation",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_invite_list",
+      "domain": "project-foundation",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_list",
+      "domain": "project-foundation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_membership_get",
+      "domain": "project-foundation",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_membership_list",
+      "domain": "project-foundation",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_ssh",
+      "domain": "project-foundation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_project_update",
+      "domain": "project-foundation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_registry_create",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_registry_delete",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_registry_list",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_registry_update",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_server_get",
+      "domain": "project-foundation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_server_list",
+      "domain": "project-foundation",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_sftp_user_delete",
+      "domain": "sftp",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_sftp_user_list",
+      "domain": "sftp",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_ssh_user_create",
+      "domain": "ssh",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_ssh_user_delete",
+      "domain": "ssh",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_ssh_user_list",
+      "domain": "ssh",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_ssh_user_update",
+      "domain": "ssh",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_stack_delete",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 50,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_stack_deploy",
+      "domain": "containers",
+      "ever_succeeded": false,
+      "success_rate": 0,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_stack_list",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_stack_ps",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 2
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_api_token_create",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_api_token_get",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_api_token_list",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_api_token_revoke",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_get",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_session_get",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_session_list",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_ssh_key_create",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 66.66666666666666,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_ssh_key_delete",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_ssh_key_get",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_ssh_key_import",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 33.33333333333333,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_user_ssh_key_list",
+      "domain": "identity",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    },
+    {
+      "tool": "mcp__mittwald__mittwald_volume_list",
+      "domain": "containers",
+      "ever_succeeded": true,
+      "success_rate": 100,
+      "runs_executed": 3
+    }
+  ]
+}

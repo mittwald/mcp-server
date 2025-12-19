@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_list",
+  "timestamp": "2025-12-19T11:36:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "organization", "count": 2}
+  ],
+  "tool_response_summary": "Successfully listed 2 organizations (Nexus, mittwald MCP Server Dev)",
+  "execution_notes": "Both organizations show Member role. Execution time: 54ms"
+}

@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_context_reset_session",
+  "timestamp": "2025-12-19T09:52:40Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["session context cleared"],
+  "tool_response_summary": "Successfully cleared all context parameters from session",
+  "execution_notes": "Cleared projectId from context. Returned previous and new context states with timestamp."
+}

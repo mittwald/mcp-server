@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_ssh_user_update",
+  "timestamp": "2025-12-19T09:53:07Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["ssh_user:e2a9e6d5-aa03-4702-8df6-b6cbc948de1c updated"],
+  "tool_response_summary": "Successfully updated SSH user description",
+  "execution_notes": "Updated description field for Development team SSH user."
+}

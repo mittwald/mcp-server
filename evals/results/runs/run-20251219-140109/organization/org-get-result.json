@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_get",
+  "timestamp": "2025-12-19T14:04:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "organization",
+      "id": "c0256a2f-ccb0-4e00-b6ed-579bdb758675",
+      "description": "Organization details retrieved"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved organization 'mittwald MCP Server Dev' with 2 members",
+  "execution_notes": "Response time: 68ms. Organization details include ID, name, and member count."
+}

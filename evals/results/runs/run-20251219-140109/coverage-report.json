@@ -1,0 +1,312 @@
+{
+  "generated_at": "2025-12-19T13:18:08.965Z",
+  "summary": {
+    "total_tools": 115,
+    "total_executed": 57,
+    "total_success": 35,
+    "total_failure": 22,
+    "overall_success_rate": 61.40350877192983,
+    "overall_coverage_rate": 49.56521739130435
+  },
+  "by_domain": [
+    {
+      "domain": "apps",
+      "total_tools": 8,
+      "executed": 8,
+      "success_count": 2,
+      "failure_count": 6,
+      "pending_count": 0,
+      "success_rate": 25,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "automation",
+      "total_tools": 9,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "pending_count": 9,
+      "success_rate": 0,
+      "coverage_rate": 0
+    },
+    {
+      "domain": "backups",
+      "total_tools": 8,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "pending_count": 8,
+      "success_rate": 0,
+      "coverage_rate": 0
+    },
+    {
+      "domain": "certificates",
+      "total_tools": 1,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "pending_count": 1,
+      "success_rate": 0,
+      "coverage_rate": 0
+    },
+    {
+      "domain": "containers",
+      "total_tools": 10,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "pending_count": 10,
+      "success_rate": 0,
+      "coverage_rate": 0
+    },
+    {
+      "domain": "context",
+      "total_tools": 3,
+      "executed": 3,
+      "success_count": 2,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 66.66666666666666,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "databases",
+      "total_tools": 14,
+      "executed": 8,
+      "success_count": 3,
+      "failure_count": 5,
+      "pending_count": 6,
+      "success_rate": 37.5,
+      "coverage_rate": 57.14285714285714
+    },
+    {
+      "domain": "domains-mail",
+      "total_tools": 20,
+      "executed": 6,
+      "success_count": 6,
+      "failure_count": 0,
+      "pending_count": 14,
+      "success_rate": 100,
+      "coverage_rate": 30
+    },
+    {
+      "domain": "identity",
+      "total_tools": 12,
+      "executed": 12,
+      "success_count": 11,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 91.66666666666666,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "misc",
+      "total_tools": 5,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "pending_count": 5,
+      "success_rate": 0,
+      "coverage_rate": 0
+    },
+    {
+      "domain": "organization",
+      "total_tools": 7,
+      "executed": 7,
+      "success_count": 4,
+      "failure_count": 3,
+      "pending_count": 0,
+      "success_rate": 57.14285714285714,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "project-foundation",
+      "total_tools": 12,
+      "executed": 12,
+      "success_count": 7,
+      "failure_count": 5,
+      "pending_count": 0,
+      "success_rate": 58.333333333333336,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "sftp",
+      "total_tools": 2,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "pending_count": 2,
+      "success_rate": 0,
+      "coverage_rate": 0
+    },
+    {
+      "domain": "ssh",
+      "total_tools": 4,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "pending_count": 4,
+      "success_rate": 0,
+      "coverage_rate": 0
+    }
+  ],
+  "by_tier": [
+    {
+      "tier": 0,
+      "total_tools": 115,
+      "executed": 56,
+      "success_count": 35,
+      "failure_count": 21,
+      "success_rate": 62.5
+    },
+    {
+      "tier": 1,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 2,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 3,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 4,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    }
+  ],
+  "problems": [
+    {
+      "type": "permission_denied",
+      "count": 18,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_${tool}",
+        "mcp__mittwald__mittwald_app_copy",
+        "mcp__mittwald__mittwald_app_get",
+        "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+        "mcp__mittwald__mittwald_app_uninstall",
+        "mcp__mittwald__mittwald_app_update",
+        "mcp__mittwald__mittwald_app_upgrade",
+        "mcp__mittwald__mittwald_context_set_session",
+        "mcp__mittwald__mittwald_database_mysql_get",
+        "mcp__mittwald__mittwald_database_redis_get",
+        "mcp__mittwald__mittwald_database_redis_versions",
+        "mcp__mittwald__mittwald_org_invite_revoke",
+        "mcp__mittwald__mittwald_org_membership_revoke",
+        "mcp__mittwald__mittwald_project_delete",
+        "mcp__mittwald__mittwald_project_invite_get",
+        "mcp__mittwald__mittwald_project_invite_list",
+        "mcp__mittwald__mittwald_project_membership_get",
+        "mcp__mittwald__mittwald_project_membership_list"
+      ],
+      "sample_descriptions": [
+        "HTTP 403 - admin-only tools",
+        "HTTP 403 Forbidden - invalid app installation ID",
+        "HTTP 403 Forbidden - invalid app installation ID"
+      ]
+    },
+    {
+      "type": "api_error",
+      "count": 2,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_database_mysql_create",
+        "mcp__mittwald__mittwald_org_invite"
+      ],
+      "sample_descriptions": [
+        "HTTP 500 Internal Server Error",
+        "HTTP 400 Bad Request - likely invalid email domain (example.com) or permission issue"
+      ]
+    },
+    {
+      "type": "resource_not_found",
+      "count": 2,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_database_redis_create",
+        "mcp__mittwald__mittwald_user_ssh_key_import"
+      ],
+      "sample_descriptions": [
+        "HTTP 404 Not Found",
+        "SSH public key file not found at /home/nodejs/.ssh/eval-test-key.pub - expected behavior since MCP server doesn't have local SSH keys"
+      ]
+    }
+  ],
+  "tools_without_assessment": [
+    "backup/create",
+    "backup/delete",
+    "backup/get",
+    "backup/list",
+    "backup/schedule/create",
+    "backup/schedule/delete",
+    "backup/schedule/list",
+    "backup/schedule/update",
+    "certificate/request",
+    "container/list",
+    "conversation/categories",
+    "conversation/create",
+    "conversation/list",
+    "conversation/reply",
+    "conversation/show",
+    "cronjob/create",
+    "cronjob/delete",
+    "cronjob/execute",
+    "cronjob/execution/abort",
+    "cronjob/execution/get",
+    "cronjob/execution/list",
+    "cronjob/get",
+    "cronjob/list",
+    "cronjob/update",
+    "database/mysql/delete",
+    "database/mysql/user/create",
+    "database/mysql/user/delete",
+    "database/mysql/user/get",
+    "database/mysql/user/list",
+    "database/mysql/user/update",
+    "domain/dnszone/get",
+    "domain/dnszone/update",
+    "domain/get",
+    "domain/virtualhost/create",
+    "domain/virtualhost/delete",
+    "domain/virtualhost/get",
+    "mail/address/create",
+    "mail/address/delete",
+    "mail/address/get",
+    "mail/address/update",
+    "mail/deliverybox/create",
+    "mail/deliverybox/delete",
+    "mail/deliverybox/get",
+    "mail/deliverybox/update",
+    "registry/create",
+    "registry/delete",
+    "registry/list",
+    "registry/update",
+    "sftp/user/delete",
+    "sftp/user/list",
+    "ssh/user/create",
+    "ssh/user/delete",
+    "ssh/user/list",
+    "ssh/user/update",
+    "stack/delete",
+    "stack/deploy",
+    "stack/list",
+    "stack/ps",
+    "volume/list"
+  ],
+  "execution_metadata": {}
+}

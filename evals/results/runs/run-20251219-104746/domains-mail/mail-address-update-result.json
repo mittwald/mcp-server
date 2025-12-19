@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_address_update",
+  "timestamp": "2025-12-19T09:52:57Z",
+  "problems_encountered": [
+    {
+      "type": "other",
+      "description": "Library mode limitation - only catchAll updates supported, advanced options not available"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Failed - library mode does not support advanced mail address update options",
+  "execution_notes": "enableSpamProtection, quota, password, randomPassword, forwardTo parameters not supported in library mode."
+}

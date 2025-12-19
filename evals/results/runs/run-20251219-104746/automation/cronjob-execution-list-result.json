@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_execution_list",
+  "timestamp": "2025-12-19T09:53:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["1 execution found"],
+  "tool_response_summary": "Successfully listed 1 execution with status 'Pending'",
+  "execution_notes": "Execution triggered by user 0f452bff-81b5-496f-957f-ac30e4f37f9d, duration 0ms (still pending). Duration: 27ms"
+}

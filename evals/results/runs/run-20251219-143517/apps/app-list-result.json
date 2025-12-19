@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list",
+  "timestamp": "2025-12-19T14:40:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app",
+      "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95",
+      "status": "verified"
+    },
+    {
+      "type": "app",
+      "id": "0b6f1d0b-7bf3-4c98-9d95-85bc02951e47",
+      "status": "verified"
+    },
+    {
+      "type": "app",
+      "id": "2f440610-5683-4c67-ab42-40f04323fc3e",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Found 3 PHP apps in project fd1ef726-14b8-4906-8a45-0756ba993246. All apps are in 'ready' phase with valid IDs and descriptions.",
+  "execution_notes": "Tool executed successfully. Response includes complete app details including version info, system software, and installation paths."
+}

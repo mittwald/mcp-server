@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_copy",
+  "timestamp": "2025-12-19T14:43:00Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "app",
+      "id": "e55290c0-97ed-42e4-9051-c869dcd4ae14"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "app",
+      "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95",
+      "status": "source_app"
+    }
+  ],
+  "tool_response_summary": "Successfully copied app from 70a3012d-d28a-4ca3-a146-9d3531ac5f95 to new installation e55290c0-97ed-42e4-9051-c869dcd4ae14 with description 'Agent-3 Eval Copy - PHP 8.2'.",
+  "execution_notes": "Tool executed successfully in 60ms. Created a duplicate of PHP 8.2 application."
+}

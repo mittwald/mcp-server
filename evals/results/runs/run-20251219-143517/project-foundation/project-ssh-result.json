@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_project_ssh",
+  "timestamp": "2025-12-19T14:50:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "command",
+      "id": "mw project ssh p-fvayu4",
+      "status": "prepared"
+    }
+  ],
+  "tool_response_summary": "Prepared SSH command 'mw project ssh p-fvayu4' for interactive terminal execution. Command includes instructions for establishing SSH connection.",
+  "execution_notes": "Tool executed successfully. Returned interactive SSH command as expected for project p-fvayu4. Command is ready for terminal execution but cannot be run non-interactively through MCP."
+}

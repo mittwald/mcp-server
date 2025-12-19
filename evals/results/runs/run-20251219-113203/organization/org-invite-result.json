@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_invite",
+  "timestamp": "2025-12-19T11:36:10Z",
+  "problems_encountered": [
+    {
+      "type": "api_error",
+      "description": "HTTP 400 Bad Request - API validation error when creating invite"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Failed to create organization invite - API returned 400 status",
+  "execution_notes": "Attempted to invite eval-test@example.com as member role. API rejected with 400 error. Possible causes: invalid email format, role validation, or API restrictions. Execution time: 2145ms"
+}

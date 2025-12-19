@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_address_update",
+  "timestamp": "2025-12-19T15:03:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "No mail address resources found. Cannot test update operation without existing mail address ID."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool not executed - no mail addresses available.",
+  "execution_notes": "Update operation requires existing mail address ID."
+}

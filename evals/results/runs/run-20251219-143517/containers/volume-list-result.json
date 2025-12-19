@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_volume_list",
+  "timestamp": "2025-12-19T14:53:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "fd1ef726-14b8-4906-8a45-0756ba993246",
+      "status": "active"
+    },
+    {
+      "type": "volume",
+      "id": "ab4f2f0e-bc8a-4068-b04e-5b480f65aa4e",
+      "status": "orphaned"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved 1 volume. Volume 'docker-file-uploads' is orphaned with 0 bytes storage.",
+  "execution_notes": "Tool executed successfully. Response time: 48.6ms."
+}

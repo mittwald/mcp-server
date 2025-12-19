@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_api_token_list",
+  "timestamp": "2025-12-19T11:35:02Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "api_token", "count": 9}
+  ],
+  "tool_response_summary": "Successfully listed 9 API tokens with various descriptions (MCP-DOCS, CLI, gitlab-deploy, etc.)",
+  "execution_notes": "All tokens have api_read and api_write roles. Some have expiration dates set. Execution time: 32ms"
+}

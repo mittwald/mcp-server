@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_get",
+  "timestamp": "2025-12-19T09:52:47Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["app:70a3012d-d28a-4ca3-a146-9d3531ac5f95"],
+  "tool_response_summary": "Successfully retrieved PHP 8.2 Application details",
+  "execution_notes": "Retrieved complete app installation details including version info, document root, system software dependencies, and phase status. Duration: 145ms"
+}

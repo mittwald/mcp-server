@@ -1,0 +1,313 @@
+{
+  "generated_at": "2025-12-19T13:56:34.117Z",
+  "summary": {
+    "total_tools": 115,
+    "total_executed": 115,
+    "total_success": 71,
+    "total_failure": 44,
+    "overall_success_rate": 61.73913043478261,
+    "overall_coverage_rate": 100
+  },
+  "by_domain": [
+    {
+      "domain": "apps",
+      "total_tools": 8,
+      "executed": 8,
+      "success_count": 8,
+      "failure_count": 0,
+      "pending_count": 0,
+      "success_rate": 100,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "automation",
+      "total_tools": 9,
+      "executed": 9,
+      "success_count": 9,
+      "failure_count": 0,
+      "pending_count": 0,
+      "success_rate": 100,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "backups",
+      "total_tools": 8,
+      "executed": 8,
+      "success_count": 7,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 87.5,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "certificates",
+      "total_tools": 1,
+      "executed": 1,
+      "success_count": 0,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 0,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "containers",
+      "total_tools": 10,
+      "executed": 10,
+      "success_count": 7,
+      "failure_count": 3,
+      "pending_count": 0,
+      "success_rate": 70,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "context",
+      "total_tools": 3,
+      "executed": 3,
+      "success_count": 2,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 66.66666666666666,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "databases",
+      "total_tools": 14,
+      "executed": 14,
+      "success_count": 5,
+      "failure_count": 9,
+      "pending_count": 0,
+      "success_rate": 35.714285714285715,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "domains-mail",
+      "total_tools": 20,
+      "executed": 20,
+      "success_count": 7,
+      "failure_count": 13,
+      "pending_count": 0,
+      "success_rate": 35,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "identity",
+      "total_tools": 12,
+      "executed": 12,
+      "success_count": 12,
+      "failure_count": 0,
+      "pending_count": 0,
+      "success_rate": 100,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "misc",
+      "total_tools": 5,
+      "executed": 5,
+      "success_count": 0,
+      "failure_count": 5,
+      "pending_count": 0,
+      "success_rate": 0,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "organization",
+      "total_tools": 7,
+      "executed": 7,
+      "success_count": 5,
+      "failure_count": 2,
+      "pending_count": 0,
+      "success_rate": 71.42857142857143,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "project-foundation",
+      "total_tools": 12,
+      "executed": 12,
+      "success_count": 7,
+      "failure_count": 5,
+      "pending_count": 0,
+      "success_rate": 58.333333333333336,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "sftp",
+      "total_tools": 2,
+      "executed": 2,
+      "success_count": 1,
+      "failure_count": 1,
+      "pending_count": 0,
+      "success_rate": 50,
+      "coverage_rate": 100
+    },
+    {
+      "domain": "ssh",
+      "total_tools": 4,
+      "executed": 4,
+      "success_count": 1,
+      "failure_count": 3,
+      "pending_count": 0,
+      "success_rate": 25,
+      "coverage_rate": 100
+    }
+  ],
+  "by_tier": [
+    {
+      "tier": 0,
+      "total_tools": 115,
+      "executed": 115,
+      "success_count": 71,
+      "failure_count": 44,
+      "success_rate": 61.73913043478261
+    },
+    {
+      "tier": 1,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 2,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 3,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    },
+    {
+      "tier": 4,
+      "total_tools": 0,
+      "executed": 0,
+      "success_count": 0,
+      "failure_count": 0,
+      "success_rate": 0
+    }
+  ],
+  "problems": [
+    {
+      "type": "dependency_missing",
+      "count": 22,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_sftp_user_delete",
+        "mcp__mittwald__mittwald_ssh_user_delete",
+        "mcp__mittwald__mittwald_ssh_user_update",
+        "mcp__mittwald__mittwald_database_mysql_delete",
+        "mcp__mittwald__mittwald_database_mysql_get",
+        "mcp__mittwald__mittwald_database_mysql_user_create",
+        "mcp__mittwald__mittwald_database_mysql_user_delete",
+        "mcp__mittwald__mittwald_database_mysql_user_get",
+        "mcp__mittwald__mittwald_database_mysql_user_list",
+        "mcp__mittwald__mittwald_database_mysql_user_update",
+        "mcp__mittwald__mittwald_certificate_request",
+        "mcp__mittwald__mittwald_domain_dnszone_get",
+        "mcp__mittwald__mittwald_domain_dnszone_update",
+        "mcp__mittwald__mittwald_domain_get",
+        "mcp__mittwald__mittwald_mail_address_create",
+        "mcp__mittwald__mittwald_mail_address_delete",
+        "mcp__mittwald__mittwald_mail_address_get",
+        "mcp__mittwald__mittwald_mail_address_update",
+        "mcp__mittwald__mittwald_mail_deliverybox_delete",
+        "mcp__mittwald__mittwald_mail_deliverybox_get",
+        "mcp__mittwald__mittwald_mail_deliverybox_update",
+        "mcp__mittwald__mittwald_project_invite_get"
+      ],
+      "sample_descriptions": [
+        "No SFTP user resources found (verified via sftp-user-list). Cannot test delete operation without existing SFTP user ID.",
+        "No SSH user resources found. Cannot test delete operation without existing SSH user ID.",
+        "No SSH user resources found (verified via ssh-user-list). Cannot test update operation without existing SSH user ID."
+      ]
+    },
+    {
+      "type": "other",
+      "count": 11,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_ssh_user_create",
+        "mcp__mittwald__mittwald_stack_delete",
+        "mcp__mittwald__mittwald_stack_deploy",
+        "mcp__mittwald__mittwald_domain_virtualhost_delete",
+        "mcp__mittwald__mittwald_mail_deliverybox_create",
+        "mcp__mittwald__mittwald_conversation_categories",
+        "mcp__mittwald__mittwald_conversation_create",
+        "mcp__mittwald__mittwald_conversation_list",
+        "mcp__mittwald__mittwald_conversation_reply",
+        "mcp__mittwald__mittwald_conversation_show",
+        "mcp__mittwald__mittwald_org_membership_revoke"
+      ],
+      "sample_descriptions": [
+        "Skipped to avoid creating access credentials in production project without explicit requirement. SSH user creation would succeed but would leave test artifacts and security credentials.",
+        "Cannot safely execute in production environment. Tool would delete running production stack containing mcp-server and oauth-server services.",
+        "Cannot safely execute in production environment. Tool requires docker-compose file and would modify running production stack (mcp-server, oauth-server). Executing would be destructive."
+      ]
+    },
+    {
+      "type": "permission_denied",
+      "count": 8,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_context_set_session",
+        "mcp__mittwald__mittwald_database_redis_versions",
+        "mcp__mittwald__mittwald_domain_virtualhost_create",
+        "mcp__mittwald__mittwald_org_invite_revoke",
+        "mcp__mittwald__mittwald_project_delete",
+        "mcp__mittwald__mittwald_project_invite_list",
+        "mcp__mittwald__mittwald_project_membership_get",
+        "mcp__mittwald__mittwald_project_membership_list"
+      ],
+      "sample_descriptions": [
+        "Access denied errors when attempting to set context for multiple project IDs: cfb94e28-036e-4497-8f8d-a8cc382e67f7, d3201a21-05ec-4154-af61-19ea7784ca95, fd1ef726-14b8-4906-8a45-0756ba993246. All attempts failed with 'Access denied to project' error. May indicate MCP server token permissions issue or tool validation logic problem.",
+        "Mittwald API returned HTTP 403 Forbidden when attempting to list Redis versions. Possible permission or scope issue.",
+        "API returned 403 Forbidden when attempting to create virtual host with hostname 'eval-agent5-test.example.com'. This hostname may not be owned by the account or requires additional domain verification."
+      ]
+    },
+    {
+      "type": "timeout",
+      "count": 1,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_backup_create"
+      ],
+      "sample_descriptions": [
+        "Backup creation operation timed out. Backup operations can take significant time to complete."
+      ]
+    },
+    {
+      "type": "resource_not_found",
+      "count": 1,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_registry_delete"
+      ],
+      "sample_descriptions": [
+        "Registry not found when attempting deletion (HTTP 404). Registry ID: 683b380e-24b9-4d16-b631-b94082cf71e1. May have been auto-deleted or not properly persisted after creation."
+      ]
+    },
+    {
+      "type": "api_error",
+      "count": 1,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_database_mysql_create"
+      ],
+      "sample_descriptions": [
+        "Mittwald API consistently returns HTTP 500 for database creation. Tested with versions: 'mysql84', 'MySQL 8.4', '8.0' - all failed with same error. Likely quota limit, project permissions, or API server issue."
+      ]
+    },
+    {
+      "type": "validation_error",
+      "count": 1,
+      "affected_tools": [
+        "mcp__mittwald__mittwald_org_invite"
+      ],
+      "sample_descriptions": [
+        "Initial attempt with @example.com email rejected by API (400). Retried with @mailinator.com and succeeded. API validates email domain authenticity."
+      ]
+    }
+  ],
+  "tools_without_assessment": [],
+  "execution_metadata": {}
+}

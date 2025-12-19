@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_get",
+  "timestamp": "2025-12-19T09:52:32Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["sshKey:73cf52d8-2152-4e5a-a756-158e9319e21e"],
+  "tool_response_summary": "Successfully retrieved SSH key details for robert@Roberts-MBP.localdomain",
+  "execution_notes": "SSH-RSA key with fingerprint d4:9a:d6:b7..., created 2025-12-17. Duration: 44ms"
+}

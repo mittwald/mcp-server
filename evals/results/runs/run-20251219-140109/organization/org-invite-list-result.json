@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_invite_list",
+  "timestamp": "2025-12-19T14:04:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "invite_list",
+      "count": 0,
+      "description": "No pending invites found"
+    }
+  ],
+  "tool_response_summary": "Successfully listed organization invites - 0 pending invites",
+  "execution_notes": "Response time: 50ms. Empty list indicates no pending invitations for this organization."
+}

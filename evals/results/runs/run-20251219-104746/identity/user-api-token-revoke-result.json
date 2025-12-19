@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_api_token_revoke",
+  "timestamp": "2025-12-19T09:52:34Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["apiToken:194ad307-c2f6-42f9-851d-22971821e0a2 revoked"],
+  "tool_response_summary": "Successfully revoked API token 194ad307-c2f6-42f9-851d-22971821e0a2",
+  "execution_notes": "Token revoked as cleanup after create test. Duration: 104ms"
+}

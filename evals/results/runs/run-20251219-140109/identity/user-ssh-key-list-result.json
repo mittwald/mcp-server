@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_list",
+  "timestamp": "2025-12-19T14:02:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "ssh_key_list",
+      "count": 2,
+      "description": "SSH keys retrieved"
+    }
+  ],
+  "tool_response_summary": "Successfully listed 2 SSH keys with fingerprints, algorithms (ssh-rsa), and comments",
+  "execution_notes": "Keys include personal key and mittwald-mcp-deploy-key. Response time: 55ms"
+}

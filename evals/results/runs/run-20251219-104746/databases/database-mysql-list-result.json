@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_list",
+  "timestamp": "2025-12-19T09:52:49Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": ["0 MySQL databases found"],
+  "tool_response_summary": "Successfully queried MySQL databases - none found in project",
+  "execution_notes": "Empty result set for project fd1ef726-14b8-4906-8a45-0756ba993246. Duration: 77ms"
+}

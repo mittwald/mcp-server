@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_api_token_revoke",
+  "timestamp": "2025-12-19T11:35:20Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "api_token", "id": "76a09a89-f64e-4d87-b096-61072d39dd55", "action": "revoked"}
+  ],
+  "tool_response_summary": "Successfully revoked API token 76a09a89-f64e-4d87-b096-61072d39dd55",
+  "execution_notes": "Token created in previous step was successfully revoked. Execution time: 78ms"
+}

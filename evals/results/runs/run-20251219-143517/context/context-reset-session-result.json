@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_context_reset_session",
+  "timestamp": "2025-12-19T14:46:30.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "session_context",
+      "id": "session_1766151025802_ka2pwpmcd",
+      "status": "reset"
+    }
+  ],
+  "tool_response_summary": "Successfully cleared all context parameters from session session_1766151025802_ka2pwpmcd. Previous context had projectId: fd1ef726-14b8-4906-8a45-0756ba993246. New context is empty {}. Reset timestamp: 2025-12-19T13:43:47.623Z",
+  "execution_notes": "Tool executed successfully. Cleared Redis session context. Session now has no default project or other context parameters set."
+}

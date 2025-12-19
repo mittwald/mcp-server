@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_copy",
+  "timestamp": "2025-12-19T11:37:55Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {"type": "app", "id": "2f440610-5683-4c67-ab42-40f04323fc3e", "description": "Eval Copy for Testing 20251219-113755"}
+  ],
+  "resources_verified": [],
+  "tool_response_summary": "Successfully copied app to new installation 2f440610-5683-4c67-ab42-40f04323fc3e",
+  "execution_notes": "Created copy from original app 70a3012d-d28a-4ca3-a146-9d3531ac5f95. Will be deleted in cleanup. Execution time: 89ms"
+}

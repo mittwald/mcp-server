@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_copy",
+  "timestamp": "2025-12-19T09:52:48Z",
+  "problems_encountered": [],
+  "resources_created": [{"type": "app", "id": "0b6f1d0b-7bf3-4c98-9d95-85bc02951e47"}],
+  "resources_verified": [],
+  "tool_response_summary": "Successfully copied PHP 8.2 app to new installation 0b6f1d0b-7bf3-4c98-9d95-85bc02951e47",
+  "execution_notes": "Created copy with description 'Eval Test Copy - PHP 8.2'. Duration: 77ms"
+}

@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_conversation_show",
+  "timestamp": "2025-12-19T09:53:08Z",
+  "problems_encountered": [
+    {
+      "type": "other",
+      "description": "Tool not available in MCP server - conversation tools not implemented"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool not available in current MCP server implementation",
+  "execution_notes": "Conversation tools are not exposed as MCP tools in the current server version."
+}
