@@ -74,6 +74,19 @@
   "sftpUsers": [],
   "stacks": [],
 
+  "testSshKeys": [
+    {
+      "comment": "eval-test-import-key",
+      "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGq4VoBdt51AH4Y+ml4XGbPzsYgms5oqRvhRBFomAKl eval-test-import-key",
+      "purpose": "Test fixture for ssh-key-import eval"
+    },
+    {
+      "comment": "eval-test-create-key",
+      "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJKpnW8VHQqhLT7gYm1X2zB4F9N8dE3sA5kP7cR6wM2n eval-test-create-key",
+      "purpose": "Test fixture for ssh-key-create eval"
+    }
+  ],
+
   "_metadata": {
     "generatedAt": "2025-12-19T09:45:00.000Z",
     "generatedBy": "Claude Code - Fixture Discovery",
@@ -82,7 +95,8 @@
       "Real resource IDs discovered from project fd1ef726-14b8-4906-8a45-0756ba993246",
       "Use these IDs in eval prompts instead of test-* placeholders",
       "Empty arrays indicate no resources of that type exist in the project",
-      "To add more resources: run create tools and update this file"
+      "To add more resources: run create tools and update this file",
+      "testSshKeys: Pre-generated test keys for ssh-key-import and ssh-key-create evals"
     ],
     "cleanupWarning": "Some resources in this file are test resources created during eval runs. Review before deletion."
   }

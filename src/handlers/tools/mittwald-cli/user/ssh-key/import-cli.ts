@@ -4,43 +4,11 @@ import { createUserSshKey, LibraryError } from '@mittwald-mcp/cli-core';
 import { sessionManager } from '../../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
 import { logger } from '../../../../../utils/logger.js';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { homedir } from 'node:os';
 
 interface MittwaldUserSshKeyImportArgs {
+  publicKey: string; // REQUIRED - SSH public key content
   quiet?: boolean;
   expires?: string;
-  input?: string;
-  publicKey?: string; // Direct public key content (alternative to file path)
-}
-
-function readPublicKey(inputPath?: string): string {
-  // Default to ~/.ssh/id_rsa.pub if no input specified
-  const defaultPath = resolve(homedir(), '.ssh', 'id_rsa.pub');
-
-  let filePath: string;
-  if (!inputPath) {
-    filePath = defaultPath;
-  } else if (inputPath.startsWith('~/')) {
-    // Handle tilde paths: ~/.ssh/id_rsa.pub → /home/user/.ssh/id_rsa.pub
-    filePath = resolve(homedir(), inputPath.slice(2));
-  } else if (inputPath.startsWith('/')) {
-    // Absolute path - use as-is
-    filePath = inputPath;
-  } else {
-    // Relative filename in ~/.ssh/ directory
-    filePath = resolve(homedir(), '.ssh', inputPath);
-  }
-
-  try {
-    return readFileSync(filePath, 'utf-8').trim();
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      throw new Error(`SSH public key file not found: ${filePath}`);
-    }
-    throw new Error(`Failed to read SSH public key from ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
-  }
 }
 
 function parseExpiresInterval(expires?: string): string | undefined {
@@ -87,19 +55,20 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
     return formatToolResponse('error', 'Session ID required');
   }
 
+  if (!args.publicKey) {
+    return formatToolResponse(
+      'error',
+      'publicKey parameter is required. The MCP server runs on Fly.io with no persistent filesystem. Provide the SSH public key content directly as a string parameter.'
+    );
+  }
+
   const session = await sessionManager.getSession(effectiveSessionId);
   if (!session?.mittwaldAccessToken) {
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
-  // Check for stdin (not supported in MCP)
-  if (args.input === '-' || args.input === '/dev/stdin') {
-    return formatToolResponse('error', 'Reading SSH key from stdin is not supported in MCP. Please specify a file path in your ~/.ssh directory or provide publicKey directly.');
-  }
-
   try {
-    // Use publicKey parameter if provided, otherwise read from file
-    const publicKey = args.publicKey || readPublicKey(args.input);
+    const publicKey = args.publicKey.trim();
 
     // Parse expires interval to ISO 8601 datetime
     const expiresAt = parseExpiresInterval(args.expires);

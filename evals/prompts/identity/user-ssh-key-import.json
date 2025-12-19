@@ -6,11 +6,18 @@
 
 ### Example Call (RECOMMENDED):
 ```typescript
-// Use publicKey parameter directly (best for MCP)
-const testPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGq4VoBdt51AH4Y+ml4XGbPzsYgms5oqRvhRBFomAKl eval-import-test";
+// Option 1: Use test key from fixtures
+const fixtures = JSON.parse(fs.readFileSync('evals/fixtures/runtime-fixtures.json', 'utf-8'));
+const testKey = fixtures.testSshKeys[0]; // Pre-generated test key
 
 await mcp__mittwald__mittwald_user_ssh_key_import({
-  publicKey: testPublicKey,  // Direct content - works in stateless MCP environment
+  publicKey: testKey.publicKey,  // ssh-ed25519 AAAAC3Nza...
+  expires: "7d"
+});
+
+// Option 2: Use inline test key
+await mcp__mittwald__mittwald_user_ssh_key_import({
+  publicKey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGq4VoBdt51AH4Y+ml4XGbPzsYgms5oqRvhRBFomAKl eval-import-test",
   expires: "7d"
 });
 ```
