@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_address_list",
+  "timestamp": "2025-12-19T08:21:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "mail_address", "id": "4223500d-baca-4d2d-87db-4d8534d23220", "status": "active"},
+    {"type": "mail_address", "id": "911e6f03-cd50-4031-bcca-24a6503610d7", "status": "active"},
+    {"type": "mail_address", "id": "92d15cc9-baef-4eef-b155-8b55043f73eb", "status": "active"}
+  ],
+  "tool_response_summary": "Successfully listed 3 mail addresses: info@mcp.mittwald.de, sales@mcp.mittwald.de, support@mcp.mittwald.de. Operation completed in 74ms.",
+  "execution_notes": "Tool executed successfully. Returns comprehensive mail address details including mailbox config, spam protection, storage usage. MCP tool working correctly."
+}

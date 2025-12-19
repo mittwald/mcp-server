@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list",
+  "timestamp": "2025-12-19T08:12:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "fd1ef726-14b8-4906-8a45-0756ba993246",
+      "status": "ready"
+    }
+  ],
+  "tool_response_summary": "Successfully listed 2 apps for project p-ptwfms: PHP 8.2 Application (a-v2tmw9) and Copy of PHP 8.2 Application (a-mlmaxn). Operation completed in 155ms.",
+  "execution_notes": "Tool executed successfully. Returns array of app installations with detailed metadata. Both apps in ready phase. MCP tool working correctly."
+}

@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_get",
+  "timestamp": "2025-12-19T08:15:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "Cannot test this tool properly because: 1) user-ssh-key-list has a bug preventing us from getting valid SSH key IDs, 2) user-ssh-key-create/import require local filesystem access. Attempted to call with test key ID 'test-key-id' which returned 400 Bad Request as expected."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool execution failed with 400 Bad Request. Used test key ID which is not a valid format/ID.",
+  "execution_notes": "This tool's functionality cannot be properly evaluated without: 1) A working user-ssh-key-list to get valid key IDs, or 2) A way to create SSH keys in the MCP environment. The tool itself appears to work correctly (makes proper API call), but we can't provide valid test data due to dependencies on other broken/limited tools."
+}

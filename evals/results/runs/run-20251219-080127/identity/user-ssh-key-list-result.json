@@ -1,0 +1,16 @@
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_list",
+  "timestamp": "2025-12-19T08:12:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "api_error",
+      "description": "Tool failed with error: 'keys.map is not a function'. This indicates a data structure mismatch between the API response and the tool's expectation. The tool expects an array but received a different data type."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool execution failed due to implementation bug. Error: keys.map is not a function.",
+  "execution_notes": "Tool has a bug in handling the API response format. The API likely returns SSH keys in a different structure than expected (possibly an object instead of an array). This is a known issue from feature 014 baseline. Tool needs to be fixed to handle the actual API response format."
+}

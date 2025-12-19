@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+  "timestamp": "2025-12-19T08:11:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95",
+      "status": "ready"
+    }
+  ],
+  "tool_response_summary": "Successfully queried upgrade candidates for app installation. No upgrade candidates available for this PHP app (version 1.0.0 is current). Operation completed in 119ms.",
+  "execution_notes": "Tool executed successfully. Returns empty array when no upgrades are available, which is correct behavior. MCP tool working as expected."
+}

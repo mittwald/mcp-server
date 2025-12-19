@@ -84,6 +84,14 @@ export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
   // Local development helpers.
   'mittwald_ddev_init': 'local development helper (not supported in MCP server runtime)',
   'mittwald_ddev_render_config': 'local development helper (not supported in MCP server runtime)',
+
+  // Conversation tools (no OAuth scope support - admin-only endpoints).
+  'mittwald_conversation_categories': 'conversation endpoints return 403 Forbidden - no OAuth scope support (admin-only)',
+  'mittwald_conversation_close': 'conversation endpoints return 403 Forbidden - no OAuth scope support (admin-only)',
+  'mittwald_conversation_create': 'conversation endpoints return 403 Forbidden - no OAuth scope support (admin-only)',
+  'mittwald_conversation_list': 'conversation endpoints return 403 Forbidden - no OAuth scope support (admin-only)',
+  'mittwald_conversation_reply': 'conversation endpoints return 403 Forbidden - no OAuth scope support (admin-only)',
+  'mittwald_conversation_show': 'conversation endpoints return 403 Forbidden - no OAuth scope support (admin-only)',
 };
 
 /**

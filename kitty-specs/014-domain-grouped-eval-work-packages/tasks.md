@@ -6,15 +6,15 @@
 
 ## Task Overview
 
-This feature executes all 115 MCP tool evals by running 12 domain-grouped Work Packages, then aggregating results into a baseline coverage report.
+This feature executes all 110 MCP tool evals by running 11 domain-grouped Work Packages, then aggregating results into a baseline coverage report. (5 conversation tools excluded - no OAuth scope support)
 
 **Execution Strategy**:
 1. **Tier 0 Domains** (WP01-03): Execute first - no dependencies
 2. **Project Foundation** (WP12): Creates project for tier-4 tools
-3. **Tier 4 Domains** (WP04-11): Execute after project exists
+3. **Tier 4 Domains** (WP04-10): Execute after project exists
 4. **Aggregation** (WP13): Generate coverage reports
 
-**Total Evals**: 115 tools across 12 domains
+**Total Evals**: 110 tools across 11 domains (WP11/conversation tools disabled - no OAuth scope support)
 
 ---
 
@@ -255,22 +255,23 @@ Execute all access-users domain evals (ssh/user/*, sftp/user/*).
 
 ---
 
-### WP11: Execute misc Domain Evals
-**Status**: planned
+### WP11: Execute misc Domain Evals [SKIPPED]
+**Status**: skipped
 **Prompt**: `tasks/WP11-misc.md`
-**Tools**: 5 evals
+**Tools**: 5 evals (all conversation/* tools)
 **Tier Mix**: 0, 4
 **Priority**: P1
 
-Execute all misc domain evals (conversation/*).
+**SKIPPED**: All 5 conversation tools have been disabled in the MCP server. Conversation endpoints return 403 Forbidden - no OAuth scope support (admin-only endpoints).
+
+**Reason**: Mittwald API has no conversation scopes. Conversation endpoints exist but are admin-only and return 403 Forbidden for OAuth access tokens.
 
 **Subtasks**:
-- [  ] T027: Execute all misc evals
-- [  ] T028: Verify all 5 self-assessments saved to evals/results/misc/
+- [X] ~~T027: Execute all misc evals~~ (SKIPPED - tools disabled)
+- [X] ~~T028: Verify all 5 self-assessments saved to evals/results/misc/~~ (SKIPPED - tools disabled)
 
 **Definition of Done**:
-- All 5 misc evals executed
-- Self-assessments saved to `evals/results/misc/*.json`
+- N/A - Work package skipped due to disabled tools
 
 ---
 
@@ -280,12 +281,12 @@ Execute all misc domain evals (conversation/*).
 **Status**: planned
 **Prompt**: `tasks/WP13-aggregate-results.md`
 **Priority**: P2
-**Dependencies**: WP01-WP12 (all evals must complete first)
+**Dependencies**: WP01-WP10, WP12 (all evals must complete first, WP11 skipped)
 
-Aggregate all 115 self-assessments into comprehensive coverage reports.
+Aggregate all 110 self-assessments into comprehensive coverage reports. (Excludes 5 disabled conversation tools)
 
 **Subtasks**:
-- [  ] T029: Validate all 115 result files exist in evals/results/
+- [  ] T029: Validate all 110 result files exist in evals/results/ (excluding misc/conversation-*.json)
 - [  ] T030: Run aggregation scripts (generate-coverage-report.ts)
 - [  ] T031: Verify coverage-report.json generated
 - [  ] T032: Verify baseline-report.md generated
@@ -295,7 +296,7 @@ Aggregate all 115 self-assessments into comprehensive coverage reports.
 **Definition of Done**:
 - `evals/results/coverage-report.json` exists with valid metrics
 - `evals/results/baseline-report.md` exists and is readable
-- Report shows 115/115 tools executed
+- Report shows 110/110 tools executed (excluding 5 disabled conversation tools)
 - Domain and tier breakdowns present
 - Problem categorization complete
 
@@ -303,19 +304,21 @@ Aggregate all 115 self-assessments into comprehensive coverage reports.
 
 ## Execution Summary
 
-**Total Tools**: 115
-**Total Work Packages**: 13 (12 domain execution + 1 aggregation)
+**Total Tools**: 110 (5 conversation tools excluded - no OAuth scope support)
+**Total Work Packages**: 12 (11 domain execution + 1 aggregation, WP11 skipped)
 **Parallelization Opportunities**:
 - WP01-WP03 can run in parallel (tier 0)
-- WP04-WP11 can run in parallel after WP12 completes
+- WP04-WP10 can run in parallel after WP12 completes
 
 **Recommended Execution Order**:
 1. Start: WP01, WP02, WP03 (parallel)
 2. Then: WP12 (creates project)
-3. Then: WP04-WP11 (parallel, requires project)
-4. Finally: WP13 (aggregation)
+3. Then: WP04-WP10 (parallel, requires project)
+4. Skip: WP11 (conversation tools disabled)
+5. Finally: WP13 (aggregation)
 
 **Success Criteria**:
-- All 115 evals executed with self-assessments saved
-- Coverage report shows 100% execution (115/115 tools)
+- All 110 evals executed with self-assessments saved
+- Coverage report shows 100% execution (110/110 tools)
 - Baseline established for future comparison
+- WP11 skipped and documented

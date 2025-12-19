@@ -35,7 +35,7 @@ interface OrganizationDetailsPayload {
  * @returns Organization details with consistent property names.
  */
 function normalizeOrganizationDetails(record: Record<string, unknown>): OrganizationDetails {
-  const id = String(record.id ?? record.orgId ?? record.organizationId ?? 'unknown');
+  const id = String(record.customerId ?? record.id ?? record.organizationId ?? 'unknown');
   const name = typeof record.name === 'string' ? record.name : undefined;
   const description = typeof record.description === 'string' ? record.description : undefined;
   const shortId = typeof record.shortId === 'string' ? record.shortId : undefined;

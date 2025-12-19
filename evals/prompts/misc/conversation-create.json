@@ -29,6 +29,8 @@
       "tier-4",
       "write"
     ],
-    "updated_at": "2025-12-18T21:57:14.490757Z"
+    "updated_at": "2025-12-18T21:57:14.490757Z",
+    "status": "skipped",
+    "skip_reason": "Tool disabled in MCP server - conversation endpoints return 403 Forbidden (no OAuth scope support, admin-only)"
   }
 }

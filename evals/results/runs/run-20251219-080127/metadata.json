@@ -1,0 +1,14 @@
+{
+  "run_id": "run-20251219-080127",
+  "name": "fix-org-cronjob-app-version",
+  "description": "Phase 1 and 2 of post 014 fixes",
+  "created_at": "2025-12-19T07:01:27.467Z",
+  "status": "in_progress",
+  "domains_executed": [],
+  "total_evals_executed": 0,
+  "tags": [],
+  "environment": {
+    "mcp_server_url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+    "oauth_bridge_url": "https://mittwald-oauth-server.fly.dev"
+  }
+}

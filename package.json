@@ -63,7 +63,17 @@
     "logs:registration": "bash scripts/tail-registration-logs.sh",
     "coverage:generate": "tsx scripts/generate-mw-coverage.ts",
     "check:cli-version": "tsx scripts/check-cli-version.ts",
-    "generate:context-flags": "tsx scripts/generate-context-flag-map.ts"
+    "generate:context-flags": "tsx scripts/generate-context-flag-map.ts",
+    "eval:quick-start": "bash evals/scripts/quick-start.sh",
+    "eval:run:create": "tsx evals/scripts/run-manager.ts create",
+    "eval:run:list": "tsx evals/scripts/run-manager.ts list",
+    "eval:run:set-active": "tsx evals/scripts/run-manager.ts set-active",
+    "eval:run:get-active": "tsx evals/scripts/run-manager.ts get-active",
+    "eval:run:compare": "tsx evals/scripts/run-manager.ts compare",
+    "eval:report": "tsx evals/scripts/generate-multi-run-report.ts",
+    "eval:compare:visual": "tsx evals/scripts/visual-comparison.ts",
+    "eval:save-result": "tsx evals/scripts/save-eval-result.ts",
+    "eval:migrate": "tsx evals/scripts/migrate-to-run.ts"
   },
   "repository": {
     "type": "git",

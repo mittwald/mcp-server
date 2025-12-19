@@ -1,25 +1,44 @@
 ---
 work_package_id: WP11
-title: "Execute misc Domain Evals"
+title: "Execute misc Domain Evals [SKIPPED]"
 lane: "done"
-status: planned
+status: skipped
 priority: P1
 subtasks:
-  - T031: Execute misc domain evals
-  - T032: Save self-assessments
-  - T033: Verify all 5 results
+  - T031: Execute misc domain evals (SKIPPED - tools disabled)
+  - T032: Save self-assessments (SKIPPED - tools disabled)
+  - T033: Verify all 5 results (SKIPPED - tools disabled)
 history:
   - timestamp: "2025-12-18T23:59:00Z"
     event: "created"
     agent: "planning-agent"
+  - timestamp: "2025-12-19T00:00:00Z"
+    event: "skipped"
+    agent: "system"
+    reason: "All 5 conversation tools disabled - no OAuth scope support (admin-only endpoints)"
 ---
 
-# Work Package: Execute misc Domain Evals
+# Work Package: Execute misc Domain Evals [SKIPPED]
 
 **Domain**: misc
-**Tool Count**: 5
+**Tool Count**: 5 (all conversation/* tools)
+**Status**: SKIPPED
 
-## Objective
+## Skip Reason
+
+All 5 conversation tools have been disabled in the MCP server and excluded from the tool registry:
+- `mittwald_conversation_categories`
+- `mittwald_conversation_close`
+- `mittwald_conversation_create`
+- `mittwald_conversation_list`
+- `mittwald_conversation_reply`
+- `mittwald_conversation_show`
+
+**Reason**: Mittwald API has no conversation scopes at all. Conversation endpoints exist but return 403 Forbidden for regular OAuth access tokens. These are admin-only or special account features that cannot be accessed via standard OAuth authentication.
+
+**Source**: `src/utils/tool-scanner.ts` - `EXCLUDED_TOOLS_WITH_REASONS`
+
+## Original Objective (Before Disabling)
 
 Execute all 5 eval prompts for the misc domain by calling each MCP tool directly and saving self-assessments to disk.
 

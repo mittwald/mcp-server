@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_get",
+  "timestamp": "2025-12-19T08:10:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95",
+      "status": "ready"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved detailed app installation data for PHP 8.2 Application (a-v2tmw9). Phase: ready, version 1.0.0, custom document root: /public. Operation completed in 193ms.",
+  "execution_notes": "Tool executed successfully. Returns comprehensive installation details including app metadata, version info (current/desired), system software dependencies, installation path, and project relationship. MCP tool working correctly."
+}

@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_virtualhost_list",
+  "timestamp": "2025-12-19T08:21:00Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "virtualhost", "id": "af77571f-93b4-4a64-ab86-d8740b430fdf", "status": "ready"},
+    {"type": "virtualhost", "id": "1b23547d-09c0-4d96-bc15-9399cc6fd9d6", "status": "ready"},
+    {"type": "virtualhost", "id": "fb76c97b-7e72-475a-bc34-bfd64ab52f25", "status": "ready"}
+  ],
+  "tool_response_summary": "Successfully listed 3 virtual hosts: auth.mcp.mittwald.de, mcp.mittwald.de, p-ptwfms.project.space. Operation completed in 38ms.",
+  "execution_notes": "Tool executed successfully. Returns virtual host details including hostname, paths, IP addresses. MCP tool working correctly."
+}
