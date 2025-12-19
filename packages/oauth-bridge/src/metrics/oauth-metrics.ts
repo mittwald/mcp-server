@@ -1,4 +1,4 @@
-import { Counter, Gauge } from 'prom-client';
+import { Counter, Gauge, Histogram } from 'prom-client';
 import { register, metricsEnabled } from './registry.js';
 
 // Only register metrics if enabled
@@ -53,5 +53,29 @@ export const registeredClients = new Gauge({
 export const stateStoreSize = new Gauge({
   name: 'oauth_state_store_size',
   help: 'Total number of entries in the OAuth state store (Redis)',
+  registers: registries
+});
+
+// Counter for Mittwald upstream token refresh attempts
+export const mittwaldTokenRefresh = new Counter({
+  name: 'oauth_mittwald_token_refresh_total',
+  help: 'Mittwald token refresh attempts by result',
+  labelNames: ['status', 'error_type'],
+  registers: registries
+});
+
+// Histogram for Mittwald token refresh latency
+export const mittwaldTokenRefreshDuration = new Histogram({
+  name: 'oauth_mittwald_token_refresh_duration_seconds',
+  help: 'Duration of Mittwald token refresh operations',
+  buckets: [0.1, 0.5, 1, 2, 5, 10],
+  registers: registries
+});
+
+// Counter for forced re-authentication events
+export const forcedReauth = new Counter({
+  name: 'oauth_forced_reauth_total',
+  help: 'Number of times users were forced to re-authenticate',
+  labelNames: ['reason'],
   registers: registries
 });

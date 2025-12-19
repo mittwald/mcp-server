@@ -4,7 +4,7 @@ import type { BridgeConfig } from '../config.js';
 import type { ClientRegistrationRecord, StateStore, AuthorizationGrantRecord } from '../state/state-store.js';
 import { exchangeMittwaldAuthorizationCode, refreshMittwaldTokens } from '../services/mittwald.js';
 import { issueBridgeTokens } from '../services/bridge-tokens.js';
-import { tokenRequests } from '../metrics/index.js';
+import { tokenRequests, mittwaldTokenRefresh, mittwaldTokenRefreshDuration, forcedReauth } from '../metrics/index.js';
 
 interface TokenRouterDeps {
   config: BridgeConfig;
@@ -306,11 +306,12 @@ async function handleRefreshTokenGrant(
     return;
   }
 
-  // Get fresh Mittwald tokens
+  // Get fresh Mittwald tokens - FAIL HARD if refresh fails
   let mittwaldTokens;
 
   // Try to use Mittwald's refresh token if available
   if (grant.mittwaldTokens?.refresh_token) {
+    const timer = mittwaldTokenRefreshDuration.startTimer();
     try {
       mittwaldTokens = await refreshMittwaldTokens({
         config,
@@ -318,25 +319,51 @@ async function handleRefreshTokenGrant(
         logger: ctx.logger
       });
       ctx.logger.debug({ clientId }, 'Refreshed Mittwald tokens successfully');
+      mittwaldTokenRefresh.inc({ status: 'success', error_type: 'none' });
     } catch (err) {
-      ctx.logger.warn({
-        error: err instanceof Error ? err.message : String(err),
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorType = errorMessage.split(':')[0] || 'unknown';
+
+      ctx.logger.error({
+        error: errorMessage,
         clientId
-      }, 'Failed to refresh Mittwald tokens, using cached tokens');
-      // Fall back to cached tokens if refresh fails
-      mittwaldTokens = grant.mittwaldTokens;
+      }, 'Mittwald token refresh failed - forcing re-authentication');
+
+      mittwaldTokenRefresh.inc({ status: 'error', error_type: errorType });
+      forcedReauth.inc({ reason: 'mittwald_refresh_failed' });
+      tokenRequests.inc({ grant_type: 'refresh_token', status: 'error' });
+
+      ctx.status = 400;
+      ctx.body = {
+        error: 'invalid_grant',
+        error_description: 'Mittwald session expired, please re-authenticate'
+      };
+      return;
+    } finally {
+      timer();
     }
   } else {
-    // No Mittwald refresh token available, use cached tokens
-    ctx.logger.debug({ clientId }, 'No Mittwald refresh token, using cached tokens');
-    mittwaldTokens = grant.mittwaldTokens;
+    // No Mittwald refresh token available - fail hard
+    ctx.logger.error({ clientId }, 'No Mittwald refresh token available');
+    forcedReauth.inc({ reason: 'no_refresh_token' });
+    tokenRequests.inc({ grant_type: 'refresh_token', status: 'error' });
+    ctx.status = 400;
+    ctx.body = {
+      error: 'invalid_grant',
+      error_description: 'Session expired, please re-authenticate'
+    };
+    return;
   }
 
   if (!mittwaldTokens) {
     ctx.logger.error({ clientId }, 'No Mittwald tokens available for refresh');
+    forcedReauth.inc({ reason: 'no_tokens_available' });
     tokenRequests.inc({ grant_type: 'refresh_token', status: 'error' });
     ctx.status = 400;
-    ctx.body = { error: 'invalid_grant', error_description: 'Session expired, please re-authenticate' };
+    ctx.body = {
+      error: 'invalid_grant',
+      error_description: 'Session expired, please re-authenticate'
+    };
     return;
   }
 
