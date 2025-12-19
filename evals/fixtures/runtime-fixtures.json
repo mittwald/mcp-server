@@ -2,6 +2,14 @@
   "projectId": "fd1ef726-14b8-4906-8a45-0756ba993246",
   "orgId": "0080fa08-4f75-4825-9210-2a4eb9a09bea",
 
+  "projectMemberships": [
+    {
+      "id": "6572f85e-4c01-4178-8781-7cc1b1db16d5",
+      "userId": "192bbecd-6788-4345-9656-1e200b6f143f",
+      "role": "owner"
+    }
+  ],
+
   "cronjobs": [
     {
       "id": "460224d7-c47c-4883-9961-e1a92ce7bb43",
