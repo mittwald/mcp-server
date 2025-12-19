@@ -54,23 +54,28 @@ interface SelfAssessment {
 }
 
 interface ToolEntry {
-  mcp_name: string;
-  display_name: string;
+  mcpName: string;
+  displayName: string;
   domain: string;
-  tier: number;
+  tier?: number;
   description: string;
-  dependencies: string[];
-  required_resources: string[];
-  success_indicators: string[];
-  is_destructive: boolean;
-  is_interactive: boolean;
+  parameters?: any[];
+  dependencies?: string[];
+  required_resources?: string[];
+  success_indicators?: string[];
+  is_destructive?: boolean;
+  is_interactive?: boolean;
 }
 
 interface ToolInventory {
-  generated_at: string;
-  tool_count: number;
-  source: string;
-  domains: Record<string, number>;
+  captureDate?: string;
+  generated_at?: string;
+  toolCount?: number;
+  tool_count?: number;
+  featureContext?: string;
+  source?: string;
+  domainCount?: number;
+  domains?: Record<string, number>;
   tools: ToolEntry[];
 }
 
@@ -235,7 +240,7 @@ export function calculateDomainCoverage(
   // Count results from assessments
   for (const tool of inventory.tools) {
     const stats = domainStats.get(tool.domain)!;
-    const assessment = assessments.get(tool.mcp_name);
+    const assessment = assessments.get(tool.mcpName);
 
     if (assessment) {
       stats.executed++;
@@ -281,10 +286,11 @@ export function calculateTierCoverage(
 
   // Count by tier
   for (const tool of inventory.tools) {
-    const stats = tierStats.get(tool.tier)!;
+    const tier = tool.tier ?? 0;
+    const stats = tierStats.get(tier)!;
     stats.total_tools++;
 
-    const assessment = assessments.get(tool.mcp_name);
+    const assessment = assessments.get(tool.mcpName);
     if (assessment) {
       stats.executed++;
       if (assessment.success) {
@@ -345,8 +351,8 @@ export function findToolsWithoutAssessment(
   const missing: string[] = [];
 
   for (const tool of inventory.tools) {
-    if (!assessments.has(tool.mcp_name)) {
-      missing.push(tool.display_name);
+    if (!assessments.has(tool.mcpName)) {
+      missing.push(tool.displayName);
     }
   }
 
@@ -374,16 +380,18 @@ export function generateReport(
   const totalSuccess = Array.from(assessments.values()).filter((a) => a.success).length;
   const totalFailure = totalExecuted - totalSuccess;
 
+  const toolCount = inventory.toolCount || inventory.tool_count || inventory.tools.length;
+
   const report: CoverageReport = {
     generated_at: new Date().toISOString(),
     summary: {
-      total_tools: inventory.tool_count,
+      total_tools: toolCount,
       total_executed: totalExecuted,
       total_success: totalSuccess,
       total_failure: totalFailure,
       overall_success_rate: totalExecuted > 0 ? (totalSuccess / totalExecuted) * 100 : 0,
       overall_coverage_rate:
-        inventory.tool_count > 0 ? (totalExecuted / inventory.tool_count) * 100 : 0,
+        toolCount > 0 ? (totalExecuted / toolCount) * 100 : 0,
     },
     by_domain: byDomain,
     by_tier: byTier,
@@ -536,7 +544,8 @@ export async function generateCoverageReport(
   const assessments = await loadAssessments(assessmentsDir);
   const inventory = loadInventory(inventoryPath);
 
-  console.log(`Found ${assessments.size} assessments for ${inventory.tool_count} tools`);
+  const toolCount = inventory.toolCount || inventory.tool_count || inventory.tools.length;
+  console.log(`Found ${assessments.size} assessments for ${toolCount} tools`);
 
   // Generate report
   const report = generateReport(inventory, assessments);
