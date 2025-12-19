@@ -177,18 +177,26 @@ export class SessionAwareCli {
         return false;
       }
 
-      // Use CLI to validate access by attempting to get resource details
-      const result = await this.executeWithSession(
-        'mw',
-        [resourceType, 'get', resourceId, '--output', 'json'],
-        sessionId,
-        { validateAccess: false } // Prevent infinite recursion
-      );
+      // Use library functions instead of spawning CLI
+      const { getProject, getServer, getOrganization } = await import('@mittwald-mcp/cli-core');
 
-      return result.exitCode === 0;
+      try {
+        if (resourceType === 'project') {
+          await getProject({ projectId: resourceId, apiToken: session.mittwaldAccessToken });
+        } else if (resourceType === 'server') {
+          await getServer({ serverId: resourceId, apiToken: session.mittwaldAccessToken });
+        } else if (resourceType === 'org') {
+          await getOrganization({ customerId: resourceId, apiToken: session.mittwaldAccessToken });
+        }
+        return true;
+      } catch (libraryError) {
+        // If library call fails (403, 404, etc.), user doesn't have access
+        logger.debug(`Access validation failed for ${resourceType} ${resourceId}`, { libraryError });
+        return false;
+      }
 
     } catch (error) {
-      logger.warn(`Access validation failed for ${resourceType} ${resourceId}:`, error);
+      logger.warn(`Access validation error for ${resourceType} ${resourceId}:`, error);
       return false;
     }
   }
@@ -199,18 +207,18 @@ export class SessionAwareCli {
    */
   async getAccessibleProjects(sessionId: string): Promise<string[]> {
     try {
-      const result = await this.executeWithSession(
-        'mw',
-        ['project', 'list', '--output', 'json'],
-        sessionId
-      );
-
-      if (result.exitCode !== 0) {
-        throw new SessionAuthenticationError('Mittwald CLI returned a non-zero exit code when listing projects');
+      const session = await sessionManager.getSession(sessionId);
+      if (!session) {
+        throw new SessionNotFoundError(sessionId);
       }
 
-      const projects = JSON.parse(result.stdout);
-      return Array.isArray(projects) ? projects.map((p: any) => p.id).filter(Boolean) : [];
+      // Use library function instead of spawning CLI
+      const { listProjects } = await import('@mittwald-mcp/cli-core');
+      const result = await listProjects({ apiToken: session.mittwaldAccessToken });
+
+      return Array.isArray(result.data)
+        ? result.data.map((p: any) => p.id).filter(Boolean)
+        : [];
 
     } catch (error) {
       logger.error(`Failed to get accessible projects for session ${sessionId}:`, error);
