@@ -12,12 +12,26 @@ interface MittwaldUserSshKeyImportArgs {
   quiet?: boolean;
   expires?: string;
   input?: string;
+  publicKey?: string; // Direct public key content (alternative to file path)
 }
 
 function readPublicKey(inputPath?: string): string {
   // Default to ~/.ssh/id_rsa.pub if no input specified
   const defaultPath = resolve(homedir(), '.ssh', 'id_rsa.pub');
-  const filePath = inputPath ? resolve(homedir(), '.ssh', inputPath) : defaultPath;
+
+  let filePath: string;
+  if (!inputPath) {
+    filePath = defaultPath;
+  } else if (inputPath.startsWith('~/')) {
+    // Handle tilde paths: ~/.ssh/id_rsa.pub → /home/user/.ssh/id_rsa.pub
+    filePath = resolve(homedir(), inputPath.slice(2));
+  } else if (inputPath.startsWith('/')) {
+    // Absolute path - use as-is
+    filePath = inputPath;
+  } else {
+    // Relative filename in ~/.ssh/ directory
+    filePath = resolve(homedir(), '.ssh', inputPath);
+  }
 
   try {
     return readFileSync(filePath, 'utf-8').trim();
@@ -80,12 +94,12 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
 
   // Check for stdin (not supported in MCP)
   if (args.input === '-' || args.input === '/dev/stdin') {
-    return formatToolResponse('error', 'Reading SSH key from stdin is not supported in MCP. Please specify a file path in your ~/.ssh directory.');
+    return formatToolResponse('error', 'Reading SSH key from stdin is not supported in MCP. Please specify a file path in your ~/.ssh directory or provide publicKey directly.');
   }
 
   try {
-    // Read the public key from file
-    const publicKey = readPublicKey(args.input);
+    // Use publicKey parameter if provided, otherwise read from file
+    const publicKey = args.publicKey || readPublicKey(args.input);
 
     // Parse expires interval to ISO 8601 datetime
     const expiresAt = parseExpiresInterval(args.expires);
