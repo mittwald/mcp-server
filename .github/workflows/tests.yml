@@ -16,10 +16,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '24.11.0'
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Build packages
+        run: npm run build:all
       - name: Run unit tests
         run: npm run test:unit
 
@@ -30,10 +32,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '24.11.0'
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Build packages
+        run: npm run build:all
       - name: Run OAuth bridge tests
         run: npm run test:bridge
 
@@ -44,10 +48,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '24.11.0'
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Build packages
+        run: npm run build:all
       - name: Run session lifecycle tests
         run: npm run test:session
 
@@ -60,10 +66,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '24.11.0'
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Build packages
+        run: npm run build:all
       - name: Run end-to-end suite
         env:
           DOCKER_BUILDKIT: '1'
