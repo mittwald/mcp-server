@@ -41,20 +41,15 @@ export function createSharedVitestConfig(options: SharedVitestOptions): UserConf
         '.worktrees/**'
       ],
       silent: process.env.CI ? true : false,
-      reporter: process.env.CI ? 'basic' : 'default',
+      reporter: process.env.CI ? 'default' : 'default',
       coverage: {
         provider: 'v8',
         reporter: ['text', 'json', 'html'],
         exclude: [...DEFAULT_COVERAGE_EXCLUDES, ...coverageExclude]
       },
       pool: 'threads',
-      poolOptions: {
-        threads: {
-          singleThread: true,
-          maxThreads: 1,
-          minThreads: 1
-        }
-      },
+      poolMaxThreads: 1,
+      poolMinThreads: 1,
       onConsoleLog: () => false,
       maxConcurrency: 1
     },
