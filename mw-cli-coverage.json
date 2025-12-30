@@ -2,11 +2,11 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 178,
-    "toolCount": 174,
-    "coveredCount": 168,
-    "missingCount": 0,
-    "coveragePercent": 100,
-    "extraToolCount": 6,
+    "toolCount": 170,
+    "coveredCount": 165,
+    "missingCount": 3,
+    "coveragePercent": 98,
+    "extraToolCount": 5,
     "excludedCount": 10
   },
   "coverage": [
@@ -739,7 +739,7 @@
       "cliFile": "context/get.js",
       "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
       "expectedToolName": "mittwald_context_get",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "context/get-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js"
     },
@@ -752,7 +752,7 @@
       "cliFile": "context/reset.js",
       "description": "This command resets any values for common parameters that you've previously set with 'context set'.",
       "expectedToolName": "mittwald_context_reset",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "context/reset-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js"
     },
@@ -765,7 +765,7 @@
       "cliFile": "context/set.js",
       "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
       "expectedToolName": "mittwald_context_set",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "context/set-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js"
     },
@@ -2457,7 +2457,47 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/volume/list-cli.js"
     }
   ],
-  "missing": [],
+  "missing": [
+    {
+      "command": "context get",
+      "segments": [
+        "context",
+        "get"
+      ],
+      "cliFile": "context/get.js",
+      "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
+      "expectedToolName": "mittwald_context_get",
+      "status": "missing",
+      "toolPath": "context/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js"
+    },
+    {
+      "command": "context reset",
+      "segments": [
+        "context",
+        "reset"
+      ],
+      "cliFile": "context/reset.js",
+      "description": "This command resets any values for common parameters that you've previously set with 'context set'.",
+      "expectedToolName": "mittwald_context_reset",
+      "status": "missing",
+      "toolPath": "context/reset-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js"
+    },
+    {
+      "command": "context set",
+      "segments": [
+        "context",
+        "set"
+      ],
+      "cliFile": "context/set.js",
+      "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
+      "expectedToolName": "mittwald_context_set",
+      "status": "missing",
+      "toolPath": "context/set-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js"
+    }
+  ],
   "excluded": [
     {
       "command": "app exec",
@@ -2646,11 +2686,6 @@
       "toolName": "mittwald_context_set_session",
       "relPath": "context/session-aware-set-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
-    },
-    {
-      "toolName": "mittwald_user_accessible_projects",
-      "relPath": "context/accessible-projects-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/accessible-projects-cli.js"
     },
     {
       "toolName": "mittwald_certificate_list",

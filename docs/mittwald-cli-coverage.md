@@ -2,9 +2,9 @@
 
 Total CLI commands: 178
 
-Covered by MCP tools: 168
+Covered by MCP tools: 165
 
-Missing wrappers: 0
+Missing wrappers: 3
 
 Status legend: ✅ Covered, ⚠️ Missing, ➖ Not Applicable
 
@@ -79,9 +79,9 @@ Status legend: ✅ Covered, ⚠️ Missing, ➖ Not Applicable
 
 | CLI Command | Description | Status | MCP Tool | Tool Definition | Notes |
 | --- | --- | --- | --- | --- | --- |
-| context get | The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command. | ✅ Covered | mittwald_context_get | src/constants/tool/mittwald-cli/context/get-cli.ts |  |
-| context reset | This command resets any values for common parameters that you've previously set with 'context set'. | ✅ Covered | mittwald_context_reset | src/constants/tool/mittwald-cli/context/reset-cli.ts |  |
-| context set | The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command. | ✅ Covered | mittwald_context_set | src/constants/tool/mittwald-cli/context/set-cli.ts |  |
+| context get | The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command. | ⚠️ Missing |  |  |  |
+| context reset | This command resets any values for common parameters that you've previously set with 'context set'. | ⚠️ Missing |  |  |  |
+| context set | The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command. | ⚠️ Missing |  |  |  |
 
 ## conversation
 
