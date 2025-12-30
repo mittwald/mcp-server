@@ -41,7 +41,7 @@
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:bridge": "vitest run --root packages/oauth-bridge --config ./vitest.config.ts",
-    "test:session": "vitest run tests/integration/cli-session.integration.test.ts",
+    "test:session": "vitest run tests/integration",
     "test:smoke": "vitest run tests/smoke",
     "test:security": "vitest run tests/security",
     "test:functional": "vitest run tests/functional --reporter=verbose --no-file-parallelism",
