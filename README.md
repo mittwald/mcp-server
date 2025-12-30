@@ -23,13 +23,37 @@ docs/               # Supplemental documentation
 
 ## Development Setup
 
-> **Prerequisite**: Node.js 20.12.2 (see `.nvmrc` / `.node-version`). Earlier LTS releases (e.g. Node 18) cannot run `@mittwald/cli@1.12.0` because its dependencies require the new `/v` regular-expression flag.
+> **Prerequisite**: Node.js 24.11.0 or higher (see `.nvmrc` / `.node-version`). Earlier LTS releases (e.g. Node 18, Node 20) cannot run `@mittwald/cli@1.12.0` because its dependencies require the new `/v` regular-expression flag.
 
-1. Install dependencies:
+### Building Locally
+
+This is a monorepo with workspace packages that must be built in order.
+
+1. Install all dependencies:
    ```bash
-   pnpm install
+   npm ci
    ```
-2. Configure scopes and Mittwald OAuth details:
+
+2. Build the project (including all workspace dependencies):
+   ```bash
+   npm run build:all
+   ```
+
+   Or build workspace packages individually:
+   ```bash
+   cd packages/mittwald-cli-core && npm run build && cd ../..
+   cd packages/oauth-bridge && npm run build && cd ../..
+   npm run build
+   ```
+
+**OR** use Docker (recommended for production builds):
+```bash
+docker build --no-cache -t mittwald/mcp .
+```
+
+### Running for Development
+
+1. Configure scopes and Mittwald OAuth details:
    ```bash
    export MITTWALD_ISSUER=https://id.mittwald.de
    export MITTWALD_CLIENT_ID=mittwald-mcp-server
@@ -38,13 +62,15 @@ docs/               # Supplemental documentation
    The OAuth and MCP services both read their scope catalogue from `config/mittwald-scopes.json`.
    Update that file (or point `MITTWALD_SCOPE_CONFIG_PATH` at an override) to change supported or
    default scopes—no code changes required.
-3. Run the OAuth bridge:
+
+2. Run the OAuth bridge:
    ```bash
-   pnpm --filter @mittwald/oauth-bridge dev
+   npm run --workspace=packages/oauth-bridge dev
    ```
-4. Run the MCP server:
+
+3. Run the MCP server:
    ```bash
-   pnpm --filter mcp-server dev
+   npm run dev
    ```
 
 Each service exposes health and debugging endpoints; consult `ARCHITECTURE.md` for flow diagrams and environment specifics.
@@ -131,9 +157,9 @@ sum(rate(oauth_token_requests_total{status="success"}[5m])) / sum(rate(oauth_tok
   session store).
 
 ## Testing
-- Run `pnpm lint`, `pnpm typecheck`, and `pnpm test:unit` for fast local feedback.
-- `pnpm test:integration` exercises Redis-backed session flows and bridge JWT verification.
-- `pnpm test:e2e:mcp` (when available) drives a full OAuth + MCP tool cycle against the mock stack.
+- Run `npm run lint`, `npm run type-check`, and `npm run test:unit` for fast local feedback.
+- `npm run test:integration` exercises Redis-backed session flows and bridge JWT verification.
+- `npm run test:e2e:mcp` (when available) drives a full OAuth + MCP tool cycle against the mock stack.
 - See `tests/README.md` for the complete matrix and environment requirements.
 
 ## Security

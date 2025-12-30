@@ -1,0 +1,44 @@
+name: Build Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Verify npm run build:all
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build workspaces and main app
+        run: npm run build:all
+
+      - name: Verify build artifacts exist
+        run: |
+          # Check main build output
+          test -f build/index.js || (echo "Main build artifact missing: build/index.js" && exit 1)
+          test -x build/index.js || (echo "Main build artifact not executable: build/index.js" && exit 1)
+
+          # Check workspace build outputs
+          test -d packages/mittwald-cli-core/dist || (echo "Workspace build missing: packages/mittwald-cli-core/dist" && exit 1)
+          test -d packages/oauth-bridge/dist || (echo "Workspace build missing: packages/oauth-bridge/dist" && exit 1)
+
+          echo "✅ All build artifacts verified"
+
+      - name: Run type-check
+        run: npm run type-check

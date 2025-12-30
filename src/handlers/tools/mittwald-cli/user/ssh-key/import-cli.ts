@@ -93,7 +93,6 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
         {
           keyId,
           expires: args.expires,
-          input: args.input,
         },
         {
           durationMs: result.durationMs,
@@ -109,7 +108,6 @@ export const handleUserSshKeyImportCli: MittwaldCliToolHandler<MittwaldUserSshKe
         keyId: data.id,
         expires: args.expires,
         expiresAt: data.expiresAt,
-        input: args.input,
         fingerprint: data.fingerprint,
         publicKey: data.publicKey,
       },
