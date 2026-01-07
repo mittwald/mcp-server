@@ -1,0 +1,7 @@
+# Copy this file to terraform.tfvars and fill in your values
+
+# Mittwald mStudio server ID
+server_id = "your-server-id-here"
+
+# Docker image tag to deploy
+image_tag = "1.0.0"
