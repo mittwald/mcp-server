@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - package: mcp-server
-            dockerfile: packages/mcp-server/Dockerfile
+            dockerfile: Dockerfile
             image: mittwald/mcp-server-http
           - package: oauth-server
             dockerfile: packages/oauth-bridge/Dockerfile

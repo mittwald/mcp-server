@@ -15,9 +15,19 @@ locals {
   base_domain = "mcp.mittwald.de"
 }
 
-resource "random_string" "random" {
+resource "random_string" "jwt_secret" {
   length           = 32
   special          = false
+}
+
+resource "random_password" "metrics_password" {
+  length           = 16
+  special          = true
+}
+
+moved {
+  from = resource.random_string.random
+  to = resource.random_string.jwt_secret
 }
 
 resource "mittwald_project" "mcp_project" {
@@ -71,7 +81,7 @@ resource "mittwald_container_stack" "mcp_stack" {
         REDIRECT_URL = "https://auth.${local.base_domain}/auth/callback"
 
         OAUTH_BRIDGE_BASE_URL = "https://auth.${local.base_domain}"
-        OAUTH_BRIDGE_JWT_SECRET = random_string.random.result
+        OAUTH_BRIDGE_JWT_SECRET = random_string.jwt_secret.result
         OAUTH_BRIDGE_ISSUER = "auth.${local.base_domain}"
         OAUTH_BRIDGE_AUDIENCE = "https://${local.base_domain}"
         OAUTH_BRIDGE_AUTHORIZATION_URL = "https://auth.${local.base_domain}/authorize"
@@ -80,6 +90,11 @@ resource "mittwald_container_stack" "mcp_stack" {
         # unclear; these are both in the .env.example
         OAUTH_BRIDGE_REDIS_URL = "redis://${mittwald_redis_database.mcp_redis.hostname}:6379"
         REDIS_URL = "redis://${mittwald_redis_database.mcp_redis.hostname}:6379"
+
+        ENABLE_DIRECT_BEARER_TOKENS = "true"
+
+        METRICS_USER = "metrics"
+        METRICS_PASS = random_password.metrics_password.result
       }
     }
 
@@ -104,7 +119,7 @@ resource "mittwald_container_stack" "mcp_stack" {
 
         BRIDGE_ISSUER = "auth.${local.base_domain}"
         BRIDGE_BASE_URL = "https://auth.${local.base_domain}"
-        BRIDGE_JWT_SECRET = random_string.random.result
+        BRIDGE_JWT_SECRET = random_string.jwt_secret.result
         BRIDGE_REDIRECT_URIS = "https://chatgpt.com/connector_platform_oauth_redirect,https://claude.ai/api/mcp/auth_callback"
 
         BRDIGE_STATE_STORE = "redis"
