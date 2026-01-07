@@ -73,6 +73,8 @@ resource "mittwald_container_stack" "mcp_stack" {
         ENABLE_HTTPS = "false"
         FLY_APP_NAME = "mock" # FLY_APP_NAME is required to trick the server into disabling TLS
 
+        CORS_ORIGIN = "https://claude.ai,https://chatgpt.com"
+
         MCP_PUBLIC_BASE = "https://${local.base_domain}"
         MITTWALD_AUTHORIZATION_URL = "https://studio.mittwald.de/api/v2/oauth2/authorize"
         MITTWALD_CLIENT_ID = "mittwald-mcp-server"
