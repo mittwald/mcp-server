@@ -1,8 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
-import { startContainer, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -59,40 +57,11 @@ export const handleContainerStartCli: MittwaldCliToolHandler<MittwaldContainerSt
   const argv = buildCliArgs(args);
 
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
+    const result = await invokeCliTool({
       toolName: 'mittwald_container_start',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await startContainer({
-          containerId: args.containerId,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+      argv: [...argv, '--token', session.mittwaldAccessToken],
+      parser: (stdout, raw) => ({ success: true, stdout, stderr: raw.stderr }),
     });
-
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_container_start',
-        containerId: args.containerId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_container_start',
-        containerId: args.containerId,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
 
     return formatToolResponse(
       'success',
@@ -101,23 +70,9 @@ export const handleContainerStartCli: MittwaldCliToolHandler<MittwaldContainerSt
         containerId: args.containerId,
         action: 'start',
         projectId: args.projectId,
-      },
-      {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
-    if (error instanceof LibraryError) {
-      return formatToolResponse('error', error.message, {
-        code: error.code,
-        details: error.details,
-      });
-    }
-
     if (error instanceof CliToolError) {
       const message = mapCliError(error, args);
       return formatToolResponse('error', message, {
@@ -128,7 +83,7 @@ export const handleContainerStartCli: MittwaldCliToolHandler<MittwaldContainerSt
       });
     }
 
-    logger.error('[WP05] Unexpected error in container start handler', { error });
+    logger.error('Unexpected error in container start handler', { error });
     return formatToolResponse('error', `Failed to start container: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

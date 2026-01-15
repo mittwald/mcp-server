@@ -1,7 +1,6 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { closeConversation, LibraryError } from '@mittwald-mcp/cli-core';
-import { validateToolParity } from '../../../../../tests/validation/parallel-validator.js';
+import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
@@ -33,40 +32,11 @@ export const handleConversationCloseCli: MittwaldCliToolHandler<MittwaldConversa
   const argv = buildCliArgs(args);
 
   try {
-    // WP05: Parallel validation - run both CLI and library
-    const validation = await validateToolParity({
+    const result = await invokeCliTool({
       toolName: 'mittwald_conversation_close',
-      cliCommand: 'mw',
-      cliArgs: [...argv, '--token', session.mittwaldAccessToken],
-      libraryFn: async () => {
-        return await closeConversation({
-          conversationId: args.conversationId,
-          apiToken: session.mittwaldAccessToken,
-        });
-      },
-      ignoreFields: ['durationMs', 'duration', 'timestamp'],
+      argv: [...argv, '--token', session.mittwaldAccessToken],
+      parser: (stdout, raw) => ({ success: true, stdout, stderr: raw.stderr }),
     });
-
-    // Log validation results
-    if (!validation.passed) {
-      logger.warn('[WP05 Validation] Output mismatch detected', {
-        tool: 'mittwald_conversation_close',
-        conversationId: args.conversationId,
-        discrepancyCount: validation.discrepancies.length,
-        discrepancies: validation.discrepancies,
-        cliExitCode: validation.cliOutput.exitCode,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-      });
-    } else {
-      logger.info('[WP05 Validation] 100% parity achieved', {
-        tool: 'mittwald_conversation_close',
-        conversationId: args.conversationId,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
-        speedup: `${((validation.cliOutput.durationMs / validation.libraryOutput.durationMs) * 100).toFixed(0)}%`,
-      });
-    }
 
     return formatToolResponse(
       'success',
@@ -74,23 +44,15 @@ export const handleConversationCloseCli: MittwaldCliToolHandler<MittwaldConversa
       {
         conversationId: args.conversationId,
         status: 'closed',
-      },
-      {
-        durationMs: validation.libraryOutput.durationMs,
-        validationPassed: validation.passed,
-        discrepancyCount: validation.discrepancies.length,
-        cliDuration: validation.cliOutput.durationMs,
-        libraryDuration: validation.libraryOutput.durationMs,
       }
     );
   } catch (error) {
-    if (error instanceof LibraryError) {
-      // Handle special cases
+    if (error instanceof CliToolError) {
       const message = error.message.toLowerCase();
       if (message.includes('not found') && message.includes('conversation')) {
         return formatToolResponse('error', `Conversation not found with ID: ${args.conversationId}.\nError: ${error.message}`, {
-          code: error.code,
-          details: error.details,
+          exitCode: error.exitCode,
+          stderr: error.stderr,
         });
       }
       if (message.includes('already closed')) {
@@ -105,12 +67,14 @@ export const handleConversationCloseCli: MittwaldCliToolHandler<MittwaldConversa
       }
 
       return formatToolResponse('error', error.message, {
-        code: error.code,
-        details: error.details,
+        exitCode: error.exitCode,
+        stderr: error.stderr,
+        stdout: error.stdout,
+        suggestedAction: error.suggestedAction,
       });
     }
 
-    logger.error('[WP05] Unexpected error in conversation close handler', { error });
+    logger.error('Unexpected error in conversation close handler', { error });
     return formatToolResponse('error', `Failed to close conversation: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
