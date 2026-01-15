@@ -364,15 +364,20 @@ let globalRegistry: ToolRegistry | null = null;
 export async function getToolRegistry(): Promise<ToolRegistry> {
   if (!globalRegistry) {
     // Load tools from the constants directory
-    // Use build directory if running from compiled JS, otherwise use src directory
-    const isBuilt = process.cwd().includes('/app') || process.argv[0].includes('build');
-    const baseDir = isBuilt 
+    // Determine if running from build or src by checking this file's actual location
+    const currentFileUrl = new URL(import.meta.url);
+    const currentFilePath = currentFileUrl.pathname;
+    const isBuilt = currentFilePath.includes('/build/') || currentFilePath.includes('/app/');
+
+    const baseDir = isBuilt
       ? resolve(process.cwd(), 'build', 'constants', 'tool', 'mittwald-cli')
       : resolve(process.cwd(), 'src', 'constants', 'tool', 'mittwald-cli');
-    
+
+    logger.debug(`Tool registry: isBuilt=${isBuilt}, baseDir=${baseDir}`);
+
     globalRegistry = await loadTools({ baseDir });
   }
-  
+
   return globalRegistry;
 }
 
