@@ -68,86 +68,54 @@ Represents an AI assistant application capable of using MCP tools.
 | best_for | string[] | Recommended use cases | Yes |
 | evidence_refs | string[] | References to evidence-log.csv entries | Yes |
 
-### CaseStudy
+### CaseStudy (Streamlined Tutorial Format)
 
-Represents a complete use case document.
+Represents a complete use case document in the 4-section streamlined format.
 
 | Attribute | Type | Description | Required |
 |-----------|------|-------------|----------|
 | case_study_id | string | Identifier (e.g., "CS-001") | Yes |
 | title | string | Descriptive title | Yes |
 | segment_ref | string | CustomerSegment.segment_id | Yes |
-| persona | Persona | Detailed user persona | Yes |
-| problem | Problem | Business problem description | Yes |
-| solution | Solution | MCP-powered solution | Yes |
-| workflow | WorkflowStep[] | Step-by-step implementation | Yes |
-| roi | ROIAnalysis | Business justification | Yes |
-| guidance | ImplementationGuidance | Developer instructions | Yes |
-| tools_used | string[] | MCPTool.tool_id references | Yes |
-| llm_clients | string[] | Recommended LLMClient.client_id | Yes |
+| persona | PersonaStreamlined | Quick persona intro | Yes |
+| problem | string | 2-3 sentence problem statement | Yes |
+| solution | SolutionWorkflow | Step-by-step MCP workflow | Yes |
+| outcomes | Outcomes | Results and next steps | Yes |
+| tools_used | string[] | MCPTool.display_name references | Yes |
+| llm_client | string | Recommended LLMClient.client_id | Yes |
 
-### Persona (embedded in CaseStudy)
+### PersonaStreamlined (Section 1 of CaseStudy)
 
 | Attribute | Type | Description | Required |
 |-----------|------|-------------|----------|
-| name | string | Fictional name | Yes |
-| role | string | Job title/role | Yes |
-| company_type | string | Type of organization | Yes |
-| experience_level | string | junior/mid/senior | Yes |
-| daily_challenges | string[] | Day-to-day pain points | Yes |
-| goals | string[] | What they want to achieve | Yes |
+| segment | string | Segment ID and name | Yes |
+| role | string | Job title/description | Yes |
+| context | string | 1-2 sentences on their situation | Yes |
 
-### Problem (embedded in CaseStudy)
+### SolutionWorkflow (Section 3 of CaseStudy)
 
 | Attribute | Type | Description | Required |
 |-----------|------|-------------|----------|
-| summary | string | One-sentence problem statement | Yes |
-| context | string | Background and circumstances | Yes |
-| current_workflow | string | How they solve it today | Yes |
-| pain_points | string[] | Specific frustrations | Yes |
-| business_impact | string | Cost of the problem | Yes |
+| prerequisites | string[] | What's needed before starting | Yes |
+| steps | WorkflowStep[] | Ordered list of workflow steps | Yes |
 
-### Solution (embedded in CaseStudy)
-
-| Attribute | Type | Description | Required |
-|-----------|------|-------------|----------|
-| summary | string | One-sentence solution | Yes |
-| mcp_tools | string[] | Specific tools used | Yes |
-| llm_interaction | string | How user interacts with LLM | Yes |
-| automation_scope | string | What gets automated | Yes |
-| human_oversight | string | What remains manual | Yes |
-
-### WorkflowStep (embedded in CaseStudy)
+### WorkflowStep (embedded in SolutionWorkflow)
 
 | Attribute | Type | Description | Required |
 |-----------|------|-------------|----------|
 | step_number | number | Sequence number | Yes |
-| action | string | What happens | Yes |
-| actor | enum | user, llm, system | Yes |
-| mcp_tools | string[] | Tools invoked (if any) | No |
-| inputs | string[] | Required inputs | No |
-| outputs | string[] | Expected outputs | No |
-| notes | string | Additional context | No |
+| action_name | string | Short action title | Yes |
+| prompt_or_command | string | LLM prompt or MCP tool invocation | Yes |
+| tools_used | string[] | MCP tools invoked (display_name format) | Yes |
+| expected_output | string | What the user sees after this step | Yes |
 
-### ROIAnalysis (embedded in CaseStudy)
+### Outcomes (Section 4 of CaseStudy)
 
 | Attribute | Type | Description | Required |
 |-----------|------|-------------|----------|
-| time_saved | string | Estimated time savings | Yes |
-| error_reduction | string | Quality improvement | Yes |
-| scalability | string | How it scales | Yes |
-| learning_curve | string | Adoption difficulty | Yes |
-| prerequisites | string[] | What's needed to start | Yes |
-
-### ImplementationGuidance (embedded in CaseStudy)
-
-| Attribute | Type | Description | Required |
-|-----------|------|-------------|----------|
-| setup_steps | string[] | Initial configuration | Yes |
-| example_prompts | string[] | Sample LLM prompts | Yes |
-| common_pitfalls | string[] | What to avoid | Yes |
-| success_indicators | string[] | How to know it's working | Yes |
-| next_steps | string[] | Advanced usage | No |
+| time_saved | string | Qualitative time savings estimate | Yes |
+| error_reduction | string | What manual mistakes are avoided | Yes |
+| next_steps | string[] | How to extend this workflow | Yes |
 
 ## Coverage Matrices
 
