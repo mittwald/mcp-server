@@ -4,7 +4,7 @@
 **Work Package**: WP01
 **Priority**: P1
 **Segment**: SEG-001 Freelance Web Developer
-**Status**: planned
+**Status**: for_review
 
 ## Objective
 
@@ -12,11 +12,11 @@ Write a case study demonstrating how a freelancer can automate new client setup 
 
 ## Included Subtasks
 
-- [ ] T001: Research domain/mail/certificate tools for client setup
-- [ ] T002: Write CS-001 persona (SEG-001 Freelancer)
-- [ ] T003: Write CS-001 problem statement
-- [ ] T004: Write CS-001 workflow (5-7 steps)
-- [ ] T005: Write CS-001 outcomes and tool summary
+- [x] T001: Research domain/mail/certificate tools for client setup
+- [x] T002: Write CS-001 persona (SEG-001 Freelancer)
+- [x] T003: Write CS-001 problem statement
+- [x] T004: Write CS-001 workflow (5-7 steps)
+- [x] T005: Write CS-001 outcomes and tool summary
 
 ## Context
 
@@ -67,10 +67,22 @@ None - this work package can start immediately.
 
 ## Acceptance Criteria
 
-- [ ] Case study follows 4-section streamlined format
-- [ ] All 6 primary tools are used in the workflow
-- [ ] Persona uses SEG-001 segment ID
-- [ ] Problem statement includes business impact
-- [ ] Each workflow step has Tools Used and Expected Output
-- [ ] Outcomes include time saved and error reduction
-- [ ] File saved to correct location in findings/
+- [x] Case study follows 4-section streamlined format
+- [x] All 6 primary tools are used in the workflow
+- [x] Persona uses SEG-001 segment ID
+- [x] Problem statement includes business impact
+- [x] Each workflow step has Tools Used and Expected Output
+- [x] Outcomes include time saved and error reduction
+- [x] File saved to correct location in findings/
+
+## Implementation Notes
+
+**Implemented by**: claude-opus
+**Completed**: 2025-01-19
+**Output**: `findings/CS-001-freelancer-client-onboarding.md`
+
+The case study covers 10 tools total (6 primary + 4 verification):
+- Primary: project/create, domain/virtualhost/create, domain/dnszone/update, mail/address/create, mail/deliverybox/create, certificate/request
+- Verification: project/get, domain/virtualhost/list, mail/address/list, certificate/list
+
+Ready for review.
