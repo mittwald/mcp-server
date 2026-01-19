@@ -332,7 +332,7 @@ This document tracks the work packages for synthesizing **13 case studies** demo
 **Goal**: Write case study demonstrating complete project lifecycle management—from setup through archival and deletion—covering the missing "list", "delete", and "management" operations.
 
 **Included Subtasks**:
-- [ ] T056: Research project/server/org lifecycle tools
+- [x] T056: Research project/server/org lifecycle tools
 - [ ] T057: Write CS-012 persona (SEG-002 Agency)
 - [ ] T058: Write CS-012 problem statement
 - [ ] T059: Write CS-012 workflow (7-9 steps)
