@@ -4,7 +4,7 @@
 **Work Package**: WP07
 **Priority**: P2
 **Segment**: SEG-002 Web Development Agency
-**Status**: planned
+**Status**: for_review
 
 ## Objective
 
@@ -12,11 +12,11 @@ Write a case study demonstrating how an agency can onboard new developers with p
 
 ## Included Subtasks
 
-- [ ] T031: Research ssh/sftp/org/identity tools
-- [ ] T032: Write CS-007 persona (SEG-002 Agency)
-- [ ] T033: Write CS-007 problem statement
-- [ ] T034: Write CS-007 workflow (5-7 steps)
-- [ ] T035: Write CS-007 outcomes and tool summary
+- [x] T031: Research ssh/sftp/org/identity tools
+- [x] T032: Write CS-007 persona (SEG-002 Agency)
+- [x] T033: Write CS-007 problem statement
+- [x] T034: Write CS-007 workflow (5-7 steps)
+- [x] T035: Write CS-007 outcomes and tool summary
 
 ## Context
 
@@ -67,10 +67,26 @@ Conceptually follows WP02 (same segment), but no technical dependency.
 
 ## Acceptance Criteria
 
-- [ ] Case study follows 4-section streamlined format
-- [ ] All 6 primary tools are used in the workflow
-- [ ] Persona uses SEG-002 segment ID
-- [ ] Problem statement includes business impact (security, efficiency)
-- [ ] Each workflow step has Tools Used and Expected Output
-- [ ] Security considerations emphasized
-- [ ] File saved to correct location in findings/
+- [x] Case study follows 4-section streamlined format
+- [x] All 6 primary tools are used in the workflow
+- [x] Persona uses SEG-002 segment ID
+- [x] Problem statement includes business impact (security, efficiency)
+- [x] Each workflow step has Tools Used and Expected Output
+- [x] Security considerations emphasized
+- [x] File saved to correct location in findings/
+
+## Implementation Notes
+
+**Implemented by**: claude-opus
+**Completed**: 2025-01-19
+**Output**: `findings/CS-007-developer-onboarding.md`
+
+Tools covered (6 primary across 4 domains):
+- org/membership/list, org/invite (organization)
+- ssh/user/create, ssh/user/list (ssh)
+- sftp/user/list (sftp)
+- user/ssh/key/create (identity)
+
+Security focus: Access provisioning, orphaned account prevention.
+
+Ready for review.
