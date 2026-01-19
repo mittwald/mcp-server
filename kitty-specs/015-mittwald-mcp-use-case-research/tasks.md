@@ -356,7 +356,7 @@ This document tracks the work packages for synthesizing **13 case studies** demo
 - [x] T061: Research domain and mail CRUD tools
 - [x] T062: Write CS-013 persona (SEG-001 Freelancer)
 - [x] T063: Write CS-013 problem statement
-- [ ] T064: Write CS-013 workflow (6-8 steps)
+- [x] T064: Write CS-013 workflow (6-8 steps)
 - [ ] T065: Write CS-013 outcomes and tool summary
 
 **Primary Tools**: `domain/get`, `domain/dnszone/get`, `domain/dnszone/list`, `domain/virtualhost/get`, `domain/virtualhost/delete`, `mail/address/get`, `mail/address/delete`, `mail/address/update`, `mail/deliverybox/get`, `mail/deliverybox/list`, `mail/deliverybox/delete`, `mail/deliverybox/update`
