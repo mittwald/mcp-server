@@ -1,3 +1,8 @@
+---
+lane: "doing"
+agent: "claude-opus"
+shell_pid: "74025"
+---
 # WP12: CS-012 Project Lifecycle Management
 
 **Feature**: 015-mittwald-mcp-use-case-research
@@ -118,3 +123,7 @@ This WP addresses the missing "list", "delete", and "management" operations that
 - Project delete/update/invite operations
 - Organization listing and access revocation
 - Application listing and uninstallation
+
+## Activity Log
+
+- 2026-01-19T15:02:39Z – claude-opus – shell_pid=74025 – lane=doing – Started review via workflow command
