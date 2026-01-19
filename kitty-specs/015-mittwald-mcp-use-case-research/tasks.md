@@ -334,7 +334,7 @@ This document tracks the work packages for synthesizing **13 case studies** demo
 **Included Subtasks**:
 - [x] T056: Research project/server/org lifecycle tools
 - [x] T057: Write CS-012 persona (SEG-002 Agency)
-- [ ] T058: Write CS-012 problem statement
+- [x] T058: Write CS-012 problem statement
 - [ ] T059: Write CS-012 workflow (7-9 steps)
 - [ ] T060: Write CS-012 outcomes and tool summary
 
