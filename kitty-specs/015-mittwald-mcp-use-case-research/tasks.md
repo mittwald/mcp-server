@@ -354,7 +354,7 @@ This document tracks the work packages for synthesizing **13 case studies** demo
 
 **Included Subtasks**:
 - [x] T061: Research domain and mail CRUD tools
-- [ ] T062: Write CS-013 persona (SEG-001 Freelancer)
+- [x] T062: Write CS-013 persona (SEG-001 Freelancer)
 - [ ] T063: Write CS-013 problem statement
 - [ ] T064: Write CS-013 workflow (6-8 steps)
 - [ ] T065: Write CS-013 outcomes and tool summary
