@@ -6,12 +6,15 @@
 
 ## Overview
 
-This document tracks the work packages for synthesizing 10 case studies demonstrating Mittwald MCP use cases. Each case study follows the streamlined 4-section tutorial format defined in `quickstart.md`.
+This document tracks the work packages for synthesizing **13 case studies** demonstrating Mittwald MCP use cases. Each case study follows the streamlined 4-section tutorial format defined in `quickstart.md`.
+
+*Note: Originally planned for 10 case studies, but review identified that only 53/115 tools (46%) would be covered. WP12-WP14 were added to achieve 100% tool coverage.*
 
 **Key Constraints**:
-- All 5 customer segments covered (2 case studies each)
+- All 5 customer segments covered (at least 2 case studies each)
 - All 115 MCP tools referenced across the collection
 - Practical, developer-focused documentation tone
+- Tool Reference appendix available at `findings/tool-reference.md`
 
 ## Subtask Registry
 
@@ -72,6 +75,21 @@ This document tracks the work packages for synthesizing 10 case studies demonstr
 | T053 | Validate 100% tool coverage | WP11 | |
 | T054 | Validate segment distribution | WP11 | |
 | T055 | Create findings summary | WP11 | |
+| T056 | Research project/server/org lifecycle tools | WP12 | [P] |
+| T057 | Write CS-012 persona (SEG-002 Agency) | WP12 | |
+| T058 | Write CS-012 problem statement | WP12 | |
+| T059 | Write CS-012 workflow (7-9 steps) | WP12 | |
+| T060 | Write CS-012 outcomes and tool summary | WP12 | |
+| T061 | Research domain and mail CRUD tools | WP13 | [P] |
+| T062 | Write CS-013 persona (SEG-001 Freelancer) | WP13 | |
+| T063 | Write CS-013 problem statement | WP13 | |
+| T064 | Write CS-013 workflow (6-8 steps) | WP13 | |
+| T065 | Write CS-013 outcomes and tool summary | WP13 | |
+| T066 | Research remaining maintenance/cleanup tools | WP14 | [P] |
+| T067 | Write CS-014 persona (SEG-005 Modern Stack) | WP14 | |
+| T068 | Write CS-014 problem statement | WP14 | |
+| T069 | Write CS-014 workflow (8-10 steps) | WP14 | |
+| T070 | Write CS-014 outcomes and tool summary | WP14 | |
 
 ## Work Packages
 
@@ -266,7 +284,7 @@ This document tracks the work packages for synthesizing 10 case studies demonstr
 **Goal**: Write case study demonstrating how an enterprise TYPO3 developer can automate security audits (API tokens, SSH keys, certificates) using MCP.
 
 **Included Subtasks**:
-- [ ] T041: Research user/api/token/certificate tools
+- [x] T041: Research user/api/token/certificate tools
 - [ ] T042: Write CS-009 persona (SEG-004 TYPO3)
 - [ ] T043: Write CS-009 problem statement
 - [ ] T044: Write CS-009 workflow (5-7 steps)
@@ -301,7 +319,76 @@ This document tracks the work packages for synthesizing 10 case studies demonstr
 
 ---
 
-### Phase 5: Validation
+### Phase 5: Tool Coverage Completion (Added via Review)
+
+*Note: WP12-WP14 were added after review of WP01-WP10 identified that only 53/115 tools (46%) were covered. These work packages ensure 100% tool coverage.*
+
+---
+
+#### WP12: CS-012 Project Lifecycle Management
+**Prompt File**: `tasks/WP12-project-lifecycle-management.md`
+**Priority**: P1 | **Segment**: SEG-002 | **Estimated Lines**: ~400
+
+**Goal**: Write case study demonstrating complete project lifecycle management—from setup through archival and deletion—covering the missing "list", "delete", and "management" operations.
+
+**Included Subtasks**:
+- [ ] T056: Research project/server/org lifecycle tools
+- [ ] T057: Write CS-012 persona (SEG-002 Agency)
+- [ ] T058: Write CS-012 problem statement
+- [ ] T059: Write CS-012 workflow (7-9 steps)
+- [ ] T060: Write CS-012 outcomes and tool summary
+
+**Primary Tools**: `server/get`, `server/list`, `project/delete`, `project/update`, `project/invite/get`, `project/invite/list`, `project/membership/get`, `org/list`, `org/invite/list`, `org/invite/revoke`, `org/membership/revoke`, `app/list`, `app/uninstall`, `app/versions`
+
+**Dependencies**: None
+
+**Risks**: Delete operations require careful documentation of warnings/confirmations
+
+---
+
+#### WP13: CS-013 Email & Domain Administration
+**Prompt File**: `tasks/WP13-email-domain-administration.md`
+**Priority**: P1 | **Segment**: SEG-001 | **Estimated Lines**: ~350
+
+**Goal**: Write case study demonstrating comprehensive email and domain administration—including the missing "get", "update", and "delete" operations.
+
+**Included Subtasks**:
+- [ ] T061: Research domain and mail CRUD tools
+- [ ] T062: Write CS-013 persona (SEG-001 Freelancer)
+- [ ] T063: Write CS-013 problem statement
+- [ ] T064: Write CS-013 workflow (6-8 steps)
+- [ ] T065: Write CS-013 outcomes and tool summary
+
+**Primary Tools**: `domain/get`, `domain/dnszone/get`, `domain/dnszone/list`, `domain/virtualhost/get`, `domain/virtualhost/delete`, `mail/address/get`, `mail/address/delete`, `mail/address/update`, `mail/deliverybox/get`, `mail/deliverybox/list`, `mail/deliverybox/delete`, `mail/deliverybox/update`
+
+**Dependencies**: None
+
+**Risks**: Migration scenario must show clear before/after state
+
+---
+
+#### WP14: CS-014 Infrastructure Maintenance & Cleanup
+**Prompt File**: `tasks/WP14-infrastructure-maintenance.md`
+**Priority**: P1 | **Segment**: SEG-005 | **Estimated Lines**: ~500
+
+**Goal**: Write case study demonstrating comprehensive infrastructure maintenance—covering all remaining tools including database user management, credential rotation, and cleanup operations.
+
+**Included Subtasks**:
+- [ ] T066: Research remaining maintenance and cleanup tools
+- [ ] T067: Write CS-014 persona (SEG-005 Modern Stack)
+- [ ] T068: Write CS-014 problem statement
+- [ ] T069: Write CS-014 workflow (8-10 steps)
+- [ ] T070: Write CS-014 outcomes and tool summary
+
+**Primary Tools**: `backup/delete`, `backup/schedule/delete`, `database/mysql/delete`, `database/mysql/user/*` (4), `database/redis/get`, `database/redis/versions`, `registry/delete`, `registry/update`, `stack/delete`, `sftp/user/delete`, `ssh/user/delete`, `ssh/user/update`, `cronjob/get`, `cronjob/update`, `cronjob/delete`, `cronjob/execution/get`, `cronjob/execution/abort`, `context/reset/session`, `conversation/categories`, `conversation/show`, `user/get`, `user/session/get`, `user/api/token/create`, `user/api/token/revoke`, `user/ssh/key/get`, `user/ssh/key/delete`, `user/ssh/key/import`
+
+**Dependencies**: None
+
+**Risks**: Large tool count (30) requires well-organized workflow sections
+
+---
+
+### Phase 6: Validation
 
 ---
 
@@ -309,7 +396,7 @@ This document tracks the work packages for synthesizing 10 case studies demonstr
 **Prompt File**: `tasks/WP11-coverage-validation.md`
 **Priority**: P1 | **Estimated Lines**: ~250
 
-**Goal**: Generate coverage matrices and validate that all 115 MCP tools and all 5 customer segments are covered across the 10 case studies.
+**Goal**: Generate coverage matrices and validate that all 115 MCP tools and all 5 customer segments are covered across the 13 case studies.
 
 **Included Subtasks**:
 - [ ] T051: Generate tool coverage matrix
@@ -323,9 +410,18 @@ This document tracks the work packages for synthesizing 10 case studies demonstr
 - `findings/segment-coverage-matrix.md`
 - `findings/research-summary.md`
 
-**Dependencies**: Depends on WP01-WP10 (all case studies complete)
+**Dependencies**: Depends on WP01-WP10, WP12-WP14 (all case studies complete)
 
-**Risks**: May identify coverage gaps requiring case study updates
+**Risks**: Should now pass with WP12-WP14 addressing coverage gaps
+
+---
+
+### Appendix: Tool Reference
+
+**File**: `findings/tool-reference.md`
+**Created by**: Review process
+
+A complete reference of all 115 MCP tools organized by domain, with brief descriptions and case study cross-references. This serves as standalone documentation separate from the case studies.
 
 ---
 
@@ -337,17 +433,19 @@ This document tracks the work packages for synthesizing 10 case studies demonstr
 **Phase 4** (WP06-WP10): Can partially parallelize:
   - WP06 after WP01, WP07 after WP02 (same segment pairs)
   - WP08 after WP03, WP09 after WP04, WP10 after WP05
-**Phase 5** (WP11): Sequential - requires all case studies complete
+**Phase 5** (WP12, WP13, WP14): Can run in parallel - independent coverage completion
+**Phase 6** (WP11): Sequential - requires all case studies complete
 
 **Maximum Parallel Agents**: 5 (one per segment in early phases)
 
 ## Acceptance Criteria
 
-1. **10 case studies** complete in `findings/` directory
-2. **100% segment coverage**: 2 case studies per segment
-3. **100% tool coverage**: All 115 tools in coverage matrix
+1. **13 case studies** complete in `findings/` directory (10 original + 3 coverage completion)
+2. **100% segment coverage**: At least 2 case studies per segment
+3. **100% tool coverage**: All 115 tools referenced across case studies
 4. **Quality validation**: All case studies pass `quickstart.md` checklist
 5. **Coverage matrices**: Both tool and segment matrices generated
+6. **Tool reference**: Complete tool reference appendix available
 
 ## Next Steps
 
@@ -355,4 +453,5 @@ After task generation:
 1. Run `/spec-kitty.implement WP01` to start first case study
 2. Can run WP01-WP05 in parallel (one per segment)
 3. Run `/spec-kitty.review` after each WP completes
-4. Run WP11 last for final validation
+4. Run WP12-WP14 in parallel for coverage completion
+5. Run WP11 last for final validation
