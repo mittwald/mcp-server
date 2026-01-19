@@ -374,7 +374,7 @@ This document tracks the work packages for synthesizing **13 case studies** demo
 **Goal**: Write case study demonstrating comprehensive infrastructure maintenance—covering all remaining tools including database user management, credential rotation, and cleanup operations.
 
 **Included Subtasks**:
-- [ ] T066: Research remaining maintenance and cleanup tools
+- [x] T066: Research remaining maintenance and cleanup tools
 - [ ] T067: Write CS-014 persona (SEG-005 Modern Stack)
 - [ ] T068: Write CS-014 problem statement
 - [ ] T069: Write CS-014 workflow (8-10 steps)
