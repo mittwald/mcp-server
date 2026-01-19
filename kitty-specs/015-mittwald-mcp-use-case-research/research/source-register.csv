@@ -1,0 +1,21 @@
+source_id,title,url,type,access_date,author,credibility,notes
+SRC-001,Mittwald Homepage,https://www.mittwald.de,primary,2025-01-19,Mittwald GmbH,high,Main company website - marketing and product info
+SRC-002,MStudio Platform,https://www.mittwald.de/mstudio,primary,2025-01-19,Mittwald GmbH,high,Hosting management interface documentation
+SRC-003,Mittwald API Documentation,https://api.mittwald.de/v2,primary,2025-01-19,Mittwald GmbH,high,REST API reference
+SRC-004,MCP Specification,https://modelcontextprotocol.io/specification/2025-11-25,primary,2025-01-19,Anthropic/AAIF,high,Official Model Context Protocol specification v2025-11-25
+SRC-005,Claude Code MCP Documentation,https://code.claude.com/docs/en/mcp,primary,2025-01-19,Anthropic,high,Claude Code MCP integration docs
+SRC-006,Claude Desktop Documentation,https://docs.anthropic.com/claude-desktop,primary,2025-01-19,Anthropic,high,Claude Desktop MCP integration docs
+SRC-007,mittwald-mcp Codebase,file://./,primary,2025-01-19,Project,high,This repository - MCP server implementation
+SRC-008,mittwald-oauth-server Codebase,file://../mittwald-oauth,primary,2025-01-19,Project,high,OAuth bridge implementation
+SRC-009,Mittwald CLI Repository,https://github.com/mittwald/cli,primary,2025-01-19,Mittwald GmbH,high,Official Mittwald CLI source
+SRC-010,OpenAI MCP Announcement,https://www.infoq.com/news/2025/10/chat-gpt-mcp/,secondary,2025-01-19,InfoQ,high,ChatGPT Developer Mode MCP support announcement
+SRC-011,Google Cloud MCP Blog,https://cloud.google.com/blog/products/ai-machine-learning/announcing-official-mcp-support-for-google-services,secondary,2025-01-19,Google Cloud,high,Google managed MCP servers announcement December 2025
+SRC-012,MCP Tools Inventory,file://./evals/inventory/tools-current.json,primary,2025-01-19,Project,high,Current 115-tool inventory
+SRC-013,Mittwald Hosting Plans,https://www.mittwald.de/hosting,primary,2025-01-19,Mittwald GmbH,high,Hosting tier details and pricing
+SRC-014,Mittwald CMS Hosting,https://www.mittwald.de/cms-hosting,primary,2025-01-19,Mittwald GmbH,high,CMS-specific hosting features
+SRC-015,MCP Anniversary Blog,https://blog.modelcontextprotocol.io/posts/2025-11-25-first-mcp-anniversary/,secondary,2025-01-19,MCP Foundation,high,One year of MCP and spec updates
+SRC-016,OpenAI Platform MCP Docs,https://developers.openai.com/codex/mcp/,primary,2025-01-19,OpenAI,high,OpenAI official MCP documentation
+SRC-017,Gemini CLI MCP Docs,https://geminicli.com/docs/tools/mcp-server/,primary,2025-01-19,Google,high,Gemini CLI MCP server configuration
+SRC-018,MCP Wikipedia,https://en.wikipedia.org/wiki/Model_Context_Protocol,secondary,2025-01-19,Wikipedia,medium,MCP overview and industry adoption timeline
+SRC-019,Hosterz Mittwald Review,https://www.hosterz.de/anbieter/mittwald/,secondary,2025-01-19,Hosterz,medium,Third-party review of Mittwald hosting 2025
+SRC-020,WebsitePlanet Mittwald Review,https://www.websiteplanet.com/web-hosting/mittwald/,secondary,2025-01-19,WebsitePlanet,medium,English review of Mittwald hosting
