@@ -4,7 +4,7 @@
 **Work Package**: WP06
 **Priority**: P2
 **Segment**: SEG-001 Freelance Web Developer
-**Status**: for_review
+**Status**: done
 
 ## Objective
 

@@ -3,7 +3,7 @@
 **Feature**: 015-mittwald-mcp-use-case-research
 **Work Package**: WP11
 **Priority**: P1
-**Status**: for_review
+**Status**: done
 
 ## Objective
 

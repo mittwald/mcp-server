@@ -4,7 +4,7 @@
 **Work Package**: WP04
 **Priority**: P1
 **Segment**: SEG-004 Enterprise TYPO3 Developer
-**Status**: for_review
+**Status**: done
 
 ## Objective
 
