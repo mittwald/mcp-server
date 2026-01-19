@@ -1,5 +1,5 @@
 ---
-lane: "doing"
+lane: "for_review"
 agent: "claude-opus"
 shell_pid: "74025"
 ---
@@ -127,3 +127,4 @@ This WP addresses the missing "list", "delete", and "management" operations that
 ## Activity Log
 
 - 2026-01-19T15:02:39Z – claude-opus – shell_pid=74025 – lane=doing – Started review via workflow command
+- 2026-01-19T15:03:08Z – claude-opus – shell_pid=74025 – lane=for_review – Ready for review: Project Lifecycle Management case study with 14 tools covering server/*, org/*, project delete/update, and app lifecycle operations
