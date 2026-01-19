@@ -353,7 +353,7 @@ This document tracks the work packages for synthesizing **13 case studies** demo
 **Goal**: Write case study demonstrating comprehensive email and domain administration—including the missing "get", "update", and "delete" operations.
 
 **Included Subtasks**:
-- [ ] T061: Research domain and mail CRUD tools
+- [x] T061: Research domain and mail CRUD tools
 - [ ] T062: Write CS-013 persona (SEG-001 Freelancer)
 - [ ] T063: Write CS-013 problem statement
 - [ ] T064: Write CS-013 workflow (6-8 steps)
