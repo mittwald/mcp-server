@@ -376,7 +376,7 @@ This document tracks the work packages for synthesizing **13 case studies** demo
 **Included Subtasks**:
 - [x] T066: Research remaining maintenance and cleanup tools
 - [x] T067: Write CS-014 persona (SEG-005 Modern Stack)
-- [ ] T068: Write CS-014 problem statement
+- [x] T068: Write CS-014 problem statement
 - [ ] T069: Write CS-014 workflow (8-10 steps)
 - [ ] T070: Write CS-014 outcomes and tool summary
 
