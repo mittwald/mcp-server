@@ -287,7 +287,7 @@ This document tracks the work packages for synthesizing **13 case studies** demo
 - [x] T041: Research user/api/token/certificate tools
 - [x] T042: Write CS-009 persona (SEG-004 TYPO3)
 - [x] T043: Write CS-009 problem statement
-- [ ] T044: Write CS-009 workflow (5-7 steps)
+- [x] T044: Write CS-009 workflow (5-7 steps)
 - [ ] T045: Write CS-009 outcomes and tool summary
 
 **Primary Tools**: `user/api/token/list`, `user/api/token/get`, `user/ssh/key/list`, `certificate/list`, `user/session/list`
