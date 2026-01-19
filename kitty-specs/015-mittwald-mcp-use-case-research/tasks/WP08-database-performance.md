@@ -4,7 +4,7 @@
 **Work Package**: WP08
 **Priority**: P2
 **Segment**: SEG-003 E-commerce Specialist
-**Status**: planned
+**Status**: for_review
 
 ## Objective
 
@@ -12,11 +12,11 @@ Write a case study demonstrating how an e-commerce specialist can optimize MySQL
 
 ## Included Subtasks
 
-- [ ] T036: Research database/mysql/redis tools
-- [ ] T037: Write CS-008 persona (SEG-003 E-commerce)
-- [ ] T038: Write CS-008 problem statement
-- [ ] T039: Write CS-008 workflow (5-7 steps)
-- [ ] T040: Write CS-008 outcomes and tool summary
+- [x] T036: Research database/mysql/redis tools
+- [x] T037: Write CS-008 persona (SEG-003 E-commerce)
+- [x] T038: Write CS-008 problem statement
+- [x] T039: Write CS-008 workflow (5-7 steps)
+- [x] T040: Write CS-008 outcomes and tool summary
 
 ## Context
 
@@ -67,10 +67,25 @@ Conceptually follows WP03 (same segment), but no technical dependency.
 
 ## Acceptance Criteria
 
-- [ ] Case study follows 4-section streamlined format
-- [ ] All 6 primary tools are used in the workflow
-- [ ] Persona uses SEG-003 segment ID
-- [ ] Problem statement includes business impact (performance during sales)
-- [ ] Each workflow step has Tools Used and Expected Output
-- [ ] Database terminology used accurately but accessibly
-- [ ] File saved to correct location in findings/
+- [x] Case study follows 4-section streamlined format
+- [x] All 6 primary tools are used in the workflow
+- [x] Persona uses SEG-003 segment ID
+- [x] Problem statement includes business impact (performance during sales)
+- [x] Each workflow step has Tools Used and Expected Output
+- [x] Database terminology used accurately but accessibly
+- [x] File saved to correct location in findings/
+
+## Implementation Notes
+
+**Implemented by**: claude-opus
+**Completed**: 2025-01-19
+**Output**: `findings/CS-008-database-performance-optimization.md`
+
+Tools covered (6 primary, all databases domain):
+- database/mysql/list, database/mysql/get, database/mysql/versions
+- database/mysql/user/list
+- database/redis/list, database/redis/create
+
+Business context: Black Friday preparation, €12k abandoned carts.
+
+Ready for review.
