@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: OAuth Guides - Claude Code & GitHub Copilot
-lane: "for_review"
+lane: "doing"
 dependencies: []
 subtasks:
 - T005
@@ -11,7 +11,7 @@ subtasks:
 phase: Phase B - OAuth Getting-Started Guides
 assignee: ''
 agent: "claude"
-shell_pid: "6220"
+shell_pid: "29944"
 review_status: ''
 reviewed_by: ''
 history:
@@ -603,3 +603,4 @@ spec-kitty implement WP05 --base WP01
 *[Activity log will be populated during implementation and review]*
 - 2026-01-23T10:44:11Z – claude – shell_pid=6220 – lane=doing – Started implementation via workflow command
 - 2026-01-23T10:49:29Z – claude – shell_pid=6220 – lane=for_review – OAuth guides complete: Claude Code and GitHub Copilot research and getting-started guides written and tested. All subtasks (T005-T008) implemented. 1700+ lines of comprehensive documentation. Build verified.
+- 2026-01-23T11:08:14Z – claude – shell_pid=29944 – lane=doing – Started review via workflow command
