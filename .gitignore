@@ -108,3 +108,5 @@ version.json
 .roo/
 .amazonq/
 .github/copilot/
+# Excluded via sparse-checkout
+kitty-specs/

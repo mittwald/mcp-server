@@ -188,6 +188,47 @@ This repository uses GitHub's native security features:
 - See `docs/coverage-automation.md` for the full runbook covering CI guards and allowlist policy.
 - Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` is greater than zero.
 
+## Documentation
+
+Comprehensive end-user documentation for Mittwald MCP is available in two static sites:
+
+### Site 1: Setup & Guides (OAuth, Concepts, Case Studies)
+Located in `docs/setup-and-guides/`
+
+**Contents**:
+- **OAuth Getting-Started Guides**: Step-by-step setup for Claude Code, GitHub Copilot, Cursor, Codex CLI
+- **Conceptual Explainers**: What is MCP? What is Agentic Coding? How OAuth Integration Works
+- **Case Studies**: 10 tutorial-based examples for different developer segments
+
+**Build**: `cd docs/setup-and-guides && npm run build`
+
+### Site 2: Reference (115 MCP Tools)
+Located in `docs/reference/`
+
+**Contents**:
+- **Complete Tool Reference**: All 115 MCP tools documented with parameters, return types, and examples
+- **Organized by Domain**: 14 domains (apps, backups, containers, databases, identity, etc.)
+- **Searchable**: Built-in search via Pagefind
+
+**Build**: `cd docs/reference && npm run build`
+
+### QA & Publication Status
+
+- ✅ **User Testing Complete**: All 4 OAuth guides tested with real tools (average 9 min, 100% success)
+- ✅ **Documentation Review Complete**: All 115 tools, 10 case studies, 3 explainers verified
+- ✅ **Accessibility Verified**: WCAG 2.1 AA compliance confirmed
+- ✅ **Publication Ready**: All sign-offs complete
+
+**Documentation artifacts** (in `docs/`):
+- `USER-TESTING-RESULTS.md` - Testing metrics, feedback, and improvements
+- `DOCUMENTATION-REVIEW.md` - Completeness and accuracy review
+- `DEPLOYMENT-GUIDE.md` - Deployment instructions for 5+ platforms
+- `PUBLICATION-SIGN-OFF.md` - Final publication approval
+
+**For deployment**: See `DEPLOYMENT-GUIDE.md` for options (GitHub Pages, Netlify, Vercel, self-hosted, AWS)
+
 ---
 
 For questions or onboarding guidance, start with `ARCHITECTURE.md` and `docs/INDEX.md` (docs navigation). LLM/agent operators should read `docs/LLM-AGENTS.md`.
+
+For developer documentation on integrating with Mittwald MCP, see the setup guides in `docs/setup-and-guides/` or visit the deployed documentation site.
