@@ -31,53 +31,121 @@ Before starting implementation:
 
 ## Work Packages Overview
 
-Execution order (from `/spec-kitty.tasks`):
+**39 granular work packages** organized into 6 implementation phases. Each package is bite-sized (2-8 hours) for independent execution.
 
-### WP01: Astro Site Setup & Configuration
-**Duration**: Initial setup  
-**Scope**: Create two Starlight projects with branding and navigation
+Execution follows dependency order: Phase A → Phase B → Phase C → Phase D → Phase E → Phase F
+
+### Phase A: Infrastructure & Setup (WP01-WP04)
+
+#### WP01: Initialize Site 1 (Setup + Guides)
+**Scope**: Create `docs/setup-and-guides/` Starlight project with basic structure
 
 **Deliverables**:
-- `docs/setup-and-guides/` - Starlight project (Site 1)
-- `docs/reference/` - Starlight project (Site 2)
-- Both sites with `astro.config.mjs` configured for BASE_URL
-- Mittwald branding (logo, colors) integrated
-- Navigation structure for each site
+- `docs/setup-and-guides/package.json`
+- `docs/setup-and-guides/astro.config.mjs`
+- `docs/setup-and-guides/src/content/docs/index.md` (home page)
+- Basic folder structure (getting-started/, explainers/, case-studies/)
 
-**Key Artifacts**:
-- `astro.config.mjs` (both sites)
-- `package.json` (both sites)
-- `tsconfig.json` (both sites)
-- `README.md` with build instructions
+**Duration**: 1-2 hours
 
 **Testing**:
 ```bash
-# Site 1
 cd docs/setup-and-guides
 npm install
 npm run dev
-# Visit http://localhost:3000 - verify branding, nav structure
-
-# Site 2
-cd docs/reference
-npm install
-npm run dev
-# Visit http://localhost:3000 - verify branding, nav structure
+# Visit http://localhost:4321 - verify site loads, navigation works
 ```
 
 ---
 
-### WP02: OAuth Getting-Started Guides (4 guides)
-**Duration**: Per guide  
-**Scope**: Write tool-specific OAuth setup guides
+#### WP02: Initialize Site 2 (Reference)
 
-**Deliverables** (one per tool):
-1. `docs/setup-and-guides/src/content/docs/getting-started/claude-code.md`
-2. `docs/setup-and-guides/src/content/docs/getting-started/github-copilot.md`
-3. `docs/setup-and-guides/src/content/docs/getting-started/cursor.md`
-4. `docs/setup-and-guides/src/content/docs/getting-started/codex-cli.md`
+**Scope**: Create `docs/reference/` Starlight project with scripts folder
 
-Plus: `docs/setup-and-guides/src/content/docs/getting-started/index.md` (landing page comparing tools)
+**Deliverables**:
+- `docs/reference/package.json`
+- `docs/reference/astro.config.mjs`
+- `docs/reference/src/content/docs/index.md` (home page)
+- `docs/reference/scripts/` (empty folder for auto-generation scripts)
+
+**Duration**: 1-2 hours
+
+**Testing**:
+```bash
+cd docs/reference
+npm install
+npm run dev
+# Visit http://localhost:4321 - verify site loads
+```
+
+---
+
+#### WP03: Extract and Integrate Mittwald Branding
+
+**Scope**: Extract logo and colors from mittwald.de, apply to both sites
+
+**Deliverables**:
+- `docs/setup-and-guides/src/assets/mittwald-logo.svg`
+- `docs/reference/src/assets/mittwald-logo.svg`
+- `docs/setup-and-guides/src/assets/mittwald-colors.css`
+- `docs/reference/src/assets/mittwald-colors.css`
+- Updated astro.config.mjs for both sites (logo, customCSS)
+
+**Duration**: 2-3 hours
+
+**Testing**: Verify logo appears in header, colors match mittwald.de
+
+---
+
+#### WP04: Configure BASE_URL and Cross-Site Navigation
+
+**Scope**: Set up dynamic BASE_URL config, cross-site linking
+
+**Deliverables**:
+- Updated astro.config.mjs for both sites (BASE_URL support)
+- Navigation menus with cross-site links
+
+**Duration**: 2-3 hours
+
+**Testing**:
+```bash
+cd docs/setup-and-guides
+BASE_URL=/docs npm run build
+BASE_URL=/mcp-docs npm run build
+# Verify links work with both BASE_URL values
+```
+
+---
+
+### Phase B: OAuth Getting-Started Guides (WP05-WP13)
+**Research + Write Pattern**: Each tool requires independent research (WP05, WP07, WP09, WP11) before writing the guide (WP06, WP08, WP10, WP12).
+
+**Why separate research WPs?** Each tool has different OAuth callback mechanics, MCP integration patterns, and documentation. Research ensures guides are accurate and complete.
+
+#### WP05: Research Claude Code OAuth + MCP Integration
+
+**Scope**: Investigate Claude Code's OAuth and MCP setup process
+
+**Research Questions**:
+- How does Claude Code handle OAuth callbacks? (RFC 8252 loopback?)
+- What redirect URI patterns does it support?
+- How is PKCE configured?
+- What's the MCP server registration process?
+- Common errors and troubleshooting steps?
+
+**Deliverables**: Research notes document with OAuth flow diagram
+
+**Duration**: 3-4 hours
+
+---
+
+#### WP06: Write Claude Code Getting-Started Guide
+
+**Scope**: Write comprehensive OAuth setup guide based on WP05 research
+
+**Deliverables**: `docs/setup-and-guides/src/content/docs/getting-started/claude-code.md`
+
+**Duration**: 3-4 hours
 
 **Content Structure** (each guide):
 ```markdown
@@ -480,4 +548,444 @@ npm run validate-references
 - **Architecture Questions**: See `plan.md` (Technical Context section)
 - **Data Model Questions**: See `data-model.md` (Entities section)
 - **Research/Decisions**: See `research.md` (Decision sections)
+
+
+**Repeat pattern for remaining tools**:
+- WP07 (Research Copilot) + WP08 (Write Copilot guide)
+- WP09 (Research Cursor) + WP10 (Write Cursor guide)
+- WP11 (Research Codex CLI) + WP12 (Write Codex CLI guide)
+
+---
+
+#### WP13: Create OAuth Guides Landing Page
+
+**Scope**: Comparison table of all 4 tools, navigation to individual guides
+
+**Deliverables**: `docs/setup-and-guides/src/content/docs/getting-started/index.md`
+
+**Content Structure**:
+- Overview of OAuth authentication for MCP
+- Comparison table: Tool vs. OAuth pattern vs. Redirect URI vs. Complexity
+- Links to individual guides
+
+**Duration**: 2 hours
+
+---
+
+### Phase C: Conceptual Explainers (WP14-WP16)
+
+#### WP14: Write "What is MCP?" Explainer
+
+**Scope**: Explain Model Context Protocol for developers without prior knowledge
+
+**Content Requirements**:
+- Definition of MCP
+- Why it matters for developers
+- How it enables agentic coding
+- Mittwald's role in the ecosystem
+- Common misconceptions
+- Diagrams: MCP architecture, client-server flow
+
+**Deliverables**: `docs/setup-and-guides/src/content/docs/explainers/what-is-mcp.md`
+
+**Duration**: 4-5 hours
+
+---
+
+#### WP15: Write "What is Agentic Coding?" Explainer
+
+**Scope**: Explain agentic coding concept and relationship to LLMs/MCP
+
+**Content Requirements**:
+- Definition of agentic coding
+- Relationship to LLMs and AI assistants
+- Practical examples with Mittwald MCP
+- When to use agentic coding vs. manual workflows
+
+**Deliverables**: `docs/setup-and-guides/src/content/docs/explainers/what-is-agentic-coding.md`
+
+**Duration**: 3-4 hours
+
+---
+
+#### WP16: Write "How OAuth Integration Works" Explainer
+
+**Scope**: Explain OAuth 2.1 flow, DCR, PKCE, token management
+
+**Content Requirements**:
+- OAuth 2.1 flow overview
+- Dynamic Client Registration (DCR)
+- Token storage and encryption
+- Scope management
+- Security considerations (PKCE, HTTPS redirect URIs)
+- Flow diagrams: OAuth authorization code flow with PKCE
+
+**Deliverables**: `docs/setup-and-guides/src/content/docs/explainers/oauth-integration.md`
+
+**Duration**: 4-5 hours
+
+---
+
+### Phase D: Auto-Generation Pipeline (WP17-WP23)
+
+#### WP17: Design Auto-Generation Schema and Contracts
+
+**Scope**: Define data structures for auto-generation pipeline
+
+**Deliverables**:
+- TypeScript interfaces for tools-manifest.json
+- OpenAPI 3.0 schema template
+- Markdown template structure
+- Documentation of data flow
+
+**Duration**: 3-4 hours
+
+---
+
+#### WP18: Implement Tool Handler Extraction Script
+
+**Scope**: Parse `/src/handlers/tools/` to extract tool metadata
+
+**Script**: `docs/reference/scripts/extract-mcp-tools.ts`
+
+**Extraction Logic**:
+- Scan all files in `/src/handlers/tools/` directory
+- For each tool handler:
+  - Extract tool name (from file or export)
+  - Extract domain (from folder structure)
+  - Extract description (from JSDoc/comments)
+  - Extract parameters (from TypeScript types or JSDoc)
+  - Extract return type (from TypeScript return type)
+  - Extract examples (from JSDoc @example blocks if present)
+- Output: `docs/reference/tools-manifest.json`
+
+**Duration**: 6-8 hours
+
+**Testing**:
+```bash
+cd docs/reference
+npx tsx scripts/extract-mcp-tools.ts
+# Verify tools-manifest.json contains 115 tools
+```
+
+---
+
+#### WP19: Implement OpenAPI Schema Generation Script
+
+**Scope**: Convert tools-manifest.json to OpenAPI 3.0 schema
+
+**Script**: `docs/reference/scripts/generate-openapi.ts`
+
+**Generation Logic**:
+- Read tools-manifest.json
+- For each tool, create OpenAPI path entry
+- Convert parameters to OpenAPI parameter definitions
+- Convert return type to OpenAPI response schema
+- Output: `docs/reference/openapi.json`
+
+**Duration**: 4-5 hours
+
+**Testing**:
+```bash
+npx tsx scripts/generate-openapi.ts
+# Verify openapi.json is valid OpenAPI 3.0 schema
+# Validate with: npx @apidevtools/swagger-cli validate openapi.json
+```
+
+---
+
+#### WP20: Implement Markdown Conversion Script
+
+**Scope**: Convert OpenAPI schema to Starlight markdown pages
+
+**Script**: `docs/reference/scripts/convert-to-markdown.ts`
+
+**Conversion Logic**:
+- Read openapi.json
+- For each tool path:
+  - Generate markdown file: `src/content/docs/tools/{domain}/{tool-name}.md`
+  - Include: title, description, syntax, parameters table, return value, examples
+  - Add frontmatter for Starlight (title, description, sidebar config)
+- Organize by domain folder
+- Output: 115 markdown files in domain folders
+
+**Duration**: 6-8 hours
+
+**Testing**:
+```bash
+npx tsx scripts/convert-to-markdown.ts
+# Verify 115 .md files created in src/content/docs/tools/
+# Verify markdown formatting is valid
+```
+
+---
+
+#### WP21: Implement Coverage Validation Script
+
+**Scope**: Verify all 115 tools are present and complete
+
+**Script**: `docs/reference/scripts/validate-coverage.ts`
+
+**Validation Checks**:
+- Count tools: must be exactly 115
+- Check for duplicates: no duplicate tool names
+- Verify all fields populated: description, parameters, return type
+- Verify domain distribution: 14 domains with expected counts
+- Check for broken references
+
+**Output**: `docs/reference/coverage-report.json`
+
+**Duration**: 3-4 hours
+
+**Testing**:
+```bash
+npx tsx scripts/validate-coverage.ts
+# Output: coverage-report.json with validation results
+# Exit code 0 = success, non-zero = validation failures
+```
+
+---
+
+#### WP22: Create 14 Domain Landing Pages
+
+**Scope**: Create overview pages for each MCP domain
+
+**Deliverables**: `docs/reference/src/content/docs/tools/{domain}/index.md` (14 files)
+
+**Content for Each Landing Page**:
+- Domain name and description
+- Tool count in this domain
+- Links to all tools in domain (auto-generated list)
+- Common use cases for this domain
+
+**Domains**:
+1. apps (8 tools)
+2. backups (8 tools)
+3. certificates (1 tool)
+4. containers (10 tools)
+5. context (3 tools)
+6. databases (14 tools)
+7. domains-mail (22 tools)
+8. identity (13 tools)
+9. misc (5 tools)
+10. organization (7 tools)
+11. project-foundation (12 tools)
+12. sftp (2 tools)
+13. ssh (4 tools)
+14. automation (9 tools)
+
+**Duration**: 4-5 hours
+
+---
+
+#### WP23: Integrate Auto-Generation into Build Pipeline
+
+**Scope**: Add prebuild hooks to package.json, test end-to-end
+
+**Changes**:
+```json
+{
+  "scripts": {
+    "generate-references": "tsx scripts/extract-mcp-tools.ts && tsx scripts/generate-openapi.ts && tsx scripts/convert-to-markdown.ts",
+    "validate-references": "tsx scripts/validate-coverage.ts",
+    "prebuild": "npm run generate-references && npm run validate-references",
+    "build": "astro build",
+    "dev": "astro dev"
+  }
+}
+```
+
+**Duration**: 2-3 hours
+
+**Testing**:
+```bash
+cd docs/reference
+npm run build
+# Verify:
+# - Auto-generation runs before build
+# - Validation passes
+# - Build succeeds
+# - All 115 tools are present in dist/
+```
+
+---
+
+### Phase E: Case Study Tutorials (WP24-WP34)
+
+**Pattern**: Each case study requires conversion from 015 research format to Divio tutorial format.
+
+**Source Data**: `kitty-specs/015-mittwald-mcp-use-case-research/findings/CS-00X-*.md`
+
+**Duration per case study**: 4-6 hours
+
+#### Example: WP24 (Freelancer Client Onboarding)
+
+**Scope**: Convert CS-001 to tutorial format
+
+**Source**: `015/findings/CS-001-freelancer-client-onboarding.md`
+
+**Conversion Steps**:
+1. Extract persona from 015 research
+2. Extract problem statement with quantified impact
+3. Extract solution overview and tool references
+4. Create step-by-step implementation workflow
+5. Add links to reference docs for each tool used
+6. Add troubleshooting section for common issues
+7. Add estimated completion time
+
+**Output**: `docs/setup-and-guides/src/content/docs/case-studies/CS-001-freelancer-client-onboarding.md`
+
+**Validation**:
+- All tool references link correctly to Site 2 reference docs
+- Steps are actionable and complete
+- Outcomes are quantified
+- Tutorial follows Divio principles (learning-oriented)
+
+**Repeat this pattern for WP25-WP33** (CS-002 through CS-010)
+
+---
+
+#### WP34: Create Case Studies Landing Page
+
+**Scope**: Navigation by customer segment, links to all 10 case studies
+
+**Deliverables**: `docs/setup-and-guides/src/content/docs/case-studies/index.md`
+
+**Content Structure**:
+- Overview of case studies
+- Navigation by segment:
+  - Freelancer (CS-001, CS-006)
+  - Agency (CS-002, CS-007)
+  - E-commerce (CS-003, CS-008)
+  - TYPO3 (CS-004, CS-009)
+  - Modern Stack (CS-005, CS-010)
+- Summary of each case study (persona, problem, outcome)
+
+**Duration**: 2-3 hours
+
+---
+
+### Phase F: Quality Assurance & Validation (WP35-WP39)
+
+#### WP35: Accessibility Audit (WCAG 2.1 AA)
+
+**Scope**: Test accessibility compliance for both sites
+
+**Audit Areas**:
+- Heading hierarchy (H1 → H2 → H3, no skips)
+- Alt text for all images and diagrams
+- Color contrast (text on background)
+- Keyboard navigation (tab order, focus indicators)
+- Screen reader compatibility (ARIA labels, semantic HTML)
+
+**Tools**: WAVE, Lighthouse, axe DevTools
+
+**Deliverables**: Accessibility audit report, fixes applied
+
+**Duration**: 4-5 hours
+
+---
+
+#### WP36: Link Validation (Cross-Site and External)
+
+**Scope**: Verify all internal, cross-site, and external links are valid
+
+**Validation**:
+- Internal links (within Site 1 or Site 2): no broken links
+- Cross-site links (Site 1 ↔ Site 2): correct BASE_URL handling
+- External links (official docs, mittwald.de): valid and reachable
+
+**Tools**: Custom script or link-checker tool
+
+**Deliverables**: Link validation report, broken links fixed
+
+**Duration**: 3-4 hours
+
+---
+
+#### WP37: Build Verification and BASE_URL Testing
+
+**Scope**: Build both sites with multiple BASE_URL values, verify outputs
+
+**Test Cases**:
+1. Build with BASE_URL=/
+2. Build with BASE_URL=/docs
+3. Build with BASE_URL=/mcp-docs
+4. Build with BASE_URL=/documentation/mittwald-mcp
+
+**Verification**:
+- All builds succeed without errors
+- Links work correctly in each build
+- Cross-site navigation works with different BASE_URLs
+
+**Duration**: 2-3 hours
+
+---
+
+#### WP38: OAuth Guide User Testing
+
+**Scope**: Test each OAuth guide with actual tool setup, gather feedback
+
+**Testing Process**:
+1. Follow each guide step-by-step with actual tools
+2. Note unclear instructions, missing steps, errors
+3. Gather feedback from testers (if available)
+4. Apply improvements to guides
+
+**Duration**: 6-8 hours
+
+---
+
+#### WP39: Final Documentation Review and Publication Readiness
+
+**Scope**: Comprehensive review, final QA checks
+
+**Review Checklist**:
+- ✅ All 115 tools auto-generated and present
+- ✅ All 4 OAuth guides complete and tested
+- ✅ All 3 explainers complete and understandable
+- ✅ All 10 case studies converted and linked
+- ✅ Both sites build without warnings
+- ✅ BASE_URL configuration works
+- ✅ Branding consistent across both sites
+- ✅ Navigation clear and functional
+- ✅ All links working
+- ✅ Accessibility: WCAG 2.1 AA compliance
+- ✅ Search functionality works
+- ✅ Mobile responsive design verified
+
+**Duration**: 4-5 hours
+
+---
+
+## Implementation Flow
+
+**Sequential Dependencies**:
+- Phase A must complete before Phase B, C, D, E
+- Phase B, C, D can run in parallel after Phase A
+- Phase E (case studies) can start after Phase D (auto-generation) completes (need tool references for links)
+- Phase F (QA) runs after all content phases complete
+
+**Recommended Execution Order**:
+1. Phase A (WP01-WP04): Infrastructure setup
+2. Phase B (WP05-WP13): OAuth guides (critical path - highest user impact)
+3. Phase D (WP17-WP23): Auto-generation pipeline (enables Phase E)
+4. Phase C (WP14-WP16): Conceptual explainers (can be parallel with Phase D)
+5. Phase E (WP24-WP34): Case study tutorials (depends on Phase D tool references)
+6. Phase F (WP35-WP39): Quality assurance and final validation
+
+---
+
+## Parallelization Opportunities
+
+**Can run in parallel**:
+- WP14, WP15, WP16 (explainers - independent of each other)
+- WP05+WP06, WP07+WP08, WP09+WP10, WP11+WP12 (OAuth guide pairs - if multiple agents available)
+- WP24-WP33 (case studies - independent of each other, can be split across agents)
+
+**Must run sequentially**:
+- WP17 → WP18 → WP19 → WP20 (auto-generation pipeline dependencies)
+- WP05 → WP06 (research must complete before writing guide)
+- WP21 depends on WP20 (validation depends on markdown generation)
+- Phase E depends on Phase D (case studies need tool reference links)
 
