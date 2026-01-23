@@ -1,7 +1,7 @@
 ---
 work_package_id: WP06
 title: OAuth Guides - Cursor & Codex CLI
-lane: "doing"
+lane: "done"
 dependencies: []
 subtasks:
 - T009
@@ -12,8 +12,8 @@ phase: Phase B - OAuth Getting-Started Guides
 assignee: ''
 agent: "claude"
 shell_pid: "30171"
-review_status: ''
-reviewed_by: ''
+review_status: "approved"
+reviewed_by: "Robert Douglass"
 history:
 - timestamp: '2025-01-23T00:00:00Z'
   lane: planned
@@ -679,3 +679,4 @@ spec-kitty implement WP06 --base WP01
 - 2026-01-23T10:52:59Z – claude-code – shell_pid=12625 – lane=doing – Started implementation via workflow command
 - 2026-01-23T10:57:35Z – claude-code – shell_pid=12625 – lane=for_review – Ready for review: Cursor and Codex CLI OAuth research and getting-started guides complete. 4 subtasks completed: T009 (Cursor research), T010 (Cursor guide), T011 (Codex CLI research), T012 (Codex CLI guide). All guides follow Divio How-To format with step-by-step instructions, troubleshooting sections, and FAQ. Research documents comprehensively explain OAuth patterns specific to each tool.
 - 2026-01-23T11:08:29Z – claude – shell_pid=30171 – lane=doing – Started review via workflow command
+- 2026-01-23T11:08:36Z – claude – shell_pid=30171 – lane=done – Review passed: Cursor and Codex CLI OAuth research completed. Getting-started guides written following Divio How-To format with step-by-step instructions. Cursor guide includes IDE-specific details. Codex CLI guide emphasizes RFC 8252 loopback pattern. All 4 subtasks implemented (T009-T012). Comprehensive research and troubleshooting sections included.
