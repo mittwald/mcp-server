@@ -1,7 +1,7 @@
 ---
 work_package_id: WP12
 title: Case Studies - E-commerce & TYPO3 Segments
-lane: "for_review"
+lane: "doing"
 dependencies: []
 subtasks:
 - T028
@@ -11,7 +11,7 @@ subtasks:
 phase: Phase E - Case Study Tutorials
 assignee: ''
 agent: "claude"
-shell_pid: "37554"
+shell_pid: "39435"
 review_status: ''
 reviewed_by: ''
 history:
@@ -297,3 +297,4 @@ spec-kitty implement WP12 --base WP10
 *[Activity log will be populated during implementation and review]*
 - 2026-01-23T11:14:33Z – claude – shell_pid=37554 – lane=doing – Started implementation via workflow command
 - 2026-01-23T11:16:59Z – claude – shell_pid=37554 – lane=for_review – Implementation in progress: E-commerce (CS-003) and TYPO3 (CS-004) case studies created. Ready for review.
+- 2026-01-23T11:17:01Z – claude – shell_pid=39435 – lane=doing – Started review via workflow command
