@@ -1,8 +1,11 @@
 ---
 work_package_id: WP14
 title: QA - Accessibility, Link Validation & Build Testing
-lane: planned
+lane: "doing"
 dependencies: []
+base_branch: main
+base_commit: 6c47b6c119bf00c61d055b36935cf9da867bb245
+created_at: '2026-01-23T11:24:06.221983+00:00'
 subtasks:
 - T035
 - T036
@@ -10,7 +13,7 @@ subtasks:
 phase: Phase F - Quality Assurance & Validation
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "49123"
 review_status: ''
 reviewed_by: ''
 history:
