@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-01-23T11:29:53.512Z",
+  "sites": {
+    "reference": {
+      "status": "pass",
+      "totalPages": 195,
+      "totalIssues": 0,
+      "criticalIssues": 0,
+      "warnings": 0,
+      "issues": []
+    }
+  },
+  "summary": {
+    "allSitesPassed": true,
+    "totalIssues": 0,
+    "totalCritical": 0,
+    "totalWarnings": 0
+  }
+}
