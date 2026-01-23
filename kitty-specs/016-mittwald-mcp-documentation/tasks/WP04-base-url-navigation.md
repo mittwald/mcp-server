@@ -1,14 +1,14 @@
 ---
 work_package_id: WP04
 title: Configure BASE_URL and Cross-Site Navigation
-lane: planned
+lane: "doing"
 dependencies: []
 subtasks:
 - T004
 phase: Phase A - Infrastructure & Setup
 assignee: ''
-agent: ''
-shell_pid: ''
+agent: "claude"
+shell_pid: "2097"
 review_status: ''
 reviewed_by: ''
 history:
@@ -719,3 +719,4 @@ spec-kitty implement WP04 --base WP03
 > Entries MUST be in chronological order (oldest first, newest last).
 
 *[Activity log will be populated during implementation and review]*
+- 2026-01-23T10:37:52Z – claude – shell_pid=2097 – lane=doing – Started implementation via workflow command
