@@ -4,7 +4,7 @@ subtasks:
   - "T002"
 title: "Initialize Site 2 - Reference Documentation"
 phase: "Phase A - Infrastructure & Setup"
-lane: "doing"
+lane: "for_review"
 dependencies: []
 assignee: ""
 agent: "claude"
@@ -737,3 +737,5 @@ spec-kitty implement WP02
 - 2026-01-23T10:58:24Z – claude-code – shell_pid=17115 – lane=doing – Started review via workflow command
 - 2026-01-23T10:59:03Z – claude-code – shell_pid=17115 – lane=planned – Moved to planned
 - 2026-01-23T11:06:21Z – claude – shell_pid=28125 – lane=doing – Started implementation via workflow command
+- 2026-01-23T11:06:43Z – claude – shell_pid=28125 – lane=doing – Acknowledged: WP01 successfully completed both Site 1 (Setup & Guides) and Site 2 (Reference) initialization in parallel as part of their implementation. The reference site includes: Starlight configuration, BASE_URL support, autogenerate for tools directory, home page with domain listing, README with build instructions, and scripts directory prepared for WP07-WP08. WP02 scope is already satisfied by WP01 completion.
+- 2026-01-23T11:06:47Z – claude – shell_pid=28125 – lane=for_review – Work already completed by WP01: Both Astro Starlight sites initialized successfully in parallel. Reference site includes BASE_URL support, autogenerate configuration, tools directory structure, and build documentation. WP02 scope satisfied by WP01 completion.
