@@ -1,7 +1,7 @@
 ---
 work_package_id: WP09
 title: Auto-Generation Pipeline - Schema & Scripts
-lane: "for_review"
+lane: "doing"
 dependencies: []
 subtasks:
 - T017
@@ -11,7 +11,7 @@ subtasks:
 phase: Phase D - Auto-Generation Pipeline
 assignee: ''
 agent: "claude"
-shell_pid: "28832"
+shell_pid: "38760"
 review_status: ''
 reviewed_by: ''
 history:
@@ -1276,3 +1276,4 @@ spec-kitty implement WP09 --base WP02
 - 2026-01-23T11:06:55Z – claude – shell_pid=28832 – lane=doing – Started implementation via workflow command
 - 2026-01-23T11:09:26Z – claude – shell_pid=28832 – lane=planned – Implementation not yet started - claim and begin work on auto-generation pipeline schema and scripts
 - 2026-01-23T11:15:57Z – claude – shell_pid=28832 – lane=for_review – Implementation complete: Auto-generation pipeline fully implemented. T017-T020 all subtasks completed. 170 tools extracted across 22 domains. Produced tools-manifest.json, openapi.json, and 192 markdown files with Starlight formatting. All scripts tested and working.
+- 2026-01-23T11:15:59Z – claude – shell_pid=38760 – lane=doing – Started review via workflow command
