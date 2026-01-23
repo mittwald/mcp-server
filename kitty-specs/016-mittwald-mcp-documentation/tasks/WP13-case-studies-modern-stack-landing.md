@@ -1,7 +1,7 @@
 ---
 work_package_id: WP13
 title: Case Studies - Modern Stack & Landing Page
-lane: "for_review"
+lane: "doing"
 dependencies: []
 subtasks:
 - T032
@@ -10,7 +10,7 @@ subtasks:
 phase: Phase E - Case Study Tutorials
 assignee: ''
 agent: "claude"
-shell_pid: "40378"
+shell_pid: "48899"
 review_status: ''
 reviewed_by: ''
 history:
@@ -467,3 +467,4 @@ spec-kitty implement WP13 --base WP10
 *[Activity log will be populated during implementation and review]*
 - 2026-01-23T11:18:12Z – claude – shell_pid=40378 – lane=doing – Started implementation via workflow command
 - 2026-01-23T11:20:04Z – claude – shell_pid=40378 – lane=for_review – Completed: CS-005 (Container Stack Deployment) and CS-010 (CI/CD Pipeline Integration) with 6 tools each, plus case studies landing page with segment-based navigation (5 segments × 2 cases each = 10 total tutorials). CS-005: Docker Compose deployment in 20 minutes with health verification. CS-010: Unified CI/CD automation across staging/production with 25-minute setup. Landing page organizes all 10 case studies by segment (freelancer, agency, ecommerce, enterprise, modern stack), use case, and industry with time savings summary showing 89% average reduction in operational time.
+- 2026-01-23T11:23:41Z – claude – shell_pid=48899 – lane=doing – Started review via workflow command
