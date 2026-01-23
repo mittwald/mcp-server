@@ -1,14 +1,14 @@
 ---
 work_package_id: WP07
 title: Create OAuth Guides Landing Page
-lane: planned
+lane: "doing"
 dependencies: []
 subtasks:
 - T013
 phase: Phase B - OAuth Getting-Started Guides
 assignee: ''
-agent: ''
-shell_pid: ''
+agent: "claude-code"
+shell_pid: "16408"
 review_status: ''
 reviewed_by: ''
 history:
@@ -464,3 +464,4 @@ spec-kitty implement WP07 --base WP06
 > Entries MUST be in chronological order (oldest first, newest last).
 
 *[Activity log will be populated during implementation and review]*
+- 2026-01-23T10:57:43Z – claude-code – shell_pid=16408 – lane=doing – Started implementation via workflow command
