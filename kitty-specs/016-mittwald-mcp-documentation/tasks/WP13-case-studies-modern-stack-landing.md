@@ -1,7 +1,7 @@
 ---
 work_package_id: WP13
 title: Case Studies - Modern Stack & Landing Page
-lane: planned
+lane: "doing"
 dependencies: []
 subtasks:
 - T032
@@ -9,8 +9,8 @@ subtasks:
 - T034
 phase: Phase E - Case Study Tutorials
 assignee: ''
-agent: ''
-shell_pid: ''
+agent: "claude"
+shell_pid: "40378"
 review_status: ''
 reviewed_by: ''
 history:
@@ -465,3 +465,4 @@ spec-kitty implement WP13 --base WP10
 > Entries MUST be in chronological order (oldest first, newest last).
 
 *[Activity log will be populated during implementation and review]*
+- 2026-01-23T11:18:12Z – claude – shell_pid=40378 – lane=doing – Started implementation via workflow command
