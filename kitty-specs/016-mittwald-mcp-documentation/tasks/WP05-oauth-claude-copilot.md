@@ -1,7 +1,7 @@
 ---
 work_package_id: WP05
 title: OAuth Guides - Claude Code & GitHub Copilot
-lane: planned
+lane: "doing"
 dependencies: []
 subtasks:
 - T005
@@ -10,8 +10,8 @@ subtasks:
 - T008
 phase: Phase B - OAuth Getting-Started Guides
 assignee: ''
-agent: ''
-shell_pid: ''
+agent: "claude"
+shell_pid: "6220"
 review_status: ''
 reviewed_by: ''
 history:
@@ -601,3 +601,4 @@ spec-kitty implement WP05 --base WP01
 > Entries MUST be in chronological order (oldest first, newest last).
 
 *[Activity log will be populated during implementation and review]*
+- 2026-01-23T10:44:11Z – claude – shell_pid=6220 – lane=doing – Started implementation via workflow command
