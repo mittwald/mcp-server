@@ -1,0 +1,54 @@
+---
+title: Mittwald MCP Documentation
+description: Setup guides and conceptual documentation for integrating Mittwald MCP with AI coding assistants
+template: splash
+hero:
+  tagline: Learn how to connect your AI coding assistant to Mittwald hosting infrastructure using MCP (Model Context Protocol).
+  actions:
+    - text: Get Started
+      link: /getting-started/
+      icon: right-arrow
+    - text: Tool Reference
+      link: http://localhost:4321/tools/
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Setup Guides
+
+<CardGrid stagger>
+	<Card title="Cursor IDE" icon="laptop">
+		Set up OAuth authentication for Cursor IDE to use Mittwald MCP tools.
+		[Get started →](/getting-started/cursor/)
+	</Card>
+	<Card title="Codex CLI" icon="seti:shell">
+		Configure OpenAI's Codex CLI with Mittwald MCP using RFC 8252 loopback.
+		[Get started →](/getting-started/codex-cli/)
+	</Card>
+</CardGrid>
+
+## Concepts
+
+<CardGrid>
+	<Card title="What is MCP?" icon="information">
+		Understand Model Context Protocol and how it enables AI tools to interact with external systems.
+		[Learn more →](/explainers/what-is-mcp/)
+	</Card>
+	<Card title="What is Agentic Coding?" icon="rocket">
+		Discover how AI-powered coding assistants are transforming software development.
+		[Learn more →](/explainers/what-is-agentic-coding/)
+	</Card>
+	<Card title="OAuth Integration" icon="approve-check">
+		Deep dive into how OAuth 2.1 authentication works with Mittwald MCP.
+		[Learn more →](/explainers/oauth-integration/)
+	</Card>
+</CardGrid>
+
+## Two Documentation Sites
+
+This documentation is split into two sites:
+
+- **Setup & Guides** (this site) - OAuth setup guides, conceptual explainers, tutorials
+- **[Tool Reference](http://localhost:4321/)** - Complete API reference for 115+ MCP tools

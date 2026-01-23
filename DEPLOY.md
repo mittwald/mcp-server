@@ -131,7 +131,108 @@ For deeper diagnostics:
 - `flyctl logs` equivalents → `kubectl logs` / orchestrator logs.
 - Increase log verbosity via `LOG_LEVEL=debug` (MCP) or enabling request logging in the bridge.
 
-## 6. Further Reading
+## 6. Documentation Sites
+
+The project includes two Astro/Starlight documentation sites:
+
+| Site | Location | Default Port | Content |
+|------|----------|--------------|---------|
+| **Tool Reference** | `docs/reference/` | 4321 | Auto-generated API docs for 115+ MCP tools |
+| **Setup & Guides** | `docs/setup-and-guides/` | 4322 | OAuth setup guides, conceptual explainers |
+
+### 6.1 Building the Documentation Sites
+
+```bash
+# Build Tool Reference site
+cd docs/reference
+npm install
+npm run build
+# Output: docs/reference/dist/
+
+# Build Setup & Guides site
+cd docs/setup-and-guides
+npm install
+npm run build
+# Output: docs/setup-and-guides/dist/
+```
+
+### 6.2 Local Development
+
+```bash
+# Start Tool Reference in dev mode (hot reload)
+cd docs/reference
+npm run dev
+# Available at http://localhost:4321
+
+# Start Setup & Guides in dev mode
+cd docs/setup-and-guides
+npm run dev
+# Available at http://localhost:4322
+```
+
+### 6.3 Serving Built Sites
+
+**Using `serve` (simple static server):**
+```bash
+# Serve Tool Reference
+cd docs/reference
+npx serve dist -p 4321
+
+# Serve Setup & Guides (in another terminal)
+cd docs/setup-and-guides
+npx serve dist -p 4322
+```
+
+**Using nginx (production):**
+```nginx
+# Tool Reference
+server {
+    listen 80;
+    server_name docs.mcp.example.com;
+    root /path/to/docs/reference/dist;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+# Setup & Guides
+server {
+    listen 80;
+    server_name guides.mcp.example.com;
+    root /path/to/docs/setup-and-guides/dist;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+### 6.4 Cross-Site Navigation
+
+The sites link to each other. Update the following if hosting on different domains:
+
+- **Tool Reference** (`docs/reference/src/content/docs/index.mdx`): Links to Setup & Guides
+- **Setup & Guides** (`docs/setup-and-guides/astro.config.mjs`): External link to Tool Reference in sidebar
+
+For production, update the hardcoded `localhost` URLs to your actual domains.
+
+### 6.5 Site Content Summary
+
+**Tool Reference** (196 pages):
+- Homepage with tool domain cards
+- 21 tool domains (App, Backup, Database, Domain, etc.)
+- Auto-generated pages for each tool with parameters, return types, examples
+
+**Setup & Guides** (8 pages):
+- Getting Started overview (OAuth concepts, tool comparison)
+- Cursor IDE setup guide
+- Codex CLI setup guide
+- What is MCP? explainer
+- What is Agentic Coding? explainer
+- OAuth Integration explainer
+
+## 7. Further Reading
 
 - `docs/FLY-MITTWALD-MIGRATION-GUIDE.md` – historical notes on migrating from Fly.
 - `.env.example` – authoritative list of supported variables.
