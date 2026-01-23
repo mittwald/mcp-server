@@ -1,7 +1,7 @@
 ---
 work_package_id: WP11
 title: Case Studies - Freelancer & Agency Segments
-lane: planned
+lane: "doing"
 dependencies: []
 subtasks:
 - T024
@@ -10,8 +10,8 @@ subtasks:
 - T027
 phase: Phase E - Case Study Tutorials
 assignee: ''
-agent: ''
-shell_pid: ''
+agent: "claude"
+shell_pid: "33382"
 review_status: ''
 reviewed_by: ''
 history:
@@ -718,3 +718,4 @@ spec-kitty implement WP11 --base WP10
 > Entries MUST be in chronological order (oldest first, newest last).
 
 *[Activity log will be populated during implementation and review]*
+- 2026-01-23T11:10:44Z – claude – shell_pid=33382 – lane=doing – Started implementation via workflow command
