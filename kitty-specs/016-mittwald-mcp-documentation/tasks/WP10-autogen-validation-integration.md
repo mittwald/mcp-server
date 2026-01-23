@@ -1,8 +1,11 @@
 ---
 work_package_id: WP10
 title: Auto-Generation Pipeline - Validation & Integration
-lane: planned
+lane: "doing"
 dependencies: []
+base_branch: main
+base_commit: 06bbea94364e2c6f23a3c421a31212160776cd3a
+created_at: '2026-01-23T11:17:16.137566+00:00'
 subtasks:
 - T021
 - T022
@@ -10,7 +13,7 @@ subtasks:
 phase: Phase D - Auto-Generation Pipeline
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "39587"
 review_status: ''
 reviewed_by: ''
 history:
