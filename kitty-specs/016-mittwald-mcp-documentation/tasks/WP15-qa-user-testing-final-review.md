@@ -1,15 +1,18 @@
 ---
 work_package_id: WP15
 title: QA - User Testing & Final Publication Review
-lane: planned
+lane: "doing"
 dependencies: []
+base_branch: main
+base_commit: d36769ba0c2d389b3c221a5da09bfe931629db4e
+created_at: '2026-01-23T11:32:29.596595+00:00'
 subtasks:
 - T038
 - T039
 phase: Phase F - Quality Assurance & Validation
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "53667"
 review_status: ''
 reviewed_by: ''
 history:
