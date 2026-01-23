@@ -1,7 +1,7 @@
 ---
 work_package_id: WP11
 title: Case Studies - Freelancer & Agency Segments
-lane: "doing"
+lane: "for_review"
 dependencies: []
 subtasks:
 - T024
@@ -719,3 +719,4 @@ spec-kitty implement WP11 --base WP10
 
 *[Activity log will be populated during implementation and review]*
 - 2026-01-23T11:10:44Z – claude – shell_pid=33382 – lane=doing – Started implementation via workflow command
+- 2026-01-23T11:14:28Z – claude – shell_pid=33382 – lane=for_review – Completed: All 4 case studies (CS-001, CS-002, CS-006, CS-007) converted to Divio tutorial format with full tool references, step-by-step walkthroughs, outcomes, and troubleshooting. Each tutorial ~30 minutes to read, includes 5-16 tool references with proper links to reference docs, quantified outcomes, and learning summaries.
