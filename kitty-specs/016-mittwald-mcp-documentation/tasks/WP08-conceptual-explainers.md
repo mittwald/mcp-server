@@ -1,7 +1,7 @@
 ---
 work_package_id: WP08
 title: Write Conceptual Explainers
-lane: planned
+lane: "doing"
 dependencies: []
 subtasks:
 - T014
@@ -9,8 +9,8 @@ subtasks:
 - T016
 phase: Phase C - Conceptual Explainers
 assignee: ''
-agent: ''
-shell_pid: ''
+agent: "claude-code"
+shell_pid: "18119"
 review_status: ''
 reviewed_by: ''
 history:
@@ -1216,3 +1216,4 @@ spec-kitty implement WP08 --base WP01
 > Entries MUST be in chronological order (oldest first, newest last).
 
 *[Activity log will be populated during implementation and review]*
+- 2026-01-23T10:58:46Z – claude-code – shell_pid=18119 – lane=doing – Started implementation via workflow command
