@@ -1,7 +1,7 @@
 ---
 work_package_id: WP09
 title: Auto-Generation Pipeline - Schema & Scripts
-lane: planned
+lane: "doing"
 dependencies: []
 subtasks:
 - T017
@@ -10,8 +10,8 @@ subtasks:
 - T020
 phase: Phase D - Auto-Generation Pipeline
 assignee: ''
-agent: ''
-shell_pid: ''
+agent: "claude"
+shell_pid: "28832"
 review_status: ''
 reviewed_by: ''
 history:
@@ -1273,3 +1273,4 @@ spec-kitty implement WP09 --base WP02
 > Entries MUST be in chronological order (oldest first, newest last).
 
 *[Activity log will be populated during implementation and review]*
+- 2026-01-23T11:06:55Z – claude – shell_pid=28832 – lane=doing – Started implementation via workflow command
