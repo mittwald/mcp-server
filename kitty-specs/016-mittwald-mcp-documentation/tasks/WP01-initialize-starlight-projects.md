@@ -7,11 +7,11 @@ subtasks:
   - "T004"
 title: "Initialize Astro Starlight Projects"
 phase: "Phase A - Infrastructure & Setup"
-lane: "for_review"
+lane: "doing"
 dependencies: []
 assignee: ""
-agent: "claude"
-shell_pid: "90387"
+agent: "claude-code"
+shell_pid: "8585"
 review_status: ""
 reviewed_by: ""
 history:
@@ -710,3 +710,4 @@ spec-kitty implement WP01
 *[Activity log will be populated during implementation and review]*
 - 2026-01-23T10:20:22Z – claude – shell_pid=90387 – lane=doing – Started implementation via workflow command
 - 2026-01-23T10:24:09Z – claude – shell_pid=90387 – lane=for_review – Ready for review: Successfully initialized both Astro Starlight documentation sites with Mittwald branding, BASE_URL support, cross-site navigation links, and verified builds. All 4 subtasks (T001-T004) completed and tested.
+- 2026-01-23T10:47:08Z – claude-code – shell_pid=8585 – lane=doing – Started review via workflow command
