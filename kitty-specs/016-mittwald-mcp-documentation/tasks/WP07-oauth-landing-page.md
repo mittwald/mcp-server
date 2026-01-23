@@ -1,7 +1,7 @@
 ---
 work_package_id: WP07
 title: Create OAuth Guides Landing Page
-lane: "doing"
+lane: "for_review"
 dependencies: []
 subtasks:
 - T013
@@ -465,3 +465,4 @@ spec-kitty implement WP07 --base WP06
 
 *[Activity log will be populated during implementation and review]*
 - 2026-01-23T10:57:43Z – claude-code – shell_pid=16408 – lane=doing – Started implementation via workflow command
+- 2026-01-23T10:58:38Z – claude-code – shell_pid=16408 – lane=for_review – Ready for review: OAuth guides landing page complete. Presents all 4 tools with clear differentiation, comparison table, comprehensive OAuth explanation, security features, common concepts, Mermaid diagram showing complete flow, troubleshooting, and FAQ. Follows Divio How-To format. Developer can choose appropriate tool within 2 minutes.
