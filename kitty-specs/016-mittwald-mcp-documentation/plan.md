@@ -1,108 +1,550 @@
-# Implementation Plan: [FEATURE]
-*Path: [templates/plan-template.md](templates/plan-template.md)*
+# Implementation Plan: Mittwald MCP Documentation & Static Site
 
+**Branch**: `016-mittwald-mcp-documentation` | **Date**: 2025-01-23 | **Spec**: [./spec.md](./spec.md)
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/kitty-specs/[###-feature-name]/spec.md`
-
-**Note**: This template is filled in by the `/spec-kitty.plan` command. See `.kittify/templates/commands/plan.md` for the execution workflow.
-
-The planner will not begin until all planning questions have been answered—capture those answers in this document before progressing to later phases.
+**Input**: Feature specification documenting OAuth-first documentation, conceptual explainers, auto-generated reference for 115 MCP tools, and 10 case study tutorials across two independent Astro Starlight sites.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+This feature creates a comprehensive documentation experience for developers using Mittwald MCP with agentic coding tools (Claude Code, GitHub Copilot, Cursor, Codex CLI). The critical path is OAuth authentication - all downstream tool usage depends on successful setup.
+
+**Documentation deliverables**:
+- **Site 1 (Setup + Guides)**: 4 OAuth getting-started guides, 3 conceptual explainers, 10 case study tutorials
+- **Site 2 (Reference)**: Auto-generated reference for all 115 MCP tools across 14 domains
+
+Both sites built with Astro Starlight, Mittwald branding (blue primary, sans-serif typography), independent deployments.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
+**Documentation Framework**: **Astro Starlight** (official Astro documentation theme)
+- Purpose-built for documentation sites
+- Built-in search (Pagefind), dark mode, responsive design
+- Markdown/MDX support with TypeScript frontmatter validation
+- Auto-generated navigation from folder structure
+- Customizable branding (colors, typography, CSS)
+- Accessibility features: WCAG compliance, keyboard navigation
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Architecture**: Two independent Starlight projects
+- `docs/setup-and-guides/` → Site 1 (OAuth guides, explainers, case studies)
+- `docs/reference/` → Site 2 (Auto-generated tool reference)
 
-## Constitution Check
+**Auto-Generation Pipeline**:
+- **Source**: Tool handler files in `/src/handlers/tools/` (TypeScript)
+- **Strategy**: Parse tool handler structure → generate OpenAPI/Swagger-compatible schema → convert to reference markdown
+- **Output**: 115 tool reference pages organized by domain (apps, backups, certificates, containers, context, databases, domains-mail, identity, misc, organization, project-foundation, sftp, ssh, automation)
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+**Mittwald Branding**:
+- **Primary Color**: Mittwald Blue (from logo at mittwald.de)
+- **Typography**: Modern sans-serif (Starlight defaults + custom fonts)
+- **Logo**: Mittwald logo extracted from mittwald.de
+- **Tagline**: "Hosting neu gedacht" (Hosting reimagined)
+- **Brand Values**: Fast. Flexible. Personal.
+- **Application**: Header/footer on both sites, color scheme, CSS overrides in Starlight theme config
 
-[Gates determined based on constitution file]
+**Output Format**: Static HTML/CSS/JS (no runtime dependencies)
+
+**Build Commands**:
+```bash
+# Site 1: Setup + Guides
+cd docs/setup-and-guides
+npm run build
+# Output: dist/ directory
+
+# Site 2: Reference
+cd docs/reference
+npm run build
+# Output: dist/ directory
+```
+
+**BASE_URL Configuration**: Both sites accept `BASE_URL` environment variable at build time for flexible deployment paths:
+```bash
+BASE_URL=/docs npm run build
+# or
+BASE_URL=/mcp-docs npm run build
+```
+
+**Accessibility Requirements**: WCAG 2.1 AA compliance (Starlight provides baseline; custom content must meet Write the Docs standards)
 
 ## Project Structure
 
-### Documentation (this feature)
+### Feature Artifacts (Planning)
 
 ```
-kitty-specs/[###-feature]/
-├── plan.md              # This file (/spec-kitty.plan command output)
-├── research.md          # Phase 0 output (/spec-kitty.plan command)
-├── data-model.md        # Phase 1 output (/spec-kitty.plan command)
-├── quickstart.md        # Phase 1 output (/spec-kitty.plan command)
-├── contracts/           # Phase 1 output (/spec-kitty.plan command)
-└── tasks.md             # Phase 2 output (/spec-kitty.tasks command - NOT created by /spec-kitty.plan)
+kitty-specs/016-mittwald-mcp-documentation/
+├── meta.json                    # Feature metadata
+├── spec.md                      # ✅ Specification (complete)
+├── plan.md                      # This file
+├── research.md                  # [Phase 0] Auto-generation technical research
+├── data-model.md                # [Phase 1] Documentation structure & entities
+├── quickstart.md                # [Phase 1] Getting-started guide for implementing
+└── tasks.md                     # [Phase 2] Work packages (generated by /spec-kitty.tasks)
 ```
 
-### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
+### Documentation Sites (Repository Root)
 
 ```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+docs/
+├── setup-and-guides/                    # Site 1: Setup + Guides + Cases
+│   ├── src/
+│   │   ├── assets/
+│   │   │   ├── mittwald-logo.svg        # Mittwald logo
+│   │   │   └── mittwald-colors.css      # Brand colors (custom CSS)
+│   │   ├── content/
+│   │   │   └── docs/
+│   │   │       ├── index.md             # Site 1 home/landing
+│   │   │       ├── getting-started/
+│   │   │       │   ├── index.md         # OAuth guides landing
+│   │   │       │   ├── claude-code.md   # OAuth guide: Claude Code
+│   │   │       │   ├── github-copilot.md
+│   │   │       │   ├── cursor.md
+│   │   │       │   └── codex-cli.md
+│   │   │       ├── explainers/
+│   │   │       │   ├── what-is-mcp.md
+│   │   │       │   ├── what-is-agentic-coding.md
+│   │   │       │   └── oauth-integration.md
+│   │   │       └── case-studies/
+│   │   │           ├── CS-001-freelancer-client-onboarding.md
+│   │   │           ├── CS-002-agency-multi-project-management.md
+│   │   │           ├── CS-003-ecommerce-launch-day-preparation.md
+│   │   │           ├── CS-004-typo3-multisite-deployment.md
+│   │   │           ├── CS-005-container-stack-deployment.md
+│   │   │           ├── CS-006-automated-backup-monitoring.md
+│   │   │           ├── CS-007-developer-onboarding.md
+│   │   │           ├── CS-008-database-performance-optimization.md
+│   │   │           ├── CS-009-security-audit-automation.md
+│   │   │           └── CS-010-cicd-pipeline-integration.md
+│   │   └── components/
+│   │       ├── Callout.astro
+│   │       ├── CodeBlock.astro
+│   │       └── ToolLink.astro             # Links to reference site tools
+│   ├── astro.config.mjs                   # Starlight config + BASE_URL support
+│   ├── package.json                       # Dependencies
+│   ├── tsconfig.json
+│   └── README.md                          # Build & deployment instructions
+│
+├── reference/                             # Site 2: Reference (Auto-generated)
+│   ├── src/
+│   │   ├── assets/
+│   │   │   └── mittwald-colors.css        # Shared branding
+│   │   ├── content/
+│   │   │   └── docs/
+│   │   │       ├── index.md               # Site 2 home/landing
+│   │   │       └── tools/
+│   │   │           ├── apps/
+│   │   │           │   ├── index.md       # Apps domain overview
+│   │   │           │   ├── app-copy.md
+│   │   │           │   ├── app-create.md
+│   │   │           │   ├── app-delete.md
+│   │   │           │   ├── app-get.md
+│   │   │           │   ├── app-install.md
+│   │   │           │   ├── app-list.md
+│   │   │           │   ├── app-uninstall.md
+│   │   │           │   └── app-upgrade.md
+│   │   │           ├── backups/          # 8 tools
+│   │   │           ├── certificates/     # 1 tool
+│   │   │           ├── containers/       # 10 tools
+│   │   │           ├── context/          # 3 tools
+│   │   │           ├── databases/        # 14 tools
+│   │   │           ├── domains-mail/     # 22 tools
+│   │   │           ├── identity/         # 13 tools
+│   │   │           ├── misc/             # 5 tools
+│   │   │           ├── organization/     # 7 tools
+│   │   │           ├── project-foundation/ # 12 tools
+│   │   │           ├── sftp/             # 2 tools
+│   │   │           ├── ssh/              # 4 tools
+│   │   │           └── automation/       # 9 tools
+│   │   └── components/
+│   │       ├── ToolParameters.astro      # Parameter table renderer
+│   │       └── ToolExamples.astro
+│   ├── scripts/
+│   │   ├── generate-tool-references.ts   # Main auto-generation orchestrator
+│   │   ├── extract-mcp-tools.ts          # Parse tool handlers from src/handlers/tools
+│   │   ├── generate-openapi.ts           # Generate OpenAPI/Swagger schema
+│   │   ├── convert-to-markdown.ts        # Convert schema → markdown pages
+│   │   └── validate-coverage.ts          # Verify all 115 tools generated
+│   ├── astro.config.mjs                  # Starlight config
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── README.md
+│
+└── scripts/                               # Shared utilities
+    ├── extract-mittwald-branding.ts      # Extract colors/logo from mittwald.de
+    ├── validate-all-sites.ts             # Cross-site validation (links, consistency)
+    └── README.md                         # Documentation generation workflow
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Divio Type Organization**:
+- **Tutorials** (Site 1, `case-studies/`): 10 case study tutorials - learning-oriented for each segment
+- **How-To Guides** (Site 1, `getting-started/`): 4 OAuth getting-started guides - goal-oriented, problem-solving
+- **Reference** (Site 2, `tools/`): Auto-generated tool reference - information-oriented
+- **Explanation** (Site 1, `explainers/`): 3 conceptual explainers - understanding-oriented
 
-## Complexity Tracking
+## Phase 0: Research
 
-*Fill ONLY if Constitution Check has violations that must be justified*
+### Objective
+Research and validate three critical decisions:
+1. Auto-generation strategy for 115 MCP tools
+2. Astro Starlight configuration for documentation sites
+3. Mittwald branding asset extraction and integration
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+### Research Tasks
+
+**Task 1: Auto-Generation Strategy** [COMPLETE]
+- **Finding**: Tool handlers in `/src/handlers/tools/` can be parsed to generate OpenAPI/Swagger schema
+- **Approach**: Parse TypeScript handler structure → extract tool name, parameters, return type, description → generate Swagger/OpenAPI compatible schema → convert to markdown reference pages
+- **Implementation**: Create extraction script in `docs/reference/scripts/extract-mcp-tools.ts`
+- **Validation**: Run against sample tools, verify output completeness for 115 tools
+
+**Task 2: Astro Starlight Configuration** [COMPLETE]
+- **Framework**: Astro Starlight (official Astro documentation framework)
+- **Key Features**: Built-in search, dark mode, responsive, Markdown/MDX support, customizable branding
+- **Branding**: Starlight allows CSS overrides for colors, fonts, logo placement
+- **Configuration**: Both sites use `astro.config.mjs` with Starlight plugin + custom theme config
+- **BASE_URL**: Astro supports `base` config property for dynamic URL paths
+
+**Task 3: Mittwald Branding Integration** [COMPLETE]
+- **Primary Color**: Mittwald Blue (extracted from mittwald.de logo)
+- **Logo**: SVG logo available from mittwald.de
+- **Typography**: Sans-serif (use Starlight defaults or custom web fonts)
+- **Implementation**: Create `mittwald-colors.css` with CSS variables for colors; import in both sites
+- **Verification**: Manual verification that colors match mittwald.de branding
+
+### Research Output
+See [research.md](research.md) for detailed findings.
+
+## Phase 1: Design
+
+### Objective
+Define documentation structure, plan content outline for each Divio type, configure auto-generation pipeline.
+
+### Site 1: Setup + Guides + Case Studies
+
+**Purpose**: Help new developers get started with OAuth, understand concepts, and see real-world examples.
+
+**Navigation Structure**:
+```
+Home
+├── Getting Started (OAuth guides landing)
+│   ├── Claude Code
+│   ├── GitHub Copilot
+│   ├── Cursor
+│   └── Codex CLI
+├── Learn (Conceptual explainers)
+│   ├── What is MCP?
+│   ├── What is Agentic Coding?
+│   └── How OAuth Integration Works
+├── Examples (Case studies by segment)
+│   ├── Freelancer Segment (2 cases)
+│   ├── Agency Segment (2 cases)
+│   ├── E-commerce Segment (2 cases)
+│   ├── Enterprise TYPO3 Segment (2 cases)
+│   └── Modern Stack Segment (2 cases)
+└── Reference (link to Site 2)
+```
+
+**Each OAuth Getting-Started Guide** (Claude Code, Copilot, Cursor, Codex CLI):
+- Persona: Developer using this specific tool
+- Prerequisites: What you need before starting
+- Step 1: Register with Mittwald OAuth (DCR endpoint, client name, redirect URI)
+- Step 2: Configure OAuth redirect URI specific to this tool
+- Step 3: Set up PKCE in your tool (if applicable)
+- Step 4: Integrate MCP connection
+- Step 5: Verify and test (run a simple tool)
+- Troubleshooting: Common OAuth errors and solutions
+- Next Steps: Link to reference docs or case studies
+
+**Each Conceptual Explainer** (MCP, Agentic Coding, OAuth):
+- Overview: What is this and why it matters
+- Core Concepts: Key ideas explained
+- How It Works: Step-by-step explanation with diagrams
+- Design Decisions: Why it's built this way
+- Common Misconceptions: What's wrong and why
+- Practical Implications: What this means for different developers
+- Further Reading: Links to related docs
+
+**Each Case Study Tutorial** (10 total, 2 per segment):
+- Persona: Developer profile (name, tools used, pain point)
+- Problem: What challenge they face (quantified: time spent, error rate, etc.)
+- Solution: How MCP tools solve it (with specific tool references)
+- Step-by-Step Implementation: Walkthrough of the workflow
+- Outcomes: Results achieved (time saved, errors prevented, etc.)
+- Next Steps: Link to related reference docs or other case studies
+
+### Site 2: Reference (Auto-Generated)
+
+**Purpose**: Quick lookup for developers who need to understand a specific MCP tool.
+
+**Navigation Structure**:
+```
+Home
+├── Tools by Domain
+│   ├── Apps (8 tools)
+│   ├── Backups (8 tools)
+│   ├── Databases (14 tools)
+│   ├── Domains & Mail (22 tools)
+│   └── ... (9 more domains)
+└── Back to Setup Guides (link to Site 1)
+```
+
+**Each Tool Reference Page**:
+- Tool Name & Domain
+- Description: What this tool does
+- Syntax/Signature: How to call it
+- Parameters: Input parameters with types, descriptions, required/optional
+- Return Value: What it returns (type, description)
+- Examples: 1-2 concrete usage examples
+- Related Tools: Other tools in same domain
+- Used In: Which case studies use this tool (backreference to Site 1)
+
+### Auto-Generation Pipeline
+
+**Step 1: Extract Tool Handlers**
+```typescript
+// docs/reference/scripts/extract-mcp-tools.ts
+// Parse /src/handlers/tools/ directory
+// Extract: tool name, domain, parameters, return type, description
+// Output: tools-manifest.json
+```
+
+**Step 2: Generate OpenAPI Schema**
+```typescript
+// docs/reference/scripts/generate-openapi.ts
+// Convert tools-manifest.json → OpenAPI/Swagger schema
+// Output: openapi.json
+```
+
+**Step 3: Convert to Markdown**
+```typescript
+// docs/reference/scripts/convert-to-markdown.ts
+// Convert OpenAPI schema → markdown files by domain
+// Output: src/content/docs/tools/{domain}/{tool}.md
+```
+
+**Step 4: Validate Coverage**
+```typescript
+// docs/reference/scripts/validate-coverage.ts
+// Verify all 115 tools are present
+// Verify no duplicate tool names
+// Verify links consistency
+// Output: coverage-report.json
+```
+
+### Content Outline: Divio Types
+
+| Divio Type | Purpose | Location | Count |
+|-----------|---------|----------|-------|
+| **Tutorials** | Learning-oriented case studies | Site 1: `case-studies/` | 10 |
+| **How-To** | Goal-oriented OAuth setup guides | Site 1: `getting-started/` | 4 |
+| **Reference** | Info-oriented tool lookup | Site 2: `tools/` | 115 |
+| **Explanation** | Understanding-oriented concepts | Site 1: `explainers/` | 3 |
+
+### Starlight Configuration
+
+**Site 1 (`docs/setup-and-guides/astro.config.mjs`)**:
+```javascript
+import starlight from '@astrojs/starlight';
+import { defineConfig } from 'astro/config';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'Mittwald MCP',
+      description: 'Getting started with Mittwald MCP and agentic coding',
+      logo: {
+        src: './src/assets/mittwald-logo.svg',
+      },
+      sidebar: [
+        { label: 'Home', link: '/' },
+        {
+          label: 'Getting Started',
+          items: [
+            { label: 'Overview', link: '/getting-started/' },
+            { label: 'Claude Code', link: '/getting-started/claude-code/' },
+            { label: 'GitHub Copilot', link: '/getting-started/github-copilot/' },
+            { label: 'Cursor', link: '/getting-started/cursor/' },
+            { label: 'Codex CLI', link: '/getting-started/codex-cli/' },
+          ],
+        },
+        // ... more sections
+      ],
+      customCss: ['./src/assets/mittwald-colors.css'],
+    }),
+  ],
+  integrations: [
+    starlight({
+      // ... config
+      sidebar: [
+        // ... nav structure
+        {
+          label: 'Reference',
+          link: process.env.REFERENCE_SITE_URL || 'https://docs.mittwald.de/reference',
+        },
+      ],
+    }),
+  ],
+});
+```
+
+**Site 2 (`docs/reference/astro.config.mjs`)**:
+```javascript
+// Similar structure, different sidebar content
+// Organized by tool domains (apps, backups, containers, etc.)
+// Links back to Site 1 setup guides
+```
+
+### Work Breakdown Preview
+
+Work packages (generated by `/spec-kitty.tasks`):
+
+1. **WP01**: Astro Site Setup & Configuration
+   - Initialize two Starlight projects
+   - Configure branding (colors, logo)
+   - Set up BASE_URL support
+   - Configure navigation structure
+
+2. **WP02**: OAuth Getting-Started Guides (4 guides)
+   - Claude Code getting-started
+   - GitHub Copilot getting-started
+   - Cursor getting-started
+   - Codex CLI getting-started
+
+3. **WP03**: Conceptual Explainers (3 pieces)
+   - What is MCP?
+   - What is Agentic Coding?
+   - How OAuth Integration Works
+
+4. **WP04**: Auto-Generation Pipeline
+   - Tool handler extraction script
+   - OpenAPI schema generation
+   - Markdown conversion
+   - Coverage validation
+
+5. **WP05**: Reference Documentation (115 tools)
+   - Auto-generate tool reference pages by domain
+   - Verify all 115 tools present
+   - Create domain landing pages
+   - Add backreferences to case studies
+
+6. **WP06**: Case Study Tutorials (10 tutorials)
+   - Convert 10 case studies from 015 research to Divio tutorial format
+   - Add links to relevant reference docs
+   - Create segment-based navigation
+
+7. **WP07**: Quality Assurance & Validation
+   - Test all OAuth guides with sample workflows
+   - Verify accessibility (WCAG 2.1 AA)
+   - Validate all cross-site links
+   - Build both sites successfully
+   - Test BASE_URL configuration with multiple paths
+
+## Constitution Check
+
+**GATE: Documentation Mission** requires adherence to Write the Docs best practices and Divio principles.
+
+**Write the Docs Principles** ✅:
+- ✅ Documentation as code (version controlled, reviewed)
+- ✅ Accessible language (clear, plain, inclusive)
+- ✅ User-focused (written for developers, not internal)
+- ✅ Maintained (generated from source where possible)
+
+**Divio Documentation System** ✅:
+- ✅ Four distinct types with clear purposes (tutorials, how-to, reference, explanation)
+- ✅ Learning-oriented tutorials (case studies)
+- ✅ Goal-oriented how-to guides (OAuth setup)
+- ✅ Information-oriented reference (auto-generated tools)
+- ✅ Understanding-oriented explanations (conceptual docs)
+
+**Accessibility Standards** ✅:
+- ✅ WCAG 2.1 AA compliance (Starlight provides baseline)
+- ✅ Proper heading hierarchy (enforced by Starlight + templates)
+- ✅ Alt text for all diagrams (required in content template)
+- ✅ Sufficient color contrast (Starlight theme ensures this)
+- ✅ Keyboard navigation support (Starlight built-in)
+
+**Mittwald Branding** ✅:
+- ✅ Logo integration (SVG from mittwald.de)
+- ✅ Brand colors (CSS variables in mittwald-colors.css)
+- ✅ Typography (sans-serif, modern)
+- ✅ Consistent application across both sites
+
+**No conflicts detected**. All constraints satisfied.
+
+## Risks & Dependencies
+
+### Risks
+
+**Risk 1: OAuth Guide Accuracy & Maintenance**
+- **Issue**: OAuth flows for each tool may change (official tool docs updates)
+- **Mitigation**: Each guide links to official tool documentation as source of truth; guides focus on Mittwald-specific integration, not tool-specific mechanics
+- **Owned by**: Documentation team monitors official docs for breaking changes
+
+**Risk 2: Auto-Generation Script Brittleness**
+- **Issue**: Tool handler structure changes could break extraction script
+- **Mitigation**: Comprehensive validation in `validate-coverage.ts`; script errors fail loudly during build; maintain test cases for sample tools
+- **Owned by**: Implementation team during WP04
+
+**Risk 3: Reference Docs Out of Sync**
+- **Issue**: New MCP tools added but not auto-generated
+- **Mitigation**: Validation script verifies count (115 expected); build fails if mismatch detected
+- **Owned by**: CI/CD pipeline
+
+**Risk 4: Branding Asset Extraction**
+- **Issue**: mittwald.de website changes; colors/logo URLs change
+- **Mitigation**: Extract colors once during WP01, hard-code in CSS; logo downloaded and committed to repo
+- **Owned by**: Initial setup; minimal maintenance after
+
+**Risk 5: Accessibility Compliance**
+- **Issue**: Custom components or content may violate WCAG 2.1 AA
+- **Mitigation**: Content templates enforce best practices; manual QA in WP07 includes accessibility audit
+- **Owned by**: QA team during WP07
+
+### Dependencies
+
+**External Dependencies**:
+- Astro Starlight framework (maintained by Astro team)
+- Official tool documentation (Claude, Copilot, Cursor, Codex) - used as reference
+- Mittwald OAuth architecture (mittwald-oauth-server) - documented in guides
+
+**Internal Dependencies**:
+- `/src/handlers/tools/` - MCP tool definitions (for auto-generation)
+- `kitty-specs/015-mittwald-mcp-use-case-research/findings/` - Case study data (for tutorials)
+- Mittwald brand assets (logo, colors from mittwald.de)
+
+**Deployment Dependencies**:
+- GitHub Pages, Fly.io, or custom hosting (decision deferred for now)
+- CI/CD pipeline to build both sites on each push
+- Environment variable `BASE_URL` support in build process
+
+## Success Criteria Validation
+
+Validating feature success criteria against Phase 1 design:
+
+| Spec Success Criterion | Design Fulfillment |
+|------------------------|-------------------|
+| SC-001: 4 OAuth guides complete | ✅ WP02 generates 4 tool-specific guides with OAuth flow details |
+| SC-002: 10-minute onboarding | ✅ Each guide emphasizes fast path; troubleshooting for common errors |
+| SC-003: 3 conceptual explainers complete | ✅ WP03 generates MCP, agentic coding, OAuth explanations |
+| SC-004: Auto-generate 115 tools | ✅ WP04-05 pipeline generates all 115 from tool handlers |
+| SC-005: 10 case study pages | ✅ WP06 converts 015 research to Divio tutorial format |
+| SC-006: 5 segments × 2 cases each | ✅ WP06 ensures 2 cases per segment, navigation by segment |
+| SC-007: Two Astro sites | ✅ WP01 sets up separate `docs/setup-and-guides/` and `docs/reference/` |
+| SC-008: Mittwald branding | ✅ WP01 integrates logo, colors, typography |
+| SC-009: Accessibility standards | ✅ WP07 validates WCAG 2.1 AA compliance |
+| SC-010: Cross-site navigation | ✅ Both sites link to each other; BASE_URL support ensures correct links |
+
+All success criteria have a clear implementation path.
+
+## Next Steps
+
+**Phase 0 Research Output**: [research.md](research.md) (completes auto-generation & branding research)
+
+**Phase 1 Design Output**:
+- [data-model.md](data-model.md) - Documentation structure entities
+- [quickstart.md](quickstart.md) - Getting-started guide for implementing
+- `docs/setup-and-guides/` and `docs/reference/` - Starlight project scaffolding
+
+**Phase 2 (Next Command)**: Run `/spec-kitty.tasks` to generate work packages (WP01-WP07)
+
+---
+
+**Plan Status**: Ready for Phase 0 research task generation
