@@ -1,14 +1,14 @@
 ---
 work_package_id: WP04
 title: Configure BASE_URL and Cross-Site Navigation
-lane: "for_review"
+lane: "doing"
 dependencies: []
 subtasks:
 - T004
 phase: Phase A - Infrastructure & Setup
 assignee: ''
 agent: "claude"
-shell_pid: "2097"
+shell_pid: "29758"
 review_status: ''
 reviewed_by: ''
 history:
@@ -721,3 +721,4 @@ spec-kitty implement WP04 --base WP03
 *[Activity log will be populated during implementation and review]*
 - 2026-01-23T10:37:52Z – claude – shell_pid=2097 – lane=doing – Started implementation via workflow command
 - 2026-01-23T11:06:14Z – claude – shell_pid=2097 – lane=for_review – Completed BASE_URL configuration and cross-site navigation: both sites build successfully with default and custom BASE_URLs, environment variables documented in READMEs, build script tested with all scenarios (local, production, github-pages), cross-site links verified in built output
+- 2026-01-23T11:08:03Z – claude – shell_pid=29758 – lane=doing – Started review via workflow command
