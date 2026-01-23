@@ -4,5 +4,7 @@
   "friendly_name": "Mittwald MCP Documentation & Static Site",
   "mission": "documentation",
   "source_description": "Create comprehensive end-user documentation for using mittwald-mcp with Cursor, GitHub Copilot, Claude Code, and Codex CLI. Documentation includes tool-specific OAuth getting-started guides, conceptual explainers (MCP, agentic coding), auto-generated reference documentation for all 115 MCP tools, and 10 case study tutorials based on 015 research. Build two separate Astro-based static sites with mittwald.de branding and configurable base URLs.",
-  "created_at": "2025-01-23T00:00:00Z"
+  "created_at": "2025-01-23T00:00:00Z",
+  "vcs": "git",
+  "vcs_locked_at": "2026-01-23T11:09:33.548333+00:00"
 }
