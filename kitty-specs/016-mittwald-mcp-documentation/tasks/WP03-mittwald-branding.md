@@ -1,14 +1,14 @@
 ---
 work_package_id: WP03
 title: Extract and Integrate Mittwald Branding
-lane: "for_review"
+lane: "doing"
 dependencies: []
 subtasks:
 - T003
 phase: Phase A - Infrastructure & Setup
 assignee: ''
-agent: "claude"
-shell_pid: "97768"
+agent: "claude-code"
+shell_pid: "23457"
 review_status: ''
 reviewed_by: ''
 history:
@@ -662,3 +662,4 @@ spec-kitty implement WP03 --base WP01
 *[Activity log will be populated during implementation and review]*
 - 2026-01-23T10:30:50Z – claude – shell_pid=97768 – lane=doing – Started implementation via workflow command
 - 2026-01-23T10:33:59Z – claude – shell_pid=97768 – lane=for_review – Ready for review: Successfully extracted and integrated Mittwald branding (logo, colors, typography) to both documentation sites. Both sites build successfully with branding applied. Comprehensive documentation included.
+- 2026-01-23T11:04:08Z – claude-code – shell_pid=23457 – lane=doing – Started review via workflow command
