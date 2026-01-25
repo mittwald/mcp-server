@@ -88,10 +88,10 @@
 **Estimated Size**: ~250 lines
 
 ### Included Subtasks
-- [ ] T015 [P] Update `getting-started/index.md` with Claude Code and Copilot links
-- [ ] T016 [P] Create `case-studies/index.md` with segment-based navigation
-- [ ] T017 Add summary table of all 10 case studies to index
-- [ ] T018 Verify all internal links resolve
+- [x] T015 [P] Update `getting-started/index.md` with Claude Code and Copilot links
+- [x] T016 [P] Create `case-studies/index.md` with segment-based navigation
+- [x] T017 Add summary table of all 10 case studies to index
+- [x] T018 Verify all internal links resolve
 
 ### Implementation Notes
 - Getting Started index: Add Claude Code and GitHub Copilot to tool comparison table
