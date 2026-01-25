@@ -23,13 +23,13 @@
 **Estimated Size**: ~350 lines
 
 ### Included Subtasks
-- [ ] T001 [P] Create `claude-code.md` file with frontmatter and introduction
-- [ ] T002 Write OAuth authentication path (Steps 1-4)
-- [ ] T003 Write API key authentication path (alternative method)
-- [ ] T004 Write Common Tasks section with 4-5 examples
-- [ ] T005 Write Troubleshooting section with 5+ error scenarios
-- [ ] T006 Write FAQ section with 6+ Q&A pairs
-- [ ] T007 Add Next Steps and cross-links
+- [x] T001 [P] Create `claude-code.md` file with frontmatter and introduction
+- [x] T002 Write OAuth authentication path (Steps 1-4)
+- [x] T003 Write API key authentication path (alternative method)
+- [x] T004 Write Common Tasks section with 4-5 examples
+- [x] T005 Write Troubleshooting section with 5+ error scenarios
+- [x] T006 Write FAQ section with 6+ Q&A pairs
+- [x] T007 Add Next Steps and cross-links
 
 ### Implementation Notes
 - Follow exact structure from `cursor.md` template
