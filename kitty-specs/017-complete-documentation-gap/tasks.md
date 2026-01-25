@@ -55,13 +55,13 @@
 **Estimated Size**: ~350 lines
 
 ### Included Subtasks
-- [ ] T008 [P] Create `github-copilot.md` file with frontmatter and introduction
-- [ ] T009 Write OAuth authentication path (VS Code CodeLens method)
-- [ ] T010 Write API key authentication path with input variables
-- [ ] T011 Write Common Tasks section with 4-5 examples
-- [ ] T012 Write Troubleshooting section with 5+ error scenarios
-- [ ] T013 Write FAQ section with 6+ Q&A pairs
-- [ ] T014 Add Next Steps and cross-links
+- [x] T008 [P] Create `github-copilot.md` file with frontmatter and introduction
+- [x] T009 Write OAuth authentication path (VS Code CodeLens method)
+- [x] T010 Write API key authentication path with input variables
+- [x] T011 Write Common Tasks section with 4-5 examples
+- [x] T012 Write Troubleshooting section with 5+ error scenarios
+- [x] T013 Write FAQ section with 6+ Q&A pairs
+- [x] T014 Add Next Steps and cross-links
 
 ### Implementation Notes
 - Follow exact structure from `cursor.md` template
