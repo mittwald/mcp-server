@@ -177,10 +177,10 @@
 **Estimated Size**: ~400 lines
 
 ### Included Subtasks
-- [ ] T027 [P] Transform CS-003 to `ecommerce-launch-day.md`
-- [ ] T028 [P] Transform CS-008 to `database-performance.md`
-- [ ] T029 Add tool reference table with links to reference docs
-- [ ] T030 Add Related Tutorials cross-links between the two
+- [x] T027 [P] Transform CS-003 to `ecommerce-launch-day.md`
+- [x] T028 [P] Transform CS-008 to `database-performance.md`
+- [x] T029 Add tool reference table with links to reference docs
+- [x] T030 Add Related Tutorials cross-links between the two
 
 ### Implementation Notes
 - Source: `kitty-specs/015-mittwald-mcp-use-case-research/findings/CS-003-*.md` and `CS-008-*.md`
