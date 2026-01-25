@@ -148,10 +148,10 @@
 **Estimated Size**: ~400 lines
 
 ### Included Subtasks
-- [ ] T023 [P] Transform CS-002 to `agency-multi-project-management.md`
-- [ ] T024 [P] Transform CS-007 to `developer-onboarding.md`
-- [ ] T025 Add tool reference table with links to reference docs
-- [ ] T026 Add Related Tutorials cross-links between the two
+- [x] T023 [P] Transform CS-002 to `agency-multi-project-management.md`
+- [x] T024 [P] Transform CS-007 to `developer-onboarding.md`
+- [x] T025 Add tool reference table with links to reference docs
+- [x] T026 Add Related Tutorials cross-links between the two
 
 ### Implementation Notes
 - Source: `kitty-specs/015-mittwald-mcp-use-case-research/findings/CS-002-*.md` and `CS-007-*.md`
