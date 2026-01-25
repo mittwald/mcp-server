@@ -1,8 +1,0 @@
-{
-  "feature_number": "017",
-  "slug": "multilingual-docs-german-translation",
-  "friendly_name": "Multilingual Documentation with German Translation",
-  "mission": "documentation",
-  "source_description": "This is a documentation task. It is to add multilingual capabilities to the two docs astro sites, add german language to the existing english, and translate 100% of the docs on both sites into german. The browser language settings should be what determines the language but there should also be a language switcher widget on the sites. See if Astro supports that natively.",
-  "created_at": "2026-01-24T00:00:00Z"
-}
