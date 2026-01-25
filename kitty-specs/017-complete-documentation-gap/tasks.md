@@ -206,10 +206,10 @@
 **Estimated Size**: ~400 lines
 
 ### Included Subtasks
-- [ ] T031 [P] Transform CS-004 to `typo3-multisite-deployment.md`
-- [ ] T032 [P] Transform CS-009 to `security-audit-automation.md`
-- [ ] T033 Add tool reference table with links to reference docs
-- [ ] T034 Add Related Tutorials cross-links between the two
+- [x] T031 [P] Transform CS-004 to `typo3-multisite-deployment.md`
+- [x] T032 [P] Transform CS-009 to `security-audit-automation.md`
+- [x] T033 Add tool reference table with links to reference docs
+- [x] T034 Add Related Tutorials cross-links between the two
 
 ### Implementation Notes
 - Source: `kitty-specs/015-mittwald-mcp-use-case-research/findings/CS-004-*.md` and `CS-009-*.md`
