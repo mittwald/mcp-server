@@ -118,10 +118,10 @@
 **Estimated Size**: ~400 lines
 
 ### Included Subtasks
-- [ ] T019 [P] Transform CS-001 to `freelancer-client-onboarding.md`
-- [ ] T020 [P] Transform CS-006 to `automated-backup-monitoring.md`
-- [ ] T021 Add tool reference table with links to reference docs
-- [ ] T022 Add Related Tutorials cross-links between the two
+- [x] T019 [P] Transform CS-001 to `freelancer-client-onboarding.md`
+- [x] T020 [P] Transform CS-006 to `automated-backup-monitoring.md`
+- [x] T021 Add tool reference table with links to reference docs
+- [x] T022 Add Related Tutorials cross-links between the two
 
 ### Implementation Notes
 - Source: `kitty-specs/015-mittwald-mcp-use-case-research/findings/CS-001-*.md` and `CS-006-*.md`
