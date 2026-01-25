@@ -235,10 +235,10 @@
 **Estimated Size**: ~400 lines
 
 ### Included Subtasks
-- [ ] T035 [P] Transform CS-005 to `container-stack-deployment.md`
-- [ ] T036 [P] Transform CS-010 to `cicd-pipeline-integration.md`
-- [ ] T037 Add tool reference table with links to reference docs
-- [ ] T038 Add Related Tutorials cross-links between the two
+- [x] T035 [P] Transform CS-005 to `container-stack-deployment.md`
+- [x] T036 [P] Transform CS-010 to `cicd-pipeline-integration.md`
+- [x] T037 Add tool reference table with links to reference docs
+- [x] T038 Add Related Tutorials cross-links between the two
 
 ### Implementation Notes
 - Source: `kitty-specs/015-mittwald-mcp-use-case-research/findings/CS-005-*.md` and `CS-010-*.md`
