@@ -10,6 +10,7 @@ import { getTestTarget, DEFAULT_TARGET, type TestTarget } from '../config/test-t
 import { checkPrerequisites, exitWithPrerequisiteErrors } from './check-prerequisites.js';
 import { fetchToolCallLogs, extractToolNames } from './log-fetcher.js';
 import { validateScenarioOutcome } from './outcome-validator.js';
+import { updateValidationRecords } from './coverage-tracker.js';
 import type { ScenarioDefinition } from '../../src/types/scenario.js';
 import type { ScenarioExecutionResult } from '../../src/types/scenario-execution.js';
 
@@ -194,6 +195,9 @@ export async function runScenario(
     getDefaultResultPath(runId, scenarioId, result.status);
   saveResult(result, resultPath);
   result.log_file_path = resultPath;
+
+  // Update tool validation records
+  updateValidationRecords(result);
 
   console.log(`\nScenario ${result.status}: ${scenarioId}`);
   console.log(`Execution time: ${result.execution_time_ms}ms`);
