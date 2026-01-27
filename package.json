@@ -79,7 +79,8 @@
     "eval:migrate": "tsx evals/scripts/migrate-to-run.ts",
     "eval:best-of": "tsx evals/scripts/aggregate-best-of.ts",
     "scenarios:validate": "tsx evals/scripts/validate-scenarios.ts",
-    "scenario:run": "tsx evals/scripts/scenario-runner.ts"
+    "scenario:run": "tsx evals/scripts/scenario-runner.ts",
+    "coverage:query": "tsx evals/scripts/coverage-query.ts"
   },
   "repository": {
     "type": "git",
