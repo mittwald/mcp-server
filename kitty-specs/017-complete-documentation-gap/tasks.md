@@ -264,10 +264,10 @@
 **Estimated Size**: ~150 lines
 
 ### Included Subtasks
-- [ ] T039 Run `npm run build` in `docs/setup-and-guides`
-- [ ] T040 Validate all cross-site links to reference documentation
-- [ ] T041 Verify segment coverage (5 segments × 2 tutorials = 10)
-- [ ] T042 Review format consistency across all new docs
+- [x] T039 Run `npm run build` in `docs/setup-and-guides`
+- [x] T040 Validate all cross-site links to reference documentation
+- [x] T041 Verify segment coverage (5 segments × 2 tutorials = 10)
+- [x] T042 Review format consistency across all new docs
 
 ### Implementation Notes
 - Build must succeed with no errors
