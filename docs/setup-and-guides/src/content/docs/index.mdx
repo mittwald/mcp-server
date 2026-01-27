@@ -9,7 +9,7 @@ hero:
       link: /getting-started/
       icon: right-arrow
     - text: Tool Reference
-      link: http://localhost:4321/tools/
+      link: /reference/tools/
       icon: external
       variant: minimal
 ---
@@ -19,6 +19,14 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 ## Setup Guides
 
 <CardGrid stagger>
+	<Card title="Claude Code" icon="seti:shell">
+		Set up OAuth for Anthropic's Claude Code CLI.
+		[Get started →](/getting-started/claude-code/)
+	</Card>
+	<Card title="GitHub Copilot" icon="github">
+		Configure GitHub Copilot with Mittwald MCP.
+		[Get started →](/getting-started/github-copilot/)
+	</Card>
 	<Card title="Cursor IDE" icon="laptop">
 		Set up OAuth authentication for Cursor IDE to use Mittwald MCP tools.
 		[Get started →](/getting-started/cursor/)
@@ -26,6 +34,33 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 	<Card title="Codex CLI" icon="seti:shell">
 		Configure OpenAI's Codex CLI with Mittwald MCP using RFC 8252 loopback.
 		[Get started →](/getting-started/codex-cli/)
+	</Card>
+</CardGrid>
+
+## Real-World Tutorials
+
+Learn how developers like you use Mittwald MCP in production workflows.
+
+<CardGrid stagger>
+	<Card title="Freelance Workflows" icon="star">
+		Client onboarding, backup monitoring, and more.
+		[View tutorials →](/case-studies/#freelance-web-developers)
+	</Card>
+	<Card title="Agency Workflows" icon="users">
+		Multi-project management and developer onboarding.
+		[View tutorials →](/case-studies/#web-development-agencies)
+	</Card>
+	<Card title="E-commerce Workflows" icon="shopping-cart">
+		Launch prep and database performance optimization.
+		[View tutorials →](/case-studies/#e-commerce-specialists)
+	</Card>
+	<Card title="Enterprise TYPO3" icon="laptop">
+		Multi-site deployment and security audits.
+		[View tutorials →](/case-studies/#enterprise-typo3-developers)
+	</Card>
+	<Card title="Modern Stack" icon="rocket">
+		Container deployment and CI/CD integration.
+		[View tutorials →](/case-studies/#modern-stack-developers)
 	</Card>
 </CardGrid>
 
@@ -51,4 +86,4 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 This documentation is split into two sites:
 
 - **Setup & Guides** (this site) - OAuth setup guides, conceptual explainers, tutorials
-- **[Tool Reference](http://localhost:4321/)** - Complete API reference for 115+ MCP tools
+- **[Tool Reference](/reference/)** - Complete API reference for 115+ MCP tools

@@ -20,6 +20,10 @@ export default defineConfig({
 					autogenerate: { directory: 'getting-started' },
 				},
 				{
+					label: 'Case Studies',
+					autogenerate: { directory: 'case-studies' },
+				},
+				{
 					label: 'Concepts',
 					autogenerate: { directory: 'explainers' },
 				},

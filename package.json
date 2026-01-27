@@ -120,6 +120,7 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
     "jsdom": "^27.0.0",
+    "playwright": "^1.58.0",
     "prettier": "^3.5.3",
     "supertest": "^7.1.4",
     "tsc-alias": "^1.8.16",
