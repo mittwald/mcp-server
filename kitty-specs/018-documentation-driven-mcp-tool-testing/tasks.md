@@ -214,9 +214,9 @@
 **Estimated Size**: ~350 lines
 
 ### Included Subtasks
-- [ ] T012 Implement error signature extraction (normalize, classify)
-- [ ] T013 Build failure clustering algorithm (token-based grouping)
-- [ ] T014 Create failure pattern report generator
+- [x] T012 Implement error signature extraction (normalize, classify)
+- [x] T013 Build failure clustering algorithm (token-based grouping)
+- [x] T014 Create failure pattern report generator
 
 ### Implementation Notes
 
