@@ -60,10 +60,10 @@
 **Estimated Size**: ~400 lines
 
 ### Included Subtasks
-- [ ] T005 Generate TypeScript types from JSON Schema contracts
-- [ ] T006 [P] Implement scenario loader with Ajv validation
-- [ ] T007 Build scenario runner (Claude Code CLI subprocess orchestration)
-- [ ] T008 Implement outcome validator for success criteria
+- [x] T005 Generate TypeScript types from JSON Schema contracts
+- [x] T006 [P] Implement scenario loader with Ajv validation
+- [x] T007 Build scenario runner (Claude Code CLI subprocess orchestration)
+- [x] T008 Implement outcome validator for success criteria
 
 ### Implementation Notes
 
