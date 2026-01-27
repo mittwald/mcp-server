@@ -1,0 +1,8 @@
+{
+  "feature_number": "018",
+  "slug": "documentation-driven-mcp-tool-testing",
+  "friendly_name": "Documentation-Driven MCP Tool Testing",
+  "mission": "software-dev",
+  "source_description": "Here's a plan from Claude to address a big gap in our documentation and testing. I want to go through it with you in detail to make sure it aligns with my goals. My goals are to have testing that acutally uses MCP tools in a prompt-led situation (eg within claude code), and 2, to have documentation for the case studies (unlike the current documentation which lists the MCP tools to call but that's nonsense because that's what the LLM would do! the documentation needs to be written from the human point of view and clearly segregate between human actions - prompt and observe and valide - and LLM actions - call MCP tools, build and ship code)",
+  "created_at": "2026-01-27T00:00:00Z"
+}
