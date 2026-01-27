@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mittwald-mcp.dev/schemas/scenario-definition.json",
+  "title": "ScenarioDefinition",
+  "description": "Defines a test scenario that exercises MCP tools through natural language prompts",
+  "type": "object",
+  "required": ["id", "name", "prompts", "success_criteria"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique scenario identifier in kebab-case",
+      "examples": ["freelancer-onboarding", "backup-monitoring"]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable scenario name",
+      "examples": ["Freelancer Client Onboarding", "Automated Backup Monitoring"]
+    },
+    "source": {
+      "type": "string",
+      "description": "Path to case study documentation (if applicable)",
+      "examples": ["docs/setup-and-guides/src/content/docs/case-studies/freelancer-client-onboarding.md"]
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "description": "Prompts to send to Claude Code CLI in sequence",
+      "examples": [
+        ["Create a new Mittwald project called 'ACME Client Portal'", "Install WordPress in that project"]
+      ]
+    },
+    "success_criteria": {
+      "type": "object",
+      "description": "Outcome-based validation criteria",
+      "properties": {
+        "resources_created": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Expected resource counts (e.g., project: 1, app: 2)",
+          "examples": [
+            { "project": 1, "app": 1, "backup_schedule": 1 }
+          ]
+        },
+        "resources_configured": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Expected configuration states",
+          "examples": [
+            { "ssl_enabled": true, "backup_frequency": "daily" }
+          ]
+        }
+      },
+      "anyOf": [
+        { "required": ["resources_created"] },
+        { "required": ["resources_configured"] }
+      ]
+    },
+    "cleanup": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Cleanup prompts for resource teardown",
+      "examples": [
+        ["Delete the WordPress app", "Delete the project"]
+      ]
+    },
+    "expected_tools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^mittwald_[a-z_]+$"
+      },
+      "description": "Optional: MCP tools expected to be called",
+      "examples": [
+        ["mittwald_project_create", "mittwald_app_install"]
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categorization tags",
+      "examples": [
+        ["case-study", "simple", "tier-3"]
+      ]
+    }
+  }
+}
