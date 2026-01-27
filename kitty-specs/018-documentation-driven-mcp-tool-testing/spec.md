@@ -119,15 +119,109 @@ As a **maintainer debugging a failed test**, I need the system to identify recur
 - **Resource Availability**: Sufficient test account quotas exist to run 10+ concurrent scenarios without hitting limits
 - **Diagnostic Efficiency**: One successful run proves tool functionality; repeated runs only needed for failure diagnosis
 
+## Multi-Target Testing Strategy *(mandatory)*
+
+Feature 018 tests against **three MCP server deployments** to ensure comprehensive validation:
+
+### Test Targets
+
+1. **Local MCP Server** (`build/index.js`)
+   - **Purpose**: Fast feedback during development
+   - **Authentication**: None required
+   - **Log Source**: Subprocess stdout (Pino structured logs)
+   - **Execution**: `npm run build && node build/index.js`
+
+2. **Fly.io MCP Server** (`mittwald-mcp-fly2.fly.dev`)
+   - **Purpose**: Production environment validation
+   - **Authentication**: OAuth required (user must authenticate via Claude Code CLI)
+   - **Log Source**: `flyctl logs -a mittwald-mcp-fly2` (Fly.io journald)
+   - **Deployment**: Automatic via GitHub Actions on main branch push
+
+3. **Mittwald.de MCP Server** (`mcp.mittwald.de`)
+   - **Purpose**: Official production deployment validation
+   - **Authentication**: OAuth required (separate from Fly.io)
+   - **Log Source**: **No direct log access** - outcome validation only
+   - **Validation**: Use local `mw` CLI to verify resource state
+
+### Authentication Requirements
+
+**Pre-flight check**: Tests verify Claude Code CLI authentication status before running. If authentication is missing, tests exit with clear instructions:
+
+```bash
+❌ Authentication required for mittwald-mcp-fly2.fly.dev
+Please authenticate first:
+  claude auth login
+Then retry: npm run test:scenarios --target=flyio
+```
+
+**User responsibility**: Maintainers must authenticate Claude Code CLI before running production target tests. Local tests require no authentication.
+
+### Target Selection
+
+Tests support a `--target` flag to select which MCP server to test:
+
+```bash
+# Quick local validation (default, ~2 hours)
+npm run test:scenarios
+
+# Production validation (requires auth, ~2 hours each)
+npm run test:scenarios --target=flyio
+npm run test:scenarios --target=mittwald
+```
+
+**Recommended workflow**:
+- Daily/PR checks: Run `--target=local` only (fast feedback)
+- Pre-release validation: Run all three targets sequentially (~6 hours total)
+- CI/CD: Local tests in PR checks, full suite in nightly builds
+
+### Tool Coverage Tracking by Target
+
+| Target | Log Retrieval | Coverage Tracking Method |
+|--------|---------------|--------------------------|
+| Local | Parse subprocess stdout | Extract tool names from Pino structured logs |
+| Fly.io | `flyctl logs -a mittwald-mcp-fly2` | Extract tool names from Pino structured logs |
+| mittwald.de | **No log access** | Validate outcomes using local `mw` CLI |
+
+**Critical constraint for mittwald.de**: Since logs are unavailable, tool coverage is tracked by:
+1. Scenario's `expected_tools` field declares which tools should be called
+2. Validation script uses local `mw` CLI to verify actual resource state
+3. If outcome passes, assume expected tools were called successfully
+
+**Important**: LLMs in test scenarios are **forbidden** from using the `mw` tool. Only validation scripts use `mw` directly to check outcomes. This prevents scenarios from bypassing MCP tools.
+
+### Target-Specific Reporting
+
+Coverage reports show per-target validation status:
+
+```markdown
+## Tool Coverage Report
+
+### Summary
+- **Local**: 110/115 tools (95.7%)
+- **Fly.io**: 106/115 tools (92.2%)
+- **mittwald.de**: 101/115 tools (87.8%)
+
+### Tools Working on All Targets ✅
+- mittwald_app_list
+- mittwald_project_get
+- ... (92 tools)
+
+### Tools Failing on Specific Targets ⚠️
+**Fly.io only**: mittwald_app_create (timeout)
+**mittwald.de only**: mittwald_domain_dns_update (DNS propagation)
+```
+
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: All 115 MCP tools have been validated in at least one realistic multi-step scenario
-- **SC-002**: At least 80% of tools are validated using the 10 existing case study workflows
-- **SC-003**: Remaining 20% of tools are validated using custom minimal scenarios (no more than 25 custom scenarios created)
-- **SC-004**: Failed tools are accompanied by actionable diagnostic information (failure mode, affected scenarios, reproduction steps)
-- **SC-005**: Case study documentation is rewritten to clearly separate human actions from LLM actions (validated by readability review)
-- **SC-006**: Test execution completes in under 2 hours for all scenarios (10 case studies + ~25 custom scenarios)
-- **SC-007**: Failure patterns are identified automatically for 90% of recurring failures (no manual categorization required)
+- **SC-001**: All 115 MCP tools validated in at least one realistic scenario on at least one target (local, Fly.io, or mittwald.de)
+- **SC-002**: At least 80% of tools validated using 10 existing case study workflows
+- **SC-003**: Remaining 20% of tools validated using custom minimal scenarios (no more than 25 custom scenarios)
+- **SC-004**: Failed tools accompanied by actionable diagnostic information (failure mode, affected scenarios, reproduction steps)
+- **SC-005**: Case study documentation rewritten to clearly separate human actions from LLM actions
+- **SC-006**: Test execution completes in under 2 hours per target (10 case studies + ~25 custom scenarios)
+- **SC-007**: Failure patterns identified automatically for 90% of recurring failures
 - **SC-008**: Zero test resource leaks after scenario execution (all projects, apps, databases cleaned up)
+- **SC-009**: **NEW** - At least 90% of tools validated on all three targets (identifies environment-specific issues)
+- **SC-010**: **NEW** - Per-target coverage reports generated showing tool validation rates and environment-specific failures

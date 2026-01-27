@@ -127,6 +127,131 @@ docs/setup-and-guides/src/content/docs/case-studies/
 
 **Structure Decision**: Extends existing single project structure. New directories (`evals/scenarios/`, `evals/coverage/`, `evals/reports/`) integrate cleanly with Feature 014's `evals/` framework. MCP logging infrastructure added to `src/server/` alongside existing server code.
 
+## Multi-Target Testing Architecture
+
+Feature 018 tests against three MCP server deployments to ensure tools work correctly across different environments:
+
+### Test Targets
+
+| Target | URL | Auth | Log Source | Purpose |
+|--------|-----|------|------------|---------|
+| **Local** | `build/index.js` | None | Subprocess stdout | Fast development feedback |
+| **Fly.io** | `mittwald-mcp-fly2.fly.dev` | OAuth | `flyctl logs` | Production environment validation |
+| **mittwald.de** | `mcp.mittwald.de` | OAuth | **None** | Official deployment validation |
+
+### MCP Server Configuration Strategy
+
+**Manual user reconfiguration** - Users must manually switch Claude Code CLI configuration before running tests:
+
+```bash
+# Test local server
+claude mcp remove mittwald  # If previously configured
+npm run test:scenarios --target=local
+
+# Test Fly.io server
+claude mcp add --transport http mittwald https://mittwald-mcp-fly2.fly.dev/mcp
+npm run test:scenarios --target=flyio
+
+# Test mittwald.de server
+claude mcp remove mittwald
+claude mcp add --transport http mittwald https://mcp.mittwald.de
+npm run test:scenarios --target=mittwald
+```
+
+**Rationale**: Simplest approach. No need to reverse-engineer Claude CLI config override mechanisms.
+
+### Log Retrieval Strategy
+
+| Target | Tool Coverage Tracking Method |
+|--------|-------------------------------|
+| **Local** | Parse structured JSON logs from Pino (subprocess stdout) |
+| **Fly.io** | Parse structured JSON logs from `flyctl logs -a mittwald-mcp-fly2` |
+| **mittwald.de** | **Validate OUTCOMEs using local `mw` CLI tool** |
+
+**CRITICAL mittwald.de Constraint**:
+- Scenario outcomes must be validated by checking actual Mittwald resources (projects, apps, databases)
+- Use local `mw` CLI tool to query resources (e.g., `mw project list`, `mw app list`)
+- **LLMs in tests are FORBIDDEN from using `mw` tool** - this would subvert tests by bypassing MCP tools
+- Validation scripts use `mw` directly, but Claude Code CLI in test scenarios must ONLY use MCP tools
+
+### Authentication Flow
+
+**Pre-flight check**: Before running scenarios on Fly.io or mittwald.de:
+
+```typescript
+async function checkAuthForTarget(target: TestTarget): Promise<void> {
+  if (!target.requiresAuth) return;
+
+  console.log(`🔐 Checking authentication for ${target.displayName}...`);
+
+  // Attempt to connect Claude CLI and check for auth
+  const authOk = await testAuthentication(target);
+
+  if (!authOk) {
+    console.error(`❌ Authentication failed for ${target.name}`);
+    console.error(`   Please start a Claude Code CLI session and authenticate first`);
+    console.error(`   Then retry this test`);
+    process.exit(1);
+  }
+
+  console.log(`✅ Authentication OK`);
+}
+```
+
+**User responsibility**: Maintainers authenticate once via Claude Code CLI before running tests. Tests check and exit if missing.
+
+### Test Execution Model
+
+**Target selection per run**:
+- Default: `npm run test:scenarios` runs `--target=local`
+- Specify target: `npm run test:scenarios --target=flyio`
+- No parallel execution: Users run targets sequentially
+
+**Workflow**:
+1. Daily/PR checks: Run `--target=local` only (fast feedback, ~2 hours)
+2. Pre-release validation: Run all three targets sequentially (~6 hours total)
+3. CI/CD: Can run local only or trigger nightly full suite
+
+### Tool Coverage by Target
+
+**Updated SC-001**:
+> All 115 MCP tools validated in at least one realistic scenario on at least one of three targets (local, Fly.io, mittwald.de)
+
+**Stretch goals**:
+- **SC-009**: 90% tools validated on all three targets
+- **SC-010**: Identify tools that work locally but fail on production (deployment issues)
+
+### Target-Specific Reporting
+
+Reports include per-target breakdowns:
+
+```json
+{
+  "byTarget": {
+    "local": {
+      "validatedTools": 110,
+      "coverage": 95.7
+    },
+    "flyio": {
+      "validatedTools": 106,
+      "coverage": 92.2
+    },
+    "mittwald": {
+      "validatedTools": 101,
+      "coverage": 87.8
+    }
+  },
+  "crossTargetIssues": [
+    {
+      "tool": "mittwald_app_create",
+      "worksOn": ["local"],
+      "failsOn": ["flyio", "mittwald"],
+      "reason": "timeout"
+    }
+  ]
+}
+```
+
 ## Complexity Tracking
 
 *No constitution violations to justify.*
