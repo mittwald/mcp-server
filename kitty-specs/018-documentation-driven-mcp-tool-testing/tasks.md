@@ -268,7 +268,7 @@
 - [x] T015 [P] Create scenario definitions for Tier 0-2 case studies (4 files)
 - [x] T016 [P] Create scenario definitions for Tier 3-4 case studies (6 files)
 - [ ] T017 Run pilot scenario (freelancer-onboarding) end-to-end
-- [ ] T018 Create run-all-scenarios script for batch execution
+- [x] T018 Create run-all-scenarios script for batch execution
 
 ### Implementation Notes
 1. Create `evals/scenarios/case-studies/` directory
