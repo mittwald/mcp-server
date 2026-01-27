@@ -25,6 +25,7 @@ import {
   getToolSchema
 } from '../constants/tools.js';
 import { logger } from '../utils/logger.js';
+import { logger as structuredLogger, sanitizeValue } from '../utils/structured-logger.js';
 import { isToolExcluded, getExclusionReason } from '../utils/tool-scanner.js';
 import { toolCallsTotal, toolDuration, toolMemoryDelta, memoryPressure } from '../metrics/index.js';
 import type { MCPToolContext } from '../types/request-context.js';
@@ -136,6 +137,21 @@ export async function handleToolCall(
       sessionId: context.sessionId
     });
   }
+
+  // Extract tool domain from name (e.g., "app" from "mittwald_app_list")
+  const toolDomain = toolName.includes('_') ? toolName.split('_')[1] : 'unknown';
+  const sessionId = context.sessionId || `session-${Date.now()}`;
+
+  // Log tool call start (debug level - high frequency)
+  structuredLogger.debug({
+    event: 'tool_call_start',
+    toolName,
+    toolDomain,
+    sessionId,
+    input: {
+      arguments: sanitizeValue(request.params.arguments),
+    },
+  }, 'Tool call initiated');
 
   try {
     // Ensure tools are loaded
@@ -309,6 +325,27 @@ export async function handleToolCall(
       });
     }
 
+    // Log successful tool call with structured data (info level)
+    structuredLogger.info({
+      event: 'tool_call_success',
+      toolName,
+      toolDomain,
+      sessionId,
+      output: {
+        status: 'success',
+        resultSize: JSON.stringify(result).length,
+      },
+      performance: {
+        durationMs,
+        memoryDeltaMB: parseFloat(memoryDeltaMB.toFixed(1)),
+        memoryPressurePct: parseFloat(((memAfter.heapUsed / memAfter.heapTotal) * 100).toFixed(1)),
+      },
+      context: {
+        nodeVersion: process.version,
+        serverUptime: Math.floor(process.uptime()),
+      },
+    }, 'Tool call completed');
+
     return result;
     
   } catch (error) {
@@ -330,6 +367,22 @@ export async function handleToolCall(
       sessionId: context.sessionId,
       uptime: process.uptime().toFixed(0)
     });
+
+    // Log failed tool call with structured data (error level)
+    structuredLogger.error({
+      event: 'tool_call_error',
+      toolName,
+      toolDomain,
+      sessionId,
+      output: {
+        status: 'error',
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorCode: (error as any)?.code,
+      },
+      performance: {
+        durationMs,
+      },
+    }, 'Tool call failed');
 
     // Return error result instead of throwing
     return {
