@@ -66,14 +66,74 @@
 - [ ] T008 Implement outcome validator for success criteria
 
 ### Implementation Notes
-1. Use `json-schema-to-typescript` to generate `src/types/scenario.ts` from `contracts/scenario-definition.schema.json`
-2. Create `evals/scripts/scenario-loader.ts` with Ajv validation
-3. Create `evals/scripts/scenario-runner.ts` to:
+
+**Multi-Target Architecture**: WP02 now supports testing against three targets (local, Fly.io, mittwald.de).
+
+1. **Add Test Target Configuration** (`evals/config/test-targets.ts`):
+   ```typescript
+   export interface TestTarget {
+     name: 'local' | 'flyio' | 'mittwald';
+     displayName: string;
+     logSource: 'local' | 'flyctl' | 'outcome-validation';
+     requiresAuth: boolean;
+     requiresUserMcpConfig: boolean;
+   }
+
+   export const TEST_TARGETS: Record<string, TestTarget> = {
+     local: {
+       name: 'local',
+       displayName: 'Local (build/index.js)',
+       logSource: 'local',
+       requiresAuth: false,
+       requiresUserMcpConfig: false,
+     },
+     flyio: {
+       name: 'flyio',
+       displayName: 'Fly.io (mittwald-mcp-fly2.fly.dev)',
+       logSource: 'flyctl',
+       requiresAuth: true,
+       requiresUserMcpConfig: true,
+     },
+     mittwald: {
+       name: 'mittwald',
+       displayName: 'Mittwald (mcp.mittwald.de)',
+       logSource: 'outcome-validation',
+       requiresAuth: true,
+       requiresUserMcpConfig: true,
+     },
+   };
+   ```
+
+2. **Add Pre-Flight Checks** (`evals/scripts/check-prerequisites.ts`):
+   - Check MCP server configuration (prompt user to run `claude mcp add`)
+   - Check authentication status (exit if missing, instruct user to authenticate)
+   - Verify target is reachable (health check)
+
+3. **Add Log Fetcher Abstraction** (`evals/scripts/log-fetcher.ts`):
+   - `fetchToolCallLogs()` supports three sources:
+     - `local`: Parse from subprocess stdout buffer
+     - `flyctl`: Execute `flyctl logs -a mittwald-mcp-fly2 | grep sessionId`
+     - `outcome-validation`: Return empty array (no logs available)
+
+4. **Add Outcome Validator** (`evals/scripts/outcome-validator.ts`):
+   - Use local `mw` CLI to verify resource state (projects, apps, databases)
+   - Compare actual state against scenario's `success_criteria`
+   - **CRITICAL**: Validation scripts use `mw` directly, NOT via Claude Code CLI
+
+5. Use `json-schema-to-typescript` to generate `src/types/scenario.ts` from `contracts/scenario-definition.schema.json`
+
+6. Create `evals/scripts/scenario-loader.ts` with Ajv validation
+
+7. Update `evals/scripts/scenario-runner.ts` to:
+   - Accept `--target` CLI flag (local | flyio | mittwald)
+   - Run pre-flight checks for target
    - Spawn Claude Code CLI as subprocess
    - Send prompts sequentially
-   - Parse MCP tool calls from structured logs (from WP01)
+   - Parse MCP tool calls from structured logs (via log fetcher)
    - Handle cleanup prompts
-4. Create `evals/scripts/scenario-validator.ts` to check outcome against success_criteria
+   - Validate outcomes for mittwald.de target
+
+8. Create `evals/scripts/scenario-validator.ts` to check outcome against success_criteria
 
 ### Parallel Opportunities
 - T005 (type generation) and T006 (loader) can proceed in parallel
@@ -104,13 +164,32 @@
 - [ ] T011 Build coverage query CLI for validation status
 
 ### Implementation Notes
+
+**Multi-Target Log Handling**: WP03 must handle three different log sources.
+
 1. Create `evals/scripts/tool-inventory.ts` to load 115 tools from `evals/inventory/tools-current.json` (Feature 014)
-2. Create `evals/scripts/coverage-tracker.ts` to:
-   - Read scenario execution results
-   - Extract tool names from logs
-   - Update `evals/coverage/tool-validation.json` (115 ToolValidationRecord entries)
+
+2. Update `evals/scripts/coverage-tracker.ts` to:
+   - Read scenario execution results (includes target information)
+   - Extract tool names based on log source:
+     - **Local/Fly.io**: Parse structured logs from log fetcher
+     - **mittwald.de**: Use scenario's `expected_tools` field if outcome passed
+   - Update `evals/coverage/tool-validation.json` with per-target status:
+     ```json
+     {
+       "mittwald_app_list": {
+         "validated": true,
+         "validatedOn": ["local", "flyio", "mittwald"],
+         "scenarios": ["freelancer-onboarding"],
+         "lastValidated": "2026-01-27T12:00:00Z"
+       }
+     }
+     ```
    - Mark tools as 'success' or 'failed' based on scenario outcome
-3. Create `evals/scripts/coverage-query.ts` CLI for querying validation status
+
+3. Create `evals/scripts/coverage-query.ts` CLI for querying validation status:
+   - Support `--target` filter: Show tools validated on specific target
+   - Show cross-target comparison: Which tools work on all/some/no targets
 
 ### Parallel Opportunities
 - All subtasks must run sequentially (T009 → T010 → T011)
@@ -140,16 +219,28 @@
 - [ ] T014 Create failure pattern report generator
 
 ### Implementation Notes
+
+**Target-Specific Failure Patterns**: WP04 identifies environment-specific issues.
+
 1. Create `evals/scripts/failure-analyzer.ts` with:
    - `normalizeError()`: Replace UUIDs, IDs, numbers with placeholders
    - `extractSignature()`: Classify error_type from message patterns
    - `hashSignature()`: Generate pattern ID
+   - **NEW**: `classifyTargetSpecificFailures()`: Detect failures unique to specific targets
+
 2. Create `evals/scripts/cluster-failures.ts` to:
-   - Read failed ToolValidationRecord entries
+   - Read failed ToolValidationRecord entries (with target information)
    - Extract signatures
    - Group by signature hash
-   - Generate FailurePattern entries
-3. Create `evals/scripts/generate-failure-report.ts` for Markdown output
+   - **NEW**: Identify target-specific patterns:
+     - "Works locally but fails on Fly.io" → Deployment issue
+     - "Works on Fly.io but fails on mittwald.de" → Environment difference
+     - "Fails on all targets" → Broken tool code
+   - Generate FailurePattern entries with target breakdown
+
+3. Create `evals/scripts/generate-failure-report.ts` for Markdown output:
+   - Include section: "Environment-Specific Failures"
+   - Show which tools fail only on specific targets
 
 ### Parallel Opportunities
 - T012 (extraction) and T013 (clustering) are sequential
@@ -222,20 +313,51 @@
 - [ ] T022 Create retry-failures script
 
 ### Implementation Notes
+
+**Per-Target Reporting**: WP06 generates reports showing coverage across all three targets.
+
 1. Create `evals/scripts/generate-coverage-report.ts` to:
-   - Read tool-validation.json (115 tools)
-   - Calculate validation_rate, coverage_by_domain
-   - Include failure pattern summary
-   - Output JSON (`evals/reports/coverage-full.json`)
+   - Read tool-validation.json (115 tools with per-target status)
+   - Calculate validation_rate per target: `local`, `flyio`, `mittwald`
+   - Calculate coverage_by_domain per target
+   - Include failure pattern summary (with target breakdown)
+   - **NEW**: Include cross-target analysis:
+     - Tools working on all targets (production-ready)
+     - Tools failing on specific targets (environment issues)
+   - Output JSON (`evals/reports/coverage-full.json`):
+     ```json
+     {
+       "byTarget": {
+         "local": { "validatedTools": 110, "coverage": 95.7 },
+         "flyio": { "validatedTools": 106, "coverage": 92.2 },
+         "mittwald": { "validatedTools": 101, "coverage": 87.8 }
+       },
+       "crossTargetIssues": [
+         {
+           "tool": "mittwald_app_create",
+           "worksOn": ["local"],
+           "failsOn": ["flyio", "mittwald"],
+           "reason": "timeout"
+         }
+       ]
+     }
+     ```
+
 2. Create `evals/scripts/generate-markdown-report.ts` to:
    - Read coverage-full.json
-   - Generate human-readable Markdown tables
+   - Generate human-readable Markdown tables with per-target columns
+   - Add section: "Tools Working on All Targets ✅"
+   - Add section: "Tools Failing on Specific Targets ⚠️"
    - Output to `evals/reports/coverage-summary.md`
+
 3. Create `evals/scripts/gap-analysis.ts` to:
    - Compare tools used in scenarios vs 115-tool inventory
-   - Identify uncovered tools
+   - Identify uncovered tools (per target)
+   - Prioritize tools not tested on any target
    - Output `evals/coverage/gap-analysis.json` with recommendations
-4. Create `evals/scripts/retry-failures.ts` to re-run only failed scenarios
+
+4. Create `evals/scripts/retry-failures.ts` to re-run only failed scenarios:
+   - Support `--target` flag to retry on specific target
 
 ### Parallel Opportunities
 - T019 (JSON report) and T020 (Markdown report) can proceed in full parallel
