@@ -307,10 +307,10 @@
 **Estimated Size**: ~380 lines
 
 ### Included Subtasks
-- [ ] T019 [P] Build JSON coverage report generator
-- [ ] T020 [P] Build Markdown coverage report generator
-- [ ] T021 Implement gap analysis (identify uncovered tools)
-- [ ] T022 Create retry-failures script
+- [x] T019 [P] Build JSON coverage report generator
+- [x] T020 [P] Build Markdown coverage report generator
+- [x] T021 Implement gap analysis (identify uncovered tools)
+- [x] T022 Create retry-failures script
 
 ### Implementation Notes
 
