@@ -6,12 +6,19 @@ import {
   validateOutcome,
   extractResourcesFromToolCalls,
 } from './scenario-validator.js';
+import { getTestTarget, DEFAULT_TARGET, type TestTarget } from '../config/test-targets.js';
+import { checkPrerequisites, exitWithPrerequisiteErrors } from './check-prerequisites.js';
+import { fetchToolCallLogs, extractToolNames } from './log-fetcher.js';
+import { validateScenarioOutcome } from './outcome-validator.js';
 import type { ScenarioDefinition } from '../../src/types/scenario.js';
 import type { ScenarioExecutionResult } from '../../src/types/scenario-execution.js';
 
 /**
  * Scenario runner that executes prompts via Claude Code CLI.
  * Tracks tool calls from MCP structured logs (WP01).
+ *
+ * Multi-target support: Tests can run against local, Fly.io, or mittwald.de
+ * by specifying --target flag.
  */
 
 interface ScenarioRunnerOptions {
@@ -20,6 +27,7 @@ interface ScenarioRunnerOptions {
   keepResources?: boolean; // Skip cleanup for debugging
   outputPath?: string; // Override default result path
   timeout?: number; // Timeout per prompt (ms, default: 120000)
+  target?: string; // Test target: 'local' | 'flyio' | 'mittwald' (default: 'local')
 }
 
 /**
@@ -35,21 +43,37 @@ export async function runScenario(
     keepResources = false,
     outputPath,
     timeout = 120000,
+    target: targetName,
   } = options;
+
+  // Get test target (default: local)
+  const target: TestTarget = targetName
+    ? getTestTarget(targetName)
+    : DEFAULT_TARGET;
+
+  console.log(`\n🎯 Test Target: ${target.displayName}`);
+
+  // Run pre-flight checks for this target
+  const prerequisitesResult = await checkPrerequisites(target);
+  if (!prerequisitesResult.passed) {
+    exitWithPrerequisiteErrors(target, prerequisitesResult);
+  }
 
   // Load scenario definition
   const scenario = loadScenario(scenarioId, scenarioDir);
 
-  console.log(`Running scenario: ${scenario.name} (${scenarioId})`);
+  console.log(`\nRunning scenario: ${scenario.name} (${scenarioId})`);
   console.log(`Prompts: ${scenario.prompts.length}`);
 
   const runId = `run-${new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19)}`;
+  const sessionId = `session-${runId}`;
   const startTime = Date.now();
 
   const result: ScenarioExecutionResult = {
     scenario_id: scenarioId,
     run_id: runId,
     executed_at: new Date().toISOString(),
+    target: target.name,
     status: 'success',
     tools_called: [],
     execution_time_ms: 0,
@@ -73,22 +97,60 @@ export async function runScenario(
       console.log(`  Tools called: ${toolsCalled.join(', ')}`);
     }
 
+    // Fetch tool call logs from the appropriate source (target-specific)
+    console.log(`\n📊 Fetching tool call logs from ${target.logSource}...`);
+    const logs = await fetchToolCallLogs(target, sessionId, fullLogOutput);
+    const toolNamesFromLogs = extractToolNames(logs);
+
+    if (toolNamesFromLogs.length > 0) {
+      console.log(`  Tools from logs: ${toolNamesFromLogs.join(', ')}`);
+      // Use logs as authoritative source if available
+      result.tools_called = toolNamesFromLogs;
+    }
+
     // Extract resources created (parse from MCP logs or tool call results)
     result.resources_created = extractResourcesFromToolCalls(
       result.tools_called,
       fullLogOutput
     );
 
-    // Validate outcome against success criteria
-    const validation = validateOutcome(scenario, result);
-    if (!validation.valid) {
-      console.error('Validation errors:', validation.errors);
-      result.status = 'failure';
-      result.failure_details = {
-        failed_tool: 'validation',
-        error_message: `Validation failed: ${validation.errors.join(', ')}`,
-        context: { validation_errors: validation.errors },
+    // Validate outcome using appropriate method for target
+    if (target.logSource === 'outcome-validation') {
+      // For mittwald.de: Use outcome validator with `mw` CLI
+      console.log(`\n🔍 Validating outcome using mw CLI...`);
+      const outcomeResult = await validateScenarioOutcome(scenario, target);
+      result.outcome_validation = {
+        all_passed: outcomeResult.allPassed,
+        checks: outcomeResult.checks,
+        errors: outcomeResult.errors,
+        expected_tools: outcomeResult.expectedTools,
       };
+
+      if (!outcomeResult.allPassed) {
+        result.status = 'failure';
+        result.failure_details = {
+          failed_tool: 'outcome_validation',
+          error_message: `Outcome validation failed: ${outcomeResult.errors.join(', ')}`,
+          context: { validation_checks: outcomeResult.checks },
+        };
+      }
+
+      // For mittwald.de, use expected_tools if outcome passed
+      if (outcomeResult.allPassed && outcomeResult.expectedTools) {
+        result.tools_called = outcomeResult.expectedTools;
+      }
+    } else {
+      // For local/Fly.io: Use traditional validation
+      const validation = validateOutcome(scenario, result);
+      if (!validation.valid) {
+        console.error('Validation errors:', validation.errors);
+        result.status = 'failure';
+        result.failure_details = {
+          failed_tool: 'validation',
+          error_message: `Validation failed: ${validation.errors.join(', ')}`,
+          context: { validation_errors: validation.errors },
+        };
+      }
     }
 
     // Perform cleanup
