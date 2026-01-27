@@ -29,6 +29,7 @@
     "build": "tsc && tsc-alias && chmod +x build/index.js && echo \"export * from './config.js';\nexport * from './oauth.js';\nexport * from './mcp.js';\nexport * from './auth-store.js';\nexport * from './types.js';\" > build/server/index.js",
     "build:workspaces": "npm run build --workspace=packages/mittwald-cli-core --if-present && npm run build --workspace=packages/oauth-bridge --if-present",
     "build:all": "npm run build:workspaces && npm run build",
+    "types:generate": "npx json-schema-to-typescript kitty-specs/018-documentation-driven-mcp-tool-testing/contracts/scenario-definition.schema.json > src/types/scenario.ts && npx json-schema-to-typescript kitty-specs/018-documentation-driven-mcp-tool-testing/contracts/scenario-execution-result.schema.json > src/types/scenario-execution.ts",
     "watch": "tsc --watch",
     "lint": "eslint .",
     "lint:credential-leak": "eslint src/handlers packages/oauth-bridge/src --config ./eslint.credential.config.js",
@@ -76,7 +77,15 @@
     "eval:compare:visual": "tsx evals/scripts/visual-comparison.ts",
     "eval:save-result": "tsx evals/scripts/save-eval-result.ts",
     "eval:migrate": "tsx evals/scripts/migrate-to-run.ts",
-    "eval:best-of": "tsx evals/scripts/aggregate-best-of.ts"
+    "eval:best-of": "tsx evals/scripts/aggregate-best-of.ts",
+    "scenarios:validate": "tsx evals/scripts/validate-scenarios.ts",
+    "scenario:run": "tsx evals/scripts/scenario-runner.ts",
+    "coverage:query": "tsx evals/scripts/coverage-query.ts",
+    "failures:cluster": "tsx evals/scripts/cluster-failures.ts",
+    "failures:report": "tsx evals/scripts/generate-failure-report.ts"
+    "coverage:query": "tsx evals/scripts/coverage-query.ts",
+    "failures:cluster": "tsx evals/scripts/cluster-failures.ts",
+    "failures:report": "tsx evals/scripts/generate-failure-report.ts"
   },
   "repository": {
     "type": "git",
@@ -124,6 +133,7 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
     "jsdom": "^27.0.0",
+    "json-schema-to-typescript": "^15.0.4",
     "playwright": "^1.58.0",
     "prettier": "^3.5.3",
     "supertest": "^7.1.4",

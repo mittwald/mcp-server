@@ -44,6 +44,10 @@ lerna-debug.log*
 coverage/
 .nyc_output/
 
+# Generated evaluation outputs
+evals/coverage/
+evals/reports/
+
 # Temporary files
 *.tmp
 *.temp
