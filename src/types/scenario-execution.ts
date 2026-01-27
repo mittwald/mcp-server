@@ -7,6 +7,10 @@
 
 /**
  * Records the outcome of running a scenario
+ *
+ * NOTE: Manual additions for multi-target testing (Feature 018):
+ * - target: Which MCP server was tested (local/flyio/mittwald)
+ * - outcome_validation: Outcome validation result for mittwald.de target
  */
 export interface ScenarioExecutionResult {
   /**
@@ -21,6 +25,10 @@ export interface ScenarioExecutionResult {
    * ISO 8601 timestamp of execution start
    */
   executed_at: string;
+  /**
+   * Test target that was used (multi-target testing support)
+   */
+  target?: "local" | "flyio" | "mittwald";
   /**
    * Overall outcome of the scenario execution
    */
@@ -87,5 +95,30 @@ export interface ScenarioExecutionResult {
    * Path to full execution log file
    */
   log_file_path?: string;
+  /**
+   * Outcome validation result (for mittwald.de target only)
+   * Contains resource verification results when log access is not available
+   */
+  outcome_validation?: {
+    /**
+     * Whether all validation checks passed
+     */
+    all_passed: boolean;
+    /**
+     * Individual check results
+     */
+    checks: {
+      [k: string]: boolean;
+    };
+    /**
+     * Validation errors
+     */
+    errors: string[];
+    /**
+     * Expected tools (from scenario definition)
+     */
+    expected_tools?: string[];
+    [k: string]: unknown;
+  };
   [k: string]: unknown;
 }
