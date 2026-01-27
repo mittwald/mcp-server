@@ -23,10 +23,10 @@
 **Estimated Size**: ~350 lines
 
 ### Included Subtasks
-- [ ] T001 Install Pino dependencies and create Winston-to-Pino migration plan
-- [ ] T002 Create structured logger with Pino config and sanitization utility
-- [ ] T003 Add tool call instrumentation to MCP handlers
-- [ ] T004 Validate logging with Feature 014 regression test
+- [x] T001 Install Pino dependencies and create Winston-to-Pino migration plan
+- [x] T002 Create structured logger with Pino config and sanitization utility
+- [x] T003 Add tool call instrumentation to MCP handlers
+- [x] T004 Validate logging with Feature 014 regression test
 
 ### Implementation Notes
 1. Install `pino`, `pino-pretty`, `fast-redact` packages
