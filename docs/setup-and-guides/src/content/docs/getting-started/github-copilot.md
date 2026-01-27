@@ -252,6 +252,15 @@ List open support conversations for my account
 
 ---
 
+## Official Documentation
+
+This guide is based on official GitHub Copilot capabilities:
+- [Setting up GitHub MCP Server](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp/set-up-the-github-mcp-server) - MCP setup for GitHub Copilot
+- [Enhanced MCP OAuth Support](https://github.blog/changelog/2025-11-18-enhanced-mcp-oauth-support-for-github-copilot-in-jetbrains-eclipse-and-xcode/) - OAuth 2.1 with PKCE (GA Sept 2025)
+- [Extending Copilot Chat with MCP](https://docs.github.com/copilot/customizing-copilot/using-model-context-protocol/extending-copilot-chat-with-mcp) - MCP integration guide
+
+---
+
 ## Still Need Help?
 
 - Check [GitHub Copilot documentation](https://docs.github.com/en/copilot)

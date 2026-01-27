@@ -160,6 +160,79 @@ Cursor should show your Mittwald user details:
 
 ---
 
+## Alternative: API Token Authentication
+
+Use this option for headless environments, CI/CD, or when you prefer direct token management.
+
+### Step 1: Get Your Mittwald API Token
+
+1. Log in to [mStudio](https://studio.mittwald.de)
+2. Go to **User Settings → API Tokens**
+3. Click **Create Token**
+4. Give it a descriptive name (e.g., "Cursor IDE - My Machine")
+5. Select required scopes (or use all scopes for full access)
+6. Click **Create**
+7. **Copy and save the token immediately** (you won't see it again)
+
+### Step 2: Configure Cursor with API Token
+
+Update your Cursor MCP configuration to include the token in headers:
+
+```json
+{
+  "servers": {
+    "mittwald": {
+      "url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_MITTWALD_API_TOKEN"
+      }
+    }
+  }
+}
+```
+
+**Replace `YOUR_MITTWALD_API_TOKEN`** with your actual token from Step 1.
+
+**Security Note**:
+- Do NOT commit this file to version control with the token in it
+- Consider using environment variables instead:
+  ```json
+  {
+    "servers": {
+      "mittwald": {
+        "url": "https://mittwald-mcp-fly2.fly.dev/mcp",
+        "headers": {
+          "Authorization": "Bearer ${MITTWALD_API_TOKEN}"
+        }
+      }
+    }
+  }
+  ```
+- Set `MITTWALD_API_TOKEN` in your shell: `export MITTWALD_API_TOKEN="your-token-here"`
+
+### Step 3: Verify Connection
+
+Same as OAuth: ask Cursor to run a Mittwald MCP tool.
+
+---
+
+## API Token vs OAuth: Which to Use?
+
+| Feature | OAuth | API Token |
+|---------|-------|-----------|
+| Browser required | Yes | No |
+| Auto token refresh | Yes | No (manual rotation) |
+| Headless/CI support | Limited | Full |
+| Security | Highest (short-lived) | Good (long-lived) |
+| Setup complexity | Medium | Low |
+| Revocation | Via mStudio | Via mStudio |
+
+**Recommendation**: Use OAuth for local development, API token for CI/CD and servers.
+
+**Learn more about Cursor's MCP support**: [Cursor MCP Documentation](https://cursor.com/docs/context/mcp)
+
+---
+
 ## Common Tasks with Mittwald MCP
 
 Once authenticated, you can use Mittwald MCP for various tasks:
@@ -297,6 +370,22 @@ Get the status of server [server-id]
 
 ---
 
+### Error: "Invalid API Token"
+
+**Symptom**: Requests fail with 401 Unauthorized when using API token authentication
+
+**Cause**: API token is invalid, expired, or has been revoked
+
+**Fix**:
+1. Log in to [mStudio](https://studio.mittwald.de)
+2. Go to **User Settings → API Tokens**
+3. Check if the token still exists and is active
+4. Create a new token if needed
+5. Update your Cursor configuration with the new token
+6. Restart Cursor
+
+---
+
 ## FAQ
 
 ### Q: Is my password transmitted to Mittwald MCP?
@@ -334,6 +423,15 @@ Access is immediately revoked.
 - **[What is MCP?](/explainers/what-is-mcp/)**: Learn foundational concepts
 - **[Case Studies](/case-studies/)**: See real-world examples using Mittwald MCP
 - **[Other Tools](/getting-started/)**: Set up GitHub Copilot, Claude Code, or Codex CLI
+
+---
+
+## Official Documentation
+
+This guide is based on official Cursor capabilities:
+- [Cursor MCP Documentation](https://cursor.com/docs/context/mcp) - MCP integration and OAuth support
+- [Cursor OAuth Issues](https://github.com/cursor/cursor/issues/3734) - Community discussions on OAuth implementation
+- **Bearer token authentication** is supported via the `headers` configuration field
 
 ---
 

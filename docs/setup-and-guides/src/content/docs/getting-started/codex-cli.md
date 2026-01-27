@@ -221,6 +221,103 @@ For all available tools, see the [complete reference](/reference/).
 
 ---
 
+## Alternative: Bearer Token Authentication
+
+Use this option for headless environments, CI/CD pipelines, or when you prefer direct token management.
+
+### Step 1: Get Your Mittwald API Token
+
+1. Log in to [mStudio](https://studio.mittwald.de)
+2. Go to **User Settings → API Tokens**
+3. Click **Create Token**
+4. Give it a descriptive name (e.g., "Codex CLI - Production Server")
+5. Select required scopes (or use all scopes for full access)
+6. Click **Create**
+7. **Copy and save the token immediately** (you won't see it again)
+
+### Step 2: Store Token Securely
+
+**Option A: Environment Variable (Recommended)**
+
+```bash
+export MITTWALD_API_TOKEN="your-token-here"
+```
+
+Add to `~/.bashrc` or `~/.zshrc` for persistence.
+
+**Option B: Codex Config File**
+
+Store in `~/.codex/secrets.env`:
+```
+MITTWALD_API_TOKEN=your-token-here
+```
+
+### Step 3: Configure Codex CLI with Bearer Token
+
+```bash
+codex mcp add mittwald \
+  --url https://mittwald-mcp-fly2.fly.dev/mcp \
+  --bearer-token-env MITTWALD_API_TOKEN
+```
+
+**What this does**:
+- Codex reads the token from `$MITTWALD_API_TOKEN` environment variable
+- Sends it as `Authorization: Bearer <token>` on every MCP request
+- No OAuth flow, no browser required
+
+### Step 4: Verify Connection
+
+```bash
+codex mcp call mittwald.user.get
+```
+
+Expected output:
+```json
+{
+  "id": "user-abc123",
+  "email": "your-email@mittwald.de",
+  "name": "Your Name"
+}
+```
+
+✅ **Success!** You're authenticated with a bearer token.
+
+---
+
+## Bearer Token vs OAuth: Which to Use?
+
+| Feature | OAuth | Bearer Token |
+|---------|-------|--------------|
+| Browser required | Yes | No |
+| Auto token refresh | Yes | No (manual rotation) |
+| Headless/CI support | Limited | Full |
+| Security | Highest | Good |
+| Setup | Medium | Simple |
+
+**Use OAuth if**: Interactive development, local machine
+**Use Bearer Token if**: CI/CD, automated scripts, headless servers
+
+**Learn more about Codex CLI's MCP support**: [OpenAI Codex MCP Documentation](https://developers.openai.com/codex/mcp/)
+
+---
+
+## Security Best Practices
+
+**For API Tokens**:
+1. ✅ Store in environment variables (not code)
+2. ✅ Rotate regularly (every 90 days recommended)
+3. ✅ Use minimal scopes (principle of least privilege)
+4. ✅ Revoke immediately if compromised
+5. ❌ Never commit tokens to Git
+6. ❌ Never share tokens in chat/email
+
+**For OAuth**:
+1. ✅ Use on trusted local machines only
+2. ✅ Revoke from mStudio when no longer needed
+3. ✅ Review approved scopes periodically
+
+---
+
 ## Understanding the OAuth Flow
 
 ### What's Actually Happening
@@ -454,6 +551,34 @@ Token has expired.
 
 ---
 
+### Error: "Invalid Bearer Token"
+
+**Symptom**:
+```
+Error: 401 Unauthorized
+Invalid or expired bearer token
+```
+
+**Cause**: API token (bearer token) is invalid, expired, or revoked
+
+**Fix**:
+1. Verify the token is correctly set in `$MITTWALD_API_TOKEN`
+   ```bash
+   echo $MITTWALD_API_TOKEN
+   ```
+2. If missing or incorrect, create a new token at [mStudio](https://studio.mittwald.de) (User Settings → API Tokens)
+3. Update the environment variable:
+   ```bash
+   export MITTWALD_API_TOKEN="your-new-token-here"
+   ```
+4. Reconnect Codex CLI:
+   ```bash
+   codex mcp remove mittwald
+   codex mcp add mittwald --url https://mittwald-mcp-fly2.fly.dev/mcp --bearer-token-env MITTWALD_API_TOKEN
+   ```
+
+---
+
 ## FAQ
 
 ### Q: Why does the browser open?
@@ -499,6 +624,15 @@ This immediately revokes Codex CLI's access to Mittwald.
 - **[What is MCP?](/explainers/what-is-mcp/)**: Learn foundational concepts
 - **[Case Studies](/case-studies/)**: See real-world examples using Mittwald MCP
 - **[Other Tools](/getting-started/)**: Set up GitHub Copilot, Claude Code, or Cursor
+
+---
+
+## Official Documentation
+
+This guide is based on official Codex CLI capabilities:
+- [OpenAI Codex MCP Documentation](https://developers.openai.com/codex/mcp/) - OAuth 2.1 with DCR and PKCE support
+- [Codex CLI Reference](https://developers.openai.com/codex/cli/reference/) - Command-line reference
+- **Bearer token authentication** is supported via `bearer_token_env_var` and static HTTP headers
 
 ---
 

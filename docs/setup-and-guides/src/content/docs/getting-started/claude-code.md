@@ -279,6 +279,15 @@ Create a backup for project [project-id]
 
 ---
 
+## Official Documentation
+
+This guide is based on official Claude Code capabilities:
+- [Claude Code IAM Documentation](https://code.claude.com/docs/en/iam) - OAuth 2.1 with DCR support
+- [Claude Code MCP Setup](https://code.claude.com/docs/en/mcp) - MCP server configuration
+- [OAuth for MCP Server Guide](https://www.buildwithmatija.com/blog/oauth-mcp-server-claude) - Community implementation guide
+
+---
+
 ## Still Need Help?
 
 - Check [Claude Code Documentation](https://code.claude.com/docs/en/mcp) for CLI-specific help

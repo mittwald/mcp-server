@@ -82,6 +82,76 @@ Mittwald MCP works with 4 popular agentic coding tools. Choose the one you use:
 
 ---
 
+## Two Ways to Authenticate
+
+Mittwald MCP supports two authentication methods. Choose based on your use case:
+
+### Option 1: OAuth 2.1 (Recommended)
+
+**Best for**: Interactive development, local machines, security-conscious workflows
+
+**How it works**:
+1. Your tool redirects you to Mittwald OAuth server
+2. You log in via browser with your mStudio credentials
+3. You approve the requested scopes
+4. Your tool receives an access token automatically
+5. Tokens refresh automatically (no manual management)
+
+**Pros**:
+- ✅ Most secure (short-lived tokens, automatic rotation)
+- ✅ No manual token management
+- ✅ Revocable from mStudio
+- ✅ Scoped access (you control what the tool can do)
+
+**Cons**:
+- ❌ Requires browser (not suitable for headless servers)
+- ❌ More complex initial setup
+
+**Supported by**: All 4 tools (Claude Code, GitHub Copilot, Cursor, Codex CLI)
+
+---
+
+### Option 2: API Token (Direct Authentication)
+
+**Best for**: CI/CD pipelines, headless servers, automated scripts, simple testing
+
+**How it works**:
+1. You create an API token in mStudio (User Settings → API Tokens)
+2. You configure your tool to send the token as a Bearer header
+3. The MCP server validates the token directly with Mittwald API
+4. No OAuth flow, no browser required
+
+**Pros**:
+- ✅ Works in headless environments (SSH, Docker, CI)
+- ✅ Simpler setup (no browser required)
+- ✅ Good for testing and automation
+
+**Cons**:
+- ❌ Manual token management (no auto-refresh)
+- ❌ Token is long-lived (security risk if leaked)
+- ❌ Must rotate manually
+
+**Supported by**: All 4 tools (different configuration methods per tool)
+
+---
+
+### Which Should I Choose?
+
+**Use OAuth if**:
+- You're developing locally on your machine
+- You want the most secure authentication
+- You don't mind using a browser for initial setup
+
+**Use API Token if**:
+- You're running in CI/CD (GitHub Actions, GitLab CI, etc.)
+- You're working on a headless server via SSH
+- You're automating tasks with scripts
+- You need quick setup for testing
+
+**You can use both**: Configure OAuth for local development and API tokens for CI/CD.
+
+---
+
 ## What is OAuth and Why Do I Need It?
 
 **OAuth 2.1** is a secure authorization protocol that allows Mittwald MCP to access your Mittwald resources on your behalf **without sharing your password**.
@@ -256,6 +326,30 @@ A: Yes, but the token storage is per-computer. On a new computer, you'll go thro
 **Q: What if I want to use multiple Mittwald accounts?**
 
 A: Register separate OAuth clients for each account (give them different names). Manage separate configurations for each client in your tool.
+
+**Q: Can I use an API token instead of OAuth?**
+
+A: Yes! All 4 tools support API token authentication as an alternative to OAuth. API tokens are best for headless environments (CI/CD, SSH servers) where browser-based OAuth isn't practical. See your tool's setup guide for instructions.
+
+**Q: Where do I get an API token?**
+
+A: Log in to [mStudio](https://studio.mittwald.de), go to **User Settings → API Tokens**, create a new token with the scopes you need, and copy it immediately (you won't see it again).
+
+---
+
+## Terminology Glossary
+
+To help avoid confusion, here's how we use authentication-related terms in this documentation:
+
+| Term | Definition |
+|------|------------|
+| **API token** | A token you create in [mStudio](https://studio.mittwald.de) (User Settings → API Tokens) for direct authentication. Also called "Personal Access Token" in some contexts. |
+| **Bearer token** | The HTTP header format for sending authentication: `Authorization: Bearer <TOKEN>`. Can contain either an API token (from mStudio) or an OAuth access token. |
+| **OAuth access token** | Short-lived token (1 hour) issued by the OAuth server after successful authentication. Automatically refreshed. |
+| **OAuth refresh token** | Long-lived token used to obtain new access tokens without re-authentication. |
+| **OAuth flow** | The browser-based authentication process where you log in and approve scopes. |
+
+**Learn more**: [Mittwald API Authentication](https://developer.mittwald.de/docs/v2/api/intro/) - Official documentation on API tokens and authentication methods.
 
 ---
 
