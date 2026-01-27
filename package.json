@@ -80,12 +80,14 @@
     "eval:best-of": "tsx evals/scripts/aggregate-best-of.ts",
     "scenarios:validate": "tsx evals/scripts/validate-scenarios.ts",
     "scenario:run": "tsx evals/scripts/scenario-runner.ts",
+    "scenarios:retry-failures": "tsx evals/scripts/retry-failures.ts",
     "coverage:query": "tsx evals/scripts/coverage-query.ts",
     "failures:cluster": "tsx evals/scripts/cluster-failures.ts",
-    "failures:report": "tsx evals/scripts/generate-failure-report.ts"
-    "coverage:query": "tsx evals/scripts/coverage-query.ts",
-    "failures:cluster": "tsx evals/scripts/cluster-failures.ts",
-    "failures:report": "tsx evals/scripts/generate-failure-report.ts"
+    "failures:report": "tsx evals/scripts/generate-failure-report.ts",
+    "report:coverage-json": "tsx evals/scripts/generate-coverage-report.ts",
+    "report:coverage-md": "tsx evals/scripts/generate-markdown-report.ts",
+    "report:coverage": "npm run report:coverage-json && npm run report:coverage-md",
+    "analysis:gaps": "tsx evals/scripts/gap-analysis.ts"
   },
   "repository": {
     "type": "git",
