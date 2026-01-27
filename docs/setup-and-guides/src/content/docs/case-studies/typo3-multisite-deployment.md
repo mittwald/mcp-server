@@ -60,6 +60,14 @@ Add a dedicated SSH user for CI/CD and ensure the team has the right access.
 
 Visit each domain and confirm that the site identifier, base URL, and database connection are correct. Repeat steps 1–4 for each additional language site.
 
+## What You'll Achieve
+
+By the end of this tutorial, you'll have:
+- Complete TYPO3 multi-site deployment with language-specific instances
+- Separate databases configured for each site with proper isolation
+- Virtual hosts mapped to correct document roots for all domains
+- SSH access provisioned for deployment automation and site management
+
 ## Tools Reference
 
 | Tool | Purpose |

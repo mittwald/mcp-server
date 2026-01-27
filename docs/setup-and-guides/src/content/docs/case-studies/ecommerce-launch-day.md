@@ -30,7 +30,7 @@ You need confidence that backups are recent, databases are healthy, and the stor
 
 Confirm that automated backups are running and the most recent snapshot is recent enough for launch.
 
-**Tool**: [`backup/schedule/get`](/reference/tools/backup/backup-schedule-get/)
+**Tool**: [`backup/schedule/list`](/reference/tools/backup/backup-schedule-list/)
 
 ### 2. Create a pre-launch backup
 
@@ -48,7 +48,7 @@ Review MySQL configuration, connection limits, and storage details to ensure the
 
 Confirm certificates are active and match the storefront domains before you open the doors to customers.
 
-**Tool**: [`certificate/get`](/reference/tools/certificate/certificate-get/)
+**Tool**: [`certificate/list`](/reference/tools/certificate/certificate-list/)
 
 ### 5. Validate app configuration
 
@@ -64,20 +64,22 @@ Check that DNS records and TTLs are aligned with your launch plan. Validate any 
 
 Summarize backup status, database health, SSL validity, and app readiness so you can communicate a clear go/no-go decision.
 
-## Outcomes
+## What You'll Achieve
 
-- **Time Saved**: Replace hours of manual checks with a short, repeatable validation run.
-- **Risk Reduced**: Fresh backups, confirmed database health, and SSL coverage reduce launch-day surprises.
-- **Next Steps**: Schedule post-launch backups and monitor performance during the first traffic spike.
+By the end of this tutorial, you'll have:
+- Verified automated backups are running and created a fresh pre-launch backup
+- Confirmed database performance baselines are ready for peak traffic
+- Validated SSL certificate coverage for all storefront domains
+- Documented a clear go/no-go decision with evidence-based launch readiness
 
 ## Tools Reference
 
 | Tool | Purpose | Reference |
 | --- | --- | --- |
-| `backup/schedule/get` | Confirm automated backups are running | [backup-schedule-get](/reference/tools/backup/backup-schedule-get/) |
+| `backup/schedule/list` | Confirm automated backups are running | [backup-schedule-list](/reference/tools/backup/backup-schedule-list/) |
 | `backup/create` | Create the pre-launch backup | [backup-create](/reference/tools/backup/backup-create/) |
 | `database/mysql/get` | Review database configuration and limits | [database-mysql-get](/reference/tools/database/database-mysql-get/) |
-| `certificate/get` | Validate SSL certificate details | [certificate-get](/reference/tools/certificate/certificate-get/) |
+| `certificate/list` | Validate SSL certificate details | [certificate-list](/reference/tools/certificate/certificate-list/) |
 | `app/get` | Confirm application configuration | [app-get](/reference/tools/app/app-get/) |
 
 ## Related Tutorials

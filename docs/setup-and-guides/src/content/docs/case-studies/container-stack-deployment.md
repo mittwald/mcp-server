@@ -85,6 +85,14 @@ Summarize stack health, volumes, and registry usage to close the rollout.
 - Tools: [`stack/ps`](/reference/tools/stack/stack-ps/), [`volume/list`](/reference/tools/volume/volume-list/), [`registry/list`](/reference/tools/registry/registry-list/)
 - Outcome: Deployment summary with readiness confirmation
 
+## What You'll Achieve
+
+By the end of this tutorial, you'll have:
+- A fully deployed Docker Compose stack running on Mittwald infrastructure
+- Container registry configured for secure image storage
+- Persistent volumes mounted and verified for data persistence
+- Complete deployment documentation with health checks and monitoring in place
+
 ## Tools Reference
 
 | Tool | Purpose |

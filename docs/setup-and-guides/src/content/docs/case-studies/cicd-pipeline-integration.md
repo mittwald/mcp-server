@@ -88,6 +88,14 @@ Capture a compliance-friendly summary of automation and context.
 - Tools: [`cronjob/list`](/reference/tools/cronjob/cronjob-list/), [`context/get/session`](/reference/tools/context/context-get-session/), [`cronjob/execution/list`](/reference/tools/cronjob/cronjob-execution-list/)
 - Outcome: Consolidated overview of jobs, context, and recent activity
 
+## What You'll Achieve
+
+By the end of this tutorial, you'll have:
+- Automated container deployments integrated with your CI/CD pipeline
+- Scheduled cron jobs for health checks and monitoring
+- A fully documented deployment workflow with execution history
+- Production-ready automation that reduces manual intervention and deployment errors
+
 ## Tools Reference
 
 | Tool | Purpose |
