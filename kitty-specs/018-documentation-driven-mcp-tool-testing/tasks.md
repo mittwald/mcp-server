@@ -159,9 +159,9 @@
 **Estimated Size**: ~320 lines
 
 ### Included Subtasks
-- [ ] T009 Create tool inventory loader (read from Feature 014 inventory)
-- [ ] T010 Implement coverage tracker (update ToolValidationRecord)
-- [ ] T011 Build coverage query CLI for validation status
+- [x] T009 Create tool inventory loader (read from Feature 014 inventory)
+- [x] T010 Implement coverage tracker (update ToolValidationRecord)
+- [x] T011 Build coverage query CLI for validation status
 
 ### Implementation Notes
 
