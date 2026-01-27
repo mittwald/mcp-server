@@ -317,20 +317,24 @@ function getDefaultResultPath(
 
 /**
  * CLI entrypoint.
- * Usage: tsx evals/scripts/scenario-runner.ts <scenario-id> [--keep-resources]
+ * Usage: tsx evals/scripts/scenario-runner.ts <scenario-id> [--keep-resources] [--target=local|flyio|mittwald]
  */
 if (import.meta.url === `file://${process.argv[1]}`) {
   const scenarioId = process.argv[2];
   const keepResources = process.argv.includes('--keep-resources');
 
+  // Parse --target flag
+  const targetFlag = process.argv.find(arg => arg.startsWith('--target='));
+  const target = targetFlag ? targetFlag.split('=')[1] : undefined;
+
   if (!scenarioId) {
     console.error(
-      'Usage: tsx evals/scripts/scenario-runner.ts <scenario-id> [--keep-resources]'
+      'Usage: tsx evals/scripts/scenario-runner.ts <scenario-id> [--keep-resources] [--target=local|flyio|mittwald]'
     );
     process.exit(1);
   }
 
-  runScenario({ scenarioId, keepResources })
+  runScenario({ scenarioId, keepResources, target })
     .then((result) => {
       process.exit(result.status === 'success' ? 0 : 1);
     })
