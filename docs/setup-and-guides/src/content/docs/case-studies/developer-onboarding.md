@@ -25,21 +25,21 @@ Onboarding often involves manual steps across multiple screens, which leads to d
 
 ## Step-by-Step Guide
 
-### 1. Add the developer to the organization
+### 1. Invite the developer to the organization
 
-Use [`org/membership/create`](/reference/tools/org/org-membership-create/) to add the new team member to your agency organization.
+Use [`org/invite`](/reference/tools/org/org-invite/) to send an invitation to the new team member to join your agency organization.
 
-### 2. Create an SSH key entry
+### 2. Create SSH user access
 
-Use [`ssh/key/create`](/reference/tools/ssh/ssh-key-create/) to register the developer's SSH public key.
+Use [`ssh/user/create`](/reference/tools/ssh/ssh-user-create/) to create SSH access for the developer with their public key.
 
 ### 3. Set up SFTP access
 
 Use [`sftp/user/create`](/reference/tools/sftp/sftp-user-create/) to create an SFTP user with the correct home directory.
 
-### 4. Grant project-specific permissions
+### 4. Verify project memberships
 
-Use [`project/membership/create`](/reference/tools/project/project-membership-create/) to assign the developer to the projects they need.
+After inviting the developer to projects (via Mittwald portal), use [`project/membership/list`](/reference/tools/project/project-membership-list/) to confirm they have the correct project access.
 
 ### 5. Verify access
 
@@ -55,10 +55,10 @@ Ask the developer to confirm SSH and SFTP access and ensure project permissions 
 
 | Tool | Purpose |
 | --- | --- |
-| [`org/membership/create`](/reference/tools/org/org-membership-create/) | Add the developer to the organization |
-| [`ssh/key/create`](/reference/tools/ssh/ssh-key-create/) | Register SSH public keys |
+| [`org/invite`](/reference/tools/org/org-invite/) | Invite the developer to the organization |
+| [`ssh/user/create`](/reference/tools/ssh/ssh-user-create/) | Create SSH access with public key |
 | [`sftp/user/create`](/reference/tools/sftp/sftp-user-create/) | Create SFTP credentials |
-| [`project/membership/create`](/reference/tools/project/project-membership-create/) | Grant project access |
+| [`project/membership/list`](/reference/tools/project/project-membership-list/) | Verify project access after invitation |
 
 ## Related Tutorials
 

@@ -60,11 +60,13 @@ Use the MySQL configuration details to identify slow query logging thresholds an
 
 Summarize findings, document the biggest risks (connection limits, outdated MySQL versions, missing Redis), and define the next optimization steps.
 
-## Outcomes
+## What You'll Achieve
 
-- **Time Saved**: A single MCP audit replaces fragmented checks across phpMyAdmin and hosting panels.
-- **Risk Reduced**: Early visibility into connection limits and cache readiness prevents performance surprises.
-- **Next Steps**: Schedule any MySQL upgrades, tune connection limits, and wire Redis into the application.
+By the end of this tutorial, you'll have:
+- Complete database performance audit with MySQL version and connection limit analysis
+- Redis cache readiness assessment for high-traffic optimization
+- Documented performance risks and optimization recommendations
+- Action plan for database tuning before traffic spikes
 
 ## Tools Reference
 

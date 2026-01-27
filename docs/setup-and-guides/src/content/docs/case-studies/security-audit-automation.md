@@ -59,6 +59,14 @@ Confirm there are no unexpected sessions and document current activity.
 
 Summarize the findings with risk flags (expired certificates, weak keys, inactive sessions) and recommended actions for the audit trail.
 
+## What You'll Achieve
+
+By the end of this tutorial, you'll have:
+- Complete security audit covering API tokens, SSH keys, certificates, and user sessions
+- Automated compliance reporting workflow for recurring audits
+- Identified security risks with remediation recommendations
+- Evidence-based audit trail for compliance and security reviews
+
 ## Tools Reference
 
 | Tool | Purpose |
