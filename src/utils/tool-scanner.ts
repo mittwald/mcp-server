@@ -58,8 +58,10 @@ export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
   'mittwald_extension_uninstall': 'not migrated to library yet',
   'mittwald_container_recreate': 'not migrated to library yet',
   'mittwald_container_update': 'not migrated to library yet',
-  'mittwald_sftp_user_create': 'not migrated to library yet (CLI-only parameter coverage)',
-  'mittwald_sftp_user_update': 'not migrated to library yet (CLI-only parameter coverage)',
+  'mittwald_sftp_user_create': 'SFTP feature incomplete - missing library support for expires/publicKey parameters',
+  'mittwald_sftp_user_update': 'SFTP feature incomplete - missing library support for advanced parameters',
+  'mittwald_sftp_user_delete': 'SFTP feature incomplete - create/update not supported due to CLI-only parameter coverage',
+  'mittwald_sftp_user_list': 'SFTP feature incomplete - create/update not supported due to CLI-only parameter coverage',
   'mittwald_volume_delete': 'not migrated to library yet (CLI-based safety checks)',
 
   // Interactive/streaming/file-transfer operations (incompatible with stateless MCP requests).
