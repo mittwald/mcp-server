@@ -74,7 +74,7 @@ Features:
   - Base URL `/mcp-docs`: 5.2s → 195 pages
 
 ### 4. Comprehensive QA Checklist
-**File**: `QA-CHECKLIST.md`
+**File**: `docs/archive/2026-01-27-feature-017-qa/QA-CHECKLIST.md`
 
 A complete guide covering:
 - **Phase 1: Automated Testing**
@@ -197,7 +197,7 @@ Each script gracefully handles missing sites and can be integrated into CI/CD:
 - ✅ `docs/qa-reports/link-validation-report.md` - Link validation summary
 - ✅ `docs/qa-reports/build-verification-report.json` - Build results
 - ✅ `docs/qa-reports/build-verification-report.md` - Build summary
-- ✅ `QA-CHECKLIST.md` - Comprehensive QA guide
+- ✅ `docs/archive/2026-01-27-feature-017-qa/QA-CHECKLIST.md` - Comprehensive QA guide
 
 ### Modified Files
 - ✅ `docs/reference/src/content/docs/index.mdx` - Added alt text to hero image
@@ -205,7 +205,7 @@ Each script gracefully handles missing sites and can be integrated into CI/CD:
 ## Next Steps (WP15)
 
 The QA testing infrastructure is ready for WP15 (User Testing & Final Review):
-1. **Manual Testing Phase**: Use QA-CHECKLIST.md for systematic manual tests
+1. **Manual Testing Phase**: Use `docs/archive/2026-01-27-feature-017-qa/QA-CHECKLIST.md` for systematic manual tests
 2. **Cross-Site Testing**: When both sites available, test cross-site navigation
 3. **Deployment Testing**: Verify staging and production deployments
 4. **Final Sign-Off**: Complete all checklists and approve for publication
@@ -227,7 +227,7 @@ The QA testing infrastructure is ready for WP15 (User Testing & Final Review):
 ## References
 
 - **WP14 Specification**: `kitty-specs/016-mittwald-mcp-documentation/tasks/WP14-qa-accessibility-links-builds.md`
-- **QA Checklist**: `QA-CHECKLIST.md`
+- **QA Checklist**: `docs/archive/2026-01-27-feature-017-qa/QA-CHECKLIST.md`
 - **Accessibility Reports**: `docs/qa-reports/accessibility-report.md`
 - **Link Reports**: `docs/qa-reports/link-validation-report.md`
 - **Build Reports**: `docs/qa-reports/build-verification-report.md`
