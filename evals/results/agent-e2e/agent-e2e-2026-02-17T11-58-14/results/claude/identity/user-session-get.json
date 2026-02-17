@@ -1,0 +1,23 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "user-session-get",
+  "domain": "identity",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/identity/user-session-get.json",
+  "toolName": "mcp__mittwald__mittwald_user_session_get",
+  "displayName": "user/session/get",
+  "startedAt": "2026-02-17T12:30:37.148Z",
+  "finishedAt": "2026-02-17T12:31:03.984Z",
+  "durationMs": 26836,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_user_session_list",
+    "mcp__mittwald__mittwald_user_session_get"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-session-get.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-session-get.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-session-get.stderr.txt"
+}

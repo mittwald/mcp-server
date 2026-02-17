@@ -1,0 +1,50 @@
+{
+  "id": "database-performance",
+  "name": "Database Performance Optimization",
+  "source": "docs/setup-and-guides/src/content/docs/case-studies/database-performance.md",
+  "description": "Audit MySQL and Redis database configurations for performance optimization",
+  "fixtures": {
+    "project": {
+      "description": "WooCommerce Performance Test {{RUN_ID}}"
+    },
+    "databases": {
+      "mysql": [
+        {
+          "description": "Production MySQL Database {{RUN_ID}}",
+          "version": "8.0",
+          "characterSet": "utf8mb4",
+          "collation": "utf8mb4_unicode_ci"
+        }
+      ],
+      "redis": [
+        {
+          "description": "Application Cache {{RUN_ID}}",
+          "version": "7",
+          "maxMemory": "512Mi",
+          "maxMemoryPolicy": "allkeys-lru"
+        }
+      ]
+    }
+  },
+  "prompts": [
+    "List all MySQL databases in project {{PROJECT_ID}} to identify the production database",
+    "Show me the detailed configuration for MySQL database {{MYSQL_0_ID}} including version, character set, and connection limits",
+    "Check Redis database {{REDIS_0_ID}} configuration and verify cache policy settings"
+  ],
+  "success_criteria": {
+    "resources_created": {
+      "project": 1,
+      "mysql_database": 1,
+      "redis_database": 1
+    },
+    "resources_configured": {
+      "audit_completed": true
+    }
+  },
+  "expected_tools": [
+    "mittwald_database_mysql_list",
+    "mittwald_database_mysql_get",
+    "mittwald_database_redis_get"
+  ],
+  "tags": ["case-study", "read-only", "audit", "databases", "low-complexity", "fixtures"]
+}

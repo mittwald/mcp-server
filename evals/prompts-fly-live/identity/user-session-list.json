@@ -1,0 +1,31 @@
+{
+  "input": {
+    "prompt": "# Eval: user/session/list\n\n## Goal\nTest the `mcp__mittwald__mittwald_user_session_list` MCP tool by list all active user sessions.\n\n## Tool Information\n- **MCP Tool Name**: `mcp__mittwald__mittwald_user_session_list`\n- **Display Name**: `user/session/list`\n- **Domain**: identity\n- **Dependency Tier**: 0\n- **Description**: List all active user sessions\n\n## Prerequisites\nThis is a Tier 0 tool with no prerequisites. You can execute it immediately.\n\n## Task\nExecute the `mcp__mittwald__mittwald_user_session_list` tool and verify the result.\n\n### Steps:\n1. Execute `mcp__mittwald__mittwald_user_session_list` with appropriate parameters\n2. Verify the operation succeeded by checking the response\n3. Record the outcome in your self-assessment\n\n### Example Parameters:\n- No required parameters for listing\n- Optional: Scope parameters like `projectId` to filter results\n\n## Success Indicators\nThe eval is successful if:\n- Returns an array or list response\n- Operation completes without errors\n- Response matches schema\n\n\n## Self-Assessment Instructions\n\nAfter completing the task (whether successful or not), you MUST provide a structured self-assessment. Output your assessment in the following exact format, enclosed in the marker comments:\n\n<!-- SELF_ASSESSMENT_START -->\n```json\n{\n  \"success\": true,\n  \"confidence\": \"high\",\n  \"tool_executed\": \"mcp__mittwald__mittwald_user_session_list\",\n  \"timestamp\": \"2026-02-17T10:29:24.833Z\",\n  \"problems_encountered\": [],\n  \"resources_created\": [],\n  \"resources_verified\": [],\n  \"tool_response_summary\": \"Brief summary of what the tool returned\",\n  \"execution_notes\": \"Any observations about the execution\"\n}\n```\n<!-- SELF_ASSESSMENT_END -->\n\n### Self-Assessment Field Guide:\n- **success**: `true` if the tool achieved its goal, `false` otherwise\n- **confidence**: `high` (clear outcome), `medium` (some uncertainty), `low` (unable to determine)\n- **tool_executed**: The exact MCP tool name you invoked\n- **timestamp**: Current ISO 8601 timestamp\n- **problems_encountered**: Array of problem objects with `type` and `description` fields\n  - Valid types: `auth_error`, `resource_not_found`, `validation_error`, `timeout`, `api_error`, `permission_denied`, `quota_exceeded`, `dependency_missing`, `other`\n- **resources_created**: Array of created resources with `type` and `id` fields\n- **resources_verified**: Array of verified resources with `type`, `id`, and `status` fields\n- **tool_response_summary**: Key information from the tool's response\n- **execution_notes**: Any observations or recommendations\n\n**IMPORTANT**: The self-assessment MUST be valid JSON enclosed in the marker comments exactly as shown.\n\n",
+    "tool_name": "mcp__mittwald__mittwald_user_session_list",
+    "display_name": "user/session/list",
+    "context": {
+      "dependencies": [],
+      "setup_instructions": "No setup required - this is a Tier 0 tool with no prerequisites.",
+      "required_resources": []
+    }
+  },
+  "expectedOutput": null,
+  "metadata": {
+    "domain": "identity",
+    "tier": 0,
+    "tool_description": "List all active user sessions",
+    "success_indicators": [
+      "Returns an array or list response",
+      "Operation completes without errors",
+      "Response matches schema"
+    ],
+    "self_assessment_required": true,
+    "eval_version": "1.0.0",
+    "created_at": "2026-02-17T10:29:24.833Z",
+    "tags": [
+      "identity",
+      "tier-0",
+      "read-only"
+    ]
+  }
+}

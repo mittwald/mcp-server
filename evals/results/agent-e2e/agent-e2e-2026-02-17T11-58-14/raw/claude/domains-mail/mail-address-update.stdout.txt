@@ -1,0 +1,63 @@
+
+
+I'll execute this eval step by step: find a test project, create a mail address, then update it.
+Good, all tools are loaded. Let me list projects to find a test project.
+I found the test project `p-mpg5kn` (description: "agent-e2e-2026-02-17T11-58-14-mysql-create-eval"). Let me first check if there are existing mail addresses, and if not, create one so I can update it.
+No existing mail addresses. I need to create one first so I can update it.
+Let me try creating a basic forwarding mail address instead.
+The address needs to be valid for the project's domain. Let me check what domains are available for this project.
+The project only has a `p-mpg5kn.project.space` virtualhost. Let me try creating the mail address using this as the domain, since Mittwald projects have built-in mail capability on their `.project.space` domains, or I may need to just use a simple address format. Let me try with just a local part - the Mittwald API may need just the local part and infer the domain from the project.
+The 400 error might be because the address format is wrong, or because the forward address needs to be a real email. Let me try with a different approach - use the project.space domain and a simple forward.
+The project.space domain likely doesn't support mail addresses. Let me check if the other projects have existing mail addresses I could work with, particularly the older project that may have a proper domain.
+Good - project `p-ptwfms` has 5 existing mail addresses on `mcp.mittwald.de`. I'll use the eval-test address `def1f8c7-78e2-40fc-805f-30cefdf7ac25` (eval-test@mcp.mittwald.de) which appears to be a test address. Let me first get its current state, then update it.
+Current state of `eval-test@mcp.mittwald.de`:
+- `isCatchAll`: false
+- `forwardAddresses`: []
+- `enableSpamProtection`: not set (no mailbox)
+
+Now let me update this mail address. I'll enable catch-all and add a forward address.
+The library mode only supports `catchAll` updates. Let me update just catchAll.
+Update succeeded. Let me verify by getting the mail address again to confirm the change was applied.
+Verified: `isCatchAll` changed from `false` to `true`, and `updatedAt` reflects the current timestamp. Now let me revert it back to keep things clean.
+Reverted successfully. The eval is complete. Here's the summary:
+
+## Eval Results: `mail/address/update`
+
+**Tool executed successfully.** Updated the `catchAll` property on mail address `eval-test@mcp.mittwald.de`:
+1. Read initial state: `isCatchAll: false`
+2. Updated to `catchAll: true` - succeeded
+3. Verified via `mail/address/get`: confirmed `isCatchAll: true` and fresh `updatedAt` timestamp
+4. Reverted to `catchAll: false` to clean up
+
+**Limitation noted:** The library mode only supports `catchAll` updates. Other fields (`forwardTo`, `enableSpamProtection`, `quota`, `password`, `randomPassword`) are not yet implemented and return a clear error message.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_address_update",
+  "timestamp": "2026-02-17T12:25:30.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "Could not create mail address on test project p-mpg5kn (no valid mail domain); used existing eval-test address on p-ptwfms instead"
+    },
+    {
+      "type": "other",
+      "description": "Library mode only supports catchAll updates; forwardTo, enableSpamProtection, quota, password, randomPassword are not yet implemented"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "mail_address",
+      "id": "def1f8c7-78e2-40fc-805f-30cefdf7ac25",
+      "status": "updated_and_reverted"
+    }
+  ],
+  "tool_response_summary": "Successfully updated mail address def1f8c7-78e2-40fc-805f-30cefdf7ac25 catchAll from false to true. Verified via get. Reverted to false.",
+  "execution_notes": "The update tool works for catchAll changes. Other update fields (forwardTo, enableSpamProtection, quota, password) are blocked by library mode limitations. The test project p-mpg5kn had no mail-capable domain so the eval used an existing eval-test address on p-ptwfms."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

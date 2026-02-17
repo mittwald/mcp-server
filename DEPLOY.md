@@ -5,6 +5,12 @@ infrastructure. It covers required services, runtime configuration, and
 verification steps. Use it alongside `.env.example` and the Fly manifests when
 porting to Kubernetes, VM-based setups, or other container platforms.
 
+## Current Fly.io Topology (Verified 2026-02-17)
+
+- `mittwald-mcp-fly2` runs the MCP server from this repository root.
+- `mittwald-oauth-server` runs `packages/oauth-bridge` from this repository.
+- The separate repository at `../mittwald-oauth/mittwald-oauth` is not the source of the currently deployed Fly.io OAuth service.
+
 ## 1. Components & Responsibilities
 
 | Component | Location | Purpose |

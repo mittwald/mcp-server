@@ -1,0 +1,31 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "mail-address-create",
+  "domain": "domains-mail",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/domains-mail/mail-address-create.json",
+  "toolName": "mcp__mittwald__mittwald_mail_address_create",
+  "displayName": "mail/address/create",
+  "startedAt": "2026-02-17T12:19:42.841Z",
+  "finishedAt": "2026-02-17T12:21:51.668Z",
+  "durationMs": 128827,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_mail_address_create",
+    "mcp__mittwald__mittwald_domain_list",
+    "mcp__mittwald__mittwald_domain_dnszone_list",
+    "mcp__mittwald__mittwald_mail_address_list",
+    "mcp__mittwald__mittwald_domain_virtualhost_list",
+    "Task",
+    "Glob",
+    "Bash",
+    "Read"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/domains-mail/mail-address-create.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/domains-mail/mail-address-create.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/domains-mail/mail-address-create.stderr.txt"
+}

@@ -2,6 +2,12 @@
 
 Complete system for running, tracking, and comparing MCP tool evaluations across multiple runs.
 
+## Documentation
+
+- **[Fixture Management Guide](FIXTURE-GUIDE.md)** - Complete guide to the fixture system for scenario-based testing
+- **[Multi-Run Guide](MULTI-RUN-GUIDE.md)** - Guide to multi-run evaluation tracking and comparison
+- **[Agent E2E Playbook](AGENT-E2E-PLAYBOOK.md)** - Full tool coverage from inside Claude/Codex/Opencode with a hard gate
+
 ## Quick Start
 
 ```bash
@@ -26,6 +32,87 @@ npm run eval:run:compare run-20251219-001 run-20251219-002
 # Generate visual HTML comparison
 npm run eval:compare:visual run-20251219-001 run-20251219-002 -- --output html
 ```
+
+## Scenario-Based Testing
+
+The fixture system enables end-to-end testing of MCP tools with automatic resource provisioning and cleanup.
+
+### Run a Scenario
+
+```bash
+# Standard run (provisions, executes, validates, cleans up)
+npx tsx evals/scripts/scenario-runner.ts fixture-test-simple
+
+# Keep resources for debugging
+npx tsx evals/scripts/scenario-runner.ts fixture-test-simple --keep-resources
+
+# Skip cleanup
+npx tsx evals/scripts/scenario-runner.ts fixture-test-simple --skip-cleanup
+```
+
+### Create a Scenario
+
+See [FIXTURE-GUIDE.md](FIXTURE-GUIDE.md) for complete documentation.
+
+Example scenario with fixtures:
+
+```json
+{
+  "id": "my-scenario",
+  "fixtures": {
+    "project": { "description": "Test {{RUN_ID}}" },
+    "databases": {
+      "mysql": [{ "description": "DB {{RUN_ID}}", "version": "8.0" }]
+    }
+  },
+  "prompts": [
+    "List databases in {{PROJECT_ID}}",
+    "Get config for {{MYSQL_0_ID}}"
+  ],
+  "success_criteria": {
+    "resources_created": { "project": 1, "mysql_database": 1 }
+  }
+}
+```
+
+## Agent-Native Tool E2E
+
+Use this path for strict MCP tool coverage from inside coding agents (Claude, Codex, Opencode) against deployed servers.
+
+### Preflight (auth + tool availability)
+
+```bash
+npm run eval:agent:preflight -- --agents=claude,codex,opencode
+```
+
+### Full run with hard 100% gate
+
+```bash
+npm run eval:agent:e2e -- \
+  --agents=claude,codex,opencode \
+  --require-coverage=100 \
+  --coverage-mode=all-agents
+```
+
+### Focused run
+
+```bash
+npm run eval:agent:e2e -- \
+  --agents=claude \
+  --domains=databases,identity \
+  --max-tools=25
+```
+
+### Read latest run report
+
+```bash
+npm run eval:agent:report
+```
+
+Output lives in `evals/results/agent-e2e/<run-id>/`:
+- `results/<agent>/<domain>/*.json` (per-tool verdicts)
+- `raw/<agent>/<domain>/*` (raw CLI output)
+- `summary.json` and `summary.md` (coverage + gate)
 
 ## Available Scripts
 

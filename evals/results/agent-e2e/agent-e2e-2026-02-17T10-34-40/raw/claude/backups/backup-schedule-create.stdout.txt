@@ -1,0 +1,46 @@
+
+
+I'll execute this eval by first discovering the tool schema, then setting up prerequisites, and finally creating a backup schedule.
+
+Let me start by loading the required tools and listing projects.
+Good, all tools are loaded. Now let me list projects to find one to use.
+I have projects available. I'll use the "Eval Test Project" (`p-kbuygq`). Let me first check existing backup schedules on this project, then create a new one.
+Good, I can see existing schedules. Now let me create a new backup schedule with a distinct cron expression and description.
+The backup schedule was created successfully. Let me verify it exists by listing schedules again.
+Verified — the newly created backup schedule `b19bec65-f3ef-41d1-a2a4-ead431839edc` appears in the list with the correct cron expression (`0 4 * * 0`) and description.
+
+## Summary
+
+| Step | Result |
+|------|--------|
+| List projects | Found 8 projects, selected `p-kbuygq` (Eval Test Project) |
+| Check existing schedules | 2 existing schedules found |
+| Create backup schedule | Created with cron `0 4 * * 0`, TTL `30d` |
+| Verify creation | Schedule confirmed in list (now 3 total) |
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_backup_schedule_create",
+  "timestamp": "2026-02-17T10:54:10.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "backup_schedule",
+      "id": "b19bec65-f3ef-41d1-a2a4-ead431839edc"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "backup_schedule",
+      "id": "b19bec65-f3ef-41d1-a2a4-ead431839edc",
+      "status": "confirmed_in_list"
+    }
+  ],
+  "tool_response_summary": "Backup schedule created successfully with scheduleId b19bec65-f3ef-41d1-a2a4-ead431839edc, cron '0 4 * * 0' (weekly Sunday 4am), TTL 30d, on project p-kbuygq. Verified via backup_schedule_list showing 3 schedules.",
+  "execution_notes": "Clean execution. Tool required projectId, schedule (cron), and ttl as required parameters. Optional description parameter also accepted. Response returned in 243ms. Verification confirmed the schedule appears in the project's schedule list."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

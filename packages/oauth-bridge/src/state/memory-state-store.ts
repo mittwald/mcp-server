@@ -8,22 +8,45 @@ import type {
 } from './state-store.js';
 
 interface MemoryStateStoreOptions {
-  ttlMs: number;
+  /**
+   * Legacy TTL value (applies to both state and grants if specific values are omitted).
+   */
+  ttlMs?: number;
+  /**
+   * TTL for authorization request state entries.
+   */
+  authRequestTtlMs?: number;
+  /**
+   * TTL for authorization grants / refresh-token lookup records.
+   */
+  grantTtlMs?: number;
 }
 
 type StoredRequest = AuthorizationRequestRecord;
 type StoredGrant = AuthorizationGrantRecord;
 
 export class MemoryStateStore implements StateStore {
-  private readonly ttlMs: number;
+  private readonly authRequestTtlMs: number;
+  private readonly grantTtlMs: number;
   private readonly requestsByInternalState = new Map<string, StoredRequest>();
   private readonly grantsByCode = new Map<string, StoredGrant>();
   private readonly refreshTokenToCode = new Map<string, string>();
   private readonly clientsById = new Map<string, ClientRegistrationRecord>();
 
   constructor(options: MemoryStateStoreOptions) {
-    this.ttlMs = options.ttlMs;
-    setInterval(() => this.reapExpired(), Math.max(1000, this.ttlMs / 2)).unref();
+    const legacyTtlMs = Math.max(1, options.ttlMs ?? 300_000);
+    this.authRequestTtlMs = Math.max(
+      1,
+      options.authRequestTtlMs ?? legacyTtlMs
+    );
+    this.grantTtlMs = Math.max(1, options.grantTtlMs ?? legacyTtlMs);
+    setInterval(
+      () => this.reapExpired(),
+      Math.max(
+        1000,
+        Math.min(this.authRequestTtlMs, this.grantTtlMs) / 2
+      )
+    ).unref();
   }
 
   /**
@@ -91,7 +114,7 @@ export class MemoryStateStore implements StateStore {
     this.requestsByInternalState.set(record.internalState, {
       ...record,
       createdAt: now,
-      expiresAt: now + this.ttlMs,
+      expiresAt: now + this.authRequestTtlMs,
       consumed: false
     });
   }
@@ -136,7 +159,7 @@ export class MemoryStateStore implements StateStore {
     this.grantsByCode.set(record.authorizationCode, {
       ...record,
       createdAt: now,
-      expiresAt: now + this.ttlMs
+      expiresAt: now + this.grantTtlMs
     });
   }
 
@@ -168,10 +191,12 @@ export class MemoryStateStore implements StateStore {
 
     // Verify refresh token matches and hasn't expired
     if (record.refreshToken !== refreshToken) {
+      this.refreshTokenToCode.delete(refreshToken);
       return null;
     }
 
     if (record.refreshTokenExpiresAt && record.refreshTokenExpiresAt <= Math.floor(Date.now() / 1000)) {
+      this.refreshTokenToCode.delete(refreshToken);
       return null;
     }
 
@@ -179,18 +204,47 @@ export class MemoryStateStore implements StateStore {
   }
 
   async updateAuthorizationGrant(record: AuthorizationGrantRecord): Promise<void> {
-    if (!this.grantsByCode.has(record.authorizationCode)) {
+    const existing = this.grantsByCode.get(record.authorizationCode);
+    if (!existing) {
       throw new Error('authorization code not found');
     }
-    this.grantsByCode.set(record.authorizationCode, { ...record });
+
+    const now = Date.now();
+    const nowSeconds = Math.floor(now / 1000);
+    const expiresAt = record.refreshTokenExpiresAt
+      ? record.refreshTokenExpiresAt * 1000
+      : now + this.grantTtlMs;
+
+    this.grantsByCode.set(record.authorizationCode, {
+      ...record,
+      expiresAt
+    });
+
+    if (
+      existing.refreshToken &&
+      record.refreshToken &&
+      existing.refreshToken !== record.refreshToken
+    ) {
+      this.refreshTokenToCode.delete(existing.refreshToken);
+    }
 
     // If the grant has a refresh token, create/update the refresh token index
     if (record.refreshToken) {
       this.refreshTokenToCode.set(record.refreshToken, record.authorizationCode);
+      if (
+        record.refreshTokenExpiresAt &&
+        record.refreshTokenExpiresAt <= nowSeconds
+      ) {
+        this.refreshTokenToCode.delete(record.refreshToken);
+      }
     }
   }
 
   async deleteAuthorizationGrant(authorizationCode: string): Promise<void> {
+    const existing = this.grantsByCode.get(authorizationCode);
+    if (existing?.refreshToken) {
+      this.refreshTokenToCode.delete(existing.refreshToken);
+    }
     this.grantsByCode.delete(authorizationCode);
   }
 
@@ -214,7 +268,9 @@ export class MemoryStateStore implements StateStore {
   async getMetrics(): Promise<StateStoreMetrics> {
     return {
       implementation: 'memory',
-      ttlSeconds: Math.floor(this.ttlMs / 1000),
+      ttlSeconds: Math.floor(this.authRequestTtlMs / 1000),
+      authRequestTtlSeconds: Math.floor(this.authRequestTtlMs / 1000),
+      grantTtlSeconds: Math.floor(this.grantTtlMs / 1000),
       pendingAuthorizations: this.requestsByInternalState.size,
       pendingGrants: this.grantsByCode.size,
       registeredClients: this.clientsById.size

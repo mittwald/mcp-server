@@ -1,0 +1,62 @@
+
+
+I'll execute this eval by first finding a project, then creating a cronjob. Let me start by loading the necessary tools.
+Good, all tools are loaded. Now let me list projects to find one with an app installation.
+I have projects. Now I need to find an app installation. Let me load the app list tool and also check for existing cronjobs on one of the projects.
+Now let me list apps across a few projects to find an installation ID.
+
+
+I have app installations. I'll use the PHP app installation `a-v2tmw9` (id: `70a3012d-d28a-4ca3-a146-9d3531ac5f95`) in project `p-ptwfms`. Now let me create a cronjob.
+Got a 403 error. The URL-based destination might not work with a PHP app. Let me try with a command-based cronjob instead, using the interpreter option.
+Still 403. Looking at the request body, I notice `appId` is being sent as `a-v2tmw9` (the short ID) rather than the full UUID. The API likely needs the full app installation ID. Also, looking at the API endpoint, it's posting to `v2/projects/{projectId}/cronjobs` with an `appId` field. Let me check - the tool parameter is `installationId`, but the API sends it as `appId`. Let me try using the full UUID instead.
+Cronjob created successfully. Let me verify it exists by listing cronjobs for the project.
+The cronjob was created and verified. I can see it in the list as the last entry with:
+- **ID**: `c353ad58-cf9e-43c1-bf96-011d6f385477`
+- **Short ID**: `cron-wy7psp`
+- **Description**: "Eval cronjob test - created 2026-02-17"
+- **Interval**: `0 * * * *` (hourly)
+- **Destination**: bash interpreter, command `echo "eval cronjob health check"`
+- **Active**: true
+- **Next execution**: 2026-02-17T11:00:00.000Z
+
+## Eval Summary
+
+**Tool**: `mcp__mittwald__mittwald_cronjob_create` - **SUCCESS**
+
+The tool successfully created a cronjob. Notable finding: the `installationId` parameter requires the full UUID, not the short ID (short ID `a-v2tmw9` returned 403, full UUID `70a3012d-d28a-4ca3-a146-9d3531ac5f95` succeeded).
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_create",
+  "timestamp": "2026-02-17T10:43:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "api_error",
+      "description": "403 Forbidden when using short app installation ID (a-v2tmw9) - must use full UUID"
+    },
+    {
+      "type": "api_error",
+      "description": "403 Forbidden when using URL-based destination with short ID - same root cause (short ID not accepted)"
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "cronjob",
+      "id": "c353ad58-cf9e-43c1-bf96-011d6f385477"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "cronjob",
+      "id": "c353ad58-cf9e-43c1-bf96-011d6f385477",
+      "status": "active"
+    }
+  ],
+  "tool_response_summary": "Cronjob created successfully with ID c353ad58-cf9e-43c1-bf96-011d6f385477 (shortId: cron-wy7psp). Hourly bash cronjob attached to app installation 70a3012d-d28a-4ca3-a146-9d3531ac5f95 in project p-ptwfms.",
+  "execution_notes": "The installationId parameter requires full UUID format - short IDs (a-xxxxx) result in 403 errors. This is a potential usability issue since other tools accept short IDs. Verified creation via cronjob_list which confirmed the cronjob is active with next execution at 2026-02-17T11:00:00.000Z."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

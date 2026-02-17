@@ -1,0 +1,45 @@
+
+
+I'll execute this eval by first finding a project and app to uninstall, then performing the uninstall operation.
+
+Let me start by loading the required tools and listing projects.
+Now let me load the project list tool and list projects to find one with apps.
+I have 8 projects. Let me check the eval test projects for installed apps that would be safe to uninstall. I'll check a few projects in parallel.
+None of the eval test projects have apps installed. Let me check the remaining two projects.
+Found apps in the "mStudio MCP server" project. I'll pick the most recent eval copy app to uninstall - **"Eval App Copy Test 20260217-2"** (`3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc`, shortId `a-rvgz61`). This is clearly an eval test copy created today and safe to remove.
+
+Now executing the uninstall with `force: true` to confirm the destructive action.
+Uninstall succeeded. Let me verify by listing apps in the same project to confirm the app is gone.
+Verification confirmed. The project now has **4 apps** (down from 5), and the uninstalled app `3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc` ("Eval App Copy Test 20260217-2") is no longer in the list.
+
+## Eval Summary
+
+| Step | Result |
+|------|--------|
+| Listed projects | Found 8 projects |
+| Listed apps | Found 5 apps in project `p-ptwfms` |
+| Selected target | "Eval App Copy Test 20260217-2" (`a-rvgz61`) - an eval copy safe to remove |
+| Uninstalled | Success with `force: true` |
+| Verified removal | Project now shows 4 apps, target app absent |
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_uninstall",
+  "timestamp": "2026-02-17T10:45:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc",
+      "status": "removed"
+    }
+  ],
+  "tool_response_summary": "App uninstalled successfully. Status: success. The app 'Eval App Copy Test 20260217-2' (id: 3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc, shortId: a-rvgz61) was removed from project p-ptwfms. Post-uninstall verification confirmed project now has 4 apps (down from 5).",
+  "execution_notes": "Selected the most recent eval copy app to minimize impact. Used force=true to bypass confirmation prompt. Verified removal by re-listing apps in the same project and confirming the target app is no longer present."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,50 @@
+
+
+I'll test the `mcp__mittwald__mittwald_user_ssh_key_import` tool. First, let me load it and understand its schema.
+The tool imports an SSH public key from the local filesystem. I need to generate a test SSH key pair first, then import it.
+The tool expects a file from `~/.ssh`. Let me try to import a commonly available key like `id_rsa.pub` or `id_ed25519.pub`. The tool has a default of `id_rsa.pub`, so let me try importing with the default first.
+The MCP server runs on Fly.io and needs the key content directly. The error message says `publicKey` parameter is required. Let me check the tool schema again - it seems I need to look for a `publicKey` parameter or provide the key content differently. Let me also check if there's a `mittwald_user_ssh_key_create` tool that accepts publicKey content directly.
+The error message from the server mentioned `publicKey` as a required parameter, even though the schema only shows `input` and `expires`. The MCP server on Fly.io can't access local filesystem, so it needs the key content directly. Let me generate an SSH key inline and try passing it through the `input` parameter as the actual key content.
+Let me try the import tool with the `input` parameter containing key content directly, since the server mentioned it needs `publicKey` content:
+The server clearly needs a `publicKey` parameter that isn't in the schema. The schema is out of sync with the server's actual requirements (the server runs on Fly.io and can't read local files). Let me try passing the key content in the `input` field since that's the closest available parameter:
+The server strictly requires a `publicKey` parameter that doesn't exist in the advertised schema. This is a schema mismatch. Let me try listing existing keys first to verify authentication works, then document this as a known limitation.
+Authentication works and I can see existing keys. The core issue is that `mcp__mittwald__mittwald_user_ssh_key_import` requires a `publicKey` parameter that isn't exposed in the tool's schema. The tool was designed to read from the local filesystem (`~/.ssh/`), but the MCP server runs on Fly.io with no persistent filesystem, creating an architectural mismatch.
+
+Let me verify this is consistently the behavior by trying one more approach — passing no parameters to see if the error message changes:
+Consistent error. The tool's handler on the server side expects a `publicKey` string parameter, but the tool schema only advertises `input`, `expires`, and `quiet`. This is a schema-vs-implementation mismatch — the server-side handler was adapted for the Fly.io environment but the schema wasn't updated to expose the `publicKey` parameter.
+
+For completeness, the `ssh_key_list` call confirmed:
+- Auth is working (3 keys returned)
+- The Mittwald API itself supports SSH key operations
+- The import tool specifically fails due to missing schema parameter
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_import",
+  "timestamp": "2026-02-17T12:01:45.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "Tool requires 'publicKey' parameter (SSH public key content as string) but schema only exposes 'input' (filename), 'expires', and 'quiet'. The MCP server runs on Fly.io with no filesystem, so the original file-based 'input' parameter is non-functional. Server-side handler was adapted to expect 'publicKey' but the tool schema was not updated to include it."
+    },
+    {
+      "type": "api_error",
+      "description": "All invocations return: 'publicKey parameter is required. The MCP server runs on Fly.io with no persistent filesystem. Provide the SSH public key content directly as a string parameter.' — regardless of parameters passed."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "ssh_key_list",
+      "id": "user-ssh-keys",
+      "status": "verified_via_list_tool (3 keys exist, auth works)"
+    }
+  ],
+  "tool_response_summary": "Tool consistently returns error requesting 'publicKey' parameter which is not in the tool schema. The underlying SSH key API works (verified via ssh_key_list returning 3 keys).",
+  "execution_notes": "Schema-implementation mismatch: the tool handler on Fly.io expects a 'publicKey' parameter containing the SSH public key content as a string, but the advertised schema only has 'input' (a filename in ~/.ssh/). The schema needs to be updated to add a 'publicKey' parameter or the 'input' parameter description needs to be changed to accept raw key content. This is a known architectural limitation of file-based CLI tools running in a serverless/remote environment."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

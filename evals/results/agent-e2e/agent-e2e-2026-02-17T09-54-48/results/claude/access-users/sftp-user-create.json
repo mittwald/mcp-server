@@ -1,0 +1,25 @@
+{
+  "runId": "agent-e2e-2026-02-17T09-54-48",
+  "agent": "claude",
+  "promptCaseId": "sftp-user-create",
+  "domain": "access-users",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts/_archived/access-users/sftp-user-create.json",
+  "toolName": "mcp__mittwald__mittwald_sftp_user-create",
+  "displayName": "sftp/user-create",
+  "startedAt": "2026-02-17T09:54:48.509Z",
+  "finishedAt": "2026-02-17T09:55:08.519Z",
+  "durationMs": 20010,
+  "status": "failure",
+  "failureCategory": "timeout",
+  "failureReason": "Agent timed out after 20010ms",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Grep",
+    "Bash",
+    "Read"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T09-54-48/raw/claude/access-users/sftp-user-create.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T09-54-48/raw/claude/access-users/sftp-user-create.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T09-54-48/raw/claude/access-users/sftp-user-create.stderr.txt"
+}

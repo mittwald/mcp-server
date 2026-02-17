@@ -4,6 +4,12 @@
 
 We replaced the legacy `oidc-provider` deployment with a **stateless OAuth bridge** that fronts Mittwald’s OAuth endpoints and issues HS256 JWTs to downstream MCP clients (ChatGPT, Claude, Inspector, etc.). The bridge stores interaction state in Redis, exchanges authorization codes with Mittwald, and embeds Mittwald access/refresh tokens in the JWT payload. The MCP server verifies the bridge JWT, persists the Mittwald tokens in Redis, and uses them for CLI calls (`mw … --token <mittwald_access_token>`).
 
+## Deployment Status (Verified 2026-02-17)
+
+- Fly app `mittwald-mcp-fly2` is built/deployed from this `mittwald-mcp` repository root.
+- Fly app `mittwald-oauth-server` is built/deployed from this repository's `packages/oauth-bridge`.
+- The separate repository at `../mittwald-oauth/mittwald-oauth` is currently inactive/deprecated for production deployment and is not the source of the running Fly.io OAuth app.
+
 Key goals:
 - Support cookie-less OAuth clients (ChatGPT/Claude) with Authorization Code + PKCE flows.
 - Keep Mittwald as the system of record for user consent and token issuance.

@@ -1,0 +1,16 @@
+{
+  "scenario_id": "database-performance",
+  "run_id": "run-2026-01-28T05-22-38",
+  "executed_at": "2026-01-28T05:22:38.385Z",
+  "target": "local",
+  "status": "failure",
+  "tools_called": [],
+  "execution_time_ms": 158443,
+  "resources_created": [],
+  "cleanup_performed": false,
+  "failure_details": {
+    "failed_tool": "unknown",
+    "error_message": "Claude CLI exited with code null: ",
+    "context": {}
+  }
+}

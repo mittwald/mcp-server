@@ -1,0 +1,45 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_stack_list` eval. Let me start by loading the required tools.
+Tools loaded. Now let me first list projects to find one to use, then call the stack list tool.
+Projects listed successfully. Now let me call the target tool `mcp__mittwald__mittwald_stack_list` using an existing project.
+The tool executed successfully. It returned 1 container stack for the eval test project. Let me also verify with another project to confirm consistent behavior.
+Excellent. The tool works perfectly. The second project (`p-ptwfms` - "mStudio MCP server") returned a rich result with a stack containing 2 running services (`mcp-server` and `oauth-server`) and 1 volume. Let me now save the self-assessment.
+The results go into `evals/results/active/`. I need to create the `containers` subdirectory there.
+The file write is being blocked by permissions. Let me provide the self-assessment inline instead.
+
+## Eval Result: `stack/list` - PASSED
+
+The `mcp__mittwald__mittwald_stack_list` tool executed successfully on two different projects:
+
+1. **Project `p-kbuygq`** (Eval Test Project): Returned 1 default stack with no services or volumes
+2. **Project `p-ptwfms`** (mStudio MCP server): Returned 1 stack with 2 running services (`mcp-server` on port 8080, `oauth-server` on port 3000) and 1 orphaned volume
+
+**Key observation**: `projectId` is actually **required**, not optional as the eval prompt suggested. The tool returns rich detail including deployed/pending state, image digests, environment variables, ports, entrypoints, and container status.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_stack_list",
+  "timestamp": "2026-02-17T15:30:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "stack",
+      "id": "7b71eeb1-542f-4b9b-966c-a001f3d1ee0c",
+      "status": "found (empty stack, no services)"
+    },
+    {
+      "type": "stack",
+      "id": "fd1ef726-14b8-4906-8a45-0756ba993246",
+      "status": "found (2 running services: mcp-server, oauth-server; 1 volume)"
+    }
+  ],
+  "tool_response_summary": "Tool returned successfully for both projects tested. Project p-kbuygq returned 1 default stack with no services/volumes. Project p-ptwfms returned 1 stack with 2 running container services (mcp-server on port 8080, oauth-server on port 3000) and 1 orphaned volume. Response includes full deployed/pending state with image, ports, envs, entrypoint, and command details.",
+  "execution_notes": "The projectId parameter is required (not optional as the eval prompt suggested). Tool returns detailed stack information including service deployment state, pending state, volumes, and container status. Both calls completed without errors. Result file could not be saved to evals/results/active/containers/ due to file write permission restrictions."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

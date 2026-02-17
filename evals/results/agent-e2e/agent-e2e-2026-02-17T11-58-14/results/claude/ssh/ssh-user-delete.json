@@ -1,0 +1,28 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "ssh-user-delete",
+  "domain": "ssh",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/ssh/ssh-user-delete.json",
+  "toolName": "mcp__mittwald__mittwald_ssh_user_delete",
+  "displayName": "ssh/user/delete",
+  "startedAt": "2026-02-17T13:09:27.786Z",
+  "finishedAt": "2026-02-17T13:12:27.805Z",
+  "durationMs": 180019,
+  "status": "failure",
+  "failureCategory": "timeout",
+  "failureReason": "Agent timed out after 180019ms",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "Read",
+    "TodoWrite",
+    "Task",
+    "WebFetch",
+    "Glob"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/ssh/ssh-user-delete.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/ssh/ssh-user-delete.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/ssh/ssh-user-delete.stderr.txt"
+}

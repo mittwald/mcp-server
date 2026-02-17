@@ -1,0 +1,25 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-34-40",
+  "agent": "claude",
+  "promptCaseId": "registry-delete",
+  "domain": "containers",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/containers/registry-delete.json",
+  "toolName": "mcp__mittwald__mittwald_registry_delete",
+  "displayName": "registry/delete",
+  "startedAt": "2026-02-17T11:02:03.880Z",
+  "finishedAt": "2026-02-17T11:02:53.144Z",
+  "durationMs": 49264,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_registry_list",
+    "mcp__mittwald__mittwald_registry_create",
+    "mcp__mittwald__mittwald_registry_delete"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/containers/registry-delete.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/containers/registry-delete.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/containers/registry-delete.stderr.txt"
+}

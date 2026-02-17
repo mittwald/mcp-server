@@ -1,0 +1,56 @@
+
+
+I'll execute the SSH user create eval. Let me start by loading the required MCP tools.
+The search didn't return the exact tools I need. Let me try direct selection.
+Tools loaded. Now let me list projects to find a test project.
+I found the test project with prefix `agent-e2e-2026-02-17T13-54-30-`. I'll use project `842df8be-3589-4c6c-ad03-963b001a356c` to create an SSH user.
+The request failed with a 400 error. Looking at the request body, I can see the issue — the password wasn't included in the authentication payload. The API expects authentication with either a password or public keys. Let me try with a public key instead, as the API seems to require it in a specific format. Let me also try providing the password differently.
+
+Let me first generate a temporary SSH key pair to use.
+Let me try the SSH user create with a public key directly instead.
+SSH user created successfully. Let me verify it exists by listing SSH users for the project.
+The SSH user was successfully created and verified. Here's the summary:
+
+**SSH User Created:**
+- **ID:** `586acc5d-0723-4743-89e6-5aebea77dff7`
+- **Username:** `ssh-rfxzee`
+- **Description:** `agent-e2e-2026-02-17T13-54-30-ssh-test-user`
+- **Auth method:** Public key (ed25519)
+- **Expires:** 30 minutes
+- **Project:** `842df8be-3589-4c6c-ad03-963b001a356c`
+
+**Notes:** The initial attempt with `password` parameter failed with a 400 error — the API sent `publicKeys: []` in the authentication body, ignoring the password field. This suggests the tool's `password` parameter may not be correctly mapped to the API's authentication payload. Using `publicKey` instead worked on the first try.
+
+Verification via `ssh_user_list` confirmed the user exists and is active.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_ssh_user_create",
+  "timestamp": "2026-02-17T14:08:30.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "First attempt using 'password' parameter failed with 400 error. The API request body showed authentication:{publicKeys:[]} ignoring the password field, suggesting a parameter mapping bug in the tool handler. Using 'publicKey' parameter instead succeeded."
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "ssh_user",
+      "id": "586acc5d-0723-4743-89e6-5aebea77dff7"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "ssh_user",
+      "id": "586acc5d-0723-4743-89e6-5aebea77dff7",
+      "status": "active"
+    }
+  ],
+  "tool_response_summary": "SSH user 'agent-e2e-2026-02-17T13-54-30-ssh-test-user' created with ID 586acc5d-0723-4743-89e6-5aebea77dff7, username ssh-rfxzee, public key authentication, 30m expiry, in project 842df8be-3589-4c6c-ad03-963b001a356c",
+  "execution_notes": "The 'password' parameter appears to be accepted by the tool schema but not correctly passed to the Mittwald API's authentication object. The API requires either a password or public keys in the authentication block, but when using the password parameter, the tool sent an empty publicKeys array with no password. This is likely a bug in the ssh-user-create tool handler. The publicKey parameter works correctly. Verified creation via ssh_user_list."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

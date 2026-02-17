@@ -1,0 +1,62 @@
+{
+  "scenario_id": "database-performance",
+  "run_id": "run-2026-01-28T05-30-30",
+  "executed_at": "2026-01-28T05:30:30.341Z",
+  "target": "local",
+  "status": "failure",
+  "tools_called": [
+    "mcp__mittwald__mittwald_context_get_session",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_app_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_context_get_session",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "TodoWrite",
+    "Grep",
+    "Grep",
+    "Glob",
+    "Read",
+    "Read",
+    "Read",
+    "Read",
+    "TodoWrite",
+    "Read",
+    "Bash",
+    "Bash",
+    "Glob",
+    "Grep",
+    "Read",
+    "Read",
+    "TodoWrite",
+    "Grep",
+    "Glob",
+    "Read",
+    "TodoWrite",
+    "WebFetch",
+    "WebFetch",
+    "Bash",
+    "Bash",
+    "TodoWrite"
+  ],
+  "execution_time_ms": 132342,
+  "resources_created": [],
+  "cleanup_performed": false,
+  "failure_details": {
+    "failed_tool": "validation",
+    "error_message": "Validation failed: Expected tool 'mittwald_database_mysql_list' was not called, Expected tool 'mittwald_database_mysql_get' was not called, Expected tool 'mittwald_database_redis_get' was not called",
+    "context": {
+      "validation_errors": [
+        "Expected tool 'mittwald_database_mysql_list' was not called",
+        "Expected tool 'mittwald_database_mysql_get' was not called",
+        "Expected tool 'mittwald_database_redis_get' was not called"
+      ]
+    }
+  }
+}

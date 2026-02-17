@@ -1,0 +1,40 @@
+
+
+I'll execute this eval by first finding a suitable project, then listing SSH users for it.
+Both tools are loaded. Let me first list projects to find a suitable one.
+I found the test project `p-wbj9rf` (agent-e2e-2026-02-17T13-54-30-updated-project). Now let me list SSH users for it.
+The tool executed successfully, returning an empty array (no SSH users configured for this test project). Let me also verify against another project to confirm the tool works with populated data.
+The tool works correctly. It returned 3 SSH users from the established project, each with full details including IDs, descriptions, public keys, and usernames.
+
+## Results Summary
+
+- **Test project** (`p-wbj9rf`): Returned empty array — correct since no SSH users are configured.
+- **Established project** (`p-ptwfms`): Returned 3 SSH users with complete details (IDs, descriptions, active status, public keys, usernames).
+- Both calls returned `status: "success"` with proper array responses.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_ssh_user_list",
+  "timestamp": "2026-02-17T14:00:12.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-wbj9rf",
+      "status": "verified - 0 SSH users (test project)"
+    },
+    {
+      "type": "project",
+      "id": "p-ptwfms",
+      "status": "verified - 3 SSH users returned successfully"
+    }
+  ],
+  "tool_response_summary": "Tool executed twice: once against test project (empty array, 0 SSH users) and once against established project (3 SSH users with full details including IDs, descriptions, public keys, usernames). Both returned status: success with correct array responses.",
+  "execution_notes": "Tool requires projectId parameter. Returns structured JSON with SSH user details including id, description, active status, publicKeys array, userName, and timestamps. Verified with both empty and populated results."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

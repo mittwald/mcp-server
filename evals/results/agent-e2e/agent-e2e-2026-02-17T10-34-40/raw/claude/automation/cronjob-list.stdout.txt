@@ -1,0 +1,42 @@
+
+
+I'll execute this eval by first loading the required tools, then listing projects, and finally listing cronjobs.
+Tools loaded. Now let me first list projects to get a project ID.
+Projects listed successfully. I have 8 projects. Now let me list cronjobs using one of the projects. I'll use the "mStudio MCP server" project first, and also try an eval project.
+The tool executed successfully. Here's a summary of the results:
+
+**`mcp__mittwald__mittwald_cronjob_list` - SUCCESS**
+
+The tool returned 5 cronjobs for project `p-ptwfms` (mStudio MCP server):
+
+| # | Short ID | Description | Interval | Active |
+|---|----------|-------------|----------|--------|
+| 1 | `cron-d67q60` | Test cronjob - projectId derivation verification | `0 0 * * *` (daily) | true |
+| 2 | `cron-wjttbb` | Test cronjob - projectId derivation verification - Kopie | `0 0 * * *` (daily) | true |
+| 3 | `cron-h5avb0` | Test cronjob - projectId derivation verification - Kopie | `0 0 * * *` (daily) | true |
+| 4 | `cron-dvv9b7` | Test cronjob - projectId derivation verification - Kopie | `0 0 * * *` (daily) | true |
+| 5 | `cron-wy7psp` | Eval cronjob test - created 2026-02-17 | `0 * * * *` (hourly) | true |
+
+The response includes full details: IDs, descriptions, intervals, latest execution info, next execution times, concurrency policies, and timeout values. The response matches the expected schema (array of cronjob objects).
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_list",
+  "timestamp": "2026-02-17T10:50:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "cronjob", "id": "460224d7-c47c-4883-9961-e1a92ce7bb43", "status": "active"},
+    {"type": "cronjob", "id": "df700e2f-01b0-4d1f-95f9-ebfdc51a828f", "status": "active"},
+    {"type": "cronjob", "id": "3973522c-7070-4c65-81f6-04b5c8bec889", "status": "active"},
+    {"type": "cronjob", "id": "2cd9b8c9-f6db-494e-83be-485dee6b40e9", "status": "active"},
+    {"type": "cronjob", "id": "c353ad58-cf9e-43c1-bf96-011d6f385477", "status": "active"}
+  ],
+  "tool_response_summary": "Returned 5 cronjobs for project p-ptwfms. All cronjobs are active with daily or hourly intervals. Response includes full metadata: IDs, descriptions, intervals, latest execution status, next execution times, concurrency policies, and timeouts. Response completed in 126ms.",
+  "execution_notes": "Tool works correctly with projectId as short ID (p-ptwfms). JSON output format provides rich detail including raw API data with latest execution info and next scheduled times. All 5 cronjobs show as active."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

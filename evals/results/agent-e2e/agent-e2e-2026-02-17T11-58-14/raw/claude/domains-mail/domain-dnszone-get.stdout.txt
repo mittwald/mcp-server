@@ -1,0 +1,54 @@
+
+
+I'll execute this eval by first finding a project, then listing DNS zones, and finally getting details for a specific DNS zone.
+
+**Step 1: Find available projects and load the required tools.**
+Tools loaded. Now let me list projects to find one to work with.
+I have projects available. Let me prefer the test project matching the eval run prefix. I'll use `p-mpg5kn` (agent-e2e-2026-02-17T11-58-14-mysql-create-eval). Let me also try the other projects to find DNS zones.
+
+**Step 2: List DNS zones across available projects.**
+No DNS zones exist in any of the projects. This is expected — DNS zones are typically created automatically when a domain is registered/added to a project, not manually. Let me still attempt to call the `dnszone_get` tool to verify its behavior and document the outcome. I'll use a known project ID as a fallback to see the error response.
+
+**Step 3: Attempt to call `mcp__mittwald__mittwald_domain_dnszone_get` with a synthetic ID to verify tool behavior.**
+The tool executed correctly — it made a proper API call to `v2/dns-zones/{id}` and returned a 403 because the provided UUID is a project ID, not a DNS zone ID. This confirms the tool is functional and correctly routes to the Mittwald API. The 403 (rather than 404) indicates the API validates permissions before returning zone data.
+
+The tool works as expected. The lack of DNS zones across all projects is the only limitation — no domains have been added to these projects, so no DNS zones exist to retrieve.
+
+**Step 4: Self-Assessment**
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_dnszone_get",
+  "timestamp": "2026-02-17T12:05:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "resource_not_found",
+      "description": "No DNS zones exist in any of the 3 accessible projects. DNS zones are created when domains are added to projects, and no domains are currently configured. The tool was invoked with a non-DNS-zone UUID, resulting in a 403 error, confirming the API endpoint is functional but no valid DNS zone IDs are available to test against."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-mpg5kn",
+      "status": "verified_no_dnszones"
+    },
+    {
+      "type": "project",
+      "id": "p-ptwfms",
+      "status": "verified_no_dnszones"
+    },
+    {
+      "type": "project",
+      "id": "p-p92nri",
+      "status": "verified_no_dnszones"
+    }
+  ],
+  "tool_response_summary": "dnszone_list returned empty arrays for all 3 projects. dnszone_get returned 403 when called with a project UUID (not a valid DNS zone ID), confirming the API endpoint is reachable and validates input correctly. The tool correctly calls GET /v2/dns-zones/{dnszoneId}.",
+  "execution_notes": "Tool is functional but cannot be fully validated without a domain/DNS zone configured in a project. DNS zones are automatically created when domains are added to Mittwald projects. To fully test this tool, a domain would need to be registered or added to a project first, which is outside the scope of this eval's prerequisites."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

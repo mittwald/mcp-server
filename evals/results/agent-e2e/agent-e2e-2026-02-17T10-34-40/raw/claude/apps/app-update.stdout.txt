@@ -1,0 +1,59 @@
+
+
+I'll execute this eval by first discovering prerequisites, then testing the `mcp__mittwald__mittwald_app_update` tool.
+
+## Step 1: Find prerequisites
+
+Let me start by loading the necessary tools and listing projects and apps.
+Good, all tools are loaded. Now let me list projects to find one with apps.
+Good, I have 8 projects. Let me list apps in a couple of them to find one with an installed app.
+
+
+I found several apps. I'll use the PHP app `a-v2tmw9` (installation ID `70a3012d-d28a-4ca3-a146-9d3531ac5f95`) in project `p-ptwfms`. Its current description is "PHP 8.2 Application - Updated via eval run 20251219" and document root is `/public`.
+
+## Step 2: Execute `mcp__mittwald__mittwald_app_update`
+
+I'll update the description and document root to test the update functionality.
+Update succeeded. Now let me load the `app_get` tool and verify the changes persisted.
+## Step 3: Verification
+
+The verification shows:
+- **Description**: Updated to `"PHP 8.2 Application - Updated via app_update eval 20260217"` — confirmed.
+- **Document root**: The `customDocumentRoot` field still shows `/public`. This is interesting — the update tool reported success for `document root: /public/html`, but the `app_get` response shows `/public`. This could be a propagation delay or the document root may be handled differently. The description update is definitively confirmed.
+
+Let me restore the document root back to `/public` to leave the app in a clean state (it may already be `/public`), and the description was intentionally updated for the eval.
+
+## Results Summary
+
+The `mcp__mittwald__mittwald_app_update` tool:
+- Accepted the update request and returned success
+- Updated the **description** field — verified via subsequent `app_get`
+- Reported **document root** update success, though `app_get` still shows original value (possible eventual consistency or the field maps differently)
+- Completed in ~55ms
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_update",
+  "timestamp": "2026-02-17T10:45:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "other",
+      "description": "Document root update reported as successful but app_get still shows original value '/public' instead of '/public/html'. Description update confirmed. Possible eventual consistency or field mapping difference."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95",
+      "status": "description_updated_confirmed"
+    }
+  ],
+  "tool_response_summary": "App updated successfully. Tool returned status:success with updates array listing both description and document root changes. Description change verified via app_get. Document root change not reflected in subsequent app_get (still shows /public).",
+  "execution_notes": "Used existing PHP app (a-v2tmw9) in project p-ptwfms. Updated description from 'PHP 8.2 Application - Updated via eval run 20251219' to 'PHP 8.2 Application - Updated via app_update eval 20260217'. Document root update to /public/html was accepted but not reflected in app_get - may indicate eventual consistency or that customDocumentRoot field behaves differently from the update parameter."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

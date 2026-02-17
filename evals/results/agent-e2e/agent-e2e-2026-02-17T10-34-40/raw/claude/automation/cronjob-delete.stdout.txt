@@ -1,0 +1,54 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_cronjob_delete` eval. Let me start by loading the required tools.
+Good, tools are loaded. Now let me also load the cronjob list tool and get the project list.
+Found 8 projects. Let me use the "Eval Test Project" (`p-kbuygq`) to check for existing cronjobs. I'll also check a couple other projects in parallel to find any existing cronjobs.
+
+
+Found a cronjob in project `p-p92nri`: cronjob ID `6339d6eb-d2ec-4902-91ec-6771ce11e327` ("Test cronjob for cronjob/* tool evals - UPDATED by WP33"). This is a test cronjob from previous eval runs, so it's safe to delete.
+
+However, I don't want to delete the only existing test cronjob without being able to verify the deletion properly. Let me first create a new cronjob specifically for this delete eval, then delete it.
+Created temp cronjob `15265012-53f1-420e-a806-1f93d6d885ae`. Now let me verify it exists, then delete it.
+Confirmed: 2 cronjobs exist. Now I'll delete the temp cronjob I just created.
+Delete succeeded. Let me verify the cronjob is gone by listing cronjobs again.
+Verification complete. The project now has only 1 cronjob (the original one from previous evals). The temp cronjob `15265012-53f1-420e-a806-1f93d6d885ae` has been successfully removed.
+
+## Summary
+
+| Step | Result |
+|------|--------|
+| List projects | Found 8 projects, used `p-p92nri` |
+| List cronjobs (before) | 1 existing cronjob found |
+| Create temp cronjob | Created `15265012-53f1-420e-a806-1f93d6d885ae` |
+| Verify creation | 2 cronjobs confirmed |
+| **Delete cronjob** | **Success** - `"Cronjob deleted successfully"` |
+| Verify deletion | Back to 1 cronjob - deleted cronjob is gone |
+
+Required parameters: `cronjobId` (string) and `confirm: true` (boolean, mandatory for destructive ops). Optional: `force: true` to skip confirmation prompt.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_delete",
+  "timestamp": "2026-02-17T10:44:12.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "cronjob",
+      "id": "15265012-53f1-420e-a806-1f93d6d885ae"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "cronjob",
+      "id": "15265012-53f1-420e-a806-1f93d6d885ae",
+      "status": "deleted_and_verified"
+    }
+  ],
+  "tool_response_summary": "Cronjob deleted successfully. Response returned status 'success' with the deleted cronjobId. Subsequent listing confirmed the cronjob was removed (count dropped from 2 to 1).",
+  "execution_notes": "Created a temporary cronjob specifically for this delete eval to avoid destroying existing test resources. Delete requires cronjobId (string) and confirm (boolean, must be true). The force parameter skips interactive confirmation. Deletion was verified by re-listing cronjobs and confirming the deleted ID was absent."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

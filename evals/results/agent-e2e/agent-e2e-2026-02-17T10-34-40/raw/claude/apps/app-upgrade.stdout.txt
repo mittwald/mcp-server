@@ -1,0 +1,64 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_app_upgrade` eval. Let me start by loading the necessary tools and checking prerequisites.
+Good, all tools are loaded. Let me start by listing projects to find one with apps.
+Now let me list apps across several projects to find one that could have upgrade candidates.
+
+
+I found apps in two projects. All PHP apps are at version `1.0.0` and the Node.js app is also at `1.0.0`. Let me check upgrade candidates for these apps to find one that actually has a newer version available.
+No upgrade candidates available for those apps. Let me check the remaining projects for apps that might have upgrades, and also check the other PHP installations.
+Only the first two projects have apps. The PHP apps (custom, version 1.0.0) and Node.js app (custom, version 1.0.0) all have no upgrade candidates — these are "custom" app types where `1.0.0` is the only version.
+
+Let me check the app versions tool to see what apps have multiple versions available, and then attempt the upgrade with one of the existing installations to properly test the tool's behavior.
+
+
+Let me check what apps with multiple versions are available (like WordPress, TYPO3, etc.) that would actually have upgrade candidates.
+That's a huge output. Let me search for WordPress specifically since it typically has many versions and upgrade candidates.
+There are 611 versions across 15 apps. The existing PHP apps (appId `34220303-cb87-4592-8a95-2eb20a97b2ac`) are custom apps with only version 1.0.0 — no upgrade path. I need to find an app that has multiple versions. The current installations don't have upgrades available.
+
+Let me now attempt the upgrade tool directly on one of the existing PHP apps. Since there are no upgrade candidates, I expect the tool to return an appropriate response — but this still validates the tool's invocation, parameter handling, and error reporting.
+The error shows the tool sent `appVersionId: "1.0.0"` but it needs a UUID version ID, not a semver string. The `targetVersion` parameter is being passed as the version ID directly to the API. Let me look at the app versions data to get the actual version UUID for the PHP app. The PHP app (appId `34220303-cb87-4592-8a95-2eb20a97b2ac`) only has version `1.0.0` with ID `ff45ad04-8589-46d7-a645-0566be3eaeec` — which is already installed. So upgrading to the same version should validate the API path.
+
+Let me try with the actual version UUID.
+The upgrade tool executed successfully. The API accepted the request and started the upgrade process. Even though this was technically a "no-op" upgrade (same version), the tool worked correctly — it accepted the parameters, called the Mittwald API, and received a 204 success response.
+
+Let me verify the app is still in good shape after the upgrade call.
+The app is confirmed in `ready` phase with the version intact. The upgrade tool executed successfully.
+
+## Summary
+
+- **Tool**: `mcp__mittwald__mittwald_app_upgrade`
+- **Result**: Successfully invoked. The API accepted the upgrade request (HTTP 204) and returned a success response.
+- **Note**: All existing app installations are custom PHP/Node.js apps at version `1.0.0` with no upgrade candidates available (`list_upgrade_candidates` returned empty for all). The upgrade was tested by targeting the current version UUID, which the API accepted as a valid operation. The `targetVersion` parameter requires a version UUID (not semver string) — passing a semver string like `"1.0.0"` causes a 400 error.
+- **Verification**: Post-upgrade `app_get` confirmed the app remains in `ready` phase with the correct version.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "medium",
+  "tool_executed": "mcp__mittwald__mittwald_app_upgrade",
+  "timestamp": "2026-02-17T11:05:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "First attempt with targetVersion='1.0.0' (semver string) failed with 400 — the API requires a version UUID, not a semver string"
+    },
+    {
+      "type": "other",
+      "description": "No actual upgrade candidates available for any existing apps — all are custom PHP/Node.js apps with only version 1.0.0. The upgrade was tested as a same-version re-apply rather than a true version change."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "a-v2tmw9",
+      "status": "ready"
+    }
+  ],
+  "tool_response_summary": "App upgrade started successfully for installation a-v2tmw9 targeting version ff45ad04-8589-46d7-a645-0566be3eaeec. API returned 204 (success). Post-upgrade verification confirmed app in ready phase.",
+  "execution_notes": "Confidence is medium because no true version upgrade was possible — only custom apps (PHP, Node.js) were available, each with a single version 1.0.0. The tool was successfully invoked and the API accepted the request, but a true version-to-version upgrade was not demonstrated. For high confidence, a multi-version app (e.g., TYPO3, Shopware) would need to be installed first. The targetVersion parameter requires a UUID (appVersionId), not a semver string."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

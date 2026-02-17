@@ -1,0 +1,31 @@
+{
+  "id": "automated-backup-monitoring",
+  "name": "Automated Backup Monitoring",
+  "source": "docs/setup-and-guides/src/content/docs/case-studies/automated-backup-monitoring.md",
+  "description": "Weekly backup health check with schedule management",
+  "fixtures": {
+    "project": {
+      "description": "Backup Monitoring Test {{RUN_ID}}"
+    }
+  },
+  "prompts": [
+    "List all backup schedules for project {{PROJECT_ID}} and show their frequency and last execution time",
+    "List all recent backups for project {{PROJECT_ID}} from the past 7 days and check for any gaps in coverage",
+    "Create a manual backup for project {{PROJECT_ID}} with description 'Manual Test Backup {{RUN_ID}}' expiring in 7 days",
+    "Create a new backup schedule for project {{PROJECT_ID}} with description 'Daily Backup Schedule {{RUN_ID}}' set to run daily at 2 AM (cron: 0 2 * * *) with 30-day retention"
+  ],
+  "success_criteria": {
+    "resources_created": {
+      "project": 1,
+      "backup": 1,
+      "backup_schedule": 1
+    }
+  },
+  "expected_tools": [
+    "mittwald_backup_schedule_list",
+    "mittwald_backup_list",
+    "mittwald_backup_create",
+    "mittwald_backup_schedule_create"
+  ],
+  "tags": ["case-study", "medium-complexity", "backups", "monitoring", "fixtures"]
+}

@@ -1,3 +1,9 @@
+# DEPRECATED
+
+This guide is legacy and may contain outdated setup details.
+
+Use the canonical docs under `docs/setup-and-guides/src/content/docs/` instead.
+
 # Cursor IDE Integration Guide
 
 > Connect the Mittwald MCP server to Cursor IDE for AI-assisted hosting management.

@@ -1,0 +1,25 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-23-10",
+  "agent": "claude",
+  "promptCaseId": "sftp-user-update",
+  "domain": "access-users",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts/_archived/access-users/sftp-user-update.json",
+  "toolName": "mcp__mittwald__mittwald_sftp_user-update",
+  "displayName": "sftp/user-update",
+  "startedAt": "2026-02-17T10:25:53.160Z",
+  "finishedAt": "2026-02-17T10:26:35.274Z",
+  "durationMs": 42114,
+  "status": "failure",
+  "failureCategory": "missing_expected_tool_call",
+  "failureReason": "Expected tool mcp__mittwald__mittwald_sftp_user-update was not called",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "ToolSearch",
+    "Grep",
+    "Bash"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-23-10/raw/claude/access-users/sftp-user-update.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-23-10/raw/claude/access-users/sftp-user-update.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-23-10/raw/claude/access-users/sftp-user-update.stderr.txt"
+}

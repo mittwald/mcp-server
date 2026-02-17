@@ -95,6 +95,171 @@
       "examples": [
         ["case-study", "simple", "tier-3"]
       ]
+    },
+    "fixtures": {
+      "type": "object",
+      "description": "Resources to provision before scenario execution (supports template variables)",
+      "properties": {
+        "project": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Project description (supports {{RUN_ID}} template)"
+            },
+            "serverId": {
+              "type": "string",
+              "description": "Server ID (optional, falls back to DEFAULT_SERVER_ID env var)"
+            }
+          },
+          "required": ["description"]
+        },
+        "databases": {
+          "type": "object",
+          "properties": {
+            "mysql": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": { "type": "string" },
+                  "version": { "type": "string" },
+                  "characterSet": { "type": "string" },
+                  "collation": { "type": "string" }
+                },
+                "required": ["description", "version"]
+              }
+            },
+            "redis": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": { "type": "string" },
+                  "version": { "type": "string" },
+                  "maxMemory": { "type": "string" },
+                  "maxMemoryPolicy": { "type": "string" }
+                },
+                "required": ["description", "version"]
+              }
+            }
+          }
+        },
+        "apps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "appName": { "type": "string" },
+              "appVersion": { "type": "string" }
+            },
+            "required": ["description", "appName", "appVersion"]
+          }
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fqdn": {
+                "type": "string",
+                "description": "Fully qualified domain name (supports {{RUN_ID}} template)"
+              },
+              "virtualhost": {
+                "type": "boolean",
+                "description": "Create virtualhost for this domain"
+              }
+            },
+            "required": ["fqdn"]
+          }
+        },
+        "mail": {
+          "type": "object",
+          "properties": {
+            "addresses": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "address": { "type": "string" },
+                  "password": { "type": "string" },
+                  "quota": { "type": "string" }
+                },
+                "required": ["address"]
+              }
+            },
+            "deliveryboxes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["description"]
+              }
+            }
+          }
+        },
+        "ssh_users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "publicKey": { "type": "string" }
+            },
+            "required": ["description"]
+          }
+        },
+        "backups": {
+          "type": "object",
+          "properties": {
+            "schedules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": { "type": "string" },
+                  "schedule": { "type": "string" },
+                  "ttl": { "type": "string" }
+                },
+                "required": ["description", "schedule", "ttl"]
+              }
+            }
+          }
+        },
+        "containers": {
+          "type": "object",
+          "properties": {
+            "stacks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": { "type": "string" },
+                  "composeFile": { "type": "string" }
+                },
+                "required": ["description"]
+              }
+            },
+            "registries": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": { "type": "string" },
+                  "uri": { "type": "string" },
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["description", "uri"]
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

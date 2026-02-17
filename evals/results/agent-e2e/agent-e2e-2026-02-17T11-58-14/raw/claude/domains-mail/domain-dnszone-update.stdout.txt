@@ -1,0 +1,60 @@
+
+
+I'll execute this eval step by step. Let me start by finding the necessary tools and listing projects.
+Tools loaded. Now let me list projects to find a test project.
+I have a test project matching the eval prefix: `p-mpg5kn` (id: `15f5367b-92bd-4761-ac33-f6bbb6f60db8`). Let me list DNS zones for this project.
+No DNS zones on the test project. Let me check the other projects for DNS zones I can use.
+
+
+No DNS zones exist on any of the projects. DNS zones are typically created automatically when a domain is registered/added to a project. Since there are no domains with DNS zones available, let me attempt the update anyway with the test project to document the tool's behavior, and also try to get a DNS zone by checking if we can find any zone ID.
+
+Let me try to call the update tool with the test project to see what happens when no valid DNS zone exists. I'll use a placeholder zone ID to test the tool's error handling and confirm the tool is callable.
+The tool executed but returned a 403 (Forbidden) error. This is expected — the DNS zone ID I used was actually the project ID (not a valid DNS zone UUID), and even if it were valid, DNS zones require a registered domain to exist first.
+
+The key findings:
+1. The tool **is callable** and correctly sends a PUT request to `v2/dns-zones/{id}/record-sets/{type}`
+2. The API returns 403 because the zone doesn't exist / isn't accessible
+3. No DNS zones exist on any available project, so a true update cannot be demonstrated without first registering a domain (which is a domain registration operation outside eval scope)
+
+Let me provide the self-assessment.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_dnszone_update",
+  "timestamp": "2026-02-17T12:05:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "resource_not_found",
+      "description": "No DNS zones exist on any of the 3 accessible projects (p-ptwfms, p-p92nri, p-mpg5kn). DNS zones are created automatically when a domain is registered to a project; no domains are registered."
+    },
+    {
+      "type": "api_error",
+      "description": "Attempted update with a placeholder zone ID returned HTTP 403 (Forbidden) — expected since the zone ID was invalid. Confirms the tool is callable and correctly routes to PUT v2/dns-zones/{id}/record-sets/{type}."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-mpg5kn",
+      "status": "ready, no DNS zones"
+    },
+    {
+      "type": "project",
+      "id": "p-ptwfms",
+      "status": "ready, no DNS zones"
+    },
+    {
+      "type": "project",
+      "id": "p-p92nri",
+      "status": "ready, no DNS zones"
+    }
+  ],
+  "tool_response_summary": "Tool invoked with test project's ID as zone ID, recordSet=txt, set=[v=spf1 -all]. API returned 403 Forbidden — the zone ID does not correspond to a valid DNS zone. All 3 projects confirmed to have zero DNS zones via dnszone/list.",
+  "execution_notes": "DNS zone update requires a pre-existing DNS zone, which in turn requires a registered domain on the project. No domains are registered on any accessible project, making a successful update impossible without domain registration (out of scope for this eval). The tool itself is functional — it correctly constructs and sends the API request. Recommendation: future eval runs should include a domain registration prerequisite or use a project with a pre-existing domain."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

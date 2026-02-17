@@ -1,0 +1,38 @@
+
+
+I'll execute this eval by first listing available servers, then getting details for a specific server.
+
+**Step 1: List servers to find available IDs**
+Both tools loaded. Now let me list servers to find an available server ID.
+Found 1 server: `cf24e9ff-21e8-4895-82ef-47354868a861` ("MCP Server Dev"). Now let me get its details.
+
+**Step 2: Get server details**
+The tool executed successfully. The server details were returned with all expected fields.
+
+**Verification:**
+- Status: `success`
+- Server ID matches the requested ID
+- Response includes full server details: description, cluster, machine type (shared.xlarge, 2 CPU, 4Gi memory), storage (50Gi), status (ready), short ID (s-igc7dy), and customer ID
+- The `server_get` response includes an additional field (`statisticsBaseDomain`) not present in the list response, confirming it provides more detailed information
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_server_get",
+  "timestamp": "2026-02-17T13:55:30.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "server",
+      "id": "cf24e9ff-21e8-4895-82ef-47354868a861",
+      "status": "ready"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved server details for 'MCP Server Dev' (cf24e9ff-21e8-4895-82ef-47354868a861). Server is ready, runs on cluster 'isenstedt' with shared.xlarge machine type (2 CPU, 4Gi memory, 50Gi storage). Short ID: s-igc7dy. Response included full details including statisticsBaseDomain.",
+  "execution_notes": "Dependency chain satisfied: server/list returned 1 server, then server/get retrieved its full details. Response completed in ~65ms. The get response provides additional fields compared to list (e.g., statisticsBaseDomain)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

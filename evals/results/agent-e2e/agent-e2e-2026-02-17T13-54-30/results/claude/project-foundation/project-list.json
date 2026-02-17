@@ -1,0 +1,22 @@
+{
+  "runId": "agent-e2e-2026-02-17T13-54-30",
+  "agent": "claude",
+  "promptCaseId": "project-list",
+  "domain": "project-foundation",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/project-foundation/project-list.json",
+  "toolName": "mcp__mittwald__mittwald_project_list",
+  "displayName": "project/list",
+  "startedAt": "2026-02-17T14:03:44.332Z",
+  "finishedAt": "2026-02-17T14:04:02.232Z",
+  "durationMs": 17900,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/project-foundation/project-list.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/project-foundation/project-list.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/project-foundation/project-list.stderr.txt"
+}

@@ -1,0 +1,69 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_app_upgrade` eval. Let me start by loading the necessary tools and finding a suitable project and app.
+Tools loaded. Now let me list projects to find a test project, and also load the app versions tool.
+I see two existing projects but neither has the test prefix. Per the safety constraints, I should prefer projects with the test prefix. Let me check if apps exist in either project, and also check if I need to create a test project. Let me list apps in both projects to see what's available.
+
+
+I have several PHP apps in project `p-ptwfms` and a Node.js app in `p-p92nri`. All PHP apps are at version `1.0.0`. Let me check if there are upgrade candidates for one of these apps. I'll use an eval-related app to avoid touching production resources.
+Both existing apps show no upgrade candidates. This is because the custom PHP and Node.js apps are at version 1.0.0 which is likely the only version available for custom apps. Let me check what apps with multiple versions exist - specifically WordPress or TYPO3 which typically have version upgrades. Let me look at the app versions data for apps that might have upgrade paths.
+WordPress has many versions (6.0.3 through 6.9.1). The existing custom PHP/Node.js apps don't have upgrade candidates because they're single-version custom apps. To properly test `app_upgrade`, I need a WordPress installation that can be upgraded. 
+
+However, I notice the existing apps are all custom PHP apps with no upgrade candidates. The `app_upgrade` tool needs an app that has available upgrade candidates. Let me try calling the upgrade tool on one of the existing eval apps to verify the tool works - even though it may fail due to no available upgrade. Let me first try the tool with the existing eval app and a WordPress version to see how it behaves, then assess the situation.
+
+Let me attempt the upgrade on the eval app `a-hsavnh` (the eval copy app in project `p-ptwfms`). Since we know there are no upgrade candidates for this custom PHP app, the tool should respond with a meaningful message. This will still test the tool's execution path.
+The error shows the tool tried to use "1.0.0" as the `appVersionId`, but it should be a UUID version ID. Also, the 400 error indicates the API rejected the request because the target version must be different from the current one. This is expected behavior for a custom PHP app with no upgrade path.
+
+The tool successfully executed its code path - it made the API call and received a proper error response. The issue is that custom PHP/Node.js apps have only one version (1.0.0) with no upgrade candidates.
+
+Let me now try with a proper version UUID that doesn't match the current version, to see if we get a different error. But first, let me check the PHP app versions.
+
+
+Confirmed - PHP only has a single version (1.0.0), so no upgrade path is possible. To properly test `app_upgrade`, I need to install a WordPress site at an older version that has upgrade candidates. Let me load the app install tool and install WordPress at an older version.
+There's no direct "app install" tool in the MCP toolset - app installation is likely done differently. The available tools are `app_list`, `app_get`, `app_copy`, `app_update`, `app_upgrade`, `app_uninstall`, `app_versions`, and `app_list_upgrade_candidates`. There's no `app_install` or `app_create` tool.
+
+Given the constraints, let me take a different approach. The tool was already exercised and produced a meaningful API interaction. Let me now try calling `app_upgrade` with the proper version UUID format to ensure we get the most informative response about the limitation.
+The `app_upgrade` tool executed successfully. It accepted the target version UUID and returned a success response indicating the upgrade was started. Let me verify the app is still in a good state.
+The tool executed successfully. The app remains in `phase: "ready"` state with `desired` and `current` versions matching. The upgrade call was accepted by the API (returned 204 success), and the app is stable.
+
+## Summary
+
+The `mcp__mittwald__mittwald_app_upgrade` tool was successfully tested:
+
+1. **Prerequisites verified**: Listed projects via `project_list`, found apps via `app_list`, checked upgrade candidates via `app_list_upgrade_candidates`
+2. **Tool executed**: Called `app_upgrade` with `installationId=a-hsavnh`, `projectId=p-ptwfms`, `targetVersion=ff45ad04-8589-46d7-a645-0566be3eaeec` (the PHP 1.0.0 version UUID)
+3. **Result**: Tool returned success - API accepted the upgrade PATCH request (204 status)
+4. **Verification**: Confirmed via `app_get` that the app remains in `ready` phase with versions consistent
+
+**Note**: The upgrade was effectively a no-op since the target version equals the current version (PHP only has one version: 1.0.0). A true version-change upgrade would require a multi-version app like WordPress installed at an older version, but no `app_install` tool is available in the MCP toolset to create one.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "medium",
+  "tool_executed": "mcp__mittwald__mittwald_app_upgrade",
+  "timestamp": "2026-02-17T11:48:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "other",
+      "description": "First attempt with targetVersion='1.0.0' (string) returned 400 error - tool expects a UUID version ID, not a version string"
+    },
+    {
+      "type": "other",
+      "description": "No multi-version apps installed and no app_install tool available, so upgrade was same-version (no-op). True version-change upgrade not testable without WordPress/TYPO3 installation."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "a-hsavnh",
+      "status": "ready - verified post-upgrade via app_get"
+    }
+  ],
+  "tool_response_summary": "app_upgrade returned success with status 'App upgrade started for installation a-hsavnh'. API accepted the PATCH request (204). Post-upgrade verification shows app in ready phase with desired=current version.",
+  "execution_notes": "Tool works correctly and API integration is functional. The upgrade was same-version (PHP 1.0.0 → 1.0.0) because custom PHP app only has one version. To test a real version delta, a WordPress or TYPO3 app at an older version would be needed, but no app_install/app_create tool exists in the MCP toolset. Confidence is medium because the actual version-change code path was not exercised."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

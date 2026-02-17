@@ -9,7 +9,7 @@ sidebar:
 
 **OAuth 2.1** is the secure authorization protocol used by Mittwald MCP. It enables your tools to access Mittwald resources **without you sharing your password**.
 
-This explainer covers the "why" and "how" of OAuth for Mittwald. For step-by-step setup, see [Getting Started](/getting-started/).
+This explainer covers the "why" and "how" of OAuth for Mittwald. For step-by-step setup, see [Getting Started](/getting-connected/).
 
 ---
 
@@ -97,9 +97,9 @@ Why? Prevents authorization code interception attacks.
 
 Your tool opens browser with URL:
 ```
-https://mittwald-oauth-server.fly.dev/oauth/authorize?
+https://mittwald-oauth-server.fly.dev/authorize?
   client_id=abc123...
-  &redirect_uri=http://127.0.0.1:3000/callback
+  &redirect_uri=http://127.0.0.1/callback
   &response_type=code
   &scope=user:read customer:read project:read app:read
   &code_challenge=E9Mrozoa2owUednMVwmYgdyKzwtq0F6nN5sEHvJ0NRM
@@ -154,7 +154,7 @@ You review and click "Approve"
 
 Browser redirects to:
 ```
-http://127.0.0.1:3000/callback?
+http://127.0.0.1/callback?
   code=AUTH_CODE_HERE
   &state=random_value
 ```
@@ -166,13 +166,13 @@ Your tool's localhost server receives this redirect and extracts the authorizati
 Your tool now exchanges the authorization code for actual tokens:
 
 ```
-POST https://mittwald-oauth-server.fly.dev/oauth/token
+POST https://mittwald-oauth-server.fly.dev/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code
 &code=AUTH_CODE_HERE
 &client_id=abc123...
-&redirect_uri=http://127.0.0.1:3000/callback
+&redirect_uri=http://127.0.0.1/callback
 &code_verifier=ORIGINAL_VERIFIER_VALUE
 ```
 
@@ -304,11 +304,11 @@ Mittwald uses **RFC 7591 Dynamic Client Registration**.
 Instead of pre-registering clients, you register on-the-fly:
 
 ```bash
-curl -X POST https://mittwald-oauth-server.fly.dev/oauth/register \
+curl -X POST https://mittwald-oauth-server.fly.dev/register \
   -H "Content-Type: application/json" \
   -d '{
     "client_name": "Claude Code - John Doe",
-    "redirect_uris": ["http://127.0.0.1:3000/callback"],
+    "redirect_uris": ["http://127.0.0.1/callback"],
     "grant_types": ["authorization_code"],
     "response_types": ["code"],
     "token_endpoint_auth_method": "none"
@@ -349,7 +349,7 @@ When your tool calls Mittwald API with token:
 
 **Refresh flow**:
 1. Your tool detects expiration approaching
-2. Tool calls: `POST /oauth/token` with refresh_token
+2. Tool calls: `POST /token` with refresh_token
 3. Server validates refresh token
 4. Server issues new access_token
 5. Tool updates stored token
@@ -480,7 +480,7 @@ OAuth lets you grant access without full trust.
 ## Further Learning
 
 **Ready to set up?**
-→ [Getting Started](/getting-started/) - Step-by-step OAuth setup for your tool
+→ [Getting Started](/getting-connected/) - Step-by-step OAuth setup for your tool
 
 **Want technical details?**
 → [RFC 6749](https://tools.ietf.org/html/rfc6749) - OAuth 2.0 specification

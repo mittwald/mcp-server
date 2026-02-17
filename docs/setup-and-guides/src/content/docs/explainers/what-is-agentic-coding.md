@@ -144,7 +144,7 @@ Agents can **dynamically discover** what tools are available:
 ```
 Agent: "What tools does Mittwald MCP expose?"
 [Calls list_tools()...]
-Response: "115 tools across 14 domains available"
+Response: "Tools across project, app, database, domain, identity, and automation domains available"
 Agent: [Evaluates which tools apply to user request]
 ```
 
@@ -275,7 +275,7 @@ Agent: "App created successfully on compatible server"
 
 ### Cost Reduction
 
-**For agencies** (case study CS-002):
+**For agencies** (tutorial workflow benchmarking):
 - **Before**: 1 junior dev handling infrastructure = 40% project overhead
 - **After**: Junior dev + agentic AI = 10% project overhead
 - **Result**: 30% more projects, same team size
@@ -388,7 +388,7 @@ Developers become more productive, not obsolete.
 
 ## Getting Started with Agentic Coding
 
-1. **Set up OAuth** with your preferred tool ([Getting Started](/getting-started/))
+1. **Set up OAuth** with your preferred tool ([Getting Started](/getting-connected/))
 2. **Explore MCP tools** in the [Reference](/reference/)
 3. **Try simple tasks** first ("Create a project")
 4. **Graduate to complex tasks** ("Set up a complete environment")
@@ -404,10 +404,10 @@ Start small. As you gain confidence, tackle more complex workflows.
 → [What is MCP?](/explainers/what-is-mcp/) - Deep dive into the protocol
 
 **Want to see agentic workflows in practice?**
-→ [Case Studies](/case-studies/) - Real developers using agentic coding
+→ [Tutorials](/tutorials/) - Real developers using agentic coding
 
 **Ready to start?**
-→ [Getting Started](/getting-started/) - Set up your tool
+→ [Getting Started](/getting-connected/) - Set up your tool
 
 ---
 

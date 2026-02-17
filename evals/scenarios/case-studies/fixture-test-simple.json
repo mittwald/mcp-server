@@ -1,0 +1,45 @@
+{
+  "id": "fixture-test-simple",
+  "name": "Fixture System Test - Simple Database Audit",
+  "description": "Minimal test scenario to validate fixture provisioning and cleanup",
+  "fixtures": {
+    "project": {
+      "description": "Test Project {{RUN_ID}}"
+    },
+    "databases": {
+      "mysql": [
+        {
+          "description": "Test MySQL DB {{RUN_ID}}",
+          "version": "8.0"
+        }
+      ],
+      "redis": [
+        {
+          "description": "Test Redis Cache {{RUN_ID}}",
+          "version": "7"
+        }
+      ]
+    }
+  },
+  "prompts": [
+    "List all MySQL databases in project {{PROJECT_ID}} and show me the test database",
+    "Get detailed configuration for MySQL database {{MYSQL_0_ID}}",
+    "Get detailed configuration for Redis database {{REDIS_0_ID}}"
+  ],
+  "success_criteria": {
+    "resources_created": {
+      "project": 1,
+      "mysql_database": 1,
+      "redis_database": 1
+    },
+    "resources_configured": {
+      "audit_completed": true
+    }
+  },
+  "expected_tools": [
+    "mittwald_database_mysql_list",
+    "mittwald_database_mysql_get",
+    "mittwald_database_redis_get"
+  ],
+  "tags": ["test", "fixtures", "simple", "databases"]
+}

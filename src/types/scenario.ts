@@ -45,5 +45,99 @@ export interface ScenarioDefinition {
    * Categorization tags
    */
   tags?: string[];
+  /**
+   * Resources to provision before scenario execution (supports template variables)
+   */
+  fixtures?: {
+    project?: {
+      /**
+       * Project description (supports {{RUN_ID}} template)
+       */
+      description: string;
+      /**
+       * Server ID (optional, falls back to DEFAULT_SERVER_ID env var)
+       */
+      serverId?: string;
+      [k: string]: unknown;
+    };
+    databases?: {
+      mysql?: {
+        description: string;
+        version: string;
+        characterSet?: string;
+        collation?: string;
+        [k: string]: unknown;
+      }[];
+      redis?: {
+        description: string;
+        version: string;
+        maxMemory?: string;
+        maxMemoryPolicy?: string;
+        [k: string]: unknown;
+      }[];
+      [k: string]: unknown;
+    };
+    apps?: {
+      description: string;
+      appName: string;
+      appVersion: string;
+      [k: string]: unknown;
+    }[];
+    domains?: {
+      /**
+       * Fully qualified domain name (supports {{RUN_ID}} template)
+       */
+      fqdn: string;
+      /**
+       * Create virtualhost for this domain
+       */
+      virtualhost?: boolean;
+      [k: string]: unknown;
+    }[];
+    mail?: {
+      addresses?: {
+        address: string;
+        password?: string;
+        quota?: string;
+        [k: string]: unknown;
+      }[];
+      deliveryboxes?: {
+        description: string;
+        password?: string;
+        [k: string]: unknown;
+      }[];
+      [k: string]: unknown;
+    };
+    ssh_users?: {
+      description: string;
+      publicKey?: string;
+      [k: string]: unknown;
+    }[];
+    backups?: {
+      schedules?: {
+        description: string;
+        schedule: string;
+        ttl: string;
+        [k: string]: unknown;
+      }[];
+      [k: string]: unknown;
+    };
+    containers?: {
+      stacks?: {
+        description: string;
+        composeFile?: string;
+        [k: string]: unknown;
+      }[];
+      registries?: {
+        description: string;
+        uri: string;
+        username?: string;
+        password?: string;
+        [k: string]: unknown;
+      }[];
+      [k: string]: unknown;
+    };
+    [k: string]: unknown;
+  };
   [k: string]: unknown;
 }

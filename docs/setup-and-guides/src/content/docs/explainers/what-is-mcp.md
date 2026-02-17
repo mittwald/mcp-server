@@ -114,19 +114,19 @@ graph LR
 
 **Tools** are discrete capabilities exposed by the MCP server.
 
-Mittwald MCP provides **115 tools** organized into 14 domains:
+Mittwald MCP provides a broad set of tools organized by domain:
 
-| Domain | Count | Purpose |
-|--------|-------|---------|
-| **apps** | 8 | Application lifecycle (install, upgrade, uninstall) |
-| **backups** | 8 | Backup creation and restoration |
-| **containers** | 10 | Docker stack deployment |
-| **databases** | 14 | MySQL and Redis management |
-| **domains-mail** | 22 | Domain, DNS, email, virtualhost management |
-| **identity** | 13 | User profiles, API tokens, SSH keys |
-| **project-foundation** | 12 | Project and server management |
-| **automation** | 9 | Workflow automation tools |
-| **... (6 more)** | ... | ... |
+| Domain | Purpose |
+|--------|---------|
+| **apps** | Application lifecycle (install, upgrade, uninstall) |
+| **backups** | Backup creation and restoration |
+| **containers** | Docker stack deployment |
+| **databases** | MySQL and Redis management |
+| **domains-mail** | Domain, DNS, email, virtualhost management |
+| **identity** | User profiles, API tokens, SSH keys |
+| **project-foundation** | Project and server management |
+| **automation** | Workflow automation tools |
+| **...** | Additional domains for certificates, org access, context, and utilities |
 
 Each tool has:
 - **Name**: Unique identifier (e.g., `project/create`)
@@ -187,7 +187,7 @@ Example prompt template: "Set up a complete web hosting stack: project + TYPO3 +
 **Implementation details**:
 - **Transport**: HTTP with Server-Sent Events (SSE) for streaming
 - **Authentication**: OAuth 2.1 with PKCE for secure authentication
-- **Tools**: 115 tools across 14 functional domains
+- **Tools**: Broad coverage across the core Mittwald platform domains
 - **Platform**: Node.js + TypeScript running on Fly.io (globally distributed)
 
 ### Authentication
@@ -206,28 +206,28 @@ See [How OAuth Integration Works](/explainers/oauth-integration/) for detailed e
 Tools are grouped by **domain** — functional areas of the Mittwald platform:
 
 **Infrastructure**:
-- `project-foundation` (12 tools) - Projects, servers
-- `containers` (10 tools) - Docker stacks
-- `sftp` (5 tools) - SFTP server management
+- `project-foundation` - Projects, servers
+- `containers` - Docker stacks
+- `sftp` - SFTP server management
 
 **Data Services**:
-- `databases` (14 tools) - MySQL, Redis
-- `backups` (8 tools) - Backup operations
+- `databases` - MySQL, Redis
+- `backups` - Backup operations
 
 **Web Services**:
-- `apps` (8 tools) - Application management
-- `domains-mail` (22 tools) - Domains, DNS, email
-- `certificates` (6 tools) - SSL/TLS certificates
+- `apps` - Application management
+- `domains-mail` - Domains, DNS, email
+- `certificates` - SSL/TLS certificates
 
 **User & Organization**:
-- `identity` (13 tools) - Users, tokens, SSH keys
-- `organization` (7 tools) - Organization management
-- `access-users` (7 tools) - User access control
+- `identity` - Users, tokens, SSH keys
+- `organization` - Organization management
+- `access-users` - User access control
 
 **Other**:
-- `automation` (9 tools) - Automation workflows
-- `context` (3 tools) - System context information
-- `misc` (5 tools) - Miscellaneous utilities
+- `automation` - Automation workflows
+- `context` - System context information
+- `misc` - Miscellaneous utilities
 
 Complete reference available in [Tool Reference](/reference/).
 
@@ -255,9 +255,9 @@ Complete reference available in [Tool Reference](/reference/).
 
 Both access the same underlying Mittwald platform.
 
-### Why 115 Granular Tools Instead of Fewer Broad Tools?
+### Why Granular Tools Instead of Fewer Broad Tools?
 
-**Granular tools** (115 focused tools):
+**Granular tools** (many focused tools):
 - **Precision**: AI can invoke the exact action needed
 - **Safety**: Less risk of unintended side effects
 - **Clear intent**: Each tool name clearly indicates its purpose
@@ -346,7 +346,7 @@ Both provide the same underlying functionality—MCP is optimized for AI, REST A
 4. Results presented in natural language
 5. Continue conversation or ask follow-up questions
 
-**Result**: 60-90% time savings for common infrastructure tasks (based on case study research from feature 015).
+**Result**: 60-90% time savings for common infrastructure tasks (based on internal workflow benchmarking).
 
 ### For Mittwald
 
@@ -369,17 +369,17 @@ Both provide the same underlying functionality—MCP is optimized for AI, REST A
 ## Further Learning
 
 **Want to get started?**
-→ [Getting Started with Mittwald MCP](/getting-started/) - Choose your tool and set up OAuth
+→ [Getting Connected to Mittwald MCP](/getting-connected/) - Choose your tool and set up OAuth
 
 **Want to see MCP in action?**
-→ [Case Studies](/case-studies/) - Real-world examples of developers using Mittwald MCP
+→ [Tutorials](/tutorials/) - Real-world examples of developers using Mittwald MCP
 
 **Need technical details?**
-→ [Tool Reference](/reference/) - Complete documentation for all 115 tools
+→ [Tool Reference](/reference/) - Complete documentation for all available tools
 
 **Want more conceptual understanding?**
 → [What is Agentic Coding?](/explainers/what-is-agentic-coding/) - How AI agents use tools autonomously
 
 ---
 
-*This explainer focused on understanding "what" MCP is and "why" it matters. For "how to use" it, see the getting-started guides.*
+*This explainer focused on understanding "what" MCP is and "why" it matters. For "how to use" it, see the getting-connected guides.*

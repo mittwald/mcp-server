@@ -1,0 +1,51 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_app_uninstall` eval. Let me start by discovering the necessary tools and finding a suitable test project.
+Tools loaded. Now let me list projects to find a test project.
+Neither of these projects has the test prefix `agent-e2e-2026-02-17T11-46-18-`. Per the safety constraints, I should prefer test projects. Let me check if there are apps in these projects. Since neither is a test project, I need to create one first, then install an app to uninstall. But let me first check if there are any apps in existing projects that might be from test runs.
+
+Let me search for a tool to create a project and install an app.
+Now let me check the existing projects for installed apps. The second project "Web Project" might have apps. Let me check both projects for apps.
+
+
+I found a perfect candidate. In project `p-ptwfms`, there's an app with description "agent-e2e-2026-02-17T11-46-18 App Copy Eval Test" (shortId: `a-cvmnla`, id: `3a0600c9-fad8-4836-9a56-0ba9945087dd`). This is a test app from the current eval run, making it safe to uninstall.
+
+Let me first verify this app exists via `app_get`, then uninstall it.
+Confirmed: the app `a-cvmnla` is a test app from the current eval run (description starts with "agent-e2e-2026-02-17T11-46-18"), phase is "ready", deletionRequested is false. Now I'll uninstall it.
+The uninstall succeeded. Let me verify the app is gone by trying to get it again.
+The verification confirms the app has been removed — querying `a-cvmnla` now returns a 403 (Forbidden), meaning the resource no longer exists or is no longer accessible. This is the expected behavior after uninstallation.
+
+Let me also verify via the app list for the project.
+Verification complete. The project now shows 4 apps (down from 5), and the test app `a-cvmnla` ("agent-e2e-2026-02-17T11-46-18 App Copy Eval Test") is no longer in the list. The uninstall was fully successful.
+
+## Summary
+
+| Step | Result |
+|------|--------|
+| Found test app | `a-cvmnla` — "agent-e2e-2026-02-17T11-46-18 App Copy Eval Test" (PHP app in project `p-ptwfms`) |
+| Pre-check | App confirmed in "ready" phase, `deletionRequested: false` |
+| Uninstall | `mcp__mittwald__mittwald_app_uninstall` returned success with `force: true` |
+| Post-check (get) | 403 — app no longer accessible |
+| Post-check (list) | Project app count dropped from 5 → 4, app absent from list |
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_uninstall",
+  "timestamp": "2026-02-17T11:50:42.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "a-cvmnla",
+      "status": "removed_confirmed"
+    }
+  ],
+  "tool_response_summary": "App uninstalled successfully. Status: success. installationId: a-cvmnla, force: true. Post-uninstall verification: app_get returns 403 (no longer accessible), app_list shows 4 apps (down from 5), target app absent.",
+  "execution_notes": "Used a test app from the current eval run (description: 'agent-e2e-2026-02-17T11-46-18 App Copy Eval Test') to safely test the destructive uninstall operation. Verified removal via both app_get (403 error) and app_list (app absent from project listing)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

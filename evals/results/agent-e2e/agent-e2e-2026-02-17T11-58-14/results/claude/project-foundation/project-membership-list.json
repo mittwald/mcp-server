@@ -1,0 +1,26 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "project-membership-list",
+  "domain": "project-foundation",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/project-foundation/project-membership-list.json",
+  "toolName": "mcp__mittwald__mittwald_project_membership_list",
+  "displayName": "project/membership/list",
+  "startedAt": "2026-02-17T12:53:25.923Z",
+  "finishedAt": "2026-02-17T12:56:10.200Z",
+  "durationMs": 164277,
+  "status": "failure",
+  "failureCategory": "missing_expected_tool_call",
+  "failureReason": "Expected tool mcp__mittwald__mittwald_project_membership_list was not called",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "Read",
+    "Glob",
+    "WebFetch"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/project-membership-list.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/project-membership-list.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/project-membership-list.stderr.txt"
+}

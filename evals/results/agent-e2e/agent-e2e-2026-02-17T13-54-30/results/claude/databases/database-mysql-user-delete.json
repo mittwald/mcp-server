@@ -1,0 +1,27 @@
+{
+  "runId": "agent-e2e-2026-02-17T13-54-30",
+  "agent": "claude",
+  "promptCaseId": "database-mysql-user-delete",
+  "domain": "databases",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/databases/database-mysql-user-delete.json",
+  "toolName": "mcp__mittwald__mittwald_database_mysql_user_delete",
+  "displayName": "database/mysql/user/delete",
+  "startedAt": "2026-02-17T13:58:32.673Z",
+  "finishedAt": "2026-02-17T14:00:02.195Z",
+  "durationMs": 89522,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "TodoWrite",
+    "mcp__mittwald__mittwald_database_mysql_versions",
+    "mcp__mittwald__mittwald_database_mysql_create",
+    "mcp__mittwald__mittwald_database_mysql_user_delete"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/databases/database-mysql-user-delete.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/databases/database-mysql-user-delete.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/databases/database-mysql-user-delete.stderr.txt"
+}

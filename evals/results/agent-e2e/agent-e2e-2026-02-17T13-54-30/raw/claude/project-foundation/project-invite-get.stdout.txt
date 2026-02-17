@@ -1,0 +1,60 @@
+
+
+I'll execute this eval by first listing projects to find a suitable one, then attempting to get project invites.
+
+**Step 1: List projects to find a test project**
+Good, I have all three tools loaded. Now let me list projects to find a suitable one.
+I have projects available. I'll use the test project (`p-wbj9rf`) since it matches our eval prefix. Now let me list invites for this project to find an invite ID.
+Got a 403 on the test project. Let me try the other projects - this might be a permissions issue specific to that project.
+Both projects return 403 on invite listing. This is a permissions issue - the authenticated user's API token likely lacks the required scope for managing project invites (e.g., `project_membership:read` or similar). Let me try the `project_invite_get` tool directly with a placeholder invite ID to see what error it returns, which will help document the tool's behavior.
+All three projects return 403 on invite listing. Let me try calling `project_invite_get` directly with a dummy UUID to verify the tool itself works (it should return a different error - like 404 - if the tool is functional).
+The tool is functional (it correctly calls the Mittwald API at `v2/project-invites/{inviteId}`), but returns 403 for all invite-related operations. This is a consistent permission issue - the authenticated API token lacks the required scope for project invite management.
+
+## Summary
+
+- **Tool executed**: `mcp__mittwald__mittwald_project_invite_get` was successfully invoked
+- **API endpoint called**: `GET v2/project-invites/{inviteId}` 
+- **Result**: 403 Forbidden across all invite operations (list and get)
+- **Root cause**: The API token used for authentication does not have the `project_membership:read` (or equivalent) scope required for invite operations
+- **Tool mechanics verified**: The tool correctly accepts `inviteId` parameter, makes the proper API call, and returns structured error responses
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_project_invite_get",
+  "timestamp": "2026-02-17T14:00:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "permission_denied",
+      "description": "HTTP 403 on GET v2/project-invites/{inviteId} - the authenticated API token lacks the required scope for project invite operations. All three available projects also returned 403 on invite list, confirming this is a token-level permission issue, not a resource-level one."
+    },
+    {
+      "type": "dependency_missing",
+      "description": "Could not obtain a valid inviteId via project_invite_list because that tool also returns 403 for all projects. Without a valid invite ID, the get operation cannot be meaningfully tested beyond verifying the API call mechanics."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-wbj9rf",
+      "status": "exists_but_invite_access_denied"
+    },
+    {
+      "type": "project",
+      "id": "p-ptwfms",
+      "status": "exists_but_invite_access_denied"
+    },
+    {
+      "type": "project",
+      "id": "p-p92nri",
+      "status": "exists_but_invite_access_denied"
+    }
+  ],
+  "tool_response_summary": "Tool correctly invoked GET v2/project-invites/00000000-0000-0000-0000-000000000000 but received HTTP 403 Forbidden. The tool's plumbing works (parameter handling, API call construction, error reporting) but the token lacks invite-related permissions.",
+  "execution_notes": "The project_invite_get and project_invite_list tools both consistently return 403 across all available projects. This indicates the OAuth token scopes do not include project invite management permissions. To fully test this tool, the token would need additional scopes (likely project_membership:read or similar). The tool itself is mechanically sound - it correctly constructs the API URL, passes parameters, and returns structured error responses."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

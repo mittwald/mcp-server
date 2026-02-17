@@ -1,0 +1,54 @@
+{
+  "id": "typo3-multisite-deployment",
+  "name": "TYPO3 Multi-Site Deployment",
+  "source": "docs/setup-and-guides/src/content/docs/case-studies/typo3-multisite-deployment.md",
+  "description": "Deploy multi-language TYPO3 sites by cloning base installation for French variant",
+  "fixtures": {
+    "project": {
+      "description": "TYPO3 Multi-Site {{RUN_ID}}"
+    },
+    "databases": {
+      "mysql": [
+        {
+          "description": "TYPO3 Base Database {{RUN_ID}}",
+          "version": "8.0"
+        }
+      ]
+    },
+    "apps": [
+      {
+        "description": "TYPO3 Base Site {{RUN_ID}}",
+        "appName": "typo3",
+        "appVersion": "12"
+      }
+    ],
+    "ssh_users": [
+      {
+        "description": "Deployment Pipeline SSH {{RUN_ID}}"
+      }
+    ]
+  },
+  "prompts": [
+    "Clone app {{APP_0_ID}} to create the French language site variant with description 'TYPO3 French Site {{RUN_ID}}'",
+    "Create a new MySQL database in project {{PROJECT_ID}} with description 'TYPO3 French DB {{RUN_ID}}' version 8.0 for the French site",
+    "Create a virtualhost for domain typo3-fr-{{RUN_ID}}.example.com in project {{PROJECT_ID}}",
+    "Verify the multi-site setup by listing all apps in project {{PROJECT_ID}} and showing virtualhost configuration"
+  ],
+  "success_criteria": {
+    "resources_created": {
+      "project": 1,
+      "app": 2,
+      "mysql_database": 2,
+      "virtualhost": 1,
+      "ssh_user": 1
+    }
+  },
+  "expected_tools": [
+    "mittwald_app_copy",
+    "mittwald_database_mysql_create",
+    "mittwald_domain_virtualhost_create",
+    "mittwald_app_list",
+    "mittwald_domain_virtualhost_list"
+  ],
+  "tags": ["case-study", "high-complexity", "multi-site", "typo3", "apps", "fixtures"]
+}

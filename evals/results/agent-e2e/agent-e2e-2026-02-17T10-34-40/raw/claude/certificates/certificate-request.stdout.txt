@@ -1,0 +1,59 @@
+
+
+I'll execute the certificate request eval. Let me start by loading the required tools and finding an existing project.
+Good, tools are loaded. Let me list available projects first.
+I have projects available. I'll use the eval test project `p-kbuygq` for the certificate request. To request a certificate via Let's Encrypt, I need a domain that is actually hosted on the project. Let me first check what domains/virtual hosts exist on this project.
+There's a virtual host with hostname `p-kbuygq.project.space`. Now let me request a certificate for this domain.
+The tool expects a `commonName` parameter, but the schema exposed to me only shows `domain`. The error suggests the underlying API requires `commonName`. Let me try using the domain as the common name — the tool might map the `domain` parameter differently. Let me check what parameters the tool actually accepts more carefully by looking at the existing eval prompt for this tool.
+The eval prompt notes that `commonName` is REQUIRED and should be the same as the domain parameter. But the MCP tool schema doesn't expose `commonName` as a parameter. The underlying API needs it, but the tool wrapper doesn't pass it. Let me try the call with the project that has more domains set up, and also check if `domain` alone suffices with a different approach. Let me also check domain lists for the projects.
+No custom domains are registered. The only available hostname is the auto-generated `p-kbuygq.project.space`. Let me check existing certificates to understand the state, and also try the certificate request with the project.space domain which should already have SSL.
+No certificates exist yet. Let me attempt the certificate request again. The error said `commonName is required` — this is a bug in the MCP tool where the `domain` parameter isn't being mapped to the underlying API's `commonName` field. Let me try passing it directly to see if the tool accepts unknown parameters, or look at the tool source code.
+I found the bug. The tool's input schema exposes `domain` as the parameter name, but the handler expects `commonName`. The schema defines `domain` and `autoRenew`/`subdomains`, but the handler interface (`MittwaldCertificateRequestArgs`) expects `commonName` — these are mismatched. The `domain` parameter from the schema is never mapped to `commonName` before the handler.
+
+This means when I pass `domain`, the handler sees `args.commonName` as undefined and returns the error. This is a schema-to-handler mismatch bug in the tool.
+
+Since I can't pass `commonName` directly through the MCP tool interface (the schema only accepts `domain`), the tool will always fail. Let me document this finding in the self-assessment.
+
+Let me verify by attempting one more call to confirm the behavior is consistent:
+Confirmed. The tool consistently fails due to the schema/handler mismatch.
+
+## Summary
+
+The `mcp__mittwald__mittwald_certificate_request` tool has a **bug**: the MCP tool schema exposes `domain` as the input parameter, but the handler expects `commonName`. The `domain` value is never mapped to `commonName`, so the handler always rejects the request with `"commonName is required"`.
+
+**Root cause** in the source:
+- **Schema** (`src/constants/tool/mittwald-cli/certificate/request-cli.ts:18`): defines `domain` as required
+- **Handler** (`src/handlers/tools/mittwald-cli/certificate/request-cli.ts:11`): expects `commonName` in `MittwaldCertificateRequestArgs`
+- No mapping between `domain` → `commonName` exists
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_certificate_request",
+  "timestamp": "2026-02-17T10:30:45.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "Tool schema defines 'domain' as the input parameter but the handler expects 'commonName'. The domain value passed via MCP is never mapped to commonName, causing the handler to always reject with 'commonName is required'. This is a schema-to-handler mismatch bug in src/constants/tool/mittwald-cli/certificate/request-cli.ts (schema) vs src/handlers/tools/mittwald-cli/certificate/request-cli.ts (handler)."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-kbuygq",
+      "status": "exists"
+    },
+    {
+      "type": "virtualhost",
+      "id": "f74784ad-d9c1-436c-818f-71576f614386",
+      "status": "exists (p-kbuygq.project.space)"
+    }
+  ],
+  "tool_response_summary": "Tool returned error: 'commonName is required'. The MCP schema exposes 'domain' but handler checks args.commonName which is undefined because no domain->commonName mapping exists.",
+  "execution_notes": "Fix: Either rename the schema property from 'domain' to 'commonName', or add a mapping in the handler (e.g., const commonName = args.commonName || args.domain). The handler also accepts optional CSR fields (city, company, country, organizationalUnit, state) that are not exposed in the MCP schema. Additionally, 'autoRenew' and 'subdomains' from the schema are not used in the handler."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

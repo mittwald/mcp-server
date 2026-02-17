@@ -13,6 +13,10 @@ import { validateScenarioOutcome } from './outcome-validator.js';
 import { updateValidationRecords } from './coverage-tracker.js';
 import type { ScenarioDefinition } from '../../src/types/scenario.js';
 import type { ScenarioExecutionResult } from '../../src/types/scenario-execution.js';
+import { setupFixtures } from './fixture-provisioner.js';
+import { buildFixtureContext, interpolateScenario } from './template-interpolator.js';
+import { validateScenarioState } from './enhanced-validator.js';
+import { cleanupFixtures } from './fixture-cleanup.js';
 
 /**
  * Scenario runner that executes prompts via Claude Code CLI.
@@ -29,6 +33,9 @@ interface ScenarioRunnerOptions {
   outputPath?: string; // Override default result path
   timeout?: number; // Timeout per prompt (ms, default: 120000)
   target?: string; // Test target: 'local' | 'flyio' | 'mittwald' (default: 'local')
+  skipFixtures?: boolean; // Skip fixture provisioning (for debugging)
+  skipCleanup?: boolean; // Skip cleanup even on success (for debugging)
+  cleanupOnFailure?: boolean; // Force cleanup even on failure
 }
 
 /**
@@ -45,6 +52,9 @@ export async function runScenario(
     outputPath,
     timeout = 120000,
     target: targetName,
+    skipFixtures = false,
+    skipCleanup = false,
+    cleanupOnFailure = false,
   } = options;
 
   // Get test target (default: local)
@@ -70,6 +80,28 @@ export async function runScenario(
   const sessionId = `session-${runId}`;
   const startTime = Date.now();
 
+  // Provision fixtures if defined
+  let provisionedFixtures;
+  let interpolatedScenario = scenario;
+
+  if (scenario.fixtures && !skipFixtures) {
+    console.log('\n🔧 Provisioning fixtures...\n');
+    try {
+      provisionedFixtures = await setupFixtures(scenario, runId);
+
+      // Build template context and interpolate prompts
+      const fixtureContext = buildFixtureContext(provisionedFixtures, runId);
+      interpolatedScenario = interpolateScenario(scenario, fixtureContext);
+
+      console.log('\n✅ Fixtures provisioned successfully\n');
+    } catch (fixtureError) {
+      console.error('\n❌ Fixture provisioning failed:', fixtureError);
+      throw fixtureError;
+    }
+  } else if (scenario.fixtures && skipFixtures) {
+    console.log('\n⏭️  Skipping fixture provisioning (--skip-fixtures flag)\n');
+  }
+
   const result: ScenarioExecutionResult = {
     scenario_id: scenarioId,
     run_id: runId,
@@ -85,10 +117,10 @@ export async function runScenario(
   let fullLogOutput = '';
 
   try {
-    // Execute prompts sequentially
-    for (let i = 0; i < scenario.prompts.length; i++) {
-      const prompt = scenario.prompts[i];
-      console.log(`\nPrompt ${i + 1}/${scenario.prompts.length}:`);
+    // Execute prompts sequentially (use interpolated scenario)
+    for (let i = 0; i < interpolatedScenario.prompts.length; i++) {
+      const prompt = interpolatedScenario.prompts[i];
+      console.log(`\nPrompt ${i + 1}/${interpolatedScenario.prompts.length}:`);
       console.log(`  "${prompt}"`);
 
       const { toolsCalled, logOutput } = await executePrompt(prompt, timeout);
@@ -115,50 +147,90 @@ export async function runScenario(
       fullLogOutput
     );
 
-    // Validate outcome using appropriate method for target
-    if (target.logSource === 'outcome-validation') {
-      // For mittwald.de: Use outcome validator with `mw` CLI
-      console.log(`\n🔍 Validating outcome using mw CLI...`);
-      const outcomeResult = await validateScenarioOutcome(scenario, target);
-      result.outcome_validation = {
-        all_passed: outcomeResult.allPassed,
-        checks: outcomeResult.checks,
-        errors: outcomeResult.errors,
-        expected_tools: outcomeResult.expectedTools,
-      };
+    // Enhanced state validation (if fixtures were provisioned)
+    if (provisionedFixtures && !skipFixtures) {
+      console.log('\n🔍 Validating scenario state...\n');
+      const stateValidation = await validateScenarioState(scenario, provisionedFixtures);
 
-      if (!outcomeResult.allPassed) {
+      if (!stateValidation.passed) {
         result.status = 'failure';
         result.failure_details = {
-          failed_tool: 'outcome_validation',
-          error_message: `Outcome validation failed: ${outcomeResult.errors.join(', ')}`,
-          context: { validation_checks: outcomeResult.checks },
+          failed_tool: 'state_validation',
+          error_message: 'State validation failed',
+          context: { checks: stateValidation.checks },
         };
-      }
-
-      // For mittwald.de, use expected_tools if outcome passed
-      if (outcomeResult.allPassed && outcomeResult.expectedTools) {
-        result.tools_called = outcomeResult.expectedTools;
       }
     } else {
-      // For local/Fly.io: Use traditional validation
-      const validation = validateOutcome(scenario, result);
-      if (!validation.valid) {
-        console.error('Validation errors:', validation.errors);
-        result.status = 'failure';
-        result.failure_details = {
-          failed_tool: 'validation',
-          error_message: `Validation failed: ${validation.errors.join(', ')}`,
-          context: { validation_errors: validation.errors },
+      // Fallback to traditional validation for scenarios without fixtures
+      if (target.logSource === 'outcome-validation') {
+        // For mittwald.de: Use outcome validator with `mw` CLI
+        console.log(`\n🔍 Validating outcome using mw CLI...`);
+        const outcomeResult = await validateScenarioOutcome(scenario, target);
+        result.outcome_validation = {
+          all_passed: outcomeResult.allPassed,
+          checks: outcomeResult.checks,
+          errors: outcomeResult.errors,
+          expected_tools: outcomeResult.expectedTools,
         };
+
+        if (!outcomeResult.allPassed) {
+          result.status = 'failure';
+          result.failure_details = {
+            failed_tool: 'outcome_validation',
+            error_message: `Outcome validation failed: ${outcomeResult.errors.join(', ')}`,
+            context: { validation_checks: outcomeResult.checks },
+          };
+        }
+
+        // For mittwald.de, use expected_tools if outcome passed
+        if (outcomeResult.allPassed && outcomeResult.expectedTools) {
+          result.tools_called = outcomeResult.expectedTools;
+        }
+      } else {
+        // For local/Fly.io: Use traditional validation
+        const validation = validateOutcome(scenario, result);
+        if (!validation.valid) {
+          console.error('Validation errors:', validation.errors);
+          result.status = 'failure';
+          result.failure_details = {
+            failed_tool: 'validation',
+            error_message: `Validation failed: ${validation.errors.join(', ')}`,
+            context: { validation_errors: validation.errors },
+          };
+        }
       }
     }
 
     // Perform cleanup
-    if (!keepResources && scenario.cleanup && result.status === 'success') {
-      console.log('\nPerforming cleanup...');
+    const shouldCleanup =
+      !keepResources &&
+      !skipCleanup &&
+      (result.status === 'success' || cleanupOnFailure);
+
+    if (shouldCleanup && provisionedFixtures) {
+      // Use new fixture cleanup (dependency-aware)
       try {
-        for (const cleanupPrompt of scenario.cleanup) {
+        const cleanupResult = await cleanupFixtures(provisionedFixtures, scenario);
+        result.cleanup_performed = cleanupResult.success;
+
+        if (cleanupResult.failed.length > 0) {
+          result.cleanup_errors = cleanupResult.failed.map(
+            (f) => `${f.type} ${f.id}: ${f.error}`
+          );
+        }
+      } catch (cleanupError) {
+        result.cleanup_errors = [
+          cleanupError instanceof Error
+            ? cleanupError.message
+            : String(cleanupError),
+        ];
+        console.error('Cleanup failed:', result.cleanup_errors);
+      }
+    } else if (!shouldCleanup && scenario.cleanup && result.status === 'success') {
+      // Fallback to legacy cleanup prompts (for scenarios without fixtures)
+      console.log('\nPerforming legacy cleanup...');
+      try {
+        for (const cleanupPrompt of interpolatedScenario.cleanup || []) {
           await executePrompt(cleanupPrompt, timeout);
         }
         result.cleanup_performed = true;
@@ -172,6 +244,10 @@ export async function runScenario(
       }
     } else if (keepResources) {
       console.log('\nSkipping cleanup (--keep-resources flag)');
+    } else if (skipCleanup) {
+      console.log('\nSkipping cleanup (--skip-cleanup flag)');
+    } else if (result.status === 'failure' && !cleanupOnFailure) {
+      console.log('\nSkipping cleanup (scenario failed, use --cleanup-on-failure to force)');
     }
 
     if (result.status !== 'failure') {
@@ -218,10 +294,37 @@ async function executePrompt(
   return new Promise((resolve, reject) => {
     const toolsCalled: string[] = [];
 
-    // Spawn Claude Code CLI as subprocess
-    const child = spawn('claude', ['--message', prompt], {
+    // Get project root and MCP config path
+    const projectRoot = process.cwd();
+    const mcpConfigPath = path.join(projectRoot, '.mcp.json');
+
+    // Check if debug mode is enabled
+    const debugMode = process.env.DEBUG_SCENARIO === 'true';
+
+    // Build command args with MCP flags
+    const args = [
+      '--print',  // Use --print for non-interactive mode
+      prompt,
+      '--mcp-config', mcpConfigPath,
+      '--allowedTools', 'mcp__mittwald__*',  // Auto-approve all Mittwald tools
+      '--output-format', 'stream-json',  // Get structured output with tool calls
+      '--verbose'  // Required for stream-json output
+    ];
+
+    if (debugMode) {
+      args.push('--debug', 'mcp');
+    }
+
+    // Spawn Claude Code CLI as subprocess with MCP configuration
+    const child = spawn('claude', args, {
+      cwd: projectRoot,
       stdio: ['ignore', 'pipe', 'pipe'],
       timeout,
+      env: {
+        ...process.env,
+        HOME: process.env.HOME,
+        PATH: process.env.PATH
+      }
     });
 
     let stdout = '';
@@ -260,22 +363,25 @@ async function executePrompt(
 }
 
 /**
- * Parse tool calls from Claude CLI output (MCP structured logs).
- * Looks for JSON log entries with event: 'tool_call_success' or 'tool_call_error'.
+ * Parse tool calls from Claude CLI output (stream-json format).
+ * Looks for {"type":"assistant"} messages with tool_use content.
  */
 function parseToolCallsFromOutput(output: string): string[] {
   const tools: string[] = [];
   const lines = output.split('\n');
 
   for (const line of lines) {
+    if (!line.trim()) continue;
+
     try {
       const json = JSON.parse(line);
-      if (
-        json.event === 'tool_call_success' ||
-        json.event === 'tool_call_error'
-      ) {
-        if (json.toolName) {
-          tools.push(json.toolName);
+
+      // Look for assistant messages with tool_use content
+      if (json.type === 'assistant' && json.message?.content) {
+        for (const content of json.message.content) {
+          if (content.type === 'tool_use' && content.name) {
+            tools.push(content.name);
+          }
         }
       }
     } catch {
@@ -321,11 +427,20 @@ function getDefaultResultPath(
 
 /**
  * CLI entrypoint.
- * Usage: tsx evals/scripts/scenario-runner.ts <scenario-id> [--keep-resources] [--target=local|flyio|mittwald]
+ * Usage: tsx evals/scripts/scenario-runner.ts <scenario-id> [options]
+ * Options:
+ *   --keep-resources      Skip cleanup (keep resources for debugging)
+ *   --skip-fixtures       Skip fixture provisioning
+ *   --skip-cleanup        Skip cleanup even on success
+ *   --cleanup-on-failure  Force cleanup even on failure
+ *   --target=<target>     Test target: local|flyio|mittwald (default: local)
  */
 if (import.meta.url === `file://${process.argv[1]}`) {
   const scenarioId = process.argv[2];
   const keepResources = process.argv.includes('--keep-resources');
+  const skipFixtures = process.argv.includes('--skip-fixtures');
+  const skipCleanup = process.argv.includes('--skip-cleanup');
+  const cleanupOnFailure = process.argv.includes('--cleanup-on-failure');
 
   // Parse --target flag
   const targetFlag = process.argv.find(arg => arg.startsWith('--target='));
@@ -333,12 +448,25 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   if (!scenarioId) {
     console.error(
-      'Usage: tsx evals/scripts/scenario-runner.ts <scenario-id> [--keep-resources] [--target=local|flyio|mittwald]'
+      'Usage: tsx evals/scripts/scenario-runner.ts <scenario-id> [options]\n' +
+      'Options:\n' +
+      '  --keep-resources      Skip cleanup (keep resources for debugging)\n' +
+      '  --skip-fixtures       Skip fixture provisioning\n' +
+      '  --skip-cleanup        Skip cleanup even on success\n' +
+      '  --cleanup-on-failure  Force cleanup even on failure\n' +
+      '  --target=<target>     Test target: local|flyio|mittwald (default: local)'
     );
     process.exit(1);
   }
 
-  runScenario({ scenarioId, keepResources, target })
+  runScenario({
+    scenarioId,
+    keepResources,
+    skipFixtures,
+    skipCleanup,
+    cleanupOnFailure,
+    target,
+  })
     .then((result) => {
       process.exit(result.status === 'success' ? 0 : 1);
     })

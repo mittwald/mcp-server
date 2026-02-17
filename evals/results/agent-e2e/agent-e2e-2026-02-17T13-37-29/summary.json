@@ -1,0 +1,100 @@
+{
+  "runId": "agent-e2e-2026-02-17T13-37-29",
+  "generatedAt": "2026-02-17T13:37:33.650Z",
+  "outputDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-37-29",
+  "options": {
+    "agents": [
+      "claude"
+    ],
+    "promptDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live",
+    "timeoutMs": 180000,
+    "target": "fly",
+    "requireCoverage": 100,
+    "coverageMode": "all-agents",
+    "requireSelfAssessment": false,
+    "cleanupTestProjects": true,
+    "cleanupProjectPrefix": "agent-e2e-2026-02-17T13-37-29",
+    "mcpUrl": "https://mittwald-mcp-fly2.fly.dev/mcp",
+    "mcpConfigPath": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json",
+    "domains": [
+      "project-foundation"
+    ],
+    "maxTools": 3
+  },
+  "promptInventory": {
+    "totalLoaded": 3,
+    "invalidFiles": []
+  },
+  "preflight": [],
+  "counts": {
+    "totalCaseRuns": 1,
+    "passedCaseRuns": 0,
+    "failedCaseRuns": 1,
+    "matrixCoveragePercent": 0,
+    "totalTools": 3,
+    "coveredTools": 0,
+    "toolCoveragePercent": 0
+  },
+  "perAgent": {
+    "claude": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "coveragePercent": 0
+    }
+  },
+  "perTool": [
+    {
+      "toolName": "mcp__mittwald__mittwald_project_create",
+      "domain": "project-foundation",
+      "displayName": "project/create",
+      "byAgent": {
+        "claude": "failure",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_delete",
+      "domain": "project-foundation",
+      "displayName": "project/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_get",
+      "domain": "project-foundation",
+      "displayName": "project/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    }
+  ],
+  "gate": {
+    "requiredCoverage": 100,
+    "mode": "all-agents",
+    "passed": false,
+    "reasons": [
+      "Tool coverage 0% is below required 100%",
+      "Execution aborted: [claude] MCP server 'mittwald' reported status 'needs-auth' at case 'project/create'"
+    ]
+  },
+  "cleanup": {
+    "enabled": true,
+    "prefix": "agent-e2e-2026-02-17T13-37-29",
+    "startedAt": "2026-02-17T13:37:31.574Z",
+    "finishedAt": "2026-02-17T13:37:33.649Z",
+    "matchedCount": 0,
+    "deleted": [],
+    "failed": []
+  },
+  "abortedReason": "[claude] MCP server 'mittwald' reported status 'needs-auth' at case 'project/create'"
+}

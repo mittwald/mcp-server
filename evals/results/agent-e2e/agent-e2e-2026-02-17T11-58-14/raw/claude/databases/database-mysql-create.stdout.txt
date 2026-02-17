@@ -1,0 +1,71 @@
+
+
+I'll execute this eval step by step: find/create a test project, check MySQL versions, create a MySQL database, and verify the result.
+
+**Step 1: Find a test project and list MySQL versions**
+Tools loaded. Now let me list projects and MySQL versions in parallel.
+I have projects and MySQL versions. Neither existing project has the test prefix `agent-e2e-2026-02-17T11-58-14-` in its description, so I need to create a test project first. Let me use the second project's server for this.
+
+**Step 2: Create a test project**
+
+
+Test project created: `15f5367b-92bd-4761-ac33-f6bbb6f60db8`. Now let me create the MySQL database.
+
+**Step 3: Create a MySQL database**
+Got a 500 error. The project might still be provisioning its resources. Let me wait briefly and try again, possibly with a different MySQL version.
+Still getting 500. The newly created project likely needs more time to fully provision. Let me wait a moment and try with the existing project instead, which is already ready.
+The 500 error is consistent across all projects and versions. Let me check if there's something wrong with the request by trying minimal parameters and also checking the tool handler source code to see if there's a known issue.
+The 500 error persists even with minimal parameters (`description` + `version` only, no `characterSettings`). This rules out the nested `characterSettings` theory. The API endpoint `POST v2/projects/{id}/mysql-databases` is consistently returning HTTP 500 from the Mittwald API itself.
+
+Let me try with the other existing project (the older one) as a final attempt.
+The Mittwald API is consistently returning HTTP 500 for `POST v2/projects/{id}/mysql-databases` across all 3 projects (2 existing + 1 newly created) and multiple MySQL versions. This is a **server-side API error** on Mittwald's end, not a client-side issue.
+
+## Summary
+
+- **Tool tested**: `mcp__mittwald__mittwald_database_mysql_create`
+- **Prerequisites verified**: Projects exist and are ready, MySQL versions were listed successfully (5.6, 5.7, 8.0, 8.4)
+- **Result**: The Mittwald API endpoint returns HTTP 500 on every attempt
+- **Attempts made**: 5 calls across 3 different projects, 2 different MySQL versions, with and without optional parameters
+- **Root cause**: Server-side error in the Mittwald API (`v2/projects/{id}/mysql-databases` endpoint)
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_create",
+  "timestamp": "2026-02-17T12:02:30.000Z",
+  "problems_encountered": [
+    {
+      "type": "api_error",
+      "description": "Mittwald API returns HTTP 500 for POST v2/projects/{id}/mysql-databases across all projects and MySQL versions. Tested 5 times with 3 different projects (fd1ef726, ad6f44a6, 15f5367b) and versions 8.0/8.4. Server-side error, not a client payload issue."
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "project",
+      "id": "15f5367b-92bd-4761-ac33-f6bbb6f60db8"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "fd1ef726-14b8-4906-8a45-0756ba993246",
+      "status": "ready"
+    },
+    {
+      "type": "project",
+      "id": "ad6f44a6-132e-4c2a-9208-895494bfcd75",
+      "status": "ready"
+    },
+    {
+      "type": "mysql_versions",
+      "id": "mysql56,mysql57,mysql80,mysql84",
+      "status": "available"
+    }
+  ],
+  "tool_response_summary": "All 5 attempts returned HTTP 500 from Mittwald API endpoint POST v2/projects/{id}/mysql-databases. Error: 'Unexpected response status (expected 201, got: 500)'. Minimal payload {description, version} also fails, ruling out parameter issues.",
+  "execution_notes": "The tool invocation is correctly constructed and reaches the Mittwald API. The 500 error is server-side. This may be a temporary Mittwald API outage for the MySQL database creation endpoint, or there may be a quota/capacity issue on the account's servers. The tool handler code correctly passes parameters to the API client library. Recommend retrying when Mittwald API is healthy."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

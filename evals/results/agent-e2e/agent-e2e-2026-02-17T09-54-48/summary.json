@@ -1,0 +1,58 @@
+{
+  "runId": "agent-e2e-2026-02-17T09-54-48",
+  "generatedAt": "2026-02-17T09:55:08.520Z",
+  "outputDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T09-54-48",
+  "options": {
+    "agents": [
+      "claude"
+    ],
+    "promptDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts",
+    "timeoutMs": 20000,
+    "requireCoverage": 0,
+    "coverageMode": "all-agents",
+    "mcpUrl": "https://mittwald-mcp-fly2.fly.dev/mcp",
+    "mcpConfigPath": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json",
+    "maxTools": 1
+  },
+  "promptInventory": {
+    "totalLoaded": 1,
+    "invalidFiles": []
+  },
+  "preflight": [],
+  "counts": {
+    "totalCaseRuns": 1,
+    "passedCaseRuns": 0,
+    "failedCaseRuns": 1,
+    "matrixCoveragePercent": 0,
+    "totalTools": 1,
+    "coveredTools": 0,
+    "toolCoveragePercent": 0
+  },
+  "perAgent": {
+    "claude": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "coveragePercent": 0
+    }
+  },
+  "perTool": [
+    {
+      "toolName": "mcp__mittwald__mittwald_sftp_user-create",
+      "domain": "access-users",
+      "displayName": "sftp/user-create",
+      "byAgent": {
+        "claude": "failure",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    }
+  ],
+  "gate": {
+    "requiredCoverage": 0,
+    "mode": "all-agents",
+    "passed": true,
+    "reasons": []
+  }
+}

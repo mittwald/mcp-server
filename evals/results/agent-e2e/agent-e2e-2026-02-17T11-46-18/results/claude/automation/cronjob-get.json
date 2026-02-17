@@ -1,0 +1,23 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-46-18",
+  "agent": "claude",
+  "promptCaseId": "cronjob-get",
+  "domain": "automation",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/automation/cronjob-get.json",
+  "toolName": "mcp__mittwald__mittwald_cronjob_get",
+  "displayName": "cronjob/get",
+  "startedAt": "2026-02-17T11:57:31.727Z",
+  "finishedAt": "2026-02-17T11:57:38.790Z",
+  "durationMs": 7063,
+  "status": "failure",
+  "failureCategory": "agent_exit_nonzero",
+  "failureReason": "Agent exited with code null. stderr: ",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "ToolSearch"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/automation/cronjob-get.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/automation/cronjob-get.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/automation/cronjob-get.stderr.txt"
+}

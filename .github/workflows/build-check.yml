@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run docs guardrails
+        run: npm run docs:guardrails
+
       - name: Build workspaces and main app
         run: npm run build:all
 

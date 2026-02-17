@@ -1,0 +1,43 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_cronjob_create` eval. Let me start by loading the necessary tools and finding a suitable project.
+Good, tools are loaded. Let me list projects to find a test project and also load the app list tool to find an app installation ID.
+Neither of these projects has the test prefix. Let me list apps on both projects to find an app installation ID I can use for the cronjob creation.
+I have app installations available. I'll use the PHP app `a-v2tmw9` (ID: `70a3012d-d28a-4ca3-a146-9d3531ac5f95`) from the first project. Now let me create a cronjob using the `mcp__mittwald__mittwald_cronjob_create` tool.
+The cronjob was created successfully. Let me verify it exists by listing cronjobs for this app installation.
+The cronjob was created and verified successfully. I can see it in the list as the last entry with:
+- **ID**: `50596ae4-16a8-48df-8888-1194d8a083d1`
+- **Short ID**: `cron-aas92b`
+- **Description**: `agent-e2e-2026-02-17T11-46-18 - Eval test cronjob`
+- **Interval**: `0 * * * *` (hourly)
+- **Interpreter**: bash
+- **Command**: `echo "cronjob eval test"`
+- **Active**: true
+- **Next execution**: `2026-02-17T12:00:00.000Z`
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_create",
+  "timestamp": "2026-02-17T11:53:30.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "cronjob",
+      "id": "50596ae4-16a8-48df-8888-1194d8a083d1"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "cronjob",
+      "id": "50596ae4-16a8-48df-8888-1194d8a083d1",
+      "status": "verified_via_cronjob_list"
+    }
+  ],
+  "tool_response_summary": "Cronjob created successfully with ID 50596ae4-16a8-48df-8888-1194d8a083d1 (shortId: cron-aas92b). Verified via cronjob_list showing active cronjob with bash interpreter, hourly interval, and next execution at 2026-02-17T12:00:00.000Z.",
+  "execution_notes": "Used existing PHP app installation (a-v2tmw9) in project fd1ef726-14b8-4906-8a45-0756ba993246. Created a bash-interpreted cronjob with hourly schedule. The cronjob description includes the test prefix 'agent-e2e-2026-02-17T11-46-18' for easy identification and cleanup."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

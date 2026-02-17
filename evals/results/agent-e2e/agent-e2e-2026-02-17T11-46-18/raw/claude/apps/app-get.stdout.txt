@@ -1,0 +1,51 @@
+
+
+I'll execute this eval by following the steps: list projects, find an app, then get app details.
+
+**Step 1: List projects to find a test project**
+Found 2 projects. Neither is a test project with the required prefix. Let me list apps in the first project to find one.
+
+**Step 2: List apps in a project**
+Found apps in both projects. I'll use the test-prefixed app `3a0600c9-fad8-4836-9a56-0ba9945087dd` (description: "agent-e2e-2026-02-17T11-46-18 App Copy Eval Test") from the first project for the `app_get` call.
+
+**Step 3: Execute `mcp__mittwald__mittwald_app_get`**
+The `mcp__mittwald__mittwald_app_get` tool executed successfully. Here's a summary of the results:
+
+**Result:** Successfully retrieved app installation details for the test app.
+
+**Key details returned:**
+- **App Name:** PHP
+- **Installation ID:** `3a0600c9-fad8-4836-9a56-0ba9945087dd` (short: `a-cvmnla`)
+- **Description:** "agent-e2e-2026-02-17T11-46-18 App Copy Eval Test"
+- **Phase:** `ready`
+- **Project ID:** `fd1ef726-14b8-4906-8a45-0756ba993246`
+- **Installation Path:** `/agent-e2e-2026-02-bp0qj`
+- **Custom Document Root:** `/public`
+- **App Version:** `1.0.0` (current matches desired)
+- **System Software:** 3 dependencies with patchLevel update policy
+- **Request Handler:** `php-fpm`
+- **Response time:** ~130ms
+
+The response contains a full schema-compliant object with app metadata, version info, system software dependencies, and installation configuration.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_get",
+  "timestamp": "2026-02-17T11:50:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "3a0600c9-fad8-4836-9a56-0ba9945087dd",
+      "status": "ready"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved details for PHP app installation a-cvmnla in project fd1ef726. App is in 'ready' phase, version 1.0.0, with php-fpm request handler and 3 system software dependencies. Description matches test prefix 'agent-e2e-2026-02-17T11-46-18'.",
+  "execution_notes": "Used test-prefixed app from app_list results. The tool returns comprehensive installation details including app metadata, current/desired versions, system software dependencies, request handler config, and installation path. Response time was ~130ms."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

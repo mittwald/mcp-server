@@ -1,7 +1,12 @@
 # Mittwald MCP Server
 [![Coverage Check](https://github.com/robertDouglass/mittwald-mcp/actions/workflows/coverage-check.yml/badge.svg)](https://github.com/robertDouglass/mittwald-mcp/actions/workflows/coverage-check.yml)
 
-The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**—there is no Mittwald-issued client secret to manage. The bridge mints its own secrets for downstream confidential MCP clients (e.g. Claude Desktop) and verifies them before issuing JWTs. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
+The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**: there is no Mittwald-issued client secret to manage. The bridge mints its own secrets for downstream confidential MCP clients (e.g. Claude Desktop) and verifies them before issuing JWTs. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
+
+## Active Production Deployment (Verified 2026-02-17)
+- `mittwald-mcp-fly2` (MCP server) is deployed from this repository root (`Dockerfile` + `src/`).
+- `mittwald-oauth-server` (OAuth service) is deployed from this repository's `packages/oauth-bridge/`.
+- The separate repository at `../mittwald-oauth/mittwald-oauth` is currently inactive/deprecated for production and is not the source of the running Fly.io OAuth service.
 
 ## What Changed (2025-09-25)
 - **Mittwald is authoritative for scopes and consent.** Our proxy no longer maintains its own scope catalogue or renders consent pages.

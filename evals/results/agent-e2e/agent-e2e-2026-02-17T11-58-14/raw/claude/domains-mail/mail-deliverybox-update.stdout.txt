@@ -1,0 +1,41 @@
+
+
+I'll execute this eval step by step. Let me start by loading the required tools and finding a suitable test project.
+Good, all tools are loaded. Let me list projects to find a test project.
+I can see a test project matching the eval prefix: `p-mpg5kn` (description: `agent-e2e-2026-02-17T11-58-14-mysql-create-eval`). Let me use this project. First, let me check if there are any existing deliveryboxes in this project.
+There's an existing deliverybox in this test project with ID `ef0cf461-b27f-4610-a8ed-50ff73b47d65` and description `agent-e2e-2026-02-17T11-58-14-deliverybox-eval`. Let me update its description and password.
+The password update isn't supported in library mode, but description update should work. Let me update just the description.
+The description update succeeded. Now let me verify the update by retrieving the deliverybox.
+The verification confirms the update was applied:
+
+- **Description** changed from `agent-e2e-2026-02-17T11-58-14-deliverybox-eval` to `agent-e2e-2026-02-17T11-58-14-deliverybox-updated`
+- **updatedAt** changed from `2026-02-17T12:25:57.000Z` to `2026-02-17T12:28:17.000Z`, confirming the update was persisted
+
+**Note**: Password updates (`password`, `randomPassword`) are not yet supported in library mode — only description updates work currently. This is a known limitation.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_deliverybox_update",
+  "timestamp": "2026-02-17T12:28:20.000Z",
+  "problems_encountered": [
+    {
+      "type": "api_error",
+      "description": "Password updates (password, randomPassword) are not supported in library mode. Only description updates are currently available. First call with randomPassword=true failed; second call with description-only succeeded."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "deliverybox",
+      "id": "ef0cf461-b27f-4610-a8ed-50ff73b47d65",
+      "status": "updated - description changed to 'agent-e2e-2026-02-17T11-58-14-deliverybox-updated', updatedAt confirmed as 2026-02-17T12:28:17.000Z"
+    }
+  ],
+  "tool_response_summary": "Successfully updated delivery box ef0cf461-b27f-4610-a8ed-50ff73b47d65. Description changed from 'agent-e2e-2026-02-17T11-58-14-deliverybox-eval' to 'agent-e2e-2026-02-17T11-58-14-deliverybox-updated'. Verified via deliverybox_get that the new description and updated timestamp are reflected.",
+  "execution_notes": "Password update parameters (password, randomPassword) are not yet implemented in the CLI-to-library conversion (feature 012). Only description field updates are functional. The description update worked correctly and was verified via a subsequent GET call."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,26 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-34-40",
+  "agent": "claude",
+  "promptCaseId": "database-mysql-user-list",
+  "domain": "databases",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/databases/database-mysql-user-list.json",
+  "toolName": "mcp__mittwald__mittwald_database_mysql_user_list",
+  "displayName": "database/mysql/user/list",
+  "startedAt": "2026-02-17T11:25:21.128Z",
+  "finishedAt": "2026-02-17T11:26:39.669Z",
+  "durationMs": 78541,
+  "status": "failure",
+  "failureCategory": "missing_expected_tool_call",
+  "failureReason": "Expected tool mcp__mittwald__mittwald_database_mysql_user_list was not called",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "TodoWrite",
+    "Read",
+    "WebFetch"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-user-list.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-user-list.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-user-list.stderr.txt"
+}

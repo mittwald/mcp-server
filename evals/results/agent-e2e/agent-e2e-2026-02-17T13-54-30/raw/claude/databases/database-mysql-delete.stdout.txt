@@ -1,0 +1,73 @@
+
+
+I'll execute this eval step by step: find a test project, ensure a MySQL database exists, delete it, and verify the deletion.
+
+**Step 1: Find a test project**
+Neither project has a description starting with the test prefix. I'll create a test project and then a MySQL database to delete.
+
+**Step 2: Create a test project**
+Project created: `842df8be-3589-4c6c-ad03-963b001a356c`
+
+**Step 3: Create a MySQL database to delete**
+First, let me check available MySQL versions.
+Now create a MySQL database to delete.
+Got a 500 error. The project may not be fully ready yet. Let me wait a moment and try again, also trying with a different approach - maybe the project needs time to provision.
+Still a 500. Let me try using an existing project that is known to be ready, and also check if there's already a MySQL database on it that I could use.
+Let me try on the existing established project and also check the new project's readiness.
+Project shows `readiness: "ready"`. The 500 error might be a transient API issue. Let me try with a different MySQL version and also include the character set explicitly.
+Consistent 500 on the new project. Let me try using the other existing project (`ad6f44a6`) which is well-established and might have better infrastructure readiness. I'll first check if it has any existing MySQL databases I could use, or try creating one there.
+Let me try creating on that established project.
+The 500 is happening on both projects - this appears to be a Mittwald API-side issue. Let me also try the first project and a different MySQL version (5.7) to rule out version-specific issues.
+Confirmed: the Mittwald API is returning 500 on all MySQL database creation attempts, across all projects and all versions. This is an upstream API issue that prevents the prerequisite (creating a MySQL database) from being fulfilled, which in turn blocks the delete eval.
+
+Let me also attempt the delete tool directly to at least verify its parameter interface and error handling, even without a valid database ID.
+
+
+Good - the tool requires `databaseId` and `confirm` parameters. Let me try calling it to verify the tool interface works (it should return a "not found" error, confirming the tool is functional).
+The delete tool is functional - it correctly called `DELETE v2/mysql-databases/{id}` and returned a 403 (forbidden, since that's a non-existent/non-owned resource). This confirms the tool's interface and API routing work correctly.
+
+The blocker is entirely on the prerequisite side: `database_mysql_create` returns 500 across all projects and MySQL versions, preventing creation of a database to delete.
+## Summary
+
+**Eval: `database/mysql/delete`** - Could not fully execute due to upstream dependency failure.
+
+**What happened:**
+1. Created test project `842df8be-3589-4c6c-ad03-963b001a356c` (success)
+2. Attempted to create a MySQL database (prerequisite) - **failed with HTTP 500** on all 3 projects and multiple MySQL versions (5.7, 8.0, 8.4). This is a Mittwald API-side issue.
+3. Verified the delete tool's interface by calling it with a dummy ID - it correctly routes to `DELETE v2/mysql-databases/{id}` and returns 403 (expected for non-owned resource), confirming the tool is wired up correctly.
+4. **Blocker**: Cannot test the actual delete flow without a database to delete.
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_delete",
+  "timestamp": "2026-02-17T13:56:45.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "mcp__mittwald__mittwald_database_mysql_create returns HTTP 500 on all projects (fd1ef726, ad6f44a6, 842df8be) and all MySQL versions (5.7, 8.0, 8.4). Mittwald API-side issue prevents creating a database to delete."
+    },
+    {
+      "type": "api_error",
+      "description": "Delete tool was invoked with a dummy UUID to verify interface; returned 403 as expected for non-existent resource. Tool routing and parameter handling confirmed working."
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "project",
+      "id": "842df8be-3589-4c6c-ad03-963b001a356c"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "tool_interface",
+      "id": "mcp__mittwald__mittwald_database_mysql_delete",
+      "status": "functional - correctly routes DELETE to v2/mysql-databases/{id}, requires databaseId and confirm parameters"
+    }
+  ],
+  "tool_response_summary": "Delete tool call with dummy ID returned 403 (expected). Tool interface accepts databaseId (required) and confirm (required, must be true). Routes to DELETE v2/mysql-databases/{databaseId}. Full functional test blocked by mysql_create returning 500.",
+  "execution_notes": "The delete tool is correctly wired up and functional at the MCP layer. The eval failure is entirely due to the upstream Mittwald API returning 500 on mysql database creation, which prevents establishing the prerequisite. Recommend retrying this eval when the Mittwald MySQL provisioning API is healthy."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

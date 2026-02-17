@@ -1,0 +1,26 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "database-redis-create",
+  "domain": "databases",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/databases/database-redis-create.json",
+  "toolName": "mcp__mittwald__mittwald_database_redis_create",
+  "displayName": "database/redis/create",
+  "startedAt": "2026-02-17T12:10:50.904Z",
+  "finishedAt": "2026-02-17T12:11:28.502Z",
+  "durationMs": 37598,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_database_redis_versions",
+    "mcp__mittwald__mittwald_database_redis_create",
+    "mcp__mittwald__mittwald_database_redis_get",
+    "mcp__mittwald__mittwald_database_redis_list"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/databases/database-redis-create.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/databases/database-redis-create.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/databases/database-redis-create.stderr.txt"
+}

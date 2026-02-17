@@ -1,0 +1,23 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "user-api-token-get",
+  "domain": "identity",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/identity/user-api-token-get.json",
+  "toolName": "mcp__mittwald__mittwald_user_api_token_get",
+  "displayName": "user/api/token/get",
+  "startedAt": "2026-02-17T12:29:10.998Z",
+  "finishedAt": "2026-02-17T12:29:32.158Z",
+  "durationMs": 21160,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_user_api_token_list",
+    "mcp__mittwald__mittwald_user_api_token_get"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-api-token-get.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-api-token-get.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-api-token-get.stderr.txt"
+}

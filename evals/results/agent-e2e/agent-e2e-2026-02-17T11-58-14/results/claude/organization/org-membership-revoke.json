@@ -1,0 +1,27 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "org-membership-revoke",
+  "domain": "organization",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/organization/org-membership-revoke.json",
+  "toolName": "mcp__mittwald__mittwald_org_membership_revoke",
+  "displayName": "org/membership/revoke",
+  "startedAt": "2026-02-17T12:38:19.609Z",
+  "finishedAt": "2026-02-17T12:39:26.247Z",
+  "durationMs": 66638,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_org_list",
+    "mcp__mittwald__mittwald_org_membership_list",
+    "mcp__mittwald__mittwald_user_get",
+    "mcp__mittwald__mittwald_org_invite",
+    "mcp__mittwald__mittwald_org_invite_list",
+    "mcp__mittwald__mittwald_org_membership_revoke"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-membership-revoke.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-membership-revoke.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-membership-revoke.stderr.txt"
+}

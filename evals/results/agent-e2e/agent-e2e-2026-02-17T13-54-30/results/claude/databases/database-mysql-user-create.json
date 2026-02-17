@@ -1,0 +1,28 @@
+{
+  "runId": "agent-e2e-2026-02-17T13-54-30",
+  "agent": "claude",
+  "promptCaseId": "database-mysql-user-create",
+  "domain": "databases",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/databases/database-mysql-user-create.json",
+  "toolName": "mcp__mittwald__mittwald_database_mysql_user_create",
+  "displayName": "database/mysql/user/create",
+  "startedAt": "2026-02-17T13:56:55.952Z",
+  "finishedAt": "2026-02-17T13:58:32.671Z",
+  "durationMs": 96719,
+  "status": "failure",
+  "failureCategory": "missing_expected_tool_call",
+  "failureReason": "Expected tool mcp__mittwald__mittwald_database_mysql_user_create was not called",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_versions",
+    "TodoWrite",
+    "mcp__mittwald__mittwald_database_mysql_create"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/databases/database-mysql-user-create.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/databases/database-mysql-user-create.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/databases/database-mysql-user-create.stderr.txt"
+}

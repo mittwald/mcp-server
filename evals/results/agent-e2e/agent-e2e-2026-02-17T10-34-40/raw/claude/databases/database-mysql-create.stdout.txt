@@ -1,0 +1,98 @@
+
+
+I'll execute this eval by creating a MySQL database. Let me start by loading the necessary tools and checking prerequisites.
+Now let me also load the MySQL versions tool, then list projects and available MySQL versions in parallel.
+Good, all tools loaded. Now let me list projects and MySQL versions in parallel.
+I have projects and MySQL versions available. I'll use the eval test project (`p-kbuygq`) and MySQL 8.4 (the latest version). Now let me create the database.
+Got a 500 error. The version might need the `mysql84` ID format instead of `8.4`. Let me also try with the full project UUID instead of the short ID, and use the version ID.
+Still a 500. Let me try MySQL 8.0 instead — the 8.4 version might be newly added and have server-side issues. Let me also try with a different project.
+Consistent 500 errors across different version formats and projects. Let me check the source code to understand what the API expects, and also try with the "mStudio MCP server" project which is on a different server.
+The code exploration revealed the root cause. The library function is **not passing the required `user` object** to the Mittwald API. The API requires both a `database` and `user` payload, but the handler only sends `description` and `version` — missing the required `user` field (with `accessLevel` and `password`). This explains the consistent 500 errors.
+
+The API expects a structure like:
+```json
+{
+  "database": { "description": "...", "version": "..." },
+  "user": { "accessLevel": "full", "password": "..." }
+}
+```
+
+But the current code sends:
+```json
+{ "description": "...", "version": "..." }
+```
+
+This is a **bug in the MCP server's database create handler** — the user creation parameters (`userPassword`, `userAccessLevel`, `userExternal`) are accepted as input but never forwarded to the API call.
+
+Let me verify the exact source code to confirm.
+Now I can see the bug clearly. Let me check what the Mittwald API actually expects for `createMysqlDatabase` to understand the exact required payload shape.
+Now I have the full picture. The Mittwald API requires a nested structure:
+
+```typescript
+data: {
+  database: { description, projectId, version, characterSettings? },
+  user: { accessLevel, password, accessIpMask?, externalAccess? }
+}
+```
+
+But the current code sends:
+
+```typescript
+data: { description, version, characterSettings? }
+```
+
+The `user` object is completely missing, and the `database` wrapper is also missing. This is a confirmed **bug in the library function** (`packages/mittwald-cli-core/src/resources/database.ts` lines 72-80).
+
+## Eval Result
+
+The `mcp__mittwald__mittwald_database_mysql_create` tool **fails** with a 500 error on every attempt due to a bug in the handler code that sends an incorrectly structured payload to the Mittwald API.
+
+**Root cause:** The `createMysqlDatabase` library function at `packages/mittwald-cli-core/src/resources/database.ts:72-80` sends a flat `{ description, version }` object instead of the API's required nested structure `{ database: { description, projectId, version }, user: { accessLevel, password } }`.
+
+**Impact:** The tool is completely non-functional — no MySQL databases can be created through MCP.
+
+**Fix needed in `packages/mittwald-cli-core/src/resources/database.ts`:**
+1. Wrap database fields in a `database` property (including `projectId`)
+2. Add a required `user` property with `accessLevel` and `password`
+3. Update `CreateMysqlDatabaseOptions` interface to accept user params
+4. Update the handler at `src/handlers/tools/mittwald-cli/database/mysql/create-cli.ts` to pass user params through
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_create",
+  "timestamp": "2026-02-17T10:32:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "api_error",
+      "description": "Consistent HTTP 500 from Mittwald API on all attempts (tried 4 times with different projects, version formats). Root cause: library function sends flat {description, version} payload instead of required nested {database: {...}, user: {...}} structure."
+    },
+    {
+      "type": "other",
+      "description": "Bug in packages/mittwald-cli-core/src/resources/database.ts:72-80 — createMysqlDatabase sends incorrect request body shape. Missing 'database' wrapper and required 'user' object with accessLevel and password fields."
+    },
+    {
+      "type": "other",
+      "description": "Handler at src/handlers/tools/mittwald-cli/database/mysql/create-cli.ts accepts userPassword/userAccessLevel/userExternal params but never passes them to the library function."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "7b71eeb1-542f-4b9b-966c-a001f3d1ee0c",
+      "status": "exists"
+    },
+    {
+      "type": "mysql-versions",
+      "id": "mysql84,mysql80,mysql57,mysql56",
+      "status": "available"
+    }
+  ],
+  "tool_response_summary": "All 4 attempts returned HTTP 500 'Unexpected response status (expected 201, got: 500)'. The API at v2/projects/{id}/mysql-databases rejects the malformed payload. Tested with projects p-kbuygq, fd1ef726..., and versions 8.0, 8.4, mysql84.",
+  "execution_notes": "Tool is completely broken due to incorrect API payload structure. The Mittwald API requires data: { database: { description, projectId, version, characterSettings? }, user: { accessLevel, password, accessIpMask?, externalAccess? } } but the library sends data: { description, version }. Fix requires updating both the library function interface and the handler to properly structure the nested payload with required user creation params."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

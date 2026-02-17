@@ -1,0 +1,64 @@
+
+
+I'll execute this eval by first listing projects to get a project ID, then testing the registry list tool.
+
+**Step 1: List projects to find an existing project**
+Good — both tools are loaded. I see `projectId` is required for `registry_list`. Let me first get a project.
+Got 8 projects. **Step 2: Execute `registry_list` with a project ID**
+
+I'll use the first project (`p-ptwfms` / "mStudio MCP server") as it's the main project.
+The tool executed successfully. It returned 3 registries for the project. Let me also verify with a second project to confirm consistent behavior.
+Both calls succeeded. The tool consistently returns an array of registry objects with `id`, `projectId`, `uri`, `description`, and optional `credentials` fields.
+
+## Results Summary
+
+| Aspect | Result |
+|--------|--------|
+| **Tool** | `mcp__mittwald__mittwald_registry_list` |
+| **Status** | Success |
+| **Project 1** (`p-ptwfms`) | 3 registries (ghcr.io, Docker Hub, GitLab) |
+| **Project 2** (`p-kbuygq`) | 2 registries (ghcr.io, Docker Hub) |
+| **Response format** | Array of registry objects with `id`, `projectId`, `uri`, `description` |
+| **Errors** | None |
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_registry_list",
+  "timestamp": "2026-02-17T10:30:15.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "registry",
+      "id": "77fbfc30-0e48-405a-8d70-80b34995dda5",
+      "status": "verified"
+    },
+    {
+      "type": "registry",
+      "id": "86dedfdb-b5d7-44be-b146-4e2037142a59",
+      "status": "verified"
+    },
+    {
+      "type": "registry",
+      "id": "c6a3886e-48f6-423c-8aef-628c55d9cbdc",
+      "status": "verified"
+    },
+    {
+      "type": "registry",
+      "id": "ce79008d-5759-4257-b70e-d978543f05d2",
+      "status": "verified"
+    },
+    {
+      "type": "registry",
+      "id": "0bc602f0-9882-4cd7-a018-3926f9d2da56",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Successfully listed registries for 2 projects. Project p-ptwfms returned 3 registries (ghcr.io, Docker Hub, GitLab). Project p-kbuygq returned 2 registries (ghcr.io, Docker Hub). Each registry object includes id, projectId, uri, description, and optional credentials fields.",
+  "execution_notes": "The projectId parameter is required (not optional as the eval prompt suggested). Tool returns consistent array structure with registry metadata. Response times ranged from 64ms to 296ms. Credential validity info is included when credentials are configured (e.g., Docker Hub showed valid credentials for user 'mittdockern')."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,41 @@
+
+
+I'll execute the eval for `mcp__mittwald__mittwald_app_versions`. Let me start by loading the required tools.
+Tools loaded. Now let me execute the primary tool - `mcp__mittwald__mittwald_app_versions` - to list available app versions. I'll call it without a specific app filter first to see all supported apps and their versions.
+The tool returned a very large response (128K+ characters), which indicates it successfully returned a comprehensive list of app versions. Let me read a portion to verify the structure and content.
+Let me use Grep to check the structure of the response.
+Now let me also test with a specific app name filter to verify that parameter works.
+Both calls succeeded. Here's a summary of the results:
+
+**Unfiltered call** (no parameters): Returned `611 versions across 15 apps` - a comprehensive listing of all supported apps and their available versions. Response structure includes `appId`, `versionId`, `version`, and `internalVersion` for each entry.
+
+**Filtered call** (`app: "WordPress"`): Returned `32 versions for WordPress` (app ID `da3aa3ae-4b6b-4398-a4a8-ee8def827876`), ranging from version 6.0.3 to 6.9.1. Response time was 71ms.
+
+Both responses matched the expected schema with `status`, `message`, `data` array, and `meta` fields.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_versions",
+  "timestamp": "2026-02-17T10:30:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_versions_unfiltered",
+      "id": "all_apps",
+      "status": "verified - 611 versions across 15 apps"
+    },
+    {
+      "type": "app_versions_filtered",
+      "id": "WordPress",
+      "status": "verified - 32 versions for WordPress (6.0.3 to 6.9.1)"
+    }
+  ],
+  "tool_response_summary": "Tool returned 611 versions across 15 apps when called without filters. When filtered by app='WordPress', returned 32 versions (6.0.3-6.9.1) with appId da3aa3ae-4b6b-4398-a4a8-ee8def827876. Response schema: {status, message, data: [{appId, versionId, version, internalVersion}], meta: {durationMs}}",
+  "execution_notes": "Tool works correctly both with and without the optional 'app' filter parameter. Unfiltered response was very large (128K+ chars) due to 611 version entries. Filtered response was 71ms. No prerequisites (project/app installation) were actually needed since this tool lists available platform apps, not installed ones."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

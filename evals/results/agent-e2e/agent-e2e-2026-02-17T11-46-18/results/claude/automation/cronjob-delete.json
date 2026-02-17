@@ -1,0 +1,24 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-46-18",
+  "agent": "claude",
+  "promptCaseId": "cronjob-delete",
+  "domain": "automation",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/automation/cronjob-delete.json",
+  "toolName": "mcp__mittwald__mittwald_cronjob_delete",
+  "displayName": "cronjob/delete",
+  "startedAt": "2026-02-17T11:53:39.197Z",
+  "finishedAt": "2026-02-17T11:54:23.437Z",
+  "durationMs": 44240,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_cronjob_list",
+    "mcp__mittwald__mittwald_cronjob_delete"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/automation/cronjob-delete.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/automation/cronjob-delete.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/automation/cronjob-delete.stderr.txt"
+}

@@ -1,0 +1,29 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "volume-create",
+  "domain": "volume",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/volume/volume-create.json",
+  "toolName": "mcp__mittwald__mittwald_volume_create",
+  "displayName": "volume/create",
+  "startedAt": "2026-02-17T13:18:15.409Z",
+  "finishedAt": "2026-02-17T13:21:15.469Z",
+  "durationMs": 180060,
+  "status": "failure",
+  "failureCategory": "timeout",
+  "failureReason": "Agent timed out after 180060ms",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "TodoWrite",
+    "Task",
+    "Skill",
+    "Read",
+    "AskUserQuestion",
+    "Glob"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/volume/volume-create.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/volume/volume-create.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/volume/volume-create.stderr.txt"
+}

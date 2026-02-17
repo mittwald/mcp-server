@@ -1,0 +1,61 @@
+
+
+I'll execute this eval by first finding a project, then listing cronjobs, and finally listing cronjob executions.
+
+**Step 1: Load the required MCP tools**
+Good, all tools are loaded. Now let me execute the eval steps.
+
+**Step 2: List projects to find an existing one**
+Found 8 projects. I'll use the first project `p-ptwfms` to list cronjobs.
+
+**Step 3: List cronjobs in the project**
+Found 5 cronjobs. I'll use the first one (`cron-d67q60` / `460224d7-c47c-4883-9961-e1a92ce7bb43`) which has a `latestExecution` showing it's been running — so it should have execution history.
+
+**Step 4: List cronjob executions (the target tool)**
+The tool executed successfully. Now let me save the self-assessment result.
+
+**Results Summary:**
+
+- **Tool**: `mcp__mittwald__mittwald_cronjob_execution_list`
+- **Status**: Success
+- **Executions returned**: 52 executions for cronjob `cron-d67q60`
+- **All executions**: Status `Complete`, all `successful: true`
+- **Date range**: 2025-12-30 through 2026-02-17 (today)
+- **Response structure**: Array of execution objects with `id`, `cronjobId`, `status`, `exitCode`, `raw` (containing `start`, `end`, `durationInMilliseconds`, `logPath`, `successful`, etc.)
+- **Response time**: ~111ms
+
+Now saving the self-assessment to disk.
+The result file write is being blocked by permissions. Here's the self-assessment inline:
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_execution_list",
+  "timestamp": "2026-02-17T11:00:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "cronjob",
+      "id": "460224d7-c47c-4883-9961-e1a92ce7bb43",
+      "status": "active"
+    },
+    {
+      "type": "cronjob_executions",
+      "id": "cron-d67q60",
+      "status": "52 executions returned, all successful"
+    }
+  ],
+  "tool_response_summary": "Returned 52 cronjob executions for cronjob cron-d67q60 (460224d7-c47c-4883-9961-e1a92ce7bb43). All executions have status 'Complete' and successful=true. Date range spans 2025-12-30 to 2026-02-17. Each execution includes id, cronjobId, status, exitCode, start/end timestamps, durationInMilliseconds, and logPath. Response time ~111ms.",
+  "execution_notes": "Used cronjobId short ID 'cron-d67q60' as the required parameter. The tool requires a cronjobId (not optional as the eval prompt suggested). The response is a well-structured array with consistent schema across all entries. Two of the most recent executions were manually triggered (have triggeredBy field). File write to evals/results/automation/ was blocked by permissions."
+}
+```
+<!-- SELF_ASSESSMENT_END -->
+
+**Eval complete.** The `mcp__mittwald__mittwald_cronjob_execution_list` tool works correctly:
+- Requires `cronjobId` parameter (used short ID `cron-d67q60`)
+- Returned 52 executions, all with `Complete` status and `successful: true`
+- Rich execution data including timestamps, duration, exit codes, and log paths
+- ~111ms response time

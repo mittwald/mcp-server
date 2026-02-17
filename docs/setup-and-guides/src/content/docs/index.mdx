@@ -3,10 +3,10 @@ title: Mittwald MCP Documentation
 description: Setup guides and conceptual documentation for integrating Mittwald MCP with AI coding assistants
 template: splash
 hero:
-  tagline: Learn how to connect your AI coding assistant to Mittwald hosting infrastructure using MCP (Model Context Protocol).
+  tagline: Prompt your agent with intent. Let Mittwald MCP execute the infrastructure work with safe, auditable tool calls.
   actions:
-    - text: Get Started
-      link: /getting-started/
+    - text: Run First Workflow
+      link: /getting-connected/
       icon: right-arrow
     - text: Tool Reference
       link: /reference/tools/
@@ -16,74 +16,124 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Setup Guides
+<div class="home-marker"></div>
+
+<div class="home-experience">
+	<div class="home-kpis">
+		<div class="home-kpi">
+			<span class="metric">Comprehensive Toolset</span>
+			<span class="label">Across projects, apps, databases, DNS, mail, security, and automation</span>
+		</div>
+		<div class="home-kpi">
+			<span class="metric">OAuth + API Token</span>
+			<span class="label">Use OAuth for interactive agents and API tokens for headless pipelines</span>
+		</div>
+		<div class="home-kpi">
+			<span class="metric">Agent-First Workflows</span>
+			<span class="label">Human intent in prompts, MCP tools for execution, approvals for risky actions</span>
+		</div>
+	</div>
+
+## Start from what you want done
 
 <CardGrid stagger>
-	<Card title="Claude Code" icon="seti:shell">
-		Set up OAuth for Anthropic's Claude Code CLI.
-		[Get started →](/getting-started/claude-code/)
+	<Card title="Connect Your Assistant" icon="key">
+		Set up Claude Code, GitHub Copilot, Cursor, or Codex with the Mittwald MCP endpoint.
+		[Open setup guides →](/getting-connected/)
 	</Card>
-	<Card title="GitHub Copilot" icon="github">
-		Configure GitHub Copilot with Mittwald MCP.
-		[Get started →](/getting-started/github-copilot/)
+	<Card title="Run Human-Intent Prompts" icon="chat-bubble">
+		Learn the pattern: you describe the outcome, the agent discovers tools and executes the plan.
+		[See practical workflows →](/tutorials/)
 	</Card>
-	<Card title="Cursor IDE" icon="laptop">
-		Set up OAuth authentication for Cursor IDE to use Mittwald MCP tools.
-		[Get started →](/getting-started/cursor/)
+	<Card title="Use Task Playbooks" icon="seti:markdown">
+		Use outcome-focused how-to guides mapped to real functional use cases.
+		[Browse how-to playbooks →](/how-to/)
 	</Card>
-	<Card title="Codex CLI" icon="seti:shell">
-		Configure OpenAI's Codex CLI with Mittwald MCP using RFC 8252 loopback.
-		[Get started →](/getting-started/codex-cli/)
+	<Card title="Runbook for Incidents" icon="warning">
+		Use incident recovery procedures with verification and rollback prompts.
+		[Browse runbooks →](/runbooks/)
+	</Card>
+	<Card title="Understand Auth Lifecycle" icon="approve-check">
+		Learn consent, refresh, and re-auth behavior across MCP clients.
+		[Open auth lifecycle docs →](/auth-token-lifecycle/)
+	</Card>
+	<Card title="Inspect Every Tool" icon="seti:json">
+		When you need exact request/response details, jump to the complete tool reference.
+		[Open reference →](/reference/)
 	</Card>
 </CardGrid>
 
-## Real-World Tutorials
+## How an agent-driven Mittwald task works
 
-Learn how developers like you use Mittwald MCP in production workflows.
+<div class="home-flow">
+	<div class="home-step">
+		<div class="step-id">1. Intent</div>
+		<p>You prompt the outcome you want on Mittwald.</p>
+	</div>
+	<div class="home-step">
+		<div class="step-id">2. Discovery</div>
+		<p>Your agent discovers relevant MCP tools and required inputs.</p>
+	</div>
+	<div class="home-step">
+		<div class="step-id">3. Auth</div>
+		<p>OAuth or token auth is used for each tool call.</p>
+	</div>
+	<div class="home-step">
+		<div class="step-id">4. Execution</div>
+		<p>The agent performs tool calls and reports results and IDs.</p>
+	</div>
+	<div class="home-step">
+		<div class="step-id">5. Verify</div>
+		<p>You run read checks and decide whether to proceed, retry, or roll back.</p>
+	</div>
+</div>
+
+<p class="home-note"><strong>Human responsibility:</strong> destructive or cost-impacting changes should be approved explicitly. Treat the agent as an operator, not as an unattended process.</p>
+
+## Tutorials by Team
 
 <CardGrid stagger>
 	<Card title="Freelance Workflows" icon="star">
-		Client onboarding, backup monitoring, and more.
-		[View tutorials →](/case-studies/#freelance-web-developers)
+		Client onboarding, backup monitoring, and repetitive operations without dashboard hopping.
+		[View playbooks →](/tutorials/)
 	</Card>
 	<Card title="Agency Workflows" icon="users">
-		Multi-project management and developer onboarding.
-		[View tutorials →](/case-studies/#web-development-agencies)
+		Cross-project visibility, team onboarding, access audits, and support handoffs.
+		[View playbooks →](/tutorials/)
 	</Card>
-	<Card title="E-commerce Workflows" icon="shopping-cart">
-		Launch prep and database performance optimization.
-		[View tutorials →](/case-studies/#e-commerce-specialists)
+	<Card title="E-Commerce Workflows" icon="shopping-cart">
+		Launch readiness, backup confidence, and database checks under deadline pressure.
+		[View playbooks →](/tutorials/)
 	</Card>
 	<Card title="Enterprise TYPO3" icon="laptop">
-		Multi-site deployment and security audits.
-		[View tutorials →](/case-studies/#enterprise-typo3-developers)
+		Multi-site rollout and security evidence collection for regulated teams.
+		[View playbooks →](/tutorials/)
 	</Card>
-	<Card title="Modern Stack" icon="rocket">
-		Container deployment and CI/CD integration.
-		[View tutorials →](/case-studies/#modern-stack-developers)
+	<Card title="Modern Stack / DevOps" icon="rocket">
+		Container stacks, cron automation, and deployment pipelines with MCP.
+		[View playbooks →](/tutorials/)
 	</Card>
 </CardGrid>
 
-## Concepts
+## Concepts and Deep Dives
 
 <CardGrid>
 	<Card title="What is MCP?" icon="information">
-		Understand Model Context Protocol and how it enables AI tools to interact with external systems.
-		[Learn more →](/explainers/what-is-mcp/)
+		Protocol fundamentals and how Mittwald exposes tools for agent workflows.
+		[Read MCP explainer →](/explainers/what-is-mcp/)
 	</Card>
-	<Card title="What is Agentic Coding?" icon="rocket">
-		Discover how AI-powered coding assistants are transforming software development.
-		[Learn more →](/explainers/what-is-agentic-coding/)
+	<Card title="Agentic Coding Model" icon="seti:ai">
+		How intent-driven prompting and multi-step tool execution work in practice.
+		[Read agentic explainer →](/explainers/what-is-agentic-coding/)
 	</Card>
 	<Card title="OAuth Integration" icon="approve-check">
-		Deep dive into how OAuth 2.1 authentication works with Mittwald MCP.
-		[Learn more →](/explainers/oauth-integration/)
+		Authentication flow, token lifecycle, and security assumptions.
+		[Read OAuth explainer →](/explainers/oauth-integration/)
 	</Card>
 </CardGrid>
 
-## Two Documentation Sites
+## Documentation Map
 
-This documentation is split into two sites:
-
-- **Setup & Guides** (this site) - OAuth setup guides, conceptual explainers, tutorials
-- **[Tool Reference](/reference/)** - Complete API reference for 115+ MCP tools
+- **Setup & Guides (this site):** human-perspective onboarding, tutorials, how-to guides, runbooks, and explainers.
+- **[Tool Reference](/reference/):** complete low-level reference for all available MCP tools.
+</div>

@@ -44,17 +44,23 @@ export const handleDatabaseMysqlCreateCli: MittwaldCliToolHandler<MittwaldDataba
   }
 
   try {
-    // Build character settings if provided
-    const characterSettings = (args.collation || args.characterSet) ? {
-      ...(args.collation && { collation: args.collation }),
-      ...(args.characterSet && { characterSet: args.characterSet }),
-    } : undefined;
+    // API requires both characterSet and collation when character settings are provided.
+    const characterSettings =
+      args.characterSet && args.collation
+        ? {
+            characterSet: args.characterSet,
+            collation: args.collation,
+          }
+        : undefined;
 
     const result = await createMysqlDatabase({
       projectId: args.projectId!,
       description: args.description,
       version: args.version,
       characterSettings,
+      userPassword: args.userPassword,
+      userAccessLevel: args.userAccessLevel,
+      userExternalAccess: args.userExternal,
       apiToken: session.mittwaldAccessToken,
     });
 

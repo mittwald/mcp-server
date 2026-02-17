@@ -1,0 +1,25 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-23-10",
+  "agent": "claude",
+  "promptCaseId": "sftp-user-list",
+  "domain": "access-users",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts/_archived/access-users/sftp-user-list.json",
+  "toolName": "mcp__mittwald__mittwald_sftp_user-list",
+  "displayName": "sftp/user-list",
+  "startedAt": "2026-02-17T10:25:16.890Z",
+  "finishedAt": "2026-02-17T10:25:53.156Z",
+  "durationMs": 36266,
+  "status": "failure",
+  "failureCategory": "missing_expected_tool_call",
+  "failureReason": "Expected tool mcp__mittwald__mittwald_sftp_user-list was not called",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "Grep"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-23-10/raw/claude/access-users/sftp-user-list.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-23-10/raw/claude/access-users/sftp-user-list.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-23-10/raw/claude/access-users/sftp-user-list.stderr.txt"
+}

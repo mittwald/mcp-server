@@ -1,0 +1,24 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "user-api-token-revoke",
+  "domain": "identity",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/identity/user-api-token-revoke.json",
+  "toolName": "mcp__mittwald__mittwald_user_api_token_revoke",
+  "displayName": "user/api/token/revoke",
+  "startedAt": "2026-02-17T12:29:49.037Z",
+  "finishedAt": "2026-02-17T12:30:19.538Z",
+  "durationMs": 30501,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_user_api_token_create",
+    "mcp__mittwald__mittwald_user_api_token_get",
+    "mcp__mittwald__mittwald_user_api_token_revoke"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-api-token-revoke.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-api-token-revoke.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-api-token-revoke.stderr.txt"
+}

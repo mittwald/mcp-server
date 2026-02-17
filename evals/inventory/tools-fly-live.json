@@ -1,0 +1,874 @@
+{
+  "generatedAt": "2026-02-17T10:28:52.069Z",
+  "toolCount": 113,
+  "source": "fly-live-preflight:agent-e2e-2026-02-17T10-22-22",
+  "domains": {
+    "apps": 8,
+    "backups": 8,
+    "domains-mail": 20,
+    "certificates": 1,
+    "container": 4,
+    "containers": 10,
+    "context": 3,
+    "automation": 9,
+    "databases": 14,
+    "organization": 7,
+    "project-foundation": 12,
+    "ssh": 4,
+    "identity": 12,
+    "volume": 1
+  },
+  "tools": [
+    {
+      "mcpName": "mcp__mittwald__mittwald_app_copy",
+      "displayName": "app/copy",
+      "domain": "apps",
+      "description": "Copy an app",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_app_get",
+      "displayName": "app/get",
+      "domain": "apps",
+      "description": "Get app details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_app_list",
+      "displayName": "app/list",
+      "domain": "apps",
+      "description": "List all apps in a project",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+      "displayName": "app/list/upgrade/candidates",
+      "domain": "apps",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_app_uninstall",
+      "displayName": "app/uninstall",
+      "domain": "apps",
+      "description": "Uninstall an app",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_app_update",
+      "displayName": "app/update",
+      "domain": "apps",
+      "description": "Update app settings",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_app_upgrade",
+      "displayName": "app/upgrade",
+      "domain": "apps",
+      "description": "Upgrade app to a newer version",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_app_versions",
+      "displayName": "app/versions",
+      "domain": "apps",
+      "description": "List available app versions",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_backup_create",
+      "displayName": "backup/create",
+      "domain": "backups",
+      "description": "Create a backup",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_backup_delete",
+      "displayName": "backup/delete",
+      "domain": "backups",
+      "description": "Delete a backup",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_backup_get",
+      "displayName": "backup/get",
+      "domain": "backups",
+      "description": "Get backup details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_backup_list",
+      "displayName": "backup/list",
+      "domain": "backups",
+      "description": "List all backups",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_backup_schedule_create",
+      "displayName": "backup/schedule/create",
+      "domain": "backups",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_backup_schedule_delete",
+      "displayName": "backup/schedule/delete",
+      "domain": "backups",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_backup_schedule_list",
+      "displayName": "backup/schedule/list",
+      "domain": "backups",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_backup_schedule_update",
+      "displayName": "backup/schedule/update",
+      "domain": "backups",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_certificate_list",
+      "displayName": "certificate/list",
+      "domain": "domains-mail",
+      "description": "List certificate resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_certificate_request",
+      "displayName": "certificate/request",
+      "domain": "certificates",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_container_delete",
+      "displayName": "container/delete",
+      "domain": "container",
+      "tier": 4,
+      "description": "Execute container_delete operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "requiredResources": [
+        "project"
+      ],
+      "successIndicators": [
+        "Operation completes without errors"
+      ],
+      "isDestructive": true,
+      "isInteractive": false,
+      "parameters": {}
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_container_list",
+      "displayName": "container/list",
+      "domain": "containers",
+      "description": "List container resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_container_restart",
+      "displayName": "container/restart",
+      "domain": "container",
+      "tier": 4,
+      "description": "Execute container_restart operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "requiredResources": [
+        "project"
+      ],
+      "successIndicators": [
+        "Operation completes without errors"
+      ],
+      "isDestructive": false,
+      "isInteractive": false,
+      "parameters": {}
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_container_start",
+      "displayName": "container/start",
+      "domain": "container",
+      "tier": 4,
+      "description": "Execute container_start operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "requiredResources": [
+        "project"
+      ],
+      "successIndicators": [
+        "Operation completes without errors"
+      ],
+      "isDestructive": false,
+      "isInteractive": false,
+      "parameters": {}
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_container_stop",
+      "displayName": "container/stop",
+      "domain": "container",
+      "tier": 4,
+      "description": "Execute container_stop operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "requiredResources": [
+        "project"
+      ],
+      "successIndicators": [
+        "Operation completes without errors"
+      ],
+      "isDestructive": false,
+      "isInteractive": false,
+      "parameters": {}
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_context_get_session",
+      "displayName": "context/get/session",
+      "domain": "context",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_context_reset_session",
+      "displayName": "context/reset/session",
+      "domain": "context",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_context_set_session",
+      "displayName": "context/set/session",
+      "domain": "context",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_create",
+      "displayName": "cronjob/create",
+      "domain": "automation",
+      "description": "Create a cronjob",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_delete",
+      "displayName": "cronjob/delete",
+      "domain": "automation",
+      "description": "Delete a cronjob",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_execute",
+      "displayName": "cronjob/execute",
+      "domain": "automation",
+      "description": "Execute a cronjob immediately",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_execution_abort",
+      "displayName": "cronjob/execution/abort",
+      "domain": "automation",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_execution_get",
+      "displayName": "cronjob/execution/get",
+      "domain": "automation",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_execution_list",
+      "displayName": "cronjob/execution/list",
+      "domain": "automation",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_get",
+      "displayName": "cronjob/get",
+      "domain": "automation",
+      "description": "Get cronjob details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_list",
+      "displayName": "cronjob/list",
+      "domain": "automation",
+      "description": "List all cronjobs",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_cronjob_update",
+      "displayName": "cronjob/update",
+      "domain": "automation",
+      "description": "Update cronjob settings",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_create",
+      "displayName": "database/mysql/create",
+      "domain": "databases",
+      "description": "Create a MySQL database",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_delete",
+      "displayName": "database/mysql/delete",
+      "domain": "databases",
+      "description": "Delete a MySQL database",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_get",
+      "displayName": "database/mysql/get",
+      "domain": "databases",
+      "description": "Get MySQL database details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_list",
+      "displayName": "database/mysql/list",
+      "domain": "databases",
+      "description": "List MySQL databases",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_user_create",
+      "displayName": "database/mysql/user/create",
+      "domain": "databases",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_user_delete",
+      "displayName": "database/mysql/user/delete",
+      "domain": "databases",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_user_get",
+      "displayName": "database/mysql/user/get",
+      "domain": "databases",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_user_list",
+      "displayName": "database/mysql/user/list",
+      "domain": "databases",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_user_update",
+      "displayName": "database/mysql/user/update",
+      "domain": "databases",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_mysql_versions",
+      "displayName": "database/mysql/versions",
+      "domain": "databases",
+      "description": "List available MySQL versions",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_redis_create",
+      "displayName": "database/redis/create",
+      "domain": "databases",
+      "description": "Create a new database redis",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_redis_get",
+      "displayName": "database/redis/get",
+      "domain": "databases",
+      "description": "Get database redis details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_redis_list",
+      "displayName": "database/redis/list",
+      "domain": "databases",
+      "description": "List database redis resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_database_redis_versions",
+      "displayName": "database/redis/versions",
+      "domain": "databases",
+      "description": "Execute database redis versions operation",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_dnszone_get",
+      "displayName": "domain/dnszone/get",
+      "domain": "domains-mail",
+      "description": "Get domain dnszone details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_dnszone_list",
+      "displayName": "domain/dnszone/list",
+      "domain": "domains-mail",
+      "description": "List domain dnszone resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_dnszone_update",
+      "displayName": "domain/dnszone/update",
+      "domain": "domains-mail",
+      "description": "Update domain dnszone settings",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_get",
+      "displayName": "domain/get",
+      "domain": "domains-mail",
+      "description": "Get domain details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_list",
+      "displayName": "domain/list",
+      "domain": "domains-mail",
+      "description": "List domain resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_virtualhost_create",
+      "displayName": "domain/virtualhost/create",
+      "domain": "domains-mail",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_virtualhost_delete",
+      "displayName": "domain/virtualhost/delete",
+      "domain": "domains-mail",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_virtualhost_get",
+      "displayName": "domain/virtualhost/get",
+      "domain": "domains-mail",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "displayName": "domain/virtualhost/list",
+      "domain": "domains-mail",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_address_create",
+      "displayName": "mail/address/create",
+      "domain": "domains-mail",
+      "description": "Create a new mail address",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_address_delete",
+      "displayName": "mail/address/delete",
+      "domain": "domains-mail",
+      "description": "Delete a mail address",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_address_get",
+      "displayName": "mail/address/get",
+      "domain": "domains-mail",
+      "description": "Get mail address details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_address_list",
+      "displayName": "mail/address/list",
+      "domain": "domains-mail",
+      "description": "List mail address resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_address_update",
+      "displayName": "mail/address/update",
+      "domain": "domains-mail",
+      "description": "Update mail address settings",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_deliverybox_create",
+      "displayName": "mail/deliverybox/create",
+      "domain": "domains-mail",
+      "description": "Create a new mail deliverybox",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_deliverybox_delete",
+      "displayName": "mail/deliverybox/delete",
+      "domain": "domains-mail",
+      "description": "Delete a mail deliverybox",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_deliverybox_get",
+      "displayName": "mail/deliverybox/get",
+      "domain": "domains-mail",
+      "description": "Get mail deliverybox details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_deliverybox_list",
+      "displayName": "mail/deliverybox/list",
+      "domain": "domains-mail",
+      "description": "List mail deliverybox resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_mail_deliverybox_update",
+      "displayName": "mail/deliverybox/update",
+      "domain": "domains-mail",
+      "description": "Update mail deliverybox settings",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_org_get",
+      "displayName": "org/get",
+      "domain": "organization",
+      "description": "Get organization details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_org_invite",
+      "displayName": "org/invite",
+      "domain": "organization",
+      "description": "Invite a user to an organization",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_org_invite_list",
+      "displayName": "org/invite/list",
+      "domain": "organization",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_org_invite_revoke",
+      "displayName": "org/invite/revoke",
+      "domain": "organization",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_org_list",
+      "displayName": "org/list",
+      "domain": "organization",
+      "description": "List all organizations",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_org_membership_list",
+      "displayName": "org/membership/list",
+      "domain": "organization",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_org_membership_revoke",
+      "displayName": "org/membership/revoke",
+      "domain": "organization",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_create",
+      "displayName": "project/create",
+      "domain": "project-foundation",
+      "description": "Create a new project",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_delete",
+      "displayName": "project/delete",
+      "domain": "project-foundation",
+      "description": "Delete a project",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_get",
+      "displayName": "project/get",
+      "domain": "project-foundation",
+      "description": "Get project details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_invite_get",
+      "displayName": "project/invite/get",
+      "domain": "project-foundation",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_invite_list",
+      "displayName": "project/invite/list",
+      "domain": "project-foundation",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_list",
+      "displayName": "project/list",
+      "domain": "project-foundation",
+      "description": "List all projects",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_membership_get",
+      "displayName": "project/membership/get",
+      "domain": "project-foundation",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_membership_list",
+      "displayName": "project/membership/list",
+      "domain": "project-foundation",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_ssh",
+      "displayName": "project/ssh",
+      "domain": "project-foundation",
+      "description": "SSH into a project",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_project_update",
+      "displayName": "project/update",
+      "domain": "project-foundation",
+      "description": "Update project settings",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_registry_create",
+      "displayName": "registry/create",
+      "domain": "containers",
+      "description": "Create a new registry",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_registry_delete",
+      "displayName": "registry/delete",
+      "domain": "containers",
+      "description": "Delete a registry",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_registry_list",
+      "displayName": "registry/list",
+      "domain": "containers",
+      "description": "List registry resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_registry_update",
+      "displayName": "registry/update",
+      "domain": "containers",
+      "description": "Update registry settings",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_server_get",
+      "displayName": "server/get",
+      "domain": "project-foundation",
+      "description": "Get server details",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_server_list",
+      "displayName": "server/list",
+      "domain": "project-foundation",
+      "description": "List all servers",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_ssh_user_create",
+      "displayName": "ssh/user/create",
+      "domain": "ssh",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_ssh_user_delete",
+      "displayName": "ssh/user/delete",
+      "domain": "ssh",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_ssh_user_list",
+      "displayName": "ssh/user/list",
+      "domain": "ssh",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_ssh_user_update",
+      "displayName": "ssh/user/update",
+      "domain": "ssh",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_stack_delete",
+      "displayName": "stack/delete",
+      "domain": "containers",
+      "description": "Delete a stack",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_stack_deploy",
+      "displayName": "stack/deploy",
+      "domain": "containers",
+      "description": "Execute stack deploy operation",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_stack_list",
+      "displayName": "stack/list",
+      "domain": "containers",
+      "description": "List stack resources",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_stack_ps",
+      "displayName": "stack/ps",
+      "domain": "containers",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_api_token_create",
+      "displayName": "user/api/token/create",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_api_token_get",
+      "displayName": "user/api/token/get",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_api_token_list",
+      "displayName": "user/api/token/list",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_api_token_revoke",
+      "displayName": "user/api/token/revoke",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_get",
+      "displayName": "user/get",
+      "domain": "identity",
+      "description": "Get profile information for a user",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_session_get",
+      "displayName": "user/session/get",
+      "domain": "identity",
+      "description": "Get details of a specific session",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_session_list",
+      "displayName": "user/session/list",
+      "domain": "identity",
+      "description": "List all active user sessions",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_ssh_key_create",
+      "displayName": "user/ssh/key/create",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_ssh_key_delete",
+      "displayName": "user/ssh/key/delete",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_ssh_key_get",
+      "displayName": "user/ssh/key/get",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_ssh_key_import",
+      "displayName": "user/ssh/key/import",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_user_ssh_key_list",
+      "displayName": "user/ssh/key/list",
+      "domain": "identity",
+      "description": "",
+      "parameters": []
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_volume_create",
+      "displayName": "volume/create",
+      "domain": "volume",
+      "tier": 4,
+      "description": "Execute volume_create operation",
+      "dependencies": [
+        "project/list"
+      ],
+      "requiredResources": [
+        "project"
+      ],
+      "successIndicators": [
+        "Operation completes without errors"
+      ],
+      "isDestructive": false,
+      "isInteractive": false,
+      "parameters": {}
+    },
+    {
+      "mcpName": "mcp__mittwald__mittwald_volume_list",
+      "displayName": "volume/list",
+      "domain": "containers",
+      "description": "List volume resources",
+      "parameters": []
+    }
+  ]
+}

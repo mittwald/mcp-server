@@ -1,0 +1,42 @@
+
+
+I'll execute this eval by first listing projects to get a project ID, then listing SFTP users for that project.
+
+**Step 1: Get a project ID**
+Got 8 projects. Now let me search for and load the SFTP user list tool.
+
+**Step 2: Load and call the SFTP user list tool**
+The SFTP user list tool was not found. The search returned SSH user list and other user-related tools, but no SFTP-specific tool. Let me check if it exists under a different name.
+No SFTP tools exist in the MCP server. Let me check the CLAUDE.md note about SFTP tools being excluded.
+This confirms it. The `mcp__mittwald__mittwald_sftp_user-list` tool **does not exist** in the MCP server. All 4 SFTP tools (user-create, user-update, user-delete, user-list) are explicitly excluded from MCP registration per git commit `72397253` ("Exclude all 4 SFTP tools from MCP registration").
+
+The exclusion reason is: **SFTP feature incomplete — missing library support for expires/publicKey parameters**. The tool code exists in the source but is blocked from registration by the `EXCLUDED_TOOLS_WITH_REASONS` list in `src/utils/tool-scanner.ts`.
+
+## Self-Assessment
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_sftp_user-list",
+  "timestamp": "2026-02-17T12:00:00Z",
+  "problems_encountered": [
+    {
+      "type": "resource_not_found",
+      "description": "Tool mcp__mittwald__mittwald_sftp_user-list does not exist in the MCP server. All 4 SFTP tools (user-create, user-update, user-delete, user-list) are explicitly excluded from MCP registration in src/utils/tool-scanner.ts. Exclusion reason: 'SFTP feature incomplete - missing library support for expires/publicKey parameters'. Git commit 72397253 confirms: 'Exclude all 4 SFTP tools from MCP registration'."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-ptwfms",
+      "status": "verified_exists"
+    }
+  ],
+  "tool_response_summary": "Tool does not exist in MCP server registry. SFTP tools were excluded from registration due to incomplete library migration. The tool code exists in src/handlers/tools/mittwald-cli/sftp/user-list-cli.ts but is blocked from registration by the EXCLUDED_TOOLS_WITH_REASONS list in src/utils/tool-scanner.ts.",
+  "execution_notes": "This eval cannot be completed until the SFTP library migration is done and the tools are re-enabled in the tool scanner. The SSH user tools (mcp__mittwald__mittwald_ssh_user_list) are the closest functional alternative and do work correctly."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

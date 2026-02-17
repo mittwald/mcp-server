@@ -1,0 +1,56 @@
+
+
+I'll execute this eval step by step. Let me start by loading the required tools and finding a suitable project with a MySQL database.
+Good, tools are loaded. Now let me load the MySQL list tool and list projects in parallel.
+I can see there's a test project matching our eval prefix: `p-mpg5kn` (agent-e2e-2026-02-17T11-58-14-mysql-create-eval). Let me list MySQL databases in that project.
+No MySQL databases in the test project. Let me check the other projects for existing databases.
+
+
+No MySQL databases exist in any project. I need to create one in the test project first, then use `mysql_get` to retrieve its details. Let me first check available MySQL versions, then create a database.
+Good. Now let me create a MySQL 8.4 database in the test project.
+Got a 500 error. Let me try with MySQL 8.0 instead.
+Still 500. Let me try the other test project and also try with the full version ID format.
+Consistent 500 errors across all projects. Let me try with the first project (the mStudio MCP server project) and also try the version ID format `mysql80`.
+The Mittwald API is returning 500 errors for MySQL database creation across all projects and version formats. This appears to be a server-side issue with the Mittwald platform. Since I cannot create a MySQL database, I cannot test `mysql_get` either. Let me still attempt the `mysql_get` tool directly to document its behavior when given an invalid/nonexistent ID, since that's the tool under test.
+The `mysql_get` tool itself is functional — it correctly calls the API endpoint `v2/mysql-databases/{id}` and returns a proper error (403 for non-existent/unauthorized database). The tool mechanics work, but I couldn't complete a successful end-to-end test because the prerequisite (`mysql_create`) fails with a 500 server error on all projects.
+
+## Eval Result Summary
+
+- **`mcp__mittwald__mittwald_database_mysql_get`**: The tool is mechanically functional — it accepts `databaseId`, calls the correct API endpoint, and properly surfaces error responses.
+- **Blocker**: Cannot create a MySQL database (prerequisite) due to Mittwald API returning HTTP 500 on `POST v2/projects/{id}/mysql-databases` across all 3 projects and all version formats tested (`8.4`, `8.0`, `mysql80`).
+- The `mysql_get` tool returns 403 for non-existent database IDs, which is expected behavior from the Mittwald API.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_get",
+  "timestamp": "2026-02-17T12:05:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "No MySQL databases exist in any accessible project. Cannot test mysql_get without a database to retrieve."
+    },
+    {
+      "type": "api_error",
+      "description": "mysql_create returns HTTP 500 on all 3 projects (p-mpg5kn, p-p92nri, p-ptwfms) with versions 8.4, 8.0, and mysql80. This is a Mittwald platform-side issue preventing prerequisite setup."
+    },
+    {
+      "type": "resource_not_found",
+      "description": "mysql_get with non-existent databaseId 'mysql-nonexistent' correctly returns HTTP 403, confirming the tool's API integration works but no valid database is available to test with."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "mysql_get_tool_endpoint",
+      "id": "v2/mysql-databases/{id}",
+      "status": "functional_but_untestable"
+    }
+  ],
+  "tool_response_summary": "mysql_get called with non-existent databaseId returned 403 error as expected. Tool correctly constructs GET request to v2/mysql-databases/{databaseId} and surfaces API errors. Full success test blocked by mysql_create returning 500 on all projects.",
+  "execution_notes": "The mysql_get tool is mechanically sound - it accepts databaseId parameter, calls the correct Mittwald API endpoint, and properly propagates error responses. However, a full positive-path test (retrieving actual database details) could not be completed because the prerequisite mysql_create tool fails with HTTP 500 across all available projects. This appears to be a Mittwald platform-side issue, not an MCP tool defect."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

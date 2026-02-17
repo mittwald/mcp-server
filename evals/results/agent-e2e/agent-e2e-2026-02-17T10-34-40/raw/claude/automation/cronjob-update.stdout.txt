@@ -1,0 +1,49 @@
+
+
+I'll execute this eval by testing the `mcp__mittwald__mittwald_cronjob_update` MCP tool. Let me start by loading the necessary tools.
+Now let me load the cronjob update, list, and get tools.
+All tools loaded. Now let me start the eval. First, I'll list projects to find one to work with.
+I'll use the "Eval Test Project" (`p-kbuygq`). Now let me list cronjobs in that project.
+
+
+No cronjobs in that project. Let me check other projects for existing cronjobs, and also look for an app installation I can use to create one.
+I found several cronjobs. I'll use the one in project `p-ptwfms` with ID `c353ad58-cf9e-43c1-bf96-011d6f385477` (shortId: `cron-wy7psp`). Let me first get its current details, then update it.
+Current state of cronjob `cron-wy7psp`:
+- **Description**: "Eval cronjob test - created 2026-02-17"
+- **Interval**: `0 * * * *` (every hour)
+- **Active**: true
+
+Now I'll update it — changing the description and interval to verify the update works.
+Update succeeded. Let me verify the changes persisted by fetching the cronjob details again.
+Verification confirmed. Both fields were updated successfully:
+
+| Field | Before | After |
+|---|---|---|
+| **Description** | `Eval cronjob test - created 2026-02-17` | `Eval cronjob test - updated via cronjob/update eval 2026-02-17` |
+| **Interval** | `0 * * * *` (at minute 0) | `30 * * * *` (at minute 30) |
+| **nextExecutionTime** | `2026-02-17T11:00:00.000Z` | `2026-02-17T11:30:00.000Z` |
+| **updatedAt** | `2026-02-17T10:42:45.000Z` | `2026-02-17T10:50:48.000Z` |
+
+The `updatedAt` timestamp advanced, `nextExecutionTime` shifted to reflect the new interval, and all other fields (command, timeout, active state) remained unchanged as expected.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_update",
+  "timestamp": "2026-02-17T10:51:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "cronjob",
+      "id": "c353ad58-cf9e-43c1-bf96-011d6f385477",
+      "status": "updated and verified via cronjob_get"
+    }
+  ],
+  "tool_response_summary": "Cronjob c353ad58-cf9e-43c1-bf96-011d6f385477 (cron-wy7psp) updated successfully. Description changed to 'Eval cronjob test - updated via cronjob/update eval 2026-02-17' and interval changed from '0 * * * *' to '30 * * * *'. Subsequent get confirmed both changes persisted, updatedAt advanced to 2026-02-17T10:50:48.000Z, and nextExecutionTime shifted accordingly.",
+  "execution_notes": "Used existing cronjob in project p-ptwfms. Updated two fields (description, interval) to verify partial update capability. Confirmed via cronjob_get that changes persisted and derived fields (nextExecutionTime, updatedAt) updated correctly."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

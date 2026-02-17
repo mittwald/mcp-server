@@ -1,0 +1,65 @@
+
+
+I'll execute this eval by first finding a project and MySQL database, then getting the database details.
+
+**Step 1: Find available projects**
+**Step 2: Find MySQL databases in a project**
+
+Let me search for MySQL databases. I'll check the eval test project first.
+No databases in that project. Let me check a few more projects in parallel.
+
+
+No MySQL databases found in any of those projects. Let me check the remaining projects.
+No MySQL databases exist in any of the 8 projects. I need to create one first. Let me check available MySQL versions and create a database.
+Now I'll create a MySQL database in the eval test project so I can then test `mysql_get`.
+Got a 500 error on that project. Let me try a different project - the "Web Project" one which might have a different server with more capacity.
+Same 500 error. Let me try the original "mStudio MCP server" project on the other server, and also try with the `mysql84` version ID instead of `8.0`.
+Consistent 500 errors across all projects. Let me check the tool schema more carefully - the `database_mysql_get` tool might accept a database ID directly. Let me load it and also look at what might be causing the create failure. The API is sending `"version":"8.0"` — maybe it needs the ID format like `mysql80`.
+Still 500. The Mittwald API is returning server errors for database creation across all projects. This appears to be a platform-side issue. Let me try one more variation — the `5.7` version which might have a different codepath, and also try with explicit user password and character set.
+The MCP server token has expired. Let me try again.
+The MCP server token has expired and needs re-authorization. Without a valid token, I cannot proceed with creating a MySQL database or testing `database_mysql_get`. Let me record the self-assessment based on what we've learned.
+
+## Summary
+
+The eval for `mcp__mittwald__mittwald_database_mysql_get` could not be fully completed due to two blockers:
+
+1. **No existing MySQL databases** — All 8 projects were checked via `mysql_list` and none contain MySQL databases.
+2. **Database creation fails with HTTP 500** — Attempted `mysql_create` across 3 different projects (on 2 different servers) with multiple version formats (`8.0`, `mysql80`, `5.7`). All returned 500 server errors from the Mittwald API.
+3. **MCP token expired** — The OAuth token expired during the session, preventing further attempts.
+
+The `database_mysql_get` tool itself was loaded and has the expected schema (`databaseId` required parameter, `output` optional), but could not be invoked without a valid database ID.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_get",
+  "timestamp": "2026-02-17T10:35:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "No MySQL databases exist in any of the 8 available projects — mysql_list returned empty for all"
+    },
+    {
+      "type": "api_error",
+      "description": "mysql_create failed with HTTP 500 on all 3 projects tried (fd1ef726, ad6f44a6, 7b71eeb1) across 2 servers, with versions 8.0, mysql80, and 5.7 — Mittwald API server-side error"
+    },
+    {
+      "type": "auth_error",
+      "description": "MCP server OAuth token expired during session, preventing further API calls"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "tool_schema",
+      "id": "mcp__mittwald__mittwald_database_mysql_get",
+      "status": "verified — requires databaseId (string), optional output format"
+    }
+  ],
+  "tool_response_summary": "Tool was loaded and schema verified (databaseId required, output optional) but could not be invoked — no MySQL databases exist and creation fails with 500 server errors from Mittwald API",
+  "execution_notes": "The mysql_create tool sends POST to v2/projects/{id}/mysql-databases with description and version fields. The 500 error is consistent across all projects and servers, suggesting a Mittwald platform issue or a missing required field in the create payload. The tool schema shows userPassword as optional, but the API may require it. Token expiration prevented testing this hypothesis."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,56 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_app_copy` eval. Let me start by loading the necessary tools and checking prerequisites.
+Tools loaded. Now let me list projects and find an app to copy.
+
+**Step 1: List projects to find one with an app.**
+Good, I have 8 projects. Let me list apps in a few of them to find one I can copy.
+
+
+I found several apps. I'll use the PHP app `a-v2tmw9` in project `p-ptwfms` as the source for the copy operation.
+
+**Step 2: Execute `mcp__mittwald__mittwald_app_copy`**
+App copied successfully. Let me verify the new installation exists.
+
+**Step 3: Verify the copy by getting details on the new app.**
+The copy was created and verified successfully. The new app installation `a-rvgz61` is in `pending` phase (provisioning), has the same PHP app type, same version, same system software, and the description I specified.
+
+## Results Summary
+
+| Field | Value |
+|-------|-------|
+| **Source app** | `a-v2tmw9` (PHP 8.2, project `p-ptwfms`) |
+| **New app ID** | `3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc` |
+| **New short ID** | `a-rvgz61` |
+| **Description** | Eval App Copy Test 20260217-2 |
+| **Phase** | `pending` (provisioning in progress) |
+| **Same app type** | PHP (confirmed) |
+| **Same version** | `ff45ad04-8589-46d7-a645-0566be3eaeec` (confirmed) |
+| **Project** | `fd1ef726-14b8-4906-8a45-0756ba993246` (same project) |
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_copy",
+  "timestamp": "2026-02-17T10:36:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "app_installation",
+      "id": "3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc",
+      "status": "pending"
+    }
+  ],
+  "tool_response_summary": "App copied successfully from a-v2tmw9 to new installation 3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc (short ID a-rvgz61). New app is a PHP installation in pending phase with description 'Eval App Copy Test 20260217-2', same app version and system software as source.",
+  "execution_notes": "Copy operation completed in ~156ms. The new app was verified via app_get and confirmed to have the same app type (PHP), version, system software dependencies, and custom document root as the source. Phase is 'pending' which is expected for a newly created copy that is still provisioning."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

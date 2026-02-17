@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mittwald": {
+      "type": "http",
+      "url": "https://mittwald-mcp-fly2.fly.dev/mcp"
+    }
+  }
+}
