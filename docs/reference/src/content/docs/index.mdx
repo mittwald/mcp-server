@@ -1,0 +1,46 @@
+---
+title: Mittwald MCP Tool Reference
+description: Complete API reference for 115+ MCP tools to manage Mittwald hosting infrastructure
+template: splash
+hero:
+  tagline: Complete API reference for 115+ MCP tools to manage your Mittwald hosting infrastructure with AI-powered coding assistants.
+  actions:
+    - text: Browse Tools
+      link: /tools/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/mittwald/mcp
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Tool Domains
+
+<CardGrid stagger>
+	<Card title="App Management" icon="rocket">
+		Create, deploy, and manage applications including WordPress, TYPO3, Node.js, PHP, and more.
+	</Card>
+	<Card title="Database" icon="document">
+		Manage MySQL and Redis databases, users, backups, and connections.
+	</Card>
+	<Card title="Domains & SSL" icon="approve-check">
+		Configure domains, DNS records, and SSL certificates.
+	</Card>
+	<Card title="Containers & Stacks" icon="puzzle">
+		Deploy and manage container workloads and application stacks.
+	</Card>
+	<Card title="Projects & Organization" icon="setting">
+		Manage projects, organizations, users, and access control.
+	</Card>
+	<Card title="Infrastructure" icon="laptop">
+		Server management, SSH keys, SFTP users, cronjobs, and backups.
+	</Card>
+</CardGrid>
+
+## Quick Stats
+
+- **115+ Tools** across 21 domains
+- **Full OAuth 2.1** authentication support
+- **Works with** Claude Code, GitHub Copilot, Cursor, Codex CLI
