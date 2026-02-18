@@ -2,6 +2,9 @@
 
 This runbook is the canonical way to build, verify, and serve the two documentation sites in this repository.
 
+Customer handover entrypoint:
+- `docs/OPERATIONS-START-HERE.md`
+
 If you need deployed functional MCP testing instructions, use:
 - `docs/FUNCTIONAL-TESTING-OPERATIONS.md`
 

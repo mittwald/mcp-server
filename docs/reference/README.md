@@ -21,6 +21,10 @@ Build output goes to `dist/`.
 
 ## Canonical Operator Instructions
 
+Customer handover entrypoint:
+
+- `docs/OPERATIONS-START-HERE.md`
+
 Use this runbook for building/spot-checking both docs sites together:
 
 - `docs/DOCS-SITES-OPERATIONS.md`

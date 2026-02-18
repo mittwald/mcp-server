@@ -1,41 +1,42 @@
 # Mittwald MCP Documentation Index
 
-**Purpose**: Single navigation point for current docs. Historical content lives under `docs/archive/legacy/` (see below).
+This index is customer-operator first.
 
----
+## Start Here
 
-## Core
-- `../README.md` – overview, setup, quick start
-- `../ARCHITECTURE.md` – OAuth bridge + MCP design (update when flows change)
-- `LLM-AGENTS.md` – guidance for LLM/agent users
-- `../DEPLOY.md` – deployment/runbook (Fly/compose)
-- `DOCS-SITES-OPERATIONS.md` – canonical operator runbook for docs site build/spot-check/deploy prep
-- `FUNCTIONAL-TESTING-OPERATIONS.md` – canonical operator runbook for agent-native functional testing
-- `testing.md` – test matrix and commands
-- `coverage.md` + `mittwald-cli-coverage.md` – wrapper coverage policy and report
-- `CREDENTIAL-SECURITY.md` – required credential-handling standard
+1. `OPERATIONS-START-HERE.md` - customer handover entrypoint
+2. `../README.md` - repository overview
+3. `../ARCHITECTURE.md` - OAuth bridge and MCP service architecture
+4. `../DEPLOY.md` - deployment/runbook mechanics
 
-## Guides
-- `docs/guides/chatgpt.md`, `docs/guides/claude-desktop.md`, `docs/guides/cursor.md` – client setup
-- `docs/guides/virtualhost.md` – virtual host/ingress usage
-- `docs/tooling-and-safety.md` – consolidated tool authoring and safety rules
+## Core Operator Runbooks
 
-## Operations & Config
-- `docs/FLY-MITTWALD-MIGRATION-GUIDE.md` (+ addendum) – Fly-specific notes
-- `docs/PLAN-NODE20-FLY.md` – platform versioning guidance
-- Config references: `config/mittwald-scopes.json`, `config/mw-cli-exclusions.json`
-- Maintainer process: `docs/MAINTAINERS-HANDBOOK.md`
+- `DOCS-SITES-OPERATIONS.md` - build and validate both docs sites
+- `FUNCTIONAL-TESTING-OPERATIONS.md` - run agent-native functional testing
+- `DEPLOYMENT-GUIDE.md` - operational deployment guidance
+- `CREDENTIAL-SECURITY.md` - secret/token handling standard
 
-## Testing & Security
-- Tests: `docs/testing.md`, `tests/README.md`
-- Security: `docs/CREDENTIAL-SECURITY.md`, CI security workflow `.github/workflows/security-check.yml`
-- Lint/typecheck commands in `package.json`
+## Functional Testing Assets
 
-## Archives / Legacy
-- Historical planning/audit/specs moved to `docs/archive/legacy/` (includes former test-plan, upgrade-plan-2025-12, handover-audit-2025-10, tooling examples/safety docs, CLAUDE.md).
-- Older archives remain under `docs/archive/` for reference.
-- Keep `kitty-specs` untouched (historical).
+- `evals/README.md` (repository root `evals/README.md`)
+- `evals/AGENT-E2E-PLAYBOOK.md` (repository root)
+- `evals/scripts/README.md` (repository root)
+- `tests/functional/use-case-library/README.md` (repository root)
 
-## Keep Updated
-- When flows, secrets, or scope catalogs change, update: README, ARCHITECTURE, LLM-AGENTS, testing, coverage.
-- Archive superseded docs promptly to avoid conflicting guidance.
+## End-User Documentation Sites
+
+- Setup & Guides source: `docs/setup-and-guides/`
+- Tool Reference source: `docs/reference/`
+
+## Maintainer / Engineering References
+
+- `testing.md`
+- `coverage.md`
+- `mittwald-cli-coverage.md`
+- `MAINTAINERS-HANDBOOK.md`
+- `LLM-AGENTS.md`
+
+## Historical Material
+
+- `docs/archive/` and `docs/archive/legacy/` hold historical plans, reports, and superseded documentation.
+- `kitty-specs/` remains historical project context.

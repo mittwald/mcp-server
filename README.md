@@ -191,7 +191,6 @@ This repository uses GitHub's native security features:
   - `npm run coverage:generate` – rebuild artifacts when coverage inputs change.
   - `npm run check:cli-version` – warn when Dockerfile pins drift from npm.
 - See `docs/coverage-automation.md` for the full runbook covering CI guards and allowlist policy.
-- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` is greater than zero.
 
 ## Documentation
 
@@ -202,6 +201,7 @@ End-user docs are split across two static sites:
 
 Operator runbooks:
 
+- `docs/OPERATIONS-START-HERE.md` (customer handover entrypoint)
 - `docs/DOCS-SITES-OPERATIONS.md` (build and verify both documentation sites)
 - `docs/FUNCTIONAL-TESTING-OPERATIONS.md` (run functional MCP testing in real agents against deployed endpoints)
 

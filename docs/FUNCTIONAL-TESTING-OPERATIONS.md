@@ -8,9 +8,11 @@ If you need docs-site build instructions, use:
 ## Read In This Order
 
 1. This file (`FUNCTIONAL-TESTING-OPERATIONS.md`)
-2. `evals/AGENT-E2E-PLAYBOOK.md`
-3. `evals/scripts/README.md`
-4. `tests/functional/use-case-library/README.md` (scenario library context)
+2. `docs/OPERATIONS-START-HERE.md`
+3. `tests/functional/README.md`
+4. `evals/AGENT-E2E-PLAYBOOK.md`
+5. `evals/scripts/README.md`
+6. `tests/functional/use-case-library/README.md` (scenario library context)
 
 ## Scope
 
