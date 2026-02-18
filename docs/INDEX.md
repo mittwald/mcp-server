@@ -7,11 +7,13 @@
 ## Core
 - `../README.md` – overview, setup, quick start
 - `../ARCHITECTURE.md` – OAuth bridge + MCP design (update when flows change)
-- `docs/LLM-AGENTS.md` – guidance for LLM/agent users
+- `LLM-AGENTS.md` – guidance for LLM/agent users
 - `../DEPLOY.md` – deployment/runbook (Fly/compose)
-- `docs/testing.md` – test matrix and commands
-- `docs/coverage.md` + `docs/mittwald-cli-coverage.md` – wrapper coverage policy and report
-- `docs/CREDENTIAL-SECURITY.md` – required credential-handling standard
+- `DOCS-SITES-OPERATIONS.md` – canonical operator runbook for docs site build/spot-check/deploy prep
+- `FUNCTIONAL-TESTING-OPERATIONS.md` – canonical operator runbook for agent-native functional testing
+- `testing.md` – test matrix and commands
+- `coverage.md` + `mittwald-cli-coverage.md` – wrapper coverage policy and report
+- `CREDENTIAL-SECURITY.md` – required credential-handling standard
 
 ## Guides
 - `docs/guides/chatgpt.md`, `docs/guides/claude-desktop.md`, `docs/guides/cursor.md` – client setup

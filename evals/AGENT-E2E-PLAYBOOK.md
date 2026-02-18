@@ -4,7 +4,7 @@ This playbook is for full MCP tool validation from inside coding agents, with a 
 
 ## Goal
 
-- Validate every tool prompt under `evals/prompts/**.json`.
+- Validate every tool prompt under `evals/prompts-fly-live/**.json` (default target set).
 - Require real MCP tool calls from agent CLIs (no HTTP bypass scripts).
 - Fail the run unless coverage target is met (default: `100%`).
 
@@ -36,6 +36,12 @@ npm run eval:agent:e2e -- \
 npm run eval:agent:report
 ```
 
+### 4) Aggregate all historical runs
+
+```bash
+npm run eval:agent:results -- --agent=claude
+```
+
 ## Authentication Hand-off
 
 When preflight fails for auth, use these remediation paths:
@@ -47,7 +53,7 @@ When preflight fails for auth, use these remediation paths:
 
 - Codex:
   - Add server if needed:
-    - `codex mcp add mittwald --url https://mcp.mittwald.de/mcp`
+    - `codex mcp add mittwald --url https://mittwald-mcp-fly2.fly.dev/mcp`
   - Authenticate:
     - `codex mcp login mittwald`
 

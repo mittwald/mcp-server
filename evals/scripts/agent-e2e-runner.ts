@@ -276,7 +276,7 @@ function parseArgs(argv: string[]): RunnerOptions {
 
   const options: RunnerOptions = {
     agents: ['claude'],
-    promptDir: toAbsolute('evals/prompts'),
+    promptDir: toAbsolute('evals/prompts-fly-live'),
     outputDir: toAbsolute('evals/results/agent-e2e'),
     timeoutMs: DEFAULT_TIMEOUT_MS,
     mcpConfigPath: mcpConfigDefault,

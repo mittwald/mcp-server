@@ -1,4 +1,0 @@
-{"eval_id": "login-reset", "tool_name": "mcp__mittwald__mittwald_login_reset", "display_name": "login/reset", "domain": "misc", "tier": 0, "timestamp": "2025-12-16T17:34:00Z", "tool_response": {"status": "skipped", "message": "Tool not available via MCP - login/* tools are in misc domain, not exposed via current MCP interface"}}
-<!-- SELF_ASSESSMENT_START -->
-{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_login_reset", "timestamp": "2025-12-16T17:34:00Z", "problems_encountered": [{"type": "other", "description": "login/reset tool not available via current MCP interface"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool not exposed via MCP server", "execution_notes": "The login/* tools are categorized in misc domain and not available through the MCP tool interface used for this eval. This is a destructive tool that would reset authentication."}
-<!-- SELF_ASSESSMENT_END -->

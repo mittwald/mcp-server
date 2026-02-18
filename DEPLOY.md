@@ -141,102 +141,47 @@ For deeper diagnostics:
 
 The project includes two Astro/Starlight documentation sites:
 
-| Site | Location | Default Port | Content |
-|------|----------|--------------|---------|
-| **Tool Reference** | `docs/reference/` | 4321 | Auto-generated API docs for 115+ MCP tools |
-| **Setup & Guides** | `docs/setup-and-guides/` | 4322 | OAuth setup guides, conceptual explainers |
+- `docs/setup-and-guides/`
+- `docs/reference/`
 
-### 6.1 Building the Documentation Sites
+Canonical build and verification instructions live in:
 
-```bash
-# Build Tool Reference site
-cd docs/reference
-npm install
-npm run build
-# Output: docs/reference/dist/
+- `docs/DOCS-SITES-OPERATIONS.md`
+- `docs/FUNCTIONAL-TESTING-OPERATIONS.md` (for post-deploy functional validation inside agent CLIs)
 
-# Build Setup & Guides site
-cd docs/setup-and-guides
-npm install
-npm run build
-# Output: docs/setup-and-guides/dist/
-```
-
-### 6.2 Local Development
+### 6.1 Quick Build (Both Sites)
 
 ```bash
-# Start Tool Reference in dev mode (hot reload)
-cd docs/reference
-npm run dev
-# Available at http://localhost:4321
-
-# Start Setup & Guides in dev mode
-cd docs/setup-and-guides
-npm run dev
-# Available at http://localhost:4322
+cd docs
+./build-all.sh local
 ```
 
-### 6.3 Serving Built Sites
+### 6.2 Build Configuration
 
-**Using `serve` (simple static server):**
+`docs/build-all.sh` supports:
+
+- `local`
+- `production`
+- `github-pages`
+- `custom` (with `BASE_URL`, `SETUP_SITE_URL`, `REFERENCE_SITE_URL`)
+
+Example:
+
 ```bash
-# Serve Tool Reference
-cd docs/reference
-npx serve dist -p 4321
-
-# Serve Setup & Guides (in another terminal)
-cd docs/setup-and-guides
-npx serve dist -p 4322
+cd docs
+BASE_URL=/docs SETUP_SITE_URL=/docs REFERENCE_SITE_URL=/docs/reference ./build-all.sh custom
 ```
 
-**Using nginx (production):**
-```nginx
-# Tool Reference
-server {
-    listen 80;
-    server_name docs.mcp.example.com;
-    root /path/to/docs/reference/dist;
+### 6.3 Local Dev Servers
 
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-
-# Setup & Guides
-server {
-    listen 80;
-    server_name guides.mcp.example.com;
-    root /path/to/docs/setup-and-guides/dist;
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
+```bash
+cd docs/setup-and-guides && npm run dev
+cd docs/reference && npm run dev
 ```
 
-### 6.4 Cross-Site Navigation
+### 6.4 Production Static Hosting
 
-The sites link to each other. Update the following if hosting on different domains:
-
-- **Tool Reference** (`docs/reference/src/content/docs/index.mdx`): Links to Setup & Guides
-- **Setup & Guides** (`docs/setup-and-guides/astro.config.mjs`): External link to Tool Reference in sidebar
-
-For production, update the hardcoded `localhost` URLs to your actual domains.
-
-### 6.5 Site Content Summary
-
-**Tool Reference** (196 pages):
-- Homepage with tool domain cards
-- 21 tool domains (App, Backup, Database, Domain, etc.)
-- Auto-generated pages for each tool with parameters, return types, examples
-
-**Setup & Guides** (8 pages):
-- Getting Started overview (OAuth concepts, tool comparison)
-- Cursor IDE setup guide
-- Codex CLI setup guide
-- What is MCP? explainer
-- What is Agentic Coding? explainer
-- OAuth Integration explainer
+Serve each built `dist/` directory as a static site (nginx/Caddy/S3/CDN all fine). Use `try_files`/SPA fallback behavior so deep links resolve to `index.html`.
 
 ## 7. Further Reading
 

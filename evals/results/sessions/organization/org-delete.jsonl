@@ -1,4 +1,0 @@
-{"eval_id": "org-delete", "tool_name": "mcp__mittwald__mittwald_org_delete", "display_name": "org/delete", "domain": "organization", "tier": 1, "timestamp": "2025-12-16T17:43:00Z", "tool_response": {"status": "skipped", "message": "Skipped - too destructive (NEVER execute on production org per WP prompt safety notes)"}}
-<!-- SELF_ASSESSMENT_START -->
-{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_org_delete", "timestamp": "2025-12-16T17:43:00Z", "problems_encountered": [{"type": "other", "description": "Skipped for safety - destructive operation that would delete entire organization"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped due to safety concerns", "execution_notes": "This tool is explicitly marked as 'NEVER execute on production org' in the WP prompt. Skipping as required."}
-<!-- SELF_ASSESSMENT_END -->

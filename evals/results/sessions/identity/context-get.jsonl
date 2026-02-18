@@ -1,4 +1,0 @@
-{"eval_id": "context-get", "tool_name": "mcp__mittwald__mittwald_context_get", "display_name": "context/get", "domain": "identity", "tier": 0, "timestamp": "2025-12-16T17:25:00Z", "tool_response": {"status": "success", "message": "No context parameters set", "data": {"context": {}, "formattedOutput": {}, "format": "json"}, "meta": {"command": "mw context get --output json", "durationMs": 116889}}}
-<!-- SELF_ASSESSMENT_START -->
-{"success": true, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_context_get", "timestamp": "2025-12-16T17:25:00Z", "problems_encountered": [], "resources_created": [], "resources_verified": [{"type": "context", "id": "current", "status": "verified"}], "tool_response_summary": "Context retrieved successfully - no parameters currently set", "execution_notes": "Tool executed correctly, returned empty context as expected for fresh session"}
-<!-- SELF_ASSESSMENT_END -->

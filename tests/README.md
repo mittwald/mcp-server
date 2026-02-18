@@ -2,6 +2,9 @@
 
 This repository uses a layered test strategy covering linting, type safety, Redis-backed session flows, the OAuth bridge, and MCP end-to-end behaviour. All commands below assume `pnpm` from the repo root.
 
+For customer-operated functional testing against deployed endpoints using real coding agents, start with:
+- `docs/FUNCTIONAL-TESTING-OPERATIONS.md`
+
 ## Quick Commands
 - `pnpm lint`
 - `pnpm type-check`

@@ -195,42 +195,24 @@ This repository uses GitHub's native security features:
 
 ## Documentation
 
-Comprehensive end-user documentation for Mittwald MCP is available in two static sites:
+End-user docs are split across two static sites:
 
-### Site 1: Setup & Guides (OAuth, Concepts, Case Studies)
-Located in `docs/setup-and-guides/`
+- **Setup & Guides** in `docs/setup-and-guides/` (human-perspective onboarding, how-to, tutorials, runbooks, explainers)
+- **Tool Reference** in `docs/reference/` (tool-by-tool reference pages and API-level details)
 
-**Contents**:
-- **OAuth Getting-Started Guides**: Step-by-step setup for Claude Code, GitHub Copilot, Cursor, Codex CLI
-- **Conceptual Explainers**: What is MCP? What is Agentic Coding? How OAuth Integration Works
-- **Case Studies**: 10 tutorial-based examples for different developer segments
+Operator runbooks:
 
-**Build**: `cd docs/setup-and-guides && npm run build`
+- `docs/DOCS-SITES-OPERATIONS.md` (build and verify both documentation sites)
+- `docs/FUNCTIONAL-TESTING-OPERATIONS.md` (run functional MCP testing in real agents against deployed endpoints)
 
-### Site 2: Reference (115 MCP Tools)
-Located in `docs/reference/`
+One-command build for both sites:
 
-**Contents**:
-- **Complete Tool Reference**: All 115 MCP tools documented with parameters, return types, and examples
-- **Organized by Domain**: 14 domains (apps, backups, containers, databases, identity, etc.)
-- **Searchable**: Built-in search via Pagefind
+```bash
+cd docs
+./build-all.sh local
+```
 
-**Build**: `cd docs/reference && npm run build`
-
-### QA & Publication Status
-
-- ✅ **User Testing Complete**: All 4 OAuth guides tested with real tools (average 9 min, 100% success)
-- ✅ **Documentation Review Complete**: All 115 tools, 10 case studies, 3 explainers verified
-- ✅ **Accessibility Verified**: WCAG 2.1 AA compliance confirmed
-- ✅ **Publication Ready**: All sign-offs complete
-
-**Documentation artifacts** (in `docs/`):
-- `USER-TESTING-RESULTS.md` - Testing metrics, feedback, and improvements
-- `DOCUMENTATION-REVIEW.md` - Completeness and accuracy review
-- `DEPLOYMENT-GUIDE.md` - Deployment instructions for 5+ platforms
-- `PUBLICATION-SIGN-OFF.md` - Final publication approval
-
-**For deployment**: See `DEPLOYMENT-GUIDE.md` for options (GitHub Pages, Netlify, Vercel, self-hosted, AWS)
+For deployment-specific details, see `DEPLOY.md` and `docs/DEPLOYMENT-GUIDE.md`.
 
 ---
 

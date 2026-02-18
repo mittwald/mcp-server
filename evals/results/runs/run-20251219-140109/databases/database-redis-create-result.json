@@ -1,1 +1,0 @@
-{"success":false,"confidence":"high","tool_executed":"mcp__mittwald__mittwald_database_redis_create","timestamp":"2025-12-19T14:12:00Z","problems_encountered":[{"type":"resource_not_found","description":"HTTP 404 Not Found"}],"resources_created":[],"resources_verified":[],"tool_response_summary":"Failed - 404 Not Found","execution_notes":"Version not found or endpoint issue"}

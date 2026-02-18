@@ -1,4 +1,0 @@
-{"eval_id": "user-ssh-key-create", "tool_name": "mcp__mittwald__mittwald_user_ssh_key_create", "display_name": "user/ssh-key/create", "domain": "identity", "tier": 0, "timestamp": "2025-12-16T17:33:00Z", "tool_response": {"status": "skipped", "message": "Skipped - user/* tools experiencing consistent timeout issues"}}
-<!-- SELF_ASSESSMENT_START -->
-{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_create", "timestamp": "2025-12-16T17:33:00Z", "problems_encountered": [{"type": "timeout", "description": "user/* tools experiencing consistent SIGTERM timeout pattern"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped due to timeout pattern", "execution_notes": "All user/* tools are timing out via MCP server - not attempting create to avoid orphaned resources"}
-<!-- SELF_ASSESSMENT_END -->
