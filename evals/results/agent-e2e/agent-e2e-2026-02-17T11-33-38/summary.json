@@ -1,0 +1,119 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-33-38",
+  "generatedAt": "2026-02-17T11:33:45.254Z",
+  "outputDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-33-38",
+  "options": {
+    "agents": [
+      "claude"
+    ],
+    "promptDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live",
+    "timeoutMs": 180000,
+    "target": "fly",
+    "requireCoverage": 0,
+    "coverageMode": "all-agents",
+    "requireSelfAssessment": false,
+    "cleanupTestProjects": true,
+    "cleanupProjectPrefix": "agent-e2e-2026-02-17T11-33-38",
+    "mcpUrl": "https://mittwald-mcp-fly2.fly.dev/mcp",
+    "mcpConfigPath": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json",
+    "tools": [
+      "mittwald_project_create"
+    ]
+  },
+  "promptInventory": {
+    "totalLoaded": 1,
+    "invalidFiles": []
+  },
+  "preflight": [
+    {
+      "agent": "claude",
+      "ok": false,
+      "reason": "Claude reports MCP server needs OAuth authentication Remediation: Run 'claude' and authenticate the mittwald MCP server via '/mcp', or update /Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json to a valid authenticated server.",
+      "details": {
+        "commandAvailable": true,
+        "expectedToolCalled": false,
+        "hasToolCallErrors": false,
+        "claudeNeedsAuth": true,
+        "probeExitCode": 0,
+        "probeTimedOut": false
+      },
+      "execution": {
+        "agent": "claude",
+        "command": "claude",
+        "args": [
+          "--print",
+          "MCP readiness probe.\nCall exactly one MCP tool: mcp__mittwald__mittwald_user_get.\nDo not run shell commands.\nDo not read or write files.\nIf the call succeeds, reply exactly PRECHECK_OK.\nIf the call fails or the tool is unavailable, reply exactly PRECHECK_FAILED.",
+          "--output-format",
+          "stream-json",
+          "--verbose",
+          "--allowedTools",
+          "mcp__mittwald__*",
+          "--mcp-config",
+          "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json",
+          "--strict-mcp-config"
+        ],
+        "exitCode": 0,
+        "durationMs": 4465,
+        "timedOut": false,
+        "stdout": "{\"type\":\"system\",\"subtype\":\"init\",\"cwd\":\"/Users/robert/Code/MittwaldCoWork/mittwald-mcp\",\"session_id\":\"369864f0-a36b-479e-8159-3294065bd66d\",\"tools\":[\"Task\",\"TaskOutput\",\"Bash\",\"Glob\",\"Grep\",\"ExitPlanMode\",\"Read\",\"Edit\",\"Write\",\"NotebookEdit\",\"WebFetch\",\"TodoWrite\",\"WebSearch\",\"TaskStop\",\"AskUserQuestion\",\"Skill\",\"EnterPlanMode\",\"ToolSearch\"],\"mcp_servers\":[{\"name\":\"mittwald\",\"status\":\"needs-auth\"}],\"model\":\"claude-opus-4-6\",\"permissionMode\":\"default\",\"slash_commands\":[\"keybindings-help\",\"debug\",\"flyio-deploy\",\"saas-pegasus-vite\",\"jujutsu\",\"codex-review\",\"spec-kitty.status\",\"spec-kitty.clarify\",\"spec-kitty.constitution\",\"spec-kitty.tasks\",\"spec-kitty.merge\",\"spec-kitty.specify\",\"spec-kitty.dashboard\",\"spec-kitty.implement\",\"spec-kitty.accept\",\"spec-kitty.review\",\"spec-kitty.analyze\",\"spec-kitty.research\",\"spec-kitty.checklist\",\"spec-kitty.plan\",\"compact\",\"context\",\"cost\",\"init\",\"pr-comments\",\"release-notes\",\"review\",\"security-review\",\"insights\"],\"apiKeySource\":\"none\",\"claude_code_version\":\"2.1.44\",\"output_style\":\"default\",\"agents\":[\"Bash\",\"general-purpose\",\"statusline-setup\",\"Explore\",\"Plan\"],\"skills\":[\"keybindings-help\",\"debug\",\"flyio-deploy\",\"saas-pegasus-vite\",\"jujutsu\",\"codex-review\"],\"plugins\":[],\"uuid\":\"cf3c5481-0722-43fc-a6a3-d7f09d03636c\",\"fast_mode_state\":\"off\"}\n{\"type\":\"assistant\",\"message\":{\"model\":\"claude-opus-4-6\",\"id\":\"msg_01QdV59GyaZoMjfk88ta5WQT\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"I don't have access to any MCP tools in this session. The `mcp__mittwald__mittwald_user_get` tool is not available to me.\\n\\nPRECHECK_FAILED\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"cache_creation_input_tokens\":7556,\"cache_read_input_tokens\":17836,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":7556},\"output_tokens\":1,\"service_tier\":\"standard\",\"inference_geo\":\"not_available\"},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"369864f0-a36b-479e-8159-3294065bd66d\",\"uuid\":\"97ed617b-ca07-41fb-8157-020c6e54c7ab\"}\n{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":3087,\"duration_api_ms\":2995,\"num_turns\":1,\"result\":\"I don't have access to any MCP tools in this session. The `mcp__mittwald__mittwald_user_get` tool is not available to me.\\n\\nPRECHECK_FAILED\",\"stop_reason\":null,\"session_id\":\"369864f0-a36b-479e-8159-3294065bd66d\",\"total_cost_usd\":0.057308000000000005,\"usage\":{\"input_tokens\":3,\"cache_creation_input_tokens\":7556,\"cache_read_input_tokens\":17836,\"output_tokens\":46,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":7556,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"},\"modelUsage\":{\"claude-opus-4-6\":{\"inputTokens\":3,\"outputTokens\":46,\"cacheReadInputTokens\":17836,\"cacheCreationInputTokens\":7556,\"webSearchRequests\":0,\"costUSD\":0.057308000000000005,\"contextWindow\":200000,\"maxOutputTokens\":32000}},\"permission_denials\":[],\"uuid\":\"9a892a7b-10f6-4511-8d05-a523f550e637\"}\n",
+        "stderr": "",
+        "toolsCalled": [],
+        "toolCallErrors": [],
+        "messages": [
+          "I don't have access to any MCP tools in this session. The `mcp__mittwald__mittwald_user_get` tool is not available to me.\n\nPRECHECK_FAILED"
+        ],
+        "parseErrors": 0,
+        "mcpServerStatus": {
+          "mittwald": "needs-auth"
+        }
+      }
+    }
+  ],
+  "counts": {
+    "totalCaseRuns": 0,
+    "passedCaseRuns": 0,
+    "failedCaseRuns": 0,
+    "matrixCoveragePercent": 0,
+    "totalTools": 1,
+    "coveredTools": 0,
+    "toolCoveragePercent": 0
+  },
+  "perAgent": {
+    "claude": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "coveragePercent": 0
+    }
+  },
+  "perTool": [
+    {
+      "toolName": "mcp__mittwald__mittwald_project_create",
+      "domain": "project-foundation",
+      "displayName": "project/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    }
+  ],
+  "gate": {
+    "requiredCoverage": 0,
+    "mode": "all-agents",
+    "passed": false,
+    "reasons": [
+      "Preflight failed for: claude"
+    ]
+  },
+  "cleanup": {
+    "enabled": true,
+    "prefix": "agent-e2e-2026-02-17T11-33-38",
+    "startedAt": "2026-02-17T11:33:43.448Z",
+    "finishedAt": "2026-02-17T11:33:45.254Z",
+    "matchedCount": 0,
+    "deleted": [],
+    "failed": []
+  }
+}

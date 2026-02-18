@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-01-23T11:30:37.755Z",
+  "sites": {
+    "reference": {
+      "site": "reference",
+      "results": [
+        {
+          "baseUrl": "/",
+          "status": "pass",
+          "buildTime": 4298,
+          "warnings": []
+        },
+        {
+          "baseUrl": "/docs",
+          "status": "pass",
+          "buildTime": 4956,
+          "warnings": []
+        },
+        {
+          "baseUrl": "/reference",
+          "status": "pass",
+          "buildTime": 5125,
+          "warnings": []
+        },
+        {
+          "baseUrl": "/setup",
+          "status": "pass",
+          "buildTime": 5000,
+          "warnings": []
+        },
+        {
+          "baseUrl": "/mcp-docs",
+          "status": "pass",
+          "buildTime": 5194,
+          "warnings": []
+        }
+      ],
+      "pageCount": 195,
+      "status": "pass"
+    },
+    "setup": {
+      "site": "setup",
+      "results": [],
+      "pageCount": 0,
+      "status": "fail"
+    }
+  },
+  "summary": {
+    "allSitesPassed": false,
+    "totalTests": 5,
+    "passedTests": 5,
+    "failedTests": 0
+  }
+}

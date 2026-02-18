@@ -1,0 +1,48 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_app_get` eval. Let me start by loading the necessary tools and finding an app to query.
+All tools loaded. Now let me list projects to find one with apps.
+Found 8 projects. Let me list apps in the first project ("mStudio MCP server") which is likely to have an app installed.
+Found 4 apps. Now let me execute the target tool `mcp__mittwald__mittwald_app_get` using the first app's installation ID.
+The tool executed successfully. Let me also verify it works with the short ID format.
+Both full UUID and short ID work. The eval is complete. Now let me save the self-assessment result.
+I see the results follow a run-based directory structure. Let me save the result in the existing pattern.
+The file write was blocked by permissions. Here is the complete eval result:
+
+## Eval Result: app/get
+
+**Status**: SUCCESS
+
+The `mcp__mittwald__mittwald_app_get` tool works correctly:
+
+1. **Prerequisites**: Listed projects via `project_list` (found 8), then listed apps via `app_list` in project `fd1ef726-14b8-4906-8a45-0756ba993246` (found 4 PHP apps)
+2. **Execution**: Called `app_get` with installation ID `70a3012d-d28a-4ca3-a146-9d3531ac5f95` - returned full app details
+3. **Verification**: Also tested with short ID `a-v2tmw9` - returned identical results, confirming both ID formats work
+4. **Response contents**: appId, version info (current/desired), description, installationPath, phase (`ready`), systemSoftware dependencies, request handler config, and app metadata
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_get",
+  "timestamp": "2026-02-17T11:15:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95",
+      "status": "verified"
+    },
+    {
+      "type": "app_installation_short_id",
+      "id": "a-v2tmw9",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved app installation details for PHP 8.2 app (id: 70a3012d-d28a-4ca3-a146-9d3531ac5f95, shortId: a-v2tmw9) in project fd1ef726-14b8-4906-8a45-0756ba993246. Response included appId, version info (current and desired), description, installationPath, phase (ready), systemSoftware dependencies, and app metadata. Both full UUID and short ID lookups returned identical results.",
+  "execution_notes": "Tool works with both full UUID (70a3012d-d28a-4ca3-a146-9d3531ac5f95) and short ID (a-v2tmw9) formats. Response time was ~353ms for full ID and ~218ms for short ID. JSON output format returns comprehensive app installation details including version tracking, system software dependencies, and request handler configuration."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

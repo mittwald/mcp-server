@@ -1,0 +1,61 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_stack_delete` eval. Let me start by loading the required tools.
+Tools loaded. Now let me list projects and find one with existing stacks.
+I have projects. Let me check a few eval projects for existing stacks. I'll check several in parallel.
+
+
+All projects have default stacks with empty services. These are "default" stacks that come with each project. I'll use one of the eval temp projects for this destructive test. Let me deploy a minimal stack first so we have something meaningful to delete, then delete it.
+
+Let me first deploy a simple stack to one of the eval projects, then delete it. I'll use the `p-jbcrrv` (Eval Temp Project) stack.
+Good, the stack exists and is deployed. Now let me execute the actual eval target — `mcp__mittwald__mittwald_stack_delete` — on this stack.
+Interesting — the tool returned an error, but examining the details reveals this is a **client-side assertion mismatch**, not an actual API failure. The API returned HTTP 200 (success), but the client library expected HTTP 204. The delete operation appears to have actually succeeded on the server side. Let me verify by listing stacks for this project again.
+The stack still exists after the delete attempt. Looking at the error more carefully:
+
+- The API call was a `PUT` to `v2/stacks/{id}` with `{"services":{},"volumes":{}}` — this is actually an **update/clear** operation, not a true DELETE
+- The API returned 200 (OK) but the client expected 204 (No Content)
+- The stack persists because the underlying implementation sends a PUT to clear services/volumes rather than a DELETE to remove the stack entirely
+
+This reveals a **bug in the MCP tool implementation**: the `stack_delete` tool is using a PUT request to clear the stack rather than a DELETE request to actually remove it, and it also has an incorrect status code assertion (expects 204 from a PUT endpoint that returns 200).
+
+Let me verify the stack's current state — the services and volumes should at least be empty after the attempted "delete."
+Confirmed: the stack has no services (it was already empty before the delete attempt). The stack itself was never truly deleted — it still exists as a "default" stack on the project.
+
+## Summary
+
+The `mcp__mittwald__mittwald_stack_delete` tool has a bug:
+
+1. **Wrong HTTP method**: The implementation sends `PUT v2/stacks/{id}` with `{"services":{},"volumes":{}}` instead of `DELETE v2/stacks/{id}`. This clears the stack's contents but doesn't delete the stack resource itself.
+2. **Status code mismatch**: The client asserts `204 No Content` but the PUT endpoint returns `200 OK`, causing an `ApiClientError`.
+3. **Net effect**: The tool errors out due to the assertion failure, and even if it didn't, it would only clear the stack rather than delete it.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_stack_delete",
+  "timestamp": "2026-02-17T10:30:45.000Z",
+  "problems_encountered": [
+    {
+      "type": "api_error",
+      "description": "Tool returned 'Unexpected response status (expected 204, got: 200)' - the underlying implementation uses PUT v2/stacks/{id} with empty services/volumes instead of DELETE, causing a status code assertion failure"
+    },
+    {
+      "type": "other",
+      "description": "Implementation bug: stack_delete sends PUT request to clear stack contents rather than DELETE to remove the stack resource. The stack persists after the operation."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "stack",
+      "id": "73b3bc84-7eba-4832-b765-02bd6fd69ccd",
+      "status": "still_exists_after_delete_attempt"
+    }
+  ],
+  "tool_response_summary": "Tool errored with ApiClientError: expected HTTP 204 but received 200. The underlying API call was PUT v2/stacks/{stackId} with empty services/volumes payload, not a DELETE request. Stack resource persists after the operation.",
+  "execution_notes": "Bug in MCP tool implementation: (1) Uses PUT instead of DELETE HTTP method, (2) Asserts wrong status code (204 vs 200). The Mittwald API likely requires a different endpoint or method for actual stack deletion. Default project stacks (one per project) may also be non-deletable by design."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

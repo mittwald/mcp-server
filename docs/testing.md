@@ -26,4 +26,5 @@
 
 ## References
 - `tests/README.md` for detailed setup.
+- `docs/FUNCTIONAL-TESTING-OPERATIONS.md` for customer-operated functional testing in real agents (deployed endpoint validation).
 - `docs/coverage.md` for coverage expectations and regeneration.

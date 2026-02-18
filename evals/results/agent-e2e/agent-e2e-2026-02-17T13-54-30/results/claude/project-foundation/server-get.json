@@ -1,0 +1,23 @@
+{
+  "runId": "agent-e2e-2026-02-17T13-54-30",
+  "agent": "claude",
+  "promptCaseId": "server-get",
+  "domain": "project-foundation",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/project-foundation/server-get.json",
+  "toolName": "mcp__mittwald__mittwald_server_get",
+  "displayName": "server/get",
+  "startedAt": "2026-02-17T14:06:38.309Z",
+  "finishedAt": "2026-02-17T14:07:03.547Z",
+  "durationMs": 25238,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_server_list",
+    "mcp__mittwald__mittwald_server_get"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/project-foundation/server-get.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/project-foundation/server-get.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T13-54-30/raw/claude/project-foundation/server-get.stderr.txt"
+}

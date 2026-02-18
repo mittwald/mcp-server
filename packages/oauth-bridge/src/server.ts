@@ -9,8 +9,14 @@ import { runStartupValidation } from './startup-validator.js';
 runStartupValidation();
 
 const config = loadConfigFromEnv();
-const ttlSeconds = Number(process.env.BRIDGE_STATE_TTL_SECONDS ?? 300);
-const stateStore = createStateStore({ ttlSeconds });
+const authRequestTtlSeconds = Number(process.env.BRIDGE_STATE_TTL_SECONDS ?? 300);
+const grantTtlSeconds = Number(
+  process.env.BRIDGE_GRANT_TTL_SECONDS ?? config.bridge.refreshTokenTtlSeconds
+);
+const stateStore = createStateStore({
+  authRequestTtlSeconds,
+  grantTtlSeconds
+});
 const registrationTokenStore = createRegistrationTokenStore();
 const app = createApp(config, stateStore, registrationTokenStore);
 

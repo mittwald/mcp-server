@@ -1,0 +1,26 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-34-40",
+  "agent": "claude",
+  "promptCaseId": "backup-delete",
+  "domain": "backups",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/backups/backup-delete.json",
+  "toolName": "mcp__mittwald__mittwald_backup_delete",
+  "displayName": "backup/delete",
+  "startedAt": "2026-02-17T10:51:39.531Z",
+  "finishedAt": "2026-02-17T10:52:26.257Z",
+  "durationMs": 46726,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_backup_list",
+    "mcp__mittwald__mittwald_backup_create",
+    "mcp__mittwald__mittwald_backup_get",
+    "mcp__mittwald__mittwald_backup_delete"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/backups/backup-delete.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/backups/backup-delete.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/backups/backup-delete.stderr.txt"
+}

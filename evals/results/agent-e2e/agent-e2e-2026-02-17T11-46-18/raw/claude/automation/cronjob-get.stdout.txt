@@ -1,0 +1,3 @@
+
+
+I'll execute this eval step by step. Let me start by loading the necessary MCP tools and finding a suitable project.

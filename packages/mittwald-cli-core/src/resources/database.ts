@@ -3,6 +3,7 @@
  * Wrappers for MySQL and Redis database operations
  */
 
+import { randomBytes } from 'node:crypto';
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
@@ -60,7 +61,18 @@ export interface CreateMysqlDatabaseOptions extends LibraryFunctionBase {
   projectId: string;
   description: string;
   version: string;
-  characterSettings?: any;
+  characterSettings?: {
+    characterSet: string;
+    collation: string;
+  };
+  userPassword?: string;
+  userAccessLevel?: 'full' | 'readonly';
+  userAccessIpMask?: string;
+  userExternalAccess?: boolean;
+}
+
+function generateMySqlUserPassword(): string {
+  return randomBytes(16).toString('hex');
 }
 
 export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): Promise<LibraryResult<any>> {
@@ -68,12 +80,24 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-
-    const data: any = {
-      description: options.description,
-      version: options.version,
+    const data = {
+      database: {
+        projectId: options.projectId,
+        description: options.description,
+        version: options.version,
+        ...(options.characterSettings ? { characterSettings: options.characterSettings } : {}),
+      },
+      user: {
+        accessLevel: options.userAccessLevel ?? 'full',
+        password: options.userPassword ?? generateMySqlUserPassword(),
+        ...(options.userAccessIpMask !== undefined
+          ? { accessIpMask: options.userAccessIpMask }
+          : {}),
+        ...(options.userExternalAccess !== undefined
+          ? { externalAccess: options.userExternalAccess }
+          : {}),
+      },
     };
-    if (options.characterSettings) data.characterSettings = options.characterSettings;
 
     const response = await client.database.createMysqlDatabase({
       projectId: options.projectId,

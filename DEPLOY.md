@@ -5,6 +5,12 @@ infrastructure. It covers required services, runtime configuration, and
 verification steps. Use it alongside `.env.example` and the Fly manifests when
 porting to Kubernetes, VM-based setups, or other container platforms.
 
+## Current Fly.io Topology (Verified 2026-02-17)
+
+- `mittwald-mcp-fly2` runs the MCP server from this repository root.
+- `mittwald-oauth-server` runs `packages/oauth-bridge` from this repository.
+- The separate repository at `../mittwald-oauth/mittwald-oauth` is not the source of the currently deployed Fly.io OAuth service.
+
 ## 1. Components & Responsibilities
 
 | Component | Location | Purpose |
@@ -131,7 +137,53 @@ For deeper diagnostics:
 - `flyctl logs` equivalents → `kubectl logs` / orchestrator logs.
 - Increase log verbosity via `LOG_LEVEL=debug` (MCP) or enabling request logging in the bridge.
 
-## 6. Further Reading
+## 6. Documentation Sites
+
+The project includes two Astro/Starlight documentation sites:
+
+- `docs/setup-and-guides/`
+- `docs/reference/`
+
+Canonical build and verification instructions live in:
+
+- `docs/DOCS-SITES-OPERATIONS.md`
+- `docs/FUNCTIONAL-TESTING-OPERATIONS.md` (for post-deploy functional validation inside agent CLIs)
+
+### 6.1 Quick Build (Both Sites)
+
+```bash
+cd docs
+./build-all.sh local
+```
+
+### 6.2 Build Configuration
+
+`docs/build-all.sh` supports:
+
+- `local`
+- `production`
+- `github-pages`
+- `custom` (with `BASE_URL`, `SETUP_SITE_URL`, `REFERENCE_SITE_URL`)
+
+Example:
+
+```bash
+cd docs
+BASE_URL=/docs SETUP_SITE_URL=/docs REFERENCE_SITE_URL=/docs/reference ./build-all.sh custom
+```
+
+### 6.3 Local Dev Servers
+
+```bash
+cd docs/setup-and-guides && npm run dev
+cd docs/reference && npm run dev
+```
+
+### 6.4 Production Static Hosting
+
+Serve each built `dist/` directory as a static site (nginx/Caddy/S3/CDN all fine). Use `try_files`/SPA fallback behavior so deep links resolve to `index.html`.
+
+## 7. Further Reading
 
 - `docs/FLY-MITTWALD-MIGRATION-GUIDE.md` – historical notes on migrating from Fly.
 - `.env.example` – authoritative list of supported variables.

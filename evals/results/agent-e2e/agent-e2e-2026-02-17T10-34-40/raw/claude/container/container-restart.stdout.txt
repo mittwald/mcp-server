@@ -1,0 +1,39 @@
+
+
+I'll execute the container restart eval. Let me start by loading the required tools and checking prerequisites.
+Tools loaded. Now let me list projects to find one that may have containers.
+Good, I have projects. Let me check a few for containers, starting with the eval test projects.
+
+
+Found 2 running containers in project `p-ptwfms`. Now let me restart one of them.
+Container restarted successfully. Let me verify it's running again by listing containers.
+The container `b0a2f781-a5ac-4cf9-8f98-1c9547104f0c` is now in `starting` status, confirming the restart was executed successfully. The other container remains `running` (unaffected).
+
+## Eval Results
+
+- **Tool**: `mcp__mittwald__mittwald_container_restart`
+- **Project**: `p-ptwfms` (mStudio MCP server)
+- **Container**: `b0a2f781-a5ac-4cf9-8f98-1c9547104f0c`
+- **Result**: Success - container restarted, verified transitioning from `running` → `starting`
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_container_restart",
+  "timestamp": "2026-02-17T10:30:15.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "container",
+      "id": "b0a2f781-a5ac-4cf9-8f98-1c9547104f0c",
+      "status": "restarted (status: starting)"
+    }
+  ],
+  "tool_response_summary": "Container b0a2f781-a5ac-4cf9-8f98-1c9547104f0c restarted successfully in project p-ptwfms. Post-restart verification confirmed container status changed from 'running' to 'starting', confirming the restart was executed.",
+  "execution_notes": "Used project p-ptwfms which had 2 running containers. Restarted the first container. Verification via container_list confirmed the restart (status: starting) while the second container remained unaffected (status: running)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

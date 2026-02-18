@@ -1,3 +1,9 @@
+# DEPRECATED
+
+This guide is legacy and may contain outdated setup details.
+
+Use the canonical docs under `docs/setup-and-guides/src/content/docs/` instead.
+
 # Claude Desktop Integration Guide
 
 > Connect the Mittwald MCP server to Claude Desktop for AI-assisted hosting management.

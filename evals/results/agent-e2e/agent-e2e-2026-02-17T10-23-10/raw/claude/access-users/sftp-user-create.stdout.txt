@@ -1,0 +1,36 @@
+
+
+I'll execute this eval by first finding a project, then attempting to create an SFTP user. Let me start by searching for the SFTP user creation tool and listing projects.
+I notice that there's no dedicated `sftp_user_create` tool - the SFTP tools were excluded from MCP registration (as noted in the git log: "Exclude all 4 SFTP tools from MCP registration"). The closest available tool is `mcp__mittwald__mittwald_ssh_user_create`, which creates SSH users (SSH users typically also provide SFTP access on Mittwald).
+
+Let me verify this by checking what SFTP-related tools exist and confirm the exclusion.
+This confirms the finding. The `mittwald_sftp_user_create` tool is **explicitly excluded** from the MCP tool registry (line 61 in `tool-scanner.ts`):
+
+> `'mittwald_sftp_user_create': 'SFTP feature incomplete - missing library support for expires/publicKey parameters'`
+
+All 4 SFTP tools (`user-create`, `user-update`, `user-delete`, `user-list`) are excluded because the SFTP feature is incomplete — the library migration hasn't been done for these tools, and the CLI-only parameter coverage is insufficient.
+
+The tool `mcp__mittwald__mittwald_sftp_user_create` does **not exist** in the MCP server's registered tool set, so it cannot be called.
+
+## Self-Assessment
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_sftp_user_create",
+  "timestamp": "2026-02-17T12:00:00Z",
+  "problems_encountered": [
+    {
+      "type": "resource_not_found",
+      "description": "Tool mcp__mittwald__mittwald_sftp_user_create does not exist in the MCP server. All 4 SFTP tools (user-create, user-update, user-delete, user-list) are explicitly excluded from MCP registration in src/utils/tool-scanner.ts lines 61-64. Exclusion reason: 'SFTP feature incomplete - missing library support for expires/publicKey parameters'. The git log also confirms: commit 72397253 'Exclude all 4 SFTP tools from MCP registration'."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool does not exist in MCP server registry. SFTP tools were excluded from registration due to incomplete library migration. The tool code exists in src/handlers/tools/mittwald-cli/sftp/user-create-cli.ts but is blocked from registration by the EXCLUDED_TOOLS_WITH_REASONS list in src/utils/tool-scanner.ts.",
+  "execution_notes": "This eval prompt references a tool that was removed from the MCP server as of commit 72397253. The eval prompt file should be archived to evals/prompts/_archived/ since the tool is not available for testing. The closest available alternative is mcp__mittwald__mittwald_ssh_user_create which creates SSH users (which on Mittwald infrastructure also provide SFTP access)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

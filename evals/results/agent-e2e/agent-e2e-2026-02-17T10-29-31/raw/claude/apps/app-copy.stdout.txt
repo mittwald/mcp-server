@@ -1,0 +1,47 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_app_copy` eval. Let me start by loading the necessary tools and checking prerequisites.
+Tools loaded. Now let me list projects to find one with an existing app.
+Found projects. Let me check a few of them for existing app installations.
+
+
+Good. Project `p-ptwfms` has 3 PHP apps. I'll use the first one (`a-v2tmw9`) as the source for the copy operation. Let me now execute the `app_copy` tool.
+The app copy succeeded. Let me verify the new installation exists by getting its details.
+The copied app is verified and currently in `installing` phase. The copy operation completed successfully.
+
+## Results Summary
+
+| Step | Result |
+|------|--------|
+| **Prerequisites** | Project `p-ptwfms` with PHP app `a-v2tmw9` found |
+| **Tool execution** | `mittwald_app_copy` returned success with new installation ID `5073be40-9ee4-45b7-91cb-2db29cbe7602` |
+| **Verification** | New app `a-hsavnh` confirmed via `app_get` - PHP app, phase `installing`, description matches, same project, same app version and system software as source |
+
+The copied app inherited all properties from the source (PHP app type, version `1.0.0`, custom document root `/public`, system software dependencies) and was assigned a new installation path `/eval-app-copy-test-f5yx6`.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_copy",
+  "timestamp": "2026-02-17T10:31:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "app_installation",
+      "id": "5073be40-9ee4-45b7-91cb-2db29cbe7602"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "5073be40-9ee4-45b7-91cb-2db29cbe7602",
+      "status": "installing"
+    }
+  ],
+  "tool_response_summary": "App copied successfully from a-v2tmw9 to new installation 5073be40-9ee4-45b7-91cb-2db29cbe7602 (shortId: a-hsavnh). New app is a PHP 1.0.0 installation in project p-ptwfms with phase 'installing', inheriting all system software and configuration from the source.",
+  "execution_notes": "Source app was a PHP 8.2 application (a-v2tmw9) in project p-ptwfms. The copy preserved all properties including custom document root /public, system software (composer, PHP, redis), and update policy. The new app was in 'installing' phase at verification time, which is expected for a freshly copied app."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

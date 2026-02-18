@@ -1,0 +1,26 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "org-invite-revoke",
+  "domain": "organization",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/organization/org-invite-revoke.json",
+  "toolName": "mcp__mittwald__mittwald_org_invite_revoke",
+  "displayName": "org/invite/revoke",
+  "startedAt": "2026-02-17T12:35:43.636Z",
+  "finishedAt": "2026-02-17T12:36:47.991Z",
+  "durationMs": 64355,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_org_list",
+    "mcp__mittwald__mittwald_org_invite",
+    "mcp__mittwald__mittwald_org_invite_list",
+    "mcp__mittwald__mittwald_org_invite_revoke",
+    "mcp__mittwald__mittwald_org_get"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-invite-revoke.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-invite-revoke.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-invite-revoke.stderr.txt"
+}

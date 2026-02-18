@@ -1,0 +1,50 @@
+
+
+I'll execute the backup schedule delete eval. Let me start by loading the required tools and checking prerequisites.
+Tools loaded. Let me first list projects to find one to work with.
+Good, I have projects available. I'll use one of the eval test projects. Let me check for existing backup schedules, and also create one that we can then delete.
+There are existing backup schedules. To safely test the delete operation, I'll first create a new backup schedule specifically for this eval, then delete it.
+Backup schedule created with ID `d7f2d997-8079-4eea-9720-731186aab9aa`. Now let me delete it using the target tool.
+Got a 403 (Forbidden) error. This is an authorization issue - the OAuth token doesn't have sufficient permissions (likely needs `backup:delete` scope) to delete backup schedules. Let me verify the schedule still exists to confirm it wasn't deleted.
+Confirmed - the schedule still exists (4 schedules now, including the one I created). The delete failed with a 403 permission error.
+
+## Summary
+
+The `mcp__mittwald__mittwald_backup_schedule_delete` tool was executed but failed with a **403 Forbidden** error. The tool correctly:
+- Accepts `backupScheduleId` and `confirm` parameters
+- Makes a `DELETE` request to `v2/project-backup-schedules/{id}`
+- Expects a 204 response on success
+
+The failure is due to insufficient OAuth scopes - the current token likely lacks `backup:delete` permission. The tool itself is functional (correct API endpoint, parameter handling), but the authenticated session doesn't have delete authorization for backup schedules.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_backup_schedule_delete",
+  "timestamp": "2026-02-17T10:55:02.000Z",
+  "problems_encountered": [
+    {
+      "type": "permission_denied",
+      "description": "HTTP 403 Forbidden when calling DELETE v2/project-backup-schedules/{id}. The OAuth token lacks sufficient scopes (likely needs backup:delete) to perform backup schedule deletion."
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "backup_schedule",
+      "id": "d7f2d997-8079-4eea-9720-731186aab9aa"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "backup_schedule",
+      "id": "d7f2d997-8079-4eea-9720-731186aab9aa",
+      "status": "still_exists_after_failed_delete"
+    }
+  ],
+  "tool_response_summary": "API returned 403 Forbidden (expected 204). The backup schedule was not deleted. Error originated from mittwald-api-client calling DELETE v2/project-backup-schedules/d7f2d997-8079-4eea-9720-731186aab9aa.",
+  "execution_notes": "Tool is functionally correct (proper endpoint, parameter handling) but the authenticated session lacks delete permissions for backup schedules. A backup schedule was created for this test (id: d7f2d997-8079-4eea-9720-731186aab9aa) and remains on project p-kbuygq. The OAuth bridge default scopes may need to include backup:delete for this operation to succeed."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

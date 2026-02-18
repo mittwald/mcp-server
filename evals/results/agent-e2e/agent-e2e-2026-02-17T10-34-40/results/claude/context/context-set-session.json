@@ -1,0 +1,24 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-34-40",
+  "agent": "claude",
+  "promptCaseId": "context-set-session",
+  "domain": "context",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/context/context-set-session.json",
+  "toolName": "mcp__mittwald__mittwald_context_set_session",
+  "displayName": "context/set/session",
+  "startedAt": "2026-02-17T11:09:17.715Z",
+  "finishedAt": "2026-02-17T11:09:50.452Z",
+  "durationMs": 32737,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_context_get_session",
+    "mcp__mittwald__mittwald_org_list",
+    "mcp__mittwald__mittwald_context_set_session"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/context/context-set-session.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/context/context-set-session.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/context/context-set-session.stderr.txt"
+}

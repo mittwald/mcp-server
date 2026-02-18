@@ -1,7 +1,12 @@
 # Mittwald MCP Server
 [![Coverage Check](https://github.com/robertDouglass/mittwald-mcp/actions/workflows/coverage-check.yml/badge.svg)](https://github.com/robertDouglass/mittwald-mcp/actions/workflows/coverage-check.yml)
 
-The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**—there is no Mittwald-issued client secret to manage. The bridge mints its own secrets for downstream confidential MCP clients (e.g. Claude Desktop) and verifies them before issuing JWTs. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
+The Mittwald MCP server lets external MCP clients (Claude, ChatGPT, MCP Inspector) run Mittwald CLI commands on behalf of users. Authentication now flows through a stateless OAuth bridge that fronts Mittwald’s OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats our bridge as a **public client**: there is no Mittwald-issued client secret to manage. The bridge mints its own secrets for downstream confidential MCP clients (e.g. Claude Desktop) and verifies them before issuing JWTs. Each CLI invocation receives the user's Mittwald access token via `mw ... --token <mittwald_access_token>`.
+
+## Active Production Deployment (Verified 2026-02-17)
+- `mittwald-mcp-fly2` (MCP server) is deployed from this repository root (`Dockerfile` + `src/`).
+- `mittwald-oauth-server` (OAuth service) is deployed from this repository's `packages/oauth-bridge/`.
+- The separate repository at `../mittwald-oauth/mittwald-oauth` is currently inactive/deprecated for production and is not the source of the running Fly.io OAuth service.
 
 ## What Changed (2025-09-25)
 - **Mittwald is authoritative for scopes and consent.** Our proxy no longer maintains its own scope catalogue or renders consent pages.
@@ -186,8 +191,31 @@ This repository uses GitHub's native security features:
   - `npm run coverage:generate` – rebuild artifacts when coverage inputs change.
   - `npm run check:cli-version` – warn when Dockerfile pins drift from npm.
 - See `docs/coverage-automation.md` for the full runbook covering CI guards and allowlist policy.
-- Intentional gaps live in `config/mw-cli-exclusions.json`. Update this allowlist (with rationale) whenever a missing CLI command is acceptable—CI fails if `stats.missingCount` is greater than zero.
+
+## Documentation
+
+End-user docs are split across two static sites:
+
+- **Setup & Guides** in `docs/setup-and-guides/` (human-perspective onboarding, how-to, tutorials, runbooks, explainers)
+- **Tool Reference** in `docs/reference/` (tool-by-tool reference pages and API-level details)
+
+Operator runbooks:
+
+- `docs/OPERATIONS-START-HERE.md` (customer handover entrypoint)
+- `docs/DOCS-SITES-OPERATIONS.md` (build and verify both documentation sites)
+- `docs/FUNCTIONAL-TESTING-OPERATIONS.md` (run functional MCP testing in real agents against deployed endpoints)
+
+One-command build for both sites:
+
+```bash
+cd docs
+./build-all.sh local
+```
+
+For deployment-specific details, see `DEPLOY.md` and `docs/DEPLOYMENT-GUIDE.md`.
 
 ---
 
 For questions or onboarding guidance, start with `ARCHITECTURE.md` and `docs/INDEX.md` (docs navigation). LLM/agent operators should read `docs/LLM-AGENTS.md`.
+
+For developer documentation on integrating with Mittwald MCP, see the setup guides in `docs/setup-and-guides/` or visit the deployed documentation site.

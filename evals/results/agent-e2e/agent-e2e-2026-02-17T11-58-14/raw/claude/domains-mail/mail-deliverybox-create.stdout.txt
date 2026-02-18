@@ -1,0 +1,51 @@
+
+
+I'll execute this eval step by step. Let me start by loading the required tools and finding a suitable test project.
+Good, tools are loaded. Let me list projects to find a suitable test project.
+I can see there's already a test project with the required prefix: `agent-e2e-2026-02-17T11-58-14-mysql-create-eval` (ID: `15f5367b-92bd-4761-ac33-f6bbb6f60db8`). I'll use this project to create the deliverybox.
+
+Now let me create a mail deliverybox in this test project.
+The `randomPassword` flag isn't supported in library mode. Let me provide an explicit password instead.
+The deliverybox was created successfully. Let me verify it exists by listing deliveryboxes for this project.
+Verification confirmed. The deliverybox was created and is visible in the project listing with the correct ID and description.
+
+## Eval Summary
+
+**Tool**: `mcp__mittwald__mittwald_mail_deliverybox_create`
+**Result**: Success
+
+- Created deliverybox with ID `ef0cf461-b27f-4610-a8ed-50ff73b47d65` in test project `15f5367b-92bd-4761-ac33-f6bbb6f60db8`
+- Verified via `deliverybox_list` — confirmed 1 deliverybox exists with correct description
+- Minor note: `randomPassword` flag is not supported in library mode; explicit password was required instead
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_deliverybox_create",
+  "timestamp": "2026-02-17T12:26:10.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "randomPassword flag not supported in library mode; had to provide explicit password instead"
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "deliverybox",
+      "id": "ef0cf461-b27f-4610-a8ed-50ff73b47d65"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "deliverybox",
+      "id": "ef0cf461-b27f-4610-a8ed-50ff73b47d65",
+      "status": "verified_via_list"
+    }
+  ],
+  "tool_response_summary": "Successfully created delivery box 'agent-e2e-2026-02-17T11-58-14-deliverybox-eval' with ID ef0cf461-b27f-4610-a8ed-50ff73b47d65. Verified via deliverybox list showing 1 box with authenticationEnabled=true, sendingEnabled=true.",
+  "execution_notes": "Used existing test project (agent-e2e-2026-02-17T11-58-14-mysql-create-eval). The randomPassword parameter is unsupported in library mode and returns a clear error message — explicit password works fine as a workaround. Deliverybox was assigned system name 'd175405'."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

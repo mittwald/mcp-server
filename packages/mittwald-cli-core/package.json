@@ -13,10 +13,6 @@
     "./lib/*": {
       "types": "./dist/lib/*.d.ts",
       "import": "./dist/lib/*.js"
-    },
-    "./installers/*": {
-      "types": "./dist/installers/*.d.ts",
-      "import": "./dist/installers/*.js"
     }
   },
   "scripts": {

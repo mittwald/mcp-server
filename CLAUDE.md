@@ -3,8 +3,11 @@
 ## Fly.io Infrastructure
 
 There are 2 Fly.io apps for the Mittwald ecosystem:
-- `mittwald-oauth-server` - OAuth 2.1 server with DCR support (https://mittwald-oauth-server.fly.dev)
-- `mittwald-mcp-fly2` - MCP server for Claude Code integration
+- `mittwald-oauth-server` - OAuth bridge deployed from this repo (`packages/oauth-bridge`) at https://mittwald-oauth-server.fly.dev
+- `mittwald-mcp-fly2` - MCP server deployed from this repo root at https://mittwald-mcp-fly2.fly.dev
+
+Deployment source note (verified 2026-02-17):
+- The separate repository at `../mittwald-oauth/mittwald-oauth` is not the source of the currently running Fly.io OAuth service and is treated as inactive/deprecated for production.
 
 ### Add MCP Server to Claude Code
 ```bash

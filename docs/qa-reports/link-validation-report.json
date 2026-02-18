@@ -1,0 +1,3538 @@
+{
+  "timestamp": "2026-01-23T11:30:13.387Z",
+  "sites": {
+    "reference": {
+      "status": "fail",
+      "internalLinksChecked": 41503,
+      "externalLinksChecked": 394,
+      "brokenLinks": 181,
+      "warnings": 170,
+      "issues": [
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 96,
+          "linkText": "link",
+          "linkUrl": "/tools/apps/",
+          "message": "Broken internal link: /tools/apps/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 102,
+          "linkText": "link",
+          "linkUrl": "/tools/backups/",
+          "message": "Broken internal link: /tools/backups/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "/tools/certificates/",
+          "message": "Broken internal link: /tools/certificates/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 114,
+          "linkText": "link",
+          "linkUrl": "/tools/containers/",
+          "message": "Broken internal link: /tools/containers/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 126,
+          "linkText": "link",
+          "linkUrl": "/tools/databases/",
+          "message": "Broken internal link: /tools/databases/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "/tools/domains-mail/",
+          "message": "Broken internal link: /tools/domains-mail/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 138,
+          "linkText": "link",
+          "linkUrl": "/tools/identity/",
+          "message": "Broken internal link: /tools/identity/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 144,
+          "linkText": "link",
+          "linkUrl": "/tools/misc/",
+          "message": "Broken internal link: /tools/misc/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 150,
+          "linkText": "link",
+          "linkUrl": "/tools/organization/",
+          "message": "Broken internal link: /tools/organization/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 156,
+          "linkText": "link",
+          "linkUrl": "/tools/project-foundation/",
+          "message": "Broken internal link: /tools/project-foundation/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/index.html",
+          "line": 174,
+          "linkText": "link",
+          "linkUrl": "/tools/automation/",
+          "message": "Broken internal link: /tools/automation/",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/volume/index.html",
+          "line": 104,
+          "linkText": "link",
+          "linkUrl": "./create",
+          "message": "Broken internal link: ./create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/volume/index.html",
+          "line": 104,
+          "linkText": "link",
+          "linkUrl": "./delete",
+          "message": "Broken internal link: ./delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/volume/index.html",
+          "line": 104,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./api-token-create",
+          "message": "Broken internal link: ./api-token-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./api-token-get",
+          "message": "Broken internal link: ./api-token-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./api-token-list",
+          "message": "Broken internal link: ./api-token-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./api-token-revoke",
+          "message": "Broken internal link: ./api-token-revoke",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./get",
+          "message": "Broken internal link: ./get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./session-get",
+          "message": "Broken internal link: ./session-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./session-list",
+          "message": "Broken internal link: ./session-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./ssh-key-create",
+          "message": "Broken internal link: ./ssh-key-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./ssh-key-delete",
+          "message": "Broken internal link: ./ssh-key-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./ssh-key-get",
+          "message": "Broken internal link: ./ssh-key-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./ssh-key-import",
+          "message": "Broken internal link: ./ssh-key-import",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/user/index.html",
+          "line": 140,
+          "linkText": "link",
+          "linkUrl": "./ssh-key-list",
+          "message": "Broken internal link: ./ssh-key-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/stack/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./delete",
+          "message": "Broken internal link: ./delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/stack/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./deploy",
+          "message": "Broken internal link: ./deploy",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/stack/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/stack/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./ps",
+          "message": "Broken internal link: ./ps",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/ssh/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./user-create",
+          "message": "Broken internal link: ./user-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/ssh/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./user-delete",
+          "message": "Broken internal link: ./user-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/ssh/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./user-list",
+          "message": "Broken internal link: ./user-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/ssh/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./user-update",
+          "message": "Broken internal link: ./user-update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/sftp/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./user-create",
+          "message": "Broken internal link: ./user-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/sftp/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./user-delete",
+          "message": "Broken internal link: ./user-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/sftp/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./user-list",
+          "message": "Broken internal link: ./user-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/sftp/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./user-update",
+          "message": "Broken internal link: ./user-update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/server/index.html",
+          "line": 100,
+          "linkText": "link",
+          "linkUrl": "./get",
+          "message": "Broken internal link: ./get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/server/index.html",
+          "line": 100,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/registry/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./create",
+          "message": "Broken internal link: ./create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/registry/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./delete",
+          "message": "Broken internal link: ./delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/registry/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/registry/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./update",
+          "message": "Broken internal link: ./update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./create",
+          "message": "Broken internal link: ./create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./delete",
+          "message": "Broken internal link: ./delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./filesystem-usage",
+          "message": "Broken internal link: ./filesystem-usage",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./get",
+          "message": "Broken internal link: ./get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./invite-get",
+          "message": "Broken internal link: ./invite-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./invite-list",
+          "message": "Broken internal link: ./invite-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./invite-list-own",
+          "message": "Broken internal link: ./invite-list-own",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./membership-get",
+          "message": "Broken internal link: ./membership-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./membership-get-own",
+          "message": "Broken internal link: ./membership-get-own",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./membership-list",
+          "message": "Broken internal link: ./membership-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./membership-list-own",
+          "message": "Broken internal link: ./membership-list-own",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./ssh",
+          "message": "Broken internal link: ./ssh",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/project/index.html",
+          "line": 148,
+          "linkText": "link",
+          "linkUrl": "./update",
+          "message": "Broken internal link: ./update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./delete",
+          "message": "Broken internal link: ./delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./get",
+          "message": "Broken internal link: ./get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./invite",
+          "message": "Broken internal link: ./invite",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./invite-list",
+          "message": "Broken internal link: ./invite-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./invite-list-own",
+          "message": "Broken internal link: ./invite-list-own",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./invite-revoke",
+          "message": "Broken internal link: ./invite-revoke",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./membership-list",
+          "message": "Broken internal link: ./membership-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./membership-list-own",
+          "message": "Broken internal link: ./membership-list-own",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/org/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./membership-revoke",
+          "message": "Broken internal link: ./membership-revoke",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./address-create",
+          "message": "Broken internal link: ./address-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./address-delete",
+          "message": "Broken internal link: ./address-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./address-get",
+          "message": "Broken internal link: ./address-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./address-list",
+          "message": "Broken internal link: ./address-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./address-update",
+          "message": "Broken internal link: ./address-update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./deliverybox-create",
+          "message": "Broken internal link: ./deliverybox-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./deliverybox-delete",
+          "message": "Broken internal link: ./deliverybox-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./deliverybox-get",
+          "message": "Broken internal link: ./deliverybox-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./deliverybox-list",
+          "message": "Broken internal link: ./deliverybox-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/mail/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./deliverybox-update",
+          "message": "Broken internal link: ./deliverybox-update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/login/index.html",
+          "line": 100,
+          "linkText": "link",
+          "linkUrl": "./reset",
+          "message": "Broken internal link: ./reset",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/login/index.html",
+          "line": 100,
+          "linkText": "link",
+          "linkUrl": "./token",
+          "message": "Broken internal link: ./token",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/extension/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./install",
+          "message": "Broken internal link: ./install",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/extension/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/extension/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./list-installed",
+          "message": "Broken internal link: ./list-installed",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/extension/index.html",
+          "line": 108,
+          "linkText": "link",
+          "linkUrl": "./uninstall",
+          "message": "Broken internal link: ./uninstall",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./dnszone-get",
+          "message": "Broken internal link: ./dnszone-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./dnszone-list",
+          "message": "Broken internal link: ./dnszone-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./dnszone-update",
+          "message": "Broken internal link: ./dnszone-update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./get",
+          "message": "Broken internal link: ./get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./virtualhost-create",
+          "message": "Broken internal link: ./virtualhost-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./virtualhost-delete",
+          "message": "Broken internal link: ./virtualhost-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./virtualhost-get",
+          "message": "Broken internal link: ./virtualhost-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/domain/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./virtualhost-list",
+          "message": "Broken internal link: ./virtualhost-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-charsets",
+          "message": "Broken internal link: ./mysql-charsets",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-create",
+          "message": "Broken internal link: ./mysql-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-delete",
+          "message": "Broken internal link: ./mysql-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-dump",
+          "message": "Broken internal link: ./mysql-dump",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-get",
+          "message": "Broken internal link: ./mysql-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-import",
+          "message": "Broken internal link: ./mysql-import",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-list",
+          "message": "Broken internal link: ./mysql-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-phpmyadmin",
+          "message": "Broken internal link: ./mysql-phpmyadmin",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-port-forward",
+          "message": "Broken internal link: ./mysql-port-forward",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-shell",
+          "message": "Broken internal link: ./mysql-shell",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-user-create",
+          "message": "Broken internal link: ./mysql-user-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-user-delete",
+          "message": "Broken internal link: ./mysql-user-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-user-get",
+          "message": "Broken internal link: ./mysql-user-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-user-list",
+          "message": "Broken internal link: ./mysql-user-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-user-update",
+          "message": "Broken internal link: ./mysql-user-update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./mysql-versions",
+          "message": "Broken internal link: ./mysql-versions",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./redis-create",
+          "message": "Broken internal link: ./redis-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./redis-get",
+          "message": "Broken internal link: ./redis-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./redis-list",
+          "message": "Broken internal link: ./redis-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/database/index.html",
+          "line": 176,
+          "linkText": "link",
+          "linkUrl": "./redis-versions",
+          "message": "Broken internal link: ./redis-versions",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./create",
+          "message": "Broken internal link: ./create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./delete",
+          "message": "Broken internal link: ./delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./execute",
+          "message": "Broken internal link: ./execute",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./execution-abort",
+          "message": "Broken internal link: ./execution-abort",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./execution-get",
+          "message": "Broken internal link: ./execution-get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./execution-list",
+          "message": "Broken internal link: ./execution-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./execution-logs",
+          "message": "Broken internal link: ./execution-logs",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./get",
+          "message": "Broken internal link: ./get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/cronjob/index.html",
+          "line": 132,
+          "linkText": "link",
+          "linkUrl": "./update",
+          "message": "Broken internal link: ./update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/conversation/index.html",
+          "line": 116,
+          "linkText": "link",
+          "linkUrl": "./categories",
+          "message": "Broken internal link: ./categories",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/conversation/index.html",
+          "line": 116,
+          "linkText": "link",
+          "linkUrl": "./close",
+          "message": "Broken internal link: ./close",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/conversation/index.html",
+          "line": 116,
+          "linkText": "link",
+          "linkUrl": "./create",
+          "message": "Broken internal link: ./create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/conversation/index.html",
+          "line": 116,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/conversation/index.html",
+          "line": 116,
+          "linkText": "link",
+          "linkUrl": "./reply",
+          "message": "Broken internal link: ./reply",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/conversation/index.html",
+          "line": 116,
+          "linkText": "link",
+          "linkUrl": "./show",
+          "message": "Broken internal link: ./show",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/context/index.html",
+          "line": 104,
+          "linkText": "link",
+          "linkUrl": "./get-session",
+          "message": "Broken internal link: ./get-session",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/context/index.html",
+          "line": 104,
+          "linkText": "link",
+          "linkUrl": "./reset-session",
+          "message": "Broken internal link: ./reset-session",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/context/index.html",
+          "line": 104,
+          "linkText": "link",
+          "linkUrl": "./set-session",
+          "message": "Broken internal link: ./set-session",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./delete",
+          "message": "Broken internal link: ./delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./logs",
+          "message": "Broken internal link: ./logs",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./recreate",
+          "message": "Broken internal link: ./recreate",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./restart",
+          "message": "Broken internal link: ./restart",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./run",
+          "message": "Broken internal link: ./run",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./start",
+          "message": "Broken internal link: ./start",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./stop",
+          "message": "Broken internal link: ./stop",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/container/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./update",
+          "message": "Broken internal link: ./update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/certificate/index.html",
+          "line": 100,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/certificate/index.html",
+          "line": 100,
+          "linkText": "link",
+          "linkUrl": "./request",
+          "message": "Broken internal link: ./request",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./create",
+          "message": "Broken internal link: ./create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./delete",
+          "message": "Broken internal link: ./delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./download",
+          "message": "Broken internal link: ./download",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./get",
+          "message": "Broken internal link: ./get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./schedule-create",
+          "message": "Broken internal link: ./schedule-create",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./schedule-delete",
+          "message": "Broken internal link: ./schedule-delete",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./schedule-list",
+          "message": "Broken internal link: ./schedule-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/backup/index.html",
+          "line": 128,
+          "linkText": "link",
+          "linkUrl": "./schedule-update",
+          "message": "Broken internal link: ./schedule-update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./copy",
+          "message": "Broken internal link: ./copy",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./create-node",
+          "message": "Broken internal link: ./create-node",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./create-php",
+          "message": "Broken internal link: ./create-php",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./create-php-worker",
+          "message": "Broken internal link: ./create-php-worker",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./create-python",
+          "message": "Broken internal link: ./create-python",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./create-static",
+          "message": "Broken internal link: ./create-static",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./dependency-list",
+          "message": "Broken internal link: ./dependency-list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./dependency-update",
+          "message": "Broken internal link: ./dependency-update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./dependency-versions",
+          "message": "Broken internal link: ./dependency-versions",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./download",
+          "message": "Broken internal link: ./download",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./get",
+          "message": "Broken internal link: ./get",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./install-contao",
+          "message": "Broken internal link: ./install-contao",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./install-joomla",
+          "message": "Broken internal link: ./install-joomla",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./install-matomo",
+          "message": "Broken internal link: ./install-matomo",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./install-nextcloud",
+          "message": "Broken internal link: ./install-nextcloud",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./install-shopware5",
+          "message": "Broken internal link: ./install-shopware5",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./install-shopware6",
+          "message": "Broken internal link: ./install-shopware6",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./install-typo3",
+          "message": "Broken internal link: ./install-typo3",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./install-wordpress",
+          "message": "Broken internal link: ./install-wordpress",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./list",
+          "message": "Broken internal link: ./list",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./list-upgrade-candidates",
+          "message": "Broken internal link: ./list-upgrade-candidates",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./open",
+          "message": "Broken internal link: ./open",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./ssh",
+          "message": "Broken internal link: ./ssh",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./uninstall",
+          "message": "Broken internal link: ./uninstall",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./update",
+          "message": "Broken internal link: ./update",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./upgrade",
+          "message": "Broken internal link: ./upgrade",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./upload",
+          "message": "Broken internal link: ./upload",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "error",
+          "type": "broken_internal_link",
+          "file": "reference/tools/app/index.html",
+          "line": 204,
+          "linkText": "link",
+          "linkUrl": "./versions",
+          "message": "Broken internal link: ./versions",
+          "fix": "Verify the target path exists and fix typos"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/volume/index.md",
+          "line": 18,
+          "linkText": "`mittwald_volume_create`",
+          "linkUrl": "./create",
+          "message": "Potentially broken link in markdown: ./create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/volume/index.md",
+          "line": 19,
+          "linkText": "`mittwald_volume_delete`",
+          "linkUrl": "./delete",
+          "message": "Potentially broken link in markdown: ./delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/volume/index.md",
+          "line": 20,
+          "linkText": "`mittwald_volume_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 18,
+          "linkText": "`mittwald_user_api_token_create`",
+          "linkUrl": "./api-token-create",
+          "message": "Potentially broken link in markdown: ./api-token-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 19,
+          "linkText": "`mittwald_user_api_token_get`",
+          "linkUrl": "./api-token-get",
+          "message": "Potentially broken link in markdown: ./api-token-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 20,
+          "linkText": "`mittwald_user_api_token_list`",
+          "linkUrl": "./api-token-list",
+          "message": "Potentially broken link in markdown: ./api-token-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 21,
+          "linkText": "`mittwald_user_api_token_revoke`",
+          "linkUrl": "./api-token-revoke",
+          "message": "Potentially broken link in markdown: ./api-token-revoke",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 22,
+          "linkText": "`mittwald_user_get`",
+          "linkUrl": "./get",
+          "message": "Potentially broken link in markdown: ./get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 23,
+          "linkText": "`mittwald_user_session_get`",
+          "linkUrl": "./session-get",
+          "message": "Potentially broken link in markdown: ./session-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 24,
+          "linkText": "`mittwald_user_session_list`",
+          "linkUrl": "./session-list",
+          "message": "Potentially broken link in markdown: ./session-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 25,
+          "linkText": "`mittwald_user_ssh_key_create`",
+          "linkUrl": "./ssh-key-create",
+          "message": "Potentially broken link in markdown: ./ssh-key-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 26,
+          "linkText": "`mittwald_user_ssh_key_delete`",
+          "linkUrl": "./ssh-key-delete",
+          "message": "Potentially broken link in markdown: ./ssh-key-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 27,
+          "linkText": "`mittwald_user_ssh_key_get`",
+          "linkUrl": "./ssh-key-get",
+          "message": "Potentially broken link in markdown: ./ssh-key-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 28,
+          "linkText": "`mittwald_user_ssh_key_import`",
+          "linkUrl": "./ssh-key-import",
+          "message": "Potentially broken link in markdown: ./ssh-key-import",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/user/index.md",
+          "line": 29,
+          "linkText": "`mittwald_user_ssh_key_list`",
+          "linkUrl": "./ssh-key-list",
+          "message": "Potentially broken link in markdown: ./ssh-key-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/stack/index.md",
+          "line": 18,
+          "linkText": "`mittwald_stack_delete`",
+          "linkUrl": "./delete",
+          "message": "Potentially broken link in markdown: ./delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/stack/index.md",
+          "line": 19,
+          "linkText": "`mittwald_stack_deploy`",
+          "linkUrl": "./deploy",
+          "message": "Potentially broken link in markdown: ./deploy",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/stack/index.md",
+          "line": 20,
+          "linkText": "`mittwald_stack_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/stack/index.md",
+          "line": 21,
+          "linkText": "`mittwald_stack_ps`",
+          "linkUrl": "./ps",
+          "message": "Potentially broken link in markdown: ./ps",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/ssh/index.md",
+          "line": 18,
+          "linkText": "`mittwald_ssh_user_create`",
+          "linkUrl": "./user-create",
+          "message": "Potentially broken link in markdown: ./user-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/ssh/index.md",
+          "line": 19,
+          "linkText": "`mittwald_ssh_user_delete`",
+          "linkUrl": "./user-delete",
+          "message": "Potentially broken link in markdown: ./user-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/ssh/index.md",
+          "line": 20,
+          "linkText": "`mittwald_ssh_user_list`",
+          "linkUrl": "./user-list",
+          "message": "Potentially broken link in markdown: ./user-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/ssh/index.md",
+          "line": 21,
+          "linkText": "`mittwald_ssh_user_update`",
+          "linkUrl": "./user-update",
+          "message": "Potentially broken link in markdown: ./user-update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/sftp/index.md",
+          "line": 18,
+          "linkText": "`mittwald_sftp_user_create`",
+          "linkUrl": "./user-create",
+          "message": "Potentially broken link in markdown: ./user-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/sftp/index.md",
+          "line": 19,
+          "linkText": "`mittwald_sftp_user_delete`",
+          "linkUrl": "./user-delete",
+          "message": "Potentially broken link in markdown: ./user-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/sftp/index.md",
+          "line": 20,
+          "linkText": "`mittwald_sftp_user_list`",
+          "linkUrl": "./user-list",
+          "message": "Potentially broken link in markdown: ./user-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/sftp/index.md",
+          "line": 21,
+          "linkText": "`mittwald_sftp_user_update`",
+          "linkUrl": "./user-update",
+          "message": "Potentially broken link in markdown: ./user-update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/server/index.md",
+          "line": 18,
+          "linkText": "`mittwald_server_get`",
+          "linkUrl": "./get",
+          "message": "Potentially broken link in markdown: ./get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/server/index.md",
+          "line": 19,
+          "linkText": "`mittwald_server_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/registry/index.md",
+          "line": 18,
+          "linkText": "`mittwald_registry_create`",
+          "linkUrl": "./create",
+          "message": "Potentially broken link in markdown: ./create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/registry/index.md",
+          "line": 19,
+          "linkText": "`mittwald_registry_delete`",
+          "linkUrl": "./delete",
+          "message": "Potentially broken link in markdown: ./delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/registry/index.md",
+          "line": 20,
+          "linkText": "`mittwald_registry_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/registry/index.md",
+          "line": 21,
+          "linkText": "`mittwald_registry_update`",
+          "linkUrl": "./update",
+          "message": "Potentially broken link in markdown: ./update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 18,
+          "linkText": "`mittwald_project_create`",
+          "linkUrl": "./create",
+          "message": "Potentially broken link in markdown: ./create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 19,
+          "linkText": "`mittwald_project_delete`",
+          "linkUrl": "./delete",
+          "message": "Potentially broken link in markdown: ./delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 20,
+          "linkText": "`mittwald_project_filesystem_usage`",
+          "linkUrl": "./filesystem-usage",
+          "message": "Potentially broken link in markdown: ./filesystem-usage",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 21,
+          "linkText": "`mittwald_project_get`",
+          "linkUrl": "./get",
+          "message": "Potentially broken link in markdown: ./get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 22,
+          "linkText": "`mittwald_project_invite_get`",
+          "linkUrl": "./invite-get",
+          "message": "Potentially broken link in markdown: ./invite-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 23,
+          "linkText": "`mittwald_project_invite_list`",
+          "linkUrl": "./invite-list",
+          "message": "Potentially broken link in markdown: ./invite-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 24,
+          "linkText": "`mittwald_project_invite_list_own`",
+          "linkUrl": "./invite-list-own",
+          "message": "Potentially broken link in markdown: ./invite-list-own",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 25,
+          "linkText": "`mittwald_project_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 26,
+          "linkText": "`mittwald_project_membership_get`",
+          "linkUrl": "./membership-get",
+          "message": "Potentially broken link in markdown: ./membership-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 27,
+          "linkText": "`mittwald_project_membership_get_own`",
+          "linkUrl": "./membership-get-own",
+          "message": "Potentially broken link in markdown: ./membership-get-own",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 28,
+          "linkText": "`mittwald_project_membership_list`",
+          "linkUrl": "./membership-list",
+          "message": "Potentially broken link in markdown: ./membership-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 29,
+          "linkText": "`mittwald_project_membership_list_own`",
+          "linkUrl": "./membership-list-own",
+          "message": "Potentially broken link in markdown: ./membership-list-own",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 30,
+          "linkText": "`mittwald_project_ssh`",
+          "linkUrl": "./ssh",
+          "message": "Potentially broken link in markdown: ./ssh",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/project/index.md",
+          "line": 31,
+          "linkText": "`mittwald_project_update`",
+          "linkUrl": "./update",
+          "message": "Potentially broken link in markdown: ./update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 18,
+          "linkText": "`mittwald_org_delete`",
+          "linkUrl": "./delete",
+          "message": "Potentially broken link in markdown: ./delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 19,
+          "linkText": "`mittwald_org_get`",
+          "linkUrl": "./get",
+          "message": "Potentially broken link in markdown: ./get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 20,
+          "linkText": "`mittwald_org_invite`",
+          "linkUrl": "./invite",
+          "message": "Potentially broken link in markdown: ./invite",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 21,
+          "linkText": "`mittwald_org_invite_list`",
+          "linkUrl": "./invite-list",
+          "message": "Potentially broken link in markdown: ./invite-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 22,
+          "linkText": "`mittwald_org_invite_list_own`",
+          "linkUrl": "./invite-list-own",
+          "message": "Potentially broken link in markdown: ./invite-list-own",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 23,
+          "linkText": "`mittwald_org_invite_revoke`",
+          "linkUrl": "./invite-revoke",
+          "message": "Potentially broken link in markdown: ./invite-revoke",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 24,
+          "linkText": "`mittwald_org_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 25,
+          "linkText": "`mittwald_org_membership_list`",
+          "linkUrl": "./membership-list",
+          "message": "Potentially broken link in markdown: ./membership-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 26,
+          "linkText": "`mittwald_org_membership_list_own`",
+          "linkUrl": "./membership-list-own",
+          "message": "Potentially broken link in markdown: ./membership-list-own",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/org/index.md",
+          "line": 27,
+          "linkText": "`mittwald_org_membership_revoke`",
+          "linkUrl": "./membership-revoke",
+          "message": "Potentially broken link in markdown: ./membership-revoke",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 18,
+          "linkText": "`mittwald_mail_address_create`",
+          "linkUrl": "./address-create",
+          "message": "Potentially broken link in markdown: ./address-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 19,
+          "linkText": "`mittwald_mail_address_delete`",
+          "linkUrl": "./address-delete",
+          "message": "Potentially broken link in markdown: ./address-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 20,
+          "linkText": "`mittwald_mail_address_get`",
+          "linkUrl": "./address-get",
+          "message": "Potentially broken link in markdown: ./address-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 21,
+          "linkText": "`mittwald_mail_address_list`",
+          "linkUrl": "./address-list",
+          "message": "Potentially broken link in markdown: ./address-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 22,
+          "linkText": "`mittwald_mail_address_update`",
+          "linkUrl": "./address-update",
+          "message": "Potentially broken link in markdown: ./address-update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 23,
+          "linkText": "`mittwald_mail_deliverybox_create`",
+          "linkUrl": "./deliverybox-create",
+          "message": "Potentially broken link in markdown: ./deliverybox-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 24,
+          "linkText": "`mittwald_mail_deliverybox_delete`",
+          "linkUrl": "./deliverybox-delete",
+          "message": "Potentially broken link in markdown: ./deliverybox-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 25,
+          "linkText": "`mittwald_mail_deliverybox_get`",
+          "linkUrl": "./deliverybox-get",
+          "message": "Potentially broken link in markdown: ./deliverybox-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 26,
+          "linkText": "`mittwald_mail_deliverybox_list`",
+          "linkUrl": "./deliverybox-list",
+          "message": "Potentially broken link in markdown: ./deliverybox-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/mail/index.md",
+          "line": 27,
+          "linkText": "`mittwald_mail_deliverybox_update`",
+          "linkUrl": "./deliverybox-update",
+          "message": "Potentially broken link in markdown: ./deliverybox-update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/login/index.md",
+          "line": 18,
+          "linkText": "`mittwald_login_reset`",
+          "linkUrl": "./reset",
+          "message": "Potentially broken link in markdown: ./reset",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/login/index.md",
+          "line": 19,
+          "linkText": "`mittwald_login_token`",
+          "linkUrl": "./token",
+          "message": "Potentially broken link in markdown: ./token",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/extension/index.md",
+          "line": 18,
+          "linkText": "`mittwald_extension_install`",
+          "linkUrl": "./install",
+          "message": "Potentially broken link in markdown: ./install",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/extension/index.md",
+          "line": 19,
+          "linkText": "`mittwald_extension_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/extension/index.md",
+          "line": 20,
+          "linkText": "`mittwald_extension_list_installed`",
+          "linkUrl": "./list-installed",
+          "message": "Potentially broken link in markdown: ./list-installed",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/extension/index.md",
+          "line": 21,
+          "linkText": "`mittwald_extension_uninstall`",
+          "linkUrl": "./uninstall",
+          "message": "Potentially broken link in markdown: ./uninstall",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 18,
+          "linkText": "`mittwald_domain_dnszone_get`",
+          "linkUrl": "./dnszone-get",
+          "message": "Potentially broken link in markdown: ./dnszone-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 19,
+          "linkText": "`mittwald_domain_dnszone_list`",
+          "linkUrl": "./dnszone-list",
+          "message": "Potentially broken link in markdown: ./dnszone-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 20,
+          "linkText": "`mittwald_domain_dnszone_update`",
+          "linkUrl": "./dnszone-update",
+          "message": "Potentially broken link in markdown: ./dnszone-update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 21,
+          "linkText": "`mittwald_domain_get`",
+          "linkUrl": "./get",
+          "message": "Potentially broken link in markdown: ./get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 22,
+          "linkText": "`mittwald_domain_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 23,
+          "linkText": "`mittwald_domain_virtualhost_create`",
+          "linkUrl": "./virtualhost-create",
+          "message": "Potentially broken link in markdown: ./virtualhost-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 24,
+          "linkText": "`mittwald_domain_virtualhost_delete`",
+          "linkUrl": "./virtualhost-delete",
+          "message": "Potentially broken link in markdown: ./virtualhost-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 25,
+          "linkText": "`mittwald_domain_virtualhost_get`",
+          "linkUrl": "./virtualhost-get",
+          "message": "Potentially broken link in markdown: ./virtualhost-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/domain/index.md",
+          "line": 26,
+          "linkText": "`mittwald_domain_virtualhost_list`",
+          "linkUrl": "./virtualhost-list",
+          "message": "Potentially broken link in markdown: ./virtualhost-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 18,
+          "linkText": "`mittwald_database_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 19,
+          "linkText": "`mittwald_database_mysql_charsets`",
+          "linkUrl": "./mysql-charsets",
+          "message": "Potentially broken link in markdown: ./mysql-charsets",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 20,
+          "linkText": "`mittwald_database_mysql_create`",
+          "linkUrl": "./mysql-create",
+          "message": "Potentially broken link in markdown: ./mysql-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 21,
+          "linkText": "`mittwald_database_mysql_delete`",
+          "linkUrl": "./mysql-delete",
+          "message": "Potentially broken link in markdown: ./mysql-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 22,
+          "linkText": "`mittwald_database_mysql_dump`",
+          "linkUrl": "./mysql-dump",
+          "message": "Potentially broken link in markdown: ./mysql-dump",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 23,
+          "linkText": "`mittwald_database_mysql_get`",
+          "linkUrl": "./mysql-get",
+          "message": "Potentially broken link in markdown: ./mysql-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 24,
+          "linkText": "`mittwald_database_mysql_import`",
+          "linkUrl": "./mysql-import",
+          "message": "Potentially broken link in markdown: ./mysql-import",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 25,
+          "linkText": "`mittwald_database_mysql_list`",
+          "linkUrl": "./mysql-list",
+          "message": "Potentially broken link in markdown: ./mysql-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 26,
+          "linkText": "`mittwald_database_mysql_phpmyadmin`",
+          "linkUrl": "./mysql-phpmyadmin",
+          "message": "Potentially broken link in markdown: ./mysql-phpmyadmin",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 27,
+          "linkText": "`mittwald_database_mysql_port_forward`",
+          "linkUrl": "./mysql-port-forward",
+          "message": "Potentially broken link in markdown: ./mysql-port-forward",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 28,
+          "linkText": "`mittwald_database_mysql_shell`",
+          "linkUrl": "./mysql-shell",
+          "message": "Potentially broken link in markdown: ./mysql-shell",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 29,
+          "linkText": "`mittwald_database_mysql_user_create`",
+          "linkUrl": "./mysql-user-create",
+          "message": "Potentially broken link in markdown: ./mysql-user-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 30,
+          "linkText": "`mittwald_database_mysql_user_delete`",
+          "linkUrl": "./mysql-user-delete",
+          "message": "Potentially broken link in markdown: ./mysql-user-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 31,
+          "linkText": "`mittwald_database_mysql_user_get`",
+          "linkUrl": "./mysql-user-get",
+          "message": "Potentially broken link in markdown: ./mysql-user-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 32,
+          "linkText": "`mittwald_database_mysql_user_list`",
+          "linkUrl": "./mysql-user-list",
+          "message": "Potentially broken link in markdown: ./mysql-user-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 33,
+          "linkText": "`mittwald_database_mysql_user_update`",
+          "linkUrl": "./mysql-user-update",
+          "message": "Potentially broken link in markdown: ./mysql-user-update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 34,
+          "linkText": "`mittwald_database_mysql_versions`",
+          "linkUrl": "./mysql-versions",
+          "message": "Potentially broken link in markdown: ./mysql-versions",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 35,
+          "linkText": "`mittwald_database_redis_create`",
+          "linkUrl": "./redis-create",
+          "message": "Potentially broken link in markdown: ./redis-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 36,
+          "linkText": "`mittwald_database_redis_get`",
+          "linkUrl": "./redis-get",
+          "message": "Potentially broken link in markdown: ./redis-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 37,
+          "linkText": "`mittwald_database_redis_list`",
+          "linkUrl": "./redis-list",
+          "message": "Potentially broken link in markdown: ./redis-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/database/index.md",
+          "line": 38,
+          "linkText": "`mittwald_database_redis_versions`",
+          "linkUrl": "./redis-versions",
+          "message": "Potentially broken link in markdown: ./redis-versions",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 18,
+          "linkText": "`mittwald_cronjob_create`",
+          "linkUrl": "./create",
+          "message": "Potentially broken link in markdown: ./create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 19,
+          "linkText": "`mittwald_cronjob_delete`",
+          "linkUrl": "./delete",
+          "message": "Potentially broken link in markdown: ./delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 20,
+          "linkText": "`mittwald_cronjob_execute`",
+          "linkUrl": "./execute",
+          "message": "Potentially broken link in markdown: ./execute",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 21,
+          "linkText": "`mittwald_cronjob_execution_abort`",
+          "linkUrl": "./execution-abort",
+          "message": "Potentially broken link in markdown: ./execution-abort",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 22,
+          "linkText": "`mittwald_cronjob_execution_get`",
+          "linkUrl": "./execution-get",
+          "message": "Potentially broken link in markdown: ./execution-get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 23,
+          "linkText": "`mittwald_cronjob_execution_list`",
+          "linkUrl": "./execution-list",
+          "message": "Potentially broken link in markdown: ./execution-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 24,
+          "linkText": "`mittwald_cronjob_execution_logs`",
+          "linkUrl": "./execution-logs",
+          "message": "Potentially broken link in markdown: ./execution-logs",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 25,
+          "linkText": "`mittwald_cronjob_get`",
+          "linkUrl": "./get",
+          "message": "Potentially broken link in markdown: ./get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 26,
+          "linkText": "`mittwald_cronjob_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/cronjob/index.md",
+          "line": 27,
+          "linkText": "`mittwald_cronjob_update`",
+          "linkUrl": "./update",
+          "message": "Potentially broken link in markdown: ./update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/conversation/index.md",
+          "line": 18,
+          "linkText": "`mittwald_conversation_categories`",
+          "linkUrl": "./categories",
+          "message": "Potentially broken link in markdown: ./categories",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/conversation/index.md",
+          "line": 19,
+          "linkText": "`mittwald_conversation_close`",
+          "linkUrl": "./close",
+          "message": "Potentially broken link in markdown: ./close",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/conversation/index.md",
+          "line": 20,
+          "linkText": "`mittwald_conversation_create`",
+          "linkUrl": "./create",
+          "message": "Potentially broken link in markdown: ./create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/conversation/index.md",
+          "line": 21,
+          "linkText": "`mittwald_conversation_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/conversation/index.md",
+          "line": 22,
+          "linkText": "`mittwald_conversation_reply`",
+          "linkUrl": "./reply",
+          "message": "Potentially broken link in markdown: ./reply",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/conversation/index.md",
+          "line": 23,
+          "linkText": "`mittwald_conversation_show`",
+          "linkUrl": "./show",
+          "message": "Potentially broken link in markdown: ./show",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/context/index.md",
+          "line": 18,
+          "linkText": "`mittwald_context_get_session`",
+          "linkUrl": "./get-session",
+          "message": "Potentially broken link in markdown: ./get-session",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/context/index.md",
+          "line": 19,
+          "linkText": "`mittwald_context_reset_session`",
+          "linkUrl": "./reset-session",
+          "message": "Potentially broken link in markdown: ./reset-session",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/context/index.md",
+          "line": 20,
+          "linkText": "`mittwald_context_set_session`",
+          "linkUrl": "./set-session",
+          "message": "Potentially broken link in markdown: ./set-session",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 18,
+          "linkText": "`mittwald_container_delete`",
+          "linkUrl": "./delete",
+          "message": "Potentially broken link in markdown: ./delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 19,
+          "linkText": "`mittwald_container_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 20,
+          "linkText": "`mittwald_container_logs`",
+          "linkUrl": "./logs",
+          "message": "Potentially broken link in markdown: ./logs",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 21,
+          "linkText": "`mittwald_container_recreate`",
+          "linkUrl": "./recreate",
+          "message": "Potentially broken link in markdown: ./recreate",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 22,
+          "linkText": "`mittwald_container_restart`",
+          "linkUrl": "./restart",
+          "message": "Potentially broken link in markdown: ./restart",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 23,
+          "linkText": "`mittwald_container_run`",
+          "linkUrl": "./run",
+          "message": "Potentially broken link in markdown: ./run",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 24,
+          "linkText": "`mittwald_container_start`",
+          "linkUrl": "./start",
+          "message": "Potentially broken link in markdown: ./start",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 25,
+          "linkText": "`mittwald_container_stop`",
+          "linkUrl": "./stop",
+          "message": "Potentially broken link in markdown: ./stop",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/container/index.md",
+          "line": 26,
+          "linkText": "`mittwald_container_update`",
+          "linkUrl": "./update",
+          "message": "Potentially broken link in markdown: ./update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/certificate/index.md",
+          "line": 18,
+          "linkText": "`mittwald_certificate_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/certificate/index.md",
+          "line": 19,
+          "linkText": "`mittwald_certificate_request`",
+          "linkUrl": "./request",
+          "message": "Potentially broken link in markdown: ./request",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 18,
+          "linkText": "`mittwald_backup_create`",
+          "linkUrl": "./create",
+          "message": "Potentially broken link in markdown: ./create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 19,
+          "linkText": "`mittwald_backup_delete`",
+          "linkUrl": "./delete",
+          "message": "Potentially broken link in markdown: ./delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 20,
+          "linkText": "`mittwald_backup_download`",
+          "linkUrl": "./download",
+          "message": "Potentially broken link in markdown: ./download",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 21,
+          "linkText": "`mittwald_backup_get`",
+          "linkUrl": "./get",
+          "message": "Potentially broken link in markdown: ./get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 22,
+          "linkText": "`mittwald_backup_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 23,
+          "linkText": "`mittwald_backup_schedule_create`",
+          "linkUrl": "./schedule-create",
+          "message": "Potentially broken link in markdown: ./schedule-create",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 24,
+          "linkText": "`mittwald_backup_schedule_delete`",
+          "linkUrl": "./schedule-delete",
+          "message": "Potentially broken link in markdown: ./schedule-delete",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 25,
+          "linkText": "`mittwald_backup_schedule_list`",
+          "linkUrl": "./schedule-list",
+          "message": "Potentially broken link in markdown: ./schedule-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/backup/index.md",
+          "line": 26,
+          "linkText": "`mittwald_backup_schedule_update`",
+          "linkUrl": "./schedule-update",
+          "message": "Potentially broken link in markdown: ./schedule-update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 18,
+          "linkText": "`mittwald_app_copy`",
+          "linkUrl": "./copy",
+          "message": "Potentially broken link in markdown: ./copy",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 19,
+          "linkText": "`mittwald_app_create_node`",
+          "linkUrl": "./create-node",
+          "message": "Potentially broken link in markdown: ./create-node",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 20,
+          "linkText": "`mittwald_app_create_php`",
+          "linkUrl": "./create-php",
+          "message": "Potentially broken link in markdown: ./create-php",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 21,
+          "linkText": "`mittwald_app_create_php_worker`",
+          "linkUrl": "./create-php-worker",
+          "message": "Potentially broken link in markdown: ./create-php-worker",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 22,
+          "linkText": "`mittwald_app_create_python`",
+          "linkUrl": "./create-python",
+          "message": "Potentially broken link in markdown: ./create-python",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 23,
+          "linkText": "`mittwald_app_create_static`",
+          "linkUrl": "./create-static",
+          "message": "Potentially broken link in markdown: ./create-static",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 24,
+          "linkText": "`mittwald_app_dependency_list`",
+          "linkUrl": "./dependency-list",
+          "message": "Potentially broken link in markdown: ./dependency-list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 25,
+          "linkText": "`mittwald_app_dependency_update`",
+          "linkUrl": "./dependency-update",
+          "message": "Potentially broken link in markdown: ./dependency-update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 26,
+          "linkText": "`mittwald_app_dependency_versions`",
+          "linkUrl": "./dependency-versions",
+          "message": "Potentially broken link in markdown: ./dependency-versions",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 27,
+          "linkText": "`mittwald_app_download`",
+          "linkUrl": "./download",
+          "message": "Potentially broken link in markdown: ./download",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 28,
+          "linkText": "`mittwald_app_get`",
+          "linkUrl": "./get",
+          "message": "Potentially broken link in markdown: ./get",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 29,
+          "linkText": "`mittwald_app_install_contao`",
+          "linkUrl": "./install-contao",
+          "message": "Potentially broken link in markdown: ./install-contao",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 30,
+          "linkText": "`mittwald_app_install_joomla`",
+          "linkUrl": "./install-joomla",
+          "message": "Potentially broken link in markdown: ./install-joomla",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 31,
+          "linkText": "`mittwald_app_install_matomo`",
+          "linkUrl": "./install-matomo",
+          "message": "Potentially broken link in markdown: ./install-matomo",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 32,
+          "linkText": "`mittwald_app_install_nextcloud`",
+          "linkUrl": "./install-nextcloud",
+          "message": "Potentially broken link in markdown: ./install-nextcloud",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 33,
+          "linkText": "`mittwald_app_install_shopware5`",
+          "linkUrl": "./install-shopware5",
+          "message": "Potentially broken link in markdown: ./install-shopware5",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 34,
+          "linkText": "`mittwald_app_install_shopware6`",
+          "linkUrl": "./install-shopware6",
+          "message": "Potentially broken link in markdown: ./install-shopware6",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 35,
+          "linkText": "`mittwald_app_install_typo3`",
+          "linkUrl": "./install-typo3",
+          "message": "Potentially broken link in markdown: ./install-typo3",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 36,
+          "linkText": "`mittwald_app_install_wordpress`",
+          "linkUrl": "./install-wordpress",
+          "message": "Potentially broken link in markdown: ./install-wordpress",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 37,
+          "linkText": "`mittwald_app_list`",
+          "linkUrl": "./list",
+          "message": "Potentially broken link in markdown: ./list",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 38,
+          "linkText": "`mittwald_app_list_upgrade_candidates`",
+          "linkUrl": "./list-upgrade-candidates",
+          "message": "Potentially broken link in markdown: ./list-upgrade-candidates",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 39,
+          "linkText": "`mittwald_app_open`",
+          "linkUrl": "./open",
+          "message": "Potentially broken link in markdown: ./open",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 40,
+          "linkText": "`mittwald_app_ssh`",
+          "linkUrl": "./ssh",
+          "message": "Potentially broken link in markdown: ./ssh",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 41,
+          "linkText": "`mittwald_app_uninstall`",
+          "linkUrl": "./uninstall",
+          "message": "Potentially broken link in markdown: ./uninstall",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 42,
+          "linkText": "`mittwald_app_update`",
+          "linkUrl": "./update",
+          "message": "Potentially broken link in markdown: ./update",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 43,
+          "linkText": "`mittwald_app_upgrade`",
+          "linkUrl": "./upgrade",
+          "message": "Potentially broken link in markdown: ./upgrade",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 44,
+          "linkText": "`mittwald_app_upload`",
+          "linkUrl": "./upload",
+          "message": "Potentially broken link in markdown: ./upload",
+          "fix": "Verify markdown file exists at target location"
+        },
+        {
+          "severity": "warning",
+          "type": "potentially_broken_link",
+          "file": "reference/tools/app/index.md",
+          "line": 45,
+          "linkText": "`mittwald_app_versions`",
+          "linkUrl": "./versions",
+          "message": "Potentially broken link in markdown: ./versions",
+          "fix": "Verify markdown file exists at target location"
+        }
+      ]
+    },
+    "setup": {
+      "status": "fail",
+      "internalLinksChecked": 0,
+      "externalLinksChecked": 0,
+      "brokenLinks": 0,
+      "warnings": 0,
+      "issues": []
+    }
+  },
+  "summary": {
+    "allSitesPassed": false,
+    "totalLinksChecked": 41897,
+    "totalBrokenLinks": 181,
+    "totalWarnings": 170
+  }
+}

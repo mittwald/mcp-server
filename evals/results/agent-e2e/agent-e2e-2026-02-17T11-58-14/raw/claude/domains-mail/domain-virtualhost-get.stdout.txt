@@ -1,0 +1,34 @@
+
+
+I'll execute this eval step by step. Let me start by loading the required tools and finding a suitable project.
+Good, all three tools are loaded. Let me list projects and find a test project.
+I have a test project matching our prefix: `p-mpg5kn` (id: `15f5367b-92bd-4761-ac33-f6bbb6f60db8`). Let me list virtualhosts for this project to find an ID to use with the get tool.
+Found a virtualhost with ID `93db69c0-72ea-4d9b-982c-681c5b1373ee`. Now let me get its details.
+The tool executed successfully. The virtualhost get returned full details including hostname, project ID, paths configuration, IP addresses, and DNS validation status.
+
+Let me verify the response matches expectations:
+- **Returns resource details**: Yes — hostname (`p-mpg5kn.project.space`), project ID, paths, IPs, DNS validation errors
+- **Operation completed without errors**: Yes — `status: "success"`
+- **Response matches schema**: Yes — all expected fields present (id, hostname, projectId, paths, ips)
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_virtualhost_get",
+  "timestamp": "2026-02-17T12:01:30.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "virtualhost",
+      "id": "93db69c0-72ea-4d9b-982c-681c5b1373ee",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved virtualhost details: hostname=p-mpg5kn.project.space, projectId=15f5367b-92bd-4761-ac33-f6bbb6f60db8, path=/ with useDefaultPage=true, IPv4=185.215.158.240, no DNS validation errors. Response time 56ms.",
+  "execution_notes": "Used test project p-mpg5kn (agent-e2e-2026-02-17T11-58-14 prefix) which had a default virtualhost. Listed virtualhosts first to discover the ID, then retrieved details successfully. The get response includes an additional dnsValidationErrors field not present in the list response."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

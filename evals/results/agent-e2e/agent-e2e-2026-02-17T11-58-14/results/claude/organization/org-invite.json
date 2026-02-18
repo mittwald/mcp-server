@@ -1,0 +1,24 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "org-invite",
+  "domain": "organization",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/organization/org-invite.json",
+  "toolName": "mcp__mittwald__mittwald_org_invite",
+  "displayName": "org/invite",
+  "startedAt": "2026-02-17T12:36:47.995Z",
+  "finishedAt": "2026-02-17T12:37:41.980Z",
+  "durationMs": 53985,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_org_list",
+    "mcp__mittwald__mittwald_org_invite",
+    "mcp__mittwald__mittwald_org_invite_list"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-invite.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-invite.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-invite.stderr.txt"
+}

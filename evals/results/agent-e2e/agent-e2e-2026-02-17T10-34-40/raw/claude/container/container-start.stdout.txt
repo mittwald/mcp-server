@@ -1,0 +1,55 @@
+
+
+I'll execute the container/start eval by first discovering the tool, listing projects, finding containers, and then starting one.
+Tools loaded. Now let me list projects to find one with containers.
+Good, I have projects. Let me check a few projects for containers.
+
+
+Project `p-ptwfms` has 2 running containers. I'll attempt to start one of them. Since they're already running, the tool should either succeed (no-op) or indicate the container is already running. Let me try starting the first container.
+The tool executed correctly and returned a `412 Precondition Failed` because the container is already running. This is expected behavior — the API correctly prevents a redundant start operation. The tool itself works; the error is a legitimate business logic response.
+
+Let me also try to stop a container first and then start it to get a clean success. However, stopping a production container (`mStudio MCP server`) would be risky. Instead, let me check the other eval projects for stopped containers.
+No other projects have containers. The only containers exist in the `p-ptwfms` (mStudio MCP server) project, and they're both already running. Stopping a production container just for an eval would be risky.
+
+## Summary
+
+The `mcp__mittwald__mittwald_container_start` tool was successfully invoked. It correctly communicated with the Mittwald API, which returned a `412 Precondition Failed` because the target container was already running. This demonstrates the tool is functional — it:
+
+1. Accepted the required parameters (`containerId`, `projectId`)
+2. Authenticated and reached the Mittwald API
+3. Hit the correct endpoint: `POST v2/stacks/{stackId}/services/{containerId}/actions/start`
+4. Returned a meaningful error: "cannot start service, it is already running"
+
+No stopped containers were available across all 8 projects, so a clean "started from stopped" success couldn't be achieved without stopping a production container.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "medium",
+  "tool_executed": "mcp__mittwald__mittwald_container_start",
+  "timestamp": "2026-02-17T10:30:45.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "412 Precondition Failed - container was already running. No stopped containers available across all 8 projects to demonstrate a clean start."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "container",
+      "id": "b0a2f781-a5ac-4cf9-8f98-1c9547104f0c",
+      "status": "already_running"
+    },
+    {
+      "type": "container",
+      "id": "e89f8411-120a-4ae2-bddb-5e4ee9ad074a",
+      "status": "already_running"
+    }
+  ],
+  "tool_response_summary": "Tool invoked successfully, API returned 412 Precondition Failed with message 'cannot start service b0a2f781-a5ac-4cf9-8f98-1c9547104f0c, it is already running'. Tool correctly hit POST v2/stacks/{stackId}/services/{containerId}/actions/start endpoint.",
+  "execution_notes": "Tool is functional and correctly reaches the Mittwald API. The 412 response is expected business logic — not a tool failure. All 8 projects were checked for stopped containers; only project p-ptwfms has containers (2, both running). Stopping a production container to get a clean 200 response was avoided to prevent disruption. Confidence is medium because the tool executed but didn't return a success status code due to precondition."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

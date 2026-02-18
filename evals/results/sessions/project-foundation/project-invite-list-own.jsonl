@@ -1,4 +1,0 @@
-{"eval_id": "project-invite-list-own", "tool_name": "mcp__mittwald__mittwald_project_invite_list_own", "display_name": "project/invite-list-own", "domain": "project-foundation", "tier": 0, "timestamp": "2025-12-16T17:52:00Z", "tool_response": {"status": "error", "message": "Command killed with signal SIGTERM"}}
-<!-- SELF_ASSESSMENT_START -->
-{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_project_invite_list_own", "timestamp": "2025-12-16T17:52:00Z", "problems_encountered": [{"type": "timeout", "description": "Mittwald CLI killed with SIGTERM before completing"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Timeout - SIGTERM", "execution_notes": "Consistent with WP18/WP19 timeout pattern affecting all CLI-based tools"}
-<!-- SELF_ASSESSMENT_END -->

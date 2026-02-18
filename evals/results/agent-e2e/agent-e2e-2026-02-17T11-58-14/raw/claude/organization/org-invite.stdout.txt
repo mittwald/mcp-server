@@ -1,0 +1,59 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_org_invite` eval. Let me start by loading the required tools.
+Tools loaded. Now let me list the organizations to find one I can use for the invite.
+I found 2 organizations. I'll use the "mittwald MCP Server Dev" organization to invite a test user. Let me now execute the invite tool.
+The API returned a 400 error. The issue might be that `example.com` addresses are rejected, or there's a permission issue (I'm a "Member" not "Owner"). Let me try with a more realistic email address. Also, the role might need to be in a specific format — let me check: the tool schema shows `"enum": ["owner", "member", "accountant"]`, so `member` is correct.
+
+Let me try with the other organization and a different email format:
+Still a 400 error. The issue is likely permission-related — I'm a "Member" role in both organizations, and inviting users likely requires "Owner" permissions. Let me also check the existing invites to understand what's happening, and try the Nexus org as well.
+Interesting - I can see existing invites (including one to `mailinator.com`), which means the invite list works. The 400 error on both orgs might be because:
+
+1. The email domain needs to be a real, deliverable domain (`.example` is not valid)
+2. Or it could be a permission issue with Member role
+
+Let me try with a `mailinator.com` email similar to the existing test invites:
+The invite was created successfully. Let me verify it exists in the invite list:
+The invite is confirmed in the list — it's the 4th entry with ID `f8dfbeeb-08a4-4bcf-8bde-e67cba42575e` for `agent-e2e-20260217@mailinator.com` with role `member`, status `accepted: false`.
+
+## Results
+
+The `mcp__mittwald__mittwald_org_invite` tool works correctly:
+
+1. **Prerequisites**: Listed organizations via `org/list` — found 2 orgs
+2. **Execution**: Successfully invited `agent-e2e-20260217@mailinator.com` as `member` to the "mittwald MCP Server Dev" organization
+3. **Verification**: Confirmed the invite appears in `org/invite_list` with correct ID, email, role, and `accepted: false` status
+
+**Note**: The API requires real/deliverable email domains — `.example` domains cause a 400 error, while `mailinator.com` works fine.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_invite",
+  "timestamp": "2026-02-17T12:00:30.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "Initial attempts with .example domain emails returned 400 errors. Mittwald API requires real/deliverable email domains. Succeeded with mailinator.com domain."
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "org_invite",
+      "id": "f8dfbeeb-08a4-4bcf-8bde-e67cba42575e"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "org_invite",
+      "id": "f8dfbeeb-08a4-4bcf-8bde-e67cba42575e",
+      "status": "verified_in_invite_list"
+    }
+  ],
+  "tool_response_summary": "Invitation sent successfully to agent-e2e-20260217@mailinator.com for organization c0256a2f-ccb0-4e00-b6ed-579bdb758675 (mittwald MCP Server Dev). Invite ID: f8dfbeeb-08a4-4bcf-8bde-e67cba42575e, role: member. Verified via org/invite_list showing 4 total invites with the new one present and accepted=false.",
+  "execution_notes": "The Mittwald API rejects email addresses with non-deliverable domains (.example, example.com) with a 400 error. Using mailinator.com (as done in prior evals) works. The authenticated user has Member role in both orgs but can still create invites. The invite tool also supports an optional 'message' parameter and 'expires' parameter for invitation expiry."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

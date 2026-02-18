@@ -1,0 +1,23 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-34-40",
+  "agent": "claude",
+  "promptCaseId": "container-list",
+  "domain": "containers",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/containers/container-list.json",
+  "toolName": "mcp__mittwald__mittwald_container_list",
+  "displayName": "container/list",
+  "startedAt": "2026-02-17T11:00:27.874Z",
+  "finishedAt": "2026-02-17T11:00:58.696Z",
+  "durationMs": 30822,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_container_list"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/containers/container-list.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/containers/container-list.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/containers/container-list.stderr.txt"
+}

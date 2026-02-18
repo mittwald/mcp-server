@@ -1,0 +1,52 @@
+
+
+I'll test the `mcp__mittwald__mittwald_user_ssh_key_delete` tool. Since this is a destructive operation, I need to first create an SSH key that I can safely delete. Let me start by loading the necessary tools.
+Good, all the SSH key tools are loaded. Let me first create a test SSH key, then delete it.
+
+**Step 1: Create a test SSH key for deletion**
+The `expiresAt` field seems to need an absolute date, not a relative interval. Let me try without the expires parameter and list existing keys first.
+SSH key created successfully. Now let me list the keys to find the ID of the one I just created.
+
+**Step 2: Find the key ID**
+I can see the test key I just created with ID `1bab5bcb-4b77-4eb4-841c-5c4a06820367`. Now let me delete it.
+
+**Step 3: Delete the test SSH key**
+Key deleted successfully. Let me verify the deletion by listing keys again.
+
+**Step 4: Verify deletion**
+Confirmed: the key list now shows 3 keys (down from 4), and the test key `1bab5bcb-4b77-4eb4-841c-5c4a06820367` with comment `agent-e2e-2026-02-17T11-58-14-delete-test` is no longer present.
+
+## Summary
+
+The eval completed successfully:
+
+1. **Created** a test SSH key with comment `agent-e2e-2026-02-17T11-58-14-delete-test` (ID: `1bab5bcb-4b77-4eb4-841c-5c4a06820367`)
+2. **Deleted** the key using `mcp__mittwald__mittwald_user_ssh_key_delete` with `confirm: true` — returned success in 32ms
+3. **Verified** deletion by listing keys — count dropped from 4 to 3, test key absent
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_delete",
+  "timestamp": "2026-02-17T12:33:01.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "ssh_key",
+      "id": "1bab5bcb-4b77-4eb4-841c-5c4a06820367"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "ssh_key",
+      "id": "1bab5bcb-4b77-4eb4-841c-5c4a06820367",
+      "status": "deleted_confirmed"
+    }
+  ],
+  "tool_response_summary": "SSH key 1bab5bcb-4b77-4eb4-841c-5c4a06820367 deleted successfully in 32ms. Subsequent list call confirmed removal (4 keys → 3 keys).",
+  "execution_notes": "Created a disposable test SSH key first (ed25519, no passphrase) to safely test the destructive delete operation. The expires parameter with relative intervals (e.g. '30m') causes a 400 error — the API expects an absolute ISO timestamp for expiresAt. Delete requires confirm=true as a safety guard."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,28 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-34-40",
+  "agent": "claude",
+  "promptCaseId": "database-mysql-list",
+  "domain": "databases",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/databases/database-mysql-list.json",
+  "toolName": "mcp__mittwald__mittwald_database_mysql_list",
+  "displayName": "database/mysql/list",
+  "startedAt": "2026-02-17T11:14:57.018Z",
+  "finishedAt": "2026-02-17T11:17:57.034Z",
+  "durationMs": 180016,
+  "status": "failure",
+  "failureCategory": "timeout",
+  "failureReason": "Agent timed out after 180016ms",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "Grep",
+    "Read",
+    "Task",
+    "WebFetch",
+    "Glob"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-list.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-list.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-list.stderr.txt"
+}

@@ -1,4 +1,0 @@
-{"eval_id": "project-membership-get-own", "tool_name": "mcp__mittwald__mittwald_project_membership_get_own", "display_name": "project/membership-get-own", "domain": "project-foundation", "tier": 4, "timestamp": "2025-12-16T17:53:00Z", "tool_response": {"status": "skipped", "message": "Skipped - dependency missing (project/create not executed)"}}
-<!-- SELF_ASSESSMENT_START -->
-{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_project_membership_get_own", "timestamp": "2025-12-16T17:53:00Z", "problems_encountered": [{"type": "dependency_missing", "description": "project/create skipped - no project ID available"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Skipped - dependency cascade", "execution_notes": "Tier 4 tool requires project ID from Tier 3 project/create which was skipped"}
-<!-- SELF_ASSESSMENT_END -->

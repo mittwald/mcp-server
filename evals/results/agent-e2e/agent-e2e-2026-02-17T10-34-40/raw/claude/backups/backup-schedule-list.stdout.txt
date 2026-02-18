@@ -1,0 +1,40 @@
+
+
+I'll execute this eval by first loading the required tools, then listing projects, and finally listing backup schedules.
+Tools loaded. Now let me list projects to get a valid project ID.
+Projects listed successfully. I'll use the first project ("mStudio MCP server") to list backup schedules.
+The tool executed successfully. It returned 3 backup schedules for the project, each with proper fields (id, projectId, description, schedule cron expression, createdAt). Let me also verify with a second project to confirm consistency.
+
+The eval is complete. Here's the self-assessment:
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_backup_schedule_list",
+  "timestamp": "2026-02-17T10:30:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "backup_schedule",
+      "id": "453f3880-3772-4d76-8fcb-14e6db346160",
+      "status": "verified"
+    },
+    {
+      "type": "backup_schedule",
+      "id": "0a500792-8c34-4bce-80ee-9332a248a0aa",
+      "status": "verified"
+    },
+    {
+      "type": "backup_schedule",
+      "id": "1da838dd-8346-498f-99ce-671f4e845fba",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Successfully listed 3 backup schedules for project fd1ef726-14b8-4906-8a45-0756ba993246 (mStudio MCP server). Each schedule includes id, projectId, description, cron schedule expression, and createdAt timestamp. Response completed in ~104ms.",
+  "execution_notes": "Tool requires projectId parameter (marked as required). Returned well-structured JSON array with 3 schedules. All schedules have valid cron expressions (daily at 3am, 4am, and 1:44am respectively). The tool correctly reports status as 'success' with a count message."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

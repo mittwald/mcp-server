@@ -1,0 +1,81 @@
+
+
+I'll execute this eval by following the steps: find a project, find a MySQL database, then list MySQL users.
+
+Let me start by loading the required tools.
+Now let me also load the MySQL list tool and then list projects.
+I found a test project matching the eval prefix: `p-mpg5kn` (agent-e2e-2026-02-17T11-58-14-mysql-create-eval). Let me list MySQL databases in that project.
+No MySQL databases in the test project. Let me check the other projects for existing databases to use, and also get the available MySQL versions so I can create one if needed.
+No MySQL databases exist in any project. I need to create one in the test project first, then list its users. Let me get the available MySQL versions.
+Now let me create a MySQL database in the test project so I can list its users.
+Got a 500 error. Let me try with MySQL 8.0 instead, and use the version ID format.
+The test project may not be ready for database creation (500 server error). Let me try creating the database in the other available project `p-p92nri` which is an older, established project.
+The MySQL create endpoint is returning 500 errors across all projects. This appears to be a Mittwald API-side issue. However, the eval goal is to test `mysql_user_list`, not `mysql_create`. Let me try calling `mysql_user_list` directly with a database ID to verify the tool works - I'll use the test project's ID as a proxy, and also try the `p-ptwfms` project which might have databases from a previous app installation.
+
+Let me try the tool with a known project to see how it responds when no database exists.
+The tool is functional - it correctly routes to the Mittwald API (`v2/mysql-databases/{id}/users`). A 403 is expected since I passed a project ID rather than a valid MySQL database ID. The tool requires a real `databaseId` (format `mysql-XXXXX`), and to get one I need to create a database first - but the create endpoint is returning 500 errors.
+
+Let me try one more approach - use the `p-ptwfms` project which hosts the MCP server; it may already have databases provisioned as part of the app installation.
+No databases exist in any project and database creation is failing with 500 errors across all projects. This is a Mittwald API-level issue preventing the prerequisite from being met.
+
+The tool itself is correctly implemented - it properly calls `GET v2/mysql-databases/{id}/users` and handles responses appropriately (403 for invalid IDs, proper error formatting). However, without a valid MySQL database, I cannot demonstrate a successful list response.
+
+## Eval Result
+
+The `mcp__mittwald__mittwald_database_mysql_user_list` tool is functional at the MCP layer but cannot be fully validated due to a Mittwald API issue preventing MySQL database creation (HTTP 500 on all projects).
+
+**What was verified:**
+- Tool accepts `databaseId` and `outputFormat` parameters correctly
+- Tool correctly routes to `GET v2/mysql-databases/{databaseId}/users`
+- Tool returns structured error responses with proper error codes
+- Tool integration with the MCP server pipeline works end-to-end
+
+**What blocked full validation:**
+- `mcp__mittwald__mittwald_database_mysql_create` returns HTTP 500 on all 3 available projects
+- No pre-existing MySQL databases in any project
+- Cannot obtain a valid `databaseId` to test the list users response
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_user_list",
+  "timestamp": "2026-02-17T12:05:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "No MySQL databases exist in any accessible project - required as prerequisite for listing users"
+    },
+    {
+      "type": "api_error",
+      "description": "mcp__mittwald__mittwald_database_mysql_create returns HTTP 500 on all 3 projects (p-mpg5kn, p-p92nri, p-ptwfms), preventing database creation"
+    },
+    {
+      "type": "validation_error",
+      "description": "Tool was invoked with a project ID instead of database ID, correctly returned 403 - confirms tool routing works but cannot validate success path"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-mpg5kn",
+      "status": "verified-no-databases"
+    },
+    {
+      "type": "project",
+      "id": "p-p92nri",
+      "status": "verified-no-databases"
+    },
+    {
+      "type": "project",
+      "id": "p-ptwfms",
+      "status": "verified-no-databases"
+    }
+  ],
+  "tool_response_summary": "Tool invocation with invalid databaseId returned structured 403 error confirming correct API routing to GET v2/mysql-databases/{id}/users. Cannot test success path because mysql_create returns 500 on all projects.",
+  "execution_notes": "The mysql_user_list tool is correctly wired and functional at the MCP layer. The blocking issue is upstream: Mittwald's database creation API returns 500 errors, preventing creation of the prerequisite MySQL database needed to list users. Recommend retrying when database creation is operational."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

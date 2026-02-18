@@ -1,0 +1,26 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "server-list",
+  "domain": "project-foundation",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/project-foundation/server-list.json",
+  "toolName": "mcp__mittwald__mittwald_server_list",
+  "displayName": "server/list",
+  "startedAt": "2026-02-17T13:05:10.265Z",
+  "finishedAt": "2026-02-17T13:06:27.771Z",
+  "durationMs": 77506,
+  "status": "failure",
+  "failureCategory": "missing_expected_tool_call",
+  "failureReason": "Expected tool mcp__mittwald__mittwald_server_list was not called",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "Task",
+    "Read",
+    "Grep"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/server-list.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/server-list.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/server-list.stderr.txt"
+}

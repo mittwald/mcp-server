@@ -1,0 +1,65 @@
+
+
+I'll execute this eval by first finding a suitable test project, then creating a virtual host. Let me start by loading the required tools and listing projects.
+Tools loaded. Let me list projects to find a test project.
+I can see there's already a test project with the correct prefix: `agent-e2e-2026-02-17T11-58-14-mysql-create-eval` (ID: `15f5367b-92bd-4761-ac33-f6bbb6f60db8`). I'll use this project to create a virtual host.
+
+Now let me create a virtual host with a test hostname.
+The API returned a 400 error. The hostname `eval-vhost-test.example.com` was rejected - likely because it needs at least one path mapping (to an app, container, or URL). Let me try with a `pathToUrl` mapping, which maps the virtualhost to an external URL.
+I notice the request data still shows `"paths":[]` - the pathToUrl parameter may not be getting parsed correctly. Let me look at how the tool handler processes these parameters to understand the expected format.
+
+
+Now I understand the parameter format. The path mappings need to be in `key=value` comma-separated format like `"path=/,url=https://example.com"`. Let me try again with the correct format.
+The virtual host was created successfully. Let me verify it exists by listing virtualhosts for the project.
+The virtual host was created and verified. It appears in the list with:
+- **ID**: `65bd6cce-dbfe-479e-ae57-899b2456147c`
+- **Hostname**: `eval-vhost-test.example.com`
+- **Path mapping**: `/` → `https://example.com/`
+
+Now let me clean up by deleting the test virtualhost.
+Test virtualhost cleaned up successfully.
+
+## Eval Summary
+
+The `mcp__mittwald__mittwald_domain_virtualhost_create` tool works correctly. Key findings:
+
+1. **Path mapping parameters** require `key=value` comma-separated format (e.g., `"path=/,url=https://example.com"`), not `path=value` slash notation.
+2. **At least one path mapping** is required — calling with an empty paths array returns a 400 error.
+3. The tool successfully created a virtualhost with a URL-based path mapping and returned the ingress ID.
+4. Verification via `virtualhost_list` confirmed the resource was created with the correct configuration.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_virtualhost_create",
+  "timestamp": "2026-02-17T12:05:00.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "First attempt with no path mappings returned HTTP 400 - at least one path mapping (pathToApp, pathToUrl, or pathToContainer) is required"
+    },
+    {
+      "type": "validation_error",
+      "description": "Second attempt with incorrect pathToUrl format ('path=value') still sent empty paths array - the parameter format must be 'key=value,key=value' comma-separated (e.g., 'path=/,url=https://example.com')"
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "virtualhost",
+      "id": "65bd6cce-dbfe-479e-ae57-899b2456147c"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "virtualhost",
+      "id": "65bd6cce-dbfe-479e-ae57-899b2456147c",
+      "status": "verified_via_list_then_deleted"
+    }
+  ],
+  "tool_response_summary": "Successfully created virtual host 'eval-vhost-test.example.com' with ID 65bd6cce-dbfe-479e-ae57-899b2456147c. Verified via virtualhost_list showing path mapping '/' -> 'https://example.com/'. Cleaned up by deleting the test virtualhost.",
+  "execution_notes": "Path mapping parameters use comma-separated key=value format: 'path=/,url=https://example.com' for pathToUrl, 'path=/,appInstallationId=<id>' for pathToApp, 'path=/,containerId=<id>' for pathToContainer. At least one path mapping is required or the API returns 400. Used existing test project (agent-e2e-2026-02-17T11-58-14-mysql-create-eval)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

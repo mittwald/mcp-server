@@ -1,0 +1,46 @@
+
+
+I'll execute this eval by first finding a project, then listing cronjobs, and finally getting details for a specific cronjob.
+
+**Step 1: Find available projects and load the required tools.**
+Tools loaded. Now let me list projects to find one with cronjobs.
+Good, I have projects. Let me search for cronjobs across a few likely projects.
+Found 5 cronjobs in project `p-ptwfms`. Now let me execute the target tool — `mcp__mittwald__mittwald_cronjob_get` — using the first cronjob ID.
+The tool executed successfully and returned detailed cronjob information. Let me verify the response contains the expected fields:
+
+- **id**: `460224d7-c47c-4883-9961-e1a92ce7bb43`
+- **description**: "Test cronjob - projectId derivation verification"
+- **projectId**: `fd1ef726-14b8-4906-8a45-0756ba993246`
+- **interval**: `0 0 * * *` (daily at midnight)
+- **active**: true
+- **destination**: URL-based (`https://httpbin.org/status/200`)
+- **latestExecution**: Complete, successful, exit code 0
+- **nextExecutionTime**: 2026-02-18T00:00:00.000Z
+- **shortId**: `cron-d67q60`
+- **timeZone**: UTC
+
+The response matches the expected schema with full cronjob details including scheduling, execution history, and configuration.
+
+## Self-Assessment
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_cronjob_get",
+  "timestamp": "2026-02-17T10:50:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "cronjob",
+      "id": "460224d7-c47c-4883-9961-e1a92ce7bb43",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved cronjob details for ID 460224d7-c47c-4883-9961-e1a92ce7bb43. Returned full schema including id, description, projectId, interval (0 0 * * *), active status (true), URL destination, latest execution (Complete/successful), next execution time, shortId (cron-d67q60), timezone, and timeout. Response time: 20.6ms.",
+  "execution_notes": "Tool returned comprehensive cronjob details. The response includes both a structured top-level view (id, description, projectId, timestamps) and a raw nested object with full API data including latestExecution details and scheduling configuration. No issues encountered."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

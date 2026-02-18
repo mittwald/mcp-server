@@ -1,0 +1,24 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "user-ssh-key-import",
+  "domain": "identity",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/identity/user-ssh-key-import.json",
+  "toolName": "mcp__mittwald__mittwald_user_ssh_key_import",
+  "displayName": "user/ssh/key/import",
+  "startedAt": "2026-02-17T12:33:18.138Z",
+  "finishedAt": "2026-02-17T12:34:40.617Z",
+  "durationMs": 82479,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "Bash",
+    "mcp__mittwald__mittwald_user_ssh_key_import",
+    "mcp__mittwald__mittwald_user_ssh_key_list"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-ssh-key-import.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-ssh-key-import.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-ssh-key-import.stderr.txt"
+}

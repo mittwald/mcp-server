@@ -1,0 +1,61 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-34-46",
+  "generatedAt": "2026-02-17T11:34:50.003Z",
+  "outputDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-34-46",
+  "options": {
+    "agents": [
+      "claude"
+    ],
+    "promptDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live",
+    "timeoutMs": 180000,
+    "target": "fly",
+    "requireCoverage": 0,
+    "coverageMode": "all-agents",
+    "requireSelfAssessment": false,
+    "cleanupTestProjects": true,
+    "cleanupProjectPrefix": "agent-e2e-cleanup-smoke-20260217123440",
+    "mcpUrl": "https://mittwald-mcp-fly2.fly.dev/mcp",
+    "mcpConfigPath": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json",
+    "maxTools": 0
+  },
+  "promptInventory": {
+    "totalLoaded": 0,
+    "invalidFiles": []
+  },
+  "preflight": [],
+  "counts": {
+    "totalCaseRuns": 0,
+    "passedCaseRuns": 0,
+    "failedCaseRuns": 0,
+    "matrixCoveragePercent": 0,
+    "totalTools": 0,
+    "coveredTools": 0,
+    "toolCoveragePercent": 0
+  },
+  "perAgent": {
+    "claude": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "coveragePercent": 0
+    }
+  },
+  "perTool": [],
+  "gate": {
+    "requiredCoverage": 0,
+    "mode": "all-agents",
+    "passed": true,
+    "reasons": []
+  },
+  "cleanup": {
+    "enabled": true,
+    "prefix": "agent-e2e-cleanup-smoke-20260217123440",
+    "startedAt": "2026-02-17T11:34:46.613Z",
+    "finishedAt": "2026-02-17T11:34:50.003Z",
+    "matchedCount": 1,
+    "deleted": [
+      "64cf38fe-7063-4ce3-863e-ebdd946dffeb"
+    ],
+    "failed": []
+  }
+}

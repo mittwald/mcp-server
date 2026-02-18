@@ -1,0 +1,25 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-34-40",
+  "agent": "claude",
+  "promptCaseId": "app-versions",
+  "domain": "apps",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/apps/app-versions.json",
+  "toolName": "mcp__mittwald__mittwald_app_versions",
+  "displayName": "app/versions",
+  "startedAt": "2026-02-17T10:41:22.170Z",
+  "finishedAt": "2026-02-17T10:42:10.098Z",
+  "durationMs": 47928,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_app_versions",
+    "Read",
+    "Grep",
+    "Bash"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/apps/app-versions.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/apps/app-versions.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/apps/app-versions.stderr.txt"
+}

@@ -1,0 +1,28 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "ssh-user-update",
+  "domain": "ssh",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/ssh/ssh-user-update.json",
+  "toolName": "mcp__mittwald__mittwald_ssh_user_update",
+  "displayName": "ssh/user/update",
+  "startedAt": "2026-02-17T13:15:15.384Z",
+  "finishedAt": "2026-02-17T13:18:15.405Z",
+  "durationMs": 180021,
+  "status": "failure",
+  "failureCategory": "timeout",
+  "failureReason": "Agent timed out after 180021ms",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "Task",
+    "Read",
+    "Glob",
+    "Grep",
+    "TodoWrite"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/ssh/ssh-user-update.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/ssh/ssh-user-update.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/ssh/ssh-user-update.stderr.txt"
+}

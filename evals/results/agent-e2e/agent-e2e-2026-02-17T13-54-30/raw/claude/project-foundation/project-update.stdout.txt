@@ -1,0 +1,42 @@
+
+
+I'll execute this eval by following the steps: list projects, find/create a test project, update it, and verify the update.
+
+**Step 1: List existing projects to find a test project**
+I found a test project with the correct prefix: `agent-e2e-2026-02-17T13-54-30-mysql-delete-test` (ID: `842df8be-3589-4c6c-ad03-963b001a356c`). I'll update its description.
+
+**Step 2: Update the project**
+Update succeeded. 
+
+**Step 3: Verify the update by listing projects again**
+Verified — the project description is now `agent-e2e-2026-02-17T13-54-30-updated-project`, confirming the update was applied successfully.
+
+## Results Summary
+
+| Step | Action | Result |
+|------|--------|--------|
+| 1 | Listed projects | Found test project `842df8be-3589-4c6c-ad03-963b001a356c` |
+| 2 | Updated description | Changed from `...-mysql-delete-test` to `...-updated-project` |
+| 3 | Verified update | Confirmed new description reflected in project list |
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_project_update",
+  "timestamp": "2026-02-17T14:00:12.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "842df8be-3589-4c6c-ad03-963b001a356c",
+      "status": "updated and verified"
+    }
+  ],
+  "tool_response_summary": "Project 842df8be-3589-4c6c-ad03-963b001a356c updated successfully. Description changed to 'agent-e2e-2026-02-17T13-54-30-updated-project'. Completed in ~94ms.",
+  "execution_notes": "Used existing test project with agent-e2e prefix. Updated description field and verified via subsequent project list call that the new description was persisted correctly."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

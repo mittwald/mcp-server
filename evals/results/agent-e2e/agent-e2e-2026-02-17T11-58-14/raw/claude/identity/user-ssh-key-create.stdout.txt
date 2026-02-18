@@ -1,0 +1,48 @@
+
+
+I'll test the `mcp__mittwald__mittwald_user_ssh_key_create` tool. First, let me load the tool and generate a test SSH key.
+I see the tool generates its own key pair rather than importing one. Let me look at the tool more carefully - it says "Generates a new SSH key pair and imports the public key." So this is a create-and-import tool. Let me call it directly.
+The error shows the `expiresAt` field was passed as `"30m"` (a string) but the API likely expects an ISO timestamp. The `expires` parameter on the tool says "An interval after which the SSH key expires (examples: 30m, 30d, 1y)" but it seems the conversion to a date may not be happening correctly. Let me also check what the tool handler does with the key. Let me try without the expires parameter.
+The SSH key was created successfully. Now let me verify it exists by listing SSH keys.
+The SSH key was created and verified successfully. I can see it in the list with the comment `agent-e2e-2026-02-17T11-58-14-eval-ssh-key` and ID `4195c269-8dca-4cb3-acf0-85da4197e2df`.
+
+Now let me clean up the test key to avoid leaving artifacts.
+Test key cleaned up. Here's the summary:
+
+**Results:**
+- **Create**: Successfully created an ED25519 SSH key with comment `agent-e2e-2026-02-17T11-58-14-eval-ssh-key` (ID: `4195c269-8dca-4cb3-acf0-85da4197e2df`) in 103ms
+- **Verify**: Confirmed key appeared in SSH key list with correct algorithm and comment
+- **Cleanup**: Deleted test key to avoid artifacts
+- **Note**: The `expires` parameter passes the interval string directly as `expiresAt` to the API, which expects an ISO timestamp — this is a bug in the tool handler (the interval-to-date conversion is missing)
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_ssh_key_create",
+  "timestamp": "2026-02-17T12:31:49.000Z",
+  "problems_encountered": [
+    {
+      "type": "validation_error",
+      "description": "The 'expires' parameter passes interval string (e.g. '30m') directly as 'expiresAt' to the Mittwald API, which expects an ISO 8601 timestamp. The interval-to-date conversion is missing in the tool handler, causing a 400 error when expires is used."
+    }
+  ],
+  "resources_created": [
+    {
+      "type": "ssh_key",
+      "id": "4195c269-8dca-4cb3-acf0-85da4197e2df"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "ssh_key",
+      "id": "4195c269-8dca-4cb3-acf0-85da4197e2df",
+      "status": "created_and_verified_via_list"
+    }
+  ],
+  "tool_response_summary": "SSH key generated and imported successfully with algorithm ssh-ed25519. Key appeared in user SSH key list. Cleaned up after verification by deleting the test key.",
+  "execution_notes": "Tool works correctly without 'expires' parameter. Bug found: 'expires' interval string is not converted to ISO timestamp before API call, causing 400 error. The tool generates its own key pair server-side and imports the public key — no local key material needed. Response time ~103ms for create, ~88ms for list, ~128ms for delete."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

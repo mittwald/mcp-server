@@ -1,0 +1,67 @@
+
+
+I'll execute this eval step by step. Let me start by loading the necessary tools and finding a suitable project and MySQL database.
+Good, the tools are loaded. Let me list projects and find a test project.
+There's a test project `p-mpg5kn` (agent-e2e-2026-02-17T11-58-14-mysql-create-eval). Let me check if it has a MySQL database already.
+No MySQL databases exist yet. I need to create one first. Let me check available MySQL versions.
+Good, MySQL 8.0 is available. Now let me create a MySQL database in the test project.
+The API returned a 500 error. Let me retry with a different version (8.4) and a simpler description.
+Still a 500 error on project `p-mpg5kn`. Let me try the other project that has a different server, and also try with the other test project's full UUID.
+No MySQL databases exist on any project. Let me try creating a database on the other project on a different server, and also try MySQL 5.7 on the test project in case the 8.0 version has an issue on that server.
+Same 500 error regardless of version. This project might still be provisioning. Let me try the other available project on the same server (`p-p92nri`).
+The Mittwald API is returning 500 errors for MySQL database creation across all projects and versions. Let me also try the first project on a different server.
+All 3 projects across 2 different servers return 500 errors for MySQL database creation. This is a Mittwald API-side issue — the `POST /v2/projects/{projectId}/mysql-databases` endpoint is consistently returning HTTP 500. Without a MySQL database, I cannot create a MySQL user.
+
+Let me update my tracking and record the self-assessment.
+## Eval Result: `mcp__mittwald__mittwald_database_mysql_user_create`
+
+**Outcome: FAILED — dependency blocker**
+
+The `database_mysql_user_create` tool could not be tested because its prerequisite (an existing MySQL database) could not be established. The Mittwald API's `POST /v2/projects/{projectId}/mysql-databases` endpoint returns HTTP 500 consistently across:
+
+- **3 projects** (`p-mpg5kn`, `p-p92nri`, `p-ptwfms`)
+- **2 servers** (`cf24e9ff...`, `00a89bf3...`)
+- **2 MySQL versions** (5.7, 8.0)
+
+This is a Mittwald platform-side issue, not an MCP tool bug.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_user_create",
+  "timestamp": "2026-02-17T12:05:30.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "Cannot create MySQL user without an existing MySQL database. All attempts to create a MySQL database via mcp__mittwald__mittwald_database_mysql_create failed with HTTP 500 from Mittwald API."
+    },
+    {
+      "type": "api_error",
+      "description": "Mittwald API POST /v2/projects/{projectId}/mysql-databases returns HTTP 500 consistently across 3 projects on 2 different servers with MySQL versions 5.7 and 8.0. This is a platform-side issue."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-mpg5kn",
+      "status": "exists_ready"
+    },
+    {
+      "type": "project",
+      "id": "p-p92nri",
+      "status": "exists_ready"
+    },
+    {
+      "type": "project",
+      "id": "p-ptwfms",
+      "status": "exists_ready"
+    }
+  ],
+  "tool_response_summary": "Tool was never invoked. Prerequisite database creation failed with HTTP 500 on all available projects. The mcp__mittwald__mittwald_database_mysql_user_create tool requires a databaseId parameter which could not be obtained.",
+  "execution_notes": "The Mittwald API mysql-databases creation endpoint appears to have a platform-wide outage. Tested across 3 projects, 2 servers, and 2 MySQL versions — all returned HTTP 500. The mysql_user_create tool itself was never reached. Recommend retrying this eval when the Mittwald database provisioning service is operational."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

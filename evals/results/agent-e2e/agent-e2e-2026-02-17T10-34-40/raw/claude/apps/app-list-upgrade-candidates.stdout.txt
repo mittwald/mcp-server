@@ -1,0 +1,45 @@
+
+
+I'll execute this eval by first finding a project and app, then testing the upgrade candidates tool.
+
+**Step 1: Find existing projects and apps**
+Good — I can see the tool requires an `installationId`. Let me list projects first.
+Now let me list apps in a couple of projects to find an app installation.
+
+
+I found multiple apps. Let me now test the `mcp__mittwald__mittwald_app_list_upgrade_candidates` tool with a couple of different app installations — a PHP app and a Node.js app.
+Both calls succeeded. The tool works correctly — it returns a successful response with an empty array, meaning these apps are already at their latest versions with no upgrade candidates available. This is a valid result (empty list is expected when apps are current).
+
+**Eval Summary:**
+- **Tool**: `mcp__mittwald__mittwald_app_list_upgrade_candidates`
+- **Prerequisites**: Verified via `project_list` (8 projects) and `app_list` (6 apps across projects)
+- **Test 1**: PHP app `a-v2tmw9` — success, 0 upgrade candidates, 127ms
+- **Test 2**: Node.js app `a-scyssh` — success, 0 upgrade candidates, 101ms
+- **Result**: Both returned `status: "success"` with empty `data` arrays (no upgrades available)
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+  "timestamp": "2026-02-17T10:45:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "a-v2tmw9",
+      "status": "verified - PHP app, no upgrade candidates"
+    },
+    {
+      "type": "app_installation",
+      "id": "a-scyssh",
+      "status": "verified - Node.js app, no upgrade candidates"
+    }
+  ],
+  "tool_response_summary": "Tool returned status:success with empty data arrays for both a PHP app (a-v2tmw9) and a Node.js app (a-scyssh), indicating no upgrade candidates are available. Response times were 127ms and 101ms respectively.",
+  "execution_notes": "Both apps are at their current versions with no available upgrades. The empty array response is a valid result — the tool correctly reports when no upgrades exist. Tested across two different app types (PHP and Node.js) to verify consistent behavior."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

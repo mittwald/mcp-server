@@ -1,0 +1,45 @@
+
+
+I'll execute this eval by first listing SFTP users to find an existing one, then updating it. Let me start by finding available SFTP users.
+The search didn't find SFTP-specific tools. Let me check what tools are actually available - the eval mentions `mcp__mittwald__mittwald_sftp_user-update` but let me search more specifically.
+I can see that there is no SFTP-specific tool available. The CLAUDE.md mentions that Feature 012 reduced tools from 175 to 115, and the git status shows SFTP tools were explicitly excluded. Let me verify this.
+Let me check the recent commit that excluded SFTP tools to confirm definitively.
+This confirms it. The SFTP tools have been **explicitly excluded from MCP registration** (commit `72397253`). The `evals/scenarios/README.md` and `evals/inventory/removed-tools-by-domain.md` both document that all 4 SFTP tools (`sftp/user-create`, `sftp/user-update`, `sftp/user-delete`, `sftp/user-list`) are de-registered from the MCP server.
+
+The tool `mcp__mittwald__mittwald_sftp_user-update` does not exist in the current tool inventory. While the code still exists in `src/constants/tool/mittwald-cli/sftp/`, these tools are excluded from registration and are not available via the MCP interface.
+
+**This eval cannot be executed** because the target tool has been removed from the MCP server's tool set.
+
+Note: The equivalent SSH user tools (`mcp__mittwald__mittwald_ssh_user_update`) ARE available and functional. The SFTP tools were consolidated/removed as part of the CLI-to-library conversion (Feature 012), reducing the tool count from 175 to 115.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_sftp_user-update",
+  "timestamp": "2026-02-17T12:00:00Z",
+  "problems_encountered": [
+    {
+      "type": "resource_not_found",
+      "description": "The tool mcp__mittwald__mittwald_sftp_user-update does not exist in the current MCP server tool inventory. All 4 SFTP tools (sftp/user-create, sftp/user-update, sftp/user-delete, sftp/user-list) were explicitly excluded from MCP registration in commit 72397253. This is documented in evals/inventory/removed-tools-by-domain.md and evals/scenarios/README.md."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "tool_inventory",
+      "id": "sftp-tools-removed",
+      "status": "confirmed_removed - all 4 SFTP tools excluded from MCP registration"
+    },
+    {
+      "type": "alternative_tool",
+      "id": "mcp__mittwald__mittwald_ssh_user_update",
+      "status": "available - SSH user update tool exists as functional alternative"
+    }
+  ],
+  "tool_response_summary": "Tool does not exist in current MCP server. SFTP tools were removed during Feature 012 CLI-to-library conversion. ToolSearch for 'sftp' returned 0 results. The equivalent SSH tools remain available.",
+  "execution_notes": "This eval prompt references a tool that was removed from the MCP server. The eval prompt set may need updating to reflect the current 115-tool inventory (down from 175). Consider archiving this eval prompt to evals/prompts/_archived/ or replacing it with an SSH user update eval."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

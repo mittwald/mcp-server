@@ -1,0 +1,41 @@
+
+
+I'll execute this eval by first finding a test project, then testing the SSH tool.
+
+**Step 1: Find a test project**
+I found a test project matching the prefix. I'll use `p-wbj9rf` (`agent-e2e-2026-02-17T13-54-30-mysql-delete-test`).
+
+**Step 2: Load and execute the SSH tool**
+The tool description says it "provides command for interactive terminal" — this means it likely returns the SSH connection command rather than opening an interactive session. Let me execute it.
+**Step 3: Verify the result**
+
+The tool executed successfully. As expected for an SSH tool in an MCP context, it returns the SSH connection command and instructions rather than opening an interactive session (which isn't possible through the MCP interface). The response:
+
+- Status: `success`
+- Returned the correct CLI command: `mw project ssh p-wbj9rf`
+- Correctly identified this as an interactive command
+- Provided clear instructions for manual execution
+
+This is the expected behavior — SSH is inherently interactive and can't run through a tool interface.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_project_ssh",
+  "timestamp": "2026-02-17T13:55:45.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-wbj9rf",
+      "status": "used as SSH target"
+    }
+  ],
+  "tool_response_summary": "Tool returned status 'success' with an SSH command prepared for interactive execution. The command 'mw project ssh p-wbj9rf' was provided with instructions noting that SSH is interactive and cannot run directly through MCP. This is the expected behavior for an interactive terminal tool.",
+  "execution_notes": "The project/ssh tool correctly handles the interactive nature of SSH by returning the command and instructions rather than attempting to open an interactive session. The tool properly resolved the short project ID and generated the appropriate CLI command. Used test project agent-e2e-2026-02-17T13-54-30-mysql-delete-test (p-wbj9rf)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

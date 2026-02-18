@@ -1,0 +1,44 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_app_copy` eval. Let me start by loading the necessary tools and finding prerequisites.
+Good, all tools are loaded. Let me list projects and find a test project with an app.
+Neither project has the test prefix. I need to find a project with an existing app to copy. Let me check both projects for apps.
+I have several apps available. I'll use the PHP app `a-v2tmw9` (id: `70a3012d-d28a-4ca3-a146-9d3531ac5f95`) from the first project as the source to copy. Now let me execute the `mcp__mittwald__mittwald_app_copy` tool.
+The app copy succeeded. Let me verify the new app installation exists by getting its details.
+The copied app is confirmed and currently in `installing` phase. The verification shows:
+
+- **New installation ID**: `3a0600c9-fad8-4836-9a56-0ba9945087dd` (short: `a-cvmnla`)
+- **Description**: `agent-e2e-2026-02-17T11-46-18 App Copy Eval Test`
+- **App type**: PHP (same as source)
+- **Project**: `fd1ef726-14b8-4906-8a45-0756ba993246` (same project as source)
+- **Phase**: `installing` (provisioning in progress)
+- **Custom document root, system software, update policy** all match the source app
+
+The `app/copy` tool executed successfully, creating a new app installation as a copy of the source PHP app.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_copy",
+  "timestamp": "2026-02-17T11:47:20.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "app_installation",
+      "id": "3a0600c9-fad8-4836-9a56-0ba9945087dd"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "3a0600c9-fad8-4836-9a56-0ba9945087dd",
+      "status": "installing"
+    }
+  ],
+  "tool_response_summary": "App copied successfully. New installation ID: 3a0600c9-fad8-4836-9a56-0ba9945087dd (short: a-cvmnla). Source app: 70a3012d-d28a-4ca3-a146-9d3531ac5f95 (PHP 8.2). The copied app is in 'installing' phase in the same project.",
+  "execution_notes": "Copied a PHP app within project fd1ef726-14b8-4906-8a45-0756ba993246. Verified via app_get that the new installation exists with matching configuration (custom document root, system software, update policy). The app is still installing at verification time, which is expected for a freshly copied app."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

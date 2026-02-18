@@ -1,0 +1,44 @@
+
+
+I'll execute this eval by first finding a suitable test project, then listing apps in it.
+
+**Step 1: List projects to find a test project**
+Now let me list projects to find a test project.
+I see 2 existing projects, but neither has the test prefix `agent-e2e-2026-02-17T11-46-18-`. I'll use one of the existing projects to list apps (this is a read-only operation). Let me use the first project.
+
+**Step 2: Execute `mcp__mittwald__mittwald_app_list` with a projectId**
+The tool executed successfully. Here's the verification:
+
+**Results Summary:**
+- **Status**: `success`
+- **Response**: Array of 5 apps returned for project `fd1ef726-14b8-4906-8a45-0756ba993246`
+- **All apps are PHP apps** in `ready` phase
+- **Response includes**: app IDs, short IDs, descriptions, creation dates, installation paths, system software dependencies, version info, and more
+- **One app** (`a-cvmnla`) has the test prefix `agent-e2e-2026-02-17T11-46-18` in its description, confirming this project contains test resources from the current eval run
+
+**Verification checks:**
+- Returns an array: **PASS** (array of 5 objects)
+- Operation completes without errors: **PASS** (status: "success")
+- Response matches expected schema: **PASS** (each item has `id`, `shortId`, `appId`, `description`, `phase`, `projectId`, etc.)
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list",
+  "timestamp": "2026-02-17T11:50:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "app", "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95", "status": "ready"},
+    {"type": "app", "id": "0b6f1d0b-7bf3-4c98-9d95-85bc02951e47", "status": "ready"},
+    {"type": "app", "id": "2f440610-5683-4c67-ab42-40f04323fc3e", "status": "ready"},
+    {"type": "app", "id": "5073be40-9ee4-45b7-91cb-2db29cbe7602", "status": "ready"},
+    {"type": "app", "id": "3a0600c9-fad8-4836-9a56-0ba9945087dd", "status": "ready"}
+  ],
+  "tool_response_summary": "Successfully listed 5 PHP apps in project fd1ef726-14b8-4906-8a45-0756ba993246. All apps are in 'ready' phase with complete metadata including versions, system software, and installation paths. Response completed in ~550ms.",
+  "execution_notes": "Tool returned JSON output with full app details. The projectId parameter is required (not optional as the eval description suggested). One of the 5 apps has the current test run prefix in its description, confirming test resources exist in this project."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

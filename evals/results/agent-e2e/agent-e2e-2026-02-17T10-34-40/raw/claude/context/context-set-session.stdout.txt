@@ -1,0 +1,38 @@
+I'll test the `mcp__mittwald__mittwald_context_set_session` tool. Let me first load it and check its schema.
+Good, both tools are loaded. Let me first check the current session context, then set a new context, and verify the change.
+Current context has `projectId` set. Now let me set a new context with an `orgId` to test the set operation.
+Good, I have real org IDs. Now let me set the session context with an `orgId` to test the set operation.
+The set operation succeeded. Now let me verify the updated context persisted.
+Verified. The session now reflects both `projectId` and `orgId` as set. The context went from 1 parameter to 2 parameters, confirming the set operation worked correctly.
+
+## Results Summary
+
+| Step | Result |
+|------|--------|
+| **Get initial context** | 1 parameter: `projectId` |
+| **Set context** | Set `orgId` + `projectId` — success |
+| **Verify context** | 2 parameters confirmed: `projectId` + `orgId` |
+
+The tool works correctly — it persists context parameters in the Redis session and subsequent lookups reflect the updated state.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_context_set_session",
+  "timestamp": "2026-02-17T11:09:41.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "session_context",
+      "id": "session_1771326558135_prf7ddg6w",
+      "status": "verified_updated"
+    }
+  ],
+  "tool_response_summary": "Successfully set orgId (c0256a2f-ccb0-4e00-b6ed-579bdb758675) and projectId (fd1ef726-14b8-4906-8a45-0756ba993246) in Redis session. Subsequent get_session confirmed both parameters persisted.",
+  "execution_notes": "Tool accepts optional parameters (orgId, projectId, serverId, installationId, stackId). Tested with orgId and projectId. Verified round-trip: initial context had 1 param, after set it had 2 params, confirming additive context setting works correctly."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

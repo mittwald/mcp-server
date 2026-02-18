@@ -1,0 +1,25 @@
+evidence_id,source_id,finding,confidence,context,research_question,date_logged
+EV-001,SRC-007,MCP server exposes 115 tools across 14 domains,high,Tool inventory from evals/inventory/tools-current.json,RQ2,2025-01-19
+EV-002,SRC-007,Domains include: apps backups certificates containers context databases domains-mail identity misc organization project-foundation sftp ssh,high,Domain categorization from tool inventory,RQ2,2025-01-19
+EV-003,SRC-008,OAuth bridge uses OAuth 2.1 with DCR for client registration,high,Architecture documented in CLAUDE.md,RQ4,2025-01-19
+EV-004,SRC-008,Single Mittwald redirect_uri drives bridge architecture,high,DCR required because Mittwald redirect list is immutable,RQ4,2025-01-19
+EV-005,SRC-001,Mittwald explicitly targets Agenturen & Freelancer (Agencies & Freelancers),high,Homepage tagline: Erstklassiges Hosting für Agenturen & Freelancer,RQ1,2025-01-19
+EV-006,SRC-001,Three hosting tiers: Webhosting (€10/mo) vServer (€35/mo) Dedicated (€139/mo),high,Product pricing page,RQ1,2025-01-19
+EV-007,SRC-001,Supported CMS: WordPress TYPO3 Joomla Shopware Magento WooCommerce Node.js,high,Product features page,RQ1,2025-01-19
+EV-008,SRC-001,TYPO3 heritage - company founded as TYPO3 provider,high,Marketing materials reference founder writing first German TYPO3 docs,RQ1,2025-01-19
+EV-009,SRC-001,B2B focus - all prices exclude VAT targeting businesses not consumers,medium,Pricing note: Angebote gelten ausschließlich für Unternehmen,RQ1,2025-01-19
+EV-010,SRC-001,Key differentiators: <1.5min phone support wait ISO 27001 100% renewable energy German datacenter,high,Marketing value propositions,RQ1,2025-01-19
+EV-011,SRC-002,mStudio provides GUI CLI and API access for automation,high,mStudio product page,RQ5,2025-01-19
+EV-012,SRC-002,Container Hosting enables flexible technology deployment beyond CMS,high,mStudio features,RQ5,2025-01-19
+EV-013,SRC-004,MCP uses JSON-RPC 2.0 for communication,high,MCP specification v2025-11-25,RQ3,2025-01-19
+EV-014,SRC-004,MCP servers expose Resources Prompts and Tools to clients,high,MCP specification architecture,RQ3,2025-01-19
+EV-015,SRC-004,User consent required for all tool invocations - security by design,high,MCP specification security section,RQ3,2025-01-19
+EV-016,SRC-005,Claude Code supports HTTP SSE and stdio MCP transports,high,Claude Code MCP documentation,RQ3,2025-01-19
+EV-017,SRC-010,OpenAI adopted MCP in March 2025 across ChatGPT and Agents SDK,high,InfoQ article and OpenAI docs,RQ3,2025-01-19
+EV-018,SRC-010,ChatGPT Developer Mode provides full MCP client support for Plus/Pro/Business users,high,OpenAI help center,RQ3,2025-01-19
+EV-019,SRC-011,Google announced managed MCP servers December 2025 for Maps BigQuery GKE,high,Google Cloud blog announcement,RQ3,2025-01-19
+EV-020,SRC-011,Gemini CLI supports MCP via stdio and HTTP with FastMCP integration,high,Gemini CLI documentation,RQ3,2025-01-19
+EV-021,SRC-002,mStudio features: project management multi-role access dev environments domain/email/backup management,high,mStudio product page detailed features,RQ5,2025-01-19
+EV-022,SRC-001,Free project migration offered for WordPress TYPO3 Shopware WooCommerce,medium,Marketing materials,RQ5,2025-01-19
+EV-023,SRC-004,MCP December 2025: donated to Agentic AI Foundation under Linux Foundation,high,MCP blog one year anniversary post,RQ3,2025-01-19
+EV-024,SRC-004,MCP v2025-11-25 adds Tasks for async operations server identity official extensions,high,MCP specification changelog,RQ3,2025-01-19

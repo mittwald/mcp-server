@@ -1,0 +1,40 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_backup_list` eval. Let me start by loading the required tools.
+Tools loaded. Now let me first list projects to get a valid project ID.
+Project list retrieved. I'll use the "Eval Test Project" (`p-kbuygq`) to list backups. Now let me execute the target tool.
+The tool executed successfully. It returned 61 backups for the project, all with status "Completed". The response includes proper backup objects with `id`, `projectId`, `description`, `status`, `createdAt`, `expiresAt`, and `size` fields. The data shows a mix of scheduled backups ("Eval test backup schedule - WP08") and manual/automatic ones.
+
+Now let me save the self-assessment result.
+The result file write was not permitted. Here is the self-assessment output inline:
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_backup_list",
+  "timestamp": "2026-02-17T11:05:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "backup_list",
+      "id": "project:p-kbuygq",
+      "status": "61 backups returned successfully"
+    }
+  ],
+  "tool_response_summary": "Successfully listed 61 backups for project p-kbuygq (Eval Test Project). All backups have status 'Completed'. Response includes id, projectId, description, status, createdAt, expiresAt, and size fields. Backups are a mix of scheduled ('Eval test backup schedule - WP08') and automatic/manual ones, spanning from 2026-01-19 to 2026-02-17.",
+  "execution_notes": "Tool works correctly with projectId parameter using short ID format. Response time was ~121ms. The projectId parameter is required per the tool schema. All 61 backups returned in a single array response with consistent field structure."
+}
+```
+<!-- SELF_ASSESSMENT_END -->
+
+## Summary
+
+The `mcp__mittwald__mittwald_backup_list` eval **passed successfully**:
+
+1. **Prerequisite**: Used `mcp__mittwald__mittwald_project_list` to find project `p-kbuygq` (Eval Test Project)
+2. **Execution**: Called `mcp__mittwald__mittwald_backup_list` with `projectId: "p-kbuygq"` and `output: "json"`
+3. **Result**: Returned 61 backups, all with "Completed" status, proper field structure (id, projectId, description, status, createdAt, expiresAt, size), and ~121ms response time
+4. **Verification**: Response is a valid array, no errors, schema-conformant objects

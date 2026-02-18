@@ -10,7 +10,18 @@ import type {
 
 interface RedisStateStoreOptions {
   redisUrl?: string;
-  ttlSeconds: number;
+  /**
+   * Legacy TTL value (applies to both state and grants if specific values are omitted).
+   */
+  ttlSeconds?: number;
+  /**
+   * TTL for authorization request state entries.
+   */
+  authRequestTtlSeconds?: number;
+  /**
+   * TTL for authorization grants / refresh-token lookup records.
+   */
+  grantTtlSeconds?: number;
   prefix?: string;
 }
 
@@ -18,12 +29,21 @@ const DEFAULT_PREFIX = 'bridge';
 
 export class RedisStateStore implements StateStore {
   private readonly redis: Redis;
-  private readonly ttlSeconds: number;
+  private readonly authRequestTtlSeconds: number;
+  private readonly grantTtlSeconds: number;
   private readonly prefix: string;
 
   constructor(options: RedisStateStoreOptions) {
+    const legacyTtlSeconds = Math.max(1, options.ttlSeconds ?? 300);
     this.redis = new Redis(options.redisUrl ?? process.env.BRIDGE_REDIS_URL ?? process.env.REDIS_URL ?? 'redis://localhost:6379');
-    this.ttlSeconds = Math.max(1, options.ttlSeconds);
+    this.authRequestTtlSeconds = Math.max(
+      1,
+      options.authRequestTtlSeconds ?? legacyTtlSeconds
+    );
+    this.grantTtlSeconds = Math.max(
+      1,
+      options.grantTtlSeconds ?? legacyTtlSeconds
+    );
     this.prefix = options.prefix ?? DEFAULT_PREFIX;
   }
 
@@ -144,11 +164,15 @@ export class RedisStateStore implements StateStore {
     const withTimestamps = {
       ...record,
       createdAt: now,
-      expiresAt: now + this.ttlSeconds * 1000,
+      expiresAt: now + this.authRequestTtlSeconds * 1000,
       consumed: false
     } satisfies AuthorizationRequestRecord;
 
-    await this.setJson(this.authRequestKey(record.internalState), withTimestamps, this.ttlSeconds);
+    await this.setJson(
+      this.authRequestKey(record.internalState),
+      withTimestamps,
+      this.authRequestTtlSeconds
+    );
   }
 
   async getAuthorizationRequestByInternalState(internalState: string): Promise<AuthorizationRequestRecord | null> {
@@ -217,10 +241,14 @@ export class RedisStateStore implements StateStore {
     const withTimestamps = {
       ...record,
       createdAt: now,
-      expiresAt: now + this.ttlSeconds * 1000
+      expiresAt: now + this.grantTtlSeconds * 1000
     } satisfies AuthorizationGrantRecord;
 
-    await this.setJson(this.grantKey(record.authorizationCode), withTimestamps, this.ttlSeconds);
+    await this.setJson(
+      this.grantKey(record.authorizationCode),
+      withTimestamps,
+      this.grantTtlSeconds
+    );
   }
 
   async getAuthorizationGrant(authorizationCode: string): Promise<AuthorizationGrantRecord | null> {
@@ -252,10 +280,12 @@ export class RedisStateStore implements StateStore {
 
     // Verify refresh token matches and hasn't expired
     if (record.refreshToken !== refreshToken) {
+      await this.redis.del(this.refreshTokenKey(refreshToken));
       return null;
     }
 
     if (record.refreshTokenExpiresAt && record.refreshTokenExpiresAt <= Math.floor(Date.now() / 1000)) {
+      await this.redis.del(this.refreshTokenKey(refreshToken));
       return null;
     }
 
@@ -263,21 +293,46 @@ export class RedisStateStore implements StateStore {
   }
 
   async updateAuthorizationGrant(record: AuthorizationGrantRecord): Promise<void> {
-    const ttl = await this.redis.ttl(this.grantKey(record.authorizationCode));
-    const ttlSeconds = ttl > 0 ? ttl : this.ttlSeconds;
-    await this.setJson(this.grantKey(record.authorizationCode), record, ttlSeconds);
+    const existing = await this.getJson<AuthorizationGrantRecord>(
+      this.grantKey(record.authorizationCode)
+    );
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const grantTtlSeconds = record.refreshTokenExpiresAt
+      ? Math.max(1, record.refreshTokenExpiresAt - nowSeconds)
+      : this.grantTtlSeconds;
+
+    await this.setJson(
+      this.grantKey(record.authorizationCode),
+      record,
+      grantTtlSeconds
+    );
+
+    // Remove stale refresh-token index entry after rotation.
+    if (
+      existing?.refreshToken &&
+      record.refreshToken &&
+      existing.refreshToken !== record.refreshToken
+    ) {
+      await this.redis.del(this.refreshTokenKey(existing.refreshToken));
+    }
 
     // If the grant has a refresh token, create/update the refresh token index
     if (record.refreshToken) {
       // Use refresh token TTL if available, otherwise use grant TTL
       const refreshTtl = record.refreshTokenExpiresAt
-        ? Math.max(1, record.refreshTokenExpiresAt - Math.floor(Date.now() / 1000))
-        : ttlSeconds;
+        ? Math.max(1, record.refreshTokenExpiresAt - nowSeconds)
+        : grantTtlSeconds;
       await this.redis.set(this.refreshTokenKey(record.refreshToken), record.authorizationCode, 'EX', refreshTtl);
     }
   }
 
   async deleteAuthorizationGrant(authorizationCode: string): Promise<void> {
+    const existing = await this.getJson<AuthorizationGrantRecord>(
+      this.grantKey(authorizationCode)
+    );
+    if (existing?.refreshToken) {
+      await this.redis.del(this.refreshTokenKey(existing.refreshToken));
+    }
     await this.redis.del(this.grantKey(authorizationCode));
   }
 
@@ -319,7 +374,9 @@ export class RedisStateStore implements StateStore {
 
     return {
       implementation: 'redis',
-      ttlSeconds: this.ttlSeconds,
+      ttlSeconds: this.authRequestTtlSeconds,
+      authRequestTtlSeconds: this.authRequestTtlSeconds,
+      grantTtlSeconds: this.grantTtlSeconds,
       pendingAuthorizations: authRequests,
       pendingGrants: grants,
       registeredClients: clients

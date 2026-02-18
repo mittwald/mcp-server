@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "prefix": "agent-e2e-2026-02-17T13-54-30",
+  "startedAt": "2026-02-17T14:12:17.413Z",
+  "finishedAt": "2026-02-17T14:12:21.253Z",
+  "matchedCount": 1,
+  "deleted": [
+    "842df8be-3589-4c6c-ad03-963b001a356c"
+  ],
+  "failed": []
+}

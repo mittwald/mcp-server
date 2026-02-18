@@ -1,0 +1,2580 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-14-07",
+  "generatedAt": "2026-02-17T10:14:44.547Z",
+  "outputDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-14-07",
+  "options": {
+    "agents": [
+      "codex",
+      "opencode",
+      "claude"
+    ],
+    "promptDir": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts",
+    "timeoutMs": 180000,
+    "target": "fly",
+    "requireCoverage": 0,
+    "coverageMode": "all-agents",
+    "mcpUrl": "https://mittwald-mcp-fly2.fly.dev/mcp",
+    "mcpConfigPath": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json"
+  },
+  "promptInventory": {
+    "totalLoaded": 218,
+    "invalidFiles": []
+  },
+  "preflight": [
+    {
+      "agent": "codex",
+      "ok": true,
+      "details": {
+        "commandAvailable": true,
+        "expectedToolCalled": true,
+        "hasToolCallErrors": false,
+        "claudeNeedsAuth": false,
+        "probeExitCode": 0,
+        "probeTimedOut": false
+      },
+      "execution": {
+        "agent": "codex",
+        "command": "codex",
+        "args": [
+          "exec",
+          "--json",
+          "MCP readiness probe.\nCall exactly one MCP tool: mcp__mittwald__mittwald_user_get.\nDo not run shell commands.\nDo not read or write files.\nIf the call succeeds, reply exactly PRECHECK_OK.\nIf the call fails or the tool is unavailable, reply exactly PRECHECK_FAILED.",
+          "-c",
+          "mcp_servers.mittwald.url=\"https://mittwald-mcp-fly2.fly.dev/mcp\""
+        ],
+        "exitCode": 0,
+        "durationMs": 16232,
+        "timedOut": false,
+        "stdout": "{\"type\":\"thread.started\",\"thread_id\":\"019c6b17-cc15-75c2-9718-7a49a7db929e\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"reasoning\",\"text\":\"**Calling MCP readiness probe**\"}}\n{\"type\":\"item.started\",\"item\":{\"id\":\"item_1\",\"type\":\"mcp_tool_call\",\"server\":\"mittwald\",\"tool\":\"mittwald_user_get\",\"arguments\":{},\"result\":null,\"error\":null,\"status\":\"in_progress\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"mcp_tool_call\",\"server\":\"mittwald\",\"tool\":\"mittwald_user_get\",\"arguments\":{},\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\n  \\\"status\\\": \\\"success\\\",\\n  \\\"message\\\": \\\"User details for self:\\\",\\n  \\\"data\\\": {\\n    \\\"user\\\": {\\n      \\\"customerMemberships\\\": {\\n        \\\"0080fa08-4f75-4825-9210-2a4eb9a09bea\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-06-05T19:23:21.000Z\\\",\\n          \\\"inherited\\\": false\\n        },\\n        \\\"c0256a2f-ccb0-4e00-b6ed-579bdb758675\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-09-29T07:05:48.000Z\\\",\\n          \\\"inherited\\\": false\\n        }\\n      },\\n      \\\"email\\\": \\\"rob@robshouse.net\\\",\\n      \\\"mfa\\\": {\\n        \\\"active\\\": false,\\n        \\\"setup\\\": false\\n      },\\n      \\\"passwordUpdatedAt\\\": \\\"2025-06-05T19:22:29.000Z\\\",\\n      \\\"person\\\": {\\n        \\\"firstName\\\": \\\"Robert\\\",\\n        \\\"lastName\\\": \\\"Douglass\\\",\\n        \\\"title\\\": \\\"mr\\\"\\n      },\\n      \\\"projectMemberships\\\": {\\n        \\\"fd1ef726-14b8-4906-8a45-0756ba993246\\\": {\\n          \\\"role\\\": \\\"external\\\",\\n          \\\"memberSince\\\": \\\"2025-10-25T12:00:39.000Z\\\",\\n          \\\"inherited\\\": false\\n        },\\n        \\\"ad6f44a6-132e-4c2a-9208-895494bfcd75\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-09T23:21:51.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"7b71eeb1-542f-4b9b-966c-a001f3d1ee0c\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-18T23:18:53.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"73b3bc84-7eba-4832-b765-02bd6fd69ccd\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T10:05:54.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"d3201a21-05ec-4154-af61-19ea7784ca95\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T10:51:57.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"cfb94e28-036e-4497-8f8d-a8cc382e67f7\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T13:10:27.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"8a815d43-b1a6-4746-8e4e-7b415a8f8553\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T13:37:51.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"ec7d6fae-44bd-4887-8d6c-a5d313d7f522\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T13:49:28.000Z\\\",\\n          \\\"inherited\\\": true\\n        }\\n      },\\n      \\\"registeredAt\\\": \\\"2025-06-05T19:22:29.000Z\\\",\\n      \\\"userId\\\": \\\"0f452bff-81b5-496f-957f-ac30e4f37f9d\\\"\\n    },\\n    \\\"formattedOutput\\\": \\\"User Profile:\\\\nID: 0f452bff-81b5-496f-957f-ac30e4f37f9d\\\\nEmail: rob@robshouse.net\\\\nFirst Name: Robert\\\\nLast Name: Douglass\\\\nPhone: N/A\\\\nRegistered: 2025-06-05T19:22:29.000Z\\\\nMFA Active: No\\\",\\n    \\\"format\\\": \\\"txt\\\"\\n  },\\n  \\\"meta\\\": {\\n    \\\"durationMs\\\": 53.59461498260498\\n  }\\n}\"}],\"structured_content\":null},\"error\":null,\"status\":\"completed\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_2\",\"type\":\"reasoning\",\"text\":\"PRECHECK_OK\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_3\",\"type\":\"agent_message\",\"text\":\"PRECHECK_OK\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":62303,\"cached_input_tokens\":34048,\"output_tokens\":282}}\n",
+        "stderr": "",
+        "toolsCalled": [
+          "mittwald_user_get"
+        ],
+        "toolCallErrors": [],
+        "messages": [
+          "PRECHECK_OK"
+        ],
+        "parseErrors": 0,
+        "mcpServerStatus": {}
+      }
+    },
+    {
+      "agent": "opencode",
+      "ok": true,
+      "details": {
+        "commandAvailable": true,
+        "expectedToolCalled": true,
+        "hasToolCallErrors": false,
+        "claudeNeedsAuth": false,
+        "probeExitCode": 0,
+        "probeTimedOut": false
+      },
+      "execution": {
+        "agent": "opencode",
+        "command": "opencode",
+        "args": [
+          "run",
+          "MCP readiness probe.\nCall exactly one MCP tool: mcp__mittwald__mittwald_user_get.\nDo not run shell commands.\nDo not read or write files.\nIf the call succeeds, reply exactly PRECHECK_OK.\nIf the call fails or the tool is unavailable, reply exactly PRECHECK_FAILED.",
+          "--format",
+          "json",
+          "--model",
+          "opencode/gpt-5-nano"
+        ],
+        "exitCode": 0,
+        "durationMs": 16922,
+        "timedOut": false,
+        "stdout": "{\"type\":\"step_start\",\"timestamp\":1771323266997,\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"part\":{\"id\":\"prt_c6b1817b40019RbeFhxOzZyNqA\",\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"messageID\":\"msg_c6b180f82001JqUCsijouUpiZ3\",\"type\":\"step-start\",\"snapshot\":\"c7e2e03fa287d878afc880245a70eec24ee42c9b\"}}\n{\"type\":\"tool_use\",\"timestamp\":1771323274694,\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"part\":{\"id\":\"prt_c6b18346f001r8DJF1QAX0sAo8\",\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"messageID\":\"msg_c6b180f82001JqUCsijouUpiZ3\",\"type\":\"tool\",\"callID\":\"call_lPi0Y3pycQMtOS7ObbnIJqRQ\",\"tool\":\"mittwald_mittwald_user_get\",\"state\":{\"status\":\"completed\",\"input\":{},\"output\":\"{\\n  \\\"status\\\": \\\"success\\\",\\n  \\\"message\\\": \\\"User details for self:\\\",\\n  \\\"data\\\": {\\n    \\\"user\\\": {\\n      \\\"customerMemberships\\\": {\\n        \\\"0080fa08-4f75-4825-9210-2a4eb9a09bea\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-06-05T19:23:21.000Z\\\",\\n          \\\"inherited\\\": false\\n        },\\n        \\\"c0256a2f-ccb0-4e00-b6ed-579bdb758675\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-09-29T07:05:48.000Z\\\",\\n          \\\"inherited\\\": false\\n        }\\n      },\\n      \\\"email\\\": \\\"rob@robshouse.net\\\",\\n      \\\"mfa\\\": {\\n        \\\"active\\\": false,\\n        \\\"setup\\\": false\\n      },\\n      \\\"passwordUpdatedAt\\\": \\\"2025-06-05T19:22:29.000Z\\\",\\n      \\\"person\\\": {\\n        \\\"firstName\\\": \\\"Robert\\\",\\n        \\\"lastName\\\": \\\"Douglass\\\",\\n        \\\"title\\\": \\\"mr\\\"\\n      },\\n      \\\"projectMemberships\\\": {\\n        \\\"ad6f44a6-132e-4c2a-9208-895494bfcd75\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-09T23:21:51.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"7b71eeb1-542f-4b9b-966c-a001f3d1ee0c\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-18T23:18:53.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"73b3bc84-7eba-4832-b765-02bd6fd69ccd\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T10:05:54.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"d3201a21-05ec-4154-af61-19ea7784ca95\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T10:51:57.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"cfb94e28-036e-4497-8f8d-a8cc382e67f7\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T13:10:27.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"8a815d43-b1a6-4746-8e4e-7b415a8f8553\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T13:37:51.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"ec7d6fae-44bd-4887-8d6c-a5d313d7f522\\\": {\\n          \\\"role\\\": \\\"owner\\\",\\n          \\\"memberSince\\\": \\\"2025-12-19T13:49:28.000Z\\\",\\n          \\\"inherited\\\": true\\n        },\\n        \\\"fd1ef726-14b8-4906-8a45-0756ba993246\\\": {\\n          \\\"role\\\": \\\"external\\\",\\n          \\\"memberSince\\\": \\\"2025-10-25T12:00:39.000Z\\\",\\n          \\\"inherited\\\": false\\n        }\\n      },\\n      \\\"registeredAt\\\": \\\"2025-06-05T19:22:29.000Z\\\",\\n      \\\"userId\\\": \\\"0f452bff-81b5-496f-957f-ac30e4f37f9d\\\"\\n    },\\n    \\\"formattedOutput\\\": \\\"User Profile:\\\\nID: 0f452bff-81b5-496f-957f-ac30e4f37f9d\\\\nEmail: rob@robshouse.net\\\\nFirst Name: Robert\\\\nLast Name: Douglass\\\\nPhone: N/A\\\\nRegistered: 2025-06-05T19:22:29.000Z\\\\nMFA Active: No\\\",\\n    \\\"format\\\": \\\"txt\\\"\\n  },\\n  \\\"meta\\\": {\\n    \\\"durationMs\\\": 56.16302704811096\\n  }\\n}\",\"title\":\"\",\"metadata\":{\"truncated\":false},\"time\":{\"start\":1771323274534,\"end\":1771323274693},\"attachments\":[]},\"metadata\":{\"opencode\":{\"itemId\":\"fc_0ef94e86d3fc2c510169943f8a11c48197b7d42bc4b542df09\"}}}}\n{\"type\":\"step_finish\",\"timestamp\":1771323274806,\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"part\":{\"id\":\"prt_c6b1835f8001q3bGMMABdvFNDi\",\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"messageID\":\"msg_c6b180f82001JqUCsijouUpiZ3\",\"type\":\"step-finish\",\"reason\":\"tool-calls\",\"snapshot\":\"c7e2e03fa287d878afc880245a70eec24ee42c9b\",\"cost\":0,\"tokens\":{\"input\":25197,\"output\":460,\"reasoning\":384,\"cache\":{\"read\":0,\"write\":0}}}}\n{\"type\":\"step_start\",\"timestamp\":1771323276374,\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"part\":{\"id\":\"prt_c6b183c55001ZPjby7CmW3QJTd\",\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"messageID\":\"msg_c6b183681001xBw6xSI7XRUzZg\",\"type\":\"step-start\",\"snapshot\":\"c7e2e03fa287d878afc880245a70eec24ee42c9b\"}}\n{\"type\":\"text\",\"timestamp\":1771323280318,\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"part\":{\"id\":\"prt_c6b184b1d001anGhByVwH8qr7w\",\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"messageID\":\"msg_c6b183681001xBw6xSI7XRUzZg\",\"type\":\"text\",\"text\":\"PRECHECK_OK\",\"time\":{\"start\":1771323280317,\"end\":1771323280317},\"metadata\":{\"opencode\":{\"itemId\":\"msg_0dda2c9aa924b9ac0169943f8fe9ac8193bb46713706c1cf59\"}}}}\n{\"type\":\"step_finish\",\"timestamp\":1771323280646,\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"part\":{\"id\":\"prt_c6b184cc9001INK9raGZ4HJxrx\",\"sessionID\":\"ses_394e7f0b2ffe5zP3GDg1aldgvB\",\"messageID\":\"msg_c6b183681001xBw6xSI7XRUzZg\",\"type\":\"step-finish\",\"reason\":\"stop\",\"snapshot\":\"c7e2e03fa287d878afc880245a70eec24ee42c9b\",\"cost\":0,\"tokens\":{\"input\":26627,\"output\":124,\"reasoning\":64,\"cache\":{\"read\":0,\"write\":0}}}}\n",
+        "stderr": "",
+        "toolsCalled": [
+          "mittwald_mittwald_user_get"
+        ],
+        "toolCallErrors": [],
+        "messages": [
+          "PRECHECK_OK"
+        ],
+        "parseErrors": 0,
+        "mcpServerStatus": {}
+      }
+    },
+    {
+      "agent": "claude",
+      "ok": false,
+      "reason": "Claude reports MCP server needs OAuth authentication Remediation: Run 'claude' and authenticate the mittwald MCP server via '/mcp', or update /Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json to a valid authenticated server.",
+      "details": {
+        "commandAvailable": true,
+        "expectedToolCalled": false,
+        "hasToolCallErrors": false,
+        "claudeNeedsAuth": true,
+        "probeExitCode": 0,
+        "probeTimedOut": false
+      },
+      "execution": {
+        "agent": "claude",
+        "command": "claude",
+        "args": [
+          "--print",
+          "MCP readiness probe.\nCall exactly one MCP tool: mcp__mittwald__mittwald_user_get.\nDo not run shell commands.\nDo not read or write files.\nIf the call succeeds, reply exactly PRECHECK_OK.\nIf the call fails or the tool is unavailable, reply exactly PRECHECK_FAILED.",
+          "--output-format",
+          "stream-json",
+          "--verbose",
+          "--allowedTools",
+          "mcp__mittwald__*",
+          "--mcp-config",
+          "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/.mcp.json",
+          "--strict-mcp-config"
+        ],
+        "exitCode": 0,
+        "durationMs": 3813,
+        "timedOut": false,
+        "stdout": "{\"type\":\"system\",\"subtype\":\"init\",\"cwd\":\"/Users/robert/Code/MittwaldCoWork/mittwald-mcp\",\"session_id\":\"0329748f-9df5-4f6b-b172-b28a97647cce\",\"tools\":[\"Task\",\"TaskOutput\",\"Bash\",\"Glob\",\"Grep\",\"ExitPlanMode\",\"Read\",\"Edit\",\"Write\",\"NotebookEdit\",\"WebFetch\",\"TodoWrite\",\"WebSearch\",\"TaskStop\",\"AskUserQuestion\",\"Skill\",\"EnterPlanMode\",\"ToolSearch\"],\"mcp_servers\":[{\"name\":\"mittwald\",\"status\":\"needs-auth\"}],\"model\":\"claude-opus-4-6\",\"permissionMode\":\"default\",\"slash_commands\":[\"keybindings-help\",\"debug\",\"flyio-deploy\",\"saas-pegasus-vite\",\"jujutsu\",\"codex-review\",\"spec-kitty.status\",\"spec-kitty.clarify\",\"spec-kitty.constitution\",\"spec-kitty.tasks\",\"spec-kitty.merge\",\"spec-kitty.specify\",\"spec-kitty.dashboard\",\"spec-kitty.implement\",\"spec-kitty.accept\",\"spec-kitty.review\",\"spec-kitty.analyze\",\"spec-kitty.research\",\"spec-kitty.checklist\",\"spec-kitty.plan\",\"compact\",\"context\",\"cost\",\"init\",\"pr-comments\",\"release-notes\",\"review\",\"security-review\",\"insights\"],\"apiKeySource\":\"none\",\"claude_code_version\":\"2.1.44\",\"output_style\":\"default\",\"agents\":[\"Bash\",\"general-purpose\",\"statusline-setup\",\"Explore\",\"Plan\"],\"skills\":[\"keybindings-help\",\"debug\",\"flyio-deploy\",\"saas-pegasus-vite\",\"jujutsu\",\"codex-review\"],\"plugins\":[],\"uuid\":\"4a136e16-dec6-4bc5-91a2-94ecf62e565a\",\"fast_mode_state\":\"off\"}\n{\"type\":\"assistant\",\"message\":{\"model\":\"claude-opus-4-6\",\"id\":\"msg_01Q5a3wPwpivkJztge8DLZ6n\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"I don't have access to MCP tools in this session. The `mcp__mittwald__mittwald_user_get` tool is not available in my current tool set.\\n\\nPRECHECK_FAILED\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"cache_creation_input_tokens\":7510,\"cache_read_input_tokens\":17836,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":7510},\"output_tokens\":1,\"service_tier\":\"standard\",\"inference_geo\":\"not_available\"},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"0329748f-9df5-4f6b-b172-b28a97647cce\",\"uuid\":\"7450a07c-9fdf-4faa-b1a7-dd0e438c843b\"}\n{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":2129,\"duration_api_ms\":2063,\"num_turns\":1,\"result\":\"I don't have access to MCP tools in this session. The `mcp__mittwald__mittwald_user_get` tool is not available in my current tool set.\\n\\nPRECHECK_FAILED\",\"stop_reason\":null,\"session_id\":\"0329748f-9df5-4f6b-b172-b28a97647cce\",\"total_cost_usd\":0.0570705,\"usage\":{\"input_tokens\":3,\"cache_creation_input_tokens\":7510,\"cache_read_input_tokens\":17836,\"output_tokens\":48,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":7510,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"},\"modelUsage\":{\"claude-opus-4-6\":{\"inputTokens\":3,\"outputTokens\":48,\"cacheReadInputTokens\":17836,\"cacheCreationInputTokens\":7510,\"webSearchRequests\":0,\"costUSD\":0.0570705,\"contextWindow\":200000,\"maxOutputTokens\":32000}},\"permission_denials\":[],\"uuid\":\"8eac5762-4491-49ce-9c1c-52954836a7ef\"}\n",
+        "stderr": "",
+        "toolsCalled": [],
+        "toolCallErrors": [],
+        "messages": [
+          "I don't have access to MCP tools in this session. The `mcp__mittwald__mittwald_user_get` tool is not available in my current tool set.\n\nPRECHECK_FAILED"
+        ],
+        "parseErrors": 0,
+        "mcpServerStatus": {
+          "mittwald": "needs-auth"
+        }
+      }
+    }
+  ],
+  "counts": {
+    "totalCaseRuns": 0,
+    "passedCaseRuns": 0,
+    "failedCaseRuns": 0,
+    "matrixCoveragePercent": 0,
+    "totalTools": 218,
+    "coveredTools": 0,
+    "toolCoveragePercent": 0
+  },
+  "perAgent": {
+    "codex": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "coveragePercent": 0
+    },
+    "opencode": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "coveragePercent": 0
+    },
+    "claude": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "coveragePercent": 0
+    }
+  },
+  "perTool": [
+    {
+      "toolName": "mcp__mittwald__mittwald_sftp_user-create",
+      "domain": "access-users",
+      "displayName": "sftp/user-create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_sftp_user-delete",
+      "domain": "access-users",
+      "displayName": "sftp/user-delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_sftp_user-list",
+      "domain": "access-users",
+      "displayName": "sftp/user-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_sftp_user-update",
+      "domain": "access-users",
+      "displayName": "sftp/user-update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ssh_user-create",
+      "domain": "access-users",
+      "displayName": "ssh/user-create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ssh_user-delete",
+      "domain": "access-users",
+      "displayName": "ssh/user-delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ssh_user-list",
+      "domain": "access-users",
+      "displayName": "ssh/user-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ssh_user-update",
+      "domain": "access-users",
+      "displayName": "ssh/user-update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_create_node",
+      "domain": "apps",
+      "displayName": "app/create/node",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_create_php-worker",
+      "domain": "apps",
+      "displayName": "app/create/php-worker",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_create_php",
+      "domain": "apps",
+      "displayName": "app/create/php",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_create_python",
+      "domain": "apps",
+      "displayName": "app/create/python",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_create_static",
+      "domain": "apps",
+      "displayName": "app/create/static",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_dependency-list",
+      "domain": "apps",
+      "displayName": "app/dependency-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_dependency-update",
+      "domain": "apps",
+      "displayName": "app/dependency-update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_dependency-versions",
+      "domain": "apps",
+      "displayName": "app/dependency-versions",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_download",
+      "domain": "apps",
+      "displayName": "app/download",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_install_contao",
+      "domain": "apps",
+      "displayName": "app/install/contao",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_install_joomla",
+      "domain": "apps",
+      "displayName": "app/install/joomla",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_install_matomo",
+      "domain": "apps",
+      "displayName": "app/install/matomo",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_install_nextcloud",
+      "domain": "apps",
+      "displayName": "app/install/nextcloud",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_install_shopware5",
+      "domain": "apps",
+      "displayName": "app/install/shopware5",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_install_shopware6",
+      "domain": "apps",
+      "displayName": "app/install/shopware6",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_install_typo3",
+      "domain": "apps",
+      "displayName": "app/install/typo3",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_install_wordpress",
+      "domain": "apps",
+      "displayName": "app/install/wordpress",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_list-upgrade-candidates",
+      "domain": "apps",
+      "displayName": "app/list-upgrade-candidates",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_open",
+      "domain": "apps",
+      "displayName": "app/open",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_ssh",
+      "domain": "apps",
+      "displayName": "app/ssh",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_upload",
+      "domain": "apps",
+      "displayName": "app/upload",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_execution-abort",
+      "domain": "automation",
+      "displayName": "cronjob/execution-abort",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_execution-get",
+      "domain": "automation",
+      "displayName": "cronjob/execution-get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_execution-list",
+      "domain": "automation",
+      "displayName": "cronjob/execution-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_execution-logs",
+      "domain": "automation",
+      "displayName": "cronjob/execution-logs",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_download",
+      "domain": "backups",
+      "displayName": "backup/download",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_schedule-create",
+      "domain": "backups",
+      "displayName": "backup/schedule-create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_schedule-delete",
+      "domain": "backups",
+      "displayName": "backup/schedule-delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_schedule-list",
+      "domain": "backups",
+      "displayName": "backup/schedule-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_schedule-update",
+      "domain": "backups",
+      "displayName": "backup/schedule-update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_delete",
+      "domain": "containers",
+      "displayName": "container/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_list-services",
+      "domain": "containers",
+      "displayName": "container/list-services",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_logs",
+      "domain": "containers",
+      "displayName": "container/logs",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_recreate",
+      "domain": "containers",
+      "displayName": "container/recreate",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_restart",
+      "domain": "containers",
+      "displayName": "container/restart",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_run",
+      "domain": "containers",
+      "displayName": "container/run",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_start",
+      "domain": "containers",
+      "displayName": "container/start",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_stop",
+      "domain": "containers",
+      "displayName": "container/stop",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_update",
+      "domain": "containers",
+      "displayName": "container/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_volume_create",
+      "domain": "containers",
+      "displayName": "volume/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_volume_delete",
+      "domain": "containers",
+      "displayName": "volume/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_list",
+      "domain": "databases",
+      "displayName": "database/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_charsets",
+      "domain": "databases",
+      "displayName": "database/mysql/charsets",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_dump",
+      "domain": "databases",
+      "displayName": "database/mysql/dump",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_import",
+      "domain": "databases",
+      "displayName": "database/mysql/import",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_phpmyadmin",
+      "domain": "databases",
+      "displayName": "database/mysql/phpmyadmin",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_port-forward",
+      "domain": "databases",
+      "displayName": "database/mysql/port-forward",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_shell",
+      "domain": "databases",
+      "displayName": "database/mysql/shell",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user-create",
+      "domain": "databases",
+      "displayName": "database/mysql/user-create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user-delete",
+      "domain": "databases",
+      "displayName": "database/mysql/user-delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user-get",
+      "domain": "databases",
+      "displayName": "database/mysql/user-get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user-list",
+      "domain": "databases",
+      "displayName": "database/mysql/user-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user-update",
+      "domain": "databases",
+      "displayName": "database/mysql/user-update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_virtualhost-create",
+      "domain": "domains-mail",
+      "displayName": "domain/virtualhost-create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_virtualhost-delete",
+      "domain": "domains-mail",
+      "displayName": "domain/virtualhost-delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_virtualhost-get",
+      "domain": "domains-mail",
+      "displayName": "domain/virtualhost-get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_virtualhost-list",
+      "domain": "domains-mail",
+      "displayName": "domain/virtualhost-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_context_accessible-projects",
+      "domain": "identity",
+      "displayName": "context/accessible-projects",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_context_get",
+      "domain": "identity",
+      "displayName": "context/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_context_reset",
+      "domain": "identity",
+      "displayName": "context/reset",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_context_set",
+      "domain": "identity",
+      "displayName": "context/set",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_api-token_create",
+      "domain": "identity",
+      "displayName": "user/api-token/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_api-token_get",
+      "domain": "identity",
+      "displayName": "user/api-token/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_api-token_list",
+      "domain": "identity",
+      "displayName": "user/api-token/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_api-token_revoke",
+      "domain": "identity",
+      "displayName": "user/api-token/revoke",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh-key_create",
+      "domain": "identity",
+      "displayName": "user/ssh-key/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh-key_delete",
+      "domain": "identity",
+      "displayName": "user/ssh-key/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh-key_get",
+      "domain": "identity",
+      "displayName": "user/ssh-key/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh-key_import",
+      "domain": "identity",
+      "displayName": "user/ssh-key/import",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh-key_list",
+      "domain": "identity",
+      "displayName": "user/ssh-key/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_conversation_close",
+      "domain": "misc",
+      "displayName": "conversation/close",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ddev_init",
+      "domain": "misc",
+      "displayName": "ddev/init",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ddev_render-config",
+      "domain": "misc",
+      "displayName": "ddev/render-config",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_login_reset",
+      "domain": "misc",
+      "displayName": "login/reset",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_login_status",
+      "domain": "misc",
+      "displayName": "login/status",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_login_token",
+      "domain": "misc",
+      "displayName": "login/token",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_extension_install",
+      "domain": "organization",
+      "displayName": "extension/install",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_extension_list-installed",
+      "domain": "organization",
+      "displayName": "extension/list-installed",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_extension_list",
+      "domain": "organization",
+      "displayName": "extension/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_extension_uninstall",
+      "domain": "organization",
+      "displayName": "extension/uninstall",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_delete",
+      "domain": "organization",
+      "displayName": "org/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_invite-list-own",
+      "domain": "organization",
+      "displayName": "org/invite-list-own",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_invite-list",
+      "domain": "organization",
+      "displayName": "org/invite-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_invite-revoke",
+      "domain": "organization",
+      "displayName": "org/invite-revoke",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_membership-list-own",
+      "domain": "organization",
+      "displayName": "org/membership-list-own",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_membership-list",
+      "domain": "organization",
+      "displayName": "org/membership-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_membership-revoke",
+      "domain": "organization",
+      "displayName": "org/membership-revoke",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_filesystem-usage",
+      "domain": "project-foundation",
+      "displayName": "project/filesystem-usage",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_invite-get",
+      "domain": "project-foundation",
+      "displayName": "project/invite-get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_invite-list-own",
+      "domain": "project-foundation",
+      "displayName": "project/invite-list-own",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_invite-list",
+      "domain": "project-foundation",
+      "displayName": "project/invite-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_membership-get-own",
+      "domain": "project-foundation",
+      "displayName": "project/membership-get-own",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_membership-get",
+      "domain": "project-foundation",
+      "displayName": "project/membership-get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_membership-list-own",
+      "domain": "project-foundation",
+      "displayName": "project/membership-list-own",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_membership-list",
+      "domain": "project-foundation",
+      "displayName": "project/membership-list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_sftp_user_delete",
+      "domain": "sftp",
+      "displayName": "sftp/user/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_sftp_user_list",
+      "domain": "sftp",
+      "displayName": "sftp/user/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ssh_user_create",
+      "domain": "ssh",
+      "displayName": "ssh/user/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ssh_user_delete",
+      "domain": "ssh",
+      "displayName": "ssh/user/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ssh_user_list",
+      "domain": "ssh",
+      "displayName": "ssh/user/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_ssh_user_update",
+      "domain": "ssh",
+      "displayName": "ssh/user/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_copy",
+      "domain": "apps",
+      "displayName": "app/copy",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_get",
+      "domain": "apps",
+      "displayName": "app/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_list_upgrade_candidates",
+      "domain": "apps",
+      "displayName": "app/list/upgrade/candidates",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_list",
+      "domain": "apps",
+      "displayName": "app/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_uninstall",
+      "domain": "apps",
+      "displayName": "app/uninstall",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_update",
+      "domain": "apps",
+      "displayName": "app/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_upgrade",
+      "domain": "apps",
+      "displayName": "app/upgrade",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_app_versions",
+      "domain": "apps",
+      "displayName": "app/versions",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_create",
+      "domain": "automation",
+      "displayName": "cronjob/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_delete",
+      "domain": "automation",
+      "displayName": "cronjob/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_execute",
+      "domain": "automation",
+      "displayName": "cronjob/execute",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_execution_abort",
+      "domain": "automation",
+      "displayName": "cronjob/execution/abort",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_execution_get",
+      "domain": "automation",
+      "displayName": "cronjob/execution/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_execution_list",
+      "domain": "automation",
+      "displayName": "cronjob/execution/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_get",
+      "domain": "automation",
+      "displayName": "cronjob/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_list",
+      "domain": "automation",
+      "displayName": "cronjob/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_cronjob_update",
+      "domain": "automation",
+      "displayName": "cronjob/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_create",
+      "domain": "backups",
+      "displayName": "backup/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_delete",
+      "domain": "backups",
+      "displayName": "backup/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_get",
+      "domain": "backups",
+      "displayName": "backup/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_list",
+      "domain": "backups",
+      "displayName": "backup/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_schedule_create",
+      "domain": "backups",
+      "displayName": "backup/schedule/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_schedule_delete",
+      "domain": "backups",
+      "displayName": "backup/schedule/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_schedule_list",
+      "domain": "backups",
+      "displayName": "backup/schedule/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_backup_schedule_update",
+      "domain": "backups",
+      "displayName": "backup/schedule/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_container_list",
+      "domain": "containers",
+      "displayName": "container/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_registry_create",
+      "domain": "containers",
+      "displayName": "registry/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_registry_delete",
+      "domain": "containers",
+      "displayName": "registry/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_registry_list",
+      "domain": "containers",
+      "displayName": "registry/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_registry_update",
+      "domain": "containers",
+      "displayName": "registry/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_stack_delete",
+      "domain": "containers",
+      "displayName": "stack/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_stack_deploy",
+      "domain": "containers",
+      "displayName": "stack/deploy",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_stack_list",
+      "domain": "containers",
+      "displayName": "stack/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_stack_ps",
+      "domain": "containers",
+      "displayName": "stack/ps",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_volume_list",
+      "domain": "containers",
+      "displayName": "volume/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_context_get_session",
+      "domain": "context",
+      "displayName": "context/get/session",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_context_reset_session",
+      "domain": "context",
+      "displayName": "context/reset/session",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_context_set_session",
+      "domain": "context",
+      "displayName": "context/set/session",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_create",
+      "domain": "databases",
+      "displayName": "database/mysql/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_delete",
+      "domain": "databases",
+      "displayName": "database/mysql/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_get",
+      "domain": "databases",
+      "displayName": "database/mysql/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_list",
+      "domain": "databases",
+      "displayName": "database/mysql/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user_create",
+      "domain": "databases",
+      "displayName": "database/mysql/user/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user_delete",
+      "domain": "databases",
+      "displayName": "database/mysql/user/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user_get",
+      "domain": "databases",
+      "displayName": "database/mysql/user/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user_list",
+      "domain": "databases",
+      "displayName": "database/mysql/user/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_user_update",
+      "domain": "databases",
+      "displayName": "database/mysql/user/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_mysql_versions",
+      "domain": "databases",
+      "displayName": "database/mysql/versions",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_redis_create",
+      "domain": "databases",
+      "displayName": "database/redis/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_redis_get",
+      "domain": "databases",
+      "displayName": "database/redis/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_redis_list",
+      "domain": "databases",
+      "displayName": "database/redis/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_database_redis_versions",
+      "domain": "databases",
+      "displayName": "database/redis/versions",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_certificate_list",
+      "domain": "domains-mail",
+      "displayName": "certificate/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_certificate_request",
+      "domain": "domains-mail",
+      "displayName": "certificate/request",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_dnszone_get",
+      "domain": "domains-mail",
+      "displayName": "domain/dnszone/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_dnszone_list",
+      "domain": "domains-mail",
+      "displayName": "domain/dnszone/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_dnszone_update",
+      "domain": "domains-mail",
+      "displayName": "domain/dnszone/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_get",
+      "domain": "domains-mail",
+      "displayName": "domain/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_list",
+      "domain": "domains-mail",
+      "displayName": "domain/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_virtualhost_create",
+      "domain": "domains-mail",
+      "displayName": "domain/virtualhost/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_virtualhost_delete",
+      "domain": "domains-mail",
+      "displayName": "domain/virtualhost/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_virtualhost_get",
+      "domain": "domains-mail",
+      "displayName": "domain/virtualhost/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_domain_virtualhost_list",
+      "domain": "domains-mail",
+      "displayName": "domain/virtualhost/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_address_create",
+      "domain": "domains-mail",
+      "displayName": "mail/address/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_address_delete",
+      "domain": "domains-mail",
+      "displayName": "mail/address/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_address_get",
+      "domain": "domains-mail",
+      "displayName": "mail/address/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_address_list",
+      "domain": "domains-mail",
+      "displayName": "mail/address/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_address_update",
+      "domain": "domains-mail",
+      "displayName": "mail/address/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_deliverybox_create",
+      "domain": "domains-mail",
+      "displayName": "mail/deliverybox/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_deliverybox_delete",
+      "domain": "domains-mail",
+      "displayName": "mail/deliverybox/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_deliverybox_get",
+      "domain": "domains-mail",
+      "displayName": "mail/deliverybox/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_deliverybox_list",
+      "domain": "domains-mail",
+      "displayName": "mail/deliverybox/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_mail_deliverybox_update",
+      "domain": "domains-mail",
+      "displayName": "mail/deliverybox/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_api_token_create",
+      "domain": "identity",
+      "displayName": "user/api/token/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_api_token_get",
+      "domain": "identity",
+      "displayName": "user/api/token/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_api_token_list",
+      "domain": "identity",
+      "displayName": "user/api/token/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_api_token_revoke",
+      "domain": "identity",
+      "displayName": "user/api/token/revoke",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_get",
+      "domain": "identity",
+      "displayName": "user/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_session_get",
+      "domain": "identity",
+      "displayName": "user/session/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_session_list",
+      "domain": "identity",
+      "displayName": "user/session/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh_key_create",
+      "domain": "identity",
+      "displayName": "user/ssh/key/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh_key_delete",
+      "domain": "identity",
+      "displayName": "user/ssh/key/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh_key_get",
+      "domain": "identity",
+      "displayName": "user/ssh/key/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh_key_import",
+      "domain": "identity",
+      "displayName": "user/ssh/key/import",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_user_ssh_key_list",
+      "domain": "identity",
+      "displayName": "user/ssh/key/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_conversation_categories",
+      "domain": "misc",
+      "displayName": "conversation/categories",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_conversation_create",
+      "domain": "misc",
+      "displayName": "conversation/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_conversation_list",
+      "domain": "misc",
+      "displayName": "conversation/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_conversation_reply",
+      "domain": "misc",
+      "displayName": "conversation/reply",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_conversation_show",
+      "domain": "misc",
+      "displayName": "conversation/show",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_get",
+      "domain": "organization",
+      "displayName": "org/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_invite_list",
+      "domain": "organization",
+      "displayName": "org/invite/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_invite_revoke",
+      "domain": "organization",
+      "displayName": "org/invite/revoke",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_invite",
+      "domain": "organization",
+      "displayName": "org/invite",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_list",
+      "domain": "organization",
+      "displayName": "org/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_membership_list",
+      "domain": "organization",
+      "displayName": "org/membership/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_org_membership_revoke",
+      "domain": "organization",
+      "displayName": "org/membership/revoke",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_create",
+      "domain": "project-foundation",
+      "displayName": "project/create",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_delete",
+      "domain": "project-foundation",
+      "displayName": "project/delete",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_get",
+      "domain": "project-foundation",
+      "displayName": "project/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_invite_get",
+      "domain": "project-foundation",
+      "displayName": "project/invite/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_invite_list",
+      "domain": "project-foundation",
+      "displayName": "project/invite/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_list",
+      "domain": "project-foundation",
+      "displayName": "project/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_membership_get",
+      "domain": "project-foundation",
+      "displayName": "project/membership/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_membership_list",
+      "domain": "project-foundation",
+      "displayName": "project/membership/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_ssh",
+      "domain": "project-foundation",
+      "displayName": "project/ssh",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_project_update",
+      "domain": "project-foundation",
+      "displayName": "project/update",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_server_get",
+      "domain": "project-foundation",
+      "displayName": "server/get",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    },
+    {
+      "toolName": "mcp__mittwald__mittwald_server_list",
+      "domain": "project-foundation",
+      "displayName": "server/list",
+      "byAgent": {
+        "claude": "not_run",
+        "codex": "not_run",
+        "opencode": "not_run"
+      },
+      "covered": false
+    }
+  ],
+  "gate": {
+    "requiredCoverage": 0,
+    "mode": "all-agents",
+    "passed": false,
+    "reasons": [
+      "Preflight failed for: claude"
+    ]
+  }
+}

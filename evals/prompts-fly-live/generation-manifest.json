@@ -1,0 +1,148 @@
+{
+  "generated_at": "2026-02-17T10:29:24.815Z",
+  "total_prompts": 113,
+  "by_domain": {
+    "apps": [
+      "app-copy.json",
+      "app-get.json",
+      "app-list.json",
+      "app-list-upgrade-candidates.json",
+      "app-uninstall.json",
+      "app-update.json",
+      "app-upgrade.json",
+      "app-versions.json"
+    ],
+    "backups": [
+      "backup-create.json",
+      "backup-delete.json",
+      "backup-get.json",
+      "backup-list.json",
+      "backup-schedule-create.json",
+      "backup-schedule-delete.json",
+      "backup-schedule-list.json",
+      "backup-schedule-update.json"
+    ],
+    "domains-mail": [
+      "certificate-list.json",
+      "domain-dnszone-get.json",
+      "domain-dnszone-list.json",
+      "domain-dnszone-update.json",
+      "domain-get.json",
+      "domain-list.json",
+      "domain-virtualhost-create.json",
+      "domain-virtualhost-delete.json",
+      "domain-virtualhost-get.json",
+      "domain-virtualhost-list.json",
+      "mail-address-create.json",
+      "mail-address-delete.json",
+      "mail-address-get.json",
+      "mail-address-list.json",
+      "mail-address-update.json",
+      "mail-deliverybox-create.json",
+      "mail-deliverybox-delete.json",
+      "mail-deliverybox-get.json",
+      "mail-deliverybox-list.json",
+      "mail-deliverybox-update.json"
+    ],
+    "certificates": [
+      "certificate-request.json"
+    ],
+    "container": [
+      "container-delete.json",
+      "container-restart.json",
+      "container-start.json",
+      "container-stop.json"
+    ],
+    "containers": [
+      "container-list.json",
+      "registry-create.json",
+      "registry-delete.json",
+      "registry-list.json",
+      "registry-update.json",
+      "stack-delete.json",
+      "stack-deploy.json",
+      "stack-list.json",
+      "stack-ps.json",
+      "volume-list.json"
+    ],
+    "context": [
+      "context-get-session.json",
+      "context-reset-session.json",
+      "context-set-session.json"
+    ],
+    "automation": [
+      "cronjob-create.json",
+      "cronjob-delete.json",
+      "cronjob-execute.json",
+      "cronjob-execution-abort.json",
+      "cronjob-execution-get.json",
+      "cronjob-execution-list.json",
+      "cronjob-get.json",
+      "cronjob-list.json",
+      "cronjob-update.json"
+    ],
+    "databases": [
+      "database-mysql-create.json",
+      "database-mysql-delete.json",
+      "database-mysql-get.json",
+      "database-mysql-list.json",
+      "database-mysql-user-create.json",
+      "database-mysql-user-delete.json",
+      "database-mysql-user-get.json",
+      "database-mysql-user-list.json",
+      "database-mysql-user-update.json",
+      "database-mysql-versions.json",
+      "database-redis-create.json",
+      "database-redis-get.json",
+      "database-redis-list.json",
+      "database-redis-versions.json"
+    ],
+    "organization": [
+      "org-get.json",
+      "org-invite.json",
+      "org-invite-list.json",
+      "org-invite-revoke.json",
+      "org-list.json",
+      "org-membership-list.json",
+      "org-membership-revoke.json"
+    ],
+    "project-foundation": [
+      "project-create.json",
+      "project-delete.json",
+      "project-get.json",
+      "project-invite-get.json",
+      "project-invite-list.json",
+      "project-list.json",
+      "project-membership-get.json",
+      "project-membership-list.json",
+      "project-ssh.json",
+      "project-update.json",
+      "server-get.json",
+      "server-list.json"
+    ],
+    "ssh": [
+      "ssh-user-create.json",
+      "ssh-user-delete.json",
+      "ssh-user-list.json",
+      "ssh-user-update.json"
+    ],
+    "identity": [
+      "user-api-token-create.json",
+      "user-api-token-get.json",
+      "user-api-token-list.json",
+      "user-api-token-revoke.json",
+      "user-get.json",
+      "user-session-get.json",
+      "user-session-list.json",
+      "user-ssh-key-create.json",
+      "user-ssh-key-delete.json",
+      "user-ssh-key-get.json",
+      "user-ssh-key-import.json",
+      "user-ssh-key-list.json"
+    ],
+    "volume": [
+      "volume-create.json"
+    ]
+  },
+  "inventory_source": "evals/inventory/tools-fly-live-v2.json"
+}

@@ -1,0 +1,25 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "user-ssh-key-create",
+  "domain": "identity",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/identity/user-ssh-key-create.json",
+  "toolName": "mcp__mittwald__mittwald_user_ssh_key_create",
+  "displayName": "user/ssh/key/create",
+  "startedAt": "2026-02-17T12:31:24.846Z",
+  "finishedAt": "2026-02-17T12:32:17.737Z",
+  "durationMs": 52891,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "Bash",
+    "mcp__mittwald__mittwald_user_ssh_key_create",
+    "mcp__mittwald__mittwald_user_ssh_key_list",
+    "mcp__mittwald__mittwald_user_ssh_key_delete"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-ssh-key-create.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-ssh-key-create.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/identity/user-ssh-key-create.stderr.txt"
+}

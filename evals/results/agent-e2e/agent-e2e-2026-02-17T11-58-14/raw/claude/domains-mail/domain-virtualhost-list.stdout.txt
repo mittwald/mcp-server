@@ -1,0 +1,37 @@
+
+
+I'll execute this eval by first finding a suitable test project, then listing virtual hosts for it.
+
+**Step 1: Find a test project**
+I found a test project matching the run prefix. I'll use project `15f5367b-92bd-4761-ac33-f6bbb6f60db8` (agent-e2e-2026-02-17T11-58-14-mysql-create-eval).
+
+**Step 2: List virtual hosts for the test project**
+The tool executed successfully. It returned 1 virtual host for the test project with:
+- **Host ID**: `93db69c0-72ea-4d9b-982c-681c5b1373ee`
+- **Hostname**: `p-mpg5kn.project.space`
+- **IPv4**: `185.215.158.240`
+- **Default page** configured at root path `/`
+
+The response is a proper array/list, completed without errors, and matches the expected schema.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_domain_virtualhost_list",
+  "timestamp": "2026-02-17T12:01:30.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "virtualhost",
+      "id": "93db69c0-72ea-4d9b-982c-681c5b1373ee",
+      "status": "listed"
+    }
+  ],
+  "tool_response_summary": "Found 1 virtual host for test project p-mpg5kn: hostname p-mpg5kn.project.space (93db69c0-72ea-4d9b-982c-681c5b1373ee) with IPv4 185.215.158.240, default page at root path. Response completed in ~82ms.",
+  "execution_notes": "Used existing test project (agent-e2e-2026-02-17T11-58-14-mysql-create-eval) to scope the listing. The project had one default virtual host automatically provisioned by Mittwald. Tool returned valid JSON array with expected fields (id, hostname, projectId, paths, ips)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

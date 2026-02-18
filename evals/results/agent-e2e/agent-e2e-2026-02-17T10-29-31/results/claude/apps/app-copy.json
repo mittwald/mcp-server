@@ -1,0 +1,27 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-29-31",
+  "agent": "claude",
+  "promptCaseId": "app-copy",
+  "domain": "apps",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/apps/app-copy.json",
+  "toolName": "mcp__mittwald__mittwald_app_copy",
+  "displayName": "app/copy",
+  "startedAt": "2026-02-17T10:30:15.530Z",
+  "finishedAt": "2026-02-17T10:30:53.423Z",
+  "durationMs": 37893,
+  "status": "failure",
+  "failureCategory": "invalid_self_assessment",
+  "failureReason": "Failed to parse self-assessment JSON: Unexpected token '\\', \"\\n```json\\\"... is not valid JSON",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_app_list",
+    "mcp__mittwald__mittwald_app_copy",
+    "mcp__mittwald__mittwald_app_get"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-29-31/raw/claude/apps/app-copy.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-29-31/raw/claude/apps/app-copy.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-29-31/raw/claude/apps/app-copy.stderr.txt"
+}

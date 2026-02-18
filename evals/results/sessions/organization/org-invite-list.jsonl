@@ -1,4 +1,0 @@
-{"eval_id": "org-invite-list", "tool_name": "mcp__mittwald__mittwald_org_invite_list", "display_name": "org/invite-list", "domain": "organization", "tier": 1, "timestamp": "2025-12-16T17:43:00Z", "tool_response": {"status": "skipped", "message": "Skipped - requires org ID from org/list which timed out"}}
-<!-- SELF_ASSESSMENT_START -->
-{"success": false, "confidence": "high", "tool_executed": "mcp__mittwald__mittwald_org_invite_list", "timestamp": "2025-12-16T17:43:00Z", "problems_encountered": [{"type": "dependency_missing", "description": "Cannot execute - requires org ID from org/list which timed out"}], "resources_created": [], "resources_verified": [], "tool_response_summary": "Tool skipped due to missing dependency", "execution_notes": "Tier 1 tool depends on org/list which timed out"}
-<!-- SELF_ASSESSMENT_END -->

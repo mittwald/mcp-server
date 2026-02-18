@@ -5,7 +5,7 @@ Audience: Claude/ChatGPT/inspector-style agents using the Mittwald MCP server an
 ## What This Server Does
 - Proxies OAuth 2.1 + PKCE to Mittwald via a stateless bridge (public client).
 - Issues bridge JWTs that embed Mittwald tokens; MCP server verifies with `OAUTH_BRIDGE_JWT_SECRET`.
-- Wraps Mittwald CLI commands (~170 tools) and returns JSON-typed results.
+- Wraps Mittwald CLI commands as MCP tools and returns JSON-typed results.
 
 ## Hard Rules (do not violate)
 - Never invent credentials; always use provided Mittwald OAuth tokens.

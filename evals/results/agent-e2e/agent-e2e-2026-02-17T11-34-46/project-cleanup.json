@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "prefix": "agent-e2e-cleanup-smoke-20260217123440",
+  "startedAt": "2026-02-17T11:34:46.613Z",
+  "finishedAt": "2026-02-17T11:34:50.003Z",
+  "matchedCount": 1,
+  "deleted": [
+    "64cf38fe-7063-4ce3-863e-ebdd946dffeb"
+  ],
+  "failed": []
+}

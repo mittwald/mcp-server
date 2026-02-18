@@ -1,0 +1,25 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-46-18",
+  "agent": "claude",
+  "promptCaseId": "app-update",
+  "domain": "apps",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/apps/app-update.json",
+  "toolName": "mcp__mittwald__mittwald_app_update",
+  "displayName": "app/update",
+  "startedAt": "2026-02-17T11:50:11.447Z",
+  "finishedAt": "2026-02-17T11:50:52.939Z",
+  "durationMs": 41492,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_app_list",
+    "mcp__mittwald__mittwald_app_update",
+    "mcp__mittwald__mittwald_app_get"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/apps/app-update.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/apps/app-update.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-46-18/raw/claude/apps/app-update.stderr.txt"
+}

@@ -1,0 +1,27 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "project-update",
+  "domain": "project-foundation",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/project-foundation/project-update.json",
+  "toolName": "mcp__mittwald__mittwald_project_update",
+  "displayName": "project/update",
+  "startedAt": "2026-02-17T12:59:10.220Z",
+  "finishedAt": "2026-02-17T13:02:10.237Z",
+  "durationMs": 180017,
+  "status": "failure",
+  "failureCategory": "timeout",
+  "failureReason": "Agent timed out after 180017ms",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "Read",
+    "WebFetch",
+    "Glob",
+    "TodoWrite"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/project-update.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/project-update.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/project-foundation/project-update.stderr.txt"
+}

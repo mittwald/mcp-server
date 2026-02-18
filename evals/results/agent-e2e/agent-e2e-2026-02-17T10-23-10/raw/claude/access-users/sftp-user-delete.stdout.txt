@@ -1,0 +1,39 @@
+
+
+I'll execute this eval by first creating a test SFTP user, then deleting it, and verifying the deletion. Let me start by finding the necessary context.
+First, let me find available projects and list existing SFTP users.
+I notice the search didn't return SFTP-specific tools. Let me search more specifically for SFTP tools and also for SSH user tools (SFTP users might be managed through SSH user tools in the Mittwald API).
+Important finding: There is **no** `mcp__mittwald__mittwald_sftp_user-delete` tool available. Let me check the project's tool registration to understand why.
+This is clear. The SFTP tools are **de-registered** from the MCP server. Let me update my todo list and provide the self-assessment.
+## Result: Tool Not Available
+
+The `mcp__mittwald__mittwald_sftp_user_delete` tool **does not exist** in the MCP server. All 4 SFTP tools (`sftp/user-create`, `sftp/user-update`, `sftp/user-delete`, `sftp/user-list`) were explicitly **de-registered** from MCP registration during Feature 012 (CLI-to-library conversion).
+
+**Evidence:**
+- Git commit `72397253`: "Exclude all 4 SFTP tools from MCP registration"
+- Exclusion is in `src/utils/tool-scanner.ts` (lines 61-64)
+- Reason: "SFTP feature incomplete - missing library support for expires/publicKey parameters"
+- Confirmed in `evals/scenarios/KNOWN-LIMITATIONS.md`
+
+The tool is not available for direct MCP invocation. SSH user tools (`mcp__mittwald__mittwald_ssh_user_create`, `_delete`, `_list`) exist as alternatives, but they are different tools.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_sftp_user_delete",
+  "timestamp": "2026-02-17T12:00:00Z",
+  "problems_encountered": [
+    {
+      "type": "resource_not_found",
+      "description": "Tool mcp__mittwald__mittwald_sftp_user_delete does not exist in the MCP server. All 4 SFTP tools (user-create, user-update, user-delete, user-list) are explicitly excluded from MCP registration in src/utils/tool-scanner.ts lines 61-64. Exclusion reason: 'SFTP feature incomplete - missing library support for expires/publicKey parameters'. Git commit 72397253 confirms: 'Exclude all 4 SFTP tools from MCP registration'."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [],
+  "tool_response_summary": "Tool is not registered in MCP server. ToolSearch returns no results for 'sftp'. The tool was de-registered during Feature 012 CLI-to-library conversion due to incomplete parameter support.",
+  "execution_notes": "All 4 SFTP tools are documented as known limitations in evals/scenarios/KNOWN-LIMITATIONS.md. SSH user tools (ssh_user_create, ssh_user_delete, ssh_user_list) exist as separate tools but are not equivalent to SFTP user tools. This eval cannot be completed until SFTP library support is implemented and the tools are re-registered."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

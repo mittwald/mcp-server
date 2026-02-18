@@ -1,0 +1,49 @@
+
+
+I'll execute this eval by first finding a project, then listing apps in it.
+
+**Step 1: Find an existing project**
+Found 8 projects. Now let me load and execute the target tool.
+
+**Step 2: Execute `mcp__mittwald__mittwald_app_list`**
+I'll list apps in the main project ("mStudio MCP server") which is most likely to have apps installed.
+The tool executed successfully. Here's a summary of the results:
+
+**Result**: `mcp__mittwald__mittwald_app_list` returned 5 apps in project `fd1ef726-14b8-4906-8a45-0756ba993246` ("mStudio MCP server").
+
+| # | Short ID | Description | App Type | Phase | Created |
+|---|----------|-------------|----------|-------|---------|
+| 1 | a-v2tmw9 | PHP 8.2 Application - Updated via eval run 20251219 | PHP | ready | 2025-12-05 |
+| 2 | a-ujj7xz | Eval Test Copy - PHP 8.2 | PHP | ready | 2025-12-19 |
+| 3 | a-xuc5eh | Eval Copy for Testing 20251219-113755 | PHP | ready | 2025-12-19 |
+| 4 | a-hsavnh | Eval App Copy Test 20260217 | PHP | ready | 2026-02-17 |
+| 5 | a-rvgz61 | Eval App Copy Test 20260217-2 | PHP | ready | 2026-02-17 |
+
+**Verification**:
+- Status: `success`
+- Returns an array of 5 app objects
+- Each object contains expected fields: `id`, `shortId`, `description`, `appId`, `phase`, `projectId`, `installationPath`, `systemSoftware`, etc.
+- All apps are in `ready` phase
+- Response completed in ~166ms
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_list",
+  "timestamp": "2026-02-17T11:45:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {"type": "app", "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95", "status": "ready"},
+    {"type": "app", "id": "0b6f1d0b-7bf3-4c98-9d95-85bc02951e47", "status": "ready"},
+    {"type": "app", "id": "2f440610-5683-4c67-ab42-40f04323fc3e", "status": "ready"},
+    {"type": "app", "id": "5073be40-9ee4-45b7-91cb-2db29cbe7602", "status": "ready"},
+    {"type": "app", "id": "3f28d4f7-1dc3-43a2-97d3-84ee81e49bcc", "status": "ready"}
+  ],
+  "tool_response_summary": "Successfully listed 5 PHP apps in project fd1ef726-14b8-4906-8a45-0756ba993246. All apps in 'ready' phase. Response included full app details with versions, system software, and installation paths. Completed in ~166ms.",
+  "execution_notes": "Tool worked correctly with projectId parameter. Returns rich data including app version info, system software dependencies, installation paths, and linked databases. All 5 apps are PHP type with identical appId (34220303-cb87-4592-8a95-2eb20a97b2ac)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

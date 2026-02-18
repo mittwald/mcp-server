@@ -75,7 +75,13 @@ export interface StateStoreHealth {
 
 export interface StateStoreMetrics {
   implementation: string;
+  /**
+   * Legacy TTL metric retained for compatibility.
+   * Represents authorization request TTL in seconds.
+   */
   ttlSeconds?: number;
+  authRequestTtlSeconds?: number;
+  grantTtlSeconds?: number;
   pendingAuthorizations: number;
   pendingGrants: number;
   registeredClients: number;

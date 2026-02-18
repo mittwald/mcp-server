@@ -1,0 +1,51 @@
+
+
+I'll execute this eval by first finding a project and app, then testing the `mcp__mittwald__mittwald_app_get` tool.
+
+**Step 1: Find available projects and apps**
+Tools loaded. Now let me list projects to find one with apps.
+Found 8 projects. Let me list apps in a couple of projects to find one with an app installation.
+Found multiple apps. Now let me execute **Step 2**: call `mcp__mittwald__mittwald_app_get` with a specific installation ID. I'll use the PHP app `70a3012d-d28a-4ca3-a146-9d3531ac5f95` from the "mStudio MCP server" project.
+The `mcp__mittwald__mittwald_app_get` tool executed successfully. Let me verify the results:
+
+**Verification:**
+- **Status**: `success` - tool completed without errors
+- **App name**: PHP (tagged as "Eigene App")
+- **Installation ID**: `70a3012d-d28a-4ca3-a146-9d3531ac5f95` (short ID: `a-v2tmw9`)
+- **Phase**: `ready` - app is healthy
+- **Project**: `fd1ef726-14b8-4906-8a45-0756ba993246` (mStudio MCP server)
+- **Description**: "PHP 8.2 Application - Updated via eval run 20251219"
+- **Version info**: Current matches desired (`ff45ad04-8589-46d7-a645-0566be3eaeec`)
+- **Request handler**: `php-fpm` (mittwald-system namespace)
+- **System software**: 3 dependencies configured with `patchLevel` update policy
+- **Document root**: `/public` (custom), base doc root `/`
+- **Response time**: ~149ms
+
+The response includes all expected fields: app identity, version details, installation path, system software dependencies, linked databases, phase status, and version metadata. The schema is well-formed and complete.
+
+Now let me save the self-assessment result.
+The result file write was blocked by permissions. Here is the self-assessment inline:
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_app_get",
+  "timestamp": "2026-02-17T11:05:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "app_installation",
+      "id": "70a3012d-d28a-4ca3-a146-9d3531ac5f95",
+      "status": "ready"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved details for PHP 8.2 app installation (a-v2tmw9) in project fd1ef726. App is in 'ready' phase with php-fpm request handler, 3 system software dependencies, custom document root /public, and current version matching desired version.",
+  "execution_notes": "Tool returned comprehensive app details including app identity, version info (current/desired), installation path, system software dependencies, linked databases, phase status, and request handler configuration. Response time was ~149ms. Used existing app installation from 'mStudio MCP server' project as prerequisite."
+}
+```
+<!-- SELF_ASSESSMENT_END -->
+
+**Eval Summary**: The `mcp__mittwald__mittwald_app_get` tool works correctly. It accepted an `installationId`, returned a complete app installation object with all expected fields (app metadata, version info, system software, phase status, request handler), and completed in ~149ms with no errors.

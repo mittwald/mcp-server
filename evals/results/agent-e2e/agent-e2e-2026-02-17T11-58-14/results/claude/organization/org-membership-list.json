@@ -1,0 +1,23 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "org-membership-list",
+  "domain": "organization",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/organization/org-membership-list.json",
+  "toolName": "mcp__mittwald__mittwald_org_membership_list",
+  "displayName": "org/membership/list",
+  "startedAt": "2026-02-17T12:37:58.149Z",
+  "finishedAt": "2026-02-17T12:38:19.608Z",
+  "durationMs": 21459,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_org_list",
+    "mcp__mittwald__mittwald_org_membership_list"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-membership-list.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-membership-list.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/organization/org-membership-list.stderr.txt"
+}

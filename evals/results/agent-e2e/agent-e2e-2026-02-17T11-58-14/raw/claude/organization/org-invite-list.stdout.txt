@@ -1,0 +1,43 @@
+
+
+I'll execute this eval by first listing organizations (prerequisite), then listing org invites.
+
+**Step 1: Load the required MCP tools**
+**Step 2: List organizations (prerequisite)**
+Found 2 organizations. Now I'll list invites for each.
+
+**Step 3: Execute `mcp__mittwald__mittwald_org_invite_list`**
+Both calls succeeded. The tool returned properly structured JSON arrays with invite objects.
+
+**Results Summary:**
+- **mittwald MCP Server Dev** org: 2 pending invites (eval-test-20251219@mailinator.com, jim@robshouse.net)
+- **Nexus** org: 2 pending invites (claude-test-eval@mailinator.com, eval-test-2@mailinator.com)
+- All invites show `accepted: false`, have valid IDs, customer references, and role assignments
+- Response schema includes: `id`, `accepted`, `customerId`, `customerName`, `mailAddress`, `role`, `information.invitedBy`
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_invite_list",
+  "timestamp": "2026-02-17T11:59:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "organization",
+      "id": "c0256a2f-ccb0-4e00-b6ed-579bdb758675",
+      "status": "listed_2_invites"
+    },
+    {
+      "type": "organization",
+      "id": "0080fa08-4f75-4825-9210-2a4eb9a09bea",
+      "status": "listed_2_invites"
+    }
+  ],
+  "tool_response_summary": "Successfully listed org invites for both organizations. mittwald MCP Server Dev has 2 pending invites, Nexus has 2 pending invites. All responses returned valid JSON arrays with invite objects containing id, accepted, customerId, customerName, mailAddress, role, and information fields.",
+  "execution_notes": "Tool was called with explicit orgId for each organization and output=json. Both calls returned structured arrays with correct schema. No authentication or permission issues encountered."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -44,6 +44,10 @@ lerna-debug.log*
 coverage/
 .nyc_output/
 
+# Generated evaluation outputs
+evals/coverage/
+evals/reports/
+
 # Temporary files
 *.tmp
 *.temp
@@ -108,3 +112,7 @@ version.json
 .roo/
 .amazonq/
 .github/copilot/
+# Block WP status files (managed in main repo, prevents merge conflicts)
+# Research artifacts in kitty-specs/**/research/ are allowed
+kitty-specs/**/tasks/*.md
+.kittify/.dashboard

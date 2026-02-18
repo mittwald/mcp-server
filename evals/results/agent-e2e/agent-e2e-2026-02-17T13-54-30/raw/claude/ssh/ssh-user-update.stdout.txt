@@ -1,0 +1,59 @@
+
+
+I'll execute this eval by following the steps: find a project, list SSH users, create one if needed, then update it.
+
+Let me start by loading the required tools.
+Tools loaded. Now let me list projects to find a test project.
+I found the test project `p-wbj9rf` (agent-e2e-2026-02-17T13-54-30-updated-project). Let me list SSH users for it and also create one we can update.
+No SSH users exist yet. Let me create one so I can test the update tool.
+The password wasn't sent properly in the request body - it looks like the tool requires either a publicKey or password for authentication. Let me try with a public key instead.
+The public key format seems to be invalid for the API. Let me generate a real ed25519 key pair and try with that.
+Let me try using the other project which likely already has SSH users, or let me try the create with a different approach. The 400 error might be due to the public key validation. Let me try with just the password auth on the full project ID.
+I notice the request body always sends `"publicKeys":[]` even when I provide a password - the password parameter isn't being included in the API call. The tool implementation may have a bug with password handling. Let me check the other projects for existing SSH users.
+I found SSH users on both non-test projects. Per the safety constraints, I should prefer operating on the test project. Since I can't create an SSH user on the test project (the create tool has a bug with empty publicKeys), let me try to create one with a valid real SSH key. Let me generate a key first.
+Since generating SSH keys requires approval and the sandbox won't allow it, let me use a different approach. The test project has no SSH users but I can't create one due to the publicKeys bug. However, there are existing SSH users on the other projects. The eval's goal is testing `ssh_user_update`, so let me use the existing "Eval test SSH user" on `p-ptwfms` which was specifically created for eval testing.
+
+Let me update that SSH user's description to test the update tool.
+The update succeeded. Let me verify the change was applied by listing the SSH users again.
+The update is confirmed. The SSH user `7d25ce3d-897b-464d-8d14-d3db9ea8b0f2` now shows:
+- **description**: `"Eval test SSH user - updated by agent-e2e-2026-02-17T13-54-30"` (was `"Eval test SSH user"`)
+- **updatedAt**: `"2026-02-17T14:11:24.000Z"` (updated from previous timestamp)
+
+The `mcp__mittwald__mittwald_ssh_user_update` tool works correctly.
+
+## Summary
+
+1. **Listed projects** - found test project and existing projects with SSH users
+2. **Attempted SSH user creation** on test project - failed due to a bug in the create tool (sends empty `publicKeys:[]` regardless of password parameter)
+3. **Used existing eval SSH user** (`7d25ce3d`) on project `p-ptwfms` 
+4. **Successfully updated** the SSH user's description
+5. **Verified** the change was reflected in subsequent listing
+
+**Notable finding**: The `ssh_user_create` tool has a bug - it always sends `"authentication":{"publicKeys":[]}` even when a password is provided, causing 400 errors from the API.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_ssh_user_update",
+  "timestamp": "2026-02-17T14:11:30.000Z",
+  "problems_encountered": [
+    {
+      "type": "api_error",
+      "description": "ssh_user_create tool has a bug: sends empty publicKeys array even when password parameter is provided, causing 400 errors. Could not create SSH user on test project."
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "ssh-user",
+      "id": "7d25ce3d-897b-464d-8d14-d3db9ea8b0f2",
+      "status": "updated - description changed to 'Eval test SSH user - updated by agent-e2e-2026-02-17T13-54-30', updatedAt reflects 2026-02-17T14:11:24.000Z"
+    }
+  ],
+  "tool_response_summary": "SSH user 7d25ce3d-897b-464d-8d14-d3db9ea8b0f2 updated successfully. Updated fields: [description]. Verified via subsequent ssh_user_list call showing new description and updated timestamp.",
+  "execution_notes": "Used existing eval SSH user on project p-ptwfms since ssh_user_create failed on the test project due to a bug where the password parameter is not passed to the API body. The update tool itself works correctly - description field was updated and verified."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

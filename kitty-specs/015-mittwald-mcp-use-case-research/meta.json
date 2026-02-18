@@ -1,0 +1,8 @@
+{
+  "feature_number": "015",
+  "slug": "015-mittwald-mcp-use-case-research",
+  "friendly_name": "Mittwald MCP Use Case Research & Documentation",
+  "mission": "research",
+  "source_description": "This is a RESEARCH mission. The Mittwald MCP is a complicated system. It involves the MCP server here, the ../mittwald-oauth server, LLM clients such as Claude Code, Claude Desktop, OpenAI Codex, Google Gemini etc., and Mittwald.de's MStudio. From the point of view of a developer who is using an LLM client to do web development work to deploy on Mittwald.de's MSTUDIO, this project is meant to fully web research and synthesize 10 plausible use cases that this MCP server can support and accelerate. To do this research, you will have to understand each of these software products extensively, audit Mittwald's marketing strategy to understand their target audience, understand Model Context Protocol in detail, understand this mittwald-mcp implementation of MCP in detail, and then produce 10 scenarios that are attractive and plausible to mittwald web developers on how they can use LLM clients and the MCP to accelerate their work. The 10 scenarios need to be diverse enough that all possible mittwald customers are represented and all of the available Mittwald MCP Tools are used.",
+  "created_at": "2025-01-19T10:25:00Z"
+}

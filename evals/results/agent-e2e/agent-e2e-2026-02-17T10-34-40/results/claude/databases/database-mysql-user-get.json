@@ -1,0 +1,29 @@
+{
+  "runId": "agent-e2e-2026-02-17T10-34-40",
+  "agent": "claude",
+  "promptCaseId": "database-mysql-user-get",
+  "domain": "databases",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/databases/database-mysql-user-get.json",
+  "toolName": "mcp__mittwald__mittwald_database_mysql_user_get",
+  "displayName": "database/mysql/user/get",
+  "startedAt": "2026-02-17T11:22:21.107Z",
+  "finishedAt": "2026-02-17T11:25:21.124Z",
+  "durationMs": 180017,
+  "status": "failure",
+  "failureCategory": "timeout",
+  "failureReason": "Agent timed out after 180017ms",
+  "expectedToolCalled": false,
+  "toolsCalled": [
+    "Bash",
+    "Task",
+    "Read",
+    "Glob",
+    "Grep",
+    "TodoWrite",
+    "WebFetch"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-user-get.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-user-get.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T10-34-40/raw/claude/databases/database-mysql-user-get.stderr.txt"
+}

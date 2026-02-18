@@ -1,0 +1,46 @@
+
+
+I'll test the `mcp__mittwald__mittwald_user_api_token_revoke` tool. Since this is a destructive operation, I need to first create a test API token that I can safely revoke.
+
+Let me start by loading the necessary tools.
+Good, all the token tools are loaded. Now let me create a test API token that I can safely revoke.
+Token created successfully. The token ID is `607466d9-4b40-4778-98b4-5d5a46b76833`. Let me verify it exists before revoking.
+Token verified - it exists and is active. Now let me revoke it using the tool under test.
+Token revoked successfully. Let me verify the revocation by trying to get the token again.
+The verification confirms the revocation worked - the token now returns a 404 (not found), meaning it has been permanently removed from the system.
+
+## Summary
+
+The eval executed successfully:
+
+1. **Created** a test API token (`607466d9-4b40-4778-98b4-5d5a46b76833`) with `api_read` role and 30m expiry
+2. **Verified** the token existed via `api_token_get` (returned 200 with token details)
+3. **Revoked** the token using `mcp__mittwald__mittwald_user_api_token_revoke` with `confirm: true` and `force: true`
+4. **Verified removal** - subsequent `api_token_get` returned 404, confirming the token was permanently revoked
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_user_api_token_revoke",
+  "timestamp": "2026-02-17T12:30:15.000Z",
+  "problems_encountered": [],
+  "resources_created": [
+    {
+      "type": "api_token",
+      "id": "607466d9-4b40-4778-98b4-5d5a46b76833"
+    }
+  ],
+  "resources_verified": [
+    {
+      "type": "api_token",
+      "id": "607466d9-4b40-4778-98b4-5d5a46b76833",
+      "status": "revoked_confirmed_via_404"
+    }
+  ],
+  "tool_response_summary": "API token 607466d9-4b40-4778-98b4-5d5a46b76833 revoked successfully. Subsequent GET returned 404, confirming permanent removal.",
+  "execution_notes": "Created a dedicated test token with 30m expiry and api_read role, verified it existed, revoked it with confirm=true and force=true, then verified revocation via 404 response on GET. Full lifecycle tested successfully."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,6 @@
+
+
+I'll execute this eval by calling the SFTP user-create tool. Let me start by finding an existing project.
+
+**Note:** According to the CLAUDE.md, SFTP tools are excluded from MCP registration. Let me verify this first.
+Let me check the tool scanner exclusion list to confirm SFTP tools are excluded from MCP registration.

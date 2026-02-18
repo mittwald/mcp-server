@@ -1,0 +1,72 @@
+
+
+I'll execute this eval by finding a test project, creating a MySQL database, then deleting it to test the delete tool.
+I found a test project matching our prefix: `p-mpg5kn` (description: `agent-e2e-2026-02-17T11-58-14-mysql-create-eval`). Let me check if it has any MySQL databases.
+Good, I have all the tools I need. Now let me list MySQL databases in the test project.
+No existing databases. I'll create one first, then delete it.
+Let me first check available MySQL versions, then create the database.
+Now let me create a MySQL database for the delete test.
+Got a 500 error. Let me try with the version ID format instead of the version number.
+Still a 500. Let me try with a different project - the other test project. Also, let me try listing databases on all projects to find any existing ones.
+No existing databases on any project. Let me try creating on a different project, and also try with the full project UUID and different version format.
+The 500 error is consistent across projects. Let me look at the database create handler code to understand what parameters the API actually expects - perhaps there's a missing field like `characterSet` or `collation` that's required.
+The database creation tool has a known bug - the payload structure is wrong (flat vs. nested `database`/`user` format). This means I can't create a MySQL database to test deletion. Let me check if there's any way to work around this, or if I should document this as a blocked eval.
+
+Let me try the first project (`p-ptwfms` - "mStudio MCP server") which is the main project - it might have databases accessible via a different method, or I can try creating via the full UUID.
+Confirmed - the request body is `{"description":"agent-e2e-delete-test","version":"8.0"}` even though I passed `userPassword` and `userAccessLevel`. The handler doesn't forward user params to the library function, confirming the bug found by the explore agent.
+
+The `database_mysql_create` tool is broken due to an incorrect API payload structure, which means I cannot create a database to test deletion against. There are no existing MySQL databases on any accessible project either.
+## Eval Result: `database/mysql/delete` - BLOCKED
+
+**The `mcp__mittwald__mittwald_database_mysql_delete` tool could not be tested** because of a dependency failure:
+
+1. **No existing MySQL databases** on any of the 3 accessible projects
+2. **`mcp__mittwald__mittwald_database_mysql_create` is broken** - sends a flat payload `{"description":"...","version":"8.0"}` instead of the nested `{"database":{...},"user":{...}}` structure the Mittwald API expects
+3. The handler accepts `userPassword`, `userAccessLevel`, `userExternal` parameters but **never forwards them** to the library function
+4. All creation attempts return HTTP 500 from the Mittwald API
+
+**The delete tool itself appears well-structured** (requires `databaseId` and `confirm: true`), but without a database to delete, it cannot be validated.
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": false,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_mysql_delete",
+  "timestamp": "2026-02-17T12:05:32.000Z",
+  "problems_encountered": [
+    {
+      "type": "dependency_missing",
+      "description": "No MySQL databases exist on any accessible project to test deletion against"
+    },
+    {
+      "type": "api_error",
+      "description": "mcp__mittwald__mittwald_database_mysql_create is broken - sends flat payload instead of nested {database:{},user:{}} structure expected by Mittwald API, returning HTTP 500 on all attempts"
+    },
+    {
+      "type": "other",
+      "description": "Create handler accepts userPassword/userAccessLevel/userExternal params but never forwards them to the library function in packages/mittwald-cli-core/src/resources/database.ts"
+    }
+  ],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "project",
+      "id": "p-mpg5kn",
+      "status": "verified-no-databases"
+    },
+    {
+      "type": "project",
+      "id": "p-ptwfms",
+      "status": "verified-no-databases"
+    },
+    {
+      "type": "project",
+      "id": "p-p92nri",
+      "status": "verified-no-databases"
+    }
+  ],
+  "tool_response_summary": "Tool could not be executed - dependency (database_mysql_create) returns HTTP 500 due to malformed API payload structure, and no pre-existing databases available for deletion",
+  "execution_notes": "The delete tool was never invoked because no MySQL database could be created or found. Root cause: packages/mittwald-cli-core/src/resources/database.ts sends {description, version} flat instead of {database:{description, version}, user:{accessLevel, password}}. The handler at src/handlers/tools/mittwald-cli/database/mysql/create-cli.ts accepts user params but discards them. This is a known structural bug affecting both create and (transitively) delete eval coverage."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

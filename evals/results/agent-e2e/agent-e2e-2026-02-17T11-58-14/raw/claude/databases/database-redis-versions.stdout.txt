@@ -1,0 +1,54 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_database_redis_versions` tool to list available Redis versions. First, let me load the required tools.
+Tools loaded. Let me first list projects to find a test project, then call the Redis versions tool.
+The tool executed successfully. It returned 4 Redis versions:
+
+| Version | ID | Status |
+|---|---|---|
+| Redis 6.0 | `redis60` | Disabled |
+| Redis 6.2 | `redis62` | **Available** |
+| Redis 7.0 | `redis70` | Disabled |
+| Redis 7.2 | `redis72` | **Available** |
+
+Two versions are currently available for deployment (6.2 and 7.2), while two are disabled (6.0 and 7.0). The tool responded in ~27ms with a structured JSON response containing version IDs, names, and availability flags.
+
+Let me also verify with a project context to confirm it works that way too.
+Same result with project context — consistent behavior confirmed.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_database_redis_versions",
+  "timestamp": "2026-02-17T12:00:30.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "redis_version",
+      "id": "redis62",
+      "status": "available"
+    },
+    {
+      "type": "redis_version",
+      "id": "redis72",
+      "status": "available"
+    },
+    {
+      "type": "redis_version",
+      "id": "redis60",
+      "status": "disabled"
+    },
+    {
+      "type": "redis_version",
+      "id": "redis70",
+      "status": "disabled"
+    }
+  ],
+  "tool_response_summary": "Returned 4 Redis versions: redis60 (6.0, disabled), redis62 (6.2, available), redis70 (7.0, disabled), redis72 (7.2, available). Tested both without and with projectId parameter — consistent results.",
+  "execution_notes": "Tool works with and without optional projectId parameter. Response time was fast (~27ms without projectId, ~67ms with). Two versions are currently deployable (6.2 and 7.2), two are disabled legacy versions (6.0 and 7.0)."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,26 @@
+{
+  "runId": "agent-e2e-2026-02-17T11-58-14",
+  "agent": "claude",
+  "promptCaseId": "database-mysql-get",
+  "domain": "databases",
+  "promptFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/prompts-fly-live/databases/database-mysql-get.json",
+  "toolName": "mcp__mittwald__mittwald_database_mysql_get",
+  "displayName": "database/mysql/get",
+  "startedAt": "2026-02-17T12:02:23.017Z",
+  "finishedAt": "2026-02-17T12:03:26.317Z",
+  "durationMs": 63300,
+  "status": "success",
+  "expectedToolCalled": true,
+  "toolsCalled": [
+    "ToolSearch",
+    "mcp__mittwald__mittwald_project_list",
+    "mcp__mittwald__mittwald_database_mysql_list",
+    "mcp__mittwald__mittwald_database_mysql_versions",
+    "mcp__mittwald__mittwald_database_mysql_create",
+    "mcp__mittwald__mittwald_database_mysql_get"
+  ],
+  "toolCallErrors": [],
+  "rawOutputFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/databases/database-mysql-get.stdout.jsonl",
+  "stdoutFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/databases/database-mysql-get.stdout.txt",
+  "stderrFile": "/Users/robert/Code/MittwaldCoWork/mittwald-mcp/evals/results/agent-e2e/agent-e2e-2026-02-17T11-58-14/raw/claude/databases/database-mysql-get.stderr.txt"
+}

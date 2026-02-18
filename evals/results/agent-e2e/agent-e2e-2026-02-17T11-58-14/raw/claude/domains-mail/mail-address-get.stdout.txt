@@ -1,0 +1,38 @@
+
+
+I'll execute this eval by first finding a project, then looking for mail addresses, and finally getting details on a specific one.
+
+**Step 1: Find a test project and load the required tools.**
+Tools loaded. Now let me list projects to find one with our test prefix.
+I have a test project (`p-mpg5kn`, id: `15f5367b-92bd-4761-ac33-f6bbb6f60db8`) with our prefix. Let me list mail addresses for this project.
+No mail addresses in the test project. Let me check the other projects for existing mail addresses.
+Found 5 mail addresses in the first project. Now let me use `mcp__mittwald__mittwald_mail_address_get` to retrieve details for one of them.
+The tool executed successfully. It returned full details for the mail address `info@mcp.mittwald.de` including mailbox configuration, spam protection settings, storage limits, and metadata.
+
+**Verification summary:**
+- Tool returned `status: "success"` with a descriptive message
+- Response includes all expected fields: `address`, `id`, `projectId`, `mailbox`, `archive`, `autoResponder`, `forwardAddresses`, `spamProtection`, `storageInBytes`
+- The returned `id` matches the requested ID
+- Response completed in ~57ms
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_mail_address_get",
+  "timestamp": "2026-02-17T12:01:30.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "mail_address",
+      "id": "4223500d-baca-4d2d-87db-4d8534d23220",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved mail address info@mcp.mittwald.de (id: 4223500d-baca-4d2d-87db-4d8534d23220) with full details including mailbox config (m120414), spam protection (active, score threshold 1), storage (0/5GB used), sending enabled, receiving enabled, no forwarding, no auto-responder, no archive.",
+  "execution_notes": "Used project fd1ef726-14b8-4906-8a45-0756ba993246 (mStudio MCP server) which had 5 existing mail addresses. The test project (agent-e2e prefix) had no mail addresses. Tool responded in ~57ms with complete schema-conformant data."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

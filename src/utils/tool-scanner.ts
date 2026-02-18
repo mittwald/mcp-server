@@ -58,8 +58,10 @@ export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
   'mittwald_extension_uninstall': 'not migrated to library yet',
   'mittwald_container_recreate': 'not migrated to library yet',
   'mittwald_container_update': 'not migrated to library yet',
-  'mittwald_sftp_user_create': 'not migrated to library yet (CLI-only parameter coverage)',
-  'mittwald_sftp_user_update': 'not migrated to library yet (CLI-only parameter coverage)',
+  'mittwald_sftp_user_create': 'SFTP feature incomplete - missing library support for expires/publicKey parameters',
+  'mittwald_sftp_user_update': 'SFTP feature incomplete - missing library support for advanced parameters',
+  'mittwald_sftp_user_delete': 'SFTP feature incomplete - create/update not supported due to CLI-only parameter coverage',
+  'mittwald_sftp_user_list': 'SFTP feature incomplete - create/update not supported due to CLI-only parameter coverage',
   'mittwald_volume_delete': 'not migrated to library yet (CLI-based safety checks)',
 
   // Interactive/streaming/file-transfer operations (incompatible with stateless MCP requests).
@@ -364,15 +366,20 @@ let globalRegistry: ToolRegistry | null = null;
 export async function getToolRegistry(): Promise<ToolRegistry> {
   if (!globalRegistry) {
     // Load tools from the constants directory
-    // Use build directory if running from compiled JS, otherwise use src directory
-    const isBuilt = process.cwd().includes('/app') || process.argv[0].includes('build');
-    const baseDir = isBuilt 
+    // Determine if running from build or src by checking this file's actual location
+    const currentFileUrl = new URL(import.meta.url);
+    const currentFilePath = currentFileUrl.pathname;
+    const isBuilt = currentFilePath.includes('/build/') || currentFilePath.includes('/app/');
+
+    const baseDir = isBuilt
       ? resolve(process.cwd(), 'build', 'constants', 'tool', 'mittwald-cli')
       : resolve(process.cwd(), 'src', 'constants', 'tool', 'mittwald-cli');
-    
+
+    logger.debug(`Tool registry: isBuilt=${isBuilt}, baseDir=${baseDir}`);
+
     globalRegistry = await loadTools({ baseDir });
   }
-  
+
   return globalRegistry;
 }
 

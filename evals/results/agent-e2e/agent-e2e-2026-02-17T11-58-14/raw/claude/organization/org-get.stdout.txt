@@ -1,0 +1,28 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_org_get` eval. First, I need to list organizations to get an ID, then get details for one.
+Good, both tools are loaded. Now let me list organizations to get an ID.
+Found 2 organizations. Now let me get details for one of them.
+The tool executed successfully. It returned organization details including the name, ID, and member count. The response time was fast at ~35ms.
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_org_get",
+  "timestamp": "2026-02-17T11:59:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "organization",
+      "id": "c0256a2f-ccb0-4e00-b6ed-579bdb758675",
+      "status": "verified"
+    }
+  ],
+  "tool_response_summary": "Successfully retrieved organization 'mittwald MCP Server Dev' (ID: c0256a2f-ccb0-4e00-b6ed-579bdb758675) with 2 members. Response completed in ~35ms.",
+  "execution_notes": "Dependency chain satisfied: org/list returned 2 organizations, then org/get retrieved details for 'mittwald MCP Server Dev'. Some fields (shortId, createdAt, updatedAt, owner details) returned as N/A, which may indicate the API doesn't expose those fields for this org or the tool doesn't map them."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

@@ -1,0 +1,44 @@
+
+
+I'll execute the `mcp__mittwald__mittwald_container_list` eval. Let me start by loading the required tools.
+Tools loaded. Now let me first list projects to find a valid project ID.
+Found 8 projects. Now let me execute the target tool `mcp__mittwald__mittwald_container_list` using a project ID. I'll use the "mStudio MCP server" project first.
+The tool executed successfully. It returned 2 containers, both in "running" status, belonging to the "mStudio MCP server" project. The response is a proper array with container objects containing `id`, `status`, `stackId`, `projectId`, `name`, `ports`, and `volumes` fields.
+
+Let me also verify with a second project to confirm consistent behavior.
+The tool correctly returns an empty array for a project with no containers. Both responses confirm consistent behavior.
+
+## Results Summary
+
+- **Tool**: `mcp__mittwald__mittwald_container_list`
+- **Status**: Success
+- **First call** (project `p-ptwfms`): Returned 2 running containers with proper schema (id, status, stackId, projectId, name, ports, volumes)
+- **Second call** (project `p-kbuygq`): Returned empty array (no containers), confirming correct behavior for projects without containers
+- Both calls completed without errors, response format is consistent
+
+<!-- SELF_ASSESSMENT_START -->
+```json
+{
+  "success": true,
+  "confidence": "high",
+  "tool_executed": "mcp__mittwald__mittwald_container_list",
+  "timestamp": "2026-02-17T10:30:00.000Z",
+  "problems_encountered": [],
+  "resources_created": [],
+  "resources_verified": [
+    {
+      "type": "container",
+      "id": "b0a2f781-a5ac-4cf9-8f98-1c9547104f0c",
+      "status": "running"
+    },
+    {
+      "type": "container",
+      "id": "e89f8411-120a-4ae2-bddb-5e4ee9ad074a",
+      "status": "running"
+    }
+  ],
+  "tool_response_summary": "Found 2 running containers in project fd1ef726-14b8-4906-8a45-0756ba993246 (mStudio MCP server). Each container has id, status, stackId, projectId, name, ports, and volumes fields. A second call against a different project returned an empty array, confirming correct empty-state handling.",
+  "execution_notes": "Tool requires projectId parameter (marked required). Returns well-structured JSON with status, message, data array, and meta fields. Response times were 242ms and 78ms respectively. The container objects have minimal fields populated (ports and volumes both empty arrays), which may indicate these are basic containers without exposed ports or mounted volumes."
+}
+```
+<!-- SELF_ASSESSMENT_END -->

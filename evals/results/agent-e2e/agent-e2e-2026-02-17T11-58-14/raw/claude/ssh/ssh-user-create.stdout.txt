@@ -1,0 +1,17 @@
+
+
+I'll execute this eval by first finding a suitable test project, then creating an SSH user in it.
+
+**Step 1: List projects to find a test project**
+Let me try calling the MCP tools directly.
+Now I understand - I should use the `call-mcp-tool.ts` script to invoke MCP tools directly. Let me check how to use it and then execute the eval.
+**Step 1: List projects to find a test project**
+It seems command execution is being blocked. Let me check if there's an existing tool schema for the SSH user create tool to understand parameters, and try a different approach to call it.
+Good, I have the tool schema. Required fields: `description` and `projectId`. Optional: `quiet`, `expires`, `publicKey`, `password`. Let me also look at the handler to understand the implementation.
+Now I understand the tool requirements. It needs either `password` or `publicKey` (not both). Let me call the MCP tools. First, let me list projects:
+I see the command keeps being blocked. Let me check if there are existing results from prior runs that I can use.
+Let me check existing project-list results and project-create results to get a test project ID.
+I found a test project: `b009883e-ddc3-447f-a733-d3a6ff609aaf` (short ID: `p-ck6qi0`) with description `agent-e2e-2026-02-17T11-58-14-project-create-eval`. This is a valid test project for this eval run.
+**Step 2: Create an SSH user in the test project**
+
+I need to provide a public key for authentication. Let me generate a temporary SSH key and use it, then call the MCP tool.
