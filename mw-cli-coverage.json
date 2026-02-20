@@ -4,10 +4,10 @@
     "cliCommandCount": 178,
     "toolCount": 170,
     "coveredCount": 165,
-    "missingCount": 3,
-    "coveragePercent": 98,
+    "missingCount": 0,
+    "coveragePercent": 100,
     "extraToolCount": 5,
-    "excludedCount": 10
+    "excludedCount": 13
   },
   "coverage": [
     {
@@ -741,7 +741,11 @@
       "expectedToolName": "mittwald_context_get",
       "status": "missing",
       "toolPath": "context/get-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js"
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-get-cli.ts"
+      }
     },
     {
       "command": "context reset",
@@ -754,7 +758,11 @@
       "expectedToolName": "mittwald_context_reset",
       "status": "missing",
       "toolPath": "context/reset-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js"
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-reset-cli.ts"
+      }
     },
     {
       "command": "context set",
@@ -767,7 +775,11 @@
       "expectedToolName": "mittwald_context_set",
       "status": "missing",
       "toolPath": "context/set-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js"
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-set-cli.ts"
+      }
     },
     {
       "command": "conversation categories",
@@ -2457,47 +2469,7 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/volume/list-cli.js"
     }
   ],
-  "missing": [
-    {
-      "command": "context get",
-      "segments": [
-        "context",
-        "get"
-      ],
-      "cliFile": "context/get.js",
-      "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
-      "expectedToolName": "mittwald_context_get",
-      "status": "missing",
-      "toolPath": "context/get-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js"
-    },
-    {
-      "command": "context reset",
-      "segments": [
-        "context",
-        "reset"
-      ],
-      "cliFile": "context/reset.js",
-      "description": "This command resets any values for common parameters that you've previously set with 'context set'.",
-      "expectedToolName": "mittwald_context_reset",
-      "status": "missing",
-      "toolPath": "context/reset-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js"
-    },
-    {
-      "command": "context set",
-      "segments": [
-        "context",
-        "set"
-      ],
-      "cliFile": "context/set.js",
-      "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
-      "expectedToolName": "mittwald_context_set",
-      "status": "missing",
-      "toolPath": "context/set-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js"
-    }
-  ],
+  "missing": [],
   "excluded": [
     {
       "command": "app exec",
@@ -2599,6 +2571,57 @@
       "exclusion": {
         "category": "interactive",
         "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
+      }
+    },
+    {
+      "command": "context get",
+      "segments": [
+        "context",
+        "get"
+      ],
+      "cliFile": "context/get.js",
+      "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
+      "expectedToolName": "mittwald_context_get",
+      "status": "missing",
+      "toolPath": "context/get-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-get-cli.ts"
+      }
+    },
+    {
+      "command": "context reset",
+      "segments": [
+        "context",
+        "reset"
+      ],
+      "cliFile": "context/reset.js",
+      "description": "This command resets any values for common parameters that you've previously set with 'context set'.",
+      "expectedToolName": "mittwald_context_reset",
+      "status": "missing",
+      "toolPath": "context/reset-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-reset-cli.ts"
+      }
+    },
+    {
+      "command": "context set",
+      "segments": [
+        "context",
+        "set"
+      ],
+      "cliFile": "context/set.js",
+      "description": "The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command.",
+      "expectedToolName": "mittwald_context_set",
+      "status": "missing",
+      "toolPath": "context/set-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-set-cli.ts"
       }
     },
     {

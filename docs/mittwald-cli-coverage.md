@@ -4,7 +4,7 @@ Total CLI commands: 178
 
 Covered by MCP tools: 165
 
-Missing wrappers: 3
+Missing wrappers: 0
 
 Status legend: ✅ Covered, ⚠️ Missing, ➖ Not Applicable
 
@@ -79,9 +79,9 @@ Status legend: ✅ Covered, ⚠️ Missing, ➖ Not Applicable
 
 | CLI Command | Description | Status | MCP Tool | Tool Definition | Notes |
 | --- | --- | --- | --- | --- | --- |
-| context get | The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command. | ⚠️ Missing |  |  |  |
-| context reset | This command resets any values for common parameters that you've previously set with 'context set'. | ⚠️ Missing |  |  |  |
-| context set | The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command. | ⚠️ Missing |  |  |  |
+| context get | The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command. | ⚠️ Missing |  |  | Allowed missing (intentional): MCP server uses session-aware context management; CLI context commands replaced by session-aware-get-cli.ts |
+| context reset | This command resets any values for common parameters that you've previously set with 'context set'. | ⚠️ Missing |  |  | Allowed missing (intentional): MCP server uses session-aware context management; CLI context commands replaced by session-aware-reset-cli.ts |
+| context set | The context allows you to persistently set values for common parameters, like --project-id or --server-id, so you don't have to specify them on every command. | ⚠️ Missing |  |  | Allowed missing (intentional): MCP server uses session-aware context management; CLI context commands replaced by session-aware-set-cli.ts |
 
 ## conversation
 
