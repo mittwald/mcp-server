@@ -1,8 +1,8 @@
 # Mittwald CLI Coverage Matrix
 
-Total CLI commands: 178
+Total CLI commands: 177
 
-Covered by MCP tools: 165
+Covered by MCP tools: 164
 
 Missing wrappers: 0
 
@@ -101,7 +101,6 @@ Status legend: ✅ Covered, ⚠️ Missing, ➖ Not Applicable
 | cronjob create |  | ✅ Covered | mittwald_cronjob_create | src/constants/tool/mittwald-cli/cronjob/create-cli.ts |  |
 | cronjob delete | Delete a cron job | ✅ Covered | mittwald_cronjob_delete | src/constants/tool/mittwald-cli/cronjob/delete-cli.ts |  |
 | cronjob execute |  | ✅ Covered | mittwald_cronjob_execute | src/constants/tool/mittwald-cli/cronjob/execute-cli.ts |  |
-| cronjob execution abort |  | ✅ Covered | mittwald_cronjob_execution_abort | src/constants/tool/mittwald-cli/cronjob/execution-abort-cli.ts |  |
 | cronjob execution get | Get a cron job execution. | ✅ Covered | mittwald_cronjob_execution_get | src/constants/tool/mittwald-cli/cronjob/execution-get-cli.ts |  |
 | cronjob execution list | List CronjobExecutions belonging to a Cronjob. | ✅ Covered | mittwald_cronjob_execution_list | src/constants/tool/mittwald-cli/cronjob/execution-list-cli.ts |  |
 | cronjob execution logs | This command prints the log output of a cronjob execution. When this command is run in a terminal, the output is piped through a pager. The pager is determined by your PAGER environment variable, with defaulting to "less". You can disable this behavior with the --no-pager flag. | ✅ Covered | mittwald_cronjob_execution_logs | src/constants/tool/mittwald-cli/cronjob/execution-logs-cli.ts |  |

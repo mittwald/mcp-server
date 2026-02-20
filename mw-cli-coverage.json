@@ -1,12 +1,12 @@
 {
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
-    "cliCommandCount": 178,
+    "cliCommandCount": 177,
     "toolCount": 170,
-    "coveredCount": 165,
+    "coveredCount": 164,
     "missingCount": 0,
     "coveragePercent": 100,
-    "extraToolCount": 5,
+    "extraToolCount": 6,
     "excludedCount": 13
   },
   "coverage": [
@@ -897,20 +897,6 @@
       "status": "covered",
       "toolPath": "cronjob/execute-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execute-cli.js"
-    },
-    {
-      "command": "cronjob execution abort",
-      "segments": [
-        "cronjob",
-        "execution",
-        "abort"
-      ],
-      "cliFile": "cronjob/execution/abort.js",
-      "description": null,
-      "expectedToolName": "mittwald_cronjob_execution_abort",
-      "status": "covered",
-      "toolPath": "cronjob/execution-abort-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execution-abort-cli.js"
     },
     {
       "command": "cronjob execution get",
@@ -2719,6 +2705,11 @@
       "toolName": "mittwald_certificate_request",
       "relPath": "certificate/request-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/certificate/request-cli.js"
+    },
+    {
+      "toolName": "mittwald_cronjob_execution_abort",
+      "relPath": "cronjob/execution-abort-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execution-abort-cli.js"
     }
   ]
 }
