@@ -21,10 +21,6 @@
   "workspaces": [
     "packages/*"
   ],
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "scripts": {
     "build": "tsc && tsc-alias && chmod +x build/index.js && echo \"export * from './config.js';\nexport * from './oauth.js';\nexport * from './mcp.js';\nexport * from './auth-store.js';\nexport * from './types.js';\" > build/server/index.js",
     "build:workspaces": "npm run build --workspace=packages/mittwald-cli-core --if-present && npm run build --workspace=packages/oauth-bridge --if-present",
