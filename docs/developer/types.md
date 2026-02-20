@@ -29,8 +29,8 @@ Request context types:
 
 ### Domain-Specific Types
 
-#### `systemprompt.ts`
-SystemPrompt.io integration types:
+#### `mittwald.ts`
+Mittwald integration types:
 - API request/response formats
 - Callback structures
 - Service configuration

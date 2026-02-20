@@ -298,7 +298,7 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
   app.get('/', (req, res) => {
     const protocol =
       req.get('x-forwarded-proto') ||
-      (req.get('host')?.includes('systemprompt.io') ? 'https' : req.protocol);
+      (req.get('host')?.includes('mittwald.de') ? 'https' : req.protocol);
     const baseUrl = `${protocol}://${req.get('host')}`;
     const basePath = req.baseUrl || '';
     
@@ -324,7 +324,7 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
     // no test-auth endpoint
     
     res.json({
-      service: 'MCP Server',
+      service: 'mittwald mStudio MCP server',
       version: '1.0.0',
       gitSha: process.env.GIT_SHA || 'unknown',
       transport: 'http',
