@@ -109,22 +109,20 @@ export async function sendSamplingRequest(
     /**
      * MCP Sampling Step 1: Construct sampling request
      * @see https://modelcontextprotocol.io/specification/2025-06-18/client/sampling#request-parameters
-     * 
+     *
      * The request includes:
      * - messages: Conversation context for the LLM
      * - maxTokens: Maximum tokens for response (default 8192)
-     * - system: Optional system prompt
-     * - temperature/topP/topK: Generation parameters
+     * - systemPrompt: Optional system prompt
+     * - temperature: Generation temperature parameter
      * - modelPreferences: Hints for model selection
      * - _meta: Callback information for response handling
      */
     const samplingRequest = {
       messages: request.params.messages,
       maxTokens: request.params.maxTokens || 8192,
-      system: request.params.system,
+      systemPrompt: request.params.systemPrompt,
       temperature: request.params.temperature,
-      topP: request.params.topP,
-      topK: request.params.topK,
       stopSequences: request.params.stopSequences,
       modelPreferences: request.params.modelPreferences,
       _meta: request.params._meta,
