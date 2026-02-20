@@ -5,10 +5,17 @@ terraform {
       version = "~> 1.0"
     }
   }
+
+  cloud {
+    organization = "mittwald"
+    workspaces {
+      name = "mcp-server"
+    }
+  }
 }
 
 provider "mittwald" {
-  debug_request_bodies = true
+  api_key = var.mittwald_api_key
 }
 
 locals {

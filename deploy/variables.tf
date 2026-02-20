@@ -19,3 +19,9 @@ variable "dockerhub_password" {
   type        = string
   sensitive   = true
 }
+
+variable "mittwald_api_key" {
+  type        = string
+  description = "The API token for the Mittwald API"
+  sensitive   = true
+}
