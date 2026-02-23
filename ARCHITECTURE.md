@@ -97,10 +97,6 @@ Reusable utilities enforce these layers consistently:
 - `tests/security/credential-leakage.test.ts` – regression suite ensuring redaction + sanitization
 - `eslint-rules/no-credential-leak.js` – lint rule blocking credential leaks in code review
 
-See also:
-- [Agent S1 Implementation Prompt](./docs/agent-prompts/STANDARD-S1-credential-security.md)
-- [Agent C3 Review (Security Champion)](./docs/agent-reviews/AGENT-C3-REVIEW.md)
-
 ### Destructive Operation Safety (REQUIRED)
 All tools that perform destructive operations (delete, revoke, terminate, etc.) MUST follow the safety pattern established by Agent C4. This pattern prevents accidental data loss and provides audit trails:
 
@@ -129,10 +125,6 @@ logger.warn('[ToolName] Destructive operation attempted', {
 // 3. CLI execution with force flags
 const argv = ['resource', 'delete', args.id, '--force', '--quiet'];
 ```
-
-See also:
-- [Agent C4 Review (Safety Pattern)](./docs/agent-reviews/AGENT-C4-REVIEW.md)
-- [Destructive Operations Safety Guide](./docs/tool-safety/destructive-operations.md)
 
 ## Security Architecture (December 2025 Hardening)
 
@@ -193,7 +185,7 @@ When users set session context (e.g., via `context/set-session`), the system pre
 - **51 tools** (29%) support `--project-id`
 - **1 tool** (0.6%) supports `--server-id`
 - **1 tool** (0.6%) supports `--org-id`
-- **125 tools** (71%) don't support any context flags
+- **119 tools** (69%) don't support any context flags
 
 Commands like `mw app versions`, `mw server list`, and `mw project list` would fail with CLI parameter errors when context was set.
 
@@ -205,10 +197,10 @@ The system now uses a build-time generated map to determine which flags each too
 scripts/generate-context-flag-map.ts
          │
          ▼ scans
-src/constants/tool/mittwald-cli/**/*-cli.ts (178 tool definitions)
+src/constants/tool/mittwald-cli/**/*-cli.ts (174 tool definitions)
          │
          ▼ generates
-src/utils/context-flag-support.ts (176 tools mapped)
+src/utils/context-flag-support.ts (172 tools mapped)
          │
          ▼ used by
 src/utils/session-aware-cli.ts (injectSessionContext method)
@@ -271,4 +263,3 @@ if (context.projectId &&
 - 2025-09-27 18:05 UTC – Session middleware hydrates `req.auth` from Redis; unit tests updated (`de63a80`).
 - 2025-09-29 11:45 UTC – Bridge dynamic registration issues secrets for Claude Desktop confidential clients and validates client authentication on `/token`.
 
-This document should be used alongside `docs/2025-09-27-openai-connector-oauth-guidance.md` for the latest implementation log.
