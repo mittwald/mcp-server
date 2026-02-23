@@ -70,6 +70,6 @@ export const SERVER_CONFIG = {
     maxRequests: 100,
   },
   MAX_REQUEST_SIZE: 10 * 1024 * 1024, // 10MB
-  PROTOCOL_VERSION: "2025-06-18",
+  PROTOCOL_VERSION: "2025-11-25",
   SDK_VERSION: "@modelcontextprotocol/sdk@1.13.0",
 } as const;
