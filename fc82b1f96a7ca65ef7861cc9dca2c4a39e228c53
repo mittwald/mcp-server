@@ -1,0 +1,25 @@
+src/server/middleware.ts
+  734e0b876dfd274d 84,89,95,101,103,117,120,127,141,145
+src/constants/server/server-config.ts
+  734e0b876dfd274d 73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "fc82b1f96a7ca65ef7861cc9dca2c4a39e228c53",
+  "prompts": {
+    "734e0b876dfd274d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "74b03d1a-73da-40ac-a60e-712a794034f7",
+        "model": "claude-opus-4-5-20251101"
+      },
+      "human_author": "Martin Helmich <m.helmich@mittwald.de>",
+      "messages": [],
+      "total_additions": 79,
+      "total_deletions": 79,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  }
+}
