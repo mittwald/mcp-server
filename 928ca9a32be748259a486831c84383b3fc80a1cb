@@ -1,0 +1,23 @@
+deploy/main.tf
+  265e747cf0d1a764 107-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "928ca9a32be748259a486831c84383b3fc80a1cb",
+  "prompts": {
+    "265e747cf0d1a764": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ed61e31-abd6-4b1a-a65a-b084fe456414",
+        "model": "claude-opus-4-5-20251101"
+      },
+      "human_author": "Martin Helmich <m.helmich@mittwald.de>",
+      "messages": [],
+      "total_additions": 7,
+      "total_deletions": 0,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  }
+}
