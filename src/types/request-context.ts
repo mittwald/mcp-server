@@ -11,6 +11,7 @@
  */
 
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
+import { Implementation } from "@modelcontextprotocol/sdk/types.js";
 
 /**
  * Context passed from MCP server to tool handler functions.
@@ -49,4 +50,6 @@ export interface MCPToolContext {
    * Abort signal used to cancel tool execution when the client disconnects.
    */
   abortSignal?: AbortSignal;
+
+  clientInfo?: Implementation;
 }

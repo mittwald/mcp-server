@@ -59,6 +59,21 @@ export interface DirectTokenConfig {
   VALIDATION_TIMEOUT_MS: number;
 }
 
+export interface MatomoConfig {
+  /** Whether Matomo tracking is enabled */
+  ENABLED: boolean;
+  /** Matomo tracking API URL (e.g., https://matomo.example.com/matomo.php) */
+  URL?: string;
+  /** Matomo site ID */
+  SITE_ID?: string;
+  /** Optional auth token for additional tracking features */
+  AUTH_TOKEN?: string;
+  /** Custom dimension ID for tracking AI agent (1-999) */
+  AGENT_DIMENSION_ID?: number;
+  /** Custom dimension ID for tracking tool domain */
+  DOMAIN_DIMENSION_ID?: number;
+}
+
 export interface ServerConfig {
   /** Secret key for JWT token signing */
   JWT_SECRET?: string;
@@ -74,6 +89,8 @@ export interface ServerConfig {
   MITTWALD: MittwaldOAuthConfig;
   /** Direct token authentication configuration */
   DIRECT_TOKENS: DirectTokenConfig;
+  /** Matomo analytics tracking configuration */
+  MATOMO: MatomoConfig;
   /** Reserved for future flags (no OAuth bypass) */
   // no-op
   /** Test server ID for running tests */
@@ -167,6 +184,18 @@ export const CONFIG: ServerConfig = {
     CACHE_TTL_MS: Math.max(1000, directTokenCacheTtl),
     SESSION_TTL_SECONDS: Math.max(60, directTokenSessionTtlSeconds),
     VALIDATION_TIMEOUT_MS: Math.max(1000, directTokenValidationTimeout),
+  },
+  MATOMO: {
+    ENABLED: process.env.MATOMO_ENABLED === 'true',
+    URL: process.env.MATOMO_URL,
+    SITE_ID: process.env.MATOMO_SITE_ID,
+    AUTH_TOKEN: process.env.MATOMO_AUTH_TOKEN,
+    AGENT_DIMENSION_ID: process.env.MATOMO_AGENT_DIMENSION_ID
+      ? parseInt(process.env.MATOMO_AGENT_DIMENSION_ID, 10)
+      : undefined,
+    DOMAIN_DIMENSION_ID: process.env.MATOMO_DOMAIN_DIMENSION_ID
+      ? parseInt(process.env.MATOMO_DOMAIN_DIMENSION_ID, 10)
+      : undefined,
   },
   // no OAuth bypass
   TEST_SERVER_ID: process.env.TEST_SERVER_ID,

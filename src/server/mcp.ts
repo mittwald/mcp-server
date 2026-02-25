@@ -204,13 +204,13 @@ export class MCPHandler implements IMCPHandler {
         }
 
         const clientCapabilities = server.getClientCapabilities();
-        const clientVersion = server.getClientVersion();
+        const clientInfo = server.getClientVersion();
 
         // Track capabilities in Prometheus metrics
         const flags = trackClientCapabilities(
           sessionId,
           clientCapabilities,
-          clientVersion,
+          clientInfo,
         );
 
         // Store flags on session for cleanup
@@ -248,7 +248,9 @@ export class MCPHandler implements IMCPHandler {
         },
       };
 
-      return handleToolCall(request, { sessionId, authInfo, abortSignal: extra.signal });
+      const clientInfo = server.getClientVersion();
+
+      return handleToolCall(request, { sessionId, authInfo, abortSignal: extra.signal, clientInfo });
     });
 
     // Prompts
