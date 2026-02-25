@@ -33,6 +33,7 @@ import type { ToolHandlerContext } from './tools/types.js';
 import { filterTools, getToolCategories, getToolCountByCategory } from '../utils/tool-filter.js';
 import { runWithSessionContext } from '../utils/execution-context.js';
 import { CONFIG } from '../server/config.js';
+import { trackToolInvocation } from '../services/matomo-tracker.js';
 
 /**
  * Flag to track if tools have been initialized
@@ -190,6 +191,16 @@ export async function handleToolCall(
       toolCallsTotal.inc({ tool_name: toolName, status: 'disabled' });
       end(); // Record duration
 
+      // Track disabled tool in Matomo
+      trackToolInvocation({
+        toolName,
+        toolDomain,
+        status: 'disabled',
+        durationMs: Date.now() - startTime,
+        sessionId,
+        userId: context.authInfo?.extra?.userId as string | undefined,
+      });
+
       return {
         content: [
           {
@@ -346,6 +357,17 @@ export async function handleToolCall(
       },
     }, 'Tool call completed');
 
+    // Track successful tool invocation in Matomo
+    trackToolInvocation({
+      toolName,
+      toolDomain,
+      status: 'success',
+      durationMs,
+      sessionId,
+      userId: context.authInfo?.extra?.userId as string | undefined,
+      aiAgent: context.clientInfo?.name,
+    });
+
     return result;
     
   } catch (error) {
@@ -383,6 +405,18 @@ export async function handleToolCall(
         durationMs,
       },
     }, 'Tool call failed');
+
+    // Track failed tool invocation in Matomo
+    trackToolInvocation({
+      toolName,
+      toolDomain,
+      status: "error",
+      durationMs,
+      sessionId,
+      userId: context.authInfo?.extra?.userId as string | undefined,
+      errorCode: (error as any)?.code || "UNKNOWN_ERROR",
+      aiAgent: context.clientInfo?.name,
+    });
 
     // Return error result instead of throwing
     return {
