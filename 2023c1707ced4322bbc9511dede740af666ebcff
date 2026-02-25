@@ -1,0 +1,29 @@
+src/services/matomo-tracker.ts
+  265e747cf0d1a764 1-199
+src/handlers/tool-handlers.ts
+  265e747cf0d1a764 36,194-203,360-367,369-370,409-412,414-416,419-420
+src/server/config.ts
+  265e747cf0d1a764 18,21,62-74,92-93,111,188-199,209,231,244,248
+.env.example
+  265e747cf0d1a764 170-194
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "2023c1707ced4322bbc9511dede740af666ebcff",
+  "prompts": {
+    "265e747cf0d1a764": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ed61e31-abd6-4b1a-a65a-b084fe456414",
+        "model": "claude-opus-4-5-20251101"
+      },
+      "human_author": "Martin Helmich <m.helmich@mittwald.de>",
+      "messages": [],
+      "total_additions": 388,
+      "total_deletions": 89,
+      "accepted_lines": 291,
+      "overriden_lines": 3
+    }
+  }
+}
