@@ -1,0 +1,23 @@
+docs/CREDENTIAL-SECURITY.md
+  df55a859eedd0e04 20,1485
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "c212cc03028bb6b4b6f6fb9e6ed39e1262cabf89",
+  "prompts": {
+    "df55a859eedd0e04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9028fc2c-f32d-4540-992c-17539307ae23",
+        "model": "claude-opus-4-5-20251101"
+      },
+      "human_author": "Martin Helmich <m.helmich@mittwald.de>",
+      "messages": [],
+      "total_additions": 7,
+      "total_deletions": 156,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
