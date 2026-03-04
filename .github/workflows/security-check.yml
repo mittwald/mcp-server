@@ -14,7 +14,7 @@ jobs:
     # Informational only - git history contains rotated secrets from archived docs
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Full history for git scanning
 
@@ -32,7 +32,7 @@ jobs:
     # Informational only - audit failures shouldn't block deploys
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v4
         with:
@@ -57,7 +57,7 @@ jobs:
     # Informational only - pattern matching has false positives
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v4
         with:
