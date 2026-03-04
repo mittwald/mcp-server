@@ -5,26 +5,21 @@ import { handleContainerLogsCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: 'mittwald_container_logs',
   title: 'View Container Logs',
-  description: 'Display logs of a specific container.',
+  description: 'Display logs of a specific container. Use mittwald_container_list to find the containerId for your container.',
   inputSchema: {
     type: 'object',
     properties: {
       containerId: {
         type: 'string',
-        description: 'ID of the container for which to get logs'
+        description: 'ID of the container to get logs for'
       },
       projectId: {
         type: 'string',
-        description: 'ID or short ID of a project (optional if default project is set in context)'
+        description: 'ID of the project containing the container'
       },
-      output: {
-        type: 'string',
-        enum: ['txt', 'json', 'yaml'],
-        description: 'Output format (default: txt)'
-      },
-      noPager: {
-        type: 'boolean',
-        description: 'Disable pager for output (always true in CLI context)'
+      tail: {
+        type: 'number',
+        description: 'Number of most recent log lines to retrieve (optional, returns all logs if not specified)'
       }
     },
     required: ["containerId", "projectId"]
