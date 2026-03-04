@@ -19,6 +19,9 @@ dist/
 # Keep example file
 !.env.example
 
+# Local SSL certificates (generate your own with mkcert)
+ssl/
+
 # Logs
 *.log
 npm-debug.log*
