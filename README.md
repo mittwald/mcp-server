@@ -56,6 +56,22 @@ This is a monorepo with workspace packages that must be built in order.
 docker build --no-cache -t mittwald/mcp .
 ```
 
+### Local SSL Certificates
+
+For local HTTPS development, generate certificates using [mkcert](https://github.com/FiloSottile/mkcert):
+
+```bash
+# Install mkcert (macOS)
+brew install mkcert
+mkcert -install
+
+# Generate certificates
+mkdir -p ssl
+mkcert -key-file ssl/localhost+2-key.pem -cert-file ssl/localhost+2.pem localhost 127.0.0.1 ::1
+```
+
+The server uses these paths by default, or set `SSL_KEY_PATH` and `SSL_CERT_PATH` to override.
+
 ### Running for Development
 
 1. Configure scopes and Mittwald OAuth details:

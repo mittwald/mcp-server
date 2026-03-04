@@ -17,7 +17,7 @@
 6. [Multi-Tenant Attack Scenarios Prevented](#multi-tenant-attack-scenarios-prevented)
 7. [Security Utilities Reference](#security-utilities-reference)
 8. [Implementation Requirements](#implementation-requirements)
-9. [Automated Enforcement](#automated-enforcement)
+9. [Security Test Suite](#security-test-suite)
 10. [Migration Guide for Existing Tools](#migration-guide-for-existing-tools)
 11. [Compliance and Audit Considerations](#compliance-and-audit-considerations)
 
@@ -38,7 +38,7 @@ This document establishes a **three-layer defense-in-depth security model** that
 - **Layer 2**: Automatic command redaction before logging
 - **Layer 3**: Response sanitization (boolean flags, not values)
 
-**All tools that handle passwords, tokens, API keys, or secrets MUST implement this standard.** Automated enforcement via ESLint and CI prevents regressions.
+**All tools that handle passwords, tokens, API keys, or secrets MUST implement this standard.**
 
 ---
 
@@ -1313,155 +1313,7 @@ export const handleMailAddressCreate: MittwaldCliToolHandler<CreateMailAddressAr
 
 ---
 
-## Automated Enforcement
-
-### ESLint Rule: `no-credential-leak`
-
-**File**: `eslint-rules/no-credential-leak.js`
-
-```javascript
-/**
- * ESLint rule: no-credential-leak
- *
- * Detects potential credential leakage in code:
- * - Direct password/token values in responses
- * - Unredacted command metadata
- * - Hardcoded credentials
- */
-module.exports = {
-  meta: {
-    type: 'problem',
-    docs: {
-      description: 'Prevent credential leakage in responses and logs',
-      category: 'Security',
-      recommended: true
-    },
-    messages: {
-      directCredential: 'Do not include {{ field }} directly in response data. Use {{ field }}Changed: boolean instead.',
-      unredactedCommand: 'Command metadata must be redacted. Use buildSecureToolResponse() or redactMetadata().',
-      hardcodedCredential: 'Do not hardcode credential values. Use generateSecurePassword().'
-    }
-  },
-  create(context) {
-    return {
-      // Detect: { password: args.password } in response objects
-      ObjectExpression(node) {
-        node.properties.forEach(prop => {
-          if (prop.key?.name === 'password' ||
-              prop.key?.name === 'token' ||
-              prop.key?.name === 'apiKey' ||
-              prop.key?.name === 'secret') {
-            context.report({
-              node: prop,
-              messageId: 'directCredential',
-              data: { field: prop.key.name }
-            });
-          }
-        });
-      },
-
-      // Detect: command: result.meta.command (without redaction)
-      Property(node) {
-        if (node.key?.name === 'command' &&
-            node.value?.type === 'MemberExpression' &&
-            !context.getAncestors().some(n =>
-              n.callee?.name === 'redactMetadata' ||
-              n.callee?.name === 'buildSecureToolResponse'
-            )) {
-          context.report({
-            node,
-            messageId: 'unredactedCommand'
-          });
-        }
-      },
-
-      // Detect: const password = "hardcoded-value"
-      VariableDeclarator(node) {
-        if ((node.id?.name === 'password' ||
-             node.id?.name === 'token' ||
-             node.id?.name === 'apiKey') &&
-            node.init?.type === 'Literal' &&
-            typeof node.init.value === 'string') {
-          context.report({
-            node,
-            messageId: 'hardcodedCredential'
-          });
-        }
-      }
-    };
-  }
-};
-```
-
-**Enable in `.eslintrc.js`**:
-
-```javascript
-module.exports = {
-  rules: {
-    'local/no-credential-leak': 'error'
-  }
-};
-```
-
----
-
-### CI Security Check
-
-**File**: `.github/workflows/security-check.yml`
-
-```yaml
-name: Security Checks
-
-on:
-  pull_request:
-    paths:
-      - 'src/handlers/**'
-      - 'src/utils/**'
-  push:
-    branches:
-      - main
-
-jobs:
-  credential-leakage:
-    name: Check for Credential Leakage
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run security test suite
-        run: npm run test:security
-
-      - name: Check for hardcoded credentials
-        run: |
-          if git grep -E "(password|token|api-key)\s*=\s*['\"][^'\"]+['\"]" src/; then
-            echo "❌ Found hardcoded credentials in source code"
-            exit 1
-          fi
-          echo "✅ No hardcoded credentials detected"
-
-      - name: Lint for credential leaks
-        run: npm run lint -- --rule local/no-credential-leak
-
-      - name: Check session storage
-        run: |
-          if git grep -E "password:|token:|apiKey:" src/server/session-manager.ts; then
-            echo "❌ Found credential storage in session manager"
-            exit 1
-          fi
-          echo "✅ No credential values stored in sessions"
-```
-
----
-
-### Security Test Suite
+## Security Test Suite
 
 **File**: `tests/security/credential-leakage.test.ts`
 
@@ -1629,9 +1481,8 @@ See [docs/migrations/credential-security-migration-2025-10.md](./migrations/cred
 
 **What auditors can verify**:
 
-1. **Automated prevention**: ESLint rule + CI checks prevent credential leakage
-2. **Test coverage**: Security test suite validates all three layers
-3. **Code review**: Pull requests blocked by CI if leakage detected
+1. **Test coverage**: Security test suite validates all three layers
+2. **Code review**: Review for credential handling patterns
 4. **Session storage**: Redis backups contain no credential values
 5. **Log aggregation**: CloudWatch/Datadog logs show `[REDACTED]` uniformly
 
