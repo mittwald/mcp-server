@@ -1,0 +1,21 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "7c8309e72daa6da3b585f3ac5c01ae8aab15e1fd",
+  "prompts": {
+    "df55a859eedd0e04": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9028fc2c-f32d-4540-992c-17539307ae23",
+        "model": "claude-opus-4-5-20251101"
+      },
+      "human_author": "Martin Helmich <m.helmich@mittwald.de>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 35,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  }
+}
