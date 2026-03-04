@@ -1,0 +1,27 @@
+docs/reference/openapi.json
+  e7a36e0ae99defd9 4790,4804,4808,4810-4812
+docs/reference/src/content/docs/tools/container/container-logs.md
+  e7a36e0ae99defd9 16,20,26-28,41-47,49
+docs/reference/tools-manifest.json
+  e7a36e0ae99defd9 2717,2723,2729,2733-2735,2744-2750,2752
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "9589fdfe1b9684e66f588364ba15929b9d9cb4e0",
+  "prompts": {
+    "e7a36e0ae99defd9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5c4a760a-94eb-4b3b-80c8-3ff465b0692a",
+        "model": "claude-opus-4-5-20251101"
+      },
+      "human_author": "Martin Helmich <m.helmich@mittwald.de>",
+      "messages": [],
+      "total_additions": 33,
+      "total_deletions": 44,
+      "accepted_lines": 33,
+      "overriden_lines": 0
+    }
+  }
+}
