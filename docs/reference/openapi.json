@@ -4787,7 +4787,7 @@
     "/tools/mittwald_container_logs": {
       "post": {
         "summary": "View Container Logs",
-        "description": "Display logs of a specific container.",
+        "description": "Display logs of a specific container. Use mittwald_container_list to find the containerId for your container.",
         "operationId": "mittwald_container_logs",
         "tags": [
           "container"
@@ -4801,24 +4801,15 @@
                 "properties": {
                   "containerId": {
                     "type": "string",
-                    "description": "ID of the container for which to get logs"
+                    "description": "ID of the container to get logs for"
                   },
                   "projectId": {
                     "type": "string",
-                    "description": "ID or short ID of a project (optional if default project is set in context)"
+                    "description": "ID of the project containing the container"
                   },
-                  "output": {
-                    "type": "string",
-                    "description": "Output format (default: txt)",
-                    "enum": [
-                      "txt",
-                      "json",
-                      "yaml"
-                    ]
-                  },
-                  "noPager": {
-                    "type": "boolean",
-                    "description": "Disable pager for output (always true in CLI context)"
+                  "tail": {
+                    "type": "number",
+                    "description": "Number of most recent log lines to retrieve (optional, returns all logs if not specified)"
                   }
                 },
                 "required": [

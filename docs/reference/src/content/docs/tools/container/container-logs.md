@@ -13,20 +13,19 @@ head:
     attrs:
       name: og:description
       content: Display logs of a specific container.
-lastUpdated: 2026-01-23
+lastUpdated: 2026-03-04
 ---
 ## Overview
 
-Display logs of a specific container.
+Display logs of a specific container. Use `mittwald_container_list` to find the `containerId` for your container.
 
 ## Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `containerId` | `string` | Yes | ID of the container for which to get logs |
-| `projectId` | `string` | Yes | ID or short ID of a project (optional if default project is set in context) |
-| `output` | `txt \| json \| yaml` | No | Output format (default: txt) |
-| `noPager` | `boolean` | No | Disable pager for output (always true in CLI context) |
+| `containerId` | `string` | Yes | ID of the container to get logs for |
+| `projectId` | `string` | Yes | ID of the project containing the container |
+| `tail` | `number` | No | Number of most recent log lines to retrieve (returns all logs if not specified) |
 
 ## Return Type
 
@@ -39,10 +38,15 @@ Display logs of a specific container.
 ```json
 {
   "status": "success",
-  "message": "Operation completed successfully",
-  "data": null,
+  "message": "Retrieved logs for container abc123",
+  "data": {
+    "containerId": "abc123",
+    "projectId": "p-xxxxx",
+    "logs": "2026-03-04T10:00:00Z Starting application...\n2026-03-04T10:00:01Z Application started successfully",
+    "lineCount": 2
+  },
   "metadata": {
-    "durationMs": 0
+    "durationMs": 45
   }
 }
 ```
