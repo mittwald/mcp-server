@@ -1,0 +1,25 @@
+src/handlers/tools/mittwald-cli/container/logs-cli.ts
+  e7a36e0ae99defd9 3-6,10-11,14-16,18-19,22-23,26-27,30-32,36-42,45-54,56,58,73,77-78,83-99,103
+src/constants/tool/mittwald-cli/container/logs-cli.ts
+  e7a36e0ae99defd9 8,14,18,20-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "b30827f922de3978c1196c397feee356c0f5ca6e",
+  "prompts": {
+    "e7a36e0ae99defd9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5c4a760a-94eb-4b3b-80c8-3ff465b0692a",
+        "model": "claude-opus-4-5-20251101"
+      },
+      "human_author": "Martin Helmich <m.helmich@mittwald.de>",
+      "messages": [],
+      "total_additions": 113,
+      "total_deletions": 136,
+      "accepted_lines": 76,
+      "overriden_lines": 0
+    }
+  }
+}
