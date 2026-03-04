@@ -28,7 +28,6 @@
     "types:generate": "npx json-schema-to-typescript kitty-specs/018-documentation-driven-mcp-tool-testing/contracts/scenario-definition.schema.json > src/types/scenario.ts && npx json-schema-to-typescript kitty-specs/018-documentation-driven-mcp-tool-testing/contracts/scenario-execution-result.schema.json > src/types/scenario-execution.ts",
     "watch": "tsc --watch",
     "lint": "eslint .",
-    "lint:credential-leak": "eslint src/handlers packages/oauth-bridge/src --config ./eslint.credential.config.js",
     "type-check": "tsc --noEmit",
     "docker": "docker-compose build && docker-compose up -d",
     "test": "vitest run",

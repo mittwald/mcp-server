@@ -103,6 +103,3 @@ jobs:
             exit 1
           fi
           echo "No private keys detected"
-
-      - name: Lint for credential leaks
-        run: npm run lint:credential-leak

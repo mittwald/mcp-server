@@ -95,7 +95,6 @@ Reusable utilities enforce these layers consistently:
 - `src/utils/credential-redactor.ts` – `redactCredentialsFromCommand()` / `redactMetadata()`
 - `src/utils/credential-response.ts` – `buildSecureToolResponse()` / `buildUpdatedAttributes()`
 - `tests/security/credential-leakage.test.ts` – regression suite ensuring redaction + sanitization
-- `eslint-rules/no-credential-leak.js` – lint rule blocking credential leaks in code review
 
 ### Destructive Operation Safety (REQUIRED)
 All tools that perform destructive operations (delete, revoke, terminate, etc.) MUST follow the safety pattern established by Agent C4. This pattern prevents accidental data loss and provides audit trails:
