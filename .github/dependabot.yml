@@ -12,20 +12,8 @@ updates:
       time: "09:00"
       timezone: "Europe/Berlin"
     open-pull-requests-limit: 10
-    groups:
-      production-dependencies:
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "@types/*"
-          - "eslint*"
-          - "vitest*"
-          - "typescript"
-      dev-dependencies:
-        dependency-type: "development"
     labels:
       - "dependencies"
-      - "security"
     commit-message:
       prefix: "deps"
 
@@ -38,15 +26,8 @@ updates:
       time: "09:00"
       timezone: "Europe/Berlin"
     open-pull-requests-limit: 5
-    groups:
-      oauth-bridge-deps:
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "@types/*"
     labels:
       - "dependencies"
-      - "security"
       - "oauth-bridge"
     commit-message:
       prefix: "deps(oauth-bridge)"
