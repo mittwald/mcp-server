@@ -1,0 +1,25 @@
+README.md
+  6526660971d646b0 59-74
+.gitignore
+  6526660971d646b0 22-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "648fc8257fcde7f9c34af34086b23aaec47a1e22",
+  "prompts": {
+    "6526660971d646b0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "45a4ecc3-4bc5-4998-a530-3c94761444f7",
+        "model": "claude-opus-4-5-20251101"
+      },
+      "human_author": "Martin Helmich <m.helmich@mittwald.de>",
+      "messages": [],
+      "total_additions": 19,
+      "total_deletions": 0,
+      "accepted_lines": 19,
+      "overriden_lines": 0
+    }
+  }
+}
