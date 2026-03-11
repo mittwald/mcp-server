@@ -13,7 +13,7 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@koa/router": "^13.1.0",
+    "@koa/router": "^15.3.1",
     "ioredis": "^5.4.1",
     "jose": "^6.0.11",
     "koa": "^3.1.2",
