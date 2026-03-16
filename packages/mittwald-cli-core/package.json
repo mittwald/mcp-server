@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@mittwald/api-client": "^4.131.0",
-    "@mittwald/api-client-commons": "^4.0.0",
+    "@mittwald/api-client-commons": "^4.327.0",
     "@mittwald/react-use-promise": "^2.6.0",
     "@oclif/core": "^4.8.0",
     "axios-retry": "^4.0.0",
