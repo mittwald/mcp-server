@@ -147,6 +147,8 @@ resource "mittwald_container_stack" "mcp_stack" {
         MITTWALD_CLIENT_ID     = "mittwald-mcp-server"
         MITTWALD_CLIENT_SECRET = "mock-client-secret"
 
+        METRICS_USER = "metrics"
+        METRICS_PASS = random_password.metrics_password.result
       }
     }
   }
