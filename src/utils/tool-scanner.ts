@@ -68,7 +68,6 @@ export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
   'mittwald_app_ssh': 'interactive shell session not supported via MCP',
   'mittwald_database_mysql_shell': 'interactive shell session not supported via MCP',
   'mittwald_database_mysql_port_forward': 'long-running port-forward/tunnel not supported via MCP',
-  'mittwald_container_logs': 'streaming logs not supported via MCP',
   'mittwald_container_run': 'interactive/arb command execution not supported via MCP',
   'mittwald_app_download': 'local file download/upload not supported via MCP',
   'mittwald_app_upload': 'local file download/upload not supported via MCP',
