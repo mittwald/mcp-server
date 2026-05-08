@@ -35,9 +35,36 @@ export const handleContainerLogsCli: MittwaldCliToolHandler<MittwaldContainerLog
   try {
     const client = MittwaldAPIV2Client.newWithToken(session.mittwaldAccessToken);
 
-    // projectId can be used directly as stackId
+    // Look up the stack ID from the project short ID
+    const stacksResponse = await client.container.listStacks({ projectId: args.projectId });
+
+    if (stacksResponse.status !== 200) {
+      return formatToolResponse('error', `Failed to list stacks for project ${args.projectId}: HTTP ${stacksResponse.status}`, {
+        projectId: args.projectId,
+      });
+    }
+
+    const stacks = stacksResponse.data;
+
+    if (!stacks || stacks.length === 0) {
+      return formatToolResponse('error', `No container stacks found for project ${args.projectId}. The project may not have any containers deployed.`, {
+        projectId: args.projectId,
+      });
+    }
+
+    // The default stack has projectId === id
+    const defaultStack = stacks.find(s => s.projectId === s.id) ?? stacks[0];
+
+    if (!defaultStack.id) {
+      return formatToolResponse('error', 'Stack found but has no ID. This is unexpected.', {
+        projectId: args.projectId,
+      });
+    }
+
+    const stackId = defaultStack.id;
+
     const response = await client.container.getServiceLogs({
-      stackId: args.projectId,
+      stackId,
       serviceId: args.containerId,
       queryParameters: args.tail ? { tail: args.tail } : undefined,
     });
