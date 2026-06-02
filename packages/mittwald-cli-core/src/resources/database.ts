@@ -7,7 +7,7 @@ import { randomBytes } from 'node:crypto';
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
-import { LibraryError } from '../contracts/functions.js';
+import { libraryErrorFromApiError } from '../contracts/functions.js';
 
 // ============================================================================
 // MYSQL DATABASES
@@ -27,11 +27,7 @@ export async function listMysqlDatabases(options: ListMysqlDatabasesOptions): Pr
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -49,11 +45,7 @@ export async function getMysqlDatabase(options: GetMysqlDatabaseOptions): Promis
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -107,11 +99,7 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -129,11 +117,7 @@ export async function deleteMysqlDatabase(options: DeleteMysqlDatabaseOptions): 
 
     return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -155,11 +139,7 @@ export async function listMysqlUsers(options: ListMysqlUsersOptions): Promise<Li
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -177,11 +157,7 @@ export async function getMysqlUser(options: GetMysqlUserOptions): Promise<Librar
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -217,11 +193,7 @@ export async function createMysqlUser(options: CreateMysqlUserOptions): Promise<
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -239,11 +211,7 @@ export async function deleteMysqlUser(options: DeleteMysqlUserOptions): Promise<
 
     return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -271,11 +239,7 @@ export async function updateMysqlUser(options: UpdateMysqlUserOptions): Promise<
 
     return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -297,11 +261,7 @@ export async function listRedisDatabases(options: ListRedisDatabasesOptions): Pr
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -319,11 +279,7 @@ export async function getRedisDatabase(options: GetRedisDatabaseOptions): Promis
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -352,11 +308,7 @@ export async function createRedisDatabase(options: CreateRedisDatabaseOptions): 
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -380,10 +332,6 @@ export async function getDatabaseVersions(options: GetDatabaseVersionsOptions): 
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
