@@ -3,10 +3,14 @@
  * Wrappers for domain, container, backup, volume, server, and other infrastructure operations
  */
 
-import { MittwaldAPIV2Client } from '@mittwald/api-client';
+import { MittwaldAPIV2Client, MittwaldAPIV2 } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
 import { LibraryError } from '../contracts/functions.js';
+
+// Re-export API types for stack declarations
+export type ContainerServiceDeclareRequest = MittwaldAPIV2.Components.Schemas.ContainerServiceDeclareRequest;
+export type ContainerVolumeDeclareRequest = MittwaldAPIV2.Components.Schemas.ContainerVolumeDeclareRequest;
 
 // Generic API call wrapper
 async function executeApiCall<T = any>(
@@ -741,5 +745,26 @@ export async function getStackProcesses(options: GetStackProcessesOptions): Prom
       projectId: options.projectId,
       queryParameters: { stackId: options.stackId },
     })
+  );
+}
+
+export interface DeclareStackOptions extends LibraryFunctionBase {
+  stackId: string;
+  services: Record<string, ContainerServiceDeclareRequest>;
+  volumes: Record<string, ContainerVolumeDeclareRequest>;
+}
+
+export async function declareStack(options: DeclareStackOptions): Promise<LibraryResult<any>> {
+  return executeApiCall(
+    options.apiToken,
+    (client) =>
+      client.container.declareStack({
+        stackId: options.stackId,
+        data: {
+          services: options.services,
+          volumes: options.volumes,
+        },
+      }),
+    200
   );
 }

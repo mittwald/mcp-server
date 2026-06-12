@@ -1,15 +1,14 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { deployStack, LibraryError } from '@mittwald-mcp/cli-core';
+import { declareStack, LibraryError } from '@mittwald-mcp/cli-core';
 import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { convertComposeToMittwald } from '../../../../utils/compose-to-mittwald.js';
 
 interface MittwaldStackDeployCliArgs {
   stackId?: string;
-  quiet?: boolean;
-  composeFile?: string;
-  envFile?: string;
-  recreate?: boolean;
+  composeYaml?: string;
+  envOverrides?: Record<string, string>;
 }
 
 export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCliArgs> = async (args, sessionId) => {
@@ -23,28 +22,51 @@ export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCli
     return formatToolResponse('error', 'Stack ID is required. Please provide the stackId parameter.');
   }
 
+  if (!args.composeYaml) {
+    return formatToolResponse('error', 'composeYaml is required. Please provide docker-compose YAML content as a string.');
+  }
+
   const session = await sessionManager.getSession(effectiveSessionId);
   if (!session?.mittwaldAccessToken) {
     return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
+  // Convert docker-compose YAML to Mittwald format
+  const conversion = convertComposeToMittwald(args.composeYaml, args.envOverrides);
+
+  if (!conversion.success || !conversion.declaration) {
+    return formatToolResponse('error', 'Failed to convert docker-compose YAML', {
+      errors: conversion.errors,
+      warnings: conversion.warnings,
+    });
+  }
+
+  // Log warnings if any
+  const warnings = conversion.warnings;
+
   try {
-    const deployData = await deployStack({
+    const result = await declareStack({
       stackId: args.stackId,
-      recreate: args.recreate ?? true,
+      services: conversion.declaration.services,
+      volumes: conversion.declaration.volumes,
       apiToken: session.mittwaldAccessToken,
     });
 
+    const serviceNames = Object.keys(conversion.declaration.services);
+    const volumeNames = Object.keys(conversion.declaration.volumes);
+
     return formatToolResponse(
       'success',
-      'Stack deployment completed',
+      `Stack declared successfully with ${serviceNames.length} service(s) and ${volumeNames.length} volume(s)`,
       {
         stackId: args.stackId,
-        status: 'deployed',
-        composeFile: args.composeFile,
-        envFile: args.envFile,
-        recreate: args.recreate ?? true,
-        result: deployData,
+        services: serviceNames,
+        volumes: volumeNames,
+        warnings: warnings.length > 0 ? warnings : undefined,
+        result: result.data,
+      },
+      {
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
@@ -52,6 +74,7 @@ export const handleStackDeployCli: MittwaldCliToolHandler<MittwaldStackDeployCli
       return formatToolResponse('error', error.message, {
         code: error.code,
         details: error.details,
+        conversionWarnings: warnings.length > 0 ? warnings : undefined,
       });
     }
 

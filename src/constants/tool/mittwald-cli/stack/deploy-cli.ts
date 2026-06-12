@@ -5,28 +5,25 @@ import { handleStackDeployCli } from '../../../../handlers/tools/mittwald-cli/st
 const tool: Tool = {
   name: 'mittwald_stack_deploy',
   title: 'Deploy Stack',
-  description: 'Deploy a docker-compose compatible file to a Mittwald stack.',
+  description: 'Deploy a docker-compose YAML configuration to a Mittwald stack. Accepts docker-compose format and converts it to Mittwald\'s native format. Note: This is a declarative API - the provided configuration REPLACES the entire stack. Any services or volumes not included will be DELETED.',
   inputSchema: {
     type: 'object',
     properties: {
       stackId: {
         type: 'string',
-        description: 'ID of a stack'
+        description: 'ID of the stack to deploy to'
       },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
-      },
-      composeFile: {
+      composeYaml: {
         type: 'string',
-        description: 'Path to a compose file, or "-" to read from stdin'
+        description: 'Docker-compose YAML content as a string. Supports services with image, ports, environment, volumes, command, and entrypoint. Example: "version: \'3\'\\nservices:\\n  web:\\n    image: nginx:alpine\\n    ports:\\n      - \'80:80\'"'
       },
-      envFile: {
-        type: 'string',
-        description: 'Alternative path to file with environment variables'
+      envOverrides: {
+        type: 'object',
+        description: 'Optional environment variable overrides to apply to all services (key-value pairs)',
+        additionalProperties: { type: 'string' }
       }
     },
-    required: []
+    required: ['stackId', 'composeYaml']
   }
 };
 
