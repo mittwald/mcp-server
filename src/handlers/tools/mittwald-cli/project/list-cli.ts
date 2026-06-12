@@ -5,14 +5,7 @@ import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
 
-interface MittwaldProjectListArgs {
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  csvSeparator?: ',' | ';';
-  noHeader?: boolean;
-  noRelativeDates?: boolean;
-  noTruncate?: boolean;
-}
+type MittwaldProjectListArgs = Record<string, never>;
 
 function formatProjects(data: unknown[]): Array<{
   id: unknown;

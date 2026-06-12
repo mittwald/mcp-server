@@ -4,25 +4,12 @@ import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
 interface MittwaldDatabaseListArgs {
   projectId?: string;
-  output?: "txt" | "json" | "yaml" | "csv" | "tsv";
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 function buildCliArgs(args: MittwaldDatabaseListArgs): string[] {
-  const cliArgs: string[] = ['database', 'list'];
-
-  cliArgs.push('--output', 'json');
+  const cliArgs: string[] = ['database', 'list', '--output', 'json'];
 
   if (args.projectId) cliArgs.push('--project-id', args.projectId);
-  if (args.extended) cliArgs.push('--extended');
-  if (args.noHeader) cliArgs.push('--no-header');
-  if (args.noTruncate) cliArgs.push('--no-truncate');
-  if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
-  if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
 
   return cliArgs;
 }

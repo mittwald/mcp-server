@@ -11,33 +11,7 @@ const tool: Tool = {
     properties: {
       databaseId: {
         type: 'string',
-        description: 'ID or short ID of the MySQL database to list users for.'
-      },
-      outputFormat: {
-        type: 'string',
-        enum: ['json', 'yaml', 'txt', 'csv', 'tsv'],
-        description: 'Preferred CLI output format. JSON enables structured responses.'
-      },
-      extended: {
-        type: 'boolean',
-        description: 'Include extended columns such as access level.'
-      },
-      noHeader: {
-        type: 'boolean',
-        description: 'Hide table headers for text and CSV output.'
-      },
-      noTruncate: {
-        type: 'boolean',
-        description: 'Disable truncation for wide text output.'
-      },
-      noRelativeDates: {
-        type: 'boolean',
-        description: 'Show absolute timestamps instead of relative strings.'
-      },
-      csvSeparator: {
-        type: 'string',
-        enum: [',', ';'],
-        description: 'Custom separator for CSV output.'
+        description: 'ID of the MySQL database to list users for'
       }
     },
     required: ['databaseId']
