@@ -7,12 +7,6 @@ import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldCronjobListCliArgs {
   projectId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 function formatCronjobs(data: unknown[]): Record<string, unknown>[] {

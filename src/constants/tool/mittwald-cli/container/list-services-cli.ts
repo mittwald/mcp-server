@@ -11,33 +11,7 @@ const tool: Tool = {
     properties: {
       projectId: {
         type: 'string',
-        description: 'ID or short ID of a project (optional if default project is set in context)'
-      },
-      output: {
-        type: 'string',
-        enum: ['txt', 'json', 'yaml', 'csv', 'tsv'],
-        description: 'Output format (default: txt)'
-      },
-      extended: {
-        type: 'boolean',
-        description: 'Show extended information'
-      },
-      noHeader: {
-        type: 'boolean',
-        description: 'Hide table header (only relevant for table output)'
-      },
-      noTruncate: {
-        type: 'boolean',
-        description: 'Do not truncate output (only relevant for table output)'
-      },
-      noRelativeDates: {
-        type: 'boolean',
-        description: 'Show dates in absolute format, not relative'
-      },
-      csvSeparator: {
-        type: 'string',
-        enum: [',', ';'],
-        description: 'Separator for CSV output (only relevant for CSV output)'
+        description: 'ID or short ID of a project'
       }
     },
     required: ["projectId"]
