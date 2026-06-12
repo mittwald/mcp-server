@@ -63,8 +63,33 @@ export interface CreateMysqlDatabaseOptions extends LibraryFunctionBase {
   userExternalAccess?: boolean;
 }
 
+const MYSQL_PASSWORD_ALPHANUMERIC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const MYSQL_PASSWORD_SPECIAL_CHARS = '#!~%^*_+-=?{}()<>|.,;$:/';
+const MYSQL_PASSWORD_ALL_CHARS = MYSQL_PASSWORD_ALPHANUMERIC + MYSQL_PASSWORD_SPECIAL_CHARS;
+const MYSQL_PASSWORD_FORBIDDEN_START = '-_;';
+
 function generateMySqlUserPassword(): string {
-  return randomBytes(16).toString('hex');
+  // API requires: min 8 chars, at least one special char, cannot start with -_;
+  // Generate 20 chars from 87-char alphabet, then fix up if needed
+  const bytes = randomBytes(22); // extra bytes for fixup randomness
+  const chars: string[] = [];
+
+  for (let i = 0; i < 20; i++) {
+    chars.push(MYSQL_PASSWORD_ALL_CHARS[bytes[i] % MYSQL_PASSWORD_ALL_CHARS.length]);
+  }
+
+  // Fix first char if it starts with forbidden character
+  if (MYSQL_PASSWORD_FORBIDDEN_START.includes(chars[0])) {
+    chars[0] = MYSQL_PASSWORD_ALPHANUMERIC[bytes[20] % MYSQL_PASSWORD_ALPHANUMERIC.length];
+  }
+
+  // Ensure at least one special char exists; if not, replace a random position (not first)
+  if (!chars.some(c => MYSQL_PASSWORD_SPECIAL_CHARS.includes(c))) {
+    const pos = 1 + (bytes[21] % 19);
+    chars[pos] = MYSQL_PASSWORD_SPECIAL_CHARS[bytes[20] % MYSQL_PASSWORD_SPECIAL_CHARS.length];
+  }
+
+  return chars.join('');
 }
 
 export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): Promise<LibraryResult<any>> {

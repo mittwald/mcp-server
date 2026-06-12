@@ -35,7 +35,7 @@ const tool: Tool = {
       },
       userPassword: {
         type: "string",
-        description: "The password to use for the default user"
+        description: "The password for the default user. If omitted, a secure password is auto-generated. Requirements: min 8 chars, at least one special character (#!~%^*_+-=?{}()<>|.,;$:/), cannot start with -_;"
       },
       userExternal: {
         type: "boolean",
