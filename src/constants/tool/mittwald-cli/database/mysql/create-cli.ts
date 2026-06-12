@@ -15,7 +15,7 @@ const tool: Tool = {
       },
       version: {
         type: "string",
-        description: "The MySQL version to use (use 'database mysql versions' command to list available versions)"
+        description: "The MySQL version in '<major>.<minor>' format, e.g. '8.0' or '8.4'"
       },
       projectId: {
         type: "string",
