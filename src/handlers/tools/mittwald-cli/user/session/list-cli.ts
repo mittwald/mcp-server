@@ -5,14 +5,7 @@ import { sessionManager } from '../../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
 import { logger } from '../../../../../utils/logger.js';
 
-interface MittwaldUserSessionListArgs {
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
-}
+type MittwaldUserSessionListArgs = Record<string, never>;
 
 interface RawSessionItem {
   id?: string;

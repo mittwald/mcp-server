@@ -7,12 +7,6 @@ import { logger } from '../../../../utils/logger.js';
 
 export interface MittwaldOrgInviteListArgs {
   orgId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 function resolveOrgId(args: MittwaldOrgInviteListArgs, context: unknown): string | undefined {

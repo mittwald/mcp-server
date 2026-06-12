@@ -7,12 +7,6 @@ import { logger } from '../../../../utils/logger.js';
 
 export interface MittwaldProjectInviteListArgs {
   projectId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 export const handleProjectInviteListCli: MittwaldCliToolHandler<MittwaldProjectInviteListArgs> = async (args, sessionId) => {

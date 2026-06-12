@@ -6,12 +6,6 @@ import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldStackListCliArgs {
   projectId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 type RawStack = {

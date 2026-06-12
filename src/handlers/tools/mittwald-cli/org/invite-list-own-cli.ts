@@ -3,28 +3,10 @@ import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { parseJsonOutput } from '../../../../utils/cli-output.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
-export interface MittwaldOrgInviteListOwnArgs {
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
-}
+export type MittwaldOrgInviteListOwnArgs = Record<string, never>;
 
-function buildCliArgs(args: MittwaldOrgInviteListOwnArgs): { argv: string[]; outputFormat: Required<MittwaldOrgInviteListOwnArgs>['output'] } {
-  const outputFormat = args.output ?? 'txt';
-  const argv: string[] = ['org', 'invite', 'list-own', '--output', outputFormat];
-
-  if (args.extended) argv.push('--extended');
-  if (args.noHeader) argv.push('--no-header');
-  if (args.noTruncate) argv.push('--no-truncate');
-  if (args.noRelativeDates) argv.push('--no-relative-dates');
-  if (args.csvSeparator && (outputFormat === 'csv' || outputFormat === 'tsv')) {
-    argv.push('--csv-separator', args.csvSeparator);
-  }
-
-  return { argv, outputFormat };
+function buildCliArgs(_args: MittwaldOrgInviteListOwnArgs): { argv: string[]; outputFormat: 'json' } {
+  return { argv: ['org', 'invite', 'list-own', '--output', 'json'], outputFormat: 'json' };
 }
 
 function mapCliError(error: CliToolError): string {

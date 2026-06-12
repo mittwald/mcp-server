@@ -7,7 +7,6 @@ import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldDatabaseMysqlUserGetArgs {
   userId: string;
-  outputFormat?: 'json' | 'yaml' | 'txt';
 }
 
 export const handleDatabaseMysqlUserGetCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlUserGetArgs> = async (

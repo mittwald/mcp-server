@@ -12,11 +12,6 @@ const tool: Tool = {
       redisId: {
         type: 'string',
         description: 'ID or short ID of the Redis database to retrieve.'
-      },
-      outputFormat: {
-        type: 'string',
-        enum: ['json', 'yaml', 'txt'],
-        description: 'Preferred CLI output format. JSON enables structured responses.'
       }
     },
     required: ['redisId']

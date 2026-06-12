@@ -9,11 +9,6 @@ import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldVolumeListArgs {
   projectId: string;
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 export interface RawVolume {

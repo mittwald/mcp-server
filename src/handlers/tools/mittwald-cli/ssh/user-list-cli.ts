@@ -6,12 +6,6 @@ import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldSshUserListArgs {
   projectId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 function formatSshUser(record: Record<string, unknown>) {

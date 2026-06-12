@@ -12,11 +12,6 @@ const tool: Tool = {
       userId: {
         type: 'string',
         description: 'ID or short ID of the MySQL user to retrieve.'
-      },
-      outputFormat: {
-        type: 'string',
-        enum: ['json', 'yaml', 'txt'],
-        description: 'Preferred CLI output format. JSON enables structured responses.'
       }
     },
     required: ['userId']

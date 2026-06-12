@@ -7,12 +7,6 @@ import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldAppListUpgradeCandidatesArgs {
   installationId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 export const handleAppListUpgradeCandidatesCli: MittwaldCliToolHandler<MittwaldAppListUpgradeCandidatesArgs> = async (args, sessionId) => {

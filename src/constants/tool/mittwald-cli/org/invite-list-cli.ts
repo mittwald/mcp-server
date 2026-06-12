@@ -12,32 +12,6 @@ const tool: Tool = {
       orgId: {
         type: "string",
         description: "ID or short ID of an org; this parameter is optional if a default org is set in the context"
-      },
-      output: {
-        type: "string",
-        description: "Output format",
-        enum: ["txt", "json", "yaml", "csv", "tsv"]
-      },
-      extended: {
-        type: "boolean",
-        description: "Show extended information"
-      },
-      noHeader: {
-        type: "boolean",
-        description: "Hide table header"
-      },
-      noTruncate: {
-        type: "boolean",
-        description: "Do not truncate output (only relevant for txt output)"
-      },
-      noRelativeDates: {
-        type: "boolean",
-        description: "Show dates in absolute format, not relative (only relevant for txt output)"
-      },
-      csvSeparator: {
-        type: "string",
-        description: "Separator for CSV output (only relevant for CSV output)",
-        enum: [",", ";"]
       }
     },
     required: []
