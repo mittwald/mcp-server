@@ -7,12 +7,6 @@ import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldDatabaseRedisVersionsArgs {
   projectId?: string;
-  outputFormat?: 'json' | 'yaml' | 'txt' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 export const handleDatabaseRedisVersionsCli: MittwaldCliToolHandler<MittwaldDatabaseRedisVersionsArgs> = async (

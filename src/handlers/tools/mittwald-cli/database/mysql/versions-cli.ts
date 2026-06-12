@@ -5,14 +5,7 @@ import { sessionManager } from '../../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
 import { logger } from '../../../../../utils/logger.js';
 
-interface MittwaldDatabaseMysqlVersionsArgs {
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
-}
+type MittwaldDatabaseMysqlVersionsArgs = Record<string, never>;
 
 export const handleDatabaseMysqlVersionsCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlVersionsArgs> = async (args, sessionId) => {
   const effectiveSessionId = sessionId || getCurrentSessionId();
