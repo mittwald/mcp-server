@@ -92,11 +92,35 @@ function generateMySqlUserPassword(): string {
   return chars.join('');
 }
 
-export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): Promise<LibraryResult<any>> {
+export interface CreateMysqlDatabaseResult {
+  /** The database ID */
+  id: string;
+  /** The default user ID */
+  userId: string;
+  /** The database name (for connection strings) */
+  name: string;
+  /** The internal hostname */
+  hostname: string;
+  /** The external hostname (for remote connections) */
+  externalHostname: string;
+  /** The username for the default user */
+  userName: string;
+  /** The password (only present if auto-generated) */
+  password?: string;
+  /** Whether the password was auto-generated */
+  passwordWasGenerated: boolean;
+}
+
+export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): Promise<LibraryResult<CreateMysqlDatabaseResult>> {
   const startTime = performance.now();
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
+
+    // Track if we're generating the password
+    const passwordWasGenerated = !options.userPassword;
+    const password = options.userPassword ?? generateMySqlUserPassword();
+
     const data = {
       database: {
         projectId: options.projectId,
@@ -106,7 +130,7 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
       },
       user: {
         accessLevel: options.userAccessLevel ?? 'full',
-        password: options.userPassword ?? generateMySqlUserPassword(),
+        password,
         ...(options.userAccessIpMask !== undefined
           ? { accessIpMask: options.userAccessIpMask }
           : {}),
@@ -116,13 +140,33 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
       },
     };
 
-    const response = await client.database.createMysqlDatabase({
+    const createResponse = await client.database.createMysqlDatabase({
       projectId: options.projectId,
       data,
     });
-    assertStatus(response, 201);
+    assertStatus(createResponse, 201);
 
-    return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
+    // Fetch full database details to get hostname, name, and user info
+    const getResponse = await client.database.getMysqlDatabase({
+      mysqlDatabaseId: createResponse.data.id,
+    });
+    assertStatus(getResponse, 200);
+
+    const dbDetails = getResponse.data;
+
+    const result: CreateMysqlDatabaseResult = {
+      id: createResponse.data.id,
+      userId: createResponse.data.userId,
+      name: dbDetails.name,
+      hostname: dbDetails.hostname,
+      externalHostname: dbDetails.externalHostname,
+      userName: dbDetails.mainUser?.name ?? '',
+      passwordWasGenerated,
+      // Only include password if it was auto-generated (security: don't echo back user-provided passwords)
+      ...(passwordWasGenerated ? { password } : {}),
+    };
+
+    return { data: result, status: createResponse.status, durationMs: performance.now() - startTime };
   } catch (error) {
     throw libraryErrorFromApiError(error, startTime);
   }
