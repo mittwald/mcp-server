@@ -6,7 +6,8 @@
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
-import { LibraryError } from '../contracts/functions.js';
+import { LibraryError, libraryErrorFromApiError } from '../contracts/functions.js';
+import { getSSHConnectionForAppInstallation } from '../lib/resources/ssh/appinstall.js';
 
 // ============================================================================
 // LIST APPS
@@ -372,5 +373,54 @@ export async function upgradeApp(options: UpgradeAppOptions): Promise<LibraryRes
   }
 }
 
+// ============================================================================
+// SSH CONNECTION
+// ============================================================================
+
+export interface GetAppSshConnectionOptions extends LibraryFunctionBase {
+  installationId: string;
+  /** Override the SSH user; defaults to the authenticated mStudio user */
+  sshUser?: string;
+}
+
+export interface AppSshConnection {
+  /** SSH hostname of the project's cluster */
+  host: string;
+  /** SSH username (`<mStudio user>@<app short id>`) */
+  user: string;
+  /** The app installation's directory */
+  directory: string;
+  installationId: string;
+  appShortId: string;
+}
+
+/**
+ * Resolves the SSH connection data for an app installation.
+ *
+ * This only looks up the endpoint; establishing the connection is up to the caller.
+ */
+export async function getAppSshConnection(
+  options: GetAppSshConnectionOptions
+): Promise<LibraryResult<AppSshConnection>> {
+  const startTime = performance.now();
+
+  try {
+    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
+    const { host, user, directory, appShortId } = await getSSHConnectionForAppInstallation(
+      client,
+      options.installationId,
+      options.sshUser
+    );
+
+    return {
+      data: { host, user, directory, installationId: options.installationId, appShortId },
+      status: 200,
+      durationMs: performance.now() - startTime,
+    };
+  } catch (error) {
+    throw libraryErrorFromApiError(error, startTime);
+  }
+}
+
 // Add more app functions as needed...
-// (download, upload, ssh, dependencies, create, install variants, etc.)
+// (dependencies, create, install variants, etc.)

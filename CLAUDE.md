@@ -131,8 +131,11 @@ via the Mittwald API and return a ready-to-run command for the agent to execute 
 | `mittwald_database_mysql_phpmyadmin` | phpMyAdmin URL (no browser is opened) |
 | `mittwald_backup_download` | Backup export download URL (no file is transferred) |
 
-Helpers live in `src/utils/ssh-command.ts` and `src/utils/mysql-ssh-command.ts`; the API lookups
-live in `packages/mittwald-cli-core/src/resources/connectivity.ts`. Never shell out to `ssh`,
+Helpers live in `src/utils/ssh-command.ts` and `src/utils/mysql-ssh-command.ts`. The API lookups
+live with their resource, not in a shared "connectivity" module: `getProjectSshConnection` in
+`resources/project.ts`, `getAppSshConnection` in `resources/app.ts`, `getMysqlConnection` and
+`getPhpMyAdminUrl` in `resources/database.ts`, `getBackupDownloadUrl` in `resources/infrastructure.ts`
+(all under `packages/mittwald-cli-core/src/`). Never shell out to `ssh`,
 `mysqldump`, `curl` or `open` from a handler — build the command and hand it back instead.
 MySQL passwords go into the command via `MYSQL_PWD`, never `-p<password>` (which leaks into the
 remote process list).

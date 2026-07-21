@@ -14,4 +14,3 @@ export * from './resources/project.js';
 export * from './resources/user.js';
 export * from './resources/all-resources.js';
 export * from './resources/infrastructure.js';
-export * from './resources/connectivity.js';
