@@ -5,6 +5,11 @@ import { handleProjectUpdateCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: "mittwald_project_update",
   title: "Update Project",
+  annotations: {
+    title: "Update Project",
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: "Update an existing project.",
   inputSchema: {
     type: "object",

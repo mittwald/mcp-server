@@ -5,6 +5,11 @@ import { handleProjectDeleteCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: "mittwald_project_delete",
   title: "Delete Project",
+  annotations: {
+    title: "Delete Project",
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: "Delete a project.",
   inputSchema: {
     type: "object",

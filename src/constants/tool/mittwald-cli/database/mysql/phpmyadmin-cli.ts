@@ -5,6 +5,11 @@ import { handleDatabaseMysqlPhpmyadminCli } from '../../../../../handlers/tools/
 const tool: Tool = {
   name: "mittwald_database_mysql_phpmyadmin",
   title: "Open phpMyAdmin",
+  annotations: {
+    title: "Open phpMyAdmin",
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: "Open phpMyAdmin for a MySQL database (provides command for browser execution)",
   inputSchema: {
     type: "object",

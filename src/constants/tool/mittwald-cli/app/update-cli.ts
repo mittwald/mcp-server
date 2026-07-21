@@ -5,6 +5,11 @@ import { handleAppUpdateCli } from '../../../../handlers/tools/mittwald-cli/app/
 const tool: Tool = {
   name: 'mittwald_app_update',
   title: 'Update App Properties',
+  annotations: {
+    title: 'Update App Properties',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Update properties of an app installation. (use upgrade to update the app version)',
   inputSchema: {
     type: 'object',

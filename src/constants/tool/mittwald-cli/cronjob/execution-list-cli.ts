@@ -5,6 +5,11 @@ import { handleCronjobExecutionListCli } from '../../../../handlers/tools/mittwa
 const tool: Tool = {
   name: 'mittwald_cronjob_execution_list',
   title: 'List Cron Job Executions',
+  annotations: {
+    title: 'List Cron Job Executions',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List cronjob executions.',
   inputSchema: {
     type: 'object',

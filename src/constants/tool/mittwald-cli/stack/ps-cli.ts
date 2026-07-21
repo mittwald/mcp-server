@@ -5,6 +5,11 @@ import { handleStackPsCli } from '../../../../handlers/tools/mittwald-cli/stack/
 const tool: Tool = {
   name: 'mittwald_stack_ps',
   title: 'List Stack Services',
+  annotations: {
+    title: 'List Stack Services',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List all services within a given stack.',
   inputSchema: {
     type: 'object',

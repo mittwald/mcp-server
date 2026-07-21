@@ -9,6 +9,11 @@ export interface SessionAwareContextGetCliParameters {
 const tool: Tool = {
   name: 'mittwald_context_get_session',
   title: 'Get Session Context',
+  annotations: {
+    title: 'Get Session Context',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'Get current user context from Redis session (session-aware, multi-tenant safe)',
   inputSchema: {
     type: "object",

@@ -9,6 +9,11 @@ export interface LoginTokenCliParameters {
 const tool: Tool = {
   name: 'mittwald_login_token',
   title: 'Login with Token',
+  annotations: {
+    title: 'Login with Token',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Login using API token.',
   inputSchema: {
     type: "object",

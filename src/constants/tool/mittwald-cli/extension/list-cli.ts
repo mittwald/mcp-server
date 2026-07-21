@@ -5,6 +5,11 @@ import { handleExtensionListCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: 'mittwald_extension_list',
   title: 'List Available Extensions',
+  annotations: {
+    title: 'List Available Extensions',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List all available extensions.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,11 @@ import { handleProjectInviteGetCli } from '../../../../handlers/tools/mittwald-c
 const tool: Tool = {
   name: 'mittwald_project_invite_get',
   title: 'Get Project Invite Details',
+  annotations: {
+    title: 'Get Project Invite Details',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'Get details of a project invite.',
   inputSchema: {
     type: 'object',

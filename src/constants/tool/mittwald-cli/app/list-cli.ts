@@ -5,6 +5,11 @@ import { handleAppListCli } from '../../../../handlers/tools/mittwald-cli/app/li
 const tool: Tool = {
   name: 'mittwald_app_list',
   title: 'List Apps',
+  annotations: {
+    title: 'List Apps',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List installed apps in a project.',
   inputSchema: {
     type: 'object',

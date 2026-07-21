@@ -5,6 +5,11 @@ import { handleDatabaseMysqlDeleteCli } from '../../../../../handlers/tools/mitt
 const tool: Tool = {
   name: "mittwald_database_mysql_delete",
   title: "Delete MySQL Database",
+  annotations: {
+    title: "Delete MySQL Database",
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: "Delete a MySQL database.",
   inputSchema: {
     type: "object",

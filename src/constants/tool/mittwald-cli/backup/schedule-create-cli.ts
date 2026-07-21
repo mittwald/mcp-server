@@ -5,6 +5,11 @@ import { handleBackupScheduleCreateCli } from '../../../../handlers/tools/mittwa
 const tool: Tool = {
   name: 'mittwald_backup_schedule_create',
   title: 'Create Backup Schedule',
+  annotations: {
+    title: 'Create Backup Schedule',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Create a backup schedule.',
   inputSchema: {
     type: 'object',

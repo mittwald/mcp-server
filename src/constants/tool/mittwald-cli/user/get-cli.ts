@@ -5,6 +5,11 @@ import { handleUserGetCli } from '../../../../handlers/tools/mittwald-cli/user/g
 const tool: Tool = {
   name: 'mittwald_user_get',
   title: 'Get User Profile',
+  annotations: {
+    title: 'Get User Profile',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'Get profile information for a user.. Defaults to the currently authenticated user if no user ID is provided.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,11 @@ import { handleConversationReplyCli } from '../../../../handlers/tools/mittwald-
 const tool: Tool = {
   name: 'mittwald_conversation_reply',
   title: 'Reply to Conversation',
+  annotations: {
+    title: 'Reply to Conversation',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Reply to a conversation.',
   inputSchema: {
     type: 'object',

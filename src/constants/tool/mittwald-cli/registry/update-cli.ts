@@ -5,6 +5,11 @@ import { handleRegistryUpdateCli } from '../../../../handlers/tools/mittwald-cli
 const tool: Tool = {
   name: 'mittwald_registry_update',
   title: 'Update Registry',
+  annotations: {
+    title: 'Update Registry',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Update an existing registry in Mittwald.',
   inputSchema: {
     type: 'object',

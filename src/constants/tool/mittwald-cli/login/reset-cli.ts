@@ -9,6 +9,11 @@ export interface LoginResetCliParameters {
 const tool: Tool = {
   name: 'mittwald_login_reset',
   title: 'Reset Login Session',
+  annotations: {
+    title: 'Reset Login Session',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Reset login session.',
   inputSchema: {
     type: "object",

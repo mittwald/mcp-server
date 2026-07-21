@@ -5,6 +5,11 @@ import { handleDatabaseRedisVersionsCli } from '../../../../../handlers/tools/mi
 const tool: Tool = {
   name: 'mittwald_database_redis_versions',
   title: 'List Redis Versions',
+  annotations: {
+    title: 'List Redis Versions',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List available Redis versions.',
   inputSchema: {
     type: 'object',

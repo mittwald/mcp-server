@@ -5,6 +5,11 @@ import { handleAppListUpgradeCandidatesCli } from '../../../../handlers/tools/mi
 const tool: Tool = {
   name: 'mittwald_app_list_upgrade_candidates',
   title: 'List App Upgrade Candidates',
+  annotations: {
+    title: 'List App Upgrade Candidates',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List upgrade candidates for an app installation.',
   inputSchema: {
     type: 'object',

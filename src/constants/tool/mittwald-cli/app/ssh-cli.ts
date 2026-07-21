@@ -5,6 +5,11 @@ import { handleAppSshCli } from '../../../../handlers/tools/mittwald-cli/app/ssh
 const tool: Tool = {
   name: 'mittwald_app_ssh',
   title: 'Connect to App via SSH',
+  annotations: {
+    title: 'Connect to App via SSH',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Connect to an app via SSH.',
   inputSchema: {
     type: 'object',

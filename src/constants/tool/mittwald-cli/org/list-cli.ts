@@ -5,6 +5,11 @@ import { handleOrgListCli } from '../../../../handlers/tools/mittwald-cli/org/li
 const tool: Tool = {
   name: 'mittwald_org_list',
   title: 'List Organizations',
+  annotations: {
+    title: 'List Organizations',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'Get all organizations the authenticated user has access to.',
   inputSchema: {
     type: 'object',

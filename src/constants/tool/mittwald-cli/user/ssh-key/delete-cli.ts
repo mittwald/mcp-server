@@ -5,6 +5,11 @@ import { handleUserSshKeyDeleteCli } from '../../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: 'mittwald_user_ssh_key_delete',
   title: 'Delete SSH Key',
+  annotations: {
+    title: 'Delete SSH Key',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Delete an SSH key.. Permanently removes the specified SSH key.',
   inputSchema: {
     type: 'object',

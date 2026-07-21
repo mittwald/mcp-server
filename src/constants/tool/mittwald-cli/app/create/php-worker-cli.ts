@@ -5,6 +5,11 @@ import { handleAppCreatePhpWorkerCli } from '../../../../../handlers/tools/mittw
 const tool: Tool = {
   name: 'mittwald_app_create_php_worker',
   title: 'Create PHP Worker App',
+  annotations: {
+    title: 'Create PHP Worker App',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Create a PHP worker app.',
   inputSchema: {
     type: 'object',

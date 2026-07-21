@@ -5,6 +5,11 @@ import { handleContainerRunCli } from '../../../../handlers/tools/mittwald-cli/c
 const tool: Tool = {
   name: 'mittwald_container_run',
   title: 'Run Container',
+  annotations: {
+    title: 'Run Container',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Create and start a new container.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,11 @@ import { handleDatabaseMysqlImportCli } from '../../../../../handlers/tools/mitt
 const tool: Tool = {
   name: "mittwald_database_mysql_import",
   title: "Import MySQL Database",
+  annotations: {
+    title: "Import MySQL Database",
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: "Import a dump into a MySQL database.",
   inputSchema: {
     type: "object",

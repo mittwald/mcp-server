@@ -5,6 +5,11 @@ import { handleUserSshKeyImportCli } from '../../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: 'mittwald_user_ssh_key_import',
   title: 'Import SSH Key',
+  annotations: {
+    title: 'Import SSH Key',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Import an existing (local) SSH key.. Imports an existing SSH public key from the local filesystem.',
   inputSchema: {
     type: 'object',

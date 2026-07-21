@@ -5,6 +5,11 @@ import { handleDatabaseMysqlUserListCli } from '../../../../../handlers/tools/mi
 const tool: Tool = {
   name: 'mittwald_database_mysql_user_list',
   title: 'List MySQL Users',
+  annotations: {
+    title: 'List MySQL Users',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List MySQL users for a database.',
   inputSchema: {
     type: 'object',

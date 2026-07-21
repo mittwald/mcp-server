@@ -5,6 +5,11 @@ import { handleDomainDnszoneListCli } from '../../../../../handlers/tools/mittwa
 const tool: Tool = {
   name: "mittwald_domain_dnszone_list",
   title: "List DNS Zones",
+  annotations: {
+    title: "List DNS Zones",
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: "List DNS zones for a project..",
   inputSchema: {
     type: "object",

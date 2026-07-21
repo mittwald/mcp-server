@@ -5,6 +5,11 @@ import { handleCronjobGetCli } from '../../../../handlers/tools/mittwald-cli/cro
 const tool: Tool = {
   name: 'mittwald_cronjob_get',
   title: 'Get Cron Job Details',
+  annotations: {
+    title: 'Get Cron Job Details',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'Get details of a cronjob.',
   inputSchema: {
     type: 'object',

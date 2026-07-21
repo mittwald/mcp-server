@@ -5,6 +5,11 @@ import { handleAppUploadCli } from '../../../../handlers/tools/mittwald-cli/app/
 const tool: Tool = {
   name: 'mittwald_app_upload',
   title: 'Upload App Files',
+  annotations: {
+    title: 'Upload App Files',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Upload the filesystem of an app to a project.',
   inputSchema: {
     type: 'object',

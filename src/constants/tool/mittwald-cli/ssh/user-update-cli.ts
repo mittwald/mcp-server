@@ -5,6 +5,11 @@ import { handleSshUserUpdateCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: "mittwald_ssh_user_update",
   title: "Update SSH User",
+  annotations: {
+    title: "Update SSH User",
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: "Update an existing SSH user.",
   inputSchema: {
     type: "object",

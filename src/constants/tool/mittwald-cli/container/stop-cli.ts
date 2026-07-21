@@ -5,6 +5,11 @@ import { handleContainerStopCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: 'mittwald_container_stop',
   title: 'Stop Container',
+  annotations: {
+    title: 'Stop Container',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Stop a running container.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,11 @@ import { handleSshUserDeleteCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: "mittwald_ssh_user_delete",
   title: "Delete SSH User",
+  annotations: {
+    title: "Delete SSH User",
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: "Delete an SSH user.",
   inputSchema: {
     type: "object",

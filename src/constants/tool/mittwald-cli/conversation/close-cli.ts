@@ -5,6 +5,11 @@ import { handleConversationCloseCli } from '../../../../handlers/tools/mittwald-
 const tool: Tool = {
   name: 'mittwald_conversation_close',
   title: 'Close Conversation',
+  annotations: {
+    title: 'Close Conversation',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Close a conversation.',
   inputSchema: {
     type: 'object',

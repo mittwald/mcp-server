@@ -5,6 +5,11 @@ import { handleDatabaseRedisListCli } from '../../../../../handlers/tools/mittwa
 const tool: Tool = {
   name: 'mittwald_database_redis_list',
   title: 'List Redis Databases',
+  annotations: {
+    title: 'List Redis Databases',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List Redis databases for a project.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,11 @@ import { handleVolumeCreateCli } from '../../../../handlers/tools/mittwald-cli/v
 const tool: Tool = {
   name: 'mittwald_volume_create',
   title: 'Create Volume',
+  annotations: {
+    title: 'Create Volume',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Create a new named volume inside a project stack.',
   inputSchema: {
     type: 'object',

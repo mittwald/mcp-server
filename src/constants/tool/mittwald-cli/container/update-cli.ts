@@ -5,6 +5,11 @@ import { handleContainerUpdateCli } from '../../../../handlers/tools/mittwald-cl
 const tool: Tool = {
   name: 'mittwald_container_update',
   title: 'Update Container',
+  annotations: {
+    title: 'Update Container',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Updates attributes of an existing container such as image, environment variables, port mappings, and volumes.',
   inputSchema: {
     type: 'object',

@@ -10,6 +10,11 @@ import { handleMittwaldMailDeliveryboxUpdateCli } from '../../../../../handlers/
 const tool: Tool = {
   name: 'mittwald_mail_deliverybox_update',
   title: 'Update Delivery Box',
+  annotations: {
+    title: 'Update Delivery Box',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Update a delivery box.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,11 @@ import { handleDatabaseMysqlUserDeleteCli } from '../../../../../handlers/tools/
 const tool: Tool = {
   name: 'mittwald_database_mysql_user_delete',
   title: 'Delete MySQL User',
+  annotations: {
+    title: 'Delete MySQL User',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Delete an existing MySQL user.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,11 @@ import { handleOrgInviteCli } from '../../../../handlers/tools/mittwald-cli/org/
 const tool: Tool = {
   name: 'mittwald_org_invite',
   title: 'Invite User to Organization',
+  annotations: {
+    title: 'Invite User to Organization',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Invite a user to join an organization with a specified role.',
   inputSchema: {
     type: 'object',

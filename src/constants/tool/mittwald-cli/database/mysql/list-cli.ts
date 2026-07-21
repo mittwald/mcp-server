@@ -5,6 +5,11 @@ import { handleDatabaseMysqlListCli } from '../../../../../handlers/tools/mittwa
 const tool: Tool = {
   name: "mittwald_database_mysql_list",
   title: "List MySQL Databases",
+  annotations: {
+    title: "List MySQL Databases",
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: "List MySQL databases.",
   inputSchema: {
     type: "object",

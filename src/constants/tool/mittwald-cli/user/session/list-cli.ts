@@ -5,6 +5,11 @@ import { handleUserSessionListCli } from '../../../../../handlers/tools/mittwald
 const tool: Tool = {
   name: 'mittwald_user_session_list',
   title: 'List My Sessions',
+  annotations: {
+    title: 'List My Sessions',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List all active sessions.. Shows all active sessions for the current user.',
   inputSchema: {
     type: 'object',

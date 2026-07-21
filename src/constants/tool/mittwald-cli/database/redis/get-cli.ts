@@ -5,6 +5,11 @@ import { handleDatabaseRedisGetCli } from '../../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: 'mittwald_database_redis_get',
   title: 'Get Redis Database',
+  annotations: {
+    title: 'Get Redis Database',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'Retrieve details for a Redis database.',
   inputSchema: {
     type: 'object',

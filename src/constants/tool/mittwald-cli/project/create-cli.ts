@@ -5,6 +5,11 @@ import { handleProjectCreateCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: "mittwald_project_create",
   title: "Create Project",
+  annotations: {
+    title: "Create Project",
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: "Create a new project.",
   inputSchema: {
     type: "object",

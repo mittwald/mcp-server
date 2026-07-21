@@ -5,6 +5,11 @@ import { handleVolumeListCli } from '../../../../handlers/tools/mittwald-cli/vol
 const tool: Tool = {
   name: 'mittwald_volume_list',
   title: 'List Volumes',
+  annotations: {
+    title: 'List Volumes',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'List persistent volumes that belong to a project stack.',
   inputSchema: {
     type: 'object',

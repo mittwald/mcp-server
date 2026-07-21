@@ -5,6 +5,11 @@ import { handleProjectFilesystemUsageCli } from '../../../../handlers/tools/mitt
 const tool: Tool = {
   name: "mittwald_project_filesystem_usage",
   title: "Get Filesystem Usage",
+  annotations: {
+    title: "Get Filesystem Usage",
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: "Get a project directory filesystem usage.",
   inputSchema: {
     type: "object",

@@ -15,6 +15,11 @@ export interface DdevInitCliParameters {
 export const mittwald_ddev_init_cli: Tool = {
   name: 'mittwald_ddev_init',
   title: 'Initialize DDEV Project',
+  annotations: {
+    title: 'Initialize DDEV Project',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Initialize DDEV project configuration.',
   inputSchema: {
     type: "object",

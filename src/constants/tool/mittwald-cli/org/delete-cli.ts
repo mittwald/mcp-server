@@ -5,6 +5,11 @@ import { handleOrgDeleteCli } from '../../../../handlers/tools/mittwald-cli/org/
 const tool: Tool = {
   name: 'mittwald_org_delete',
   title: 'Delete Organization',
+  annotations: {
+    title: 'Delete Organization',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Delete an organization. This is a destructive operation and cannot be undone.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,11 @@ import { handleOrgMembershipRevokeCli } from '../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: 'mittwald_org_membership_revoke',
   title: 'Revoke Organization Membership',
+  annotations: {
+    title: 'Revoke Organization Membership',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Revoke a user\'s membership to an organization.',
   inputSchema: {
     type: 'object',

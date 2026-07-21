@@ -5,6 +5,11 @@ import { handleExtensionUninstallCli } from '../../../../handlers/tools/mittwald
 const tool: Tool = {
   name: 'mittwald_extension_uninstall',
   title: 'Uninstall Extension',
+  annotations: {
+    title: 'Uninstall Extension',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Remove an extension from an organization.',
   inputSchema: {
     type: 'object',

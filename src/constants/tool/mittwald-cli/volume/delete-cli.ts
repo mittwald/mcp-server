@@ -5,6 +5,11 @@ import { handleVolumeDeleteCli } from '../../../../handlers/tools/mittwald-cli/v
 const tool: Tool = {
   name: 'mittwald_volume_delete',
   title: 'Delete Volume',
+  annotations: {
+    title: 'Delete Volume',
+    readOnlyHint: false,
+    destructiveHint: true,
+  },
   description: 'Delete a persistent volume. WARNING: This permanently removes stored data.',
   inputSchema: {
     type: 'object',

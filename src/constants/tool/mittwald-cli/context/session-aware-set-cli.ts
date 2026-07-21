@@ -13,6 +13,11 @@ export interface SessionAwareContextSetCliParameters {
 const tool: Tool = {
   name: 'mittwald_context_set_session',
   title: 'Set Session Context',
+  annotations: {
+    title: 'Set Session Context',
+    readOnlyHint: false,
+    destructiveHint: false,
+  },
   description: 'Set user context in Redis session (session-aware, multi-tenant safe)',
   inputSchema: {
     type: "object",

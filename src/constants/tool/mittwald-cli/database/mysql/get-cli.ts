@@ -5,6 +5,11 @@ import { handleDatabaseMysqlGetCli } from '../../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: "mittwald_database_mysql_get",
   title: "Get MySQL Database Details",
+  annotations: {
+    title: "Get MySQL Database Details",
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: "Get a MySQL database.",
   inputSchema: {
     type: "object",

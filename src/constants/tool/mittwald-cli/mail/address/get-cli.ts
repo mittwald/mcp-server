@@ -10,6 +10,11 @@ import { handleMittwaldMailAddressGetCli } from '../../../../../handlers/tools/m
 const tool: Tool = {
   name: 'mittwald_mail_address_get',
   title: 'Get Mail Address Details',
+  annotations: {
+    title: 'Get Mail Address Details',
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: 'Get a specific mail address.',
   inputSchema: {
     type: 'object',

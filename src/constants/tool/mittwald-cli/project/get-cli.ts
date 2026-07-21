@@ -5,6 +5,11 @@ import { handleProjectGetCli } from '../../../../handlers/tools/mittwald-cli/pro
 const tool: Tool = {
   name: "mittwald_project_get",
   title: "Get Project Details",
+  annotations: {
+    title: "Get Project Details",
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
   description: "Get details of a project.",
   inputSchema: {
     type: "object",
