@@ -84,6 +84,19 @@ npm run test     # Run tests
 ## Code Style
 Follow standard TypeScript conventions.
 
+**No banner-comment subsections.** If a file needs
+
+```typescript
+// ============================================================================
+// SOME SECTION
+// ============================================================================
+```
+
+to stay navigable, it is too big — split it into one file per section instead. In
+`packages/mittwald-cli-core/src/resources/` that means one file per resource (`backup.ts`,
+`domain.ts`, `database-mysql.ts`, …), re-exported from `src/index.ts`. Consumers import from the
+package root (`@mittwald-mcp/cli-core`), so splitting a module never changes their imports.
+
 ## Tool Annotations - CRITICAL
 
 **Every new tool MUST declare a title and behavioural hints.** This is a hard requirement of the
@@ -133,9 +146,9 @@ via the Mittwald API and return a ready-to-run command for the agent to execute 
 
 Helpers live in `src/utils/ssh-command.ts` and `src/utils/mysql-ssh-command.ts`. The API lookups
 live with their resource, not in a shared "connectivity" module: `getProjectSshConnection` in
-`resources/project.ts`, `getAppSshConnection` in `resources/app.ts`, `getMysqlConnection` and
-`getPhpMyAdminUrl` in `resources/database.ts`, `getBackupDownloadUrl` in `resources/infrastructure.ts`
-(all under `packages/mittwald-cli-core/src/`). Never shell out to `ssh`,
+`resources/project-ssh.ts`, `getAppSshConnection` in `resources/app-ssh.ts`, `getMysqlConnection`
+and `getPhpMyAdminUrl` in `resources/database-mysql-connection.ts`, `getBackupDownloadUrl` in
+`resources/backup.ts` (all under `packages/mittwald-cli-core/src/`). Never shell out to `ssh`,
 `mysqldump`, `curl` or `open` from a handler — build the command and hand it back instead.
 MySQL passwords go into the command via `MYSQL_PWD`, never `-p<password>` (which leaks into the
 remote process list).

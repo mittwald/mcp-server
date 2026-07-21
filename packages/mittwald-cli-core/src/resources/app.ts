@@ -1,17 +1,11 @@
 /**
- * App resource library functions
- * Comprehensive wrappers for all app operations
+ * App installation operations
  */
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
+import { LibraryError } from '../contracts/functions.js';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
-import { LibraryError, libraryErrorFromApiError } from '../contracts/functions.js';
-import { getSSHConnectionForAppInstallation } from '../lib/resources/ssh/appinstall.js';
-
-// ============================================================================
-// LIST APPS
-// ============================================================================
 
 export interface ListAppsOptions extends LibraryFunctionBase {
   projectId: string;
@@ -47,10 +41,6 @@ export async function listApps(options: ListAppsOptions): Promise<LibraryResult<
     );
   }
 }
-
-// ============================================================================
-// GET APP
-// ============================================================================
 
 export interface GetAppOptions extends LibraryFunctionBase {
   installationId: string;
@@ -89,10 +79,6 @@ export async function getApp(options: GetAppOptions): Promise<LibraryResult<any>
   }
 }
 
-// ============================================================================
-// GET PROJECT ID FROM INSTALLATION
-// ============================================================================
-
 export interface GetProjectIdFromInstallationOptions extends LibraryFunctionBase {
   installationId: string;
 }
@@ -126,10 +112,6 @@ export async function getProjectIdFromInstallation(
   }
 }
 
-// ============================================================================
-// UNINSTALL APP
-// ============================================================================
-
 export interface UninstallAppOptions extends LibraryFunctionBase {
   installationId: string;
 }
@@ -151,10 +133,6 @@ export async function uninstallApp(options: UninstallAppOptions): Promise<Librar
     );
   }
 }
-
-// ============================================================================
-// UPDATE APP
-// ============================================================================
 
 export interface UpdateAppOptions extends LibraryFunctionBase {
   installationId: string;
@@ -188,10 +166,6 @@ export async function updateApp(options: UpdateAppOptions): Promise<LibraryResul
   }
 }
 
-// ============================================================================
-// COPY APP
-// ============================================================================
-
 export interface CopyAppOptions extends LibraryFunctionBase {
   installationId: string;
   description?: string;
@@ -221,206 +195,3 @@ export async function copyApp(options: CopyAppOptions): Promise<LibraryResult<an
     );
   }
 }
-
-// ============================================================================
-// LIST ALL APPS (APP TYPES)
-// ============================================================================
-
-export interface ListAllAppsOptions extends LibraryFunctionBase {}
-
-/**
- * Lists all available app types (PHP, Node.js, etc.) from the Mittwald catalog.
- */
-export async function listAllApps(options: ListAllAppsOptions): Promise<LibraryResult<any[]>> {
-  const startTime = performance.now();
-
-  try {
-    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const response = await client.app.listApps();
-    assertStatus(response, 200);
-
-    return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
-  } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
-  }
-}
-
-// ============================================================================
-// RESOLVE APP NAME TO UUID
-// ============================================================================
-
-export interface ResolveAppNameOptions extends LibraryFunctionBase {
-  appName: string;
-}
-
-/**
- * Resolves an app name (e.g., "PHP", "Node.js") to its UUID.
- */
-export async function resolveAppNameToUuid(options: ResolveAppNameOptions): Promise<LibraryResult<string>> {
-  const startTime = performance.now();
-
-  try {
-    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const { getAppUuidFromAppName } = await import('../lib/resources/app/uuid.js');
-    const appUuid = await getAppUuidFromAppName(client, options.appName);
-
-    return { data: appUuid, status: 200, durationMs: performance.now() - startTime };
-  } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
-  }
-}
-
-// ============================================================================
-// APP VERSIONS
-// ============================================================================
-
-export interface GetAppVersionsOptions extends LibraryFunctionBase {
-  appId: string;
-  recommended?: boolean;
-}
-
-export async function getAppVersions(options: GetAppVersionsOptions): Promise<LibraryResult<any[]>> {
-  const startTime = performance.now();
-
-  try {
-    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const response = await client.app.listAppversions({ appId: options.appId });
-    assertStatus(response, 200);
-
-    return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
-  } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
-  }
-}
-
-// ============================================================================
-// LIST UPGRADE CANDIDATES
-// ============================================================================
-
-export interface ListUpgradeCandidatesOptions extends LibraryFunctionBase {
-  installationId: string;
-}
-
-export async function listUpgradeCandidates(options: ListUpgradeCandidatesOptions): Promise<LibraryResult<any[]>> {
-  const startTime = performance.now();
-
-  try {
-    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const response = await client.app.getAppinstallation({ appInstallationId: options.installationId });
-    assertStatus(response, 200);
-
-    // Get available versions for the app
-    const versionsResponse = await client.app.listAppversions({ appId: response.data.appId });
-    assertStatus(versionsResponse, 200);
-
-    // Filter for upgrade candidates (versions newer than current)
-    const currentVersion = response.data.appVersion.desired;
-    const candidates = versionsResponse.data.filter((v: any) => v.id !== currentVersion);
-
-    return { data: candidates, status: 200, durationMs: performance.now() - startTime };
-  } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
-  }
-}
-
-// ============================================================================
-// UPGRADE APP
-// ============================================================================
-
-export interface UpgradeAppOptions extends LibraryFunctionBase {
-  installationId: string;
-  targetVersion?: string;
-}
-
-export async function upgradeApp(options: UpgradeAppOptions): Promise<LibraryResult<void>> {
-  const startTime = performance.now();
-
-  try {
-    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-
-    const data: any = {};
-    if (options.targetVersion) data.appVersionId = options.targetVersion;
-
-    const response = await client.app.patchAppinstallation({
-      appInstallationId: options.installationId,
-      data,
-    });
-    assertStatus(response, 204);
-
-    return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
-  } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
-  }
-}
-
-// ============================================================================
-// SSH CONNECTION
-// ============================================================================
-
-export interface GetAppSshConnectionOptions extends LibraryFunctionBase {
-  installationId: string;
-  /** Override the SSH user; defaults to the authenticated mStudio user */
-  sshUser?: string;
-}
-
-export interface AppSshConnection {
-  /** SSH hostname of the project's cluster */
-  host: string;
-  /** SSH username (`<mStudio user>@<app short id>`) */
-  user: string;
-  /** The app installation's directory */
-  directory: string;
-  installationId: string;
-  appShortId: string;
-}
-
-/**
- * Resolves the SSH connection data for an app installation.
- *
- * This only looks up the endpoint; establishing the connection is up to the caller.
- */
-export async function getAppSshConnection(
-  options: GetAppSshConnectionOptions
-): Promise<LibraryResult<AppSshConnection>> {
-  const startTime = performance.now();
-
-  try {
-    const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
-    const { host, user, directory, appShortId } = await getSSHConnectionForAppInstallation(
-      client,
-      options.installationId,
-      options.sshUser
-    );
-
-    return {
-      data: { host, user, directory, installationId: options.installationId, appShortId },
-      status: 200,
-      durationMs: performance.now() - startTime,
-    };
-  } catch (error) {
-    throw libraryErrorFromApiError(error, startTime);
-  }
-}
-
-// Add more app functions as needed...
-// (dependencies, create, install variants, etc.)
