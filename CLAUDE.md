@@ -117,6 +117,26 @@ Never set both `readOnlyHint` and `destructiveHint` to `true`.
 `tests/unit/tools/tool-annotations.test.ts` enforces this across the whole registry — it will fail
 if a new tool is missing a title or either hint.
 
+## Return Connection Data, Don't Execute - CRITICAL
+
+The MCP server is stateless and must never open interactive sessions, tunnels, browsers or
+file transfers on the server host. Tools that cover such operations resolve the **connection data**
+via the Mittwald API and return a ready-to-run command for the agent to execute locally:
+
+| Tool | Returns |
+| --- | --- |
+| `mittwald_app_ssh` / `mittwald_project_ssh` | SSH host, user, directory + `ssh` command |
+| `mittwald_database_mysql_port_forward` | `ssh -N -L <port>:<host>:3306` command |
+| `mittwald_database_mysql_dump` / `_import` | `ssh … mysqldump/mysql` command piped to/from a local file |
+| `mittwald_database_mysql_phpmyadmin` | phpMyAdmin URL (no browser is opened) |
+| `mittwald_backup_download` | Backup export download URL (no file is transferred) |
+
+Helpers live in `src/utils/ssh-command.ts` and `src/utils/mysql-ssh-command.ts`; the API lookups
+live in `packages/mittwald-cli-core/src/resources/connectivity.ts`. Never shell out to `ssh`,
+`mysqldump`, `curl` or `open` from a handler — build the command and hand it back instead.
+MySQL passwords go into the command via `MYSQL_PWD`, never `-p<password>` (which leaks into the
+remote process list).
+
 ## Mittwald OAuth Scopes - CRITICAL
 
 **Mittwald accepts scopes in `resource:action` format ONLY:**

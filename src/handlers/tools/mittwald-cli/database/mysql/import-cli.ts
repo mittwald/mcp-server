@@ -1,149 +1,107 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { getMysqlConnection, LibraryError } from '@mittwald-mcp/cli-core';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { buildSshCommand, SSH_USAGE_NOTE, shellQuote } from '../../../../../utils/ssh-command.js';
+import { buildRemoteMysqlCommand, passwordNote } from '../../../../../utils/mysql-ssh-command.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldDatabaseMysqlImportArgs {
-  databaseId: string;
-  input: string;
-  quiet?: boolean;
+  databaseId?: string;
+  input?: string;
   mysqlPassword?: string;
   mysqlCharset?: string;
-  temporaryUser?: boolean;
+  gzip?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
-  gzip?: boolean;
 }
 
-function buildCliArgs(args: MittwaldDatabaseMysqlImportArgs): string[] {
-  const cliArgs: string[] = ['database', 'mysql', 'import', args.databaseId, '--input', args.input];
+export const handleDatabaseMysqlImportCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlImportArgs> = async (
+  args,
+  sessionId
+) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.mysqlPassword) cliArgs.push('--mysql-password', args.mysqlPassword);
-  if (args.mysqlCharset) cliArgs.push('--mysql-charset', args.mysqlCharset);
-  if (args.temporaryUser !== undefined) cliArgs.push(args.temporaryUser ? '--temporary-user' : '--no-temporary-user');
-  if (args.sshUser) cliArgs.push('--ssh-user', args.sshUser);
-  if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
-  if (args.gzip) cliArgs.push('--gzip');
-
-  return cliArgs;
-}
-
-function buildCliOptions(args: MittwaldDatabaseMysqlImportArgs) {
-  const env: Record<string, string> = {};
-
-  if (args.mysqlPassword) env.MYSQL_PWD = args.mysqlPassword;
-  if (args.sshUser) env.MITTWALD_SSH_USER = args.sshUser;
-  if (args.sshIdentityFile) env.MITTWALD_SSH_IDENTITY_FILE = args.sshIdentityFile;
-
-  return {
-    timeout: 300000,
-    ...(Object.keys(env).length ? { env } : {}),
-  };
-}
-
-function mapCliError(error: CliToolError, args: MittwaldDatabaseMysqlImportArgs): string {
-  const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}`.toLowerCase();
-  const errorText = error.stderr || error.stdout || error.message;
-
-  if (
-    combined.includes('403') ||
-    combined.includes('forbidden') ||
-    combined.includes('permission denied')
-  ) {
-    return `Permission denied when importing to MySQL database. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorText}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  if (combined.includes('not found') || combined.includes('404')) {
-    if (combined.includes('database')) {
-      return `MySQL database not found. Please verify the database ID: ${args.databaseId}\nError: ${errorText}`;
-    }
-    return `Input file not found. Please verify the file path: ${args.input}\nError: ${errorText}`;
-  }
-
-  if (combined.includes('ssh') && combined.includes('connection')) {
-    return `SSH connection failed. Check your SSH configuration and credentials.\nError: ${errorText}`;
-  }
-
-  if (combined.includes('password') && combined.includes('authentication')) {
-    return `MySQL authentication failed. Check your password or enable temporary user option.\nError: ${errorText}`;
-  }
-
-  if (combined.includes('timeout') || combined.includes('timed out')) {
-    return `Database import operation timed out. Try again or check file size and compression.\nError: ${errorText}`;
-  }
-
-  if (combined.includes('permission denied') && combined.includes('file')) {
-    return `Cannot read input file. Check file permissions and path: ${args.input}\nError: ${errorText}`;
-  }
-
-  if (combined.includes('sql') && combined.includes('syntax')) {
-    return `SQL syntax error in dump file. Please verify the dump file format and content.\nError: ${errorText}`;
-  }
-
-  if (combined.includes('disk') && combined.includes('space')) {
-    return `Insufficient disk space for import operation. Please free up space or contact support.\nError: ${errorText}`;
-  }
-
-  return `Failed to import MySQL dump: ${errorText}`;
-}
-
-export const handleDatabaseMysqlImportCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlImportArgs> = async (args) => {
   if (!args.databaseId) {
-    return formatToolResponse('error', 'Database ID is required.');
+    return formatToolResponse('error', 'Database ID is required. Please provide the databaseId parameter.');
   }
 
-  if (!args.input) {
-    return formatToolResponse('error', 'Input path is required.');
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
-
-  const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
-      toolName: 'mittwald_database_mysql_import',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-      cliOptions: buildCliOptions(args),
+    const result = await getMysqlConnection({
+      databaseId: args.databaseId,
+      sshUser: args.sshUser,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-    const inputSource = args.input === '-' || args.input === '/dev/stdin' ? 'stdin' : args.input;
-    const message = args.quiet
-      ? stdout || 'Import completed'
-      : `Successfully imported MySQL dump from ${inputSource} to database '${args.databaseId}'`;
+    const { database, hostname, databaseUser, characterSet, sshHost, sshUser } = result.data;
+    const inputFile = args.input ?? `${database}.sql${args.gzip ? '.gz' : ''}`;
+
+    const remoteCommand = buildRemoteMysqlCommand({
+      binary: 'mysql',
+      hostname,
+      user: databaseUser,
+      database,
+      password: args.mysqlPassword,
+      charset: args.mysqlCharset ?? characterSet,
+      gzip: args.gzip,
+    });
+
+    const sshCommand = buildSshCommand({
+      user: sshUser,
+      host: sshHost,
+      identityFile: args.sshIdentityFile,
+      remoteCommand: args.gzip ? `bash -c ${shellQuote(remoteCommand)}` : remoteCommand,
+    });
+
+    const command = `${sshCommand} < ${shellQuote(inputFile)}`;
 
     return formatToolResponse(
       'success',
-      message,
+      `MySQL import instructions for database ${database}`,
       {
-        databaseId: args.databaseId,
-        inputFile: args.input,
-        compressed: args.gzip || false,
-        temporaryUser: args.temporaryUser,
-        success: true,
-        output,
+        databaseId: result.data.databaseId,
+        database,
+        databaseUser,
+        hostname,
+        characterSet: args.mysqlCharset ?? characterSet,
+        sshHost,
+        sshUser,
+        inputFile,
+        gzip: Boolean(args.gzip),
+        command,
+        instructions:
+          'Run the command below on your own machine; this MCP server does not stream dumps.\n\n' +
+          `${command}\n\n` +
+          `The local file ${inputFile} is piped into mysql running on the hosting environment. ` +
+          'This overwrites existing data in the target database - consider creating a backup first ' +
+          '(mittwald_backup_create).\n' +
+          `${passwordNote(Boolean(args.mysqlPassword))}\n\n` +
+          SSH_USAGE_NOTE,
       },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
-      }
+      { durationMs: result.durationMs }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
       });
     }
 
+    logger.error('Unexpected error in MySQL import handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to build MySQL import instructions: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

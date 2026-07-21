@@ -4,13 +4,15 @@ import { handleDatabaseMysqlDumpCli } from '../../../../../handlers/tools/mittwa
 
 const tool: Tool = {
   name: "mittwald_database_mysql_dump",
-  title: "Export MySQL Database",
+  title: "Get MySQL Dump Instructions",
   annotations: {
-    title: "Export MySQL Database",
+    title: "Get MySQL Dump Instructions",
     readOnlyHint: true,
     destructiveHint: false,
   },
-  description: "Create a dump of a MySQL database.",
+  description:
+    "Get a ready-to-run command that dumps a MySQL database via SSH and mysqldump into a local file. " +
+    "This tool does not create the dump itself - run the returned command locally.",
   inputSchema: {
     type: "object",
     properties: {
@@ -20,38 +22,30 @@ const tool: Tool = {
       },
       output: {
         type: "string",
-        description: "The output file to write the dump to ('-' for stdout)"
-      },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary"
+        description: "Local file the dump should be written to; defaults to <database>.sql (or .sql.gz with gzip)"
       },
       mysqlPassword: {
         type: "string",
-        description: "The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD)"
+        description: "Password of the MySQL user; if omitted, the returned command contains a placeholder to fill in"
       },
       mysqlCharset: {
         type: "string",
-        description: "The character set to use for the MySQL connection"
-      },
-      temporaryUser: {
-        type: "boolean",
-        description: "Create a temporary user for the dump (recommended for security)"
-      },
-      sshUser: {
-        type: "string",
-        description: "Override the SSH user to connect with"
-      },
-      sshIdentityFile: {
-        type: "string",
-        description: "The SSH identity file (private key) to use for public key authentication"
+        description: "Character set for the MySQL connection; defaults to the database's own character set"
       },
       gzip: {
         type: "boolean",
         description: "Compress the dump with gzip (recommended for large databases)"
+      },
+      sshUser: {
+        type: "string",
+        description: "Override the SSH user to connect with; if omitted, your own mStudio user will be used"
+      },
+      sshIdentityFile: {
+        type: "string",
+        description: "The SSH identity file (private key) to include in the returned ssh command"
       }
     },
-    required: ["databaseId", "output"]
+    required: ["databaseId"]
   }
 };
 

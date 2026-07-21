@@ -4,13 +4,15 @@ import { handleDatabaseMysqlPhpmyadminCli } from '../../../../../handlers/tools/
 
 const tool: Tool = {
   name: "mittwald_database_mysql_phpmyadmin",
-  title: "Open phpMyAdmin",
+  title: "Get phpMyAdmin URL",
   annotations: {
-    title: "Open phpMyAdmin",
+    title: "Get phpMyAdmin URL",
     readOnlyHint: true,
     destructiveHint: false,
   },
-  description: "Open phpMyAdmin for a MySQL database (provides command for browser execution)",
+  description:
+    "Get the phpMyAdmin URL for a MySQL database's main user. " +
+    "This tool does not open a browser - open the returned URL yourself.",
   inputSchema: {
     type: "object",
     properties: {

@@ -4,13 +4,16 @@ import { handleDatabaseMysqlImportCli } from '../../../../../handlers/tools/mitt
 
 const tool: Tool = {
   name: "mittwald_database_mysql_import",
-  title: "Import MySQL Database",
+  title: "Get MySQL Import Instructions",
   annotations: {
-    title: "Import MySQL Database",
-    readOnlyHint: false,
-    destructiveHint: true,
+    title: "Get MySQL Import Instructions",
+    readOnlyHint: true,
+    destructiveHint: false,
   },
-  description: "Import a dump into a MySQL database.",
+  description:
+    "Get a ready-to-run command that imports a local dump file into a MySQL database via SSH. " +
+    "This tool does not import anything itself - run the returned command locally. " +
+    "Note that running the returned command overwrites data in the target database.",
   inputSchema: {
     type: "object",
     properties: {
@@ -20,38 +23,30 @@ const tool: Tool = {
       },
       input: {
         type: "string",
-        description: "The input file from which to read the dump ('-' for stdin)"
-      },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary"
+        description: "Local dump file to import; defaults to <database>.sql (or .sql.gz with gzip)"
       },
       mysqlPassword: {
         type: "string",
-        description: "The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD)"
+        description: "Password of the MySQL user; if omitted, the returned command contains a placeholder to fill in"
       },
       mysqlCharset: {
         type: "string",
-        description: "The character set to use for the MySQL connection"
-      },
-      temporaryUser: {
-        type: "boolean",
-        description: "Create a temporary user for the import (recommended for security)"
-      },
-      sshUser: {
-        type: "string",
-        description: "Override the SSH user to connect with"
-      },
-      sshIdentityFile: {
-        type: "string",
-        description: "The SSH identity file (private key) to use for public key authentication"
+        description: "Character set for the MySQL connection; defaults to the database's own character set"
       },
       gzip: {
         type: "boolean",
-        description: "Uncompress the dump with gzip while importing"
+        description: "The input file is gzip-compressed and should be decompressed while importing"
+      },
+      sshUser: {
+        type: "string",
+        description: "Override the SSH user to connect with; if omitted, your own mStudio user will be used"
+      },
+      sshIdentityFile: {
+        type: "string",
+        description: "The SSH identity file (private key) to include in the returned ssh command"
       }
     },
-    required: ["databaseId", "input"]
+    required: ["databaseId"]
   }
 };
 

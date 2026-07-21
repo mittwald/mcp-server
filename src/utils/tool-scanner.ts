@@ -25,8 +25,6 @@ import type {
  * a no-CLI-spawn runtime (see docs/UNMIGRATED-TOOLS-ANALYSIS.md).
  */
 export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
-  'mittwald_login_reset': 'security reasons in multi-tenant environment',
-  'mittwald_login_token': 'security reasons in multi-tenant environment',
   'mittwald_org_delete': 'organization deletion is irreversible and no org/create tool exists for safe testing',
 
   // Disabled to guarantee "no mw spawn" in normal operation (not yet migrated or not suitable for MCP).
@@ -64,18 +62,13 @@ export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
   'mittwald_sftp_user_list': 'SFTP feature incomplete - create/update not supported due to CLI-only parameter coverage',
   'mittwald_volume_delete': 'not migrated to library yet (CLI-based safety checks)',
 
-  // Interactive/streaming/file-transfer operations (incompatible with stateless MCP requests).
-  'mittwald_app_ssh': 'interactive shell session not supported via MCP',
-  'mittwald_database_mysql_shell': 'interactive shell session not supported via MCP',
-  'mittwald_database_mysql_port_forward': 'long-running port-forward/tunnel not supported via MCP',
+  // Interactive/streaming operations (incompatible with stateless MCP requests).
+  //
+  // NOTE: SSH, port-forward, dump/import, phpMyAdmin and backup download are NOT excluded.
+  // Those tools no longer perform the operation on the server; they resolve the connection
+  // data (SSH endpoint, download URL, phpMyAdmin URL) and hand it to the agent, which runs
+  // the command or downloads the file on its own machine.
   'mittwald_container_run': 'interactive/arb command execution not supported via MCP',
-  'mittwald_app_download': 'local file download/upload not supported via MCP',
-  'mittwald_app_upload': 'local file download/upload not supported via MCP',
-  'mittwald_backup_download': 'local file download/upload not supported via MCP',
-  'mittwald_app_open': 'opens a browser on the host; not supported via MCP',
-  'mittwald_database_mysql_dump': 'streams large exports; not supported via MCP',
-  'mittwald_database_mysql_import': 'streams large imports; not supported via MCP',
-  'mittwald_database_mysql_phpmyadmin': 'opens a browser on the host; not supported via MCP',
 
   // No stable API support.
   'mittwald_cronjob_execution_logs': 'no API support for execution logs',
@@ -83,7 +76,6 @@ export const EXCLUDED_TOOLS_WITH_REASONS: Record<string, string> = {
   'mittwald_database_list': 'CLI-only wrapper; no direct API equivalent',
 
   // Local development helpers.
-  'mittwald_ddev_init': 'local development helper (not supported in MCP server runtime)',
   'mittwald_ddev_render_config': 'local development helper (not supported in MCP server runtime)',
 
   // Conversation tools (no OAuth scope support - admin-only endpoints).

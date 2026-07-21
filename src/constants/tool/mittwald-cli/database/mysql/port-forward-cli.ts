@@ -4,13 +4,15 @@ import { handleDatabaseMysqlPortForwardCli } from '../../../../../handlers/tools
 
 const tool: Tool = {
   name: "mittwald_database_mysql_port_forward",
-  title: "Forward MySQL Port",
+  title: "Get MySQL Port Forwarding Instructions",
   annotations: {
-    title: "Forward MySQL Port",
-    readOnlyHint: false,
-    destructiveHint: true,
+    title: "Get MySQL Port Forwarding Instructions",
+    readOnlyHint: true,
+    destructiveHint: false,
   },
-  description: "Forward the TCP port of a MySQL database to a local port (provides command for long-running execution)",
+  description:
+    "Get a ready-to-run SSH port forwarding command that exposes a MySQL database on a local TCP port. " +
+    "This tool does not open the tunnel itself - run the returned command locally.",
   inputSchema: {
     type: "object",
     properties: {
@@ -18,21 +20,17 @@ const tool: Tool = {
         type: "string",
         description: "The ID or name of the database"
       },
-      quiet: {
-        type: "boolean",
-        description: "Suppress process output and only display a machine-readable summary"
-      },
-      sshUser: {
-        type: "string",
-        description: "Override the SSH user to connect with"
-      },
-      sshIdentityFile: {
-        type: "string",
-        description: "The SSH identity file (private key) to use for public key authentication"
-      },
       port: {
         type: "number",
         description: "The local TCP port to forward to (default: 3306)"
+      },
+      sshUser: {
+        type: "string",
+        description: "Override the SSH user to connect with; if omitted, your own mStudio user will be used"
+      },
+      sshIdentityFile: {
+        type: "string",
+        description: "The SSH identity file (private key) to include in the returned ssh command"
       }
     },
     required: ["databaseId"]

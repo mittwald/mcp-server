@@ -1,138 +1,105 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
+import { getMysqlConnection, LibraryError } from '@mittwald-mcp/cli-core';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { buildSshCommand, SSH_USAGE_NOTE, shellQuote } from '../../../../../utils/ssh-command.js';
+import { buildRemoteMysqlCommand, passwordNote } from '../../../../../utils/mysql-ssh-command.js';
+import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldDatabaseMysqlDumpArgs {
-  databaseId: string;
-  output: string;
-  quiet?: boolean;
+  databaseId?: string;
+  output?: string;
   mysqlPassword?: string;
   mysqlCharset?: string;
-  temporaryUser?: boolean;
+  gzip?: boolean;
   sshUser?: string;
   sshIdentityFile?: string;
-  gzip?: boolean;
 }
 
-function buildCliArgs(args: MittwaldDatabaseMysqlDumpArgs): string[] {
-  const cliArgs: string[] = ['database', 'mysql', 'dump', args.databaseId, '--output', args.output];
+export const handleDatabaseMysqlDumpCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlDumpArgs> = async (
+  args,
+  sessionId
+) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.mysqlPassword) cliArgs.push('--mysql-password', args.mysqlPassword);
-  if (args.mysqlCharset) cliArgs.push('--mysql-charset', args.mysqlCharset);
-  if (args.temporaryUser !== undefined) cliArgs.push(args.temporaryUser ? '--temporary-user' : '--no-temporary-user');
-  if (args.sshUser) cliArgs.push('--ssh-user', args.sshUser);
-  if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
-  if (args.gzip) cliArgs.push('--gzip');
-
-  return cliArgs;
-}
-
-function buildCliOptions(args: MittwaldDatabaseMysqlDumpArgs) {
-  const env: Record<string, string> = {};
-
-  if (args.mysqlPassword) env.MYSQL_PWD = args.mysqlPassword;
-  if (args.sshUser) env.MITTWALD_SSH_USER = args.sshUser;
-  if (args.sshIdentityFile) env.MITTWALD_SSH_IDENTITY_FILE = args.sshIdentityFile;
-
-  return {
-    timeout: 300000,
-    ...(Object.keys(env).length ? { env } : {}),
-  };
-}
-
-function mapCliError(error: CliToolError, args: MittwaldDatabaseMysqlDumpArgs): string {
-  const combined = `${error.stderr ?? ''}\n${error.stdout ?? ''}`.toLowerCase();
-  const errorText = error.stderr || error.stdout || error.message;
-
-  if (
-    combined.includes('403') ||
-    combined.includes('forbidden') ||
-    combined.includes('permission denied')
-  ) {
-    return `Permission denied when creating MySQL dump. Complete OAuth sign-in and ensure the Mittwald CLI is authenticated.\nError: ${errorText}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  if (combined.includes('not found') || combined.includes('404')) {
-    return `MySQL database not found. Please verify the database ID: ${args.databaseId}\nError: ${errorText}`;
-  }
-
-  if (combined.includes('ssh') && combined.includes('connection')) {
-    return `SSH connection failed. Check your SSH configuration and credentials.\nError: ${errorText}`;
-  }
-
-  if (combined.includes('password') && combined.includes('authentication')) {
-    return `MySQL authentication failed. Check your password or enable temporary user option.\nError: ${errorText}`;
-  }
-
-  if (combined.includes('timeout') || combined.includes('timed out')) {
-    return `Database dump operation timed out. Try again or use compression for large databases.\nError: ${errorText}`;
-  }
-
-  if (combined.includes('permission denied') && combined.includes('file')) {
-    return `Cannot write to output file. Check file permissions and path: ${args.output}\nError: ${errorText}`;
-  }
-
-  return `Failed to create MySQL dump: ${errorText}`;
-}
-
-export const handleDatabaseMysqlDumpCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlDumpArgs> = async (args) => {
   if (!args.databaseId) {
-    return formatToolResponse('error', 'Database ID is required.');
+    return formatToolResponse('error', 'Database ID is required. Please provide the databaseId parameter.');
   }
 
-  if (!args.output) {
-    return formatToolResponse('error', 'Output path is required.');
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
-
-  const argv = buildCliArgs(args);
 
   try {
-    const result = await invokeCliTool({
-      toolName: 'mittwald_database_mysql_dump',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-      cliOptions: buildCliOptions(args),
+    const result = await getMysqlConnection({
+      databaseId: args.databaseId,
+      sshUser: args.sshUser,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    const stdout = result.result.stdout ?? '';
-    const stderr = result.result.stderr ?? '';
-    const output = stdout || stderr;
-    const outputLocation = args.output === '-' || args.output === '/dev/stdout' ? 'stdout' : args.output;
-    const message = args.quiet
-      ? stdout || 'Dump completed'
-      : `Successfully created MySQL dump of database '${args.databaseId}' to ${outputLocation}`;
+    const { database, hostname, databaseUser, characterSet, sshHost, sshUser } = result.data;
+    const outputFile = args.output ?? `${database}.sql${args.gzip ? '.gz' : ''}`;
+
+    const remoteCommand = buildRemoteMysqlCommand({
+      binary: 'mysqldump',
+      hostname,
+      user: databaseUser,
+      database,
+      password: args.mysqlPassword,
+      charset: args.mysqlCharset ?? characterSet,
+      gzip: args.gzip,
+    });
+
+    const sshCommand = buildSshCommand({
+      user: sshUser,
+      host: sshHost,
+      identityFile: args.sshIdentityFile,
+      remoteCommand: args.gzip ? `bash -c ${shellQuote(remoteCommand)}` : remoteCommand,
+    });
+
+    const command = `${sshCommand} > ${shellQuote(outputFile)}`;
 
     return formatToolResponse(
       'success',
-      message,
+      `mysqldump instructions for database ${database}`,
       {
-        databaseId: args.databaseId,
-        outputFile: args.output,
-        compressed: args.gzip || false,
-        temporaryUser: args.temporaryUser,
-        success: true,
-        output,
+        databaseId: result.data.databaseId,
+        database,
+        databaseUser,
+        hostname,
+        characterSet: args.mysqlCharset ?? characterSet,
+        sshHost,
+        sshUser,
+        outputFile,
+        gzip: Boolean(args.gzip),
+        command,
+        instructions:
+          'Run the command below on your own machine; this MCP server does not stream dumps.\n\n' +
+          `${command}\n\n` +
+          `mysqldump runs on the hosting environment and the dump is written to ${outputFile} locally.\n` +
+          `${passwordNote(Boolean(args.mysqlPassword))}\n\n` +
+          SSH_USAGE_NOTE,
       },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
-      }
+      { durationMs: result.durationMs }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
       });
     }
 
+    logger.error('Unexpected error in MySQL dump handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to build mysqldump instructions: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };
