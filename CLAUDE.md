@@ -84,6 +84,39 @@ npm run test     # Run tests
 ## Code Style
 Follow standard TypeScript conventions.
 
+## Tool Annotations - CRITICAL
+
+**Every new tool MUST declare a title and behavioural hints.** This is a hard requirement of the
+[Claude connector review criteria](https://claude.com/docs/connectors/building/review-criteria#provide-tool-annotations)
+— a tool without them fails review.
+
+Each tool definition in `src/constants/tool/**` needs a top-level `title` plus an `annotations` block:
+
+```typescript
+const tool: Tool = {
+  name: 'mittwald_app_list',
+  title: 'List Apps',
+  annotations: {
+    title: 'List Apps',        // mirrors the top-level title (legacy clients read this one)
+    readOnlyHint: true,
+    destructiveHint: false,
+  },
+  description: '...',
+  inputSchema: { /* ... */ },
+};
+```
+
+**Choosing the hints:**
+- Read-only (`list`, `get`, `versions`, `logs`, `dump`, `download`): `readOnlyHint: true, destructiveHint: false`
+- Overwrites/removes/disrupts existing state (`delete`, `update`, `revoke`, `uninstall`, `stop`,
+  `restart`, `deploy`, interactive shells, arbitrary command execution): `readOnlyHint: false, destructiveHint: true`
+- Creates new resources only (`create`, `install`, `invite`, `execute`): `readOnlyHint: false, destructiveHint: false`
+
+Never set both `readOnlyHint` and `destructiveHint` to `true`.
+
+`tests/unit/tools/tool-annotations.test.ts` enforces this across the whole registry — it will fail
+if a new tool is missing a title or either hint.
+
 ## Mittwald OAuth Scopes - CRITICAL
 
 **Mittwald accepts scopes in `resource:action` format ONLY:**
