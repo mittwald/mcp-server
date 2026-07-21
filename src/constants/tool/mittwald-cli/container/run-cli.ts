@@ -8,7 +8,7 @@ const tool: Tool = {
   annotations: {
     title: 'Run Container',
     readOnlyHint: false,
-    destructiveHint: true,
+    destructiveHint: false,
   },
   description: 'Create and start a new container.',
   inputSchema: {

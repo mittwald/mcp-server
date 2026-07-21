@@ -8,7 +8,7 @@ const tool: Tool = {
   annotations: {
     title: 'Copy App',
     readOnlyHint: false,
-    destructiveHint: true,
+    destructiveHint: false,
   },
   description: 'Copy an app within a project.',
   inputSchema: {
