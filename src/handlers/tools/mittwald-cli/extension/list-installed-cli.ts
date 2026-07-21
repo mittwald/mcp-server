@@ -9,12 +9,6 @@ import { logger } from '../../../../utils/logger.js';
 interface MittwaldExtensionListInstalledCliArgs {
   projectId?: string;
   orgId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 function validateScope(args: MittwaldExtensionListInstalledCliArgs) {
@@ -54,11 +48,6 @@ export const handleExtensionListInstalledCli: MittwaldCliToolHandler<MittwaldExt
     const cliArgs = ['extension', 'list-installed', '--output', 'json'];
     if (args.projectId) cliArgs.push('--project-id', args.projectId);
     if (args.orgId) cliArgs.push('--org-id', args.orgId);
-    if (args.extended) cliArgs.push('--extended');
-    if (args.noHeader) cliArgs.push('--no-header');
-    if (args.noTruncate) cliArgs.push('--no-truncate');
-    if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
-    if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
 
     const result = await invokeCliTool({
       toolName: 'mittwald_extension_list_installed',

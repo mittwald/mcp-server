@@ -12,27 +12,6 @@ const tool: Tool = {
       projectId: {
         type: 'string',
         description: 'Project ID to inspect (format: p-xxxxx).'
-      },
-      extended: {
-        type: 'boolean',
-        description: 'Include extended information returned by the Mittwald CLI.'
-      },
-      noHeader: {
-        type: 'boolean',
-        description: 'Hide table header in textual CLI output.'
-      },
-      noTruncate: {
-        type: 'boolean',
-        description: 'Do not truncate columns in textual CLI output.'
-      },
-      noRelativeDates: {
-        type: 'boolean',
-        description: 'Show absolute dates instead of relative ones.'
-      },
-      csvSeparator: {
-        type: 'string',
-        enum: [',', ';'],
-        description: 'Separator used for CSV exports.'
       }
     },
     required: ['projectId']

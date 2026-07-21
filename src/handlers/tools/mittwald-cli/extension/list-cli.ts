@@ -6,16 +6,9 @@ import { sessionManager } from '../../../../server/session-manager.js';
 import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
 
-interface MittwaldExtensionListCliArgs {
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
-}
+type MittwaldExtensionListCliArgs = Record<string, never>;
 
-export const handleExtensionListCli: MittwaldCliToolHandler<MittwaldExtensionListCliArgs> = async (args, sessionId) => {
+export const handleExtensionListCli: MittwaldCliToolHandler<MittwaldExtensionListCliArgs> = async (_args, sessionId) => {
   const effectiveSessionId = sessionId || getCurrentSessionId();
 
   if (!effectiveSessionId) {
@@ -29,11 +22,6 @@ export const handleExtensionListCli: MittwaldCliToolHandler<MittwaldExtensionLis
 
   try {
     const cliArgs = ['extension', 'list', '--output', 'json'];
-    if (args.extended) cliArgs.push('--extended');
-    if (args.noHeader) cliArgs.push('--no-header');
-    if (args.noTruncate) cliArgs.push('--no-truncate');
-    if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
-    if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
 
     const result = await invokeCliTool({
       toolName: 'mittwald_extension_list',

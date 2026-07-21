@@ -7,7 +7,6 @@ import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldDatabaseRedisGetArgs {
   redisId: string;
-  outputFormat?: 'json' | 'yaml' | 'txt';
 }
 
 export const handleDatabaseRedisGetCli: MittwaldCliToolHandler<MittwaldDatabaseRedisGetArgs> = async (

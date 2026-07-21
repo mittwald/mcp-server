@@ -2,25 +2,10 @@ import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversa
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
 
-export interface MittwaldProjectMembershipListOwnArgs {
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
-}
+export type MittwaldProjectMembershipListOwnArgs = Record<string, never>;
 
-function buildCliArgs(args: MittwaldProjectMembershipListOwnArgs): string[] {
-  const cliArgs: string[] = ['project', 'membership', 'list-own', '--output', 'json'];
-
-  if (args.extended) cliArgs.push('--extended');
-  if (args.noHeader) cliArgs.push('--no-header');
-  if (args.noTruncate) cliArgs.push('--no-truncate');
-  if (args.noRelativeDates) cliArgs.push('--no-relative-dates');
-  if (args.csvSeparator) cliArgs.push('--csv-separator', args.csvSeparator);
-
-  return cliArgs;
+function buildCliArgs(_args: MittwaldProjectMembershipListOwnArgs): string[] {
+  return ['project', 'membership', 'list-own', '--output', 'json'];
 }
 
 function mapCliError(error: CliToolError): string {

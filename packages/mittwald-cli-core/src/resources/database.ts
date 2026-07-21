@@ -7,7 +7,7 @@ import { randomBytes } from 'node:crypto';
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
-import { LibraryError } from '../contracts/functions.js';
+import { libraryErrorFromApiError } from '../contracts/functions.js';
 
 // ============================================================================
 // MYSQL DATABASES
@@ -27,11 +27,7 @@ export async function listMysqlDatabases(options: ListMysqlDatabasesOptions): Pr
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -49,11 +45,7 @@ export async function getMysqlDatabase(options: GetMysqlDatabaseOptions): Promis
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -71,15 +63,64 @@ export interface CreateMysqlDatabaseOptions extends LibraryFunctionBase {
   userExternalAccess?: boolean;
 }
 
+const MYSQL_PASSWORD_ALPHANUMERIC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const MYSQL_PASSWORD_SPECIAL_CHARS = '#!~%^*_+-=?{}()<>|.,;$:/';
+const MYSQL_PASSWORD_ALL_CHARS = MYSQL_PASSWORD_ALPHANUMERIC + MYSQL_PASSWORD_SPECIAL_CHARS;
+const MYSQL_PASSWORD_FORBIDDEN_START = '-_;';
+
 function generateMySqlUserPassword(): string {
-  return randomBytes(16).toString('hex');
+  // API requires: min 8 chars, at least one special char, cannot start with -_;
+  // Generate 20 chars from 87-char alphabet, then fix up if needed
+  const bytes = randomBytes(22); // extra bytes for fixup randomness
+  const chars: string[] = [];
+
+  for (let i = 0; i < 20; i++) {
+    chars.push(MYSQL_PASSWORD_ALL_CHARS[bytes[i] % MYSQL_PASSWORD_ALL_CHARS.length]);
+  }
+
+  // Fix first char if it starts with forbidden character
+  if (MYSQL_PASSWORD_FORBIDDEN_START.includes(chars[0])) {
+    chars[0] = MYSQL_PASSWORD_ALPHANUMERIC[bytes[20] % MYSQL_PASSWORD_ALPHANUMERIC.length];
+  }
+
+  // Ensure at least one special char exists; if not, replace a random position (not first)
+  if (!chars.some(c => MYSQL_PASSWORD_SPECIAL_CHARS.includes(c))) {
+    const pos = 1 + (bytes[21] % 19);
+    chars[pos] = MYSQL_PASSWORD_SPECIAL_CHARS[bytes[20] % MYSQL_PASSWORD_SPECIAL_CHARS.length];
+  }
+
+  return chars.join('');
 }
 
-export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): Promise<LibraryResult<any>> {
+export interface CreateMysqlDatabaseResult {
+  /** The database ID */
+  id: string;
+  /** The default user ID */
+  userId: string;
+  /** The database name (for connection strings) */
+  name: string;
+  /** The internal hostname */
+  hostname: string;
+  /** The external hostname (for remote connections) */
+  externalHostname: string;
+  /** The username for the default user */
+  userName: string;
+  /** The password (only present if auto-generated) */
+  password?: string;
+  /** Whether the password was auto-generated */
+  passwordWasGenerated: boolean;
+}
+
+export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): Promise<LibraryResult<CreateMysqlDatabaseResult>> {
   const startTime = performance.now();
 
   try {
     const client = MittwaldAPIV2Client.newWithToken(options.apiToken);
+
+    // Track if we're generating the password
+    const passwordWasGenerated = !options.userPassword;
+    const password = options.userPassword ?? generateMySqlUserPassword();
+
     const data = {
       database: {
         projectId: options.projectId,
@@ -89,7 +130,7 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
       },
       user: {
         accessLevel: options.userAccessLevel ?? 'full',
-        password: options.userPassword ?? generateMySqlUserPassword(),
+        password,
         ...(options.userAccessIpMask !== undefined
           ? { accessIpMask: options.userAccessIpMask }
           : {}),
@@ -99,19 +140,35 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
       },
     };
 
-    const response = await client.database.createMysqlDatabase({
+    const createResponse = await client.database.createMysqlDatabase({
       projectId: options.projectId,
       data,
     });
-    assertStatus(response, 201);
+    assertStatus(createResponse, 201);
 
-    return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
+    // Fetch full database details to get hostname, name, and user info
+    const getResponse = await client.database.getMysqlDatabase({
+      mysqlDatabaseId: createResponse.data.id,
+    });
+    assertStatus(getResponse, 200);
+
+    const dbDetails = getResponse.data;
+
+    const result: CreateMysqlDatabaseResult = {
+      id: createResponse.data.id,
+      userId: createResponse.data.userId,
+      name: dbDetails.name,
+      hostname: dbDetails.hostname,
+      externalHostname: dbDetails.externalHostname,
+      userName: dbDetails.mainUser?.name ?? '',
+      passwordWasGenerated,
+      // Only include password if it was auto-generated (security: don't echo back user-provided passwords)
+      ...(passwordWasGenerated ? { password } : {}),
+    };
+
+    return { data: result, status: createResponse.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -129,11 +186,7 @@ export async function deleteMysqlDatabase(options: DeleteMysqlDatabaseOptions): 
 
     return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -155,11 +208,7 @@ export async function listMysqlUsers(options: ListMysqlUsersOptions): Promise<Li
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -177,11 +226,7 @@ export async function getMysqlUser(options: GetMysqlUserOptions): Promise<Librar
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -217,11 +262,7 @@ export async function createMysqlUser(options: CreateMysqlUserOptions): Promise<
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -239,11 +280,7 @@ export async function deleteMysqlUser(options: DeleteMysqlUserOptions): Promise<
 
     return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -271,11 +308,7 @@ export async function updateMysqlUser(options: UpdateMysqlUserOptions): Promise<
 
     return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -297,11 +330,7 @@ export async function listRedisDatabases(options: ListRedisDatabasesOptions): Pr
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -319,11 +348,7 @@ export async function getRedisDatabase(options: GetRedisDatabaseOptions): Promis
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -352,11 +377,7 @@ export async function createRedisDatabase(options: CreateRedisDatabaseOptions): 
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -380,10 +401,6 @@ export async function getDatabaseVersions(options: GetDatabaseVersionsOptions): 
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }

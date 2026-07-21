@@ -8,34 +8,7 @@ const tool: Tool = {
   description: "List all organization invites for the executing user.",
   inputSchema: {
     type: "object",
-    properties: {
-      output: {
-        type: "string",
-        description: "Output format",
-        enum: ["txt", "json", "yaml", "csv", "tsv"]
-      },
-      extended: {
-        type: "boolean",
-        description: "Show extended information"
-      },
-      noHeader: {
-        type: "boolean",
-        description: "Hide table header"
-      },
-      noTruncate: {
-        type: "boolean",
-        description: "Do not truncate output (only relevant for txt output)"
-      },
-      noRelativeDates: {
-        type: "boolean",
-        description: "Show dates in absolute format, not relative (only relevant for txt output)"
-      },
-      csvSeparator: {
-        type: "string",
-        description: "Separator for CSV output (only relevant for CSV output)",
-        enum: [",", ";"]
-      }
-    },
+    properties: {},
     required: []
   }
 };

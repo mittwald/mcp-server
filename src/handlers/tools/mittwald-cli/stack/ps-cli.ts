@@ -7,12 +7,6 @@ import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 interface MittwaldStackPsCliArgs {
   stackId?: string;
   projectId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 type RawService = {

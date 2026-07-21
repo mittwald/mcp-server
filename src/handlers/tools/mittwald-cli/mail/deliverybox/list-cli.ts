@@ -7,12 +7,6 @@ import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldMailDeliveryboxListArgs {
   projectId?: string;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 export const handleMittwaldMailDeliveryboxListCli: MittwaldCliToolHandler<MittwaldMailDeliveryboxListArgs> = async (args, sessionId) => {

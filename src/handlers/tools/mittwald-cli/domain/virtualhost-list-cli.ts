@@ -7,13 +7,6 @@ import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldDomainVirtualhostListArgs {
   projectId?: string;
-  all?: boolean;
-  output?: 'txt' | 'json' | 'yaml' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 type RawVirtualhostListItem = {

@@ -7,12 +7,6 @@ import { logger } from '../../../../../utils/logger.js';
 
 interface MittwaldDatabaseMysqlUserListArgs {
   databaseId: string;
-  outputFormat?: 'json' | 'yaml' | 'txt' | 'csv' | 'tsv';
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: ',' | ';';
 }
 
 export const handleDatabaseMysqlUserListCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlUserListArgs> = async (

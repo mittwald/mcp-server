@@ -15,7 +15,7 @@ const tool: Tool = {
       },
       version: {
         type: "string",
-        description: "The MySQL version to use (use 'database mysql versions' command to list available versions)"
+        description: "The MySQL version in '<major>.<minor>' format, e.g. '8.0' or '8.4'"
       },
       projectId: {
         type: "string",
@@ -35,7 +35,7 @@ const tool: Tool = {
       },
       userPassword: {
         type: "string",
-        description: "The password to use for the default user"
+        description: "The password for the default user. If omitted, a secure password is auto-generated. Requirements: min 8 chars, at least one special character (#!~%^*_+-=?{}()<>|.,;$:/), cannot start with -_;"
       },
       userExternal: {
         type: "boolean",

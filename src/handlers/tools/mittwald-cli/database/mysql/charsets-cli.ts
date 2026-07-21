@@ -3,41 +3,10 @@ import { formatToolResponse } from '../../../../../utils/format-tool-response.js
 import { parseJsonOutput } from '@/utils/cli-output.js';
 import { invokeCliTool, CliToolError } from '@/tools/index.js';
 
-interface MittwaldDatabaseMysqlCharsetsArgs {
-  output?: "txt" | "json" | "yaml" | "csv" | "tsv";
-  extended?: boolean;
-  noHeader?: boolean;
-  noTruncate?: boolean;
-  noRelativeDates?: boolean;
-  csvSeparator?: "," | ";";
-}
+type MittwaldDatabaseMysqlCharsetsArgs = Record<string, never>;
 
-export const handleDatabaseMysqlCharsetsCli: MittwaldToolHandler<MittwaldDatabaseMysqlCharsetsArgs> = async (args) => {
-  // Build CLI command arguments
-  const cliArgs: string[] = ['database', 'mysql', 'charsets'];
-
-  const outputFormat = args.output || 'json';
-  cliArgs.push('--output', outputFormat);
-
-  if (args.extended) {
-    cliArgs.push('--extended');
-  }
-
-  if (args.noHeader) {
-    cliArgs.push('--no-header');
-  }
-
-  if (args.noTruncate) {
-    cliArgs.push('--no-truncate');
-  }
-
-  if (args.noRelativeDates) {
-    cliArgs.push('--no-relative-dates');
-  }
-
-  if (args.csvSeparator && (outputFormat === 'csv' || outputFormat === 'tsv')) {
-    cliArgs.push('--csv-separator', args.csvSeparator);
-  }
+export const handleDatabaseMysqlCharsetsCli: MittwaldToolHandler<MittwaldDatabaseMysqlCharsetsArgs> = async () => {
+  const cliArgs: string[] = ['database', 'mysql', 'charsets', '--output', 'json'];
 
   try {
     const result = await invokeCliTool({
@@ -49,35 +18,23 @@ export const handleDatabaseMysqlCharsetsCli: MittwaldToolHandler<MittwaldDatabas
     const stdout = result.result.stdout ?? '';
     const stderr = result.result.stderr ?? '';
 
-    if (outputFormat === 'json') {
-      try {
-        const charsets = parseJsonOutput(stdout || stderr);
-        return formatToolResponse(
-          'success',
-          `Successfully retrieved ${Array.isArray(charsets) ? charsets.length : 'MySQL'} character sets and collations`,
-          charsets,
-          {
-            command: result.meta.command,
-            durationMs: result.meta.durationMs,
-          }
-        );
-      } catch (error) {
-        return formatToolResponse(
-          'error',
-          `Failed to parse JSON output: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
+    try {
+      const charsets = parseJsonOutput(stdout || stderr);
+      return formatToolResponse(
+        'success',
+        `Successfully retrieved ${Array.isArray(charsets) ? charsets.length : 'MySQL'} character sets and collations`,
+        charsets,
+        {
+          command: result.meta.command,
+          durationMs: result.meta.durationMs,
+        }
+      );
+    } catch (error) {
+      return formatToolResponse(
+        'error',
+        `Failed to parse JSON output: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
-
-    return formatToolResponse(
-      'success',
-      'MySQL character sets and collations retrieved successfully',
-      stdout || stderr,
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
-      }
-    );
   } catch (error) {
     if (error instanceof CliToolError) {
       const errorMessage = error.stderr || error.stdout || error.message;
