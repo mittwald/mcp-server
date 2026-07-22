@@ -135,10 +135,10 @@ entirely within closed or private systems. Read-only tools change nothing, so th
 `false`.
 
 In this codebase that means `openWorldHint: true` for app installs/updates/uninstalls, certificate
-requests, container and stack operations, cronjobs (they run arbitrary code), DNS zone and
-virtualhost changes, mail address changes, organisation invitations (they send email) and project
-deletion. Everything else — databases, backups, volumes, registries, SSH/SFTP users, API tokens,
-memberships, delivery boxes — stays `false`.
+requests, container/stack deployments, DNS zone and virtualhost changes, mail address changes,
+organisation invitations (they send email) and project deletion. Everything else — databases,
+backups, volumes, registries, SSH/SFTP users, API tokens, memberships, delivery boxes, cronjobs and
+container lifecycle operations (start/stop/restart) — stays `false`.
 
 `tests/unit/tools/tool-annotations.test.ts` enforces this across the whole registry — it will fail
 if a new tool is missing a title or any of the three hints.

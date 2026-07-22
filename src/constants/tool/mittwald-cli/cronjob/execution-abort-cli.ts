@@ -9,7 +9,7 @@ const tool: Tool = {
     title: 'Abort Cron Job Execution',
     readOnlyHint: false,
     destructiveHint: true,
-    openWorldHint: true,
+    openWorldHint: false,
   },
   description: 'Abort a cronjob execution.',
   inputSchema: {
