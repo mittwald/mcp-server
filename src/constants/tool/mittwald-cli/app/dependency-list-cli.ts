@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List App Dependencies',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get all available system software dependencies and optionally filter by app type or installation.',
   inputSchema: {

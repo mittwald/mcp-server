@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get MySQL User',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Retrieve details for a specific MySQL user.',
   inputSchema: {

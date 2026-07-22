@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get My Project Membership',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get details of own project membership.',
   inputSchema: {

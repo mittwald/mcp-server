@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get Backup Download URL',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description:
     'Get the download URL for a backup, requesting an export first if none exists yet. ' +

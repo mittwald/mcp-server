@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Restart Container',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Restart a container.',
   inputSchema: {

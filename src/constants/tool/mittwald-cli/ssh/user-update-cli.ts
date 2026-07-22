@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Update SSH User",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: "Update an existing SSH user.",
   inputSchema: {

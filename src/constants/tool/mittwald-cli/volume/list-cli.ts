@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Volumes',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List persistent volumes that belong to a project stack.',
   inputSchema: {

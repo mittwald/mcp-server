@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'Delete Delivery Box',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete a delivery box.',
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create Registry',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Create a new registry in Mittwald.',
   inputSchema: {

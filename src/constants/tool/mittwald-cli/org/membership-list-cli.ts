@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Organization Members',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List all memberships belonging to an organization.',
   inputSchema: {

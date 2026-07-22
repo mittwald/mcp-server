@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Update DNS Zone Records",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: "Update DNS zone records..",
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete SSH Key',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete an SSH key.. Permanently removes the specified SSH key.',
   inputSchema: {

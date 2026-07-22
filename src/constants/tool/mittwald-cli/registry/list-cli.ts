@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Registries',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List registries available in Mittwald.',
   inputSchema: {

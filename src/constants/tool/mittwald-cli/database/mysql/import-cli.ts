@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get MySQL Import Instructions",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description:
     "Get a ready-to-run command that imports a local dump file into a MySQL database via SSH. " +

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Run Container',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Create and start a new container.',
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List Databases",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List all databases.",
   inputSchema: {

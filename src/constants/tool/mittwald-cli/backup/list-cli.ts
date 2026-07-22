@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Backups',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List backups',
   inputSchema: {

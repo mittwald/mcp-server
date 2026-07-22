@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create Virtual Host',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Create a domain virtualhost.',
   inputSchema: {

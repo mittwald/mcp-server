@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create PHP Worker App',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Create a PHP worker app.',
   inputSchema: {

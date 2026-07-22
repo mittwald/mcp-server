@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'View Container Logs',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Display logs of a specific container. Use mittwald_container_list to find the containerId for your container.',
   inputSchema: {

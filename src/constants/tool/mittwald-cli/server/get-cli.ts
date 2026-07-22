@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get Server Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get server details.. Retrieves information about a specific server.',
   inputSchema: {

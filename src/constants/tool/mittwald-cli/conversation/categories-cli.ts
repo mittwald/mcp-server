@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Conversation Categories',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List conversation categories.',
   inputSchema: {

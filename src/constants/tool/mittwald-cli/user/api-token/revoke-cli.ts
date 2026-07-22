@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Revoke API Token',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Revoke an API token.. Permanently disables the specified API token.',
   inputSchema: {

@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'Create Delivery Box',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Create a new delivery box.',
   inputSchema: {

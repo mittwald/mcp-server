@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Uninstall Extension',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Remove an extension from an organization.',
   inputSchema: {

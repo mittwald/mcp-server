@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get API Token Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get a specific API token.. Retrieves information about a specific API token.',
   inputSchema: {

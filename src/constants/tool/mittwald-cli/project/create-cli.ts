@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Create Project",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "Create a new project.",
   inputSchema: {

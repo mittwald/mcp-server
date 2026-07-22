@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get DNS Zone Details",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "Get DNS zone information..",
   inputSchema: {

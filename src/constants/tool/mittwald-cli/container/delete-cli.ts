@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete Container',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Delete a container.',
   inputSchema: {

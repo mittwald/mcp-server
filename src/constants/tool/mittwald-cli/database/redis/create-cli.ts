@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create Redis Database',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Provision a new Redis database within a project.',
   inputSchema: {

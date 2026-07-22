@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Organizations',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get all organizations the authenticated user has access to.',
   inputSchema: {

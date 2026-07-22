@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'Delete Mail Address',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Delete a mail address.',
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Install Nextcloud",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: "Install Nextcloud application.",
   inputSchema: {

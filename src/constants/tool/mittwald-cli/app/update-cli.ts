@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Update App Properties',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Update properties of an app installation. (use upgrade to update the app version)',
   inputSchema: {

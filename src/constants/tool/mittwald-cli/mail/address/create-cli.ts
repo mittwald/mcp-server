@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'Create Mail Address',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Create a new mail address.',
   inputSchema: {

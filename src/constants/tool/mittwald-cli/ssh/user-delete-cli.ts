@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Delete SSH User",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: "Delete an SSH user.",
   inputSchema: {

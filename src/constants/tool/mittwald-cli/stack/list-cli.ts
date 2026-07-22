@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Stacks',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List stacks for a given project.',
   inputSchema: {

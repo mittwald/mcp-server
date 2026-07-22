@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'List Delivery Boxes',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List all delivery boxes for a project.',
   inputSchema: {

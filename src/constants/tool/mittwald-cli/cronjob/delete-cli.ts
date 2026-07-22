@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete Cron Job',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete a cronjob.',
   inputSchema: {

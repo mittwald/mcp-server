@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Copy App',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Copy an app within a project.',
   inputSchema: {

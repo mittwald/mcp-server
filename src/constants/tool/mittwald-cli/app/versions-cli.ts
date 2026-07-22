@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List App Versions',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List supported Apps and Versions.',
   inputSchema: {

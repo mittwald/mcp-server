@@ -113,6 +113,7 @@ const tool: Tool = {
     title: 'List Apps',        // mirrors the top-level title (legacy clients read this one)
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: '...',
   inputSchema: { /* ... */ },
@@ -127,8 +128,20 @@ const tool: Tool = {
 
 Never set both `readOnlyHint` and `destructiveHint` to `true`.
 
+**`openWorldHint` (required by the OpenAI integration):** for write tools, `true` if the tool can
+change publicly visible internet state — publishing content, changing what a public site or mail
+domain serves, pushing code, sending messages to third parties. `false` only if the tool operates
+entirely within closed or private systems. Read-only tools change nothing, so they are always
+`false`.
+
+In this codebase that means `openWorldHint: true` for app installs/updates/uninstalls, certificate
+requests, container/stack deployments, DNS zone and virtualhost changes, mail address changes,
+organisation invitations (they send email) and project deletion. Everything else — databases,
+backups, volumes, registries, SSH/SFTP users, API tokens, memberships, delivery boxes, cronjobs and
+container lifecycle operations (start/stop/restart) — stays `false`.
+
 `tests/unit/tools/tool-annotations.test.ts` enforces this across the whole registry — it will fail
-if a new tool is missing a title or either hint.
+if a new tool is missing a title or any of the three hints.
 
 ## Return Connection Data, Don't Execute - CRITICAL
 

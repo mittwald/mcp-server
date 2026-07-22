@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get MySQL Port Forwarding Instructions",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description:
     "Get a ready-to-run SSH port forwarding command that exposes a MySQL database on a local TCP port. " +

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Uninstall App',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Uninstall an app.',
   inputSchema: {

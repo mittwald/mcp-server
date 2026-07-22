@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List MySQL Databases",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List MySQL databases.",
   inputSchema: {

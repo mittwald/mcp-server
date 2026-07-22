@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List App Upgrade Candidates',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List upgrade candidates for an app installation.',
   inputSchema: {

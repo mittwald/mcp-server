@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create Conversation',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Create a new conversation.',
   inputSchema: {

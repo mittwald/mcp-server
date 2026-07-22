@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Update Registry',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Update an existing registry in Mittwald.',
   inputSchema: {

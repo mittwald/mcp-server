@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Update Container',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Updates attributes of an existing container such as image, environment variables, port mappings, and volumes.',
   inputSchema: {

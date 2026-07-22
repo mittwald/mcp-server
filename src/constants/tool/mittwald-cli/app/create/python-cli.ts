@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create Python App',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Create a Python app.',
   inputSchema: {

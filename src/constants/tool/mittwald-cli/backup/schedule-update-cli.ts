@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Update Backup Schedule',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Update a backup schedule.',
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get MySQL Dump Instructions",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description:
     "Get a ready-to-run command that dumps a MySQL database via SSH and mysqldump into a local file. " +

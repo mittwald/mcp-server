@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Containers',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List containers belonging to a project.',
   inputSchema: {

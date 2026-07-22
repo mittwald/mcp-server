@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get App SSH Connection Data',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description:
     'Get the SSH connection data (host, user, document root) for an app installation, plus a ready-to-run ssh command. ' +

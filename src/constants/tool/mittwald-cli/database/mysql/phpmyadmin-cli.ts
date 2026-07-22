@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get phpMyAdmin URL",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description:
     "Get the phpMyAdmin URL for a MySQL database's main user. " +
