@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Update Cron Job',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Update a cronjob.',
   inputSchema: {

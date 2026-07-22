@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get App Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get details about an app installation.',
   inputSchema: {

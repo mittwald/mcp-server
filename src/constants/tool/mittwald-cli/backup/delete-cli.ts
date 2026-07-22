@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete Backup',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete a backup',
   inputSchema: {

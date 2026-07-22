@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Delete MySQL Database",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: "Delete a MySQL database.",
   inputSchema: {

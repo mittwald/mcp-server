@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create Volume',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Create a new named volume inside a project stack.',
   inputSchema: {

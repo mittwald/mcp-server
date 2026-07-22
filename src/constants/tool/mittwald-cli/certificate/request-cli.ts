@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Request SSL Certificate",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: "Request a new SSL/TLS certificate for a domain using Let's Encrypt.",
   inputSchema: {

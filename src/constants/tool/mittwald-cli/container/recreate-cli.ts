@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Recreate Container',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Recreate a container.',
   inputSchema: {

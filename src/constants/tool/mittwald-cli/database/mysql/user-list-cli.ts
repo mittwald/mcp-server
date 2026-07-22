@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List MySQL Users',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List MySQL users for a database.',
   inputSchema: {

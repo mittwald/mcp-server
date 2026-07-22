@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Servers',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List servers for an organization or user.. Shows all servers accessible to the current user.',
   inputSchema: {

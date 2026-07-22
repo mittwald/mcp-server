@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get User Profile',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get profile information for a user.. Defaults to the currently authenticated user if no user ID is provided.',
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Create SSH User",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "Create a new SSH user.",
   inputSchema: {

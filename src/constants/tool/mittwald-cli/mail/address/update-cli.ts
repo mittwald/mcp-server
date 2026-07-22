@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'Update Mail Address',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Update a mail address.',
   inputSchema: {

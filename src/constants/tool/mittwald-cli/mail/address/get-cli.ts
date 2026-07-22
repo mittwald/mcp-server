@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'Get Mail Address Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get a specific mail address.',
   inputSchema: {

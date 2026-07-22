@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List MySQL Character Sets",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List available MySQL character sets and collations.",
   inputSchema: {

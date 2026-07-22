@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get SSH Key Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get a specific SSH key.. Retrieves information about a specific SSH key.',
   inputSchema: {

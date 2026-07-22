@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List Domains",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List domains belonging to a project..",
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List SFTP Users",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List all SFTP users for a project.",
   inputSchema: {

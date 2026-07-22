@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get Session Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get a specific session.. Retrieves information about a specific user session.',
   inputSchema: {

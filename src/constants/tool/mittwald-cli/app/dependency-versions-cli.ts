@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Dependency Versions',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Fetch available versions for a specific system software dependency.',
   inputSchema: {

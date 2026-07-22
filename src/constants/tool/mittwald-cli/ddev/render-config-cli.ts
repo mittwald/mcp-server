@@ -12,6 +12,7 @@ export const mittwald_ddev_render_config_cli: Tool = {
     title: 'Render DDEV Config',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Render DDEV configuration for an app installation.',
   inputSchema: {

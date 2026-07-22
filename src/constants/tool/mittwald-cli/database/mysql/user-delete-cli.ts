@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete MySQL User',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete an existing MySQL user.',
   inputSchema: {

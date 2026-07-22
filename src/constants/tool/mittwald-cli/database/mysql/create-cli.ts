@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Create MySQL Database",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "Create a new MySQL database.",
   inputSchema: {

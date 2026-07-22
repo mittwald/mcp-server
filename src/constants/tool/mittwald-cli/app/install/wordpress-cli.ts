@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Install WordPress",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: "Install WordPress application.",
   inputSchema: {

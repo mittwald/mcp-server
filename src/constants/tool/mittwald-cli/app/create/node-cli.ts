@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create Node.js App',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Create a Node.js app.',
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Cron Job Executions',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List cronjob executions.',
   inputSchema: {

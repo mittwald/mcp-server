@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get Project SSH Connection Data",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description:
     "Get the SSH connection data (host, user, web root) for a project, plus a ready-to-run ssh command. " +

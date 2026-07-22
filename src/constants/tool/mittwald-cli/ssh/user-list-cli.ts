@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List SSH Users",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List all SSH users for a project.",
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List SSL Certificates",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List SSL/TLS certificates available for a domain.",
   inputSchema: {

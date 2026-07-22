@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete Organization',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete an organization. This is a destructive operation and cannot be undone.',
   inputSchema: {

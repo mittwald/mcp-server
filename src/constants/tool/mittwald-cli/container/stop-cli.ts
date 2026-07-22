@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Stop Container',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Stop a running container.',
   inputSchema: {

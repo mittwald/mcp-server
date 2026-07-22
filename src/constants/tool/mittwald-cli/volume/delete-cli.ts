@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete Volume',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete a persistent volume. WARNING: This permanently removes stored data.',
   inputSchema: {

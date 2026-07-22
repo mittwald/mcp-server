@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Install Joomla",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: "Install Joomla application.",
   inputSchema: {

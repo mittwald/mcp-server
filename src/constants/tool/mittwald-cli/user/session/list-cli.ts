@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List My Sessions',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List all active sessions.. Shows all active sessions for the current user.',
   inputSchema: {

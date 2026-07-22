@@ -4,9 +4,12 @@ import { initializeTools, TOOLS } from '../../../src/constants/tools.js';
 
 /**
  * Every tool exposed to clients must carry a human-readable title and the
- * applicable behavioural hint, as required by the Claude connector review
+ * applicable behavioural hints, as required by the Claude connector review
  * criteria:
  * https://claude.com/docs/connectors/building/review-criteria#provide-tool-annotations
+ *
+ * `openWorldHint` is additionally required for the OpenAI integration: it marks
+ * the write tools that can change publicly visible internet state.
  */
 describe('Tool annotations', () => {
   beforeAll(async () => {
@@ -25,16 +28,25 @@ describe('Tool annotations', () => {
     expect(missing).toEqual([]);
   });
 
-  it('every tool declares readOnlyHint and destructiveHint', () => {
+  it('every tool declares readOnlyHint, destructiveHint and openWorldHint', () => {
     const missing = TOOLS.filter((tool: Tool) => {
       const annotations = tool.annotations;
       return (
         typeof annotations?.readOnlyHint !== 'boolean' ||
-        typeof annotations?.destructiveHint !== 'boolean'
+        typeof annotations?.destructiveHint !== 'boolean' ||
+        typeof annotations?.openWorldHint !== 'boolean'
       );
     }).map((tool) => tool.name);
 
     expect(missing).toEqual([]);
+  });
+
+  it('never marks a read-only tool as open-world', () => {
+    const contradictory = TOOLS.filter(
+      (tool: Tool) => tool.annotations?.readOnlyHint && tool.annotations?.openWorldHint,
+    ).map((tool) => tool.name);
+
+    expect(contradictory).toEqual([]);
   });
 
   it('never marks a tool as both read-only and destructive', () => {

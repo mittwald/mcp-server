@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete Virtual Host',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Delete a domain virtualhost.',
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get Redis Database',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Retrieve details for a Redis database.',
   inputSchema: {

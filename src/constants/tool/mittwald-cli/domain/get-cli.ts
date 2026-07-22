@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get Domain Info",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "Get domain information..",
   inputSchema: {

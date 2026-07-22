@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Revoke Organization Invite",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: "Revoke an invite to an organization.",
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Reply to Conversation',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Reply to a conversation.',
   inputSchema: {

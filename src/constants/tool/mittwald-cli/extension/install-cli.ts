@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Install Extension',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Install an extension in a project or organization.',
   inputSchema: {

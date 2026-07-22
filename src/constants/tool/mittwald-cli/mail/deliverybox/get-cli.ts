@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'Get Delivery Box Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get a specific delivery box.',
   inputSchema: {

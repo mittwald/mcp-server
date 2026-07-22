@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List My Project Invites',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List own project invites.',
   inputSchema: {

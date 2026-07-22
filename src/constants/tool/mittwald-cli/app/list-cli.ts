@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Apps',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List installed apps in a project.',
   inputSchema: {

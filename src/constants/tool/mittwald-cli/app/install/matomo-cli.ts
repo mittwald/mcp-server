@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Install Matomo",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: "Install Matomo application.",
   inputSchema: {

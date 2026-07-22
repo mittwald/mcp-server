@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Redis Versions',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List available Redis versions.',
   inputSchema: {

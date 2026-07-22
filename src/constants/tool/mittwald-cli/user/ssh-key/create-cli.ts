@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create SSH Key',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Create and import a new SSH key.. Generates a new SSH key pair and imports the public key.',
   inputSchema: {

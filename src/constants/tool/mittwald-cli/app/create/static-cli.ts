@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create Static App',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Create a static app.',
   inputSchema: {

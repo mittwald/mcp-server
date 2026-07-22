@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete Backup Schedule',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete a backup schedule.',
   inputSchema: {

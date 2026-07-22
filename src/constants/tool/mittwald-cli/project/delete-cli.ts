@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Delete Project",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: "Delete a project.",
   inputSchema: {

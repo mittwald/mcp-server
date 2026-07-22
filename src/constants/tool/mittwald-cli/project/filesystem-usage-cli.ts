@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get Filesystem Usage",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "Get a project directory filesystem usage.",
   inputSchema: {

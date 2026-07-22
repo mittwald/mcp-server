@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Get MySQL Database Details",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "Get a MySQL database.",
   inputSchema: {

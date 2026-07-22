@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Installed Extensions',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List installed extensions in a project or organization.',
   inputSchema: {

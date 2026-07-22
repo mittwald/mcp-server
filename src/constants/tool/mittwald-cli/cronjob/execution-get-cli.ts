@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get Cron Job Execution Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get details of a cronjob execution.',
   inputSchema: {

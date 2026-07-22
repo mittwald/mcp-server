@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Delete SFTP User",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: "Delete an SFTP user.",
   inputSchema: {

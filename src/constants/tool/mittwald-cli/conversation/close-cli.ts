@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Close Conversation',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Close a conversation.',
   inputSchema: {

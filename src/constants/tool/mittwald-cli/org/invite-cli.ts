@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Invite User to Organization',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: 'Invite a user to join an organization with a specified role.',
   inputSchema: {

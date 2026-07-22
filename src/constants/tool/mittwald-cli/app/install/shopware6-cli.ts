@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Install Shopware 6",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: "Install Shopware 6 application.",
   inputSchema: {

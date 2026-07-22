@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'List Mail Addresses',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List all mail addresses for a project.',
   inputSchema: {

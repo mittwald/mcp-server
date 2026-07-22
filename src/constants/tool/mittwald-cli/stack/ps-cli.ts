@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Stack Services',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List all services within a given stack.',
   inputSchema: {

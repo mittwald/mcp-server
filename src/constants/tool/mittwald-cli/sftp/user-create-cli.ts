@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Create SFTP User",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "Create a new SFTP user.",
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Show Conversation Details',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Show details of a conversation.',
   inputSchema: {

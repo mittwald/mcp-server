@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List Projects",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List all projects that you have access to.",
   inputSchema: {

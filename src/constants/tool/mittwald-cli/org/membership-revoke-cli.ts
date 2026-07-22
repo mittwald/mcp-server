@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Revoke Organization Membership',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Revoke a user\'s membership to an organization.',
   inputSchema: {

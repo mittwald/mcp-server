@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Update Project",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: "Update an existing project.",
   inputSchema: {

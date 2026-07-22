@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Virtual Hosts',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List domain virtualhosts.',
   inputSchema: {

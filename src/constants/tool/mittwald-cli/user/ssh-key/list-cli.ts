@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List My SSH Keys',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get your stored SSH keys.. Lists all SSH keys for the current user.',
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Backup Schedules',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List backup schedules.',
   inputSchema: {

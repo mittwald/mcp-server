@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Update MySQL User',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Update properties of an existing MySQL user.',
   inputSchema: {

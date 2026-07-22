@@ -14,6 +14,7 @@ const tool: Tool = {
     title: 'Update Delivery Box',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Update a delivery box.',
   inputSchema: {

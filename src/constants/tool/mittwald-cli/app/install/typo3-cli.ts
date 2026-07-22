@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Install TYPO3",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: "Install TYPO3 application.",
   inputSchema: {

@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "List MySQL Versions",
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: "List available MySQL versions.",
   inputSchema: {

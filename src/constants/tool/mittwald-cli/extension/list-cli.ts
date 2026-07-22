@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List Available Extensions',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List all available extensions.',
   inputSchema: {

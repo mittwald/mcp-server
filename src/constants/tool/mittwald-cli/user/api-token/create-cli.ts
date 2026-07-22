@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create API Token',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Create a new API token.. API tokens can be used to authenticate API requests.',
   inputSchema: {

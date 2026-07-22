@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Get Organization',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Get detailed information about a specific organization.',
   inputSchema: {

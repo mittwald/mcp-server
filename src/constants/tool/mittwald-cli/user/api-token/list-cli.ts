@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'List My API Tokens',
     readOnlyHint: true,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'List all API tokens of the user.. Shows all API tokens belonging to the current user.',
   inputSchema: {

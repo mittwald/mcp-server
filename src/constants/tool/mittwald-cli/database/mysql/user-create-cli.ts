@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Create MySQL User',
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: false,
   },
   description: 'Create a new MySQL user for a database.',
   inputSchema: {

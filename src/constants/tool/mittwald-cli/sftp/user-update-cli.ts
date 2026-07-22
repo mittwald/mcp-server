@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Update SFTP User",
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: "Update an existing SFTP user.",
   inputSchema: {

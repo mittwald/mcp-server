@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Delete Registry',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: false,
   },
   description: 'Delete a registry from Mittwald.',
   inputSchema: {

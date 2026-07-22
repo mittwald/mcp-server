@@ -9,6 +9,7 @@ const tool: Tool = {
     title: 'Update App Dependencies',
     readOnlyHint: false,
     destructiveHint: true,
+    openWorldHint: true,
   },
   description: 'Update one or more system software dependencies for an app installation.',
   inputSchema: {

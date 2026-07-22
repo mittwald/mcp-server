@@ -9,6 +9,7 @@ const tool: Tool = {
     title: "Install Contao",
     readOnlyHint: false,
     destructiveHint: false,
+    openWorldHint: true,
   },
   description: "Install Contao application.",
   inputSchema: {
