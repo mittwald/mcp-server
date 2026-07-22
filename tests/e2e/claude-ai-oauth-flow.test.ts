@@ -316,7 +316,12 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       expect(mittwaldRedirect.pathname).toBe('/oauth/authorize');
       const internalState = mittwaldRedirect.searchParams.get('state');
       expect(internalState).toBeTruthy();
-      expect(mittwaldRedirect.searchParams.get('code_challenge')).toBe(codeChallenge);
+      // The bridge terminates the client's PKCE exchange and originates its own
+      // upstream pair (FR-005), so the challenge sent to Mittwald must NOT be the client's.
+      const upstreamCodeChallenge = mittwaldRedirect.searchParams.get('code_challenge');
+      expect(upstreamCodeChallenge).toBeTruthy();
+      expect(upstreamCodeChallenge).not.toBe(codeChallenge);
+      expect(mittwaldRedirect.searchParams.get('code_challenge_method')).toBe('S256');
 
       if (!internalState) {
         throw new Error('Mittwald redirect missing internal state parameter');
@@ -379,7 +384,13 @@ describe('Claude.ai OAuth 2.1 End-to-End Flow', () => {
       expect(lastTokenRequest).toBeTruthy();
       expect(lastTokenRequest?.body?.grant_type).toBe('authorization_code');
       expect(lastTokenRequest?.body?.code).toBe(mittwaldAuthCode);
-      expect(lastTokenRequest?.body?.code_verifier).toBe(codeVerifier);
+      // The bridge redeems Mittwald's code with its own verifier, which must be the
+      // pre-image of the challenge it sent upstream at /authorize — never the client's.
+      const upstreamCodeVerifier = lastTokenRequest?.body?.code_verifier as string;
+      expect(upstreamCodeVerifier).toBeTruthy();
+      expect(upstreamCodeVerifier).not.toBe(codeVerifier);
+      expect(base64UrlEncode(createHash('sha256').update(upstreamCodeVerifier).digest()))
+        .toBe(upstreamCodeChallenge);
       expect(lastTokenRequest?.body?.redirect_uri).toContain('/mittwald/callback');
 
       const verifiedJwt = await verifyBridgeJwt(tokenBody.access_token);
