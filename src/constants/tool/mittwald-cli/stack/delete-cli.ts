@@ -5,6 +5,12 @@ import { handleStackDeleteCli } from '../../../../handlers/tools/mittwald-cli/st
 const tool: Tool = {
   name: 'mittwald_stack_delete',
   title: 'Delete Stack',
+  annotations: {
+    title: 'Delete Stack',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: true,
+  },
   description: 'Delete a stack.',
   inputSchema: {
     type: 'object',

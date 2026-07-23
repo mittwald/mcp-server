@@ -5,6 +5,12 @@ import { handleOrgMembershipListOwnCli } from '../../../../handlers/tools/mittwa
 const tool: Tool = {
   name: 'mittwald_org_membership_list_own',
   title: 'List My Organization Memberships',
+  annotations: {
+    title: 'List My Organization Memberships',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List all organization memberships for the authenticated user.',
   inputSchema: {
     type: 'object',

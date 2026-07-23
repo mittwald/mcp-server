@@ -5,6 +5,12 @@ import { handleDatabaseMysqlUserUpdateCli } from '../../../../../handlers/tools/
 const tool: Tool = {
   name: 'mittwald_database_mysql_user_update',
   title: 'Update MySQL User',
+  annotations: {
+    title: 'Update MySQL User',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: false,
+  },
   description: 'Update properties of an existing MySQL user.',
   inputSchema: {
     type: 'object',

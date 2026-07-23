@@ -4,8 +4,16 @@ import { handleProjectSshCli } from '../../../../handlers/tools/mittwald-cli/pro
 
 const tool: Tool = {
   name: "mittwald_project_ssh",
-  title: "Connect to Project via SSH",
-  description: "Connect to a project via SSH. (provides command for interactive terminal)",
+  title: "Get Project SSH Connection Data",
+  annotations: {
+    title: "Get Project SSH Connection Data",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
+  description:
+    "Get the SSH connection data (host, user, web root) for a project, plus a ready-to-run ssh command. " +
+    "This tool does not open a session itself - run the returned command locally to connect.",
   inputSchema: {
     type: "object",
     properties: {
@@ -15,11 +23,11 @@ const tool: Tool = {
       },
       sshUser: {
         type: "string",
-        description: "Override the SSH user to connect with; if omitted, your own user will be used"
+        description: "Override the SSH user to connect with; if omitted, your own mStudio user will be used"
       },
       sshIdentityFile: {
         type: "string",
-        description: "The SSH identity file (private key) to use for public key authentication"
+        description: "The SSH identity file (private key) to include in the returned ssh command"
       }
     },
     required: ["projectId"]

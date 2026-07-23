@@ -5,6 +5,12 @@ import { handleSftpUserListCli } from '../../../../handlers/tools/mittwald-cli/s
 const tool: Tool = {
   name: "mittwald_sftp_user_list",
   title: "List SFTP Users",
+  annotations: {
+    title: "List SFTP Users",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: "List all SFTP users for a project.",
   inputSchema: {
     type: "object",

@@ -5,6 +5,12 @@ import { handleDomainListCli } from '../../../../handlers/tools/mittwald-cli/dom
 const tool: Tool = {
   name: "mittwald_domain_list",
   title: "List Domains",
+  annotations: {
+    title: "List Domains",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: "List domains belonging to a project..",
   inputSchema: {
     type: "object",

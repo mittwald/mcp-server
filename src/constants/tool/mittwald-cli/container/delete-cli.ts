@@ -5,6 +5,12 @@ import { handleContainerDeleteCli } from '../../../../handlers/tools/mittwald-cl
 const tool: Tool = {
   name: 'mittwald_container_delete',
   title: 'Delete Container',
+  annotations: {
+    title: 'Delete Container',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: true,
+  },
   description: 'Delete a container.',
   inputSchema: {
     type: 'object',

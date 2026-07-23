@@ -5,6 +5,12 @@ import { handleUserApiTokenCreateCli } from '../../../../../handlers/tools/mittw
 const tool: Tool = {
   name: 'mittwald_user_api_token_create',
   title: 'Create API Token',
+  annotations: {
+    title: 'Create API Token',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Create a new API token.. API tokens can be used to authenticate API requests.',
   inputSchema: {
     type: 'object',

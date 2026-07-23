@@ -5,6 +5,12 @@ import { handleUserApiTokenRevokeCli } from '../../../../../handlers/tools/mittw
 const tool: Tool = {
   name: 'mittwald_user_api_token_revoke',
   title: 'Revoke API Token',
+  annotations: {
+    title: 'Revoke API Token',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: false,
+  },
   description: 'Revoke an API token.. Permanently disables the specified API token.',
   inputSchema: {
     type: 'object',

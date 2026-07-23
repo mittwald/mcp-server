@@ -5,6 +5,12 @@ import { handleAppVersionsCli } from '../../../../handlers/tools/mittwald-cli/ap
 const tool: Tool = {
   name: 'mittwald_app_versions',
   title: 'List App Versions',
+  annotations: {
+    title: 'List App Versions',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List supported Apps and Versions.',
   inputSchema: {
     type: 'object',

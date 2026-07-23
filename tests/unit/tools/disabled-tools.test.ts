@@ -102,12 +102,12 @@ describe('Disabled Tools Error Handling', () => {
     });
   });
 
-  describe('mittwald_login_reset (excluded tool)', () => {
-    it('returns a clear error message when calling disabled login_reset tool', async () => {
+  describe('mittwald_container_run (excluded tool)', () => {
+    it('returns a clear error message when calling disabled container_run tool', async () => {
       const request: CallToolRequest = {
         method: 'tools/call',
         params: {
-          name: 'mittwald_login_reset',
+          name: 'mittwald_container_run',
           arguments: {},
         },
       };
@@ -123,39 +123,37 @@ describe('Disabled Tools Error Handling', () => {
 
       // Verify error message contains tool name and safety message
       expect(response.status).toBe('error');
-      expect(response.message).toContain('mittwald_login_reset');
+      expect(response.message).toContain('mittwald_container_run');
       expect(response.message).toContain('disabled for safety reasons');
-      expect(response.message).toContain('multi-tenant environment');
+      expect(response.message).toContain('interactive');
 
       // Verify data structure
-      expect(response.data.toolName).toBe('mittwald_login_reset');
+      expect(response.data.toolName).toBe('mittwald_container_run');
       expect(response.data.reason).toBe('excluded_for_safety');
     });
   });
 
-  describe('mittwald_login_token (excluded tool)', () => {
-    it('returns a clear error message when calling disabled login_token tool', async () => {
+  describe('removed tools', () => {
+    // These tools were removed entirely (interactive logins, local file transfer and
+    // local session context); they are unknown rather than excluded.
+    it.each([
+      'mittwald_login_token',
+      'mittwald_login_reset',
+      'mittwald_app_upload',
+      'mittwald_context_set_session',
+    ])('reports %s as an unknown tool', async (toolName) => {
       const request: CallToolRequest = {
         method: 'tools/call',
         params: {
-          name: 'mittwald_login_token',
+          name: toolName,
           arguments: {},
         },
       };
 
       const result = await handleToolCall(request, mockContext);
 
-      // Verify it's an error response
       expect(result.isError).toBe(true);
-
-      // Parse the response text
-      const responseText = result.content[0].text;
-      const response = JSON.parse(responseText);
-
-      // Verify error message contains tool name and safety message
-      expect(response.status).toBe('error');
-      expect(response.message).toContain('mittwald_login_token');
-      expect(response.message).toContain('disabled for safety reasons');
+      expect(result.content[0].text).toContain('Unknown tool');
     });
   });
 

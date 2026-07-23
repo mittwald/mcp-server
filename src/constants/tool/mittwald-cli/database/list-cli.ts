@@ -5,6 +5,12 @@ import { handleDatabaseListCli } from '../../../../handlers/tools/mittwald-cli/d
 const tool: Tool = {
   name: "mittwald_database_list",
   title: "List Databases",
+  annotations: {
+    title: "List Databases",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: "List all databases.",
   inputSchema: {
     type: "object",

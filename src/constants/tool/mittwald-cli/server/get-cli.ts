@@ -5,6 +5,12 @@ import { handleServerGetCli } from '../../../../handlers/tools/mittwald-cli/serv
 const tool: Tool = {
   name: 'mittwald_server_get',
   title: 'Get Server Details',
+  annotations: {
+    title: 'Get Server Details',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Get server details.. Retrieves information about a specific server.',
   inputSchema: {
     type: 'object',

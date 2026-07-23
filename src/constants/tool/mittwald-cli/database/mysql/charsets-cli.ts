@@ -5,6 +5,12 @@ import { handleDatabaseMysqlCharsetsCli } from '../../../../../handlers/tools/mi
 const tool: Tool = {
   name: "mittwald_database_mysql_charsets",
   title: "List MySQL Character Sets",
+  annotations: {
+    title: "List MySQL Character Sets",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: "List available MySQL character sets and collations.",
   inputSchema: {
     type: "object",

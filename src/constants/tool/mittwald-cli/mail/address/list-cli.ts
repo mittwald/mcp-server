@@ -10,6 +10,12 @@ import { handleMittwaldMailAddressListCli } from '../../../../../handlers/tools/
 const tool: Tool = {
   name: 'mittwald_mail_address_list',
   title: 'List Mail Addresses',
+  annotations: {
+    title: 'List Mail Addresses',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List all mail addresses for a project.',
   inputSchema: {
     type: 'object',

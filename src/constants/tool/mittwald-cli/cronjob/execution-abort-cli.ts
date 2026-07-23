@@ -5,6 +5,12 @@ import { handleCronjobExecutionAbortCli } from '../../../../handlers/tools/mittw
 const tool: Tool = {
   name: 'mittwald_cronjob_execution_abort',
   title: 'Abort Cron Job Execution',
+  annotations: {
+    title: 'Abort Cron Job Execution',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: false,
+  },
   description: 'Abort a cronjob execution.',
   inputSchema: {
     type: 'object',

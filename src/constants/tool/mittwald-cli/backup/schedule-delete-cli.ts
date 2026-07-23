@@ -5,6 +5,12 @@ import { handleBackupScheduleDeleteCli } from '../../../../handlers/tools/mittwa
 const tool: Tool = {
   name: 'mittwald_backup_schedule_delete',
   title: 'Delete Backup Schedule',
+  annotations: {
+    title: 'Delete Backup Schedule',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: false,
+  },
   description: 'Delete a backup schedule.',
   inputSchema: {
     type: 'object',

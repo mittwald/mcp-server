@@ -1,65 +1,92 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
+import { getProjectSshConnection, LibraryError } from '@mittwald-mcp/cli-core';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { buildSshCommand, SSH_USAGE_NOTE } from '../../../../utils/ssh-command.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldProjectSshArgs {
-  projectId: string;
+  projectId?: string;
   sshUser?: string;
   sshIdentityFile?: string;
 }
 
-function quote(value: string): string {
-  return value.includes(' ') ? `"${value}"` : value;
-}
+export const handleProjectSshCli: MittwaldCliToolHandler<MittwaldProjectSshArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-function buildCliCommand(args: MittwaldProjectSshArgs): string {
-  const cliArgs: string[] = ['mw', 'project', 'ssh', args.projectId];
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
+  }
 
-  if (args.sshUser) cliArgs.push('--ssh-user', quote(args.sshUser));
-  if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', quote(args.sshIdentityFile));
-
-  return cliArgs.join(' ');
-}
-
-function buildInstructions(command: string): string {
-  return `INTERACTIVE COMMAND: Project SSH\n\n` +
-    'The project SSH command opens an interactive shell session on the project host and cannot be executed directly through the MCP interface.\n\n' +
-    'To connect to your project via SSH, run the following command in your terminal:\n\n' +
-    `${command}\n\n` +
-    'Ensure you are authenticated with the Mittwald CLI (run `mw login` if needed).\n' +
-    'This command will establish an SSH connection using your configured credentials. Use `exit` to close the session when finished.';
-}
-
-export const handleProjectSshCli: MittwaldCliToolHandler<MittwaldProjectSshArgs> = async (args) => {
   if (!args.projectId) {
-    return formatToolResponse('error', 'Project ID is required.');
+    return formatToolResponse('error', 'Project ID is required. Please provide the projectId parameter.');
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
   }
 
   try {
-    const command = buildCliCommand(args);
-    const instructions = buildInstructions(command);
+    const result = await getProjectSshConnection({
+      projectId: args.projectId,
+      sshUser: args.sshUser,
+      apiToken: session.mittwaldAccessToken,
+    });
+
+    const { host, user, directory, projectShortId } = result.data;
+    const identityFile = args.sshIdentityFile;
+
+    const command = buildSshCommand({ user, host, identityFile });
+    const commandInDirectory = buildSshCommand({
+      user,
+      host,
+      identityFile,
+      remoteCommand: `cd ${directory} && exec $SHELL -l`,
+    });
+    const exampleCommand = buildSshCommand({
+      user,
+      host,
+      identityFile,
+      remoteCommand: `cd ${directory} && ls -la`,
+    });
 
     return formatToolResponse(
       'success',
-      'SSH command prepared for interactive execution',
+      `SSH connection data for project ${projectShortId}`,
       {
+        projectId: result.data.projectId,
+        projectShortId,
+        host,
+        user,
+        port: 22,
+        webRoot: directory,
         command,
-        projectId: args.projectId,
-        flags: {
-          sshUser: args.sshUser,
-          sshIdentityFile: args.sshIdentityFile,
-        },
-        interactive: true,
-        instructions,
+        commandInWebRoot: commandInDirectory,
+        instructions:
+          'Run the command below on your own machine to connect; this MCP server does not open SSH sessions.\n\n' +
+          `${command}\n\n` +
+          `To start directly in the web root:\n\n${commandInDirectory}\n\n` +
+          `To run a single command non-interactively:\n\n${exampleCommand}\n\n` +
+          SSH_USAGE_NOTE,
       },
       {
-        command,
-        durationMs: null,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
+      });
+    }
+
+    logger.error('Unexpected error in project ssh handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to prepare SSH command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to resolve SSH connection data: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

@@ -28,6 +28,12 @@ export function createHelpTool(
   // Create the tool definition
   const tool: Tool = {
     name: toolName,
+    title: metadata.name,
+    annotations: {
+      title: metadata.name,
+      readOnlyHint: true,
+      destructiveHint: false,
+    },
     description: metadata.description,
     inputSchema: {
       type: "object",

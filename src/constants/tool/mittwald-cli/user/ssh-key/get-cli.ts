@@ -5,6 +5,12 @@ import { handleUserSshKeyGetCli } from '../../../../../handlers/tools/mittwald-c
 const tool: Tool = {
   name: 'mittwald_user_ssh_key_get',
   title: 'Get SSH Key Details',
+  annotations: {
+    title: 'Get SSH Key Details',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Get a specific SSH key.. Retrieves information about a specific SSH key.',
   inputSchema: {
     type: 'object',

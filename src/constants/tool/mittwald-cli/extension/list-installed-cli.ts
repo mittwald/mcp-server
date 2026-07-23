@@ -5,6 +5,12 @@ import { handleExtensionListInstalledCli } from '../../../../handlers/tools/mitt
 const tool: Tool = {
   name: 'mittwald_extension_list_installed',
   title: 'List Installed Extensions',
+  annotations: {
+    title: 'List Installed Extensions',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List installed extensions in a project or organization.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,12 @@ import { handleAppUpgradeCli } from '../../../../handlers/tools/mittwald-cli/app
 const tool: Tool = {
   name: 'mittwald_app_upgrade',
   title: 'Upgrade App Version',
+  annotations: {
+    title: 'Upgrade App Version',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: true,
+  },
   description: 'Upgrade app installation to target version.',
   inputSchema: {
     type: 'object',

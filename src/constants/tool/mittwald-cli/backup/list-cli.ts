@@ -5,6 +5,12 @@ import { handleBackupListCli } from '../../../../handlers/tools/mittwald-cli/bac
 const tool: Tool = {
   name: 'mittwald_backup_list',
   title: 'List Backups',
+  annotations: {
+    title: 'List Backups',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List backups',
   inputSchema: {
     type: 'object',

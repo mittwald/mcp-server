@@ -5,6 +5,12 @@ import { handleDomainVirtualhostListCli } from '../../../../handlers/tools/mittw
 const tool: Tool = {
   name: 'mittwald_domain_virtualhost_list',
   title: 'List Virtual Hosts',
+  annotations: {
+    title: 'List Virtual Hosts',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List domain virtualhosts.',
   inputSchema: {
     type: 'object',

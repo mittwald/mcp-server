@@ -1,97 +1,90 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { getBackupDownloadUrl, LibraryError } from '@mittwald-mcp/cli-core';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldBackupDownloadCliArgs {
-  backupId: string;
+  backupId?: string;
   format?: 'tar' | 'zip';
-  output?: string;
   password?: string;
-  generatePassword?: boolean;
-  promptPassword?: boolean;
-  resume?: boolean;
-  quiet?: boolean;
+  recreate?: boolean;
 }
 
-function buildCliArgs(args: MittwaldBackupDownloadCliArgs): string[] {
-  const cliArgs: string[] = ['backup', 'download', args.backupId];
+export const handleBackupDownloadCli: MittwaldCliToolHandler<MittwaldBackupDownloadCliArgs> = async (
+  args,
+  sessionId
+) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  if (args.format) cliArgs.push('--format', args.format);
-  if (args.output) cliArgs.push('--output', args.output);
-  if (args.password) cliArgs.push('--password', args.password);
-  if (args.generatePassword) cliArgs.push('--generate-password');
-  if (args.promptPassword) cliArgs.push('--prompt-password');
-  if (args.resume) cliArgs.push('--resume');
-  if (args.quiet) cliArgs.push('--quiet');
-
-  return cliArgs;
-}
-
-function mapCliError(error: CliToolError, args: MittwaldBackupDownloadCliArgs): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-
-  if (combined.includes('not found') && combined.includes('backup')) {
-    return `Backup not found. Please verify the backup ID: ${args.backupId}.\nError: ${error.stderr || error.message}`;
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  if (combined.includes('permission') || combined.includes('access')) {
-    return `Permission denied. Please check your access rights.\nError: ${error.stderr || error.message}`;
-  }
-
-  if (combined.includes('file exists') || combined.includes('already exists')) {
-    return `Output file already exists. Use --resume to resume the download or specify a different output file.\nError: ${error.stderr || error.message}`;
-  }
-
-  return error.message;
-}
-
-export const handleBackupDownloadCli: MittwaldCliToolHandler<MittwaldBackupDownloadCliArgs> = async (args) => {
   if (!args.backupId) {
     return formatToolResponse('error', 'Backup ID is required. Please provide the backupId parameter.');
   }
 
-  const argv = buildCliArgs(args);
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
 
   try {
-    const result = await invokeCliTool({
-      toolName: 'mittwald_backup_download',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
+    const result = await getBackupDownloadUrl({
+      backupId: args.backupId,
+      format: args.format,
+      password: args.password,
+      recreate: args.recreate,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    const stdout = result.result.stdout || '';
-    const stderr = result.result.stderr || '';
-    const output = stdout || stderr;
-    const message = args.quiet
-      ? output || `Backup ${args.backupId} downloaded successfully`
-      : `Backup ${args.backupId} downloaded successfully`;
+    const info = result.data;
+
+    if (!info.downloadURL) {
+      return formatToolResponse(
+        'success',
+        `Backup export is being prepared (phase: ${info.phase ?? 'Pending'}). No download URL available yet.`,
+        {
+          ...info,
+          instructions:
+            'The archive is still being created. Call mittwald_backup_download again in a few seconds ' +
+            'to obtain the download URL once the export has completed.',
+        },
+        { durationMs: result.durationMs }
+      );
+    }
+
+    const downloadCommand = `curl -L -o backup-${args.backupId}.${info.format ?? 'tar'} '${info.downloadURL}'`;
 
     return formatToolResponse(
       'success',
-      message,
+      `Download URL for backup ${args.backupId}`,
       {
-        backupId: args.backupId,
-        format: args.format ?? 'tar',
-        outputPath: args.output,
-        resume: args.resume,
-        output,
+        ...info,
+        downloadCommand,
+        instructions:
+          'Download the archive on your own machine; this MCP server does not transfer files.\n\n' +
+          `${downloadCommand}\n\n` +
+          (info.expiresAt ? `The URL expires at ${info.expiresAt}.\n` : '') +
+          (info.withPassword ? 'The archive is password-protected with the password used at export time.\n' : '') +
+          (info.sha256Checksum ? `Expected SHA-256 checksum: ${info.sha256Checksum}` : ''),
       },
-      {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
-      }
+      { durationMs: result.durationMs }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('Unexpected error in backup download handler', { error });
+    return formatToolResponse(
+      'error',
+      `Failed to resolve backup download URL: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 };

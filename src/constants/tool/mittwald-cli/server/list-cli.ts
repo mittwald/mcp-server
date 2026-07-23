@@ -5,6 +5,12 @@ import { handleServerListCli } from '../../../../handlers/tools/mittwald-cli/ser
 const tool: Tool = {
   name: 'mittwald_server_list',
   title: 'List Servers',
+  annotations: {
+    title: 'List Servers',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List servers for an organization or user.. Shows all servers accessible to the current user.',
   inputSchema: {
     type: 'object',

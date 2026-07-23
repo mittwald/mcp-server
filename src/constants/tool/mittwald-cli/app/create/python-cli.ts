@@ -5,6 +5,12 @@ import { handleAppCreatePythonCli } from '../../../../../handlers/tools/mittwald
 const tool: Tool = {
   name: 'mittwald_app_create_python',
   title: 'Create Python App',
+  annotations: {
+    title: 'Create Python App',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: true,
+  },
   description: 'Create a Python app.',
   inputSchema: {
     type: 'object',

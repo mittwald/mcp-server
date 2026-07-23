@@ -5,6 +5,12 @@ import { handleDatabaseMysqlVersionsCli } from '../../../../../handlers/tools/mi
 const tool: Tool = {
   name: "mittwald_database_mysql_versions",
   title: "List MySQL Versions",
+  annotations: {
+    title: "List MySQL Versions",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: "List available MySQL versions.",
   inputSchema: {
     type: "object",

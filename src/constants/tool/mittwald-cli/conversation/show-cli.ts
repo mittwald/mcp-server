@@ -5,6 +5,12 @@ import { handleConversationShowCli } from '../../../../handlers/tools/mittwald-c
 const tool: Tool = {
   name: 'mittwald_conversation_show',
   title: 'Show Conversation Details',
+  annotations: {
+    title: 'Show Conversation Details',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Show details of a conversation.',
   inputSchema: {
     type: 'object',

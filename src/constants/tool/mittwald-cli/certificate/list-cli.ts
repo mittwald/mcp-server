@@ -5,6 +5,12 @@ import { handleCertificateListCli } from '../../../../handlers/tools/mittwald-cl
 const tool: Tool = {
   name: "mittwald_certificate_list",
   title: "List SSL Certificates",
+  annotations: {
+    title: "List SSL Certificates",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: "List SSL/TLS certificates available for a domain.",
   inputSchema: {
     type: "object",

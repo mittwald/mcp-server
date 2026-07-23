@@ -10,6 +10,12 @@ import { handleMittwaldMailAddressCreateCli } from '../../../../../handlers/tool
 const tool: Tool = {
   name: 'mittwald_mail_address_create',
   title: 'Create Mail Address',
+  annotations: {
+    title: 'Create Mail Address',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: true,
+  },
   description: 'Create a new mail address.',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,12 @@ import { handleAppCreatePhpCli } from '../../../../../handlers/tools/mittwald-cl
 const tool: Tool = {
   name: 'mittwald_app_create_php',
   title: 'Create PHP App',
+  annotations: {
+    title: 'Create PHP App',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: true,
+  },
   description: 'Create a PHP app.',
   inputSchema: {
     type: 'object',

@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-02-17T10:29:24.815Z",
-  "total_prompts": 113,
+  "total_prompts": 109,
   "by_domain": {
     "apps": [
       "app-copy.json",
@@ -64,11 +64,6 @@
       "stack-list.json",
       "stack-ps.json",
       "volume-list.json"
-    ],
-    "context": [
-      "context-get-session.json",
-      "context-reset-session.json",
-      "context-set-session.json"
     ],
     "automation": [
       "cronjob-create.json",
@@ -137,7 +132,6 @@
       "user-ssh-key-create.json",
       "user-ssh-key-delete.json",
       "user-ssh-key-get.json",
-      "user-ssh-key-import.json",
       "user-ssh-key-list.json"
     ],
     "volume": [

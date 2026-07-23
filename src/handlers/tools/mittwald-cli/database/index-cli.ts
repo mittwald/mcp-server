@@ -13,7 +13,6 @@ export { handleDatabaseMysqlCreateCli } from './mysql/create-cli.js';
 export { handleDatabaseMysqlDeleteCli } from './mysql/delete-cli.js';
 export { handleDatabaseMysqlDumpCli } from './mysql/dump-cli.js';
 export { handleDatabaseMysqlImportCli } from './mysql/import-cli.js';
-export { handleDatabaseMysqlShellCli } from './mysql/shell-cli.js';
 export { handleDatabaseMysqlPhpmyadminCli } from './mysql/phpmyadmin-cli.js';
 export { handleDatabaseMysqlPortForwardCli } from './mysql/port-forward-cli.js';
 export { handleDatabaseMysqlCharsetsCli } from './mysql/charsets-cli.js';

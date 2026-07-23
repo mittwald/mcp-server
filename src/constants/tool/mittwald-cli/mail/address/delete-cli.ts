@@ -10,6 +10,12 @@ import { handleMittwaldMailAddressDeleteCli } from '../../../../../handlers/tool
 const tool: Tool = {
   name: 'mittwald_mail_address_delete',
   title: 'Delete Mail Address',
+  annotations: {
+    title: 'Delete Mail Address',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: true,
+  },
   description: 'Delete a mail address.',
   inputSchema: {
     type: 'object',

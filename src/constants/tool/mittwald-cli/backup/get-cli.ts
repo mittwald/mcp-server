@@ -5,6 +5,12 @@ import { handleBackupGetCli } from '../../../../handlers/tools/mittwald-cli/back
 const tool: Tool = {
   name: 'mittwald_backup_get',
   title: 'Get Backup Details',
+  annotations: {
+    title: 'Get Backup Details',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Get details of a backup',
   inputSchema: {
     type: 'object',

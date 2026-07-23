@@ -8,6 +8,12 @@ export interface DdevRenderConfigCliParameters {
 export const mittwald_ddev_render_config_cli: Tool = {
   name: 'mittwald_ddev_render_config',
   title: 'Render DDEV Config',
+  annotations: {
+    title: 'Render DDEV Config',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Render DDEV configuration for an app installation.',
   inputSchema: {
     type: "object",

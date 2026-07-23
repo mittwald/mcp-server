@@ -5,6 +5,12 @@ import { handleBackupCreateCli } from '../../../../handlers/tools/mittwald-cli/b
 const tool: Tool = {
   name: 'mittwald_backup_create',
   title: 'Create Backup',
+  annotations: {
+    title: 'Create Backup',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Create a new backup',
   inputSchema: {
     type: 'object',

@@ -5,6 +5,12 @@ import { handleAppDependencyUpdateCli } from '../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: 'mittwald_app_dependency_update',
   title: 'Update App Dependencies',
+  annotations: {
+    title: 'Update App Dependencies',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: true,
+  },
   description: 'Update one or more system software dependencies for an app installation.',
   inputSchema: {
     type: 'object',

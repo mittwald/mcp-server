@@ -5,6 +5,12 @@ import { handleAppDependencyListCli } from '../../../../handlers/tools/mittwald-
 const tool: Tool = {
   name: 'mittwald_app_dependency_list',
   title: 'List App Dependencies',
+  annotations: {
+    title: 'List App Dependencies',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Get all available system software dependencies and optionally filter by app type or installation.',
   inputSchema: {
     type: 'object',

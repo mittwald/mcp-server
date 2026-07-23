@@ -5,6 +5,12 @@ import { handleDomainGetCli } from '../../../../handlers/tools/mittwald-cli/doma
 const tool: Tool = {
   name: "mittwald_domain_get",
   title: "Get Domain Info",
+  annotations: {
+    title: "Get Domain Info",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: "Get domain information..",
   inputSchema: {
     type: "object",

@@ -5,6 +5,12 @@ import { handleAppUninstallCli } from '../../../../handlers/tools/mittwald-cli/a
 const tool: Tool = {
   name: 'mittwald_app_uninstall',
   title: 'Uninstall App',
+  annotations: {
+    title: 'Uninstall App',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: true,
+  },
   description: 'Uninstall an app.',
   inputSchema: {
     type: 'object',

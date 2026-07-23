@@ -5,6 +5,12 @@ import { handleCertificateRequestCli } from '../../../../handlers/tools/mittwald
 const tool: Tool = {
   name: "mittwald_certificate_request",
   title: "Request SSL Certificate",
+  annotations: {
+    title: "Request SSL Certificate",
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: true,
+  },
   description: "Request a new SSL/TLS certificate for a domain using Let's Encrypt.",
   inputSchema: {
     type: "object",

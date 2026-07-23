@@ -5,6 +5,12 @@ import { handleCronjobCreateCli } from '../../../../handlers/tools/mittwald-cli/
 const tool: Tool = {
   name: 'mittwald_cronjob_create',
   title: 'Create Cron Job',
+  annotations: {
+    title: 'Create Cron Job',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Create a cronjob.',
   inputSchema: {
     type: 'object',

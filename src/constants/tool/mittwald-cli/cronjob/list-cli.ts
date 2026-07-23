@@ -5,6 +5,12 @@ import { handleCronjobListCli } from '../../../../handlers/tools/mittwald-cli/cr
 const tool: Tool = {
   name: 'mittwald_cronjob_list',
   title: 'List Cron Jobs',
+  annotations: {
+    title: 'List Cron Jobs',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List cronjobs.',
   inputSchema: {
     type: 'object',

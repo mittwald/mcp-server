@@ -5,6 +5,12 @@ import { handleDatabaseMysqlUserGetCli } from '../../../../../handlers/tools/mit
 const tool: Tool = {
   name: 'mittwald_database_mysql_user_get',
   title: 'Get MySQL User',
+  annotations: {
+    title: 'Get MySQL User',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Retrieve details for a specific MySQL user.',
   inputSchema: {
     type: 'object',

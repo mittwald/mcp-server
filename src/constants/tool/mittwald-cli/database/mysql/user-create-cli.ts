@@ -5,6 +5,12 @@ import { handleDatabaseMysqlUserCreateCli } from '../../../../../handlers/tools/
 const tool: Tool = {
   name: 'mittwald_database_mysql_user_create',
   title: 'Create MySQL User',
+  annotations: {
+    title: 'Create MySQL User',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Create a new MySQL user for a database.',
   inputSchema: {
     type: 'object',

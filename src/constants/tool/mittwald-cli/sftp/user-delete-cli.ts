@@ -5,6 +5,12 @@ import { handleSftpUserDeleteCli } from '../../../../handlers/tools/mittwald-cli
 const tool: Tool = {
   name: "mittwald_sftp_user_delete",
   title: "Delete SFTP User",
+  annotations: {
+    title: "Delete SFTP User",
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: false,
+  },
   description: "Delete an SFTP user.",
   inputSchema: {
     type: "object",

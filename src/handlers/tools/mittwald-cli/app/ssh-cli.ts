@@ -1,104 +1,92 @@
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../tools/index.js';
+import { getAppSshConnection, LibraryError } from '@mittwald-mcp/cli-core';
+import { sessionManager } from '../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../utils/execution-context.js';
+import { buildSshCommand, SSH_USAGE_NOTE } from '../../../../utils/ssh-command.js';
+import { logger } from '../../../../utils/logger.js';
 
 interface MittwaldAppSshArgs {
   installationId?: string;
   sshUser?: string;
   sshIdentityFile?: string;
-  cd?: boolean;
-  info?: boolean;
-  test?: boolean;
 }
 
-function buildCliArgs(args: MittwaldAppSshArgs, installationId: string): string[] {
-  const cliArgs: string[] = ['app', 'ssh', installationId];
+export const handleAppSshCli: MittwaldCliToolHandler<MittwaldAppSshArgs> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-  if (args.sshUser) cliArgs.push('--ssh-user', args.sshUser);
-  if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', args.sshIdentityFile);
-
-  if (typeof args.cd === 'boolean') {
-    cliArgs.push(args.cd ? '--cd' : '--no-cd');
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  if (args.info) cliArgs.push('--info');
-  if (args.test) cliArgs.push('--test');
-
-  return cliArgs;
-}
-
-function mapCliError(error: CliToolError, installationId: string): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-
-  if (combined.includes('not found') && combined.includes('installation')) {
-    return `App installation not found. Please verify the installation ID: ${installationId}.\nError: ${error.stderr || error.message}`;
-  }
-
-  if (combined.includes('ssh')) {
-    return `SSH connection failed. Please check your SSH configuration and credentials.\nError: ${error.stderr || error.message}`;
-  }
-
-  return error.message;
-}
-
-export const handleAppSshCli: MittwaldCliToolHandler<MittwaldAppSshArgs> = async (args) => {
   if (!args.installationId) {
     return formatToolResponse('error', 'Installation ID is required. Please provide the installationId parameter.');
   }
 
-  const argv = buildCliArgs(args, args.installationId);
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
 
   try {
-    const result = await invokeCliTool({
-      toolName: 'mittwald_app_ssh',
-      argv,
-      parser: (stdout, raw) => ({ stdout, stderr: raw.stderr }),
-      cliOptions: {
-        env: {
-          MITTWALD_NONINTERACTIVE: '1',
-        },
-      },
+    const result = await getAppSshConnection({
+      installationId: args.installationId,
+      sshUser: args.sshUser,
+      apiToken: session.mittwaldAccessToken,
     });
 
-    const stdout = result.result.stdout || '';
-    const stderr = result.result.stderr || '';
-    const output = stdout || stderr || 'SSH operation completed';
+    const { host, user, directory, appShortId } = result.data;
+    const identityFile = args.sshIdentityFile;
 
-    let message = 'SSH operation completed successfully';
-    if (args.info) {
-      message = 'SSH connection information retrieved';
-    } else if (args.test) {
-      message = 'SSH connection test completed successfully';
-    }
+    const command = buildSshCommand({ user, host, identityFile });
+    const commandInDirectory = buildSshCommand({
+      user,
+      host,
+      identityFile,
+      remoteCommand: `cd ${directory} && exec $SHELL -l`,
+    });
+    const exampleCommand = buildSshCommand({
+      user,
+      host,
+      identityFile,
+      remoteCommand: `cd ${directory} && ls -la`,
+    });
 
     return formatToolResponse(
       'success',
-      message,
+      `SSH connection data for app installation ${appShortId}`,
       {
         installationId: args.installationId,
-        sshUser: args.sshUser,
-        sshIdentityFile: args.sshIdentityFile,
-        cd: args.cd,
-        info: args.info,
-        test: args.test,
-        output,
+        appShortId,
+        host,
+        user,
+        port: 22,
+        documentRoot: directory,
+        command,
+        commandInDocumentRoot: commandInDirectory,
+        instructions:
+          'Run the command below on your own machine to connect; this MCP server does not open SSH sessions.\n\n' +
+          `${command}\n\n` +
+          `To start directly in the app directory:\n\n${commandInDirectory}\n\n` +
+          `To run a single command non-interactively:\n\n${exampleCommand}\n\n` +
+          SSH_USAGE_NOTE,
       },
       {
-        command: result.meta.command,
-        durationMs: result.meta.durationMs,
+        durationMs: result.durationMs,
       }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args.installationId);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
       });
     }
 
-    return formatToolResponse('error', `Failed to execute CLI command: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error('Unexpected error in app ssh handler', { error });
+    return formatToolResponse(
+      'error',
+      `Failed to resolve SSH connection data: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 };

@@ -5,6 +5,12 @@ import { handleUserApiTokenListCli } from '../../../../../handlers/tools/mittwal
 const tool: Tool = {
   name: 'mittwald_user_api_token_list',
   title: 'List My API Tokens',
+  annotations: {
+    title: 'List My API Tokens',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List all API tokens of the user.. Shows all API tokens belonging to the current user.',
   inputSchema: {
     type: 'object',

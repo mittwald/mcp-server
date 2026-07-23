@@ -1,163 +1,99 @@
 import type { MittwaldCliToolHandler } from '../../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../../utils/format-tool-response.js';
-import { invokeCliTool, CliToolError } from '../../../../../tools/index.js';
-import { parseJsonOutput } from '../../../../../utils/cli-output.js';
+import { getMysqlConnection, LibraryError } from '@mittwald-mcp/cli-core';
+import { sessionManager } from '../../../../../server/session-manager.js';
+import { getCurrentSessionId } from '../../../../../utils/execution-context.js';
+import { buildSshCommand, SSH_USAGE_NOTE } from '../../../../../utils/ssh-command.js';
+import { logger } from '../../../../../utils/logger.js';
+
+const MYSQL_PORT = 3306;
 
 interface MittwaldDatabaseMysqlPortForwardArgs {
-  databaseId: string;
-  quiet?: boolean;
+  databaseId?: string;
+  port?: number;
   sshUser?: string;
   sshIdentityFile?: string;
-  port?: number;
 }
 
-interface MysqlDatabaseMetadata {
-  id?: string;
-  name?: string;
-  hostname?: string;
-  projectId?: string;
-  [key: string]: unknown;
-}
+export const handleDatabaseMysqlPortForwardCli: MittwaldCliToolHandler<
+  MittwaldDatabaseMysqlPortForwardArgs
+> = async (args, sessionId) => {
+  const effectiveSessionId = sessionId || getCurrentSessionId();
 
-function quote(value: string): string {
-  return value.includes(' ') ? `"${value}"` : value;
-}
-
-function buildRecommendedCommand(args: MittwaldDatabaseMysqlPortForwardArgs): { command: string; localPort: number } {
-  const cliArgs: string[] = ['mw', 'database', 'mysql', 'port-forward', args.databaseId];
-
-  if (args.quiet) cliArgs.push('--quiet');
-  if (args.sshUser) cliArgs.push('--ssh-user', quote(args.sshUser));
-  if (args.sshIdentityFile) cliArgs.push('--ssh-identity-file', quote(args.sshIdentityFile));
-  if (args.port && args.port !== 3306) cliArgs.push('--port', String(args.port));
-
-  const localPort = args.port ?? 3306;
-  return { command: cliArgs.join(' '), localPort };
-}
-
-function parseDatabaseMetadata(stdout: string): MysqlDatabaseMetadata {
-  const parsed = parseJsonOutput(stdout);
-  if (!parsed || typeof parsed !== 'object') {
-    throw new Error('Unexpected CLI output when fetching database metadata.');
+  if (!effectiveSessionId) {
+    return formatToolResponse('error', 'Session ID required');
   }
 
-  return parsed as MysqlDatabaseMetadata;
-}
-
-async function fetchDatabaseMetadata(databaseId: string) {
-  return invokeCliTool<MysqlDatabaseMetadata>({
-    toolName: 'mittwald_database_mysql_port_forward',
-    argv: ['database', 'mysql', 'get', databaseId, '--output', 'json'],
-    parser: parseDatabaseMetadata,
-  });
-}
-
-function buildInstructions(
-  command: string,
-  databaseId: string,
-  localPort: number,
-  args: MittwaldDatabaseMysqlPortForwardArgs,
-  metadata: MysqlDatabaseMetadata
-): string {
-  const databaseLabel = typeof metadata.name === 'string' && metadata.name
-    ? `${metadata.name} (${databaseId})`
-    : databaseId;
-
-  return `LONG-RUNNING COMMAND: MySQL Port Forward
-
-The port forward command creates a persistent SSH tunnel that forwards MySQL traffic to your local machine.
-
-To start port forwarding for your MySQL database, run the following command in your terminal:
-
-${command}
-
-This will:
-1. Establish an SSH connection to your hosting environment
-2. Forward MySQL traffic from database ${databaseLabel} to local port ${localPort}
-3. Keep the connection open until you stop the command (Ctrl+C)
-
-USAGE AFTER STARTING:
-Once the port forwarding is active, connect to MySQL using any client:
-
-mysql -h 127.0.0.1 -P ${localPort} -u [username] -p [database]
-
-Or with a connection string:
-mysql://username:password@127.0.0.1:${localPort}/${metadata.name ?? 'database_name'}
-
-ENVIRONMENT VARIABLES:
-${args.sshUser ? `- MITTWALD_SSH_USER: ${args.sshUser}` : '- MITTWALD_SSH_USER: Override SSH user if needed'}
-${args.sshIdentityFile ? `- MITTWALD_SSH_IDENTITY_FILE: ${args.sshIdentityFile}` : '- MITTWALD_SSH_IDENTITY_FILE: Specify SSH private key if needed'}
-
-TIPS:
-- Keep the terminal window open while using the port forward
-- Use Ctrl+C to stop the port forwarding
-- Ensure port ${localPort} is available on your local machine
-- The connection respects your SSH configuration in ~/.ssh/config`;
-}
-
-function mapCliError(error: CliToolError, databaseId: string): string {
-  const combined = `${error.stdout ?? ''}\n${error.stderr ?? ''}`.toLowerCase();
-
-  if (combined.includes('forbidden') || combined.includes('permission')) {
-    return `Permission denied when accessing database ${databaseId}. Verify your access rights and ensure you are authenticated with the Mittwald CLI.\nError: ${error.stderr || error.stdout || error.message}`;
-  }
-
-  if (combined.includes('not found') || combined.includes('404')) {
-    return `Database not found. Please verify the database ID: ${databaseId}.\nError: ${error.stderr || error.stdout || error.message}`;
-  }
-
-  return error.message;
-}
-
-export const handleDatabaseMysqlPortForwardCli: MittwaldCliToolHandler<MittwaldDatabaseMysqlPortForwardArgs> = async (args) => {
   if (!args.databaseId) {
-    return formatToolResponse('error', 'Database ID is required.');
+    return formatToolResponse('error', 'Database ID is required. Please provide the databaseId parameter.');
   }
 
-  const { command, localPort } = buildRecommendedCommand(args);
+  const localPort = args.port ?? MYSQL_PORT;
+  if (!Number.isInteger(localPort) || localPort < 1 || localPort > 65535) {
+    return formatToolResponse('error', `Invalid local port: ${args.port}. Must be an integer between 1 and 65535.`);
+  }
+
+  const session = await sessionManager.getSession(effectiveSessionId);
+  if (!session?.mittwaldAccessToken) {
+    return formatToolResponse('error', 'No Mittwald access token found in session. Please authenticate first.');
+  }
 
   try {
-    const metadataResult = await fetchDatabaseMetadata(args.databaseId);
-    const metadata = metadataResult.result;
-    const instructions = buildInstructions(command, args.databaseId, localPort, args, metadata);
+    const result = await getMysqlConnection({
+      databaseId: args.databaseId,
+      sshUser: args.sshUser,
+      apiToken: session.mittwaldAccessToken,
+    });
 
-    const databaseName = typeof metadata.name === 'string' ? metadata.name : undefined;
+    const { database, hostname, databaseUser, sshHost, sshUser } = result.data;
+
+    const command = buildSshCommand({
+      user: sshUser,
+      host: sshHost,
+      identityFile: args.sshIdentityFile,
+      flags: ['-N', '-L', `${localPort}:${hostname}:${MYSQL_PORT}`],
+    });
+
+    const mysqlClientCommand = `mysql -h 127.0.0.1 -P ${localPort} -u ${databaseUser} -p ${database}`;
 
     return formatToolResponse(
       'success',
-      'MySQL port forward command prepared',
+      `Port forwarding instructions for MySQL database ${database}`,
       {
-        command,
-        databaseId: args.databaseId,
-        databaseName,
+        databaseId: result.data.databaseId,
+        database,
+        databaseUser,
+        remoteHostname: hostname,
+        remotePort: MYSQL_PORT,
         localPort,
-        longRunning: true,
-        connectionString: `mysql://username:password@127.0.0.1:${localPort}/${databaseName ?? 'database_name'}`,
-        instructions,
-        environmentVariables: {
-          ...(args.sshUser && { MITTWALD_SSH_USER: args.sshUser }),
-          ...(args.sshIdentityFile && { MITTWALD_SSH_IDENTITY_FILE: args.sshIdentityFile }),
-        },
+        sshHost,
+        sshUser,
+        command,
+        mysqlClientCommand,
+        instructions:
+          'Run the command below on your own machine to open the tunnel; this MCP server does not keep ' +
+          'long-running tunnels open. The command stays in the foreground until you stop it with CTRL+C.\n\n' +
+          `${command}\n\n` +
+          `While the tunnel is open, connect to the database on 127.0.0.1:${localPort}, e.g.:\n\n` +
+          `${mysqlClientCommand}\n\n` +
+          'You will be prompted for the password of the MySQL user (the MCP server cannot read it back; ' +
+          'reset it with mittwald_database_mysql_user_update if you do not know it).\n\n' +
+          SSH_USAGE_NOTE,
       },
-      {
-        command: metadataResult.meta.command,
-        durationMs: metadataResult.meta.durationMs,
-      }
+      { durationMs: result.durationMs }
     );
   } catch (error) {
-    if (error instanceof CliToolError) {
-      const message = mapCliError(error, args.databaseId);
-      return formatToolResponse('error', message, {
-        exitCode: error.exitCode,
-        stderr: error.stderr,
-        stdout: error.stdout,
-        suggestedAction: error.suggestedAction,
+    if (error instanceof LibraryError) {
+      return formatToolResponse('error', error.message, {
+        code: error.code,
+        details: error.details,
       });
     }
 
+    logger.error('Unexpected error in MySQL port-forward handler', { error });
     return formatToolResponse(
       'error',
-      `Failed to prepare MySQL port forward command: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to resolve port forwarding data: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 };

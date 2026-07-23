@@ -5,6 +5,12 @@ import { handleOrgGetCli } from '../../../../handlers/tools/mittwald-cli/org/get
 const tool: Tool = {
   name: 'mittwald_org_get',
   title: 'Get Organization',
+  annotations: {
+    title: 'Get Organization',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Get detailed information about a specific organization.',
   inputSchema: {
     type: 'object',

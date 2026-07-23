@@ -5,6 +5,12 @@ import { handleSshUserListCli } from '../../../../handlers/tools/mittwald-cli/ss
 const tool: Tool = {
   name: "mittwald_ssh_user_list",
   title: "List SSH Users",
+  annotations: {
+    title: "List SSH Users",
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: "List all SSH users for a project.",
   inputSchema: {
     type: "object",

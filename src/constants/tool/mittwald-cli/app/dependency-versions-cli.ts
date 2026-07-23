@@ -5,6 +5,12 @@ import { handleAppDependencyVersionsCli } from '../../../../handlers/tools/mittw
 const tool: Tool = {
   name: 'mittwald_app_dependency_versions',
   title: 'List Dependency Versions',
+  annotations: {
+    title: 'List Dependency Versions',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Fetch available versions for a specific system software dependency.',
   inputSchema: {
     type: 'object',

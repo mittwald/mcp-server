@@ -5,6 +5,12 @@ import { handleRegistryDeleteCli } from '../../../../handlers/tools/mittwald-cli
 const tool: Tool = {
   name: 'mittwald_registry_delete',
   title: 'Delete Registry',
+  annotations: {
+    title: 'Delete Registry',
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: false,
+  },
   description: 'Delete a registry from Mittwald.',
   inputSchema: {
     type: 'object',

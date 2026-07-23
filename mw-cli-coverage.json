@@ -2,12 +2,12 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 177,
-    "toolCount": 170,
-    "coveredCount": 164,
+    "toolCount": 160,
+    "coveredCount": 157,
     "missingCount": 0,
     "coveragePercent": 100,
-    "extraToolCount": 6,
-    "excludedCount": 13
+    "extraToolCount": 3,
+    "excludedCount": 20
   },
   "coverage": [
     {
@@ -144,9 +144,13 @@
       "cliFile": "app/download.js",
       "description": "This command downloads the filesystem of an app installation to your local machine via rsync.\n\nFor this, rsync needs to be installed on your system.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.\n\nThis command will also look for a file named .mw-rsync-filter in the current directory and use it as a filter file for rsync. Have a look at https://manpages.ubuntu.com/manpages/noble/en/man1/rsync.1.html#filter%20rules for more information on how to write filter rules.",
       "expectedToolName": "mittwald_app_download",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "app/download-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/download-cli.js"
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/download-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Local file transfer: the MCP server is stateless and has no access to the agent's filesystem. Use mittwald_app_ssh and copy files with your own SSH client."
+      }
     },
     {
       "command": "app exec",
@@ -325,9 +329,13 @@
       "cliFile": "app/open.js",
       "description": "This command opens an app installation in the browser. For this to work, there needs to be at least one virtual host linked to the app installation.",
       "expectedToolName": "mittwald_app_open",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "app/open-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/open-cli.js"
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/open-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Opens a browser on the host running the command; the MCP server has no browser and no display."
+      }
     },
     {
       "command": "app ssh",
@@ -390,9 +398,13 @@
       "cliFile": "app/upload.js",
       "description": "Upload the filesystem of an app from your local machine to a project.\n\nFor this, rsync needs to be installed on your system.\n\nCAUTION: This is a potentially destructive operation. It will overwrite files on the server with the files from your local machine. This is NOT a turnkey deployment solution. It is intended for development purposes only.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.\n\nThis command will also look for a file named .mw-rsync-filter in the current directory and use it as a filter file for rsync. Have a look at https://manpages.ubuntu.com/manpages/noble/en/man1/rsync.1.html#filter%20rules for more information on how to write filter rules.",
       "expectedToolName": "mittwald_app_upload",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "app/upload-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/upload-cli.js"
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/upload-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Local file transfer: the MCP server is stateless and has no access to the agent's filesystem. Use mittwald_app_ssh and copy files with your own SSH client."
+      }
     },
     {
       "command": "app version-info",
@@ -744,7 +756,7 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js",
       "exclusion": {
         "category": "intentional",
-        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-get-cli.ts"
+        "reason": "Session context is managed per MCP session, not through CLI context commands."
       }
     },
     {
@@ -761,7 +773,7 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js",
       "exclusion": {
         "category": "intentional",
-        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-reset-cli.ts"
+        "reason": "Session context is managed per MCP session, not through CLI context commands."
       }
     },
     {
@@ -778,7 +790,7 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js",
       "exclusion": {
         "category": "intentional",
-        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-set-cli.ts"
+        "reason": "Session context is managed per MCP session, not through CLI context commands."
       }
     },
     {
@@ -1128,9 +1140,13 @@
       "cliFile": "database/mysql/shell.js",
       "description": "This command opens an interactive mysql shell to a MySQL database.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
       "expectedToolName": "mittwald_database_mysql_shell",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "database/mysql/shell-cli.ts",
-      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/shell-cli.js"
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/shell-cli.js",
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
+      }
     },
     {
       "command": "database mysql user create",
@@ -1514,9 +1530,13 @@
       "cliFile": "login/reset.js",
       "description": "Reset your local authentication state",
       "expectedToolName": "mittwald_login_reset",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "login/reset-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/login/reset-cli.js"
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/login/reset-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "CLI-local credential management; the MCP server authenticates per request with an OAuth session token."
+      }
     },
     {
       "command": "login status",
@@ -1544,9 +1564,13 @@
       "cliFile": "login/token.js",
       "description": "Authenticate using an API token",
       "expectedToolName": "mittwald_login_token",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "login/token-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/login/token-cli.js"
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/login/token-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "CLI-local credential management; the MCP server authenticates per request with an OAuth session token."
+      }
     },
     {
       "command": "mail address create",
@@ -2397,9 +2421,13 @@
       "cliFile": "user/ssh-key/import.js",
       "description": "Import an existing (local) SSH key",
       "expectedToolName": "mittwald_user_ssh_key_import",
-      "status": "covered",
+      "status": "missing",
       "toolPath": "user/ssh-key/import-cli.ts",
-      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/ssh-key/import-cli.js"
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/ssh-key/import-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Reads a key file from the local filesystem, which the MCP server cannot access. Use mittwald_user_ssh_key_create with the key material instead."
+      }
     },
     {
       "command": "user ssh-key list",
@@ -2458,6 +2486,23 @@
   "missing": [],
   "excluded": [
     {
+      "command": "app download",
+      "segments": [
+        "app",
+        "download"
+      ],
+      "cliFile": "app/download.js",
+      "description": "This command downloads the filesystem of an app installation to your local machine via rsync.\n\nFor this, rsync needs to be installed on your system.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.\n\nThis command will also look for a file named .mw-rsync-filter in the current directory and use it as a filter file for rsync. Have a look at https://manpages.ubuntu.com/manpages/noble/en/man1/rsync.1.html#filter%20rules for more information on how to write filter rules.",
+      "expectedToolName": "mittwald_app_download",
+      "status": "missing",
+      "toolPath": "app/download-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/download-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Local file transfer: the MCP server is stateless and has no access to the agent's filesystem. Use mittwald_app_ssh and copy files with your own SSH client."
+      }
+    },
+    {
       "command": "app exec",
       "segments": [
         "app",
@@ -2472,6 +2517,40 @@
       "exclusion": {
         "category": "interactive",
         "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
+      }
+    },
+    {
+      "command": "app open",
+      "segments": [
+        "app",
+        "open"
+      ],
+      "cliFile": "app/open.js",
+      "description": "This command opens an app installation in the browser. For this to work, there needs to be at least one virtual host linked to the app installation.",
+      "expectedToolName": "mittwald_app_open",
+      "status": "missing",
+      "toolPath": "app/open-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/open-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Opens a browser on the host running the command; the MCP server has no browser and no display."
+      }
+    },
+    {
+      "command": "app upload",
+      "segments": [
+        "app",
+        "upload"
+      ],
+      "cliFile": "app/upload.js",
+      "description": "Upload the filesystem of an app from your local machine to a project.\n\nFor this, rsync needs to be installed on your system.\n\nCAUTION: This is a potentially destructive operation. It will overwrite files on the server with the files from your local machine. This is NOT a turnkey deployment solution. It is intended for development purposes only.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.\n\nThis command will also look for a file named .mw-rsync-filter in the current directory and use it as a filter file for rsync. Have a look at https://manpages.ubuntu.com/manpages/noble/en/man1/rsync.1.html#filter%20rules for more information on how to write filter rules.",
+      "expectedToolName": "mittwald_app_upload",
+      "status": "missing",
+      "toolPath": "app/upload-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/app/upload-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Local file transfer: the MCP server is stateless and has no access to the agent's filesystem. Use mittwald_app_ssh and copy files with your own SSH client."
       }
     },
     {
@@ -2573,7 +2652,7 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/get-cli.js",
       "exclusion": {
         "category": "intentional",
-        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-get-cli.ts"
+        "reason": "Session context is managed per MCP session, not through CLI context commands."
       }
     },
     {
@@ -2590,7 +2669,7 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/reset-cli.js",
       "exclusion": {
         "category": "intentional",
-        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-reset-cli.ts"
+        "reason": "Session context is managed per MCP session, not through CLI context commands."
       }
     },
     {
@@ -2607,7 +2686,25 @@
       "handlerImport": "../../../../handlers/tools/mittwald-cli/context/set-cli.js",
       "exclusion": {
         "category": "intentional",
-        "reason": "MCP server uses session-aware context management; CLI context commands replaced by session-aware-set-cli.ts"
+        "reason": "Session context is managed per MCP session, not through CLI context commands."
+      }
+    },
+    {
+      "command": "database mysql shell",
+      "segments": [
+        "database",
+        "mysql",
+        "shell"
+      ],
+      "cliFile": "database/mysql/shell.js",
+      "description": "This command opens an interactive mysql shell to a MySQL database.\n\nThis command relies on connecting to your hosting environment via SSH. For this, it will use your systems SSH client under the hood, and will respect your SSH configuration in ~/.ssh/config.\n\nAn exception to this is the 'User' configuration, which will be overridden by this command to either your authenticated mStudio user or the user specified with the --ssh-user flag.\n\nSee https://linux.die.net/man/5/ssh_config for a reference on the configuration file.",
+      "expectedToolName": "mittwald_database_mysql_shell",
+      "status": "missing",
+      "toolPath": "database/mysql/shell-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/database/mysql/shell-cli.js",
+      "exclusion": {
+        "category": "interactive",
+        "reason": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details."
       }
     },
     {
@@ -2663,6 +2760,23 @@
       }
     },
     {
+      "command": "login reset",
+      "segments": [
+        "login",
+        "reset"
+      ],
+      "cliFile": "login/reset.js",
+      "description": "Reset your local authentication state",
+      "expectedToolName": "mittwald_login_reset",
+      "status": "missing",
+      "toolPath": "login/reset-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/login/reset-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "CLI-local credential management; the MCP server authenticates per request with an OAuth session token."
+      }
+    },
+    {
       "command": "login status",
       "segments": [
         "login",
@@ -2678,24 +2792,44 @@
         "category": "intentional",
         "reason": "MCP server uses per-command token injection; CLI login state not applicable"
       }
+    },
+    {
+      "command": "login token",
+      "segments": [
+        "login",
+        "token"
+      ],
+      "cliFile": "login/token.js",
+      "description": "Authenticate using an API token",
+      "expectedToolName": "mittwald_login_token",
+      "status": "missing",
+      "toolPath": "login/token-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/login/token-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "CLI-local credential management; the MCP server authenticates per request with an OAuth session token."
+      }
+    },
+    {
+      "command": "user ssh-key import",
+      "segments": [
+        "user",
+        "ssh-key",
+        "import"
+      ],
+      "cliFile": "user/ssh-key/import.js",
+      "description": "Import an existing (local) SSH key",
+      "expectedToolName": "mittwald_user_ssh_key_import",
+      "status": "missing",
+      "toolPath": "user/ssh-key/import-cli.ts",
+      "handlerImport": "../../../../../handlers/tools/mittwald-cli/user/ssh-key/import-cli.js",
+      "exclusion": {
+        "category": "intentional",
+        "reason": "Reads a key file from the local filesystem, which the MCP server cannot access. Use mittwald_user_ssh_key_create with the key material instead."
+      }
     }
   ],
   "extraTools": [
-    {
-      "toolName": "mittwald_context_get_session",
-      "relPath": "context/session-aware-get-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
-    },
-    {
-      "toolName": "mittwald_context_reset_session",
-      "relPath": "context/session-aware-reset-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
-    },
-    {
-      "toolName": "mittwald_context_set_session",
-      "relPath": "context/session-aware-set-cli.ts",
-      "handlerImport": "../../../../handlers/tools/mittwald-cli/context/session-aware-context.js"
-    },
     {
       "toolName": "mittwald_certificate_list",
       "relPath": "certificate/list-cli.ts",

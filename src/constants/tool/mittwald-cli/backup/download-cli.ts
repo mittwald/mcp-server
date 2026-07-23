@@ -4,8 +4,17 @@ import { handleBackupDownloadCli } from '../../../../handlers/tools/mittwald-cli
 
 const tool: Tool = {
   name: 'mittwald_backup_download',
-  title: 'Download Backup',
-  description: 'Download a backup',
+  title: 'Get Backup Download URL',
+  annotations: {
+    title: 'Get Backup Download URL',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
+  description:
+    'Get the download URL for a backup, requesting an export first if none exists yet. ' +
+    'This tool does not download anything itself - fetch the returned URL locally. ' +
+    'Exports are prepared asynchronously; if no URL is returned yet, call this tool again in a few seconds.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -16,31 +25,15 @@ const tool: Tool = {
       format: {
         type: 'string',
         enum: ['tar', 'zip'],
-        description: 'Archive format (tar, zip)'
-      },
-      output: {
-        type: 'string',
-        description: 'Output file path'
+        description: 'Archive format to export the backup in (default: tar)'
       },
       password: {
         type: 'string',
-        description: 'Password for encrypted archive'
+        description: 'Password to protect the archive with (only applied when a new export is created)'
       },
-      generatePassword: {
+      recreate: {
         type: 'boolean',
-        description: 'Generate a random password for encryption'
-      },
-      promptPassword: {
-        type: 'boolean',
-        description: 'Prompt for password'
-      },
-      resume: {
-        type: 'boolean',
-        description: 'Resume a previously interrupted download'
-      },
-      quiet: {
-        type: 'boolean',
-        description: 'Suppress process output and only display a machine-readable summary'
+        description: 'Request a fresh export even if a usable one already exists'
       }
     },
     required: ['backupId']

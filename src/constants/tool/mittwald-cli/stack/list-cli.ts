@@ -5,6 +5,12 @@ import { handleStackListCli } from '../../../../handlers/tools/mittwald-cli/stac
 const tool: Tool = {
   name: 'mittwald_stack_list',
   title: 'List Stacks',
+  annotations: {
+    title: 'List Stacks',
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'List stacks for a given project.',
   inputSchema: {
     type: 'object',

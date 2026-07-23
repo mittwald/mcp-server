@@ -5,6 +5,12 @@ import { handleOrgInviteRevokeCli } from '../../../../handlers/tools/mittwald-cl
 const tool: Tool = {
   name: "mittwald_org_invite_revoke",
   title: "Revoke Organization Invite",
+  annotations: {
+    title: "Revoke Organization Invite",
+    readOnlyHint: false,
+    destructiveHint: true,
+    openWorldHint: false,
+  },
   description: "Revoke an invite to an organization.",
   inputSchema: {
     type: "object",

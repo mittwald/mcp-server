@@ -5,6 +5,12 @@ import { handleDatabaseRedisCreateCli } from '../../../../../handlers/tools/mitt
 const tool: Tool = {
   name: 'mittwald_database_redis_create',
   title: 'Create Redis Database',
+  annotations: {
+    title: 'Create Redis Database',
+    readOnlyHint: false,
+    destructiveHint: false,
+    openWorldHint: false,
+  },
   description: 'Provision a new Redis database within a project.',
   inputSchema: {
     type: 'object',
