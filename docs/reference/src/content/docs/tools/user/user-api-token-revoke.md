@@ -1,19 +1,19 @@
 ---
-title: Revoke API Token
-description: Revoke an API token.. Permanently disables the specified API token.
+title: "Revoke API Token"
+description: "Revoke an API token.. Permanently disables the specified API token."
 sidebar:
-  label: Revoke API Token
+  label: "Revoke API Token"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Revoke API Token
+      content: "Revoke API Token"
   - tag: meta
     attrs:
       name: og:description
-      content: Revoke an API token.. Permanently disables the specified API token.
-lastUpdated: 2026-01-23
+      content: "Revoke an API token.. Permanently disables the specified API token."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

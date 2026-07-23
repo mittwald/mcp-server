@@ -1,19 +1,19 @@
 ---
-title: Get Cron Job Details
-description: Get details of a cronjob.
+title: "Get Cron Job Details"
+description: "Get details of a cronjob."
 sidebar:
-  label: Get Cron Job Details
+  label: "Get Cron Job Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Cron Job Details
+      content: "Get Cron Job Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get details of a cronjob.
-lastUpdated: 2026-01-23
+      content: "Get details of a cronjob."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

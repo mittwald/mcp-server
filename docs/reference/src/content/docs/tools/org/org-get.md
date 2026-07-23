@@ -1,19 +1,19 @@
 ---
-title: Get Organization
-description: Get detailed information about a specific organization.
+title: "Get Organization"
+description: "Get detailed information about a specific organization."
 sidebar:
-  label: Get Organization
+  label: "Get Organization"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Organization
+      content: "Get Organization"
   - tag: meta
     attrs:
       name: og:description
-      content: Get detailed information about a specific organization.
-lastUpdated: 2026-01-23
+      content: "Get detailed information about a specific organization."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

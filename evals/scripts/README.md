@@ -1,8 +1,6 @@
 # Agent-Native E2E Scripts
 
-This directory now only contains the current agent-native E2E path.
-
-## Kept scripts
+## Scripts
 
 - `agent-auth-bootstrap.ts`  
   Configures MCP endpoints and auth bootstrap for Claude, Codex, Opencode.
@@ -16,7 +14,7 @@ This directory now only contains the current agent-native E2E path.
 ## Canonical commands
 
 ```bash
-npm run eval:agent:auth -- --target=fly
+npm run eval:agent:auth
 npm run eval:agent:preflight -- --agents=claude,codex,opencode
 npm run eval:agent:e2e -- --agents=claude --require-coverage=100
 npm run eval:agent:report

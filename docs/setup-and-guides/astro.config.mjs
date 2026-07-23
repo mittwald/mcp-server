@@ -14,7 +14,7 @@ export default defineConfig({
 			title: 'Mittwald MCP',
 			description: 'Setup guides and documentation for integrating Mittwald MCP with AI coding assistants',
 			customCss: ['./src/styles/mittwald-theme.css'],
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/mittwald/mcp' }],
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/mittwald/mcp-server' }],
 			sidebar: [
 				{
 					label: 'Getting Connected',

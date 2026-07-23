@@ -1,19 +1,19 @@
 ---
-title: Delete Backup Schedule
-description: Delete a backup schedule.
+title: "Delete Backup Schedule"
+description: "Delete a backup schedule."
 sidebar:
-  label: Delete Backup Schedule
+  label: "Delete Backup Schedule"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Backup Schedule
+      content: "Delete Backup Schedule"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a backup schedule.
-lastUpdated: 2026-01-23
+      content: "Delete a backup schedule."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

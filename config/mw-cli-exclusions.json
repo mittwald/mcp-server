@@ -51,7 +51,7 @@
     "volume list"
   ],
   "rationale": {
-    "interactive": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/interactive-commands-decision.md for details.",
+    "interactive": "Interactive or streaming CLI command excluded until the MCP protocol supports bidirectional streaming; see docs/KNOWN-LIMITATIONS.md for details.",
     "intentional": {
       "app dependency list": "Workstream C1 will implement dependency inspection wrappers; CLI command temporarily excluded.",
       "app dependency update": "Workstream C1 backlog item; update functionality to be wrapped once CLI parser is stabilized.",
@@ -100,6 +100,6 @@
     "assessedBy": "Agent E3 (Interactive Command Assessment)",
     "mcpStreamingSupport": false,
     "securityApproval": "N/A - streaming infeasible",
-    "documentationLink": "docs/interactive-commands-decision.md"
+    "documentationLink": "docs/KNOWN-LIMITATIONS.md"
   }
 }

@@ -1,19 +1,19 @@
 ---
-title: Create Mail Address
-description: Create a new mail address.
+title: "Create Mail Address"
+description: "Create a new mail address."
 sidebar:
-  label: Create Mail Address
+  label: "Create Mail Address"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Mail Address
+      content: "Create Mail Address"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new mail address.
-lastUpdated: 2026-01-23
+      content: "Create a new mail address."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

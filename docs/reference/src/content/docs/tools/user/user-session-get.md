@@ -1,19 +1,19 @@
 ---
-title: Get Session Details
-description: Get a specific session.. Retrieves information about a specific user session.
+title: "Get Session Details"
+description: "Get a specific session.. Retrieves information about a specific user session."
 sidebar:
-  label: Get Session Details
+  label: "Get Session Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Session Details
+      content: "Get Session Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get a specific session.. Retrieves information about a specific user session.
-lastUpdated: 2026-01-23
+      content: "Get a specific session.. Retrieves information about a specific user session."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

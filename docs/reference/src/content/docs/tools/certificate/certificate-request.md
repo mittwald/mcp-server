@@ -1,19 +1,19 @@
 ---
-title: Request SSL Certificate
-description: Request a new SSL/TLS certificate for a domain using Let's Encrypt.
+title: "Request SSL Certificate"
+description: "Request a new SSL/TLS certificate for a domain using Let's Encrypt."
 sidebar:
-  label: Request SSL Certificate
+  label: "Request SSL Certificate"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Request SSL Certificate
+      content: "Request SSL Certificate"
   - tag: meta
     attrs:
       name: og:description
-      content: Request a new SSL/TLS certificate for a domain using Let's Encrypt.
-lastUpdated: 2026-01-23
+      content: "Request a new SSL/TLS certificate for a domain using Let's Encrypt."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

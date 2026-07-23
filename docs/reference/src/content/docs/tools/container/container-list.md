@@ -1,19 +1,19 @@
 ---
-title: List Containers
-description: List containers belonging to a project.
+title: "List Containers"
+description: "List containers belonging to a project."
 sidebar:
-  label: List Containers
+  label: "List Containers"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List Containers
+      content: "List Containers"
   - tag: meta
     attrs:
       name: og:description
-      content: List containers belonging to a project.
-lastUpdated: 2026-01-23
+      content: "List containers belonging to a project."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
@@ -23,13 +23,7 @@ List containers belonging to a project.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `projectId` | `string` | Yes | ID or short ID of a project (optional if default project is set in context) |
-| `output` | `txt \| json \| yaml \| csv \| tsv` | No | Output format (default: txt) |
-| `extended` | `boolean` | No | Show extended information |
-| `noHeader` | `boolean` | No | Hide table header (only relevant for table output) |
-| `noTruncate` | `boolean` | No | Do not truncate output (only relevant for table output) |
-| `noRelativeDates` | `boolean` | No | Show dates in absolute format, not relative |
-| `csvSeparator` | `, \| ;` | No | Separator for CSV output (only relevant for CSV output) |
+| `projectId` | `string` | Yes | ID or short ID of a project |
 
 ## Return Type
 

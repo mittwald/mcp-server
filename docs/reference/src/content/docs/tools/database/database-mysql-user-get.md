@@ -1,19 +1,19 @@
 ---
-title: Get MySQL User
-description: Retrieve details for a specific MySQL user.
+title: "Get MySQL User"
+description: "Retrieve details for a specific MySQL user."
 sidebar:
-  label: Get MySQL User
+  label: "Get MySQL User"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get MySQL User
+      content: "Get MySQL User"
   - tag: meta
     attrs:
       name: og:description
-      content: Retrieve details for a specific MySQL user.
-lastUpdated: 2026-01-23
+      content: "Retrieve details for a specific MySQL user."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
@@ -24,7 +24,6 @@ Retrieve details for a specific MySQL user.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `userId` | `string` | Yes | ID or short ID of the MySQL user to retrieve. |
-| `outputFormat` | `json \| yaml \| txt` | No | Preferred CLI output format. JSON enables structured responses. |
 
 ## Return Type
 

@@ -1,19 +1,19 @@
 ---
-title: Get App Details
-description: Get details about an app installation.
+title: "Get App Details"
+description: "Get details about an app installation."
 sidebar:
-  label: Get App Details
+  label: "Get App Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get App Details
+      content: "Get App Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get details about an app installation.
-lastUpdated: 2026-01-23
+      content: "Get details about an app installation."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,19 +1,19 @@
 ---
-title: Get Domain Info
-description: Get domain information..
+title: "Get Domain Info"
+description: "Get domain information.."
 sidebar:
-  label: Get Domain Info
+  label: "Get Domain Info"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Domain Info
+      content: "Get Domain Info"
   - tag: meta
     attrs:
       name: og:description
-      content: Get domain information..
-lastUpdated: 2026-01-23
+      content: "Get domain information.."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

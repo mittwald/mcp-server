@@ -1,6 +1,23 @@
 # Redis Configuration
 
-## Production Settings
+Redis backs both the OAuth bridge's authorization state and the MCP server's sessions. There are
+two deployments of it, configured independently.
+
+## Production (mittwald managed Redis)
+
+Provisioned by `mittwald_redis_database.mcp_redis` in `deploy/main.tf`:
+
+| Setting | Value |
+|---------|-------|
+| version | 7.2 |
+| max_memory_mb | 512 |
+| max_memory_policy | allkeys-lru |
+| persistent | true |
+
+Change these in Terraform, not on the running instance. Note that `allkeys-lru` allows eviction of
+keys without a TTL under memory pressure; every key this system writes carries a TTL (see below).
+
+## Self-Hosted / Local (`docker-compose.prod.yml`)
 
 | Setting | Value | Purpose |
 |---------|-------|---------|
@@ -9,7 +26,7 @@
 | appendonly | yes | Enable AOF persistence |
 | appendfsync | everysec | Sync to disk every second |
 
-## Data Durability
+### Data Durability
 
 - **Maximum data loss**: 1 second of writes (worst case on crash)
 - **Persistence**: AOF (Append Only File) at `/data/appendonly.aof`
@@ -23,9 +40,13 @@
 | `auth_request:{state}` | 10 minutes | Yes (has TTL) |
 | `reg_token:{client_id}` | 30 days | Yes (has TTL) |
 
-With `volatile-lru` policy, only keys with TTL can be evicted under memory pressure. This protects any permanent keys while allowing session cleanup.
+Every key carries a TTL, so a `volatile-lru` policy can always reclaim memory, and no permanent key
+is ever at risk.
 
 ## Monitoring Commands
+
+The commands below target a Docker-based deployment. For the managed production instance, use the
+Redis metrics in mStudio.
 
 ```bash
 # Check Redis info

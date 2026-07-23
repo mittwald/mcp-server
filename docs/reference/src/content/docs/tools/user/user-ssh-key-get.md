@@ -1,19 +1,19 @@
 ---
-title: Get SSH Key Details
-description: Get a specific SSH key.. Retrieves information about a specific SSH key.
+title: "Get SSH Key Details"
+description: "Get a specific SSH key.. Retrieves information about a specific SSH key."
 sidebar:
-  label: Get SSH Key Details
+  label: "Get SSH Key Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get SSH Key Details
+      content: "Get SSH Key Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get a specific SSH key.. Retrieves information about a specific SSH key.
-lastUpdated: 2026-01-23
+      content: "Get a specific SSH key.. Retrieves information about a specific SSH key."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

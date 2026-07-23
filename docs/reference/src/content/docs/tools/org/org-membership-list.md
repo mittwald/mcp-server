@@ -1,19 +1,19 @@
 ---
-title: List Organization Members
-description: List all memberships belonging to an organization.
+title: "List Organization Members"
+description: "List all memberships belonging to an organization."
 sidebar:
-  label: List Organization Members
+  label: "List Organization Members"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List Organization Members
+      content: "List Organization Members"
   - tag: meta
     attrs:
       name: og:description
-      content: List all memberships belonging to an organization.
-lastUpdated: 2026-01-23
+      content: "List all memberships belonging to an organization."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

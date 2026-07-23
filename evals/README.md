@@ -7,17 +7,15 @@ Operator start point:
 
 ## Scope
 
-- Prompt corpus for deployed Fly MCP: `evals/prompts-fly-live/`
+- Prompt corpus for the deployed MCP endpoint: `evals/prompts-fly-live/` (the name predates the move off Fly)
 - Runner + auth/bootstrap + reporting: `evals/scripts/`
 - Run artifacts: `evals/results/agent-e2e/`
-
-Legacy scenario-runner and multi-run orchestration artifacts were removed from this directory.
 
 ## Commands
 
 ```bash
-# Configure agent MCP endpoints/auth bootstrap (default target: fly)
-npm run eval:agent:auth -- --target=fly
+# Configure agent MCP endpoints/auth bootstrap (target: https://mcp.mittwald.de/mcp)
+npm run eval:agent:auth
 
 # Check agent readiness (CLI + MCP tool visibility + auth)
 npm run eval:agent:preflight -- --agents=claude,codex,opencode

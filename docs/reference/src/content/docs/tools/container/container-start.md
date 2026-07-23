@@ -1,19 +1,19 @@
 ---
-title: Start Container
-description: Start a stopped container.
+title: "Start Container"
+description: "Start a stopped container."
 sidebar:
-  label: Start Container
+  label: "Start Container"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Start Container
+      content: "Start Container"
   - tag: meta
     attrs:
       name: og:description
-      content: Start a stopped container.
-lastUpdated: 2026-01-23
+      content: "Start a stopped container."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,6 +1,6 @@
-# Customer Operations: Start Here
+# Operations: Start Here
 
-This is the fastest path for customer operators who need to:
+This is the fastest path for operators who need to:
 
 1. deploy and run the Mittwald MCP server + OAuth bridge
 2. build and verify both documentation sites
@@ -13,8 +13,8 @@ Read in this order:
 1. `README.md` (repo overview and architecture pointers)
 2. `ARCHITECTURE.md` (auth flow and service boundaries)
 3. `DEPLOY.md` (deployment mechanics)
-4. `docs/DEPLOYMENT-GUIDE.md` (operational deployment details)
-5. `docs/CREDENTIAL-SECURITY.md` (token and secret handling requirements)
+4. `docs/CREDENTIAL-SECURITY.md` (token and secret handling requirements)
+5. `docs/MAINTAINERS-HANDBOOK.md` (day-to-day operation of the deployed stack)
 
 ## 2) Build and Validate Both Docs Sites
 
@@ -44,7 +44,7 @@ Read alongside:
 Core commands:
 
 ```bash
-npm run eval:agent:auth -- --target=fly --agents=claude,codex,opencode
+npm run eval:agent:auth -- --target=mittwald --agents=claude,codex,opencode
 npm run eval:agent:preflight -- --agents=claude,codex,opencode
 npm run eval:agent:e2e -- --agents=claude --require-coverage=100
 npm run eval:agent:results -- --agent=claude

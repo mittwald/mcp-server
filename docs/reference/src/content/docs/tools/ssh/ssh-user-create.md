@@ -1,19 +1,19 @@
 ---
-title: Create SSH User
-description: Create a new SSH user.
+title: "Create SSH User"
+description: "Create a new SSH user."
 sidebar:
-  label: Create SSH User
+  label: "Create SSH User"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create SSH User
+      content: "Create SSH User"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new SSH user.
-lastUpdated: 2026-01-23
+      content: "Create a new SSH user."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

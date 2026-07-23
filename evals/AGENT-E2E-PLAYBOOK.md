@@ -53,7 +53,7 @@ When preflight fails for auth, use these remediation paths:
 
 - Codex:
   - Add server if needed:
-    - `codex mcp add mittwald --url https://mittwald-mcp-fly2.fly.dev/mcp`
+    - `codex mcp add mittwald --url https://mcp.mittwald.de/mcp`
   - Authenticate:
     - `codex mcp login mittwald`
 

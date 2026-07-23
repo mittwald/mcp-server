@@ -1,19 +1,19 @@
 ---
-title: List SSL Certificates
-description: List SSL/TLS certificates available for a domain.
+title: "List SSL Certificates"
+description: "List SSL/TLS certificates available for a domain."
 sidebar:
-  label: List SSL Certificates
+  label: "List SSL Certificates"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List SSL Certificates
+      content: "List SSL Certificates"
   - tag: meta
     attrs:
       name: og:description
-      content: List SSL/TLS certificates available for a domain.
-lastUpdated: 2026-01-23
+      content: "List SSL/TLS certificates available for a domain."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

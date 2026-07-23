@@ -1,19 +1,19 @@
 ---
-title: Get Server Details
-description: Get server details.. Retrieves information about a specific server.
+title: "Get Server Details"
+description: "Get server details.. Retrieves information about a specific server."
 sidebar:
-  label: Get Server Details
+  label: "Get Server Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Server Details
+      content: "Get Server Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get server details.. Retrieves information about a specific server.
-lastUpdated: 2026-01-23
+      content: "Get server details.. Retrieves information about a specific server."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

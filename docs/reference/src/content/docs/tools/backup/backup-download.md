@@ -1,36 +1,32 @@
 ---
-title: Download Backup
-description: Download a backup
+title: "Get Backup Download URL"
+description: "Get the download URL for a backup, requesting an export first if none exists yet. This tool does not download anything itself - fetch the returned URL locally. Exports are prepared asynchronously; if no URL is returned yet, call this tool again in a few seconds."
 sidebar:
-  label: Download Backup
+  label: "Get Backup Download URL"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Download Backup
+      content: "Get Backup Download URL"
   - tag: meta
     attrs:
       name: og:description
-      content: Download a backup
-lastUpdated: 2026-01-23
+      content: "Get the download URL for a backup, requesting an export first if none exists yet. This tool does not download anything itself - fetch the returned URL locally. Exports are prepared asynchronously; if no URL is returned yet, call this tool again in a few seconds."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
-Download a backup
+Get the download URL for a backup, requesting an export first if none exists yet. This tool does not download anything itself - fetch the returned URL locally. Exports are prepared asynchronously; if no URL is returned yet, call this tool again in a few seconds.
 
 ## Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `backupId` | `string` | Yes | ID or short ID of a backup |
-| `format` | `tar \| zip` | No | Archive format (tar, zip) |
-| `output` | `string` | No | Output file path |
-| `password` | `string` | No | Password for encrypted archive |
-| `generatePassword` | `boolean` | No | Generate a random password for encryption |
-| `promptPassword` | `boolean` | No | Prompt for password |
-| `resume` | `boolean` | No | Resume a previously interrupted download |
-| `quiet` | `boolean` | No | Suppress process output and only display a machine-readable summary |
+| `format` | `tar \| zip` | No | Archive format to export the backup in (default: tar) |
+| `password` | `string` | No | Password to protect the archive with (only applied when a new export is created) |
+| `recreate` | `boolean` | No | Request a fresh export even if a usable one already exists |
 
 ## Return Type
 

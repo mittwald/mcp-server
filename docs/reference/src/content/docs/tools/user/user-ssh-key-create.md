@@ -1,19 +1,19 @@
 ---
-title: Create SSH Key
-description: Create and import a new SSH key.. Generates a new SSH key pair and imports the public key.
+title: "Create SSH Key"
+description: "Create and import a new SSH key.. Generates a new SSH key pair and imports the public key."
 sidebar:
-  label: Create SSH Key
+  label: "Create SSH Key"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create SSH Key
+      content: "Create SSH Key"
   - tag: meta
     attrs:
       name: og:description
-      content: Create and import a new SSH key.. Generates a new SSH key pair and imports the public key.
-lastUpdated: 2026-01-23
+      content: "Create and import a new SSH key.. Generates a new SSH key pair and imports the public key."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,19 +1,19 @@
 ---
-title: Get Mail Address Details
-description: Get a specific mail address.
+title: "Get Mail Address Details"
+description: "Get a specific mail address."
 sidebar:
-  label: Get Mail Address Details
+  label: "Get Mail Address Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Mail Address Details
+      content: "Get Mail Address Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get a specific mail address.
-lastUpdated: 2026-01-23
+      content: "Get a specific mail address."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

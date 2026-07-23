@@ -1,84 +1,64 @@
 # mittwald-mcp Development Guidelines
 
-## Fly.io Infrastructure
+## Production Infrastructure
 
-There are 2 Fly.io apps for the Mittwald ecosystem:
-- `mittwald-oauth-server` - OAuth bridge deployed from this repo (`packages/oauth-bridge`) at https://mittwald-oauth-server.fly.dev
-- `mittwald-mcp-fly2` - MCP server deployed from this repo root at https://mittwald-mcp-fly2.fly.dev
+Both services run as containers in a single mittwald container stack, provisioned by the Terraform
+config in `deploy/`:
 
-Deployment source note (verified 2026-02-17):
-- The separate repository at `../mittwald-oauth/mittwald-oauth` is not the source of the currently running Fly.io OAuth service and is treated as inactive/deprecated for production.
+- MCP server — https://mcp.mittwald.de (image `mittwald/mcp-server-http`, built from `Dockerfile`)
+- OAuth bridge — https://auth.mcp.mittwald.de (image `mittwald/mcp-server-oauth`, built from
+  `packages/oauth-bridge/Dockerfile`)
+
+The stack also contains a mittwald-managed Redis, shared by both containers. TLS is terminated by
+the mittwald ingress, so both containers run with `ENABLE_HTTPS=false`.
 
 ### Add MCP Server to Claude Code
 ```bash
-claude mcp add --transport http mittwald https://mittwald-mcp-fly2.fly.dev/mcp
-```
-
-### Single Instance Only - CRITICAL
-
-**NEVER scale to multiple instances!** Both `mittwald-oauth-server` and `mittwald-mcp-fly2` must run as **single instances only**.
-
-Why: In-memory storage (sessions, state) is NOT synchronized horizontally. Running multiple instances causes:
-- Session loss when requests hit different instances
-- OAuth state mismatches
-- Authentication failures
-
-**To verify single instance:**
-```bash
-flyctl status -a mittwald-oauth-server  # Should show 1 instance
-flyctl status -a mittwald-mcp-fly2      # Should show 1 instance
-```
-
-**If you accidentally scaled up:**
-```bash
-flyctl scale count 1 -a mittwald-oauth-server
-flyctl scale count 1 -a mittwald-mcp-fly2
+claude mcp add --transport http mittwald https://mcp.mittwald.de/mcp
 ```
 
 ### Deployment - CRITICAL
 
-**NEVER run `fly deploy` or `flyctl deploy` directly!**
+**Never run `terraform apply` from a workstation, and never push images by hand.** Deployment is
+driven entirely by `.github/workflows/build-and-publish.yml`, which triggers on `v*` tags:
 
-Deployment is automated via GitHub Actions. To deploy:
-1. Commit and push changes to the `main` branch
-2. GitHub Actions workflow (`.github/workflows/deploy-fly.yml`) triggers automatically
-3. Monitor deployment status with: `gh run list --limit 5`
+1. Tag a release: `git tag v1.2.3 && git push origin v1.2.3`
+2. The workflow builds and pushes both images to Docker Hub
+3. It then runs `terraform apply` in `deploy/` with `image_tag` set to the tag's version
 
-**The workflow triggers on changes to:**
-- `packages/**`
-- `src/**`
-- `Dockerfile`
-- `fly.toml`
-- `.github/workflows/deploy-fly.yml`
+Terraform state lives in the HCP Terraform workspace `mittwald/mcp-server`, so a local apply will
+fight the workflow for the lock and can deploy an image that was never built.
 
 **To check deployment status:**
 ```bash
-# View recent workflow runs
 gh run list --limit 5
-
-# Watch a specific run
 gh run watch
-
-# View logs for a failed run
 gh run view --log-failed
 ```
 
-**Why not direct deploy?**
-- Bypasses CI/CD checks
-- No audit trail in GitHub
-- Can deploy untested/unbuilt code
-- Inconsistent with team workflow
+### Single Instance Only - CRITICAL
+
+Sessions and OAuth state live in Redis, but the MCP transport keeps per-session state in memory.
+Keep **one replica of each container**. Running several breaks session lookups, OAuth state
+handoff, and authentication.
 
 ## Project Structure
 ```
-src/
-tests/
+src/                       MCP server (HTTP transport, auth, tool handlers, tool definitions)
+packages/oauth-bridge/     OAuth 2.1 bridge to Mittwald (Koa)
+packages/mittwald-cli-core/ Mittwald CLI business logic extracted as an importable library
+deploy/                    Terraform config for the production container stack
+docs/                      Operator runbooks + two Astro documentation sites
+tests/                     Unit, integration, e2e, security, smoke and functional suites
+evals/                     Agent-native E2E harness and prompt corpus
 ```
 
 ## Commands
 ```bash
-npm run build    # Build the project
-npm run test     # Run tests
+npm run build:all   # Build workspace packages, then the server
+npm run test        # Run the full vitest suite
+npm run lint
+npm run type-check
 ```
 
 ## Code Style
@@ -176,8 +156,11 @@ remote process list).
 
 **What Mittwald does NOT accept:**
 - `mittwald:api` - There is NO passthrough scope!
-- `openid`, `profile`, `email` - OIDC scopes are NOT supported
 - Any scope not in the /v2/scopes list
+
+`openid`, `offline_access` and `profile` are a special case: clients may request them (MCP clients
+routinely do), so they are in `supportedScopes`, but they are **not** in `upstreamScopes` and are
+therefore stripped before the request reaches Mittwald.
 
 **The oauth-bridge flow:**
 1. Clients request scopes (e.g., `user:read customer:read app:read`)
@@ -185,7 +168,9 @@ remote process list).
 3. When redirecting to Mittwald: Send actual scopes from the `upstreamScopes` list
 4. Default scopes: `user:read customer:read project:read app:read`
 
-**Location:** `packages/oauth-bridge/src/config/mittwald-scopes.ts` - `MITTWALD_SCOPE_STRING`
+**Location:** `config/mittwald-scopes.json` holds the catalogue (override the path with
+`MITTWALD_SCOPE_CONFIG_PATH`); `packages/oauth-bridge/src/config/mittwald-scopes.ts` loads it and
+exports `MITTWALD_SCOPE_STRING`.
 
 ## OAuth Bridge DCR Architecture - CRITICAL
 
@@ -214,226 +199,77 @@ This means the client did NOT use DCR first. They must call `POST /register` bef
 
 **Location:** `packages/oauth-bridge/src/routes/authorize.ts` - DCR lookup via `stateStore.getClientRegistration()`
 
+
 ## Operations Checklist
 
 ### JWT Secret Synchronization - CRITICAL
 The OAuth bridge and MCP server must share the same JWT signing secret:
-- **OAuth Server**: `BRIDGE_JWT_SECRET`
-- **MCP Server**: `OAUTH_BRIDGE_JWT_SECRET`
+- **OAuth bridge**: `BRIDGE_JWT_SECRET`
+- **MCP server**: `OAUTH_BRIDGE_JWT_SECRET`
 
-These MUST be identical! If they differ, JWT signature verification fails and the MCP server falls back to Mittwald CLI validation, which causes OOM errors.
+These MUST be identical. If they differ, JWT signature verification fails and the MCP server falls
+back to validating the token against Mittwald on every request, which is slow and has caused OOM
+kills in the past.
 
-**To verify:**
-```bash
-flyctl ssh console -a mittwald-oauth-server -C "printenv BRIDGE_JWT_SECRET"
-flyctl ssh console -a mittwald-mcp-fly2 -C "printenv OAUTH_BRIDGE_JWT_SECRET"
-```
-
-**To sync (if different):**
-```bash
-# Get the OAuth server's secret
-SECRET=$(flyctl ssh console -a mittwald-oauth-server -C "printenv BRIDGE_JWT_SECRET" 2>/dev/null | tail -1)
-# Set it on the MCP server
-flyctl secrets set OAUTH_BRIDGE_JWT_SECRET="$SECRET" -a mittwald-mcp-fly2
-```
+Terraform guarantees this: both containers in `deploy/main.tf` get their value from the single
+`random_string.jwt_secret` resource. Do not set either variable by hand — change it in Terraform or
+the two will drift.
 
 ### Health Check URLs
-- OAuth Server: https://mittwald-oauth-server.fly.dev/health
-- MCP Server: https://mittwald-mcp-fly2.fly.dev/health
+- OAuth bridge: https://auth.mcp.mittwald.de/health
+- MCP server: https://mcp.mittwald.de/health
+
+Both return `{"status":"healthy",...}` including a `checks.redis` field.
 
 ### Logs
+Container logs are read through the mittwald CLI against the MCP project:
+
 ```bash
-flyctl logs -a mittwald-oauth-server --no-tail | tail -50
-flyctl logs -a mittwald-mcp-fly2 --no-tail | tail -50
+mw container list --project-id <project-id>
+mw container logs <container-id>
 ```
 
-<!-- MANUAL ADDITIONS START -->
+## Execution Model - CRITICAL
 
-## CLI-to-Library Architecture - CRITICAL
+Tool handlers reach Mittwald in one of two ways, and new handlers should use the first:
 
-**Feature 012: Mittwald CLI converted to importable library to fix concurrent user failures**
+1. **Library calls (preferred, ~120 handlers)** — import from `@mittwald-mcp/cli-core`, a package
+   containing the business logic extracted from `@mittwald/cli`'s `src/lib/`. No process is
+   spawned.
 
-### Problem
-- MCP server spawned `mw` CLI processes for each tool invocation
-- Process spawning caused concurrent user failures and Node.js compilation cache deadlocks
-- 200-400ms overhead per CLI spawn vs <50ms target
+   ```typescript
+   import { listApps } from '@mittwald-mcp/cli-core';
 
-### Solution Architecture
-**Monorepo package:** `packages/mittwald-cli-core/`
-- Extracted `src/lib/` business logic from `@mittwald/cli` v1.12.0
-- Skipped CLI command layer (oclif wrappers)
-- Direct function imports replace process spawning
+   const result = await listApps({ projectId, apiToken: session.mittwaldAccessToken });
+   ```
 
-**Why not import `@mittwald/cli` directly?**
-- Package exports NO library interface (`main: null`, `exports: null`)
-- Only exports binary: `bin/mw`
-- oclif framework discourages programmatic command invocation
+2. **`mw` subprocess (legacy, 41 handlers)** — via `invokeCliTool` in `src/tools/cli-adapter.ts`.
+   Spawning is slow and does not survive concurrency well, which is why the migration exists. Most
+   of these handlers back tools listed in `EXCLUDED_TOOLS_WITH_REASONS` in
+   `src/utils/tool-scanner.ts` and are therefore never reachable. Five registered tools still spawn
+   `mw`: `mittwald_container_start`, `_stop`, `_restart`, `_delete` and `mittwald_volume_create`.
+   Migrating one means porting the logic into `packages/mittwald-cli-core/src/resources/` and, for
+   an excluded tool, removing its exclusion.
 
-**Why not use `@mittwald/api-client` alone?**
-- CLI contains orchestration logic (multi-step workflows, validation)
-- One CLI command = multiple API calls + coordination
-- Would require duplicating ~101 files of business logic
+Why not import `@mittwald/cli` directly? It exports no library interface (`main: null`,
+`exports: null`) — only the `bin/mw` binary. Why not `@mittwald/api-client` alone? One CLI command
+is often several API calls plus validation and orchestration.
 
-### Package Structure
-```
-packages/
-  mittwald-cli-core/
-    src/
-      lib/           # Extracted from @mittwald/cli/src/lib/
-      installers/    # Relocated from CLI command files
-      index.ts       # Library function exports
-```
+## Tool Registry
 
-### Integration Pattern
-```typescript
-// Tool handlers import library functions instead of spawning CLI:
-import { listApps } from '@mittwald-mcp/cli-core';
+`src/constants/tool/mittwald-cli/**` holds 161 tool definitions; 45 of them are excluded by
+`src/utils/tool-scanner.ts`, leaving **116 tools registered** across 16 domains. The exclusion map
+is the single source of truth for what clients can call — the reference docs site and its coverage
+check both read it.
 
-const result = await listApps({
-  projectId,
-  apiToken: session.mittwaldAccessToken,
-});
-```
+## Documentation
 
-### Key Locations
-- **Library package:** `packages/mittwald-cli-core/`
-- **Tool handlers:** `src/handlers/tools/mittwald-cli/**/*.ts`
-- **Plan:** `kitty-specs/012-convert-mittwald-cli/plan.md`
-- **Spec:** `kitty-specs/012-convert-mittwald-cli/spec.md`
+Two Astro/Starlight sites are the end-user documentation:
 
-### Success Criteria
-- 10 concurrent users, zero failures
-- <50ms median response time (vs 200-400ms baseline)
-- Zero `mw` CLI processes spawned
-- 100% output parity validated via parallel execution
+- `docs/setup-and-guides/` — getting connected, how-to, tutorials, runbooks, explainers
+- `docs/reference/` — one page per tool, **generated** from the tool registry; never hand-edit
+  `docs/reference/src/content/docs/tools/` (see `docs/reference/README.md` for the regeneration
+  commands)
 
-## Agent-Based MCP Tool Evaluation - CRITICAL
-
-**Feature 013: Post-012 Eval Suite Reconciliation**
-
-### Problem
-- Feature 010 created eval suite for 175 tools (pre-CLI-to-library conversion)
-- Feature 012 reduced tool count to 115 tools (library-based architecture)
-- Existing eval prompts out of sync with current MCP server reality
-- Need to validate post-012 MCP server health and establish new baseline
-
-### Solution
-**Eval Prompt Reconciliation:**
-- Discover current tool inventory (115 tools across 19 domains)
-- Archive prompts for 60 removed tools
-- Update prompts for renamed/modified tools
-- Create prompts for new tools (if any)
-- Ensure all prompts formatted as Langfuse-importable JSON documents
-
-**Agent Execution Model:**
-- Users manually spawn agents (no orchestration automation)
-- Work package (WP) prompt files contain eval instructions
-- Agents execute via `/spec-kitty.implement` on WP files
-- **CRITICAL**: Agents must CALL MCP tools directly, NOT write scripts
-- Self-assessment captured via embedded JSON with marker extraction
-
-### Inventory Changes (010 → 013)
-- **Baseline (010)**: 175 tools, 10 domains
-- **Current (013)**: 115 tools, 19 domains
-- **Delta**: 60 tools removed/consolidated (34.3% reduction)
-- **Primary cause**: CLI-to-library conversion simplified tool set
-
-### Langfuse Format
-Eval prompts use feature 010's Langfuse-compatible JSON structure:
-```json
-{
-  "input": {
-    "prompt": "Markdown with self-assessment instructions",
-    "tool_name": "mcp__mittwald__mittwald_app_list",
-    "display_name": "app/list",
-    "context": {
-      "dependencies": ["..."],
-      "setup_instructions": "..."
-    }
-  },
-  "expectedOutput": null,
-  "metadata": {
-    "domain": "app",
-    "tier": 4,
-    "eval_version": "2.0.0"
-  }
-}
-```
-
-### Key Locations
-- **Feature spec:** `kitty-specs/013-agent-based-mcp-tool-evaluation/spec.md`
-- **Plan:** `kitty-specs/013-agent-based-mcp-tool-evaluation/plan.md`
-- **Research:** `kitty-specs/013-agent-based-mcp-tool-evaluation/research.md`
-- **Eval prompts:** `evals/prompts/{domain}/*.json`
-- **Archived prompts:** `evals/prompts/_archived/`
-- **Tool inventory:** `evals/inventory/tools-current.json`
-
-### Success Criteria
-- 100% of 115 current tools have valid eval prompts
-- All prompts formatted as Langfuse-importable JSON
-- Prompts explicitly instruct "CALL tool directly, NOT write scripts"
-- Archived prompts for removed tools documented
-- Post-012 baseline established for future validation
-
-## Domain-Grouped Eval Work Packages - CRITICAL
-
-**Feature 014: Execute All Evals and Establish Baseline**
-
-### Problem
-- Feature 013 created 116 eval prompt JSON files but they haven't been executed yet
-- No baseline data for post-012 MCP server health
-- Manual copy-paste workflow from JSON files is cumbersome
-
-### Solution
-**Execute all 116 evals in this feature:**
-- Generate 12 domain-grouped Work Package (WP) files during `/spec-kitty.tasks`
-- Each WP contains all eval prompts for that domain, ordered by tier (0→4)
-- Execute WPs via `/spec-kitty.implement`
-- Agents call MCP tools directly, save self-assessments inline to disk
-- Aggregate results using feature 010's existing scripts
-- By feature completion: all 116 evals executed, baseline established
-
-### Execution Model
-**WP Generation (automated during task generation):**
-- TypeScript script reads all JSON files from `evals/prompts/{domain}/`
-- Extracts `input.prompt` field from each JSON
-- Sorts by `metadata.tier` (ascending)
-- Generates 12 markdown WP files (one per domain)
-- WP files are task files, executed via `/spec-kitty.implement`
-
-**Inline Self-Assessment Save:**
-- Each eval prompt instructs agent: "After completing this eval, immediately save self-assessment JSON to `evals/results/{domain}/{tool-name}-result.json`"
-- Agent writes result file before moving to next eval
-- No batch save (prevents data loss if interrupted)
-
-**Aggregation:**
-- After all WPs execute, run `npx tsx evals/scripts/generate-coverage-report.ts`
-- Produces `coverage-report.json` and `baseline-report.md`
-- Feature 010 scripts handle the result file structure
-
-### Domain Classification (116 tools across 12 domains)
-- access-users (7), apps (8), automation (9), backups (8)
-- containers (10), context (3), databases (14), domains-mail (22)
-- identity (13), misc (5), organization (7), project-foundation (10)
-
-### Execution Order (by tier)
-1. **Tier 0** (no dependencies): identity, organization, context
-2. **Tier 1-3** (organizational/project setup): project-foundation
-3. **Tier 4** (requires project): remaining 8 domains
-
-### Key Locations
-- **Feature spec:** `kitty-specs/014-domain-grouped-eval-work-packages/spec.md`
-- **Plan:** `kitty-specs/014-domain-grouped-eval-work-packages/plan.md`
-- **Data model:** `kitty-specs/014-domain-grouped-eval-work-packages/data-model.md`
-- **Quickstart:** `kitty-specs/014-domain-grouped-eval-work-packages/quickstart.md`
-- **Eval prompts (input):** `evals/prompts/{domain}/*.json`
-- **Results (output):** `evals/results/{domain}/*.json`
-- **Aggregation scripts:** `evals/scripts/generate-coverage-report.ts`
-
-### Success Criteria
-- All 116 evals executed during this feature's implementation
-- 100% of evals have self-assessments saved to `evals/results/{domain}/{tool}-result.json`
-- Coverage report generated showing domain/tier breakdowns and success rates
-- Post-014 baseline established and documented
-
-<!-- MANUAL ADDITIONS END -->
+`npm run docs:guardrails` validates internal links, Codex CLI flags against captured `--help`
+snapshots, and tutorial→use-case mappings. Run it after touching either site.

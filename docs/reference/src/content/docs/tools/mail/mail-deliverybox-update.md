@@ -1,19 +1,19 @@
 ---
-title: Update Delivery Box
-description: Update a delivery box.
+title: "Update Delivery Box"
+description: "Update a delivery box."
 sidebar:
-  label: Update Delivery Box
+  label: "Update Delivery Box"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update Delivery Box
+      content: "Update Delivery Box"
   - tag: meta
     attrs:
       name: og:description
-      content: Update a delivery box.
-lastUpdated: 2026-01-23
+      content: "Update a delivery box."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

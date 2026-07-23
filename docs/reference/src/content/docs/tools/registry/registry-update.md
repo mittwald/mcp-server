@@ -1,19 +1,19 @@
 ---
-title: Update Registry
-description: Update an existing registry in Mittwald.
+title: "Update Registry"
+description: "Update an existing registry in Mittwald."
 sidebar:
-  label: Update Registry
+  label: "Update Registry"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update Registry
+      content: "Update Registry"
   - tag: meta
     attrs:
       name: og:description
-      content: Update an existing registry in Mittwald.
-lastUpdated: 2026-01-23
+      content: "Update an existing registry in Mittwald."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

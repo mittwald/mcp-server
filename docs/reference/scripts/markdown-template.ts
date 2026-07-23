@@ -16,23 +16,40 @@ import type { MCPTool } from './schema.js';
  * @param domain - Tool domain
  * @returns YAML frontmatter string
  */
+/**
+ * Renders a value as a double-quoted YAML scalar.
+ *
+ * Tool descriptions routinely contain colons, quotes and newlines, all of which
+ * break an unquoted frontmatter value.
+ */
+function yamlString(value: string): string {
+  const escaped = value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\r?\n/g, ' ')
+    .trim();
+  return `"${escaped}"`;
+}
+
 export function generateFrontmatter(tool: MCPTool, domain: string): string {
   const date = new Date().toISOString().split('T')[0];
+  const title = yamlString(tool.title);
+  const description = yamlString(tool.description);
   return `---
-title: ${tool.title}
-description: ${tool.description.replace(/"/g, '\\"')}
+title: ${title}
+description: ${description}
 sidebar:
-  label: ${tool.title}
+  label: ${title}
   order: ${tool.name.charCodeAt(0)}
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: ${tool.title}
+      content: ${title}
   - tag: meta
     attrs:
       name: og:description
-      content: ${tool.description.replace(/"/g, '\\"')}
+      content: ${description}
 lastUpdated: ${date}
 ---
 `;
@@ -160,7 +177,8 @@ Reference documentation for all ${domain} management tools.
 `;
 
   for (const tool of tools) {
-    const description = tool.description.replace(/\|/g, '\\|');
+    // A table cell must stay on one line, and `|` would end it early.
+    const description = tool.description.replace(/\r?\n/g, ' ').replace(/\|/g, '\\|');
     content += `| [\`${tool.name}\`](./${tool.name.split('_').slice(2).join('-')}) | ${description} |\n`;
   }
 

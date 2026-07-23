@@ -1,19 +1,19 @@
 ---
-title: Update App Properties
-description: Update properties of an app installation. (use upgrade to update the app version)
+title: "Update App Properties"
+description: "Update properties of an app installation. (use upgrade to update the app version)"
 sidebar:
-  label: Update App Properties
+  label: "Update App Properties"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update App Properties
+      content: "Update App Properties"
   - tag: meta
     attrs:
       name: og:description
-      content: Update properties of an app installation. (use upgrade to update the app version)
-lastUpdated: 2026-01-23
+      content: "Update properties of an app installation. (use upgrade to update the app version)"
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

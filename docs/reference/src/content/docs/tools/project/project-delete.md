@@ -1,19 +1,19 @@
 ---
-title: Delete Project
-description: Delete a project.
+title: "Delete Project"
+description: "Delete a project."
 sidebar:
-  label: Delete Project
+  label: "Delete Project"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Project
+      content: "Delete Project"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a project.
-lastUpdated: 2026-01-23
+      content: "Delete a project."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

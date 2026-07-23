@@ -1,19 +1,19 @@
 ---
-title: Execute Cron Job
-description: Execute a cronjob.
+title: "Execute Cron Job"
+description: "Execute a cronjob."
 sidebar:
-  label: Execute Cron Job
+  label: "Execute Cron Job"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Execute Cron Job
+      content: "Execute Cron Job"
   - tag: meta
     attrs:
       name: og:description
-      content: Execute a cronjob.
-lastUpdated: 2026-01-23
+      content: "Execute a cronjob."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,19 +1,19 @@
 ---
-title: List Registries
-description: List registries available in Mittwald.
+title: "List Registries"
+description: "List registries available in Mittwald."
 sidebar:
-  label: List Registries
+  label: "List Registries"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List Registries
+      content: "List Registries"
   - tag: meta
     attrs:
       name: og:description
-      content: List registries available in Mittwald.
-lastUpdated: 2026-01-23
+      content: "List registries available in Mittwald."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
@@ -24,12 +24,6 @@ List registries available in Mittwald.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `projectId` | `string` | Yes | ID or short ID of a project |
-| `output` | `txt \| json \| yaml \| csv \| tsv` | No | Output format |
-| `extended` | `boolean` | No | Show extended information |
-| `noHeader` | `boolean` | No | Hide table header |
-| `noTruncate` | `boolean` | No | Do not truncate output |
-| `noRelativeDates` | `boolean` | No | Show dates in absolute format |
-| `csvSeparator` | `, \| ;` | No | Separator for CSV output |
 
 ## Return Type
 

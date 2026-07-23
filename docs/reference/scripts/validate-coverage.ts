@@ -12,33 +12,6 @@ const TOOLS_DIR = path.join(__dirname, '../src/content/docs/tools');
 const REPORT_FILE = path.join(__dirname, '../coverage-report.json');
 const OPENAPI_FILE = path.join(__dirname, '../openapi.json');
 
-// Expected tool counts per domain (from actual manifest)
-const EXPECTED_COUNTS: Record<string, number> = {
-  'app': 28,
-  'backup': 9,
-  'certificate': 2,
-  'container': 9,
-  'context': 3,
-  'conversation': 6,
-  'cronjob': 10,
-  'database': 21,
-  'domain': 9,
-  'extension': 4,
-  'login': 2,
-  'mail': 10,
-  'org': 10,
-  'project': 14,
-  'registry': 4,
-  'server': 2,
-  'sftp': 4,
-  'ssh': 4,
-  'stack': 4,
-  'user': 12,
-  'volume': 3,
-};
-
-const EXPECTED_TOTAL = Object.values(EXPECTED_COUNTS).reduce((sum, count) => sum + count, 0);
-
 interface ValidationIssue {
   type: 'error' | 'warning';
   message: string;
@@ -107,40 +80,37 @@ async function validateCoverage(): Promise<CoverageReport> {
     });
   }
 
-  // Step 3: Validate tool count
-  if (manifest.totalTools !== EXPECTED_TOTAL) {
-    issues.push({
-      type: 'error',
-      message: `Expected ${EXPECTED_TOTAL} tools, found ${manifest.totalTools}`,
-    });
-  } else {
-    console.log(`✓ Tool count correct: ${EXPECTED_TOTAL}`);
-  }
+  // Step 3: The manifest is regenerated from the tool registry, so it — not a
+  // hardcoded table — is the expectation the published pages are checked against.
+  const EXPECTED_TOTAL = manifest.totalTools;
 
-  // Step 4: Validate domain distribution
   const domainsInManifest = Object.keys(manifest.tools).filter(d => manifest.tools[d].length > 0);
   console.log(`\n✓ Domains found: ${domainsInManifest.length}`);
 
-  for (const [domain, expectedCount] of Object.entries(EXPECTED_COUNTS)) {
-    const foundCount = manifest.tools[domain]?.length || 0;
+  // Step 4: Every tool in the manifest must have a page, and vice versa.
+  for (const domain of domainsInManifest) {
+    const expectedCount = manifest.tools[domain].length;
+    const domainPages = await glob(`${TOOLS_DIR}/${domain}/*.md`);
+    const foundCount = domainPages.filter(f => !f.endsWith('index.md')).length;
     byDomain[domain] = { expected: expectedCount, found: foundCount };
 
     if (foundCount !== expectedCount) {
       issues.push({
         type: 'error',
-        message: `Domain ${domain}: expected ${expectedCount} tools, found ${foundCount}`,
+        message: `Domain ${domain}: manifest lists ${expectedCount} tools, found ${foundCount} pages`,
       });
     } else {
       console.log(`  ✓ Domain ${domain}: ${foundCount} tools`);
     }
   }
 
-  // Step 5: Check for extra domains (not in expected)
-  for (const domain of domainsInManifest) {
-    if (!(domain in EXPECTED_COUNTS)) {
+  // Step 5: Check for page directories with no corresponding manifest domain.
+  const pageDirs = (await glob(`${TOOLS_DIR}/*/index.md`)).map(f => path.basename(path.dirname(f)));
+  for (const domain of pageDirs) {
+    if (!domainsInManifest.includes(domain)) {
       issues.push({
-        type: 'warning',
-        message: `Unexpected domain found: ${domain} with ${manifest.tools[domain].length} tools`,
+        type: 'error',
+        message: `Pages exist for domain '${domain}', which is not in the manifest — regenerate the reference`,
       });
     }
   }

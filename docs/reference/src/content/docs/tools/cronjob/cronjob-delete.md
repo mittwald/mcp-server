@@ -1,19 +1,19 @@
 ---
-title: Delete Cron Job
-description: Delete a cronjob.
+title: "Delete Cron Job"
+description: "Delete a cronjob."
 sidebar:
-  label: Delete Cron Job
+  label: "Delete Cron Job"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Cron Job
+      content: "Delete Cron Job"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a cronjob.
-lastUpdated: 2026-01-23
+      content: "Delete a cronjob."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

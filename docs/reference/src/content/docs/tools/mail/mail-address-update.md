@@ -1,19 +1,19 @@
 ---
-title: Update Mail Address
-description: Update a mail address.
+title: "Update Mail Address"
+description: "Update a mail address."
 sidebar:
-  label: Update Mail Address
+  label: "Update Mail Address"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update Mail Address
+      content: "Update Mail Address"
   - tag: meta
     attrs:
       name: og:description
-      content: Update a mail address.
-lastUpdated: 2026-01-23
+      content: "Update a mail address."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

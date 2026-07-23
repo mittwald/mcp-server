@@ -1,19 +1,19 @@
 ---
-title: Revoke Organization Invite
-description: Revoke an invite to an organization.
+title: "Revoke Organization Invite"
+description: "Revoke an invite to an organization."
 sidebar:
-  label: Revoke Organization Invite
+  label: "Revoke Organization Invite"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Revoke Organization Invite
+      content: "Revoke Organization Invite"
   - tag: meta
     attrs:
       name: og:description
-      content: Revoke an invite to an organization.
-lastUpdated: 2026-01-23
+      content: "Revoke an invite to an organization."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

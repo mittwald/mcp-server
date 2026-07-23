@@ -1,19 +1,19 @@
 ---
-title: Update Backup Schedule
-description: Update a backup schedule.
+title: "Update Backup Schedule"
+description: "Update a backup schedule."
 sidebar:
-  label: Update Backup Schedule
+  label: "Update Backup Schedule"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update Backup Schedule
+      content: "Update Backup Schedule"
   - tag: meta
     attrs:
       name: og:description
-      content: Update a backup schedule.
-lastUpdated: 2026-01-23
+      content: "Update a backup schedule."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

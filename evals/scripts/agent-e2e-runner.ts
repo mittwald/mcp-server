@@ -6,14 +6,13 @@ import path from 'path';
 
 type AgentName = 'claude' | 'codex' | 'opencode';
 type CoverageMode = 'all-agents' | 'any-agent';
-type McpTarget = 'fly' | 'mittwald';
+type McpTarget = 'mittwald';
 
 const SUPPORTED_AGENTS: AgentName[] = ['claude', 'codex', 'opencode'];
 const MCP_TARGET_URLS: Record<McpTarget, string> = {
-  fly: 'https://mittwald-mcp-fly2.fly.dev/mcp',
   mittwald: 'https://mcp.mittwald.de/mcp',
 };
-const DEFAULT_MCP_TARGET: McpTarget = 'fly';
+const DEFAULT_MCP_TARGET: McpTarget = 'mittwald';
 const CODEX_MCP_SERVERS_TO_DISABLE = ['notion', 'Tavily', 'playwright'];
 const SELF_ASSESSMENT_START = '<!-- SELF_ASSESSMENT_START -->';
 const SELF_ASSESSMENT_END = '<!-- SELF_ASSESSMENT_END -->';
@@ -334,9 +333,9 @@ function parseArgs(argv: string[]): RunnerOptions {
         break;
       case 'target':
         if (!value) throw new Error('--target requires a value');
-        if (value !== 'fly' && value !== 'mittwald') {
+        if (value !== 'mittwald') {
           throw new Error(
-            `Invalid --target '${value}'. Use 'fly' or 'mittwald'`
+            `Invalid --target '${value}'. Only 'mittwald' is supported.`
           );
         }
         options.target = value;
@@ -1647,8 +1646,8 @@ function printUsage(): void {
       '  --output-dir=evals/results/agent-e2e',
       `  --timeout-ms=${DEFAULT_TIMEOUT_MS}              Timeout per prompt`,
       '  --mcp-config=.mcp.json            Claude MCP config file',
-      '  --target=fly|mittwald             Target endpoint selection (default: fly)',
-      '  --mcp-url=https://mittwald-mcp-fly2.fly.dev/mcp',
+      '  --target=mittwald                 Target endpoint selection (default: mittwald)',
+      '  --mcp-url=https://mcp.mittwald.de/mcp',
       '  --domains=apps,databases          Restrict domains',
       '  --tools=mcp__mittwald__foo,...    Restrict tools',
       '  --max-tools=10                    Run only first N cases',

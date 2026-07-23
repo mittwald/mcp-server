@@ -1,19 +1,19 @@
 ---
-title: List MySQL Databases
-description: List MySQL databases.
+title: "List MySQL Databases"
+description: "List MySQL databases."
 sidebar:
-  label: List MySQL Databases
+  label: "List MySQL Databases"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List MySQL Databases
+      content: "List MySQL Databases"
   - tag: meta
     attrs:
       name: og:description
-      content: List MySQL databases.
-lastUpdated: 2026-01-23
+      content: "List MySQL databases."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
@@ -23,13 +23,7 @@ List MySQL databases.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `projectId` | `string` | Yes | Optional project ID to filter databases by project |
-| `output` | `txt \| json \| yaml \| csv \| tsv` | No | Output format (default: json for structured data) |
-| `extended` | `boolean` | No | Show extended information |
-| `noHeader` | `boolean` | No | Omit header row |
-| `noTruncate` | `boolean` | No | Do not truncate output |
-| `noRelativeDates` | `boolean` | No | Show absolute dates instead of relative dates |
-| `csvSeparator` | `, \| ;` | No | CSV separator character |
+| `projectId` | `string` | Yes | Project ID to list databases for |
 
 ## Return Type
 

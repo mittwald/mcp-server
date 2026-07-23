@@ -5,15 +5,14 @@ import fs from 'fs';
 import path from 'path';
 
 type AgentName = 'claude' | 'codex' | 'opencode';
-type McpTarget = 'fly' | 'mittwald';
+type McpTarget = 'mittwald';
 type ClaudeScope = 'local' | 'project' | 'user';
 
 const SUPPORTED_AGENTS: AgentName[] = ['claude', 'codex', 'opencode'];
 const MCP_TARGET_URLS: Record<McpTarget, string> = {
-  fly: 'https://mittwald-mcp-fly2.fly.dev/mcp',
   mittwald: 'https://mcp.mittwald.de/mcp',
 };
-const DEFAULT_TARGET: McpTarget = 'fly';
+const DEFAULT_TARGET: McpTarget = 'mittwald';
 
 interface BootstrapOptions {
   agents: AgentName[];
@@ -78,8 +77,8 @@ function parseArgs(argv: string[]): BootstrapOptions {
         break;
       case 'target':
         if (!value) throw new Error('--target requires a value');
-        if (value !== 'fly' && value !== 'mittwald') {
-          throw new Error(`Invalid --target '${value}'. Use 'fly' or 'mittwald'`);
+        if (value !== 'mittwald') {
+          throw new Error(`Invalid --target '${value}'. Only 'mittwald' is supported.`);
         }
         options.target = value;
         if (!mcpUrlExplicitlySet) {
@@ -314,7 +313,7 @@ function printUsage(): void {
       '',
       'Options:',
       '  --agents=claude,codex,opencode   Comma-separated agents (default: all)',
-      '  --target=fly|mittwald            Endpoint target (default: fly)',
+      '  --target=mittwald                Endpoint target (default: mittwald)',
       '  --mcp-url=<url>                  Explicit MCP URL override',
       '  --mcp-name=mittwald              Shared MCP server name',
       '  --mcp-config=.mcp.json           Claude project MCP config path',

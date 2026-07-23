@@ -1,19 +1,19 @@
 ---
-title: Get Delivery Box Details
-description: Get a specific delivery box.
+title: "Get Delivery Box Details"
+description: "Get a specific delivery box."
 sidebar:
-  label: Get Delivery Box Details
+  label: "Get Delivery Box Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Delivery Box Details
+      content: "Get Delivery Box Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get a specific delivery box.
-lastUpdated: 2026-01-23
+      content: "Get a specific delivery box."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

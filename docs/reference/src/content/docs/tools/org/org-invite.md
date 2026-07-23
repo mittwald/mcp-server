@@ -1,19 +1,19 @@
 ---
-title: Invite User to Organization
-description: Invite a user to join an organization with a specified role.
+title: "Invite User to Organization"
+description: "Invite a user to join an organization with a specified role."
 sidebar:
-  label: Invite User to Organization
+  label: "Invite User to Organization"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Invite User to Organization
+      content: "Invite User to Organization"
   - tag: meta
     attrs:
       name: og:description
-      content: Invite a user to join an organization with a specified role.
-lastUpdated: 2026-01-23
+      content: "Invite a user to join an organization with a specified role."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,19 +1,19 @@
 ---
-title: Create Cron Job
-description: Create a cronjob.
+title: "Create Cron Job"
+description: "Create a cronjob."
 sidebar:
-  label: Create Cron Job
+  label: "Create Cron Job"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Cron Job
+      content: "Create Cron Job"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a cronjob.
-lastUpdated: 2026-01-23
+      content: "Create a cronjob."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

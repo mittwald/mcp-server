@@ -1,19 +1,19 @@
 ---
-title: Create Backup
-description: Create a new backup
+title: "Create Backup"
+description: "Create a new backup"
 sidebar:
-  label: Create Backup
+  label: "Create Backup"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Backup
+      content: "Create Backup"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new backup
-lastUpdated: 2026-01-23
+      content: "Create a new backup"
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

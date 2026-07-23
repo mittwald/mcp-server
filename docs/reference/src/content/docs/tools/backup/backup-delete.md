@@ -1,19 +1,19 @@
 ---
-title: Delete Backup
-description: Delete a backup
+title: "Delete Backup"
+description: "Delete a backup"
 sidebar:
-  label: Delete Backup
+  label: "Delete Backup"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Backup
+      content: "Delete Backup"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a backup
-lastUpdated: 2026-01-23
+      content: "Delete a backup"
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

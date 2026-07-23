@@ -1,19 +1,19 @@
 ---
-title: Delete Container
-description: Delete a container.
+title: "Delete Container"
+description: "Delete a container."
 sidebar:
-  label: Delete Container
+  label: "Delete Container"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Container
+      content: "Delete Container"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a container.
-lastUpdated: 2026-01-23
+      content: "Delete a container."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

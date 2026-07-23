@@ -1,46 +1,64 @@
 # Test Guide
 
-This repository uses a layered test strategy covering linting, type safety, Redis-backed session flows, the OAuth bridge, and MCP end-to-end behaviour. All commands below assume `pnpm` from the repo root.
+Layered test strategy covering linting, type safety, Redis-backed session flows, the OAuth bridge,
+and MCP end-to-end behaviour. All commands run with `npm` from the repository root.
 
-For customer-operated functional testing against deployed endpoints using real coding agents, start with:
-- `docs/FUNCTIONAL-TESTING-OPERATIONS.md`
+For functional testing against the deployed endpoint using real coding agents, start with
+`docs/FUNCTIONAL-TESTING-OPERATIONS.md`.
 
 ## Quick Commands
-- `pnpm lint`
-- `pnpm type-check`
-- `pnpm test:unit`
-- `pnpm test:integration`
-- `pnpm --filter @mittwald/oauth-bridge test` (package-specific unit tests)
 
-End-to-end flows will move into `pnpm test:e2e:mcp` as we stabilise the bridge-driven stack; see roadmap notes below.
+```bash
+npm run lint
+npm run type-check
+npm run test          # everything
+npm run test:unit
+npm run test:integration
+npm run test:bridge   # OAuth bridge package suite
+npm run test:e2e
+npm run test:security
+npm run test:smoke
+```
 
 ## Suite Overview
-### Unit Tests (`tests/unit/**`)
-Focus: JWT verification, session management, CLI wrappers.
-- `server/oauth-middleware.test.ts`
-- `server/session-manager.test.ts`
-- `utils/cli-wrapper.test.ts`
-- `oauth-bridge/*` inside `packages/oauth-bridge/tests`
 
-### Integration Tests (`tests/integration/**`)
-Spin up Express handlers + Redis to verify:
-- OAuth lifecycle and Mittwald token passthrough (`oauth-lifecycle.test.ts`)
-- Scope persistence and refresh logic (`scope-validation.test.ts`)
-- CLI token injection via `sessionAwareCli` (`cli-session.integration.test.ts`)
-- Mittwald-specific API constraints (`mittwald-integration.test.ts`)
+### Unit (`tests/unit/**`)
+Handlers, tool definitions, utilities, middleware, metrics, session management and JWT
+verification. `tests/unit/tools/tool-annotations.test.ts` enforces that every registered tool
+declares a title and the three behavioural hints.
 
-### End-to-End Roadmap (`tests/e2e/**`)
-Legacy suites targeting the oidc-provider remain as references while we port them to the bridge:
-- `all-clients-compatibility.test.ts`
+The OAuth bridge has its own unit suite under `packages/oauth-bridge/tests/`, run with
+`npm run test:bridge`.
+
+### Integration (`tests/integration/**`)
+- `direct-token-cli.integration.test.ts` — direct Mittwald API token path
+- `mittwald-integration.test.ts` — Mittwald-specific API constraints
+
+### End-to-End (`tests/e2e/**`)
+Full OAuth + MCP cycles against a stubbed Mittwald (`mittwald-stub-server.ts`):
 - `claude-ai-oauth-flow.test.ts`
+- `all-clients-compatibility.test.ts`
+- `security-validation.e2e.test.ts`
+
+`docker-compose.test.yml` brings up the stack these need. See `tests/e2e/README.md`.
+
+### Security (`tests/security/**`)
+Credential-leak regression and shell-injection fuzzing.
+
+### Smoke (`tests/smoke/**`)
+Post-deploy OAuth checks against a running deployment.
+
+### Functional (`tests/functional/**`)
+No vitest suite lives here — the directory holds the use-case library
+(`tests/functional/use-case-library/`), the scenario corpus executed by the agent-native E2E
+harness in `evals/`. See `docs/FUNCTIONAL-TESTING-OPERATIONS.md`.
 
 ## Environment Notes
-- Redis must be reachable at `REDIS_URL` (use `docker compose up redis` locally).
-- The OAuth bridge expects Mittwald credentials via environment variables; see `ARCHITECTURE.md` for the list.
-- End-to-end suites require the stateless bridge + MCP server running together; align secrets across both services.
 
-## Next Steps
-- Migrate remaining E2E suites to the stateless bridge stack.
-- Add automated coverage for per-scope tool filtering once implemented.
+- Redis must be reachable at `REDIS_URL` (`docker compose up redis` locally).
+- The OAuth bridge needs its Mittwald configuration in the environment; see
+  `packages/oauth-bridge/.env.example`.
+- E2E suites need the bridge and MCP server running together with the **same** JWT secret
+  (`BRIDGE_JWT_SECRET` / `OAUTH_BRIDGE_JWT_SECRET`).
 
-For architectural context and deployment guidance read `ARCHITECTURE.md` and `docs/INDEX.md`.
+For architectural context read `ARCHITECTURE.md`; for deployment read `DEPLOY.md`.

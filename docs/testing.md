@@ -14,7 +14,7 @@
 - Redis required for session/state tests; compose includes `redis:7-alpine`.
 - OAuth tests default to mock OAuth issuer (`mock-oauth` in compose). Set `OAUTH_ISSUER`/`OAUTH_REDIRECT_URI` for real stacks.
 - Ensure `MITTWALD_OAUTH_CLIENT_ID` and `OAUTH_BRIDGE_JWT_SECRET` are set for bridge flows.
-- CLI buffers are capped (`MCP_CLI_MAX_BUFFER_MB`); large outputs can fail tests if limits are exceeded.
+- Tool payloads are capped (`MCP_TOOL_MAX_PAYLOAD_MB`, `MCP_CLI_MAX_BUFFER_MB`); large outputs can fail tests if limits are exceeded.
 
 ## Test Matrices
 - Unit: handlers, utilities, schemas.
@@ -27,4 +27,5 @@
 ## References
 - `tests/README.md` for detailed setup.
 - `docs/FUNCTIONAL-TESTING-OPERATIONS.md` for customer-operated functional testing in real agents (deployed endpoint validation).
-- `docs/coverage.md` for coverage expectations and regeneration.
+- `docs/coverage.md` for Mittwald CLI coverage expectations and regeneration.
+- `npm run test:functional` for the local functional suite (`tests/functional/`).

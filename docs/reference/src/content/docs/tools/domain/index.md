@@ -4,7 +4,7 @@ description: Complete reference for domain management tools
 sidebar:
   label: Domain
   order: 0
-lastUpdated: 2026-01-23
+lastUpdated: 2026-07-23
 ---
 
 ## Domain Tools

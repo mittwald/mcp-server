@@ -1,9 +1,8 @@
 # Credential Security Architecture
 
-**Version**: 1.0
 **Status**: 🟢 REQUIRED STANDARD
-**Established**: 2025-10-02
-**Based On**: Agent C3 database tools implementation
+
+This standard is mandatory for every tool that handles passwords, tokens, API keys or secrets.
 
 ---
 
@@ -54,7 +53,7 @@ This document establishes a **three-layer defense-in-depth security model** that
          ↓
 ┌─────────────────────────────────┐
 │ OAuth Bridge                    │
-│ (mittwald-oauth-server.fly.dev) │
+│ (auth.mcp.mittwald.de) │
 └────────┬────────────────────────┘
          │ JWT with embedded Mittwald tokens
          ↓
@@ -669,7 +668,7 @@ async function handleDatabaseUserUpdate(args: {
 │ Step 3: Bridge Embeds Tokens in JWT                              │
 │                                                                   │
 │ {                                                                 │
-│   "iss": "https://mittwald-oauth-server.fly.dev",                │
+│   "iss": "https://auth.mcp.mittwald.de",                │
 │   "sub": "tenant-a-user-123",                                    │
 │   "mittwaldAccessToken": "mwat_tenant_a_abc123...", ← Embedded  │
 │   "mittwaldRefreshToken": "mwrt_tenant_a_def456..." ← Embedded  │
@@ -1445,9 +1444,7 @@ describe('Credential Security Validation', () => {
 
 ## Migration Guide for Existing Tools
 
-See [docs/migrations/credential-security-migration-2025-10.md](./migrations/credential-security-migration-2025-10.md) for detailed migration instructions for existing tools that handle credentials.
-
-**Quick Summary**:
+To bring an existing credential-handling tool up to this standard:
 
 1. **Identify tools**: `git grep -l "password\|token\|api-key" src/handlers/`
 2. **Update password generation**: Replace `Math.random()` with `generateSecurePassword()`
@@ -1504,24 +1501,16 @@ See [docs/migrations/credential-security-migration-2025-10.md](./migrations/cred
 
 ### Internal Documentation
 
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - OAuth 2.1 bridge and session management
-- [LLM_CONTEXT.md](./LLM_CONTEXT.md) - Complete project overview
-- [docs/agent-prompts/STANDARD-S1-credential-security.md](./agent-prompts/STANDARD-S1-credential-security.md) - Agent implementation guide
-- [docs/agent-reviews/AGENT-C3-REVIEW.md](./agent-reviews/AGENT-C3-REVIEW.md) - Original security pattern review
+- [ARCHITECTURE.md](../ARCHITECTURE.md) - OAuth 2.1 bridge and session management
+- [CLAUDE.md](../CLAUDE.md) - Development guidelines, including tool annotation requirements
+- [tooling-and-safety.md](./tooling-and-safety.md) - Day-to-day safety patterns for tool authors
+- [security/risk-register.md](./security/risk-register.md) - Identified, remediated and accepted risks
 
 ### External Standards
 
 - [OAuth 2.1 Specification](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1-07)
 - [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [NIST SP 800-63B](https://pages.nist.gov/800-63-3/sp800-63b.html) - Digital Identity Guidelines
-
----
-
-## Changelog
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2025-10-02 | Initial standard based on Agent C3 implementation |
 
 ---
 

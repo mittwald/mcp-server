@@ -1,19 +1,19 @@
 ---
-title: List App Versions
-description: List supported Apps and Versions.
+title: "List App Versions"
+description: "List supported Apps and Versions."
 sidebar:
-  label: List App Versions
+  label: "List App Versions"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List App Versions
+      content: "List App Versions"
   - tag: meta
     attrs:
       name: og:description
-      content: List supported Apps and Versions.
-lastUpdated: 2026-01-23
+      content: "List supported Apps and Versions."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

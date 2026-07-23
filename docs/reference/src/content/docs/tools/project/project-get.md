@@ -1,19 +1,19 @@
 ---
-title: Get Project Details
-description: Get details of a project.
+title: "Get Project Details"
+description: "Get details of a project."
 sidebar:
-  label: Get Project Details
+  label: "Get Project Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Project Details
+      content: "Get Project Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get details of a project.
-lastUpdated: 2026-01-23
+      content: "Get details of a project."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

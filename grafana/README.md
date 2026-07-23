@@ -5,8 +5,8 @@
 ### 1. Import Dashboard to Grafana (Manual - Recommended)
 
 **Via Grafana UI:**
-1. Go to https://mittwald-grafana.fly.dev/
-2. Login (admin/admin)
+1. Go to your Grafana instance
+2. Log in
 3. Navigate to: Dashboards → Import
 4. Copy and paste the contents of `oom-monitoring-dashboard.json`
 5. Click "Load"
@@ -15,13 +15,13 @@
 
 **Via API (if you have an API key):**
 ```bash
-curl -X POST https://mittwald-grafana.fly.dev/api/dashboards/db \
+curl -X POST <your-grafana-url>/api/dashboards/db \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d @grafana/oom-monitoring-dashboard.json
 ```
 
-**Note:** The Grafana instance on Fly.io has ephemeral storage, so dashboards uploaded via filesystem won't persist across restarts. Use the UI import method above.
+**Note:** if your Grafana instance uses ephemeral storage, dashboards uploaded via the filesystem will not survive a restart — use the UI import above.
 
 ### 2. Configure Prometheus Alerts
 
@@ -40,7 +40,7 @@ curl -X POST http://localhost:9090/-/reload
 ### 3. Access Dashboard
 
 ```
-https://mittwald-prometheus.fly.dev/grafana/dashboards
+<your-grafana-url>/dashboards
 ```
 
 ## Dashboard Panels
@@ -103,7 +103,7 @@ mcp_memory_pressure_percent and on() sum(rate(mcp_tool_calls_total{status="error
 ## Troubleshooting
 
 ### Dashboard shows no data
-1. Check Prometheus is scraping metrics: `https://mittwald-mcp-fly2.fly.dev/metrics`
+1. Check Prometheus is scraping metrics: `https://mcp.mittwald.de/metrics` (Basic auth required)
 2. Verify datasource in Grafana
 3. Check time range (default: Last 6 hours)
 

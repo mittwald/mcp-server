@@ -1,19 +1,19 @@
 ---
-title: List Organizations
-description: Get all organizations the authenticated user has access to.
+title: "List Organizations"
+description: "Get all organizations the authenticated user has access to."
 sidebar:
-  label: List Organizations
+  label: "List Organizations"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List Organizations
+      content: "List Organizations"
   - tag: meta
     attrs:
       name: og:description
-      content: Get all organizations the authenticated user has access to.
-lastUpdated: 2026-01-23
+      content: "Get all organizations the authenticated user has access to."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

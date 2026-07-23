@@ -1,19 +1,19 @@
 ---
-title: Get Project Membership Details
-description: Get details of a project membership.
+title: "Get Project Membership Details"
+description: "Get details of a project membership."
 sidebar:
-  label: Get Project Membership Details
+  label: "Get Project Membership Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Project Membership Details
+      content: "Get Project Membership Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get details of a project membership.
-lastUpdated: 2026-01-23
+      content: "Get details of a project membership."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
