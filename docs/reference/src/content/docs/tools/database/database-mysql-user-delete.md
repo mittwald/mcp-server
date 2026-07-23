@@ -1,19 +1,19 @@
 ---
-title: Delete MySQL User
-description: Delete an existing MySQL user.
+title: "Delete MySQL User"
+description: "Delete an existing MySQL user."
 sidebar:
-  label: Delete MySQL User
+  label: "Delete MySQL User"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete MySQL User
+      content: "Delete MySQL User"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete an existing MySQL user.
-lastUpdated: 2026-01-23
+      content: "Delete an existing MySQL user."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

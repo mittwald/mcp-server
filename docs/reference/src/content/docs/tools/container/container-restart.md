@@ -1,19 +1,19 @@
 ---
-title: Restart Container
-description: Restart a container.
+title: "Restart Container"
+description: "Restart a container."
 sidebar:
-  label: Restart Container
+  label: "Restart Container"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Restart Container
+      content: "Restart Container"
   - tag: meta
     attrs:
       name: og:description
-      content: Restart a container.
-lastUpdated: 2026-01-23
+      content: "Restart a container."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

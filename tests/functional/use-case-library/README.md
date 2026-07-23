@@ -34,8 +34,27 @@ Each JSON file defines a human-intent workflow that agents execute against deplo
 
 ## Authoring Rules
 
+A prompt must describe a **business outcome**, not a tool sequence. Prescriptive prompts train the
+agent to expect specific tools, which destroys the tool-discovery signal these scenarios exist to
+measure.
+
+- ❌ "Use the Mittwald MCP tools to first list all projects, then create a PHP application."
+- ✅ "I need to deploy a PHP 8.2 web application so I can see it running in my project environment."
+
+Never use in prompt text:
+
+| Phrasing | Why |
+|---|---|
+| "Use the MCP/Mittwald tools" | Prescribes tool selection |
+| "Call the …" / "Invoke …" | Explicitly invokes a tool |
+| "First …, then …" (as instruction) | Dictates tool order |
+| `mcp__mittwald__*` tool names | Removes the discovery element |
+| "Using the API" | Exposes internal mechanics |
+
+Each prompt should convey business context (why the user needs this), the desired outcome, and how
+success is recognised. Beyond that:
+
 - Keep prompts intent-based and realistic.
-- Do not hardcode MCP tool names in the prompt text.
 - Keep destructive scenarios paired with explicit cleanup requirements.
 - Preserve existing IDs; add new scenarios as new IDs instead of renaming old ones.
 

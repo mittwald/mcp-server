@@ -1,19 +1,19 @@
 ---
-title: Abort Cron Job Execution
-description: Abort a cronjob execution.
+title: "Abort Cron Job Execution"
+description: "Abort a cronjob execution."
 sidebar:
-  label: Abort Cron Job Execution
+  label: "Abort Cron Job Execution"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Abort Cron Job Execution
+      content: "Abort Cron Job Execution"
   - tag: meta
     attrs:
       name: og:description
-      content: Abort a cronjob execution.
-lastUpdated: 2026-01-23
+      content: "Abort a cronjob execution."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

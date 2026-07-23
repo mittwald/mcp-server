@@ -1,19 +1,19 @@
 ---
-title: Update Cron Job
-description: Update a cronjob.
+title: "Update Cron Job"
+description: "Update a cronjob."
 sidebar:
-  label: Update Cron Job
+  label: "Update Cron Job"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update Cron Job
+      content: "Update Cron Job"
   - tag: meta
     attrs:
       name: og:description
-      content: Update a cronjob.
-lastUpdated: 2026-01-23
+      content: "Update a cronjob."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,19 +1,19 @@
 ---
-title: Delete Mail Address
-description: Delete a mail address.
+title: "Delete Mail Address"
+description: "Delete a mail address."
 sidebar:
-  label: Delete Mail Address
+  label: "Delete Mail Address"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Mail Address
+      content: "Delete Mail Address"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a mail address.
-lastUpdated: 2026-01-23
+      content: "Delete a mail address."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -4,7 +4,7 @@ description: Complete reference for user management tools
 sidebar:
   label: User
   order: 0
-lastUpdated: 2026-01-23
+lastUpdated: 2026-07-23
 ---
 
 ## User Tools
@@ -25,6 +25,5 @@ Reference documentation for all user management tools.
 | [`mittwald_user_ssh_key_create`](./ssh-key-create) | Create and import a new SSH key.. Generates a new SSH key pair and imports the public key. |
 | [`mittwald_user_ssh_key_delete`](./ssh-key-delete) | Delete an SSH key.. Permanently removes the specified SSH key. |
 | [`mittwald_user_ssh_key_get`](./ssh-key-get) | Get a specific SSH key.. Retrieves information about a specific SSH key. |
-| [`mittwald_user_ssh_key_import`](./ssh-key-import) | Import an existing (local) SSH key.. Imports an existing SSH public key from the local filesystem. |
 | [`mittwald_user_ssh_key_list`](./ssh-key-list) | Get your stored SSH keys.. Lists all SSH keys for the current user. |
 

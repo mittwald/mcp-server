@@ -1,19 +1,19 @@
 ---
-title: List Volumes
-description: List persistent volumes that belong to a project stack.
+title: "List Volumes"
+description: "List persistent volumes that belong to a project stack."
 sidebar:
-  label: List Volumes
+  label: "List Volumes"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List Volumes
+      content: "List Volumes"
   - tag: meta
     attrs:
       name: og:description
-      content: List persistent volumes that belong to a project stack.
-lastUpdated: 2026-01-23
+      content: "List persistent volumes that belong to a project stack."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
@@ -24,11 +24,6 @@ List persistent volumes that belong to a project stack.
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `projectId` | `string` | Yes | Project ID to inspect (format: p-xxxxx). |
-| `extended` | `boolean` | No | Include extended information returned by the Mittwald CLI. |
-| `noHeader` | `boolean` | No | Hide table header in textual CLI output. |
-| `noTruncate` | `boolean` | No | Do not truncate columns in textual CLI output. |
-| `noRelativeDates` | `boolean` | No | Show absolute dates instead of relative ones. |
-| `csvSeparator` | `, \| ;` | No | Separator used for CSV exports. |
 
 ## Return Type
 

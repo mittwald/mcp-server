@@ -1,19 +1,19 @@
 ---
-title: Create Delivery Box
-description: Create a new delivery box.
+title: "Create Delivery Box"
+description: "Create a new delivery box."
 sidebar:
-  label: Create Delivery Box
+  label: "Create Delivery Box"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Delivery Box
+      content: "Create Delivery Box"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new delivery box.
-lastUpdated: 2026-01-23
+      content: "Create a new delivery box."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

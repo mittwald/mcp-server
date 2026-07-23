@@ -1,19 +1,19 @@
 ---
-title: Uninstall App
-description: Uninstall an app.
+title: "Uninstall App"
+description: "Uninstall an app."
 sidebar:
-  label: Uninstall App
+  label: "Uninstall App"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Uninstall App
+      content: "Uninstall App"
   - tag: meta
     attrs:
       name: og:description
-      content: Uninstall an app.
-lastUpdated: 2026-01-23
+      content: "Uninstall an app."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

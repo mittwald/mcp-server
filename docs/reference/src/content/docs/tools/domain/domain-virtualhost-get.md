@@ -1,19 +1,19 @@
 ---
-title: Get Virtual Host Details
-description: Get details of a domain virtualhost.
+title: "Get Virtual Host Details"
+description: "Get details of a domain virtualhost."
 sidebar:
-  label: Get Virtual Host Details
+  label: "Get Virtual Host Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Virtual Host Details
+      content: "Get Virtual Host Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get details of a domain virtualhost.
-lastUpdated: 2026-01-23
+      content: "Get details of a domain virtualhost."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

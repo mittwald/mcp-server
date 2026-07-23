@@ -1,37 +1,35 @@
 ---
-title: Import MySQL Database
-description: Import a dump into a MySQL database.
+title: "Get MySQL Import Instructions"
+description: "Get a ready-to-run command that imports a local dump file into a MySQL database via SSH. This tool does not import anything itself - run the returned command locally. Note that running the returned command overwrites data in the target database."
 sidebar:
-  label: Import MySQL Database
+  label: "Get MySQL Import Instructions"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Import MySQL Database
+      content: "Get MySQL Import Instructions"
   - tag: meta
     attrs:
       name: og:description
-      content: Import a dump into a MySQL database.
-lastUpdated: 2026-01-23
+      content: "Get a ready-to-run command that imports a local dump file into a MySQL database via SSH. This tool does not import anything itself - run the returned command locally. Note that running the returned command overwrites data in the target database."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
-Import a dump into a MySQL database.
+Get a ready-to-run command that imports a local dump file into a MySQL database via SSH. This tool does not import anything itself - run the returned command locally. Note that running the returned command overwrites data in the target database.
 
 ## Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `databaseId` | `string` | Yes | The ID or name of the database |
-| `input` | `string` | Yes | The input file from which to read the dump ('-' for stdin) |
-| `quiet` | `boolean` | No | Suppress process output and only display a machine-readable summary |
-| `mysqlPassword` | `string` | No | The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD) |
-| `mysqlCharset` | `string` | No | The character set to use for the MySQL connection |
-| `temporaryUser` | `boolean` | No | Create a temporary user for the import (recommended for security) |
-| `sshUser` | `string` | No | Override the SSH user to connect with |
-| `sshIdentityFile` | `string` | No | The SSH identity file (private key) to use for public key authentication |
-| `gzip` | `boolean` | No | Uncompress the dump with gzip while importing |
+| `input` | `string` | No | Local dump file to import; defaults to <database>.sql (or .sql.gz with gzip) |
+| `mysqlPassword` | `string` | No | Password of the MySQL user; if omitted, the returned command contains a placeholder to fill in |
+| `mysqlCharset` | `string` | No | Character set for the MySQL connection; defaults to the database's own character set |
+| `gzip` | `boolean` | No | The input file is gzip-compressed and should be decompressed while importing |
+| `sshUser` | `string` | No | Override the SSH user to connect with; if omitted, your own mStudio user will be used |
+| `sshIdentityFile` | `string` | No | The SSH identity file (private key) to include in the returned ssh command |
 
 ## Return Type
 

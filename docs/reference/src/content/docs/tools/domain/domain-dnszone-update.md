@@ -1,19 +1,19 @@
 ---
-title: Update DNS Zone Records
-description: Update DNS zone records..
+title: "Update DNS Zone Records"
+description: "Update DNS zone records.."
 sidebar:
-  label: Update DNS Zone Records
+  label: "Update DNS Zone Records"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update DNS Zone Records
+      content: "Update DNS Zone Records"
   - tag: meta
     attrs:
       name: og:description
-      content: Update DNS zone records..
-lastUpdated: 2026-01-23
+      content: "Update DNS zone records.."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

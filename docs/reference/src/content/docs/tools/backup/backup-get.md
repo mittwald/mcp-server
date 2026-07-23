@@ -1,19 +1,19 @@
 ---
-title: Get Backup Details
-description: Get details of a backup
+title: "Get Backup Details"
+description: "Get details of a backup"
 sidebar:
-  label: Get Backup Details
+  label: "Get Backup Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Backup Details
+      content: "Get Backup Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get details of a backup
-lastUpdated: 2026-01-23
+      content: "Get details of a backup"
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

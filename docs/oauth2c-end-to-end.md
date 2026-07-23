@@ -17,8 +17,8 @@ The OAuth bridge acts as a **proxy** between clients and Mittwald:
 ```
 ┌─────────────────┐     ┌──────────────────────┐     ┌─────────────────┐
 │  Client         │     │  OAuth Bridge        │     │  Mittwald       │
-│  (Claude.ai,    │────▶│  (mittwald-oauth-    │────▶│  OAuth Server   │
-│   ChatGPT,      │     │   server.fly.dev)    │     │                 │
+│  (Claude.ai,    │────▶│  (auth.mcp.          │────▶│  OAuth Server   │
+│   ChatGPT,      │     │   mittwald.de)       │     │                 │
 │   oauth2c)      │◀────│                      │◀────│                 │
 └─────────────────┘     └──────────────────────┘     └─────────────────┘
         │                         │                          │
@@ -52,8 +52,8 @@ If you see this error, the client did NOT use DCR to register their redirect_uri
 ## 1. Prerequisites
 - Local shell access with `curl`, `jq`, and a browser available (desktop or headless).
 - Mittwald account credentials that can complete the Mittwald login flow.
-- The OAuth bridge deployed at `https://mittwald-oauth-server.fly.dev`.
-- Optional: A Mittwald staging environment URL (`https://mittwald-mcp-fly2.fly.dev/mcp`) for the resource parameter.
+- The OAuth bridge deployed at `https://auth.mcp.mittwald.de`.
+- The MCP endpoint URL (`https://mcp.mittwald.de/mcp`) for the resource parameter.
 
 ## 2. Install `oauth2c`
 ```bash
@@ -80,7 +80,7 @@ cat > /tmp/claude/register-request.json << 'EOF'
 }
 EOF
 
-curl -X POST https://mittwald-oauth-server.fly.dev/register \
+curl -X POST https://auth.mcp.mittwald.de/register \
   -H "Content-Type: application/json" \
   --data @/tmp/claude/register-request.json | tee /tmp/claude/oauth2c-register.json
 ```
@@ -94,11 +94,11 @@ Confirm the response includes:
 ## 4. Authorization Code Flow (PKCE + Resource Indicator)
 Launch the authorization flow; `oauth2c` will open a browser window. Log in with Mittwald credentials and approve the request.
 ```bash
-oauth2c authorize https://mittwald-oauth-server.fly.dev \
+oauth2c authorize https://auth.mcp.mittwald.de \
   --client-id "$(jq -r '.client_id' /tmp/oauth2c-register.json)" \
   --redirect-uri "http://127.0.0.1:8765/callback" \
   --scope "openid offline_access app:read" \
-  --resource "https://mittwald-mcp-fly2.fly.dev/mcp" \
+  --resource "https://mcp.mittwald.de/mcp" \
   --use-pkce \
   --save /tmp/oauth2c-session.json \
   --browser
@@ -111,7 +111,7 @@ During the browser step:
 ## 5. Exchange Code for Tokens
 If the authorization succeeded, `oauth2c` automatically captures the code and can exchange it for tokens. Use:
 ```bash
-oauth2c token https://mittwald-oauth-server.fly.dev \
+oauth2c token https://auth.mcp.mittwald.de \
   --session /tmp/oauth2c-session.json \
   --format json | tee /tmp/oauth2c-token.json
 ```
@@ -131,7 +131,7 @@ Check for `mittwald_scope`, `mittwald_access_token`, or related custom claims if
 ## 7. Refresh Token Flow
 Validate refresh token support using the saved tokens:
 ```bash
-oauth2c refresh https://mittwald-oauth-server.fly.dev \
+oauth2c refresh https://auth.mcp.mittwald.de \
   --client-id "$(jq -r '.client_id' /tmp/oauth2c-register.json)" \
   --refresh-token "$(jq -r '.refresh_token' /tmp/oauth2c-token.json)" \
   --format json | tee /tmp/oauth2c-refresh.json
@@ -141,7 +141,7 @@ Ensure a new `access_token` (and optional `refresh_token`) is returned.
 ## 8. Optional: Token Introspection (if enabled)
 If introspection is allowed:
 ```bash
-oauth2c introspect https://mittwald-oauth-server.fly.dev/token/introspection \
+oauth2c introspect https://auth.mcp.mittwald.de/token/introspection \
   --client-id "$(jq -r '.client_id' /tmp/oauth2c-register.json)" \
   --token "$(jq -r '.access_token' /tmp/oauth2c-token.json)"
 ```
@@ -150,14 +150,14 @@ Confirm the response indicates `active: true` and shows the expected scopes.
 ## 9. Optional: Revoke or Delete the Client
 Clean up the dynamically registered client to avoid clutter. Use the `registration_access_token` from step 3.
 ```bash
-oauth2c delete-client https://mittwald-oauth-server.fly.dev \
+oauth2c delete-client https://auth.mcp.mittwald.de \
   --client-id "$(jq -r '.client_id' /tmp/oauth2c-register.json)" \
   --registration-access-token "$(jq -r '.registration_access_token' /tmp/oauth2c-register.json)"
 ```
 A `204 No Content` response indicates success.
 
 ## 10. Cross-Checking Server Logs
-While running the steps, tail the Fly.io logs for the OAuth server to confirm the sequence:
+While running the steps, tail the OAuth bridge container logs to confirm the sequence:
 - `/reg` (201) with `registration_create.success`
 - `/auth` (303) multiple times during the redirect flow
 - `/mittwald/callback` (302) showing Mittwald token exchange
@@ -165,45 +165,10 @@ While running the steps, tail the Fly.io logs for the OAuth server to confirm th
 
 Example:
 ```bash
-fly logs -a mittwald-oauth-server --since 10m
+mw container logs <oauth-container-id>
 ```
 
-## 11. Test Results Summary (Executed 2025-09-27)
-
-### ✅ PASSED - Core OAuth Infrastructure
-- **Dynamic Client Registration**: ✅ Successfully registered client using curl (oauth2c lacks registration command)
-- **OAuth Discovery**: ✅ Server provides proper OAuth 2.0 metadata at `/.well-known/oauth-authorization-server`
-- **Authorization Endpoint**: ✅ Properly validates PKCE requirements and redirects to interaction handlers
-- **Token Introspection**: ✅ Returns correct `{"active":false}` for invalid tokens
-- **Client Deletion**: ✅ Successfully deletes registered clients (HTTP 204)
-
-### ✅ VERIFIED - OAuth Server Configuration
-- **PKCE Support**: ✅ Server correctly enforces PKCE with proper error messages
-- **Scopes**: ✅ All 43 Mittwald scopes + openid/offline_access properly configured
-- **Endpoints**: ✅ All OAuth 2.0 endpoints functional (auth, token, introspection, revocation, registration)
-- **Security**: ✅ Proper SSL/TLS configuration, CORS headers, cache-control headers
-
-### ⚠️ LIMITATIONS IDENTIFIED
-- **oauth2c Tool**: The documented oauth2c commands are incorrect - no built-in registration command exists
-- **Interactive Flow**: Full end-to-end testing requires browser interaction with Mittwald login
-- **Token Exchange**: Could not test actual token issuance without completing Mittwald authentication
-
-### 🔧 DEVIATIONS FROM PLAN
-1. **Registration**: Used curl instead of `oauth2c register` (command doesn't exist)
-2. **Authorization**: Tested PKCE validation but couldn't complete browser flow in automated environment
-3. **Redirect URI**: Must use `http://localhost:9876/callback` for oauth2c compatibility
-
-### 📊 SERVER HEALTH STATUS
-**VERDICT: OAuth server is FULLY FUNCTIONAL** ✅
-
-The Mittwald OAuth bridge at `https://mittwald-oauth-server.fly.dev` is working correctly:
-- All core OAuth 2.0 endpoints operational
-- Proper security validations in place
-- Correct error handling and responses
-- PKCE enforcement working as expected
-- Client lifecycle management functional
-
-## 12. Next Steps for Complete Validation
+## 11. Completing the Flow Manually
 To complete end-to-end testing, manually:
 1. Open the generated authorization URL in a browser
 2. Complete Mittwald login and consent
@@ -213,7 +178,7 @@ To complete end-to-end testing, manually:
 
 If any step fails, capture:
 - Command output (stdout/stderr)
-- Relevant Fly.io logs for the same timestamp
+- Bridge container logs for the same timestamp
 - Screenshots or HAR files from the browser flow
 
 Share these artifacts with the engineering team to diagnose server- or client-side issues.

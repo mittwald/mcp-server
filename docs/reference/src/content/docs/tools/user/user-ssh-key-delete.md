@@ -1,19 +1,19 @@
 ---
-title: Delete SSH Key
-description: Delete an SSH key.. Permanently removes the specified SSH key.
+title: "Delete SSH Key"
+description: "Delete an SSH key.. Permanently removes the specified SSH key."
 sidebar:
-  label: Delete SSH Key
+  label: "Delete SSH Key"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete SSH Key
+      content: "Delete SSH Key"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete an SSH key.. Permanently removes the specified SSH key.
-lastUpdated: 2026-01-23
+      content: "Delete an SSH key.. Permanently removes the specified SSH key."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

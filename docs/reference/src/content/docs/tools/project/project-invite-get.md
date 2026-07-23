@@ -1,19 +1,19 @@
 ---
-title: Get Project Invite Details
-description: Get details of a project invite.
+title: "Get Project Invite Details"
+description: "Get details of a project invite."
 sidebar:
-  label: Get Project Invite Details
+  label: "Get Project Invite Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get Project Invite Details
+      content: "Get Project Invite Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get details of a project invite.
-lastUpdated: 2026-01-23
+      content: "Get details of a project invite."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

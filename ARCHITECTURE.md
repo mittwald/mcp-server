@@ -1,14 +1,21 @@
-# Mittwald MCP Connector Architecture (2025-09-27)
+# Mittwald MCP Connector Architecture
 
 ## Executive Summary
 
-We replaced the legacy `oidc-provider` deployment with a **stateless OAuth bridge** that fronts Mittwald’s OAuth endpoints and issues HS256 JWTs to downstream MCP clients (ChatGPT, Claude, Inspector, etc.). The bridge stores interaction state in Redis, exchanges authorization codes with Mittwald, and embeds Mittwald access/refresh tokens in the JWT payload. The MCP server verifies the bridge JWT, persists the Mittwald tokens in Redis, and uses them for CLI calls (`mw … --token <mittwald_access_token>`).
+An **OAuth bridge** fronts Mittwald's OAuth endpoints and issues HS256 JWTs to downstream MCP clients (ChatGPT, Claude, Inspector, etc.). The bridge stores interaction state in Redis, exchanges authorization codes with Mittwald, and embeds Mittwald access/refresh tokens in the JWT payload. The MCP server verifies the bridge JWT, persists the Mittwald tokens in Redis, and uses them to authenticate every Mittwald API call it makes on the user's behalf.
 
-## Deployment Status (Verified 2026-02-17)
+## Deployment Topology
 
-- Fly app `mittwald-mcp-fly2` is built/deployed from this `mittwald-mcp` repository root.
-- Fly app `mittwald-oauth-server` is built/deployed from this repository's `packages/oauth-bridge`.
-- The separate repository at `../mittwald-oauth/mittwald-oauth` is currently inactive/deprecated for production deployment and is not the source of the running Fly.io OAuth app.
+Both services run as containers in a single mittwald container stack, defined by the Terraform
+config in `deploy/` and applied by `.github/workflows/build-and-publish.yml` on every `v*` tag:
+
+| Service | Public hostname | Container port | Image | Built from |
+|---------|-----------------|----------------|-------|------------|
+| MCP server | `mcp.mittwald.de` | 8080 | `mittwald/mcp-server-http` | repository root `Dockerfile` |
+| OAuth bridge | `auth.mcp.mittwald.de` | 3000 | `mittwald/mcp-server-oauth` | `packages/oauth-bridge/Dockerfile` |
+
+A mittwald-managed Redis (`mittwald_redis_database.mcp_redis`) in the same project backs both.
+The mittwald ingress terminates TLS, so both containers run with `ENABLE_HTTPS=false`.
 
 Key goals:
 - Support cookie-less OAuth clients (ChatGPT/Claude) with Authorization Code + PKCE flows.
@@ -22,24 +29,25 @@ Key goals:
 3. **Mittwald Callback** – Mittwald redirects back to `/mittwald/callback`. We look up the original request using an internal state token, generate our own bridge authorization code, and redirect the MCP client back to its callback with that code.
 4. **Token Exchange** – Client calls `POST /token` on the bridge with PKCE verifier. We verify the grant, exchange the stored Mittwald authorization code for access/refresh tokens (`MITTWALD_TOKEN_URL`), mint a JWT (`HS256`) embedding the Mittwald tokens, and return the JWT + refresh token to the MCP client.
 5. **MCP Request** – Client presents the bridge JWT to the MCP server (`Authorization: Bearer`). Our OAuth middleware verifies the signature using `OAUTH_BRIDGE_JWT_SECRET`, extracts Mittwald access/refresh tokens, and populates `req.auth.extra`.
-   - When `ENABLE_DIRECT_BEARER_TOKENS=true`, MCP clients may instead send a Mittwald CLI access token directly. The middleware validates it with `mw login status --token`, caches the result briefly, and seeds `req.auth.extra` without invoking the OAuth bridge.
+   - When `ENABLE_DIRECT_BEARER_TOKENS=true`, MCP clients may instead send a Mittwald API token directly. `src/server/direct-token-validator.ts` validates it with a `GET /users/self` call against the Mittwald API, caches the result briefly, and seeds `req.auth.extra` without invoking the OAuth bridge.
 6. **Session Persistence** – MCP server stores the Mittwald credentials, scopes, and resource in Redis via `sessionManager`. Subsequent requests reuse the cached tokens; `session-auth` middleware hydrates `req.auth` and `req.user` from Redis.
-7. **CLI Execution** – When tools invoke the Mittwald CLI (`mw`), we inject the Mittwald access token from `req.auth.extra.mittwaldAccessToken` ensuring every command authenticates on behalf of the user.
+7. **Tool Execution** – Handlers call `@mittwald-mcp/cli-core` library functions with the Mittwald access token from `req.auth.extra.mittwaldAccessToken`, so every operation runs on behalf of the user. A small number of legacy handlers still shell out to `mw` and inject the same token as `--token`.
 
 ## Components
 
 | Component | Role |
 |-----------|------|
-| **OAuth Bridge (`packages/oauth-bridge`)** | Koa service handling `/authorize`, `/mittwald/callback`, `/token`, client registration lifecycle, `/health` metrics, JWT signing, and Redis-backed state. The bridge authenticates as a public Mittwald PKCE client (no Mittwald client secret) and **must** listen on `https://mittwald-oauth-server.fly.dev` so Mittwald’s redirect whitelist continues to match. Dynamic client registration now supports both public clients (`token_endpoint_auth_method=none`) and confidential clients (`client_secret_post` / `client_secret_basic`) by minting bridge-side client secrets. |
+| **OAuth Bridge (`packages/oauth-bridge`)** | Koa service handling `/authorize`, `/mittwald/callback`, `/token`, client registration lifecycle, `/health` metrics, JWT signing, and Redis-backed state. The bridge authenticates as a public Mittwald PKCE client (no Mittwald client secret) and **must** be reachable at `https://auth.mcp.mittwald.de` so Mittwald’s redirect whitelist continues to match. Dynamic client registration now supports both public clients (`token_endpoint_auth_method=none`) and confidential clients (`client_secret_post` / `client_secret_basic`) by minting bridge-side client secrets. |
 | **Mittwald OAuth** | Authoritative IdP (static client `mittwald-mcp-server`). Provides login UI, enforces scopes, and issues access/refresh tokens. |
-| **MCP Server (`src/server`)** | Validates bridge JWTs, persists sessions in Redis, and drives tool execution via Mittwald tokens. |
+| **MCP Server (`src/`)** | Validates bridge JWTs, persists sessions in Redis, and drives tool execution via Mittwald tokens. |
+| **`@mittwald-mcp/cli-core` (`packages/mittwald-cli-core`)** | Mittwald CLI business logic extracted as an importable library, so tool handlers make API calls in-process instead of spawning `mw`. |
 | **Redis** | Session/state cache storing authorization requests (bridge) and user sessions (MCP server). |
 | **MCP Clients** | ChatGPT, Claude, Inspector, etc. – consume discovery, execute OAuth 2.1 + PKCE using bridge endpoints. |
 
 ## Stateful Data
 
 ### Bridge Authorization Store
-- Implemented in `packages/oauth-bridge/src/state/` (in-memory for now, backed by Redis in deployment).
+- Implemented in `packages/oauth-bridge/src/state/`. `BRIDGE_STATE_STORE` selects the backend: `memory` for local development, `redis` in production.
 - Tracks `state` → client metadata, PKCE challenge, Mittwald authorization code, tokens, refresh tokens.
 - TTL-driven cleanup to avoid leaked state.
 
@@ -54,7 +62,7 @@ Key goals:
 - `PORT` – Bridge HTTP port (default 3000).
 - `BRIDGE_ISSUER`, `BRIDGE_BASE_URL`, `BRIDGE_JWT_SECRET` – JWT metadata and signing key (shared with MCP server via `OAUTH_BRIDGE_JWT_SECRET`).
 - `BRIDGE_REDIRECT_URIS` – Comma-separated list (ChatGPT `https://chatgpt.com/connector_platform_oauth_redirect`, Claude `https://claude.ai/api/mcp/auth_callback`, etc.).
-- `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_CLIENT_ID` – Mittwald endpoints and static client identifier (public PKCE client; no client secret required). Deployments must ensure the bridge callback remains `https://mittwald-oauth-server.fly.dev/mittwald/callback`.
+- `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL`, `MITTWALD_CLIENT_ID` – Mittwald endpoints and static client identifier (public PKCE client; no client secret required). Mittwald's redirect whitelist is immutable, so the bridge callback must stay at `https://auth.mcp.mittwald.de/mittwald/callback`.
 - Optional TTL overrides: `BRIDGE_ACCESS_TOKEN_TTL_SECONDS`, `BRIDGE_REFRESH_TOKEN_TTL_SECONDS`.
 
 ### MCP Environment Variables
@@ -97,12 +105,12 @@ Reusable utilities enforce these layers consistently:
 - `tests/security/credential-leakage.test.ts` – regression suite ensuring redaction + sanitization
 
 ### Destructive Operation Safety (REQUIRED)
-All tools that perform destructive operations (delete, revoke, terminate, etc.) MUST follow the safety pattern established by Agent C4. This pattern prevents accidental data loss and provides audit trails:
+All tools that perform destructive operations (delete, revoke, terminate, etc.) MUST follow this safety pattern, which prevents accidental data loss and provides audit trails:
 
 1. **Required Confirm Flag**: Schema must include `confirm: boolean` (required) with explicit validation
 2. **Audit Logging**: Use `logger.warn()` before execution with sessionId, userId, and resource identifier
 3. **Clear Error Messages**: Validation failure must explain the operation is "destructive and cannot be undone"
-4. **CLI Force Flags**: Use `--force` and `--quiet` flags for clean execution with ID capture
+4. **Tool Annotations**: Set `destructiveHint: true` (see the annotation rules in `CLAUDE.md`)
 
 **Implementation Pattern**:
 ```typescript
@@ -125,7 +133,7 @@ logger.warn('[ToolName] Destructive operation attempted', {
 const argv = ['resource', 'delete', args.id, '--force', '--quiet'];
 ```
 
-## Security Architecture (December 2025 Hardening)
+## Security Architecture
 
 ### Authentication Flow
 
@@ -148,7 +156,7 @@ User → MCP Client → OAuth Bridge → Mittwald ID
 #### Runtime Security
 - **Startup Validation**: Placeholder secrets blocked in production mode
 - **CORS**: Wildcard origins blocked in production mode
-- **Shell Execution**: `execFile()` with argument arrays (no shell interpretation, prevents injection)
+- **Shell Execution**: `spawn()` with argument arrays and no shell (prevents injection)
 - **Non-interactive Mode**: CLI runs with `MITTWALD_NONINTERACTIVE=1` and `CI=1`
 
 #### Infrastructure Security
@@ -181,10 +189,10 @@ See `docs/security/risk-register.md` for the full list of identified, remediated
 
 When users set session context (e.g., via `context/set-session`), the system previously injected `--project-id`, `--server-id`, and `--org-id` flags to ALL CLI commands. However, not all commands support these flags:
 
-- **51 tools** (29%) support `--project-id`
-- **1 tool** (0.6%) supports `--server-id`
-- **1 tool** (0.6%) supports `--org-id`
-- **119 tools** (69%) don't support any context flags
+- **49 tools** support `projectId`
+- **1 tool** supports `serverId`
+- **1 tool** supports `orgId`
+- **110 tools** support no context parameter at all
 
 Commands like `mw app versions`, `mw server list`, and `mw project list` would fail with CLI parameter errors when context was set.
 
@@ -196,10 +204,10 @@ The system now uses a build-time generated map to determine which flags each too
 scripts/generate-context-flag-map.ts
          │
          ▼ scans
-src/constants/tool/mittwald-cli/**/*-cli.ts (174 tool definitions)
+src/constants/tool/mittwald-cli/**/*-cli.ts (161 tool definitions)
          │
          ▼ generates
-src/utils/context-flag-support.ts (172 tools mapped)
+src/utils/context-flag-support.ts (161 tools mapped)
          │
          ▼ used by
 src/utils/session-aware-cli.ts (injectSessionContext method)
@@ -244,21 +252,3 @@ if (context.projectId &&
 ```
 
 4. **Fail-safe default**: Unknown tools get no flags injected (prevents errors)
-
----
-
-## Remaining Work / Considerations
-- Token refresh orchestration (optional) – bridge currently mints refresh tokens; MCP server may use Mittwald refresh tokens in future.
-- Enterprise IdPs without DCR – may require a separate onboarding flow.
-- Redis persistence for bridge state – in production we should swap the in-memory store for Redis.
-- Additional error logging around `/token` exchange for better diagnostics.
-- Consider rotating bridge-issued client secrets and surfacing revocation flows once confidential client usage increases.
-- **Coverage automation** – The Workstream A tooling generates `mw-cli-coverage.json` / `docs/mittwald-cli-coverage.md`, validates them in CI, and applies exclusion policy via `config/mw-cli-exclusions.json`. See `docs/coverage-automation.md` for maintainer workflow details.
-
-## Changelog Snapshot
-- 2025-09-27 15:25 UTC – Created `packages/oauth-bridge`, scaffolded Koa service.
-- 2025-09-27 16:32 UTC – Implemented Mittwald callback + `/token` flow, embedded Mittwald tokens in JWT (`408d2e1`).
-- 2025-09-27 17:32 UTC – MCP server verifies bridge JWT via `jose`, sessions carry Mittwald tokens (`3938aff`).
-- 2025-09-27 18:05 UTC – Session middleware hydrates `req.auth` from Redis; unit tests updated (`de63a80`).
-- 2025-09-29 11:45 UTC – Bridge dynamic registration issues secrets for Claude Desktop confidential clients and validates client authentication on `/token`.
-

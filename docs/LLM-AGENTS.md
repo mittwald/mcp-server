@@ -5,7 +5,7 @@ Audience: Claude/ChatGPT/inspector-style agents using the Mittwald MCP server an
 ## What This Server Does
 - Proxies OAuth 2.1 + PKCE to Mittwald via a stateless bridge (public client).
 - Issues bridge JWTs that embed Mittwald tokens; MCP server verifies with `OAUTH_BRIDGE_JWT_SECRET`.
-- Wraps Mittwald CLI commands as MCP tools and returns JSON-typed results.
+- Exposes 116 tools covering apps, projects, databases, domains, mail, containers, backups and access management, returning JSON-typed results.
 
 ## Hard Rules (do not violate)
 - Never invent credentials; always use provided Mittwald OAuth tokens.
@@ -24,16 +24,16 @@ Audience: Claude/ChatGPT/inspector-style agents using the Mittwald MCP server an
 ## Using Tools Safely
 - Prefer read/list/get tools first; fetch IDs before mutating resources.
 - For destructive actions, confirm target identifiers and echo intent to the user.
-- Use `output=json` where available; avoid parsing human-readable text.
+- Tool results are already JSON-typed; do not attempt to parse human-readable text.
 - Respect context filters: project/server/org IDs can be set by the user; do not override without confirmation.
 - Watch for rate/size limits; split large listings.
 
 ## When Things Fail
 - 401/403: token expired or scope missing → prompt re-auth or reduced scope.
 - 400 on token exchange: check redirect URI and PKCE verifier.
-- CLI timeouts/maxBuffer: narrow query, paginate, or request elevated limits.
+- Payload/timeout errors: narrow the query or paginate (`MCP_TOOL_MAX_PAYLOAD_MB` caps responses).
 
 ## References
-- `LLM_CONTEXT.md` – deep architecture/flow details.
+- `ARCHITECTURE.md` – deep architecture/flow details.
 - `docs/testing.md` – how to run server and tests locally.
 - `docs/tooling-and-safety.md` – consolidated safety patterns and examples.

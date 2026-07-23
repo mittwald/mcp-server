@@ -1,19 +1,19 @@
 ---
-title: Get MySQL Database Details
-description: Get a MySQL database.
+title: "Get MySQL Database Details"
+description: "Get a MySQL database."
 sidebar:
-  label: Get MySQL Database Details
+  label: "Get MySQL Database Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get MySQL Database Details
+      content: "Get MySQL Database Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get a MySQL database.
-lastUpdated: 2026-01-23
+      content: "Get a MySQL database."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

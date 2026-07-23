@@ -4,7 +4,7 @@ description: Complete reference for certificate management tools
 sidebar:
   label: Certificate
   order: 0
-lastUpdated: 2026-01-23
+lastUpdated: 2026-07-23
 ---
 
 ## Certificate Tools

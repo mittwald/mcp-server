@@ -1,19 +1,19 @@
 ---
-title: Create API Token
-description: Create a new API token.. API tokens can be used to authenticate API requests.
+title: "Create API Token"
+description: "Create a new API token.. API tokens can be used to authenticate API requests."
 sidebar:
-  label: Create API Token
+  label: "Create API Token"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create API Token
+      content: "Create API Token"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new API token.. API tokens can be used to authenticate API requests.
-lastUpdated: 2026-01-23
+      content: "Create a new API token.. API tokens can be used to authenticate API requests."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

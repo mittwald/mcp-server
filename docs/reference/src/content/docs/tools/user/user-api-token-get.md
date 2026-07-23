@@ -1,19 +1,19 @@
 ---
-title: Get API Token Details
-description: Get a specific API token.. Retrieves information about a specific API token.
+title: "Get API Token Details"
+description: "Get a specific API token.. Retrieves information about a specific API token."
 sidebar:
-  label: Get API Token Details
+  label: "Get API Token Details"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get API Token Details
+      content: "Get API Token Details"
   - tag: meta
     attrs:
       name: og:description
-      content: Get a specific API token.. Retrieves information about a specific API token.
-lastUpdated: 2026-01-23
+      content: "Get a specific API token.. Retrieves information about a specific API token."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,19 +1,19 @@
 ---
-title: Stop Container
-description: Stop a running container.
+title: "Stop Container"
+description: "Stop a running container."
 sidebar:
-  label: Stop Container
+  label: "Stop Container"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Stop Container
+      content: "Stop Container"
   - tag: meta
     attrs:
       name: og:description
-      content: Stop a running container.
-lastUpdated: 2026-01-23
+      content: "Stop a running container."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,19 +1,19 @@
 ---
-title: Create MySQL User
-description: Create a new MySQL user for a database.
+title: "Create MySQL User"
+description: "Create a new MySQL user for a database."
 sidebar:
-  label: Create MySQL User
+  label: "Create MySQL User"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create MySQL User
+      content: "Create MySQL User"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new MySQL user for a database.
-lastUpdated: 2026-01-23
+      content: "Create a new MySQL user for a database."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -182,7 +182,7 @@ Example prompt template: "Set up a complete web hosting stack: project + TYPO3 +
 
 ### Architecture Overview
 
-**Mittwald MCP Server**: https://mittwald-mcp-fly2.fly.dev/mcp
+**Mittwald MCP Server**: https://mcp.mittwald.de/mcp
 
 **Implementation details**:
 - **Transport**: HTTP with Server-Sent Events (SSE) for streaming

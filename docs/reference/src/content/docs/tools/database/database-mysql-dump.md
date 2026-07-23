@@ -1,37 +1,35 @@
 ---
-title: Export MySQL Database
-description: Create a dump of a MySQL database.
+title: "Get MySQL Dump Instructions"
+description: "Get a ready-to-run command that dumps a MySQL database via SSH and mysqldump into a local file. This tool does not create the dump itself - run the returned command locally."
 sidebar:
-  label: Export MySQL Database
+  label: "Get MySQL Dump Instructions"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Export MySQL Database
+      content: "Get MySQL Dump Instructions"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a dump of a MySQL database.
-lastUpdated: 2026-01-23
+      content: "Get a ready-to-run command that dumps a MySQL database via SSH and mysqldump into a local file. This tool does not create the dump itself - run the returned command locally."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
-Create a dump of a MySQL database.
+Get a ready-to-run command that dumps a MySQL database via SSH and mysqldump into a local file. This tool does not create the dump itself - run the returned command locally.
 
 ## Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `databaseId` | `string` | Yes | The ID or name of the database |
-| `output` | `string` | Yes | The output file to write the dump to ('-' for stdout) |
-| `quiet` | `boolean` | No | Suppress process output and only display a machine-readable summary |
-| `mysqlPassword` | `string` | No | The password to use for the MySQL user (security risk - prefer environment variable MYSQL_PWD) |
-| `mysqlCharset` | `string` | No | The character set to use for the MySQL connection |
-| `temporaryUser` | `boolean` | No | Create a temporary user for the dump (recommended for security) |
-| `sshUser` | `string` | No | Override the SSH user to connect with |
-| `sshIdentityFile` | `string` | No | The SSH identity file (private key) to use for public key authentication |
+| `output` | `string` | No | Local file the dump should be written to; defaults to <database>.sql (or .sql.gz with gzip) |
+| `mysqlPassword` | `string` | No | Password of the MySQL user; if omitted, the returned command contains a placeholder to fill in |
+| `mysqlCharset` | `string` | No | Character set for the MySQL connection; defaults to the database's own character set |
 | `gzip` | `boolean` | No | Compress the dump with gzip (recommended for large databases) |
+| `sshUser` | `string` | No | Override the SSH user to connect with; if omitted, your own mStudio user will be used |
+| `sshIdentityFile` | `string` | No | The SSH identity file (private key) to include in the returned ssh command |
 
 ## Return Type
 

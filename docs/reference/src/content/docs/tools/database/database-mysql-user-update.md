@@ -1,19 +1,19 @@
 ---
-title: Update MySQL User
-description: Update properties of an existing MySQL user.
+title: "Update MySQL User"
+description: "Update properties of an existing MySQL user."
 sidebar:
-  label: Update MySQL User
+  label: "Update MySQL User"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update MySQL User
+      content: "Update MySQL User"
   - tag: meta
     attrs:
       name: og:description
-      content: Update properties of an existing MySQL user.
-lastUpdated: 2026-01-23
+      content: "Update properties of an existing MySQL user."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

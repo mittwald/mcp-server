@@ -1,19 +1,19 @@
 ---
-title: Create Virtual Host
-description: Create a domain virtualhost.
+title: "Create Virtual Host"
+description: "Create a domain virtualhost."
 sidebar:
-  label: Create Virtual Host
+  label: "Create Virtual Host"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Virtual Host
+      content: "Create Virtual Host"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a domain virtualhost.
-lastUpdated: 2026-01-23
+      content: "Create a domain virtualhost."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -1,23 +1,23 @@
 ---
-title: Open phpMyAdmin
-description: Open phpMyAdmin for a MySQL database (provides command for browser execution)
+title: "Get phpMyAdmin URL"
+description: "Get the phpMyAdmin URL for a MySQL database's main user. This tool does not open a browser - open the returned URL yourself."
 sidebar:
-  label: Open phpMyAdmin
+  label: "Get phpMyAdmin URL"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Open phpMyAdmin
+      content: "Get phpMyAdmin URL"
   - tag: meta
     attrs:
       name: og:description
-      content: Open phpMyAdmin for a MySQL database (provides command for browser execution)
-lastUpdated: 2026-01-23
+      content: "Get the phpMyAdmin URL for a MySQL database's main user. This tool does not open a browser - open the returned URL yourself."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
-Open phpMyAdmin for a MySQL database (provides command for browser execution)
+Get the phpMyAdmin URL for a MySQL database's main user. This tool does not open a browser - open the returned URL yourself.
 
 ## Parameters
 

@@ -1,23 +1,36 @@
 # Tooling & Safety Guide
 
-## Scope & Audience
-Current guidance for MCP tools wrapping the Mittwald CLI. Use this instead of the archived tool-examples/safety docs (see `docs/archive/legacy/tooling/` for historical detail).
+Guidance for MCP tools that wrap Mittwald operations. The hard requirements — tool annotations,
+scope handling, and the "return connection data, don't execute" rule — live in `CLAUDE.md`; this
+page collects the day-to-day patterns.
 
 ## Core Safety Patterns
-- **Confirm intent for destructive ops**: require explicit user confirmation for delete/revoke/drop/destroy/reset actions; echo target IDs.
-- **Redact credentials**: never log secrets; use credential redactors for commands and responses.
-- **Use JSON outputs**: prefer `--output json` to avoid brittle parsing.
-- **Respect context**: honor user-provided project/server/org IDs; do not override without consent.
-- **Resource caps**: stdout payloads are limited; paginate or filter large listings.
-- **Timeouts**: keep commands bounded; prefer targeted queries over broad scans.
+
+- **Confirm intent for destructive ops**: require an explicit `confirm: true` for
+  delete/revoke/drop/destroy/reset actions, log the attempt with `logger.warn()`, and echo the
+  target IDs back to the user. Mark the tool `destructiveHint: true`.
+- **Redact credentials**: never log secrets. Use `src/utils/credential-redactor.ts` for commands and
+  `src/utils/credential-response.ts` for responses.
+- **Generate secrets properly**: `src/utils/credential-generator.ts`, never ad-hoc randomness.
+- **Respect context**: honour user-provided project/server/org IDs; never override without consent.
+  Context parameters are only injected into tools whose schema declares them (see the context-flag
+  map in `ARCHITECTURE.md`).
+- **Resource caps**: tool payloads are capped (`MCP_TOOL_MAX_PAYLOAD_MB`); paginate or filter large
+  listings rather than returning everything.
+- **Timeouts**: keep operations bounded; prefer targeted queries over broad scans.
 
 ## Tool Authoring Checklist
-- Define schemas for inputs/outputs; validate before invoking CLI.
-- Provide safe defaults (read/list before mutate).
-- Ensure `--token` injection comes from session; never accept arbitrary tokens from input.
-- Add tests for edge/error cases (missing IDs, malformed flags, denied scopes).
 
-## Examples & References
-- Archived detailed examples and audits live in `docs/archive/legacy/tooling/tool-examples/`.
-- Credential handling standard: `docs/CREDENTIAL-SECURITY.md`.
-- Coverage expectations: `docs/coverage.md`.
+- Define an `inputSchema` and validate before doing any work.
+- Declare `title` and the three annotation hints — `tests/unit/tools/tool-annotations.test.ts`
+  enforces this.
+- Provide safe defaults (read/list before mutate).
+- Take the Mittwald token from the session, never from tool input.
+- Prefer a `@mittwald-mcp/cli-core` library call over spawning `mw`.
+- Add tests for edge and error cases (missing IDs, malformed input, denied scopes).
+
+## References
+
+- Credential handling standard: `docs/CREDENTIAL-SECURITY.md`
+- CLI coverage expectations: `docs/coverage.md`
+- Regression suite: `tests/security/credential-leakage.test.ts`

@@ -6,7 +6,7 @@ This directory contains TypeScript type definitions for the MCP server, ensuring
 
 ```
 src/types/
-├── index.ts                 # Central export (currently empty)
+├── index.ts                 # Empty; there is no central re-export
 ├── request-context.ts       # MCP handler context types
 ├── tool-registry.ts         # Dynamic tool registration types
 ├── tool-validation.ts       # Tool validation types
@@ -59,7 +59,8 @@ MCP sampling protocol extensions:
 
 ### `scenario.ts` / `scenario-execution.ts`
 
-Test scenario definitions for documentation-driven testing (Feature 018).
+Scenario definitions and execution results for documentation-driven tool testing. These were
+generated from JSON Schema; the generator has been removed, so edit them directly.
 
 ## Mittwald Domain Types
 
@@ -73,6 +74,11 @@ The `mittwald/` subdirectory contains types matching the Mittwald API structure:
 | `mail.ts` | Mail addresses, deliveryboxes, forwards |
 | `project.ts` | Projects, server configurations |
 | `user.ts` | Users, API tokens, SSH keys |
+| `conversation.ts` | Conversation/messaging types |
+| `marketplace.ts` | Marketplace extension types |
+| `notification.ts` | Notification types |
+| `miscellaneous.ts` | Utility types |
+| `ssh-backup.ts` | SSH keys and backup types |
 
 These types are derived from the Mittwald API client (`@mittwald/api-client`) and provide additional structure for MCP tool handlers.
 

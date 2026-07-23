@@ -66,30 +66,32 @@ tools-manifest.json
 
 - **`convert-to-markdown.ts`** - Generate markdown documentation
   - Input: `tools-manifest.json`
-  - Output: `src/content/docs/tools/**/*.md` (115+ files)
+  - Output: `src/content/docs/tools/**/*.md` (one page per tool, plus a domain index)
 
 ## Running the Pipeline
 
 ### Prerequisites
 
 ```bash
-cd /Users/robert/Code/mittwald-mcp/docs/reference
-npm install
+npm ci --prefix docs/reference
 ```
+
+All four scripts resolve paths relative to the **repository root**, so run them from there.
 
 ### Full Pipeline (Recommended)
 
 Run all scripts in order:
 
 ```bash
-# From the mittwald-mcp root directory
+# From the repository root
 npm run docs:generate
 ```
 
-This command (defined in package.json) runs:
+This command (defined in the root `package.json`) runs:
 1. `extract-mcp-tools.ts`
 2. `generate-openapi.ts`
 3. `convert-to-markdown.ts`
+4. `validate-coverage.ts`
 
 ### Individual Steps
 
@@ -113,8 +115,8 @@ Complete catalog of all MCP tools with metadata:
 ```json
 {
   "version": "1.0.0",
-  "generatedAt": "2024-01-23T12:00:00.000Z",
-  "totalTools": 115,
+  "generatedAt": "2026-07-23T09:00:00.000Z",
+  "totalTools": 116,
   "tools": {
     "app": [...],
     "database": [...],
@@ -176,29 +178,15 @@ tools/
 └── ...
 ```
 
-## Tool Domains (17 total)
+## Tool Domains
 
-| Domain | Title | Tools |
-|--------|-------|-------|
-| app | Apps | 8 |
-| backup | Backups | 8 |
-| certificate | Certificates | 2 |
-| container | Containers | 10 |
-| context | Context | 3 |
-| cronjob | Cron Jobs | 9 |
-| database | Databases | 14 |
-| domain | Domains | 8 |
-| extension | Extensions | 4 |
-| org | Organizations | 7 |
-| project | Projects | 10 |
-| registry | Registries | 3 |
-| sftp | SFTP | 6 |
-| ssh | SSH | 6 |
-| stack | Stacks | 2 |
-| user | Users | 7 |
-| volume | Volumes | 5 |
+The domain list and per-domain counts are derived from the registry at generation time — read them
+from `tools-manifest.json` or the output of `extract-mcp-tools.ts` rather than from a table here.
+Tools excluded by `EXCLUDED_TOOLS_WITH_REASONS` in `src/utils/tool-scanner.ts` are skipped, so the
+reference documents only the tools a client can actually call.
 
-**Total: 115 tools**
+When a domain gains its first tool or loses its last one, update the sidebar in
+`docs/reference/astro.config.mjs` to match.
 
 ## Implementation Details
 
@@ -273,7 +261,9 @@ For each tool:
 1. Create `src/constants/tool/mittwald-cli/{domain}/{name}-cli.ts`
 2. Export `ToolRegistration` with `Tool` definition
 3. Run `npm run docs:generate` to rebuild documentation
-4. New tool automatically appears in documentation
+
+A tool listed in `EXCLUDED_TOOLS_WITH_REASONS` (`src/utils/tool-scanner.ts`) is deliberately left
+out of the reference — the server does not register it.
 
 ### Updating Tool Documentation
 
@@ -283,11 +273,11 @@ For each tool:
 
 ### Adding a New Domain
 
-1. Create new directory under `src/handlers/tools/mittwald-cli/{newdomain}/`
+1. Create new directory under `src/constants/tool/mittwald-cli/{newdomain}/`
 2. Add domain name to `MCPDomain` type in `schema.ts`
 3. Add domain entry to `DOMAIN_TITLES` and `DOMAIN_DESCRIPTIONS`
-4. Run `npm run docs:generate`
-5. New domain automatically included in documentation
+4. Add a sidebar entry in `docs/reference/astro.config.mjs`
+5. Run `npm run docs:generate`
 
 ## Validation
 

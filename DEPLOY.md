@@ -1,15 +1,55 @@
 # Deployment Guide
 
-This guide explains how to run the Mittwald MCP server off Fly.io on your own
-infrastructure. It covers required services, runtime configuration, and
-verification steps. Use it alongside `.env.example` and the Fly manifests when
-porting to Kubernetes, VM-based setups, or other container platforms.
+This guide covers both how the hosted deployment is produced and how to run the same stack on your
+own infrastructure. Use it alongside `.env.example`, `packages/oauth-bridge/.env.example` and
+`deploy/main.tf`.
 
-## Current Fly.io Topology (Verified 2026-02-17)
+## Production Deployment (mcp.mittwald.de)
 
-- `mittwald-mcp-fly2` runs the MCP server from this repository root.
-- `mittwald-oauth-server` runs `packages/oauth-bridge` from this repository.
-- The separate repository at `../mittwald-oauth/mittwald-oauth` is not the source of the currently deployed Fly.io OAuth service.
+Production is a single mittwald container stack, fully described by the Terraform config in
+`deploy/` and applied from CI. **Do not run `terraform apply` locally** — state lives in the HCP
+Terraform workspace `mittwald/mcp-server`, and a local apply can ship an image that was never built.
+
+To release:
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+`.github/workflows/build-and-publish.yml` then:
+
+1. builds `mittwald/mcp-server-http` from the root `Dockerfile` and `mittwald/mcp-server-oauth`
+   from `packages/oauth-bridge/Dockerfile`, tagging both with the released version, and pushes them
+   to Docker Hub;
+2. runs `terraform apply -auto-approve -var="image_tag=<version>"` in `deploy/`.
+
+Watch the run with `gh run watch`, then verify:
+
+```bash
+curl -s https://mcp.mittwald.de/health | jq
+curl -s https://auth.mcp.mittwald.de/health | jq
+```
+
+What `deploy/main.tf` provisions:
+
+| Resource | Purpose |
+|----------|---------|
+| `mittwald_project.mcp_project` | Project holding the whole deployment |
+| `mittwald_container_registry.mcp_registry` | Docker Hub credentials for pulling both images |
+| `mittwald_container_stack.mcp_stack` | The `mcp-server` (8080) and `oauth-server` (3000) containers and all their environment |
+| `mittwald_redis_database.mcp_redis` | Shared session/state store |
+| `mittwald_virtualhost.mcp_domain` / `oauth_domain` | `mcp.mittwald.de` and `auth.mcp.mittwald.de` routing |
+
+`random_string.jwt_secret` feeds both `BRIDGE_JWT_SECRET` and `OAUTH_BRIDGE_JWT_SECRET`, which is
+what keeps the two services' JWT verification in sync. Never set either by hand.
+
+Both containers must stay at **one replica**: the MCP transport keeps per-session state in memory.
+
+## Self-Hosting
+
+The rest of this document describes running the same two services on your own infrastructure
+(Kubernetes, VMs, plain Docker).
 
 ## 1. Components & Responsibilities
 
@@ -18,7 +58,7 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 | **MCP Server** | `Dockerfile`, `src/` | Exposes `/mcp`, `/health`, and OAuth metadata endpoints. Validates JWTs, handles direct bearer tokens, manages MCP sessions. |
 | **OAuth Bridge** | `packages/oauth-bridge/` | Implements the OAuth 2.1 proxy that Claude Desktop and other clients rely on. Hosts registration, authorization, and token endpoints. |
 | **Redis** | External service | Shared cache/session store. Required for both the MCP server and bridge (authorization codes, sessions, rate limiting). |
-| **Mittwald APIs** | External | The OAuth bridge exchanges codes against Mittwald and the MCP server uses mittwald CLI. Configure tenant-specific URLs and client credentials. |
+| **Mittwald APIs** | External | The OAuth bridge exchanges codes against Mittwald; the MCP server calls the Mittwald API through `@mittwald-mcp/cli-core`. Configure tenant-specific URLs and the client ID. |
 
 ## 2. Networking & TLS
 
@@ -46,7 +86,7 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 
 ## 3. Environment Variables
 
-### 3.1 MCP Server (`.env.example` lines 11–126)
+### 3.1 MCP Server (see `.env.example`)
 
 | Variable | Purpose | Notes |
 |----------|---------|-------|
@@ -59,7 +99,7 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 | `OAUTH_BRIDGE_JWT_SECRET` | Secret shared with bridge. | Must equal bridge’s `BRIDGE_JWT_SECRET`. |
 | `JWT_SIGNING_KEY` | Signing key for internal sessions. | Rotate per environment. |
 | `MCP_PUBLIC_BASE` | Public base URL (e.g. `https://mcp.<domain>`). | Used for metadata & challenge headers. |
-| `OAUTH_BRIDGE_BASE_URL`, `OAUTH_BRIDGE_AUTHORIZATION_URL`, `OAUTH_BRIDGE_TOKEN_URL` | Override Fly defaults; point to self-hosted bridge domain. |
+| `OAUTH_BRIDGE_BASE_URL`, `OAUTH_BRIDGE_AUTHORIZATION_URL`, `OAUTH_BRIDGE_TOKEN_URL` | Point at your own bridge domain. |
 | `OAUTH_BRIDGE_ISSUER`, `OAUTH_BRIDGE_AUDIENCE` | Expected issuer/audience for bridge JWTs. |
 | `MITTWALD_*` (`MITTWALD_TOKEN_URL`, `MITTWALD_CLIENT_ID`, etc.) | Tenant-specific Mittwald OAuth endpoints & credentials. |
 | `OAUTH_REDIRECT_URI` | Redirect URL registered with Mittwald. |
@@ -75,7 +115,7 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 | `PORT` | Bridge listen port (default `8080`). |
 | `BRIDGE_BASE_URL`, `BRIDGE_ISSUER` | External URL + issuer (e.g. `https://oauth.<domain>`). |
 | `MITTWALD_AUTHORIZATION_URL`, `MITTWALD_TOKEN_URL` | Tenant Mittwald endpoints. |
-| `MITTWALD_CLIENT_ID`, `MITTWALD_CLIENT_SECRET` | OAuth client credentials. |
+| `MITTWALD_CLIENT_ID` | Mittwald OAuth client ID. The bridge is a **public** PKCE client — there is no client secret. |
 | `BRIDGE_JWT_SECRET` | Must match MCP server’s `OAUTH_BRIDGE_JWT_SECRET`. |
 | `BRIDGE_STATE_STORE` | `redis` recommended. |
 | `BRIDGE_REDIS_URL` | Redis connection string, same instance as MCP server. |
@@ -88,9 +128,8 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 
 - **Redis**: ensure ACL/credentials allow both services to connect.
 - **Ingress**: forward `Authorization` header and `WWW-Authenticate` responses intact.
-- **Fly-specific knobs**: the default `fly.toml` files embed Fly domains and the
-  `release_command`. When running elsewhere, either ignore those manifests or
-  override the Fly-specific environment variables.
+- **Reference configuration**: `deploy/main.tf` lists every environment variable the hosted
+  deployment sets, and is the most reliable starting point for a new environment.
 
 ## 4. Deployment Workflow Outline
 
@@ -108,6 +147,8 @@ porting to Kubernetes, VM-based setups, or other container platforms.
    - Populate MCP server and bridge environment variables (see tables above).
    - Set `ENABLE_HTTPS=false` if TLS is terminated upstream.
    - Ensure `MCP_PUBLIC_BASE`, `OAUTH_BRIDGE_*` all reference your domains.
+   - Register your bridge callback (`<bridge-url>/mittwald/callback`) with Mittwald. Mittwald's
+     redirect list is immutable from our side, so this must be arranged up front.
 
 4. **Deploy containers**
    - Use Kubernetes (`Deployment` + `Service`), Docker Compose, or other orchestrator.
@@ -129,12 +170,12 @@ porting to Kubernetes, VM-based setups, or other container platforms.
 |---------|--------------|-----|
 | `404` on `https://mcp.<domain>/` | Routing hits OAuth bridge instead of MCP server. | Update ingress to point root path to MCP server. |
 | `502 Bad Gateway` from proxy | MCP server still serves HTTPS internally while ingress expects HTTP. | Set `ENABLE_HTTPS=false` (now honored even in production). |
-| `401` with bridge domain in `WWW-Authenticate` pointing to Fly.io | Override `OAUTH_BRIDGE_*` variables with your domains. |
+| `401` whose `WWW-Authenticate` points at the wrong host | `OAUTH_BRIDGE_*` variables still reference another deployment. | Override them with your domains. |
 | Direct bearer tokens ignored | Missing `Authorization` header or `ENABLE_DIRECT_BEARER_TOKENS=false`. | Ensure header forwarding and env flag. |
 | Bridge + MCP JWT mismatch | `BRIDGE_JWT_SECRET` ≠ `OAUTH_BRIDGE_JWT_SECRET`. | Use same secret for both. |
 
 For deeper diagnostics:
-- `flyctl logs` equivalents → `kubectl logs` / orchestrator logs.
+- Container logs via your orchestrator (`kubectl logs`, `docker logs`, `mw container logs <id>`).
 - Increase log verbosity via `LOG_LEVEL=debug` (MCP) or enabling request logging in the bridge.
 
 ## 6. Documentation Sites
@@ -185,8 +226,7 @@ Serve each built `dist/` directory as a static site (nginx/Caddy/S3/CDN all fine
 
 ## 7. Further Reading
 
-- `docs/FLY-MITTWALD-MIGRATION-GUIDE.md` – historical notes on migrating from Fly.
-- `.env.example` – authoritative list of supported variables.
-- `docker-compose.yml` (if present) – local orchestration reference.
-
-Keep this document updated as additional infrastructure targets are supported.
+- `.env.example` and `packages/oauth-bridge/.env.example` – authoritative list of supported variables.
+- `docker-compose.yml` – local orchestration reference (MCP server, bridge, Redis, mock OAuth).
+- `docker-compose.prod.yml` – Redis durability settings; see `docs/operations/redis.md`.
+- `ARCHITECTURE.md` – flow diagrams and component responsibilities.

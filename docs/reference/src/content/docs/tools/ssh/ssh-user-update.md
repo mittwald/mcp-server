@@ -1,19 +1,19 @@
 ---
-title: Update SSH User
-description: Update an existing SSH user.
+title: "Update SSH User"
+description: "Update an existing SSH user."
 sidebar:
-  label: Update SSH User
+  label: "Update SSH User"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update SSH User
+      content: "Update SSH User"
   - tag: meta
     attrs:
       name: og:description
-      content: Update an existing SSH user.
-lastUpdated: 2026-01-23
+      content: "Update an existing SSH user."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

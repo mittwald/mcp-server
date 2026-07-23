@@ -1,19 +1,19 @@
 ---
-title: Upgrade App Version
-description: Upgrade app installation to target version.
+title: "Upgrade App Version"
+description: "Upgrade app installation to target version."
 sidebar:
-  label: Upgrade App Version
+  label: "Upgrade App Version"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Upgrade App Version
+      content: "Upgrade App Version"
   - tag: meta
     attrs:
       name: og:description
-      content: Upgrade app installation to target version.
-lastUpdated: 2026-01-23
+      content: "Upgrade app installation to target version."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

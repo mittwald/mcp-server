@@ -1,19 +1,19 @@
 ---
-title: Create Redis Database
-description: Provision a new Redis database within a project.
+title: "Create Redis Database"
+description: "Provision a new Redis database within a project."
 sidebar:
-  label: Create Redis Database
+  label: "Create Redis Database"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Redis Database
+      content: "Create Redis Database"
   - tag: meta
     attrs:
       name: og:description
-      content: Provision a new Redis database within a project.
-lastUpdated: 2026-01-23
+      content: "Provision a new Redis database within a project."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

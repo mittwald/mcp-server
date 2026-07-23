@@ -1,19 +1,19 @@
 ---
-title: Delete SSH User
-description: Delete an SSH user.
+title: "Delete SSH User"
+description: "Delete an SSH user."
 sidebar:
-  label: Delete SSH User
+  label: "Delete SSH User"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete SSH User
+      content: "Delete SSH User"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete an SSH user.
-lastUpdated: 2026-01-23
+      content: "Delete an SSH user."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

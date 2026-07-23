@@ -1,19 +1,19 @@
 ---
-title: Create Backup Schedule
-description: Create a backup schedule.
+title: "Create Backup Schedule"
+description: "Create a backup schedule."
 sidebar:
-  label: Create Backup Schedule
+  label: "Create Backup Schedule"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Backup Schedule
+      content: "Create Backup Schedule"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a backup schedule.
-lastUpdated: 2026-01-23
+      content: "Create a backup schedule."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

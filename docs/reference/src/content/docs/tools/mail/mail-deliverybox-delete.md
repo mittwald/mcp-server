@@ -1,19 +1,19 @@
 ---
-title: Delete Delivery Box
-description: Delete a delivery box.
+title: "Delete Delivery Box"
+description: "Delete a delivery box."
 sidebar:
-  label: Delete Delivery Box
+  label: "Delete Delivery Box"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Delivery Box
+      content: "Delete Delivery Box"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a delivery box.
-lastUpdated: 2026-01-23
+      content: "Delete a delivery box."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

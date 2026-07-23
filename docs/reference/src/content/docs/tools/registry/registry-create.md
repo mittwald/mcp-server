@@ -1,19 +1,19 @@
 ---
-title: Create Registry
-description: Create a new registry in Mittwald.
+title: "Create Registry"
+description: "Create a new registry in Mittwald."
 sidebar:
-  label: Create Registry
+  label: "Create Registry"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Registry
+      content: "Create Registry"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new registry in Mittwald.
-lastUpdated: 2026-01-23
+      content: "Create a new registry in Mittwald."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

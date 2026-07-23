@@ -1,19 +1,19 @@
 ---
-title: Copy App
-description: Copy an app within a project.
+title: "Copy App"
+description: "Copy an app within a project."
 sidebar:
-  label: Copy App
+  label: "Copy App"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Copy App
+      content: "Copy App"
   - tag: meta
     attrs:
       name: og:description
-      content: Copy an app within a project.
-lastUpdated: 2026-01-23
+      content: "Copy an app within a project."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -4,7 +4,7 @@ description: Complete reference for server management tools
 sidebar:
   label: Server
   order: 0
-lastUpdated: 2026-01-23
+lastUpdated: 2026-07-23
 ---
 
 ## Server Tools

@@ -1,6 +1,6 @@
 # Functional Testing Operator Runbook
 
-This is the canonical runbook for customer-operated functional testing against deployed Mittwald MCP endpoints using real coding agents.
+This is the canonical runbook for functional testing against the deployed Mittwald MCP endpoint using real coding agents.
 
 If you need docs-site build instructions, use:
 - `docs/DOCS-SITES-OPERATIONS.md`
@@ -17,7 +17,7 @@ If you need docs-site build instructions, use:
 ## Scope
 
 - Executes prompt-based MCP tool tests inside agent CLIs.
-- Uses deployed MCP targets (`fly` by default, `mittwald` optional).
+- Runs against the deployed MCP endpoint `https://mcp.mittwald.de/mcp` (`--target=mittwald`, the default).
 - Produces per-run artifacts and aggregate coverage across runs.
 - Includes automatic test-project cleanup by default.
 
@@ -36,13 +36,7 @@ If you need docs-site build instructions, use:
 ### 1) Configure MCP endpoints and auth bootstrap
 
 ```bash
-npm run eval:agent:auth -- --target=fly --agents=claude,codex,opencode
-```
-
-Switch to production endpoint target if needed:
-
-```bash
-npm run eval:agent:auth -- --target=mittwald --agents=claude,codex,opencode
+npm run eval:agent:auth -- --agents=claude,codex,opencode
 ```
 
 ### 2) Preflight (must pass before full run)
@@ -111,4 +105,4 @@ jq -r '.perTool[] | select(.byAgent.claude=="failure") | .toolName' evals/result
   - `evals/results/agent-e2e/<run-id>/results/<agent>/<domain>/*.json`
   - `evals/results/agent-e2e/<run-id>/project-cleanup.json` (when generated)
 - Prompt corpus:
-  - `evals/prompts-fly-live/`
+  - `evals/prompts-fly-live/` (the directory name predates the move off Fly; the prompts target the current endpoint)

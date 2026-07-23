@@ -1,19 +1,19 @@
 ---
-title: Create Volume
-description: Create a new named volume inside a project stack.
+title: "Create Volume"
+description: "Create a new named volume inside a project stack."
 sidebar:
-  label: Create Volume
+  label: "Create Volume"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Volume
+      content: "Create Volume"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new named volume inside a project stack.
-lastUpdated: 2026-01-23
+      content: "Create a new named volume inside a project stack."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

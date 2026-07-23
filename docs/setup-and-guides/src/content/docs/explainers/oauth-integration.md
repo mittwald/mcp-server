@@ -97,7 +97,7 @@ Why? Prevents authorization code interception attacks.
 
 Your tool opens browser with URL:
 ```
-https://mittwald-oauth-server.fly.dev/authorize?
+https://auth.mcp.mittwald.de/authorize?
   client_id=abc123...
   &redirect_uri=http://127.0.0.1/callback
   &response_type=code
@@ -166,7 +166,7 @@ Your tool's localhost server receives this redirect and extracts the authorizati
 Your tool now exchanges the authorization code for actual tokens:
 
 ```
-POST https://mittwald-oauth-server.fly.dev/token
+POST https://auth.mcp.mittwald.de/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code
@@ -227,7 +227,7 @@ A **temporary credential** your tool uses to access resources.
 Header:   {"alg": "RS256", "typ": "JWT"}
 Payload:  {
   "sub": "user-12345",
-  "aud": "https://mittwald-mcp-fly2.fly.dev",
+  "aud": "https://mcp.mittwald.de",
   "scope": "user:read project:read app:read",
   "exp": 1234567890
 }
@@ -304,7 +304,7 @@ Mittwald uses **RFC 7591 Dynamic Client Registration**.
 Instead of pre-registering clients, you register on-the-fly:
 
 ```bash
-curl -X POST https://mittwald-oauth-server.fly.dev/register \
+curl -X POST https://auth.mcp.mittwald.de/register \
   -H "Content-Type: application/json" \
   -d '{
     "client_name": "Claude Code - John Doe",

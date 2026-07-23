@@ -15,6 +15,7 @@ import { join, resolve, dirname, relative } from 'path';
 import { pathToFileURL } from 'url';
 import type { MCPTool, ToolsManifest, MCPDomain } from './schema.js';
 import { MCP_DOMAINS, DOMAIN_TITLES, DOMAIN_DESCRIPTIONS } from './schema.js';
+import { isToolExcluded } from '../../../src/utils/tool-scanner.js';
 
 /**
  * Scans a directory recursively for tool definition files
@@ -88,6 +89,12 @@ async function extractToolFromFile(filePath: string): Promise<MCPTool | null> {
     }
 
     const toolDef = registration.tool;
+
+    // Tools the server excludes from its registry are not reachable, so they
+    // must not appear in the reference.
+    if (isToolExcluded(toolDef.name)) {
+      return null;
+    }
 
     // Extract parameters from inputSchema
     const parameters = [];

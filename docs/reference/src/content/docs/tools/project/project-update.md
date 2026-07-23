@@ -1,19 +1,19 @@
 ---
-title: Update Project
-description: Update an existing project.
+title: "Update Project"
+description: "Update an existing project."
 sidebar:
-  label: Update Project
+  label: "Update Project"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Update Project
+      content: "Update Project"
   - tag: meta
     attrs:
       name: og:description
-      content: Update an existing project.
-lastUpdated: 2026-01-23
+      content: "Update an existing project."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

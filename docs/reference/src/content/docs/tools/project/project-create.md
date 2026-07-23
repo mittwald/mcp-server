@@ -1,19 +1,19 @@
 ---
-title: Create Project
-description: Create a new project.
+title: "Create Project"
+description: "Create a new project."
 sidebar:
-  label: Create Project
+  label: "Create Project"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Create Project
+      content: "Create Project"
   - tag: meta
     attrs:
       name: og:description
-      content: Create a new project.
-lastUpdated: 2026-01-23
+      content: "Create a new project."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

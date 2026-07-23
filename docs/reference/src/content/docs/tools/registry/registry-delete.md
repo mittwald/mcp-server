@@ -1,19 +1,19 @@
 ---
-title: Delete Registry
-description: Delete a registry from Mittwald.
+title: "Delete Registry"
+description: "Delete a registry from Mittwald."
 sidebar:
-  label: Delete Registry
+  label: "Delete Registry"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Registry
+      content: "Delete Registry"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a registry from Mittwald.
-lastUpdated: 2026-01-23
+      content: "Delete a registry from Mittwald."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

@@ -4,7 +4,7 @@ description: Complete reference for mail management tools
 sidebar:
   label: Mail
   order: 0
-lastUpdated: 2026-01-23
+lastUpdated: 2026-07-23
 ---
 
 ## Mail Tools

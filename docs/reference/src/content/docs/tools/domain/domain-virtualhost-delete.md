@@ -1,19 +1,19 @@
 ---
-title: Delete Virtual Host
-description: Delete a domain virtualhost.
+title: "Delete Virtual Host"
+description: "Delete a domain virtualhost."
 sidebar:
-  label: Delete Virtual Host
+  label: "Delete Virtual Host"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Virtual Host
+      content: "Delete Virtual Host"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a domain virtualhost.
-lastUpdated: 2026-01-23
+      content: "Delete a domain virtualhost."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

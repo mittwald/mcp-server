@@ -1,23 +1,23 @@
 ---
-title: View Container Logs
-description: Display logs of a specific container.
+title: "View Container Logs"
+description: "Display logs of a specific container. Use mittwald_container_list to find the containerId for your container."
 sidebar:
-  label: View Container Logs
+  label: "View Container Logs"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: View Container Logs
+      content: "View Container Logs"
   - tag: meta
     attrs:
       name: og:description
-      content: Display logs of a specific container.
-lastUpdated: 2026-03-04
+      content: "Display logs of a specific container. Use mittwald_container_list to find the containerId for your container."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
-Display logs of a specific container. Use `mittwald_container_list` to find the `containerId` for your container.
+Display logs of a specific container. Use mittwald_container_list to find the containerId for your container.
 
 ## Parameters
 
@@ -25,7 +25,7 @@ Display logs of a specific container. Use `mittwald_container_list` to find the 
 |-----------|------|----------|-------------|
 | `containerId` | `string` | Yes | ID of the container to get logs for |
 | `projectId` | `string` | Yes | ID of the project containing the container |
-| `tail` | `number` | No | Number of most recent log lines to retrieve (returns all logs if not specified) |
+| `tail` | `number` | No | Number of most recent log lines to retrieve (optional, returns all logs if not specified) |
 
 ## Return Type
 
@@ -38,15 +38,10 @@ Display logs of a specific container. Use `mittwald_container_list` to find the 
 ```json
 {
   "status": "success",
-  "message": "Retrieved logs for container abc123",
-  "data": {
-    "containerId": "abc123",
-    "projectId": "p-xxxxx",
-    "logs": "2026-03-04T10:00:00Z Starting application...\n2026-03-04T10:00:01Z Application started successfully",
-    "lineCount": 2
-  },
+  "message": "Operation completed successfully",
+  "data": null,
   "metadata": {
-    "durationMs": 45
+    "durationMs": 0
   }
 }
 ```

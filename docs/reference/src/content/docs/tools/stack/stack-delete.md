@@ -1,19 +1,19 @@
 ---
-title: Delete Stack
-description: Delete a stack.
+title: "Delete Stack"
+description: "Delete a stack."
 sidebar:
-  label: Delete Stack
+  label: "Delete Stack"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete Stack
+      content: "Delete Stack"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a stack.
-lastUpdated: 2026-01-23
+      content: "Delete a stack."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

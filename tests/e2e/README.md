@@ -7,7 +7,7 @@ End-to-end tests verify the complete OAuth 2.1 + PKCE flow and MCP tool executio
 ## Prerequisites
 
 - Docker and docker-compose
-- Node.js 20+
+- Node.js 24.11.0+ (see `.nvmrc`)
 - Redis and OAuth services (via docker-compose.test.yml)
 
 ## Setup

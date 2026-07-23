@@ -1,31 +1,31 @@
 ---
-title: Connect to Project via SSH
-description: Connect to a project via SSH. (provides command for interactive terminal)
+title: "Get Project SSH Connection Data"
+description: "Get the SSH connection data (host, user, web root) for a project, plus a ready-to-run ssh command. This tool does not open a session itself - run the returned command locally to connect."
 sidebar:
-  label: Connect to Project via SSH
+  label: "Get Project SSH Connection Data"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Connect to Project via SSH
+      content: "Get Project SSH Connection Data"
   - tag: meta
     attrs:
       name: og:description
-      content: Connect to a project via SSH. (provides command for interactive terminal)
-lastUpdated: 2026-01-23
+      content: "Get the SSH connection data (host, user, web root) for a project, plus a ready-to-run ssh command. This tool does not open a session itself - run the returned command locally to connect."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
-Connect to a project via SSH. (provides command for interactive terminal)
+Get the SSH connection data (host, user, web root) for a project, plus a ready-to-run ssh command. This tool does not open a session itself - run the returned command locally to connect.
 
 ## Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `projectId` | `string` | Yes | ID or short ID of a project |
-| `sshUser` | `string` | No | Override the SSH user to connect with; if omitted, your own user will be used |
-| `sshIdentityFile` | `string` | No | The SSH identity file (private key) to use for public key authentication |
+| `sshUser` | `string` | No | Override the SSH user to connect with; if omitted, your own mStudio user will be used |
+| `sshIdentityFile` | `string` | No | The SSH identity file (private key) to include in the returned ssh command |
 
 ## Return Type
 

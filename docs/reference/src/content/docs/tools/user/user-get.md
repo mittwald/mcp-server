@@ -1,19 +1,19 @@
 ---
-title: Get User Profile
-description: Get profile information for a user.. Defaults to the currently authenticated user if no user ID is provided.
+title: "Get User Profile"
+description: "Get profile information for a user.. Defaults to the currently authenticated user if no user ID is provided."
 sidebar:
-  label: Get User Profile
+  label: "Get User Profile"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Get User Profile
+      content: "Get User Profile"
   - tag: meta
     attrs:
       name: og:description
-      content: Get profile information for a user.. Defaults to the currently authenticated user if no user ID is provided.
-lastUpdated: 2026-01-23
+      content: "Get profile information for a user.. Defaults to the currently authenticated user if no user ID is provided."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

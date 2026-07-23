@@ -1,19 +1,19 @@
 ---
-title: Delete MySQL Database
-description: Delete a MySQL database.
+title: "Delete MySQL Database"
+description: "Delete a MySQL database."
 sidebar:
-  label: Delete MySQL Database
+  label: "Delete MySQL Database"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Delete MySQL Database
+      content: "Delete MySQL Database"
   - tag: meta
     attrs:
       name: og:description
-      content: Delete a MySQL database.
-lastUpdated: 2026-01-23
+      content: "Delete a MySQL database."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

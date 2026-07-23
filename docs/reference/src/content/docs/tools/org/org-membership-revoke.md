@@ -1,19 +1,19 @@
 ---
-title: Revoke Organization Membership
-description: Revoke a user's membership to an organization.
+title: "Revoke Organization Membership"
+description: "Revoke a user's membership to an organization."
 sidebar:
-  label: Revoke Organization Membership
+  label: "Revoke Organization Membership"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: Revoke Organization Membership
+      content: "Revoke Organization Membership"
   - tag: meta
     attrs:
       name: og:description
-      content: Revoke a user's membership to an organization.
-lastUpdated: 2026-01-23
+      content: "Revoke a user's membership to an organization."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 

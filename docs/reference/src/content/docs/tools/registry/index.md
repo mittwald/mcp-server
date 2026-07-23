@@ -4,7 +4,7 @@ description: Complete reference for registry management tools
 sidebar:
   label: Registry
   order: 0
-lastUpdated: 2026-01-23
+lastUpdated: 2026-07-23
 ---
 
 ## Registry Tools

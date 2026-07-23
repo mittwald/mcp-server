@@ -1,35 +1,29 @@
 ---
-title: List Redis Versions
-description: List available Redis versions for deployment.
+title: "List Redis Versions"
+description: "List available Redis versions."
 sidebar:
-  label: List Redis Versions
+  label: "List Redis Versions"
   order: 109
 head:
   - tag: meta
     attrs:
       name: og:title
-      content: List Redis Versions
+      content: "List Redis Versions"
   - tag: meta
     attrs:
       name: og:description
-      content: List available Redis versions for deployment.
-lastUpdated: 2026-01-23
+      content: "List available Redis versions."
+lastUpdated: 2026-07-23
 ---
 ## Overview
 
-List available Redis versions for deployment.
+List available Redis versions.
 
 ## Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `projectId` | `string` | No | Optional project context used to filter available versions. |
-| `outputFormat` | `json \| yaml \| txt \| csv \| tsv` | No | Preferred CLI output format. JSON enables structured responses. |
-| `extended` | `boolean` | No | Include additional metadata about each version. |
-| `noHeader` | `boolean` | No | Hide table headers for text and CSV output. |
-| `noTruncate` | `boolean` | No | Disable truncation for wide text output. |
-| `noRelativeDates` | `boolean` | No | Show absolute timestamps instead of relative strings. |
-| `csvSeparator` | `, \| ;` | No | Custom separator for CSV output. |
+| `projectId` | `string` | No | Project ID to filter available versions (different projects may have different versions available) |
 
 ## Return Type
 
