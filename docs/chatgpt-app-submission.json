@@ -1,0 +1,1472 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "mittwald",
+    "subtitle": "Manage mittwald hosting",
+    "description": "Manage your mittwald (mStudio) hosting infrastructure from ChatGPT. List and inspect projects, apps, servers and domains; provision and manage MySQL and Redis databases, users, backups and backup schedules; work with containers, stacks, cron jobs and volumes; configure domains, DNS zones, virtual hosts, SSL certificates and mail addresses; manage organization and project members, SSH users and keys, and API tokens. Read-only tools inspect resources, while write tools create, update or remove them on the authenticated user's behalf.",
+    "category": "DEVELOPER_TOOLS"
+  },
+  "tools": {
+    "mittwald_app_copy": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it copies the app (into a new installation), changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it provisions a new, publicly reachable app installation.",
+        "destructive_justification": "Only creates a new app (into a new installation) and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_app_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the app installation and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_app_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the app installation and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_app_list_upgrade_candidates": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves available app upgrade versions and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_app_ssh": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only resolves the app SSH connection details and returns a ready-to-run command; the tool performs no operation on the server and changes no state.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_app_uninstall": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the app installation, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it takes down a publicly reachable app installation.",
+        "destructive_justification": "Can delete the app installation, which is not easily reversible."
+      }
+    },
+    "mittwald_app_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the app installation settings, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it changes what the live, publicly served app installation runs.",
+        "destructive_justification": "Can overwrite the existing configuration of the app installation settings, which is not easily reversible."
+      }
+    },
+    "mittwald_app_upgrade": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it upgrades the app to a newer version, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it changes the version of the live, publicly served app installation.",
+        "destructive_justification": "Can upgrade the app to a newer version, which cannot be rolled back automatically."
+      }
+    },
+    "mittwald_app_versions": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the app installation and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_backup_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the backup, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new backup and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_backup_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the backup, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the backup, which is not easily reversible."
+      }
+    },
+    "mittwald_backup_download": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it generates a time-limited backup export and download URL rather than only reading existing data.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Does not delete or overwrite the backup; it only produces a download URL for an export."
+      }
+    },
+    "mittwald_backup_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the backup and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_backup_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the backup and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_backup_schedule_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the backup schedule, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new backup schedule and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_backup_schedule_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the backup schedule, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the backup schedule, which is not easily reversible."
+      }
+    },
+    "mittwald_backup_schedule_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the backup schedule and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_backup_schedule_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the backup schedule, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can overwrite the existing configuration of the backup schedule, which is not easily reversible."
+      }
+    },
+    "mittwald_certificate_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the SSL/TLS certificate and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_certificate_request": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it requests the SSL/TLS certificate, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it issues a public SSL/TLS certificate for a domain.",
+        "destructive_justification": "Only requests a new SSL/TLS certificate and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_container_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the container, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it removes a container that may serve public traffic.",
+        "destructive_justification": "Can delete the container, which is not easily reversible."
+      }
+    },
+    "mittwald_container_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the container and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_container_logs": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves container log output and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_container_restart": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it restarts the container, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can disrupt the container, briefly interrupting service."
+      }
+    },
+    "mittwald_container_start": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it starts the container, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new container and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_container_stop": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it stops the container, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can stop the container, interrupting service until it is started again."
+      }
+    },
+    "mittwald_cronjob_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the cron job, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new cron job and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_cronjob_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the cron job, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the cron job, which is not easily reversible."
+      }
+    },
+    "mittwald_cronjob_execute": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it triggers a run of the cron job, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only triggers a new cron job and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_cronjob_execution_abort": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it aborts the cron job execution, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can terminate the cron job execution, which is not easily reversible."
+      }
+    },
+    "mittwald_cronjob_execution_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the cron job execution and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_cronjob_execution_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the cron job execution and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_cronjob_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the cron job and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_cronjob_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the cron job and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_cronjob_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the cron job, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can overwrite the existing configuration of the cron job, which is not easily reversible."
+      }
+    },
+    "mittwald_database_mysql_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the MySQL database, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new MySQL database and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_database_mysql_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the MySQL database, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the MySQL database, which is not easily reversible."
+      }
+    },
+    "mittwald_database_mysql_dump": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only resolves MySQL dump connection details and returns a ready-to-run command; the tool performs no operation on the server and changes no state.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_mysql_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the MySQL database and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_mysql_import": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only resolves MySQL import connection details and returns a ready-to-run command; the tool performs no operation on the server and changes no state.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_mysql_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the MySQL database and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_mysql_phpmyadmin": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only resolves the phpMyAdmin URL and returns a ready-to-run command; the tool performs no operation on the server and changes no state.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_mysql_port_forward": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only resolves MySQL port-forward connection details and returns a ready-to-run command; the tool performs no operation on the server and changes no state.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_mysql_user_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the MySQL database user, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new MySQL database user and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_database_mysql_user_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the MySQL database user, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the MySQL database user, which is not easily reversible."
+      }
+    },
+    "mittwald_database_mysql_user_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the MySQL database user and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_mysql_user_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the MySQL database user and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_mysql_user_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the MySQL database user, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can overwrite the existing configuration of the MySQL database user, which is not easily reversible."
+      }
+    },
+    "mittwald_database_mysql_versions": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the MySQL database and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_redis_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the Redis database, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new Redis database and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_database_redis_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the Redis database and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_redis_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the Redis database and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_database_redis_versions": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the Redis database and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_domain_dnszone_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the DNS zone and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_domain_dnszone_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the DNS zone and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_domain_dnszone_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the DNS zone, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it changes public DNS records that resolve on the internet.",
+        "destructive_justification": "Can overwrite the existing configuration of the DNS zone, which is not easily reversible."
+      }
+    },
+    "mittwald_domain_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the domain and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_domain_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the domain and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_domain_virtualhost_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the virtual host, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it exposes a new publicly reachable virtual host.",
+        "destructive_justification": "Only creates a new virtual host and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_domain_virtualhost_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the virtual host, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it removes a publicly reachable virtual host.",
+        "destructive_justification": "Can delete the virtual host, which is not easily reversible."
+      }
+    },
+    "mittwald_domain_virtualhost_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the virtual host and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_domain_virtualhost_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the virtual host and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_mail_address_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the mail address, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it changes what the public mail domain serves.",
+        "destructive_justification": "Only creates a new mail address and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_mail_address_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the mail address, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it changes what the public mail domain serves.",
+        "destructive_justification": "Can delete the mail address, which is not easily reversible."
+      }
+    },
+    "mittwald_mail_address_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the mail address and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_mail_address_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the mail address and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_mail_address_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the mail address, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it changes what the public mail domain serves.",
+        "destructive_justification": "Can overwrite the existing configuration of the mail address, which is not easily reversible."
+      }
+    },
+    "mittwald_mail_deliverybox_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the mail delivery box, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new mail delivery box and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_mail_deliverybox_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the mail delivery box, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the mail delivery box, which is not easily reversible."
+      }
+    },
+    "mittwald_mail_deliverybox_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the mail delivery box and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_mail_deliverybox_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the mail delivery box and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_mail_deliverybox_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the mail delivery box, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can overwrite the existing configuration of the mail delivery box, which is not easily reversible."
+      }
+    },
+    "mittwald_org_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the organization and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_org_invite": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates an invitation to join the organization, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it sends an invitation email to a third party.",
+        "destructive_justification": "Only creates a new organization invitation and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_org_invite_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the organization invitation and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_org_invite_revoke": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it revokes the organization invitation, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can revoke access to the organization invitation, which is not easily reversible."
+      }
+    },
+    "mittwald_org_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the organization and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_org_membership_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the organization membership and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_org_membership_revoke": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it revokes the organization membership, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can revoke access to the organization membership, which is not easily reversible."
+      }
+    },
+    "mittwald_project_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the project, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new project and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_project_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the project, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it removes a project and its publicly reachable services.",
+        "destructive_justification": "Can delete the project, which is not easily reversible."
+      }
+    },
+    "mittwald_project_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the project and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_project_invite_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the project invitation and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_project_invite_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the project invitation and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_project_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the project and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_project_membership_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the project membership and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_project_membership_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the project membership and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_project_ssh": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only resolves the project SSH connection details and returns a ready-to-run command; the tool performs no operation on the server and changes no state.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_project_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the project, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can overwrite the existing configuration of the project, which is not easily reversible."
+      }
+    },
+    "mittwald_registry_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the container registry, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new container registry and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_registry_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the container registry, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the container registry, which is not easily reversible."
+      }
+    },
+    "mittwald_registry_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the container registry and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_registry_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the container registry, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can overwrite the existing configuration of the container registry, which is not easily reversible."
+      }
+    },
+    "mittwald_server_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the server and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_server_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the server and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_ssh_user_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the SSH user, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new SSH user and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_ssh_user_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the SSH user, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the SSH user, which is not easily reversible."
+      }
+    },
+    "mittwald_ssh_user_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the SSH user and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_ssh_user_update": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it updates the SSH user, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can overwrite the existing configuration of the SSH user, which is not easily reversible."
+      }
+    },
+    "mittwald_stack_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the container stack, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it removes publicly reachable container services.",
+        "destructive_justification": "Can delete the container stack, which is not easily reversible."
+      }
+    },
+    "mittwald_stack_deploy": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": true,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deploys the container stack, changing stored state.",
+        "open_world_justification": "Changes publicly visible state because it changes publicly reachable container services.",
+        "destructive_justification": "Can replace the running services of the container stack, which is not easily reversible."
+      }
+    },
+    "mittwald_stack_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the container stack and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_stack_ps": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the container stack and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_user_api_token_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the API token, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new API token and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_user_api_token_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the API token and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_user_api_token_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the API token and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_user_api_token_revoke": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it revokes the API token, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can revoke access to the API token, which is not easily reversible."
+      }
+    },
+    "mittwald_user_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the user profile and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_user_session_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the user session and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_user_session_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the user session and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_user_ssh_key_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the SSH key, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new SSH key and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_user_ssh_key_delete": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": true
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it deletes the SSH key, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Can delete the SSH key, which is not easily reversible."
+      }
+    },
+    "mittwald_user_ssh_key_get": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the SSH key and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_user_ssh_key_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the SSH key and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    },
+    "mittwald_volume_create": {
+      "annotations": {
+        "readOnlyHint": false,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Not read-only: it creates the container volume, changing stored state.",
+        "open_world_justification": "Operates only within the user's private Mittwald account and does not change publicly visible internet state.",
+        "destructive_justification": "Only creates a new container volume and does not delete, overwrite, or revoke existing resources."
+      }
+    },
+    "mittwald_volume_list": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves the container volume and returns it without creating, updating, or deleting anything.",
+        "open_world_justification": "Does not write to public internet state or any third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform any irreversible action."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "List the projects available to the authenticated user.",
+      "user_prompt": "Show me all my mittwald projects.",
+      "file_attachment_urls": null,
+      "tools_triggered": "mittwald_project_list",
+      "expected_output": "Returns the list of projects the user can access with enough detail to pick one for follow-up actions.",
+      "expected_output_url": null
+    },
+    {
+      "description": "List the apps installed in a specific project.",
+      "user_prompt": "Which apps are installed in my project p-abc123?",
+      "file_attachment_urls": null,
+      "tools_triggered": "mittwald_app_list",
+      "expected_output": "Returns the apps installed in the given project, including names and versions.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Inspect available upgrades for an app before acting.",
+      "user_prompt": "Are there any available upgrades for the app a-xyz789?",
+      "file_attachment_urls": null,
+      "tools_triggered": "mittwald_app_list_upgrade_candidates",
+      "expected_output": "Returns the versions the app installation could be upgraded to, without changing anything.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Create a new MySQL database in a project.",
+      "user_prompt": "Create a MySQL database in project p-abc123 with description \"staging db\".",
+      "file_attachment_urls": null,
+      "tools_triggered": "mittwald_database_mysql_create",
+      "expected_output": "Creates the database and returns its identifier and connection metadata.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Resolve SSH connection details for an app without opening a session.",
+      "user_prompt": "How do I SSH into the app a-xyz789?",
+      "file_attachment_urls": null,
+      "tools_triggered": "mittwald_app_ssh",
+      "expected_output": "Returns the SSH host, user, directory and a ready-to-run ssh command for the user to execute locally.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not trigger for unrelated general knowledge questions.",
+      "user_prompt": "What is the capital of France?",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because the request is unrelated to mittwald hosting management.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for hosting providers other than mittwald.",
+      "user_prompt": "Deploy my app to AWS Elastic Beanstalk.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because it only manages mittwald (mStudio) infrastructure.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not open interactive sessions or run remote commands on the server.",
+      "user_prompt": "Open a live SSH shell to my server and run top for 5 minutes.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked to run an interactive session; at most it returns connection details for the user to run locally, and no tool performs a live remote shell.",
+      "expected_output_url": null
+    }
+  ]
+}
