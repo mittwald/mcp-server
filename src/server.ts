@@ -236,9 +236,12 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
   app.use('', oauthMetadataRoutes.getRouter());
 
   // OpenAI Apps domain-verification challenge (ChatGPT app submission)
-  const openaiAppsChallenge =
-    process.env.OPENAI_APPS_CHALLENGE || 'TMjy_Jie1D1d1jHg8zZigHYwG2wRbhMfFgrIqCuoFqY';
+  const openaiAppsChallenge = process.env.OPENAI_APPS_CHALLENGE;
   app.get('/.well-known/openai-apps-challenge', (_, res) => {
+    if (!openaiAppsChallenge) {
+      res.sendStatus(404);
+      return;
+    }
     res.type('text/plain').send(openaiAppsChallenge);
   });
 
