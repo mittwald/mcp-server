@@ -235,6 +235,11 @@ async function setupUtilityRoutes(app: express.Application): Promise<void> {
   const oauthMetadataRoutes = new OAuthMetadataRoutes();
   app.use('', oauthMetadataRoutes.getRouter());
 
+  // OpenAI Apps domain-verification challenge (ChatGPT app submission)
+  app.get('/.well-known/openai-apps-challenge', (_, res) => {
+    res.type('text/plain').send('TMjy_Jie1D1d1jHg8zZigHYwG2wRbhMfFgrIqCuoFqY');
+  });
+
   // Health check
   app.get('/health', async (_, res) => {
     if (isServerShuttingDown()) {
