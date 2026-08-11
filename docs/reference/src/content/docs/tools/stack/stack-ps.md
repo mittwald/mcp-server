@@ -13,7 +13,7 @@ head:
     attrs:
       name: og:description
       content: "List all services within a given stack."
-lastUpdated: 2026-07-23
+lastUpdated: 2026-08-11
 ---
 ## Overview
 
@@ -23,8 +23,8 @@ List all services within a given stack.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `stackId` | `string` | No | ID of a stack |
-| `projectId` | `string` | No | ID of the project containing the stack |
+| `stackId` | `string` | Yes | ID of a stack |
+| `projectId` | `string` | Yes | ID of the project containing the stack |
 
 ## Return Type
 

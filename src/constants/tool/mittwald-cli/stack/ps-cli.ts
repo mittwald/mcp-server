@@ -24,7 +24,7 @@ const tool: Tool = {
         description: 'ID of the project containing the stack'
       }
     },
-    required: []
+    required: ['stackId', 'projectId']
   }
 };
 
