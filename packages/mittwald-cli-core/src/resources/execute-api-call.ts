@@ -5,7 +5,7 @@
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
 import type { LibraryResult } from '../contracts/functions.js';
-import { LibraryError } from '../contracts/functions.js';
+import { libraryErrorFromApiError } from '../contracts/functions.js';
 
 /**
  * Runs an API call with a token-scoped client, asserts the expected status and
@@ -29,10 +29,6 @@ export async function executeApiCall<T = any>(
       durationMs: performance.now() - startTime,
     };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
