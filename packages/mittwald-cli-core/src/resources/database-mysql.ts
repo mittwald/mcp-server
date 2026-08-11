@@ -7,6 +7,7 @@ import { assertStatus } from '@mittwald/api-client-commons';
 import { libraryErrorFromApiError } from '../contracts/functions.js';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
 import { randomBytes } from 'node:crypto';
+import { poll } from '../lib/poll.js';
 
 export interface ListMysqlDatabasesOptions extends LibraryFunctionBase {
   projectId: string;
@@ -149,13 +150,37 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
 
     const dbDetails = getResponse.data;
 
+    // Right after creation, `getMysqlDatabase` can briefly return the new database without its
+    // `mainUser` relation populated (eventual consistency on the API side). Poll the same
+    // endpoint — with exponential backoff — until mainUser.name shows up, rather than reading it
+    // once. A fallback read from a different endpoint (e.g. listMysqlUsers) wouldn't help here: it
+    // reads the same not-yet-converged backend state, so it can race the same way getMysqlDatabase
+    // did. Best-effort only: if the budget is exhausted before the username appears, fall back to
+    // '' as before rather than throwing (retryOnError so a transient error on one poll attempt
+    // doesn't abort the remaining ones either).
+    let userName = dbDetails.mainUser?.name ?? '';
+    if (!userName) {
+      userName =
+        (await poll(
+          async () => {
+            const pollResponse = await client.database.getMysqlDatabase({
+              mysqlDatabaseId: createResponse.data.id,
+            });
+            assertStatus(pollResponse, 200);
+            return pollResponse.data.mainUser?.name ?? '';
+          },
+          (name) => Boolean(name),
+          { maxAttempts: 4, initialDelayMs: 100, maxDelayMs: 2000, retryOnError: true }
+        )) ?? '';
+    }
+
     const result: CreateMysqlDatabaseResult = {
       id: createResponse.data.id,
       userId: createResponse.data.userId,
       name: dbDetails.name,
       hostname: dbDetails.hostname,
       externalHostname: dbDetails.externalHostname,
-      userName: dbDetails.mainUser?.name ?? '',
+      userName,
       passwordWasGenerated,
       // Only include password if it was auto-generated (security: don't echo back user-provided passwords)
       ...(passwordWasGenerated ? { password } : {}),
