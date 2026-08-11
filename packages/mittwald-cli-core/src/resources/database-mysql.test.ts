@@ -38,7 +38,10 @@ const dbDetails = (overrides: Record<string, unknown> = {}) => ({
 
 describe('createMysqlDatabase', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    // resetAllMocks (rather than clearAllMocks) also drops any not-yet-consumed
+    // mockResolvedValueOnce/mockRejectedValueOnce queue entries, so a test that fails before
+    // fully draining its queued responses can't leak them into the next test.
+    vi.resetAllMocks();
   });
 
   afterEach(() => {
@@ -62,7 +65,7 @@ describe('createMysqlDatabase', () => {
     expect(mockGetMysqlDatabase).toHaveBeenCalledTimes(1);
   });
 
-  it('polls the same getMysqlDatabase endpoint until mainUser.name appears on a later attempt', async () => {
+  it('polls the same getMysqlDatabase endpoint with exponential backoff until mainUser.name appears', async () => {
     vi.useFakeTimers();
 
     mockCreateMysqlDatabase.mockResolvedValue({
@@ -70,19 +73,30 @@ describe('createMysqlDatabase', () => {
       data: { id: 'db-1', userId: 'user-1' },
     });
     mockGetMysqlDatabase
-      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // initial read: not yet populated
-      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // poll attempt 1: still not populated
+      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // initial read (outside poll): not yet populated
+      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // poll's 1st attempt (no delay before it): still not populated
+      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // poll's 2nd attempt (after 100ms): still not populated
       .mockResolvedValueOnce({
         status: 200,
         data: dbDetails({ mainUser: { name: 'dbu_resolved_later' } }),
-      }); // poll attempt 2: now populated
+      }); // poll's 3rd attempt (after another 200ms, doubled): now populated
 
     const resultPromise = createMysqlDatabase(baseOptions);
-    await vi.runAllTimersAsync();
-    const result = await resultPromise;
 
-    expect(result.data.userName).toBe('dbu_resolved_later');
+    // The initial read and poll's first attempt both happen with no delay in front of them.
+    await vi.advanceTimersByTimeAsync(0);
+    expect(mockGetMysqlDatabase).toHaveBeenCalledTimes(2);
+
+    // Poll's second attempt fires after the configured initial delay (100ms).
+    await vi.advanceTimersByTimeAsync(100);
     expect(mockGetMysqlDatabase).toHaveBeenCalledTimes(3);
+
+    // Poll's third attempt fires after the delay has doubled (100ms -> 200ms).
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockGetMysqlDatabase).toHaveBeenCalledTimes(4);
+
+    const result = await resultPromise;
+    expect(result.data.userName).toBe('dbu_resolved_later');
   });
 
   it('falls back to an empty string without throwing once the poll budget is exhausted', async () => {
@@ -100,7 +114,8 @@ describe('createMysqlDatabase', () => {
     const result = await resultPromise;
 
     expect(result.data.userName).toBe('');
-    // 1 initial read + up to 4 poll attempts = 5 total calls, then it gives up.
+    // 1 initial read + up to MYSQL_USERNAME_POLL_MAX_ATTEMPTS (4) poll attempts = 5 total calls,
+    // then it gives up rather than hanging indefinitely.
     expect(mockGetMysqlDatabase).toHaveBeenCalledTimes(5);
   });
 
