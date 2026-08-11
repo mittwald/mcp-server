@@ -10528,7 +10528,11 @@
                     "type": "string",
                     "description": "ID of the project containing the stack"
                   }
-                }
+                },
+                "required": [
+                  "stackId",
+                  "projectId"
+                ]
               }
             }
           }
