@@ -88,16 +88,6 @@ function generateMySqlUserPassword(): string {
   return chars.join('');
 }
 
-// Right after `createMysqlDatabase` succeeds, `getMysqlDatabase` can briefly return the new
-// database without its `mainUser` relation populated (eventual consistency on the API side).
-// Poll the same endpoint a few more times, with exponential backoff, rather than surfacing an
-// empty username. Bounded so a slow/never-converging backend can't hang the tool call: worst
-// case is MYSQL_USERNAME_POLL_MAX_ATTEMPTS extra requests, with delays growing from
-// MYSQL_USERNAME_POLL_INITIAL_DELAY_MS up to MYSQL_USERNAME_POLL_MAX_DELAY_MS between them.
-const MYSQL_USERNAME_POLL_MAX_ATTEMPTS = 4;
-const MYSQL_USERNAME_POLL_INITIAL_DELAY_MS = 100;
-const MYSQL_USERNAME_POLL_MAX_DELAY_MS = 2000;
-
 export interface CreateMysqlDatabaseResult {
   /** The database ID */
   id: string;
@@ -160,12 +150,13 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
 
     const dbDetails = getResponse.data;
 
-    // See the comment on MYSQL_USERNAME_POLL_MAX_ATTEMPTS above: poll getMysqlDatabase — the same
-    // endpoint we just called — until mainUser.name shows up, rather than reading it once. A
-    // fallback read from a different endpoint (e.g. listMysqlUsers) wouldn't help here: it reads
-    // the same not-yet-converged backend state, so it can race the same way getMysqlDatabase did.
-    // Best-effort only: if the budget is exhausted before the username appears, fall back to ''
-    // as before rather than throwing (retryOnError so a transient error on one poll attempt
+    // Right after creation, `getMysqlDatabase` can briefly return the new database without its
+    // `mainUser` relation populated (eventual consistency on the API side). Poll the same
+    // endpoint — with exponential backoff — until mainUser.name shows up, rather than reading it
+    // once. A fallback read from a different endpoint (e.g. listMysqlUsers) wouldn't help here: it
+    // reads the same not-yet-converged backend state, so it can race the same way getMysqlDatabase
+    // did. Best-effort only: if the budget is exhausted before the username appears, fall back to
+    // '' as before rather than throwing (retryOnError so a transient error on one poll attempt
     // doesn't abort the remaining ones either).
     let userName = dbDetails.mainUser?.name ?? '';
     if (!userName) {
@@ -179,12 +170,7 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
             return pollResponse.data.mainUser?.name ?? '';
           },
           (name) => Boolean(name),
-          {
-            maxAttempts: MYSQL_USERNAME_POLL_MAX_ATTEMPTS,
-            initialDelayMs: MYSQL_USERNAME_POLL_INITIAL_DELAY_MS,
-            maxDelayMs: MYSQL_USERNAME_POLL_MAX_DELAY_MS,
-            retryOnError: true,
-          }
+          { maxAttempts: 4, initialDelayMs: 100, maxDelayMs: 2000, retryOnError: true }
         )) ?? '';
     }
 
