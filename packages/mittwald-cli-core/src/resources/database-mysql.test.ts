@@ -1,8 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockCreateMysqlDatabase = vi.fn();
 const mockGetMysqlDatabase = vi.fn();
-const mockListMysqlUsers = vi.fn();
 
 vi.mock('@mittwald/api-client', () => ({
   MittwaldAPIV2Client: {
@@ -10,7 +9,6 @@ vi.mock('@mittwald/api-client', () => ({
       database: {
         createMysqlDatabase: mockCreateMysqlDatabase,
         getMysqlDatabase: mockGetMysqlDatabase,
-        listMysqlUsers: mockListMysqlUsers,
       },
     })),
   },
@@ -29,115 +27,119 @@ const baseOptions = {
   version: '8.0',
 };
 
+const dbDetails = (overrides: Record<string, unknown> = {}) => ({
+  id: 'db-1',
+  name: 'db-1',
+  hostname: 'db-1.mysql.mittwald.de',
+  externalHostname: 'ext-db-1.mysql.mittwald.de',
+  mainUser: undefined,
+  ...overrides,
+});
+
 describe('createMysqlDatabase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('resolves the real username via listMysqlUsers when mainUser is not yet populated on the fresh database', async () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('uses mainUser.name directly when the initial getMysqlDatabase call already has it populated', async () => {
     mockCreateMysqlDatabase.mockResolvedValue({
       status: 201,
       data: { id: 'db-1', userId: 'user-1' },
     });
-
-    // Immediately after creation, the API has not yet populated the mainUser relation.
     mockGetMysqlDatabase.mockResolvedValue({
       status: 200,
-      data: {
-        id: 'db-1',
-        name: 'db-1',
-        hostname: 'db-1.mysql.mittwald.de',
-        externalHostname: 'ext-db-1.mysql.mittwald.de',
-        mainUser: undefined,
-      },
-    });
-
-    mockListMysqlUsers.mockResolvedValue({
-      status: 200,
-      data: [
-        { id: 'user-1', name: 'dbu_abc123', mainUser: true },
-        { id: 'user-2', name: 'dbu_other', mainUser: false },
-      ],
-    });
-
-    const result = await createMysqlDatabase(baseOptions);
-
-    expect(result.data.userName).toBe('dbu_abc123');
-    expect(mockListMysqlUsers).toHaveBeenCalledWith(
-      expect.objectContaining({ mysqlDatabaseId: 'db-1' })
-    );
-  });
-
-  it('uses mainUser.name directly when the database details already have it populated', async () => {
-    mockCreateMysqlDatabase.mockResolvedValue({
-      status: 201,
-      data: { id: 'db-2', userId: 'user-2' },
-    });
-
-    mockGetMysqlDatabase.mockResolvedValue({
-      status: 200,
-      data: {
-        id: 'db-2',
-        name: 'db-2',
-        hostname: 'db-2.mysql.mittwald.de',
-        externalHostname: 'ext-db-2.mysql.mittwald.de',
-        mainUser: { name: 'dbu_already_there' },
-      },
+      data: dbDetails({ mainUser: { name: 'dbu_already_there' } }),
     });
 
     const result = await createMysqlDatabase(baseOptions);
 
     expect(result.data.userName).toBe('dbu_already_there');
-    expect(mockListMysqlUsers).not.toHaveBeenCalled();
+    // Only the initial read — no polling needed once the field is already populated.
+    expect(mockGetMysqlDatabase).toHaveBeenCalledTimes(1);
   });
 
-  it('falls back to an empty string when the follow-up listMysqlUsers lookup cannot find a matching user', async () => {
+  it('polls the same getMysqlDatabase endpoint until mainUser.name appears on a later attempt', async () => {
+    vi.useFakeTimers();
+
     mockCreateMysqlDatabase.mockResolvedValue({
       status: 201,
-      data: { id: 'db-3', userId: 'user-3' },
+      data: { id: 'db-1', userId: 'user-1' },
     });
+    mockGetMysqlDatabase
+      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // initial read: not yet populated
+      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // poll attempt 1: still not populated
+      .mockResolvedValueOnce({
+        status: 200,
+        data: dbDetails({ mainUser: { name: 'dbu_resolved_later' } }),
+      }); // poll attempt 2: now populated
 
-    mockGetMysqlDatabase.mockResolvedValue({
-      status: 200,
-      data: {
-        id: 'db-3',
-        name: 'db-3',
-        hostname: 'db-3.mysql.mittwald.de',
-        externalHostname: 'ext-db-3.mysql.mittwald.de',
-        mainUser: undefined,
-      },
+    const resultPromise = createMysqlDatabase(baseOptions);
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
+
+    expect(result.data.userName).toBe('dbu_resolved_later');
+    expect(mockGetMysqlDatabase).toHaveBeenCalledTimes(3);
+  });
+
+  it('falls back to an empty string without throwing once the poll budget is exhausted', async () => {
+    vi.useFakeTimers();
+
+    mockCreateMysqlDatabase.mockResolvedValue({
+      status: 201,
+      data: { id: 'db-1', userId: 'user-1' },
     });
+    // mainUser never shows up on any attempt.
+    mockGetMysqlDatabase.mockResolvedValue({ status: 200, data: dbDetails() });
 
-    mockListMysqlUsers.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-
-    const result = await createMysqlDatabase(baseOptions);
+    const resultPromise = createMysqlDatabase(baseOptions);
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
 
     expect(result.data.userName).toBe('');
+    // 1 initial read + up to 4 poll attempts = 5 total calls, then it gives up.
+    expect(mockGetMysqlDatabase).toHaveBeenCalledTimes(5);
   });
 
-  it('falls back to an empty string without throwing when the follow-up listMysqlUsers call itself fails', async () => {
+  it('keeps polling past a transient error on an individual poll attempt and still resolves the username', async () => {
+    vi.useFakeTimers();
+
     mockCreateMysqlDatabase.mockResolvedValue({
       status: 201,
-      data: { id: 'db-4', userId: 'user-4' },
+      data: { id: 'db-1', userId: 'user-1' },
     });
+    mockGetMysqlDatabase
+      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // initial read: not yet populated
+      .mockRejectedValueOnce(new Error('transient network error')) // poll attempt 1: fails
+      .mockResolvedValueOnce({
+        status: 200,
+        data: dbDetails({ mainUser: { name: 'dbu_after_retry' } }),
+      }); // poll attempt 2: succeeds
 
-    mockGetMysqlDatabase.mockResolvedValue({
-      status: 200,
-      data: {
-        id: 'db-4',
-        name: 'db-4',
-        hostname: 'db-4.mysql.mittwald.de',
-        externalHostname: 'ext-db-4.mysql.mittwald.de',
-        mainUser: undefined,
-      },
+    const resultPromise = createMysqlDatabase(baseOptions);
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
+
+    expect(result.data.userName).toBe('dbu_after_retry');
+  });
+
+  it('falls back to an empty string without throwing when every poll attempt errors', async () => {
+    vi.useFakeTimers();
+
+    mockCreateMysqlDatabase.mockResolvedValue({
+      status: 201,
+      data: { id: 'db-1', userId: 'user-1' },
     });
+    mockGetMysqlDatabase
+      .mockResolvedValueOnce({ status: 200, data: dbDetails() }) // initial read: not yet populated
+      .mockRejectedValue(new Error('backend unavailable')); // every poll attempt fails
 
-    mockListMysqlUsers.mockRejectedValue(new Error('network error'));
-
-    const result = await createMysqlDatabase(baseOptions);
+    const resultPromise = createMysqlDatabase(baseOptions);
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
 
     expect(result.data.userName).toBe('');
   });

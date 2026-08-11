@@ -7,7 +7,6 @@ import { assertStatus } from '@mittwald/api-client-commons';
 import { libraryErrorFromApiError } from '../contracts/functions.js';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
 import { randomBytes } from 'node:crypto';
-import { listMysqlUsers } from './database-mysql-user.js';
 
 export interface ListMysqlDatabasesOptions extends LibraryFunctionBase {
   projectId: string;
@@ -88,6 +87,19 @@ function generateMySqlUserPassword(): string {
   return chars.join('');
 }
 
+// Right after `createMysqlDatabase` succeeds, `getMysqlDatabase` can briefly return the new
+// database without its `mainUser` relation populated (eventual consistency on the API side).
+// Poll the same endpoint a few more times with a short delay rather than surfacing an empty
+// username. Bounded so a slow/never-converging backend can't hang the tool call: worst case is
+// MYSQL_USERNAME_POLL_MAX_ATTEMPTS - 1 extra requests spread over roughly
+// (MYSQL_USERNAME_POLL_MAX_ATTEMPTS - 1) * MYSQL_USERNAME_POLL_INTERVAL_MS.
+const MYSQL_USERNAME_POLL_MAX_ATTEMPTS = 5;
+const MYSQL_USERNAME_POLL_INTERVAL_MS = 400;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export interface CreateMysqlDatabaseResult {
   /** The database ID */
   id: string;
@@ -150,23 +162,23 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
 
     const dbDetails = getResponse.data;
 
-    // Right after creation, the freshly-created database's `mainUser` relation is often not yet
-    // populated (eventual consistency on the API side). Fall back to a follow-up listMysqlUsers
-    // call to resolve the real username instead of surfacing an empty string. Best-effort only:
-    // if this also fails to find the user, fall back to '' as before rather than throwing.
+    // See the comment on MYSQL_USERNAME_POLL_MAX_ATTEMPTS above: poll getMysqlDatabase — the same
+    // endpoint we just called — until mainUser.name shows up, rather than reading it once. A
+    // fallback read from a different endpoint (e.g. listMysqlUsers) wouldn't help here: it reads
+    // the same not-yet-converged backend state, so it can race the same way getMysqlDatabase did.
+    // Best-effort only: if the budget is exhausted before the username appears, fall back to ''
+    // as before rather than throwing.
     let userName = dbDetails.mainUser?.name ?? '';
-    if (!userName) {
+    for (let attempt = 1; !userName && attempt < MYSQL_USERNAME_POLL_MAX_ATTEMPTS; attempt++) {
+      await delay(MYSQL_USERNAME_POLL_INTERVAL_MS);
       try {
-        const usersResponse = await listMysqlUsers({
-          databaseId: createResponse.data.id,
-          apiToken: options.apiToken,
+        const pollResponse = await client.database.getMysqlDatabase({
+          mysqlDatabaseId: createResponse.data.id,
         });
-        const mainUser = usersResponse.data.find(
-          (user) => user.id === createResponse.data.userId || user.mainUser === true
-        );
-        userName = mainUser?.name ?? '';
+        assertStatus(pollResponse, 200);
+        userName = pollResponse.data.mainUser?.name ?? '';
       } catch {
-        // Best-effort enrichment — keep userName as '' if the follow-up lookup fails.
+        // Best-effort enrichment — keep polling; if every attempt fails, userName stays ''.
       }
     }
 
