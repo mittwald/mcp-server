@@ -133,12 +133,6 @@ Get database connection info for [db-id]
 Check backup schedules for project [project-id]
 ```
 
-### Support Tickets
-
-```
-List open support conversations for my account
-```
-
 ---
 
 ## Troubleshooting
