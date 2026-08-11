@@ -7,6 +7,7 @@ import { assertStatus } from '@mittwald/api-client-commons';
 import { libraryErrorFromApiError } from '../contracts/functions.js';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
 import { randomBytes } from 'node:crypto';
+import { listMysqlUsers } from './database-mysql-user.js';
 
 export interface ListMysqlDatabasesOptions extends LibraryFunctionBase {
   projectId: string;
@@ -149,13 +150,33 @@ export async function createMysqlDatabase(options: CreateMysqlDatabaseOptions): 
 
     const dbDetails = getResponse.data;
 
+    // Right after creation, the freshly-created database's `mainUser` relation is often not yet
+    // populated (eventual consistency on the API side). Fall back to a follow-up listMysqlUsers
+    // call to resolve the real username instead of surfacing an empty string. Best-effort only:
+    // if this also fails to find the user, fall back to '' as before rather than throwing.
+    let userName = dbDetails.mainUser?.name ?? '';
+    if (!userName) {
+      try {
+        const usersResponse = await listMysqlUsers({
+          databaseId: createResponse.data.id,
+          apiToken: options.apiToken,
+        });
+        const mainUser = usersResponse.data.find(
+          (user) => user.id === createResponse.data.userId || user.mainUser === true
+        );
+        userName = mainUser?.name ?? '';
+      } catch {
+        // Best-effort enrichment — keep userName as '' if the follow-up lookup fails.
+      }
+    }
+
     const result: CreateMysqlDatabaseResult = {
       id: createResponse.data.id,
       userId: createResponse.data.userId,
       name: dbDetails.name,
       hostname: dbDetails.hostname,
       externalHostname: dbDetails.externalHostname,
-      userName: dbDetails.mainUser?.name ?? '',
+      userName,
       passwordWasGenerated,
       // Only include password if it was auto-generated (security: don't echo back user-provided passwords)
       ...(passwordWasGenerated ? { password } : {}),
