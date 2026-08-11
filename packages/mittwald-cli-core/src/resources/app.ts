@@ -4,7 +4,7 @@
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
-import { LibraryError } from '../contracts/functions.js';
+import { LibraryError, libraryErrorFromApiError } from '../contracts/functions.js';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
 
 export interface ListAppsOptions extends LibraryFunctionBase {
@@ -34,11 +34,7 @@ export async function listApps(options: ListAppsOptions): Promise<LibraryResult<
 
     return { data: enrichedData, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -71,11 +67,7 @@ export async function getApp(options: GetAppOptions): Promise<LibraryResult<any>
 
     return { data: enriched, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -104,11 +96,7 @@ export async function getProjectIdFromInstallation(
 
     return { data: projectId, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -126,11 +114,7 @@ export async function uninstallApp(options: UninstallAppOptions): Promise<Librar
 
     return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -158,11 +142,7 @@ export async function updateApp(options: UpdateAppOptions): Promise<LibraryResul
 
     return { data: undefined, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
@@ -188,10 +168,6 @@ export async function copyApp(options: CopyAppOptions): Promise<LibraryResult<an
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }

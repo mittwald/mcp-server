@@ -4,7 +4,7 @@
 
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
-import { LibraryError } from '../contracts/functions.js';
+import { libraryErrorFromApiError } from '../contracts/functions.js';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
 
 export interface GetUserOptions extends LibraryFunctionBase {
@@ -22,10 +22,6 @@ export async function getUser(options: GetUserOptions): Promise<LibraryResult<an
 
     return { data: response.data, status: response.status, durationMs: performance.now() - startTime };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
