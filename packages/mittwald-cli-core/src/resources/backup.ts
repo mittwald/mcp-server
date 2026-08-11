@@ -5,7 +5,7 @@
 import { MittwaldAPIV2Client } from '@mittwald/api-client';
 import { assertStatus } from '@mittwald/api-client-commons';
 import { executeApiCall } from './execute-api-call.js';
-import { LibraryError } from '../contracts/functions.js';
+import { libraryErrorFromApiError } from '../contracts/functions.js';
 import type { LibraryFunctionBase, LibraryResult } from '../contracts/functions.js';
 
 export interface ListBackupsOptions extends LibraryFunctionBase {
@@ -138,11 +138,7 @@ export async function getBackupDownloadUrl(
       durationMs: performance.now() - startTime,
     };
   } catch (error) {
-    throw new LibraryError(
-      error instanceof Error ? error.message : 'Unknown error',
-      (error as any).status || 500,
-      { originalError: error, durationMs: performance.now() - startTime }
-    );
+    throw libraryErrorFromApiError(error, startTime);
   }
 }
 
