@@ -6,24 +6,64 @@ import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldStackListCliArgs {
   projectId?: string;
+  revealEnvironmentVariables?: boolean;
 }
+
+const REDACTED = '[REDACTED]';
+
+type RawServiceState = {
+  envs?: Record<string, string>;
+  [key: string]: unknown;
+};
+
+type RawService = {
+  deployedState?: RawServiceState;
+  pendingState?: RawServiceState;
+  [key: string]: unknown;
+};
 
 type RawStack = {
   id?: string;
   description?: string;
   prefix?: string;
-  services?: unknown;
+  services?: RawService[];
   volumes?: unknown;
   disabled?: boolean;
   projectId?: string;
 };
 
-function formatStacks(stacks: RawStack[]) {
+function redactEnvs(envs: Record<string, string> | undefined): Record<string, string> | undefined {
+  if (!envs) {
+    return envs;
+  }
+
+  return Object.fromEntries(Object.keys(envs).map((key) => [key, REDACTED]));
+}
+
+function redactServiceState(state: RawServiceState | undefined): RawServiceState | undefined {
+  if (!state) {
+    return state;
+  }
+
+  return { ...state, envs: redactEnvs(state.envs) };
+}
+
+function redactServiceEnvironment(service: RawService): RawService {
+  return {
+    ...service,
+    deployedState: redactServiceState(service.deployedState),
+    pendingState: redactServiceState(service.pendingState),
+  };
+}
+
+function formatStacks(stacks: RawStack[], revealEnvironmentVariables: boolean) {
   return stacks.map((stack) => ({
     id: stack.id,
     description: stack.description,
     prefix: stack.prefix,
-    services: stack.services ?? [],
+    services: revealEnvironmentVariables
+      ? (stack.services ?? [])
+      : (stack.services ?? []).map(redactServiceEnvironment),
     volumes: stack.volumes ?? [],
     disabled: stack.disabled ?? false,
     projectId: stack.projectId,
@@ -53,7 +93,8 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
       projectId: args.projectId,
     });
 
-    const stacks = result.data as any[];
+    const stacks = result.data as RawStack[];
+    const revealEnvironmentVariables = args.revealEnvironmentVariables === true;
 
     if (!stacks || stacks.length === 0) {
       return formatToolResponse(
@@ -63,10 +104,14 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
       );
     }
 
+    const redactionNotice = revealEnvironmentVariables
+      ? ''
+      : ' (environment variable values redacted; pass revealEnvironmentVariables=true to include them)';
+
     return formatToolResponse(
       'success',
-      `Found ${stacks.length} container stack${stacks.length === 1 ? '' : 's'}`,
-      formatStacks(stacks)
+      `Found ${stacks.length} container stack${stacks.length === 1 ? '' : 's'}${redactionNotice}`,
+      formatStacks(stacks, revealEnvironmentVariables)
     );
   } catch (error) {
     if (error instanceof LibraryError) {

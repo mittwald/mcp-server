@@ -10416,7 +10416,7 @@
     "/tools/mittwald_stack_list": {
       "post": {
         "summary": "List Stacks",
-        "description": "List stacks for a given project.",
+        "description": "List stacks for a given project. Environment variable values on each service are redacted by default; pass revealEnvironmentVariables=true to include their real values.",
         "operationId": "mittwald_stack_list",
         "tags": [
           "stack"
@@ -10431,6 +10431,10 @@
                   "projectId": {
                     "type": "string",
                     "description": "ID or short ID of a project"
+                  },
+                  "revealEnvironmentVariables": {
+                    "type": "boolean",
+                    "description": "Include real environment variable values (which may contain secrets) instead of redacting them. Defaults to false."
                   }
                 },
                 "required": [

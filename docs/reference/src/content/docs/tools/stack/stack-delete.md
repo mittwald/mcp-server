@@ -13,7 +13,7 @@ head:
     attrs:
       name: og:description
       content: "Delete a stack."
-lastUpdated: 2026-07-23
+lastUpdated: 2026-08-31
 ---
 ## Overview
 

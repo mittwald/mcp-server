@@ -13,7 +13,7 @@ head:
     attrs:
       name: og:description
       content: "Deploy a docker-compose YAML configuration to a Mittwald stack. Accepts docker-compose format and converts it to Mittwald's native format. IMPORTANT: This is a declarative API - the provided configuration REPLACES the entire stack. Any services or volumes not included will be DELETED. You MUST first read the existing stack configuration (using mittwald_stack_get) before updating, then merge your changes with the existing services/volumes to avoid data loss."
-lastUpdated: 2026-07-23
+lastUpdated: 2026-08-31
 ---
 ## Overview
 
