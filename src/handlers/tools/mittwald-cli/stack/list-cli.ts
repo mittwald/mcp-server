@@ -1,3 +1,4 @@
+import type { MittwaldAPIV2 } from '@mittwald/api-client';
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { listStacks, LibraryError } from '@mittwald-mcp/cli-core';
@@ -9,30 +10,13 @@ interface MittwaldStackListCliArgs {
   revealEnvironmentVariables?: boolean;
 }
 
+type ContainerStackResponse = MittwaldAPIV2.Components.Schemas.ContainerStackResponse;
+type ContainerServiceResponse = MittwaldAPIV2.Components.Schemas.ContainerServiceResponse;
+type ContainerServiceState = MittwaldAPIV2.Components.Schemas.ContainerServiceState;
+
 const REDACTED = '[REDACTED]';
 
-type RawServiceState = {
-  envs?: Record<string, string>;
-  [key: string]: unknown;
-};
-
-type RawService = {
-  deployedState?: RawServiceState;
-  pendingState?: RawServiceState;
-  [key: string]: unknown;
-};
-
-type RawStack = {
-  id?: string;
-  description?: string;
-  prefix?: string;
-  services?: RawService[];
-  volumes?: unknown;
-  disabled?: boolean;
-  projectId?: string;
-};
-
-function redactEnvs(envs: Record<string, string> | undefined): Record<string, string> | undefined {
+function redactEnvs(envs: ContainerServiceState['envs']): ContainerServiceState['envs'] {
   if (!envs) {
     return envs;
   }
@@ -40,15 +24,11 @@ function redactEnvs(envs: Record<string, string> | undefined): Record<string, st
   return Object.fromEntries(Object.keys(envs).map((key) => [key, REDACTED]));
 }
 
-function redactServiceState(state: RawServiceState | undefined): RawServiceState | undefined {
-  if (!state) {
-    return state;
-  }
-
+function redactServiceState(state: ContainerServiceState): ContainerServiceState {
   return { ...state, envs: redactEnvs(state.envs) };
 }
 
-function redactServiceEnvironment(service: RawService): RawService {
+function redactServiceEnvironment(service: ContainerServiceResponse): ContainerServiceResponse {
   return {
     ...service,
     deployedState: redactServiceState(service.deployedState),
@@ -56,7 +36,7 @@ function redactServiceEnvironment(service: RawService): RawService {
   };
 }
 
-function formatStacks(stacks: RawStack[], revealEnvironmentVariables: boolean) {
+function formatStacks(stacks: ContainerStackResponse[], revealEnvironmentVariables: boolean) {
   return stacks.map((stack) => ({
     id: stack.id,
     description: stack.description,
@@ -65,7 +45,7 @@ function formatStacks(stacks: RawStack[], revealEnvironmentVariables: boolean) {
       ? (stack.services ?? [])
       : (stack.services ?? []).map(redactServiceEnvironment),
     volumes: stack.volumes ?? [],
-    disabled: stack.disabled ?? false,
+    disabled: stack.disabled,
     projectId: stack.projectId,
   }));
 }
@@ -93,7 +73,7 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
       projectId: args.projectId,
     });
 
-    const stacks = result.data as RawStack[];
+    const stacks = result.data as ContainerStackResponse[];
     const revealEnvironmentVariables = args.revealEnvironmentVariables === true;
 
     if (!stacks || stacks.length === 0) {
