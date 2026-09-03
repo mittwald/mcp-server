@@ -13,7 +13,7 @@ head:
     attrs:
       name: og:description
       content: "List all services within a given stack."
-lastUpdated: 2026-08-11
+lastUpdated: 2026-08-31
 ---
 ## Overview
 

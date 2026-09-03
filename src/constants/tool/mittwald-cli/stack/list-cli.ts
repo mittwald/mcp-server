@@ -11,13 +11,21 @@ const tool: Tool = {
     destructiveHint: false,
     openWorldHint: false,
   },
-  description: 'List stacks for a given project.',
+  description:
+    'List stacks for a given project. Environment variable values on each service are redacted ' +
+    'by default; pass revealEnvironmentVariables=true to include their real values.',
   inputSchema: {
     type: 'object',
     properties: {
       projectId: {
         type: 'string',
         description: 'ID or short ID of a project'
+      },
+      revealEnvironmentVariables: {
+        type: 'boolean',
+        description:
+          'Include real environment variable values (which may contain secrets) instead of redacting them. ' +
+          'Defaults to false.'
       }
     },
     required: ["projectId"]

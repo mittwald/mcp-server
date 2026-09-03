@@ -1,3 +1,4 @@
+import type { MittwaldAPIV2 } from '@mittwald/api-client';
 import type { MittwaldCliToolHandler } from '../../../../types/mittwald/conversation.js';
 import { formatToolResponse } from '../../../../utils/format-tool-response.js';
 import { listStacks, LibraryError } from '@mittwald-mcp/cli-core';
@@ -6,26 +7,45 @@ import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 
 interface MittwaldStackListCliArgs {
   projectId?: string;
+  revealEnvironmentVariables?: boolean;
 }
 
-type RawStack = {
-  id?: string;
-  description?: string;
-  prefix?: string;
-  services?: unknown;
-  volumes?: unknown;
-  disabled?: boolean;
-  projectId?: string;
-};
+type ContainerStackResponse = MittwaldAPIV2.Components.Schemas.ContainerStackResponse;
+type ContainerServiceResponse = MittwaldAPIV2.Components.Schemas.ContainerServiceResponse;
+type ContainerServiceState = MittwaldAPIV2.Components.Schemas.ContainerServiceState;
 
-function formatStacks(stacks: RawStack[]) {
+const REDACTED = '[REDACTED]';
+
+function redactEnvs(envs: ContainerServiceState['envs']): ContainerServiceState['envs'] {
+  if (!envs) {
+    return envs;
+  }
+
+  return Object.fromEntries(Object.keys(envs).map((key) => [key, REDACTED]));
+}
+
+function redactServiceState(state: ContainerServiceState): ContainerServiceState {
+  return { ...state, envs: redactEnvs(state.envs) };
+}
+
+function redactServiceEnvironment(service: ContainerServiceResponse): ContainerServiceResponse {
+  return {
+    ...service,
+    deployedState: redactServiceState(service.deployedState),
+    pendingState: redactServiceState(service.pendingState),
+  };
+}
+
+function formatStacks(stacks: ContainerStackResponse[], revealEnvironmentVariables: boolean) {
   return stacks.map((stack) => ({
     id: stack.id,
     description: stack.description,
     prefix: stack.prefix,
-    services: stack.services ?? [],
+    services: revealEnvironmentVariables
+      ? (stack.services ?? [])
+      : (stack.services ?? []).map(redactServiceEnvironment),
     volumes: stack.volumes ?? [],
-    disabled: stack.disabled ?? false,
+    disabled: stack.disabled,
     projectId: stack.projectId,
   }));
 }
@@ -53,7 +73,8 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
       projectId: args.projectId,
     });
 
-    const stacks = result.data as any[];
+    const stacks = result.data as ContainerStackResponse[];
+    const revealEnvironmentVariables = args.revealEnvironmentVariables === true;
 
     if (!stacks || stacks.length === 0) {
       return formatToolResponse(
@@ -63,10 +84,14 @@ export const handleStackListCli: MittwaldCliToolHandler<MittwaldStackListCliArgs
       );
     }
 
+    const redactionNotice = revealEnvironmentVariables
+      ? ''
+      : ' (environment variable values redacted; pass revealEnvironmentVariables=true to include them)';
+
     return formatToolResponse(
       'success',
-      `Found ${stacks.length} container stack${stacks.length === 1 ? '' : 's'}`,
-      formatStacks(stacks)
+      `Found ${stacks.length} container stack${stacks.length === 1 ? '' : 's'}${redactionNotice}`,
+      formatStacks(stacks, revealEnvironmentVariables)
     );
   } catch (error) {
     if (error instanceof LibraryError) {
