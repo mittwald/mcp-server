@@ -82,8 +82,12 @@ resource "mittwald_container_stack" "mcp_stack" {
 
         CORS_ORIGIN = "https://claude.ai,https://chatgpt.com"
 
-        MCP_PUBLIC_BASE            = "https://${local.base_domain}"
+        MCP_PUBLIC_BASE = "https://${local.base_domain}"
+
+        # MITTWALD_TOKEN_URL is what the server needs to refresh a session's Mittwald access token.
+        # Without it every refresh fails and the session is dropped mid-conversation.
         MITTWALD_AUTHORIZATION_URL = "https://studio.mittwald.de/api/v2/oauth2/authorize"
+        MITTWALD_TOKEN_URL         = "https://studio.mittwald.de/api/v2/oauth2/token"
         MITTWALD_CLIENT_ID         = "mittwald-mcp-server"
         MITTWALD_CLIENT_SECRET     = "mock-client-secret"
 

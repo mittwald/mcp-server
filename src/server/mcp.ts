@@ -733,10 +733,13 @@ export class MCPHandler implements IMCPHandler {
         ? scope.split(/\s+/).filter(Boolean)
         : existing?.scopes;
 
-      const ttlSeconds = Math.max(
-        60,
-        Math.floor(Math.max(expiresAt.getTime() - Date.now(), 0) / 1000)
-      );
+      // The record must outlive the access token, otherwise it disappears from Redis just as the
+      // access token comes up for renewal and the client is told its session expired.
+      const ttlSeconds = sessionManager.resolveSessionTtl({
+        expiresAt,
+        mittwaldRefreshTokenExpiresAt: refreshTokenExpiresAt,
+        authenticationMode: sessionAuth.authenticationMode ?? existing?.authenticationMode,
+      });
 
       await sessionManager.upsertSession(sessionId, sessionAuth.username, {
         mittwaldAccessToken: sessionAuth.accessToken,

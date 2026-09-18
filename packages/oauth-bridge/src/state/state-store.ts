@@ -51,6 +51,9 @@ export interface MittwaldTokenResponse {
   token_type: string;
   expires_in: number;
   refresh_token?: string;
+  /** Mittwald has used both spellings; treat either as the refresh token's lifetime. */
+  refresh_token_expires_in?: number;
+  refresh_expires_in?: number;
   scope?: string;
 }
 

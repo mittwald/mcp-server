@@ -256,7 +256,7 @@ async function handleAuthorizationCodeGrant(
   ctx.body = {
     access_token: bridgeTokens.accessToken,
     token_type: 'Bearer',
-    expires_in: config.bridge.accessTokenTtlSeconds,
+    expires_in: bridgeTokens.expiresIn,
     scope: grant.scope,
     refresh_token: bridgeTokens.refreshToken
   };
@@ -403,7 +403,7 @@ async function handleRefreshTokenGrant(
   ctx.body = {
     access_token: bridgeTokens.accessToken,
     token_type: 'Bearer',
-    expires_in: config.bridge.accessTokenTtlSeconds,
+    expires_in: bridgeTokens.expiresIn,
     scope: grant.scope,
     refresh_token: bridgeTokens.refreshToken
   };
