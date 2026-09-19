@@ -145,22 +145,6 @@ resource "mittwald_container_stack" "mcp_stack" {
         BRIDGE_STATE_STORE = "redis"
         BRIDGE_REDIS_URL   = "redis://${mittwald_redis_database.mcp_redis.hostname}:6379"
 
-        # Mittwald cannot renew a session (its token endpoint has no refresh_token grant), so this
-        # value is a hard ceiling on how long a user stays connected before a browser sign-in.
-        # Left unset it defaults to 3600, which is why sessions died hourly.
-        #
-        # The hour was ours, not Mittwald's: Mittwald issues access tokens with a 1 week lifetime
-        # (signup-service config/default.yaml, not overridden in values.prod.yaml), so the token
-        # inside the JWT stays valid long after we expire the JWT wrapping it. issueBridgeTokens
-        # clamps to that lifetime, so this can never hand out a token that outlives the one it
-        # wraps, whatever is configured here.
-        #
-        # 86400 (24h) exceeds SessionManager.DEFAULT_TTL (8h) in the MCP server, which is why
-        # persistSessionAuth sizes the Redis session record by the bearer token's own remaining
-        # life. Without that the record would expire first and the client would be told "Session
-        # expired" while holding a token it believes is valid.
-        BRIDGE_ACCESS_TOKEN_TTL_SECONDS = "86400"
-
         MITTWALD_AUTHORIZATION_URL = "https://studio.mittwald.de/api/v2/oauth2/authorize"
         MITTWALD_TOKEN_URL         = "https://studio.mittwald.de/api/v2/oauth2/token"
 
