@@ -164,6 +164,26 @@ describe('SessionManager', () => {
     expect(ttl).toBeGreaterThan(23 * 60 * 60);
   });
 
+  it('keeps the session record alive at least as long as the bearer token addressing it', () => {
+    const manager = new SessionManager();
+
+    // The bridge can issue a token that outlives the default session TTL. If the record expires
+    // first, the client is told "Session expired" while holding a token it believes is valid —
+    // and with no working refresh, that means a browser sign-in.
+    const twentyFourHours = 24 * 60 * 60;
+
+    const ttl = manager.resolveSessionTtl(
+      {
+        expiresAt: new Date(Date.now() + twentyFourHours * 1000),
+        mittwaldRefreshTokenExpiresAt: undefined,
+        authenticationMode: 'bridge',
+      },
+      twentyFourHours
+    );
+
+    expect(ttl).toBeGreaterThanOrEqual(twentyFourHours);
+  });
+
   it('caps the session record at the token expiry for direct API tokens', () => {
     const manager = new SessionManager();
 

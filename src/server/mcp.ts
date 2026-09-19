@@ -734,12 +734,17 @@ export class MCPHandler implements IMCPHandler {
         : existing?.scopes;
 
       // The record must outlive the access token, otherwise it disappears from Redis just as the
-      // access token comes up for renewal and the client is told its session expired.
+      // access token comes up for renewal and the client is told its session expired. It must also
+      // outlive the bearer token the client is holding, whose lifetime the bridge controls.
+      const bearerTokenTtlSeconds = expiresAtSeconds
+        ? Math.max(0, expiresAtSeconds - Math.floor(Date.now() / 1000))
+        : undefined;
+
       const ttlSeconds = sessionManager.resolveSessionTtl({
         expiresAt,
         mittwaldRefreshTokenExpiresAt: refreshTokenExpiresAt,
         authenticationMode: sessionAuth.authenticationMode ?? existing?.authenticationMode,
-      });
+      }, bearerTokenTtlSeconds);
 
       await sessionManager.upsertSession(sessionId, sessionAuth.username, {
         mittwaldAccessToken: sessionAuth.accessToken,

@@ -214,13 +214,20 @@ export class SessionManager {
    * hour) made the record vanish from Redis at the exact moment a refresh was due, so the client
    * got "Session expired" instead of a renewed session.
    */
-  resolveSessionTtl(session: Pick<UserSession, 'mittwaldRefreshTokenExpiresAt' | 'expiresAt' | 'authenticationMode'>): number {
+  resolveSessionTtl(
+    session: Pick<UserSession, 'mittwaldRefreshTokenExpiresAt' | 'expiresAt' | 'authenticationMode'>,
+    minimumSeconds?: number
+  ): number {
     // A direct API token is never refreshed, so its own expiry is the real ceiling.
     if (session.authenticationMode === 'direct-token') {
       return this.calculateTtl(session.expiresAt) ?? this.DEFAULT_TTL;
     }
 
-    return this.calculateTtl(session.mittwaldRefreshTokenExpiresAt) ?? this.DEFAULT_TTL;
+    const base = this.calculateTtl(session.mittwaldRefreshTokenExpiresAt) ?? this.DEFAULT_TTL;
+
+    // The record has to outlive the bearer token that addresses it. If it expires first the client
+    // is holding a token it believes is valid and gets "Session expired", with no way to renew.
+    return Math.max(base, minimumSeconds ?? 0);
   }
 
   private async refreshSessionTokens(sessionId: string, session: UserSession): Promise<SessionRefreshResult> {

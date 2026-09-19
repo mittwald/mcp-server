@@ -61,4 +61,26 @@ describe('deploy/main.tf', () => {
     expect(urls).toHaveLength(2);
     expect(new Set(urls).size).toBe(1);
   });
+
+  describe('bridge access token lifetime', () => {
+    // Sessions cannot be renewed upstream, so this value is how long a user stays connected.
+    // Unset, the bridge falls back to 3600 and users are signed out every hour.
+    const configured = /^\s*BRIDGE_ACCESS_TOKEN_TTL_SECONDS\s*=\s*"(\d+)"/m.exec(
+      environmentBlockFor('oauth-server')
+    );
+
+    it('is set explicitly rather than left to the 3600 default', () => {
+      expect(configured).not.toBeNull();
+      expect(Number(configured?.[1])).toBeGreaterThan(3600);
+    });
+
+    it('does not exceed the Mittwald token lifetime it wraps', () => {
+      // signup-service config/default.yaml: tokenLifetimeInSeconds 604800, not overridden in
+      // values.prod.yaml. issueBridgeTokens clamps to it, so a larger value here would silently
+      // do nothing rather than what the operator intended.
+      const mittwaldAccessTokenLifetime = 7 * 24 * 60 * 60;
+
+      expect(Number(configured?.[1])).toBeLessThanOrEqual(mittwaldAccessTokenLifetime);
+    });
+  });
 });
