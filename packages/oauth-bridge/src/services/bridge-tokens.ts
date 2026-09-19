@@ -7,6 +7,13 @@ interface IssueBridgeTokensArgs {
   config: BridgeConfig;
   grant: AuthorizationGrantRecord;
   mittwaldTokens: MittwaldTokenResponse;
+  /**
+   * Absolute expiry (epoch seconds) of the Mittwald access token, when known.
+   *
+   * Preferred over `mittwaldTokens.expires_in`, which is relative to Mittwald's issuance and so
+   * overstates the remaining life of a token that has been reused from storage.
+   */
+  mittwaldAccessTokenExpiresAt?: number;
 }
 
 export interface BridgeTokenResponse {
@@ -32,13 +39,20 @@ function readPositiveNumber(value: unknown): number | undefined {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
 }
 
-export async function issueBridgeTokens({ config, grant, mittwaldTokens }: IssueBridgeTokensArgs): Promise<BridgeTokenResponse> {
+export async function issueBridgeTokens({
+  config,
+  grant,
+  mittwaldTokens,
+  mittwaldAccessTokenExpiresAt
+}: IssueBridgeTokensArgs): Promise<BridgeTokenResponse> {
   const issuedAt = Math.floor(Date.now() / 1000);
 
   // The access token carries a snapshot of the Mittwald tokens, so it is only as good as they are.
   // Advertising the configured hour while Mittwald granted less left clients holding a token that
   // looked valid but no longer worked — they had no reason to refresh, and every call failed.
-  const mittwaldExpiresIn = readPositiveNumber(mittwaldTokens.expires_in);
+  const mittwaldExpiresIn = mittwaldAccessTokenExpiresAt
+    ? readPositiveNumber(mittwaldAccessTokenExpiresAt - issuedAt)
+    : readPositiveNumber(mittwaldTokens.expires_in);
   const accessTokenTtl = Math.max(
     MIN_ACCESS_TOKEN_TTL_SECONDS,
     mittwaldExpiresIn

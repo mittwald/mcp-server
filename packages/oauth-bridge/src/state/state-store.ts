@@ -39,6 +39,14 @@ export interface AuthorizationGrantRecord {
   resource?: string;
   mittwaldAuthorizationCode: string;
   mittwaldTokens?: MittwaldTokenResponse;
+  /**
+   * Absolute expiry (epoch seconds) of the Mittwald access token in `mittwaldTokens`.
+   *
+   * `expires_in` on the token response is relative to when Mittwald issued it, which is useless
+   * once the record has been sitting in storage. This records when it actually lapses, so a
+   * later refresh can tell whether the stored token is still usable.
+   */
+  mittwaldAccessTokenExpiresAt?: number;
   createdAt: number;
   expiresAt: number;
   used: boolean;
