@@ -3,10 +3,19 @@ import { resetRedisMock } from '../../helpers/redis-mock.ts';
 
 vi.mock('../../../src/server/mittwald-token-service.js', () => ({
   refreshMittwaldAccessToken: vi.fn(),
-  MittwaldTokenServiceError: class extends Error {},
+  MittwaldTokenServiceError: class extends Error {
+    reason: string;
+    constructor(message: string, reason = 'transport') {
+      super(message);
+      this.reason = reason;
+    }
+  },
 }));
 
-import { refreshMittwaldAccessToken } from '../../../src/server/mittwald-token-service.js';
+import {
+  refreshMittwaldAccessToken,
+  MittwaldTokenServiceError,
+} from '../../../src/server/mittwald-token-service.js';
 import { SessionManager } from '../../../src/server/session-manager.js';
 
 const mockRefreshMittwaldAccessToken = vi.mocked(refreshMittwaldAccessToken);
@@ -99,6 +108,73 @@ describe('SessionManager', () => {
     expect(session?.mittwaldRefreshToken).toBe('rotated-refresh-token');
     expect(session?.scope).toBe('profile extended');
     expect(session?.mittwaldAccessTokenExpiresAt?.getTime()).toBeGreaterThan(now.getTime());
+  });
+
+  it('keeps the session when a refresh fails for a reason the user cannot fix', async () => {
+    // A misconfigured server or an unreachable Mittwald must not cost the user their session:
+    // that turns a transient blip into a forced re-authentication mid-conversation.
+    for (const reason of ['configuration', 'transport'] as const) {
+      const manager = new SessionManager();
+
+      mockRefreshMittwaldAccessToken.mockRejectedValue(
+        new MittwaldTokenServiceError('refresh unavailable', reason)
+      );
+
+      const sessionId = await manager.createSession('user-1', {
+        ...baseSessionData(),
+        expiresAt: new Date(Date.now() - 1_000),
+        mittwaldAccessTokenExpiresAt: new Date(Date.now() - 1_000),
+      });
+
+      const session = await manager.getSession(sessionId);
+
+      expect(session, `expected session to survive a '${reason}' failure`).not.toBeNull();
+      expect(session?.mittwaldAccessToken).toBe('access-token');
+    }
+  });
+
+  it('discards the session when Mittwald rejects the refresh token', async () => {
+    const manager = new SessionManager();
+
+    mockRefreshMittwaldAccessToken.mockRejectedValue(
+      new MittwaldTokenServiceError('Mittwald token refresh failed', 'revoked')
+    );
+
+    const sessionId = await manager.createSession('user-1', {
+      ...baseSessionData(),
+      expiresAt: new Date(Date.now() - 1_000),
+      mittwaldAccessTokenExpiresAt: new Date(Date.now() - 1_000),
+    });
+
+    expect(await manager.getSession(sessionId)).toBeNull();
+  });
+
+  it('keeps the session record alive for as long as it can still be refreshed', () => {
+    const manager = new SessionManager();
+    const now = Date.now();
+
+    // The access token expires in a minute, the refresh token not for another day. Tying the Redis
+    // TTL to the access token deleted the record exactly when a refresh became due.
+    const ttl = manager.resolveSessionTtl({
+      expiresAt: new Date(now + 60_000),
+      mittwaldRefreshTokenExpiresAt: new Date(now + 24 * 60 * 60 * 1000),
+      authenticationMode: 'bridge',
+    });
+
+    expect(ttl).toBeGreaterThan(23 * 60 * 60);
+  });
+
+  it('caps the session record at the token expiry for direct API tokens', () => {
+    const manager = new SessionManager();
+
+    // Direct tokens are never refreshed, so their own expiry is the real ceiling.
+    const ttl = manager.resolveSessionTtl({
+      expiresAt: new Date(Date.now() + 600_000),
+      mittwaldRefreshTokenExpiresAt: undefined,
+      authenticationMode: 'direct-token',
+    });
+
+    expect(ttl).toBeLessThanOrEqual(600);
   });
 
   it('cleans up sessions with expired metadata', async () => {

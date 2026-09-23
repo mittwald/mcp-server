@@ -1,14 +1,56 @@
 import Router from '@koa/router';
 import { createHash } from 'node:crypto';
 import type { BridgeConfig } from '../config.js';
-import type { ClientRegistrationRecord, StateStore, AuthorizationGrantRecord } from '../state/state-store.js';
+import type {
+  ClientRegistrationRecord,
+  StateStore,
+  AuthorizationGrantRecord,
+  MittwaldTokenResponse
+} from '../state/state-store.js';
 import { exchangeMittwaldAuthorizationCode, refreshMittwaldTokens } from '../services/mittwald.js';
 import { issueBridgeTokens } from '../services/bridge-tokens.js';
-import { tokenRequests, mittwaldTokenRefresh, mittwaldTokenRefreshDuration, forcedReauth } from '../metrics/index.js';
+import { tokenRequests, mittwaldTokenRefresh, mittwaldTokenRefreshDuration, forcedReauth, mittwaldTokenReuse } from '../metrics/index.js';
 
 interface TokenRouterDeps {
   config: BridgeConfig;
   stateStore: StateStore;
+}
+
+/**
+ * How much life a stored Mittwald access token needs left before we will re-wrap it rather than
+ * ask Mittwald for a new one. Enough that the bridge token we hand back is worth having.
+ */
+const MITTWALD_TOKEN_REUSE_MARGIN_SECONDS = 120;
+
+/** Absolute expiry (epoch seconds) of a freshly received Mittwald access token. */
+function expiryFromTokenResponse(tokens: MittwaldTokenResponse): number | undefined {
+  const expiresIn = typeof tokens.expires_in === 'number' ? tokens.expires_in : Number(tokens.expires_in);
+  if (!Number.isFinite(expiresIn) || expiresIn <= 0) {
+    return undefined;
+  }
+
+  return Math.floor(Date.now() / 1000) + expiresIn;
+}
+
+/**
+ * When the grant's stored Mittwald access token lapses, in epoch seconds.
+ *
+ * Grants written before `mittwaldAccessTokenExpiresAt` existed do not carry it, so fall back to
+ * the grant's creation time plus the token's original lifetime. `createdAt` is in milliseconds and
+ * predates the token exchange slightly, which makes the fallback a mild underestimate — erring
+ * towards an upstream refresh rather than towards reusing a token that has already lapsed.
+ */
+function resolveMittwaldAccessTokenExpiry(grant: AuthorizationGrantRecord): number | undefined {
+  if (typeof grant.mittwaldAccessTokenExpiresAt === 'number') {
+    return grant.mittwaldAccessTokenExpiresAt;
+  }
+
+  const expiresIn = grant.mittwaldTokens?.expires_in;
+  if (!grant.createdAt || typeof expiresIn !== 'number' || expiresIn <= 0) {
+    return undefined;
+  }
+
+  return Math.floor(grant.createdAt / 1000) + expiresIn;
 }
 
 export function createTokenRouter({ config, stateStore }: TokenRouterDeps) {
@@ -235,6 +277,7 @@ async function handleAuthorizationCodeGrant(
   const updatedGrant = {
     ...grant,
     mittwaldTokens,
+    mittwaldAccessTokenExpiresAt: expiryFromTokenResponse(mittwaldTokens),
     used: true,
     refreshToken: bridgeTokens.refreshToken,
     refreshTokenExpiresAt: bridgeTokens.refreshTokenExpiresAt
@@ -256,7 +299,7 @@ async function handleAuthorizationCodeGrant(
   ctx.body = {
     access_token: bridgeTokens.accessToken,
     token_type: 'Bearer',
-    expires_in: config.bridge.accessTokenTtlSeconds,
+    expires_in: bridgeTokens.expiresIn,
     scope: grant.scope,
     refresh_token: bridgeTokens.refreshToken
   };
@@ -306,11 +349,28 @@ async function handleRefreshTokenGrant(
     return;
   }
 
-  // Get fresh Mittwald tokens - FAIL HARD if refresh fails
   let mittwaldTokens;
+  let mittwaldAccessTokenExpiresAt = resolveMittwaldAccessTokenExpiry(grant);
 
-  // Try to use Mittwald's refresh token if available
-  if (grant.mittwaldTokens?.refresh_token) {
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const mittwaldTokenStillUsable =
+    mittwaldAccessTokenExpiresAt !== undefined &&
+    mittwaldAccessTokenExpiresAt - nowSeconds > MITTWALD_TOKEN_REUSE_MARGIN_SECONDS;
+
+  if (grant.mittwaldTokens && mittwaldTokenStillUsable) {
+    // Renewing our own token does not require renewing Mittwald's. Their access token is long
+    // lived and still valid here, so re-wrap it in a fresh bridge token and skip the upstream
+    // call entirely. Going upstream on every refresh meant a client whose Mittwald token had days
+    // left was still forced back through a browser sign-in whenever ours expired.
+    mittwaldTokens = grant.mittwaldTokens;
+
+    ctx.logger.debug({
+      clientId,
+      mittwaldTokenExpiresInSeconds: mittwaldAccessTokenExpiresAt! - nowSeconds
+    }, 'Reusing the stored Mittwald access token; no upstream refresh needed');
+
+    mittwaldTokenReuse.inc();
+  } else if (grant.mittwaldTokens?.refresh_token) {
     const timer = mittwaldTokenRefreshDuration.startTimer();
     try {
       mittwaldTokens = await refreshMittwaldTokens({
@@ -318,6 +378,7 @@ async function handleRefreshTokenGrant(
         refreshToken: grant.mittwaldTokens.refresh_token,
         logger: ctx.logger
       });
+      mittwaldAccessTokenExpiresAt = expiryFromTokenResponse(mittwaldTokens);
       ctx.logger.debug({ clientId }, 'Refreshed Mittwald tokens successfully');
       mittwaldTokenRefresh.inc({ status: 'success', error_type: 'none' });
     } catch (err) {
@@ -370,7 +431,7 @@ async function handleRefreshTokenGrant(
   // Issue new bridge tokens
   let bridgeTokens;
   try {
-    bridgeTokens = await issueBridgeTokens({ config, grant, mittwaldTokens });
+    bridgeTokens = await issueBridgeTokens({ config, grant, mittwaldTokens, mittwaldAccessTokenExpiresAt });
   } catch (err) {
     ctx.logger.error({ error: err instanceof Error ? err.message : String(err), clientId }, 'Failed to issue bridge tokens');
     tokenRequests.inc({ grant_type: 'refresh_token', status: 'error' });
@@ -383,6 +444,7 @@ async function handleRefreshTokenGrant(
   const updatedGrant = {
     ...grant,
     mittwaldTokens,
+    mittwaldAccessTokenExpiresAt,
     refreshToken: bridgeTokens.refreshToken,
     refreshTokenExpiresAt: bridgeTokens.refreshTokenExpiresAt
   };
@@ -403,7 +465,7 @@ async function handleRefreshTokenGrant(
   ctx.body = {
     access_token: bridgeTokens.accessToken,
     token_type: 'Bearer',
-    expires_in: config.bridge.accessTokenTtlSeconds,
+    expires_in: bridgeTokens.expiresIn,
     scope: grant.scope,
     refresh_token: bridgeTokens.refreshToken
   };

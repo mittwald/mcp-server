@@ -35,6 +35,17 @@ export interface SessionCreateOptions {
   ttlSeconds?: number;
 }
 
+/**
+ * Outcome of trying to refresh a session's Mittwald tokens.
+ *
+ * `deferred` is the important one: the refresh did not succeed, but the session is still valid and
+ * must survive, so a transient failure cannot force the user to authenticate again.
+ */
+type SessionRefreshResult =
+  | { status: 'refreshed'; session: UserSession }
+  | { status: 'revoked' }
+  | { status: 'deferred' };
+
 export class SessionManager {
   private readonly SESSION_PREFIX = 'session:';
   private readonly USER_SESSIONS_PREFIX = 'user_sessions:';
@@ -110,8 +121,8 @@ export class SessionManager {
       updatedSession.lastAccessed = new Date();
 
       const ttl = await redisClient.ttl(sessionKey);
-      const ttlSeconds = ttl > 0 ? ttl : this.calculateTtl(updatedSession.expiresAt);
-      await redisClient.set(sessionKey, JSON.stringify(updatedSession), ttlSeconds ?? undefined);
+      const ttlSeconds = ttl > 0 ? ttl : this.resolveSessionTtl(updatedSession);
+      await redisClient.set(sessionKey, JSON.stringify(updatedSession), ttlSeconds);
 
       return updatedSession;
 
@@ -156,16 +167,30 @@ export class SessionManager {
       return session;
     }
 
-    if (timeUntilExpiry <= -TOKEN_REFRESH_SKEW_MS) {
-      return await this.refreshSessionTokens(sessionId, session);
+    if (timeUntilExpiry > TOKEN_REFRESH_SKEW_MS) {
+      return session;
     }
 
-    if (timeUntilExpiry <= TOKEN_REFRESH_SKEW_MS) {
-      const refreshed = await this.refreshSessionTokens(sessionId, session);
-      return refreshed ?? session;
-    }
+    const result = await this.refreshSessionTokens(sessionId, session);
 
-    return session;
+    switch (result.status) {
+      case 'refreshed':
+        return result.session;
+
+      case 'revoked':
+        // The refresh token is gone or rejected. Re-authentication is genuinely required.
+        logger.info(`Session ${sessionId} can no longer be refreshed; discarding it`);
+        await this.destroySession(sessionId);
+        return null;
+
+      case 'deferred':
+        // Refresh did not work *this time*, but the grant is still good. Keep the session: the
+        // bearer token on the next request carries a Mittwald token of its own, which the MCP
+        // transport applies to the session and which may already be fresher than what we hold.
+        // Throwing the session away here turns a transient blip into a forced re-login.
+        logger.warn(`Keeping session ${sessionId} despite a failed token refresh`);
+        return session;
+    }
   }
 
   private calculateTtl(expiresAt?: Date): number | undefined {
@@ -181,11 +206,27 @@ export class SessionManager {
     return Math.max(60, seconds);
   }
 
-  private async refreshSessionTokens(sessionId: string, session: UserSession): Promise<UserSession | null> {
+  /**
+   * How long the session record should live in Redis.
+   *
+   * A session stays useful for as long as it can still be refreshed, so this tracks the refresh
+   * token — not the access token. Keying it to the access token expiry (which can be well under an
+   * hour) made the record vanish from Redis at the exact moment a refresh was due, so the client
+   * got "Session expired" instead of a renewed session.
+   */
+  resolveSessionTtl(session: Pick<UserSession, 'mittwaldRefreshTokenExpiresAt' | 'expiresAt' | 'authenticationMode'>): number {
+    // A direct API token is never refreshed, so its own expiry is the real ceiling.
+    if (session.authenticationMode === 'direct-token') {
+      return this.calculateTtl(session.expiresAt) ?? this.DEFAULT_TTL;
+    }
+
+    return this.calculateTtl(session.mittwaldRefreshTokenExpiresAt) ?? this.DEFAULT_TTL;
+  }
+
+  private async refreshSessionTokens(sessionId: string, session: UserSession): Promise<SessionRefreshResult> {
     if (!session.mittwaldRefreshToken) {
-      logger.debug(`Session ${sessionId} missing refresh token; destroying session`);
-      await this.destroySession(sessionId);
-      return null;
+      logger.debug(`Session ${sessionId} has no refresh token; cannot refresh`);
+      return { status: 'revoked' };
     }
 
     try {
@@ -224,7 +265,7 @@ export class SessionManager {
         authenticationMode: session.authenticationMode,
       };
 
-      const ttlSeconds = this.calculateTtl(updatedSession.expiresAt) ?? this.DEFAULT_TTL;
+      const ttlSeconds = this.resolveSessionTtl(updatedSession);
 
       await this.upsertSession(sessionId, session.userId, {
         mittwaldAccessToken: updatedSession.mittwaldAccessToken,
@@ -244,16 +285,17 @@ export class SessionManager {
         authenticationMode: updatedSession.authenticationMode,
       }, { ttlSeconds });
 
-      return updatedSession;
+      return { status: 'refreshed', session: updatedSession };
     } catch (error) {
       if (error instanceof MittwaldTokenServiceError) {
-        logger.warn(`Mittwald token refresh failed for session ${sessionId}: ${error.message}`);
-      } else {
-        logger.error(`Unexpected error refreshing Mittwald token for session ${sessionId}:`, error);
+        logger.warn(
+          `Mittwald token refresh failed for session ${sessionId} (${error.reason}): ${error.message}`
+        );
+        return error.reason === 'revoked' ? { status: 'revoked' } : { status: 'deferred' };
       }
 
-      await this.destroySession(sessionId);
-      return null;
+      logger.error(`Unexpected error refreshing Mittwald token for session ${sessionId}:`, error);
+      return { status: 'deferred' };
     }
   }
 

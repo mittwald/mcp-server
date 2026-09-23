@@ -152,7 +152,36 @@ export function validateSecrets(): void {
     );
   }
 
+  validateTokenRefreshConfig();
+
   logger.debug('Startup security validation completed successfully');
+}
+
+/**
+ * Warns if the server cannot refresh Mittwald access tokens.
+ *
+ * Without these, sessions authenticated through the OAuth bridge work right up until their access
+ * token needs renewing and then fail, which reads to users as the connection dropping at random.
+ * This warns rather than blocks: a deployment serving only direct API tokens never refreshes
+ * anything and is legitimately configured without them.
+ */
+function validateTokenRefreshConfig(): void {
+  const usesOAuthBridge = Boolean(process.env.OAUTH_BRIDGE_JWT_SECRET);
+  if (!usesOAuthBridge) {
+    return;
+  }
+
+  const missing = (['MITTWALD_TOKEN_URL', 'MITTWALD_CLIENT_ID'] as const).filter(
+    (envVar) => !process.env[envVar]
+  );
+
+  if (missing.length > 0) {
+    logger.warn(
+      { missing },
+      `[CONFIG] ${missing.join(' and ')} not set - Mittwald access tokens cannot be refreshed, ` +
+        'so bridge-authenticated sessions will fail once their access token expires'
+    );
+  }
 }
 
 /**

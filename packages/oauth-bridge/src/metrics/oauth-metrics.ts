@@ -79,3 +79,12 @@ export const forcedReauth = new Counter({
   labelNames: ['reason'],
   registers: registries
 });
+
+// Counter for refreshes served from the stored Mittwald token without an upstream call.
+// Deliberately separate from oauth_mittwald_token_refresh_total so that metric keeps meaning
+// "requests we actually sent to Mittwald".
+export const mittwaldTokenReuse = new Counter({
+  name: 'oauth_mittwald_token_reuse_total',
+  help: 'Bridge token renewals served from a still-valid stored Mittwald access token',
+  registers: registries
+});
