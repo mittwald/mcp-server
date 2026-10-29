@@ -2,11 +2,11 @@
   "$schema": "./config/mw-cli-coverage.schema.json",
   "stats": {
     "cliCommandCount": 177,
-    "toolCount": 160,
+    "toolCount": 164,
     "coveredCount": 157,
     "missingCount": 0,
     "coveragePercent": 100,
-    "extraToolCount": 3,
+    "extraToolCount": 7,
     "excludedCount": 20
   },
   "coverage": [
@@ -2844,6 +2844,26 @@
       "toolName": "mittwald_cronjob_execution_abort",
       "relPath": "cronjob/execution-abort-cli.ts",
       "handlerImport": "../../../../handlers/tools/mittwald-cli/cronjob/execution-abort-cli.js"
+    },
+    {
+      "toolName": "mittwald_domain_check",
+      "relPath": "domain/check-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/check-cli.js"
+    },
+    {
+      "toolName": "mittwald_domain_order",
+      "relPath": "domain/order-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/order-cli.js"
+    },
+    {
+      "toolName": "mittwald_domain_order_preview",
+      "relPath": "domain/order-preview-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/order-preview-cli.js"
+    },
+    {
+      "toolName": "mittwald_domain_resend_verification",
+      "relPath": "domain/resend-verification-cli.ts",
+      "handlerImport": "../../../../handlers/tools/mittwald-cli/domain/resend-verification-cli.js"
     }
   ]
 }

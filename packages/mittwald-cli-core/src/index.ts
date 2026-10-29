@@ -26,6 +26,7 @@ export * from './resources/organization.js';
 export * from './resources/mail.js';
 export * from './resources/cronjob.js';
 export * from './resources/domain.js';
+export * from './resources/domain-order.js';
 export * from './resources/container.js';
 export * from './resources/stack.js';
 export * from './resources/volume.js';

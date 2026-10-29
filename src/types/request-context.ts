@@ -11,7 +11,8 @@
  */
 
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
-import { Implementation } from "@modelcontextprotocol/sdk/types.js";
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { Implementation, RequestId } from "@modelcontextprotocol/sdk/types.js";
 
 /**
  * Context passed from MCP server to tool handler functions.
@@ -50,6 +51,17 @@ export interface MCPToolContext {
    * Abort signal used to cancel tool execution when the client disconnects.
    */
   abortSignal?: AbortSignal;
+
+  /**
+   * Server instance of the session, for server-to-client requests (e.g. elicitation).
+   */
+  server?: Server;
+
+  /**
+   * ID of the tools/call request. Server-to-client requests (e.g. elicitation)
+   * must reference it to be sent on the response stream of this call.
+   */
+  requestId?: RequestId;
 
   clientInfo?: Implementation;
 }

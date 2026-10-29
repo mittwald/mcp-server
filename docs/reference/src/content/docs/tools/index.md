@@ -4,12 +4,12 @@ description: Complete API reference for Mittwald MCP tools
 sidebar:
   label: Tools
   order: 1
-lastUpdated: 2026-07-23
+lastUpdated: 2026-10-29
 ---
 
 # Mittwald MCP Tools Reference
 
-Complete reference documentation for all 116 Mittwald MCP tools, organized by domain.
+Complete reference documentation for all 120 Mittwald MCP tools, organized by domain.
 
 ## Quick Navigation
 
@@ -19,7 +19,7 @@ Complete reference documentation for all 116 Mittwald MCP tools, organized by do
 - [**Container**](./container/) - 6 tools
 - [**Cronjob**](./cronjob/) - 9 tools
 - [**Database**](./database/) - 18 tools
-- [**Domain**](./domain/) - 9 tools
+- [**Domain**](./domain/) - 13 tools
 - [**Mail**](./mail/) - 10 tools
 - [**Org**](./org/) - 7 tools
 - [**Project**](./project/) - 10 tools
@@ -33,7 +33,7 @@ Complete reference documentation for all 116 Mittwald MCP tools, organized by do
 
 ## About This Reference
 
-This reference documents all 116 MCP tools available in the Mittwald platform. Each tool includes:
+This reference documents all 120 MCP tools available in the Mittwald platform. Each tool includes:
 
 - **Description**: What the tool does
 - **Parameters**: Required and optional parameters
@@ -67,7 +67,7 @@ Schedule and manage cron jobs
 
 Manage databases and connections
 
-### Domain (9 tools)
+### Domain (13 tools)
 
 Configure domains and DNS records
 
