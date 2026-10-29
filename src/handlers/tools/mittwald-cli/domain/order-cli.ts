@@ -6,7 +6,7 @@ import { getCurrentSessionId } from '../../../../utils/execution-context.js';
 import { logger } from '../../../../utils/logger.js';
 import { takePendingDomainOrder } from '../../../../utils/pending-domain-orders.js';
 import { requestUserConfirmation } from '../../../../utils/user-confirmation.js';
-import { buildDomainOrderOverview, formatDomainOrderOverview, VERIFICATION_EMAIL_NOTICE } from './domain-order-overview.js';
+import { buildDomainOrderOverview, formatDomainOrderOverview, verificationEmailNotice } from './domain-order-overview.js';
 
 interface MittwaldDomainOrderArgs {
   confirmationToken: string;
@@ -58,7 +58,7 @@ export const handleDomainOrderCli: MittwaldCliToolHandler<MittwaldDomainOrderArg
 
     return formatToolResponse(
       'success',
-      `Ordered ${order.domain}. Tell the user: ${VERIFICATION_EMAIL_NOTICE} If the email does not arrive, use ` +
+      `Ordered ${order.domain}. Tell the user: ${verificationEmailNotice(order.tld)} If the email does not arrive, use ` +
         `mittwald_domain_resend_verification once the domain shows up in mittwald_domain_list.`,
       {
         orderId: result.data.orderId,

@@ -12,8 +12,9 @@ const tool: Tool = {
     openWorldHint: true,
   },
   description:
-    'Resend the email that asks the domain owner to verify their email address. It is sent from ' +
-    'noreply@mittwald.de and must be confirmed within 7 days of registering the domain, otherwise the domain is suspended.',
+    'Resend the email that asks the domain owner to verify their email address. For .de domains it is sent ' +
+    'from noreply@mittwald.de and must be confirmed within 7 days; for other domains our registrar sends it ' +
+    'and the deadline is stated in the email. Domains whose owner email is not verified in time are blocked.',
   inputSchema: {
     type: 'object',
     properties: {

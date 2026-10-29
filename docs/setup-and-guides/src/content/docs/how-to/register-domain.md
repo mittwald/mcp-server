@@ -25,7 +25,9 @@ show me the overview with price and contract duration before ordering anything.
 
 - Provide correct owner details. The owner is the legal holder of the domain.
 - Approve the order. Clients that support MCP elicitation additionally show a confirmation dialog before the order is placed; the order is only placed if you confirm it there.
-- Confirm the verification email if one arrives. It is sent from `noreply@mittwald.de` to the owner's email address and must be confirmed within **7 days**, otherwise the domain is suspended.
+- Confirm the verification email if one arrives. Who sends it depends on the domain ending:
+  - **`.de` domains:** the email is sent from `noreply@mittwald.de` to the owner's email address and must be confirmed within **7 days**, otherwise the domain is suspended.
+  - **All other domains:** for owner details entered for the first time, mittwald's registrar sends the email. Make sure the owner's email address is reachable and confirm it within the deadline stated in the email. Otherwise the domain is blocked, and email addresses belonging to the domain stop working as well.
 
 The order the agent places is always exactly the previewed one. To change the owner or the project, the agent has to prepare a new preview, which you have to approve again.
 

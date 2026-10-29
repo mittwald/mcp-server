@@ -1,8 +1,22 @@
 import type { PendingDomainOrder } from '../../../../utils/pending-domain-orders.js';
 
-export const VERIFICATION_EMAIL_NOTICE =
-  "Registering a domain may require verifying the owner's email address. The verification email is sent " +
-  'from noreply@mittwald.de and must be confirmed within 7 days, otherwise the domain will be suspended.';
+/**
+ * .de verification emails come from mittwald with a fixed deadline; for all
+ * other TLDs the registrar sends them and sets the deadline.
+ */
+export function verificationEmailNotice(tld: string): string {
+  if (tld === 'de') {
+    return (
+      "Registering a domain may require verifying the owner's email address. The verification email is sent " +
+      'from noreply@mittwald.de and must be confirmed within 7 days, otherwise the domain will be suspended.'
+    );
+  }
+  return (
+    'For owner details entered for the first time, our registrar sends a verification email. Make sure the ' +
+    "owner's email address is reachable and confirm it within the deadline stated in the email. Otherwise the " +
+    'domain will be blocked, and email addresses belonging to the domain will no longer be reachable either.'
+  );
+}
 
 function formatEuroCents(cents: number): string {
   return `${(cents / 100).toFixed(2)} EUR`;
@@ -28,7 +42,7 @@ export function buildDomainOrderOverview(order: Omit<PendingDomainOrder, 'userId
       total: formatEuroCents(price.totalPrice),
     },
     contractDurationInMonths: price.contractDurationInMonths,
-    verificationEmail: VERIFICATION_EMAIL_NOTICE,
+    verificationEmail: verificationEmailNotice(order.tld),
   };
 }
 

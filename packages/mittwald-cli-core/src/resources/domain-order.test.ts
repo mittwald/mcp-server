@@ -107,7 +107,7 @@ describe('domain orders', () => {
     it('maps a person for a TLD with owner types', async () => {
       const { data } = await build('example.de', person);
 
-      expect(Object.fromEntries(data.map((f) => [f.name, f.value]))).toEqual({
+      expect(Object.fromEntries(data.fields.map((f) => [f.name, f.value]))).toEqual({
         type: 'PERSON',
         name: 'Max Mustermann',
         email: 'max@example.com',
@@ -121,7 +121,7 @@ describe('domain orders', () => {
 
     it('puts the company into name for organizations on TLDs with owner types', async () => {
       const { data } = await build('example.de', { ...person, type: 'organization', company: 'Mustermann GmbH' });
-      const fields = Object.fromEntries(data.map((f) => [f.name, f.value]));
+      const fields = Object.fromEntries(data.fields.map((f) => [f.name, f.value]));
 
       expect(fields).toMatchObject({ type: 'ORG', name: 'Mustermann GmbH' });
       expect(fields).not.toHaveProperty('organization');
@@ -129,16 +129,17 @@ describe('domain orders', () => {
 
     it('keeps the contact person in name and the company in organization on other TLDs', async () => {
       const { data } = await build('example.com', { ...person, type: 'organization', company: 'Mustermann GmbH' });
-      const fields = Object.fromEntries(data.map((f) => [f.name, f.value]));
+      const fields = Object.fromEntries(data.fields.map((f) => [f.name, f.value]));
 
       expect(fields).toMatchObject({ name: 'Max Mustermann', organization: 'Mustermann GmbH' });
       expect(fields).not.toHaveProperty('type');
     });
 
     it('uses the contact schema of the longest matching TLD', async () => {
-      await build('example.co.uk', person);
+      const { data } = await build('example.co.uk', person);
 
       expect(mockListTldContactSchemas).toHaveBeenCalledWith({ tld: 'co.uk' });
+      expect(data.tld).toBe('co.uk');
     });
 
     it('rejects organizations without company', async () => {

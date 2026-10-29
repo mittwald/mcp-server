@@ -37,6 +37,7 @@ const mockOrderDomain = orderDomain as unknown as vi.Mock;
 const pendingOrder = {
   userId: 'user-1',
   domain: 'example.de',
+  tld: 'de',
   projectId: 'p-1',
   owner: {
     type: 'person',
@@ -91,6 +92,20 @@ describe('handleDomainOrderCli', () => {
 
     expect(mockOrderDomain).toHaveBeenCalled();
     expect(parse(result).data.confirmedVia).toBe('agent');
+  });
+
+  it('passes on the registrar verification notice for TLDs other than .de', async () => {
+    mockTakePendingDomainOrder.mockResolvedValue({ ...pendingOrder, domain: 'example.com', tld: 'com' });
+    mockRequestUserConfirmation.mockResolvedValue({ outcome: 'confirmed' });
+
+    const result = await handleDomainOrderCli({ confirmationToken: 'token' }, 'session-1');
+
+    expect(mockRequestUserConfirmation).toHaveBeenCalledWith(
+      expect.stringContaining('our registrar sends a verification email'),
+      expect.any(String)
+    );
+    expect(parse(result).message).toContain('our registrar sends a verification email');
+    expect(parse(result).message).not.toContain('noreply@mittwald.de');
   });
 
   it('does not order if the user rejects', async () => {

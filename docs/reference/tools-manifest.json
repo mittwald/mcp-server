@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-10-29T15:03:03.679Z",
+  "generatedAt": "2026-10-29T15:07:03.507Z",
   "totalTools": 120,
   "tools": {
     "app": [
@@ -2889,7 +2889,7 @@
       {
         "name": "mittwald_domain_resend_verification",
         "title": "Resend Domain Verification Email",
-        "description": "Resend the email that asks the domain owner to verify their email address. It is sent from noreply@mittwald.de and must be confirmed within 7 days of registering the domain, otherwise the domain is suspended.",
+        "description": "Resend the email that asks the domain owner to verify their email address. For .de domains it is sent from noreply@mittwald.de and must be confirmed within 7 days; for other domains our registrar sends it and the deadline is stated in the email. Domains whose owner email is not verified in time are blocked.",
         "domain": "domain",
         "parameters": [
           {

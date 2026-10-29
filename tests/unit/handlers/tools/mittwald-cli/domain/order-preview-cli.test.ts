@@ -52,7 +52,7 @@ describe('handleDomainOrderPreviewCli', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockGetSession.mockResolvedValue({ userId: 'user-1', mittwaldAccessToken: 'token-123' });
-    mockBuildDomainOwnerHandle.mockResolvedValue({ data: ownerHandle, durationMs: 1 });
+    mockBuildDomainOwnerHandle.mockResolvedValue({ data: { tld: 'de', fields: ownerHandle }, durationMs: 1 });
     mockPreviewDomainOrder.mockResolvedValue({
       data: { domainPrice: 1068, feePrice: 299, totalPrice: 1367, contractDurationInMonths: 12 },
       durationMs: 1,
@@ -67,7 +67,7 @@ describe('handleDomainOrderPreviewCli', () => {
     );
 
     expect(mockStorePendingDomainOrder).toHaveBeenCalledWith(
-      expect.objectContaining({ userId: 'user-1', domain: 'example.de', projectId: 'p-1', owner, ownerHandle })
+      expect.objectContaining({ userId: 'user-1', domain: 'example.de', tld: 'de', projectId: 'p-1', owner, ownerHandle })
     );
     expect(orderDomain).not.toHaveBeenCalled();
 
@@ -79,8 +79,19 @@ describe('handleDomainOrderPreviewCli', () => {
       orderType: 'registration',
       price: { domain: '10.68 EUR', fee: '2.99 EUR', total: '13.67 EUR' },
       contractDurationInMonths: 12,
-      verificationEmail: expect.stringContaining('within 7 days'),
+      verificationEmail: expect.stringContaining('noreply@mittwald.de and must be confirmed within 7 days'),
     });
+  });
+
+  it('tells the user that the registrar sends the verification email for other TLDs', async () => {
+    mockBuildDomainOwnerHandle.mockResolvedValue({ data: { tld: 'com', fields: ownerHandle }, durationMs: 1 });
+
+    const result = await handleDomainOrderPreviewCli({ domain: 'example.com', projectId: 'p-1', owner }, 'session-1');
+
+    const { verificationEmail } = parse(result).data.overview;
+    expect(verificationEmail).toContain('our registrar sends a verification email');
+    expect(verificationEmail).toContain('within the deadline stated in the email');
+    expect(verificationEmail).not.toContain('noreply@mittwald.de');
   });
 
   it('returns owner validation errors without storing anything', async () => {

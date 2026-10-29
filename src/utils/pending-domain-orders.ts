@@ -14,6 +14,8 @@ export const PENDING_DOMAIN_ORDER_TTL_SECONDS = 15 * 60;
 export interface PendingDomainOrder {
   userId: string;
   domain: string;
+  /** TLD the owner details were validated for; decides who sends the verification email */
+  tld: string;
   projectId: string;
   authCode?: string;
   owner: DomainOwner;

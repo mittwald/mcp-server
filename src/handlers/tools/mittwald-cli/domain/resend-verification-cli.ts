@@ -36,7 +36,8 @@ export const handleDomainResendVerificationCli: MittwaldCliToolHandler<MittwaldD
 
     return formatToolResponse(
       'success',
-      'Verification email resent. It is sent from noreply@mittwald.de to the domain owner and must be confirmed within 7 days.',
+      'Verification email resent to the domain owner. It must be confirmed within 7 days for .de domains, ' +
+        'otherwise within the deadline stated in the email; if not, the domain will be blocked.',
       { domainId: args.domainId },
       { durationMs: result.durationMs }
     );

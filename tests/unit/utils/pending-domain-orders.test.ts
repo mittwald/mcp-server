@@ -26,6 +26,7 @@ const { PENDING_DOMAIN_ORDER_TTL_SECONDS, storePendingDomainOrder, takePendingDo
 const order = {
   userId: 'user-1',
   domain: 'example.de',
+  tld: 'de',
   projectId: 'p-1',
   owner: {
     type: 'person' as const,

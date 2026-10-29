@@ -34,6 +34,12 @@ export interface DomainOwnerHandleField {
   value: string;
 }
 
+export interface DomainOwnerHandle {
+  /** TLD whose contact schema the fields were validated against, e.g. "de" or "co.uk" */
+  tld: string;
+  fields: DomainOwnerHandleField[];
+}
+
 type ContactSchema = {
   properties?: Record<string, unknown>;
   required?: string[];
@@ -211,7 +217,7 @@ export interface BuildDomainOwnerHandleOptions extends LibraryFunctionBase {
  */
 export async function buildDomainOwnerHandle(
   options: BuildDomainOwnerHandleOptions
-): Promise<LibraryResult<DomainOwnerHandleField[]>> {
+): Promise<LibraryResult<DomainOwnerHandle>> {
   const startTime = performance.now();
   const domain = normalizeDomain(options.domain);
   const { owner } = options;
@@ -220,7 +226,8 @@ export async function buildDomainOwnerHandle(
     throw new LibraryError('Invalid domain owner: company is required for organizations', 400);
   }
 
-  const schema = await getOwnerContactSchema(options.apiToken, await resolveTld(options.apiToken, domain));
+  const tld = await resolveTld(options.apiToken, domain);
+  const schema = await getOwnerContactSchema(options.apiToken, tld);
   const mapping = ownerFieldMapping(schema, owner);
 
   const handle: Record<string, string> = {};
@@ -243,7 +250,7 @@ export async function buildDomainOwnerHandle(
   }
 
   return {
-    data: Object.entries(handle).map(([name, value]) => ({ name, value })),
+    data: { tld, fields: Object.entries(handle).map(([name, value]) => ({ name, value })) },
     status: 200,
     durationMs: performance.now() - startTime,
   };
@@ -298,7 +305,7 @@ export interface OrderDomainOptions extends LibraryFunctionBase {
   domain: string;
   projectId: string;
   authCode?: string;
-  /** Output of {@link buildDomainOwnerHandle} */
+  /** Fields returned by {@link buildDomainOwnerHandle} */
   ownerHandle: DomainOwnerHandleField[];
 }
 

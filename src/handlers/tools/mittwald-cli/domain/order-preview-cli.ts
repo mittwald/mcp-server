@@ -46,6 +46,7 @@ export const handleDomainOrderPreviewCli: MittwaldCliToolHandler<MittwaldDomainO
 
     const order = {
       domain: args.domain.trim().toLowerCase(),
+      tld: ownerHandle.data.tld,
       projectId: args.projectId,
       ...(args.authCode ? { authCode: args.authCode } : {}),
       owner: args.owner,
@@ -54,7 +55,7 @@ export const handleDomainOrderPreviewCli: MittwaldCliToolHandler<MittwaldDomainO
     const confirmationToken = await storePendingDomainOrder({
       ...order,
       userId: session.userId,
-      ownerHandle: ownerHandle.data,
+      ownerHandle: ownerHandle.data.fields,
     });
 
     return formatToolResponse(
