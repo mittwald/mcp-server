@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-08-31T10:34:51.765Z",
-  "totalTools": 116,
+  "generatedAt": "2026-10-29T15:03:03.679Z",
+  "totalTools": 120,
   "tools": {
     "app": [
       {
@@ -2532,6 +2532,43 @@
     "ddev": [],
     "domain": [
       {
+        "name": "mittwald_domain_check",
+        "title": "Check Domain Availability",
+        "description": "Check whether a domain can be registered (or, if it is taken, transferred) at mittwald, and which owner details its domain ending requires. Use this before mittwald_domain_order_preview when a user wants to register or buy a domain.",
+        "domain": "domain",
+        "parameters": [
+          {
+            "name": "domain",
+            "type": "string",
+            "description": "Fully qualified domain name, e.g. example.de",
+            "required": true
+          },
+          {
+            "name": "authCode",
+            "type": "string",
+            "description": "Auth code from the current registrar; only needed to check whether a taken domain can be transferred",
+            "required": false
+          }
+        ],
+        "returnType": {
+          "type": "object",
+          "description": "Tool execution result with status, message, and data",
+          "example": {
+            "status": "success",
+            "message": "Operation completed successfully",
+            "data": null,
+            "metadata": {
+              "durationMs": 0
+            }
+          }
+        },
+        "requiresAuth": true,
+        "requiredScopes": [],
+        "tags": [
+          "domain"
+        ]
+      },
+      {
         "name": "mittwald_domain_dnszone_get",
         "title": "Get DNS Zone Details",
         "description": "Get DNS zone information..",
@@ -2748,6 +2785,117 @@
             "name": "projectId",
             "type": "string",
             "description": "ID or short ID of a project",
+            "required": true
+          }
+        ],
+        "returnType": {
+          "type": "object",
+          "description": "Tool execution result with status, message, and data",
+          "example": {
+            "status": "success",
+            "message": "Operation completed successfully",
+            "data": null,
+            "metadata": {
+              "durationMs": 0
+            }
+          }
+        },
+        "requiresAuth": true,
+        "requiredScopes": [],
+        "tags": [
+          "domain"
+        ]
+      },
+      {
+        "name": "mittwald_domain_order",
+        "title": "Order Domain",
+        "description": "Order (register or transfer) a domain. This costs money. Only call this after you showed the overview from mittwald_domain_order_preview to the user and the user explicitly approved the order. The order is placed exactly as previewed; to change anything, run the preview again. Depending on the client, the user is asked to confirm the order once more.",
+        "domain": "domain",
+        "parameters": [
+          {
+            "name": "confirmationToken",
+            "type": "string",
+            "description": "confirmationToken returned by mittwald_domain_order_preview; it can be used only once",
+            "required": true
+          }
+        ],
+        "returnType": {
+          "type": "object",
+          "description": "Tool execution result with status, message, and data",
+          "example": {
+            "status": "success",
+            "message": "Operation completed successfully",
+            "data": null,
+            "metadata": {
+              "durationMs": 0
+            }
+          }
+        },
+        "requiresAuth": true,
+        "requiredScopes": [],
+        "tags": [
+          "domain"
+        ]
+      },
+      {
+        "name": "mittwald_domain_order_preview",
+        "title": "Preview Domain Order",
+        "description": "Prepare the registration (or transfer) of a domain without ordering anything. Validates the owner details, returns an order overview with price and contract duration, and a confirmationToken for mittwald_domain_order. Always show the overview to the user, including the note about the verification email, before ordering. Ask the user for the owner details; do not make them up.",
+        "domain": "domain",
+        "parameters": [
+          {
+            "name": "domain",
+            "type": "string",
+            "description": "Fully qualified domain name, e.g. example.de",
+            "required": true
+          },
+          {
+            "name": "projectId",
+            "type": "string",
+            "description": "ID of the project the domain will belong to",
+            "required": true
+          },
+          {
+            "name": "authCode",
+            "type": "string",
+            "description": "Auth code from the current registrar; only for transferring a domain that is already registered",
+            "required": false
+          },
+          {
+            "name": "owner",
+            "type": "object",
+            "description": "Domain owner. The owner is the legal holder of the domain and responsible for it.",
+            "required": true
+          }
+        ],
+        "returnType": {
+          "type": "object",
+          "description": "Tool execution result with status, message, and data",
+          "example": {
+            "status": "success",
+            "message": "Operation completed successfully",
+            "data": null,
+            "metadata": {
+              "durationMs": 0
+            }
+          }
+        },
+        "requiresAuth": true,
+        "requiredScopes": [],
+        "tags": [
+          "domain"
+        ]
+      },
+      {
+        "name": "mittwald_domain_resend_verification",
+        "title": "Resend Domain Verification Email",
+        "description": "Resend the email that asks the domain owner to verify their email address. It is sent from noreply@mittwald.de and must be confirmed within 7 days of registering the domain, otherwise the domain is suspended.",
+        "domain": "domain",
+        "parameters": [
+          {
+            "name": "domainId",
+            "type": "string",
+            "description": "The domain ID (see mittwald_domain_list)",
             "required": true
           }
         ],
@@ -5402,7 +5550,7 @@
       "name": "domain",
       "title": "Domains",
       "description": "Manage domains and DNS",
-      "toolCount": 9,
+      "toolCount": 13,
       "tags": [
         "domain"
       ]

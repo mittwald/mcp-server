@@ -1,7 +1,7 @@
 # Mittwald MCP Server
 [![Coverage Check](https://github.com/mittwald/mcp-server/actions/workflows/coverage-check.yml/badge.svg)](https://github.com/mittwald/mcp-server/actions/workflows/coverage-check.yml)
 
-The Mittwald MCP server exposes 116 tools that let MCP clients (Claude, ChatGPT, MCP Inspector, Cursor, Codex CLI) manage Mittwald hosting infrastructure on behalf of a user. Authentication flows through an OAuth bridge that fronts Mittwald's OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats the bridge as a **public client**: there is no Mittwald-issued client secret to manage. The bridge mints its own secrets for downstream confidential MCP clients (e.g. Claude Desktop) and verifies them before issuing JWTs.
+The Mittwald MCP server exposes 120 tools that let MCP clients (Claude, ChatGPT, MCP Inspector, Cursor, Codex CLI) manage Mittwald hosting infrastructure on behalf of a user. Authentication flows through an OAuth bridge that fronts Mittwald's OAuth 2.1 endpoints using Authorization Code + PKCE only. Mittwald treats the bridge as a **public client**: there is no Mittwald-issued client secret to manage. The bridge mints its own secrets for downstream confidential MCP clients (e.g. Claude Desktop) and verifies them before issuing JWTs.
 
 Mittwald remains authoritative for scopes and consent — the bridge renders no consent page of its own, and the scope string inside each issued JWT comes straight from Mittwald's token response. Clients register their redirect URI through `/register` (Dynamic Client Registration); see `ARCHITECTURE.md` for why that is mandatory.
 

@@ -28,6 +28,7 @@ How-to guides are task-oriented: you know the outcome you need, and the guide gi
 
 ## Domain, Mail, and Certificates
 
+- [Register a Domain](/how-to/register-domain/)
 - [Configure DNS, Forwarding, Mailbox, and SSL](/how-to/domain-mail-ssl/)
 
 ## Automation

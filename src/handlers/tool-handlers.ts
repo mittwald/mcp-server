@@ -293,9 +293,13 @@ export async function handleToolCall(
     
     let result: CallToolResult;
     result = await runWithSessionContext(
-      context.sessionId,
-      () => handler(request.params.arguments as any),
-      context.abortSignal
+      {
+        sessionId: context.sessionId,
+        abortSignal: context.abortSignal,
+        server: context.server,
+        requestId: context.requestId,
+      },
+      () => handler(request.params.arguments as any)
     );
 
     // Capture memory after execution

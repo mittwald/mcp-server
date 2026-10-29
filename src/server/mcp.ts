@@ -250,7 +250,7 @@ export class MCPHandler implements IMCPHandler {
 
       const clientInfo = server.getClientVersion();
 
-      return handleToolCall(request, { sessionId, authInfo, abortSignal: extra.signal, clientInfo });
+      return handleToolCall(request, { sessionId, authInfo, abortSignal: extra.signal, server, requestId: extra.requestId, clientInfo });
     });
 
     // Prompts

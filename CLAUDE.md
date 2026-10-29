@@ -257,8 +257,8 @@ is often several API calls plus validation and orchestration.
 
 ## Tool Registry
 
-`src/constants/tool/mittwald-cli/**` holds 161 tool definitions; 45 of them are excluded by
-`src/utils/tool-scanner.ts`, leaving **116 tools registered** across 16 domains. The exclusion map
+`src/constants/tool/mittwald-cli/**` holds 165 tool definitions; 45 of them are excluded by
+`src/utils/tool-scanner.ts`, leaving **120 tools registered** across 16 domains. The exclusion map
 is the single source of truth for what clients can call — the reference docs site and its coverage
 check both read it.
 

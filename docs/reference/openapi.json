@@ -5515,6 +5515,102 @@
         }
       }
     },
+    "/tools/mittwald_domain_check": {
+      "post": {
+        "summary": "Check Domain Availability",
+        "description": "Check whether a domain can be registered (or, if it is taken, transferred) at mittwald, and which owner details its domain ending requires. Use this before mittwald_domain_order_preview when a user wants to register or buy a domain.",
+        "operationId": "mittwald_domain_check",
+        "tags": [
+          "domain"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domain": {
+                    "type": "string",
+                    "description": "Fully qualified domain name, e.g. example.de"
+                  },
+                  "authCode": {
+                    "type": "string",
+                    "description": "Auth code from the current registrar; only needed to check whether a taken domain can be transferred"
+                  }
+                },
+                "required": [
+                  "domain"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response from mittwald_domain_check",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "error"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {},
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "durationMs": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tool not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tools/mittwald_domain_dnszone_get": {
       "post": {
         "summary": "Get DNS Zone Details",
@@ -5976,6 +6072,296 @@
         "responses": {
           "200": {
             "description": "Successful response from mittwald_domain_list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "error"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {},
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "durationMs": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tool not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/mittwald_domain_order": {
+      "post": {
+        "summary": "Order Domain",
+        "description": "Order (register or transfer) a domain. This costs money. Only call this after you showed the overview from mittwald_domain_order_preview to the user and the user explicitly approved the order. The order is placed exactly as previewed; to change anything, run the preview again. Depending on the client, the user is asked to confirm the order once more.",
+        "operationId": "mittwald_domain_order",
+        "tags": [
+          "domain"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "confirmationToken": {
+                    "type": "string",
+                    "description": "confirmationToken returned by mittwald_domain_order_preview; it can be used only once"
+                  }
+                },
+                "required": [
+                  "confirmationToken"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response from mittwald_domain_order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "error"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {},
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "durationMs": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tool not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/mittwald_domain_order_preview": {
+      "post": {
+        "summary": "Preview Domain Order",
+        "description": "Prepare the registration (or transfer) of a domain without ordering anything. Validates the owner details, returns an order overview with price and contract duration, and a confirmationToken for mittwald_domain_order. Always show the overview to the user, including the note about the verification email, before ordering. Ask the user for the owner details; do not make them up.",
+        "operationId": "mittwald_domain_order_preview",
+        "tags": [
+          "domain"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domain": {
+                    "type": "string",
+                    "description": "Fully qualified domain name, e.g. example.de"
+                  },
+                  "projectId": {
+                    "type": "string",
+                    "description": "ID of the project the domain will belong to"
+                  },
+                  "authCode": {
+                    "type": "string",
+                    "description": "Auth code from the current registrar; only for transferring a domain that is already registered"
+                  },
+                  "owner": {
+                    "type": "object",
+                    "description": "Domain owner. The owner is the legal holder of the domain and responsible for it."
+                  }
+                },
+                "required": [
+                  "domain",
+                  "projectId",
+                  "owner"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response from mittwald_domain_order_preview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "error"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {},
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "durationMs": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tool not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/mittwald_domain_resend_verification": {
+      "post": {
+        "summary": "Resend Domain Verification Email",
+        "description": "Resend the email that asks the domain owner to verify their email address. It is sent from noreply@mittwald.de and must be confirmed within 7 days of registering the domain, otherwise the domain is suspended.",
+        "operationId": "mittwald_domain_resend_verification",
+        "tags": [
+          "domain"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domainId": {
+                    "type": "string",
+                    "description": "The domain ID (see mittwald_domain_list)"
+                  }
+                },
+                "required": [
+                  "domainId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response from mittwald_domain_resend_verification",
             "content": {
               "application/json": {
                 "schema": {
